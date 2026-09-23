@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pick My Costume - Five questions. Three costume ideas.</title>
-<meta name="description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account.">
+<title>Pick My Costume - A few quick questions. Three costume ideas.</title>
+<meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pickmycostume.com/">
-<meta property="og:title" content="Pick My Costume - Five questions. Three costume ideas.">
-<meta property="og:description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
+<meta property="og:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
+<meta property="og:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
 <meta property="og:image" content="https://pickmycostume.com/images/little-pumpkin.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Pick My Costume - Five questions. Three costume ideas.">
-<meta name="twitter:description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account.">
+<meta name="twitter:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
+<meta name="twitter:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
 <meta name="twitter:image" content="https://pickmycostume.com/images/little-pumpkin.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -150,7 +150,7 @@ footer a{color:var(--accent)}
     <div class="hero">
       <div class="moon" aria-hidden="true">&#127769;</div>
       <h1>Pick My Costume</h1>
-      <p class="tagline">Five questions. Three costume ideas. No email, no account.</p>
+      <p class="tagline">A few quick questions. Three costume ideas. No email, no account.</p>
       <div class="returnbox" id="returnbox" style="display:none">
         <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
@@ -264,12 +264,6 @@ var QUESTIONS = [
     {label:"Cute", tags:{cute:2}},
     {label:"Keep it simple", tags:{simple:2}}
   ]},
-  {id:"q3", title:"What is the budget?", hint:"Per costume, roughly.", options:[
-    {label:"Under $25", value:"low", tags:{}},
-    {label:"$25 to $60", value:"mid", tags:{}},
-    {label:"$60+", value:"high", tags:{}},
-    {label:"DIY from my closet", value:"diy", tags:{}}
-  ]},
   {id:"q4", title:"How much effort?", hint:"Be honest. Couch-level is a fine answer.", options:[
     {label:"Couch-level", tags:{couch:2}},
     {label:"A little crafty", tags:{crafty:2}},
@@ -322,12 +316,12 @@ var IDEAS = [
   {id:"glow-skeleton", title:"Glow Skeleton", blurb:"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.", why:"Spooky after dark and visible to cars, which parents love.", audience:["kid"], budget:["low","diy"], tags:{couch:2,scary:2,cute:1,kid36:2,kid7plus:1}, rank:11},
   {id:"lost-tourist", title:"Lost Tourist", blurb:"Hawaiian shirt, camera around neck, sunscreen stripe on the nose.", why:"Everything is in your closet already and it gets funnier all night.", audience:["solo"], budget:["diy","low"], tags:{funny:3,couch:2,simple:1}, rank:63},
   {id:"error-404", title:"Error 404", blurb:"White tee that says Error 404: Costume Not Found.", why:"Gets a laugh with just a white tee and a marker.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:3,simple:2}, rank:69},
-  {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1}, rank:1},
-  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with ten minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1}, rank:32},
+  {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3}, rank:1},
+  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with ten minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1,dinos:2}, rank:32},
   {id:"plague-doctor", title:"Plague Doctor", blurb:"Long coat, wide hat, beaked mask.", why:"Genuinely unsettling and you get to keep the mask for years.", audience:["solo"], budget:["mid","high"], tags:{scary:3,allout:2}, rank:66},
-  {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Scary with zero shopping: it's just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{couch:2,scary:2,funny:1,make:2}, rank:70},
+  {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Scary with zero shopping: it's just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{couch:2,scary:2,funny:1,make:2,dinos:2,tv:1}, rank:70},
   {id:"rosie", title:"Rosie the Riveter", blurb:"Denim shirt, red bandana, rolled sleeves.", why:"Bandana, denim shirt, red lipstick: done in minutes.", audience:["solo"], budget:["diy","low"], tags:{couch:2,simple:2,cute:1}, rank:64},
-  {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1}, rank:4},
+  {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1,tv:3}, rank:4},
   {id:"workout-80s", title:"80s Workout Video", blurb:"Neon leggings, headband, leg warmers.", why:"Thrift-store gold and you can jog in place all night.", audience:["solo"], budget:["low","diy"], tags:{funny:3,couch:1}, rank:67},
   {id:"crowd-camouflage", title:"Crowd Camouflage", blurb:"Red-white striped shirt, beanie, round glasses. Hide in plain sight.", why:"You will still be found immediately, and that is the joke.", audience:["solo"], budget:["diy","low"], tags:{couch:2,simple:3,funny:1}, rank:68},
   {id:"pbj", title:"Peanut Butter and Jelly", blurb:"One brown tee, one purple tee, both cut sandwich-round.", why:"The classic couples costume for a reason: cheap and adorable.", audience:["couple"], budget:["diy","low"], tags:{couch:2,cute:3,funny:1,matchyes:2}, rank:57},
@@ -340,15 +334,15 @@ var IDEAS = [
   {id:"robot-crew", title:"Cardboard Robot Crew", blurb:"Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.", why:"Scales to any group size, costs almost nothing, and the group photo is unbeatable.", audience:["group","family"], budget:["diy","low"], tags:{allout:2,funny:3,crafty:3}, rank:34},
   {id:"crayons", title:"Box of Crayons", blurb:"Everyone picks a color: matching tee plus a cone hat.", why:"No two people match, everyone matches. Ideal group costume.", audience:["group","family"], budget:["diy"], tags:{couch:2,cute:3,simple:1}, rank:36},
   {id:"olympians", title:"The Olympians", blurb:"Bedsheet togas, gold rope belts, laurel crowns from the craft store. Everyone gets a god.", why:"Epic group photos, and the whole thing is thrifted.", audience:["group","family"], budget:["diy","low"], tags:{funny:2,cute:1,crafty:1}, rank:52},
-  {id:"mystery-crew", title:"Mystery Crew", blurb:"Assign the leader, the style icon, the brains, the goofball, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group","family"], budget:["diy","mid"], tags:{couch:2,cute:3,funny:1}, rank:46},
-  {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{couch:2,scary:2,funny:1}, rank:47},
-  {id:"goggle-crew", title:"Goggle Crew", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{couch:2,cute:2,funny:1}, rank:51},
+  {id:"mystery-crew", title:"Mystery Crew", blurb:"Assign the leader, the style icon, the brains, the goofball, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group","family"], budget:["diy","mid"], tags:{couch:2,cute:3,funny:1,tv:3}, rank:46},
+  {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{couch:2,scary:2,funny:1,dinos:2}, rank:47},
+  {id:"goggle-crew", title:"Goggle Crew", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{couch:2,cute:2,funny:1,tv:3}, rank:51},
   {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1,animals:3}, rank:6},
-  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Scare each other all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:45},
+  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Scare each other all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1,tv:3}, rank:45},
   {id:"disco-ball", title:"Human Disco Ball", blurb:"Silver clothes with taped-on foil squares. You are the party light.", why:"High-impact look, and the DIY is literally cut squares, attach squares.", audience:["solo"], budget:["diy","low"], tags:{funny:2,couch:2,simple:1}, rank:53},
-  {id:"garden-gnome", title:"Garden Gnome", blurb:"Solid shirt, jeans, belt, and a red cone hat from felt or poster board.", why:"The silhouette does all the work; the rest is already in your closet.", audience:["solo"], budget:["diy","low"], tags:{couch:2,funny:2,simple:2,cute:1}, rank:54},
+  {id:"garden-gnome", title:"Garden Gnome", blurb:"Solid shirt, jeans, belt, and a red cone hat from felt or poster board.", why:"The silhouette does all the work; the rest is already in your closet.", audience:["solo"], budget:["diy","low"], tags:{couch:2,funny:2,simple:2,cute:1,princess:1}, rank:54},
   {id:"sun-moon", title:"Sun and Moon", blurb:"One in yellow with cardboard rays, one in navy with paper stars and a crescent.", why:"Two faces, one night: simple paint, big charm.", audience:["couple"], budget:["diy"], tags:{couch:2,cute:3,matchyes:2,simple:1}, rank:55},
-  {id:"moth-porch-light", title:"Moth and Porch Light", blurb:"One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.", why:"The joke lands in one second and it builds in under an hour.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:1,matchyes:2}, rank:56},
+  {id:"moth-porch-light", title:"Moth and Porch Light", blurb:"One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.", why:"The joke lands in one second and it builds in under an hour.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:1,matchyes:2,animals:1}, rank:56},
   {id:"tooth-fairy", title:"Tooth and Tooth Fairy", blurb:"One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.", why:"An obvious pair, playful instead of elaborate.", audience:["couple"], budget:["diy"], tags:{couch:2,funny:2,cute:2,matchyes:1,princess:2}, rank:65},
   {id:"breakfast-buffet", title:"Breakfast Buffet", blurb:"Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.", why:"Scales to any group size and nobody needs a full costume.", audience:["group","family"], budget:["diy","low"], tags:{couch:2,funny:3,simple:1}, rank:42},
   {id:"traffic-jam", title:"Traffic Jam", blurb:"Everyone picks a traffic symbol: stop sign, traffic light, cone, crosswalk, speed limit, construction worker.", why:"The theme is obvious even if each person only wears one homemade prop.", audience:["group"], budget:["diy"], tags:{couch:2,funny:3,simple:2}, rank:43},
@@ -357,7 +351,7 @@ var IDEAS = [
   {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{couch:2,cute:3,simple:1,kid36:2,kidunder3:1,animals:1}, rank:27},
   {id:"rain-cloud-rainbow", title:"Rain Cloud and Rainbow", blurb:"One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.", why:"The two costumes clearly belong together without matching outfits.", audience:["couple"], budget:["diy","low"], tags:{couch:2,cute:3,matchyes:2,simple:1}, rank:41},
   {id:"board-game-pieces", title:"Board Game Pieces", blurb:"Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.", why:"Everyone recognizes every piece, and the group looks like a set.", audience:["group"], budget:["diy","low"], tags:{funny:2,cute:1,crafty:1}, rank:40},
-  {id:"under-the-sea", title:"Under the Sea", blurb:"Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.", why:"The go-all-out family theme; every age can scale their part up or down.", audience:["family"], budget:["diy","low"], tags:{cute:3,allout:2,crafty:1,kid36:1}, rank:39},
+  {id:"under-the-sea", title:"Under the Sea", blurb:"Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.", why:"The go-all-out family theme; every age can scale their part up or down.", audience:["family"], budget:["diy","low"], tags:{cute:3,allout:2,crafty:1,kid36:1,animals:2}, rank:39},
   {id:"little-strawberry", title:"Little Strawberry", blurb:"Red shirt with black felt seeds and a green leaf collar.", why:"Works even if they refuse hats or accessories.", audience:["kid"], budget:["diy","low"], tags:{couch:2,cute:3,simple:2,kid36:2,kidunder3:1}, rank:28},
 
 {id:"emoji-crew", title:"Emoji Crew", blurb:"Everyone picks an emoji: a yellow tee plus a big printed face.", why:"Everyone gets their favorite emoji, and the group photo reads instantly.", audience:["group","family"], budget:["diy","low"], tags:{cute:3, funny:1, simple:2, couch:2}, rank:33},
@@ -370,8 +364,8 @@ var IDEAS = [
   {id:"disney-princesses", title:"Disney Princesses", blurb:"A dress or a crown from the closet — every princess works.", why:"Every kid already has a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3}, rank:7},
   {id:"little-mermaid-crew", title:"Little Mermaid Crew", blurb:"Ariel, Eric, King Triton, Ursula, or Sebastian the crab — pick your role.", why:"Everyone gets a starring role, from mermaid to sea witch.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"simple":1,"couch":1,"crafty":1,"kid36":2,"kid7plus":1,princess:3}, rank:13},
   {id:"be-our-guest", title:"Be Our Guest Crew", blurb:"Belle, the Beast, Lumière the candle, Cogsworth the clock, Mrs. Potts.", why:"The enchanted objects steal the show, and they're all DIY.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"crafty":2,"kid36":1,"kid7plus":1,princess:2}, rank:15},
-  {id:"iron-man", title:"Iron Man", blurb:"Red and gold plus a glowing chest circle — the suit does the talking.", why:"A red tee, gold tape, and a paper arc reactor. Instant hero.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3}, rank:8},
-  {id:"elphaba-glinda", title:"Elphaba & Glinda", blurb:"Green face paint and black for Elphaba, pink gown and crown for Glinda.", why:"The duo of the year — one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2}, rank:9},
+  {id:"iron-man", title:"Iron Man", blurb:"Red and gold plus a glowing chest circle — the suit does the talking.", why:"A red tee, gold tape, and a paper arc reactor. Instant hero.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2}, rank:8},
+  {id:"elphaba-glinda", title:"Elphaba & Glinda", blurb:"Green face paint and black for Elphaba, pink gown and crown for Glinda.", why:"The duo of the year — one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3}, rank:9},
   {id:"minecraft-crew", title:"Minecraft Crew", blurb:"Cardboard-box heads: Steve, Alex, or a Creeper — pixelated and perfect.", why:"A box, some paint, and you're everyone's favorite blockhead.", audience:["kid","family","group"], budget:["diy","low"], tags:{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,games:3}, rank:12},
   {id:"wednesday-enid", title:"Wednesday & Enid", blurb:"Braids and black for Wednesday, color-pop and smiles for Enid.", why:"The deadpan duo — one broods, one sparkles, both nail it.", audience:["group","solo"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3}, rank:5},
   {id:"stitch-ohana", title:"Stitch Ohana", blurb:"Blue hoodie, big ears — Stitch, Lilo, or the whole ohana.", why:"Another blue favorite: ears, a blue hoodie, and maximum cute.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,tv:3}, rank:3},
@@ -400,12 +394,20 @@ var TAG_WORDS = {
 var state = { qi: 0, answers: {} }; // answers: {qid: option}
 
 function qById(id){ return QUESTIONS.filter(function(q){ return q.id === id; })[0]; }
+function qTitle(qid){
+  if (qid === "qinterest") {
+    var aud = state.answers.q1 ? state.answers.q1.value : null;
+    return (aud === "kid" || aud === "family") ? "What is your kid into?" : "What are you into?";
+  }
+  return qById(qid).title;
+}
 
 function flowOrder(){
   var aud = state.answers.q1 ? state.answers.q1.value : null;
-  if (aud === "kid") return ["q1","q2","q3","q4","q5kid","qinterest"];
-  var q5 = aud === "couple" ? "q5couple" : (aud === "family" ? "qinterest" : "q5other");
-  return ["q1","q2","q3","q4",q5];
+  if (aud === "kid") return ["q1","q2","q4","q5kid","qinterest"];
+  if (aud === "family") return ["q1","q2","q4","qinterest"];
+  var q5 = aud === "couple" ? "q5couple" : "q5other";
+  return ["q1","q2","q4",q5,"qinterest"];
 }
 
 function answerTags(){
@@ -430,12 +432,19 @@ var BUDGET_OK = {
 
 function scoreIdeas(){
   var aud = state.answers.q1.value;
-  var bud = state.answers.q3.value;
   var tags = answerTags();
-  var okBudgets = BUDGET_OK[bud] || [bud];
-  var pool = IDEAS.filter(function(i){
-    return i.audience.indexOf(aud) !== -1 && i.budget.some(function(b){ return okBudgets.indexOf(b) !== -1; });
-  });
+  /* Budget is a ceiling: a bigger budget includes cheaper bands. Skipped when the flow has no budget question (kid flow). */
+  var budAns = state.answers.q3;
+  var pool;
+  if (budAns) {
+    var bud = budAns.value;
+    var okBudgets = BUDGET_OK[bud] || [bud];
+    pool = IDEAS.filter(function(i){
+      return i.audience.indexOf(aud) !== -1 && i.budget.some(function(b){ return okBudgets.indexOf(b) !== -1; });
+    });
+  } else {
+    pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
+  }
   if (pool.length < 3) {
     pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
   }
@@ -446,7 +455,7 @@ function scoreIdeas(){
       if (tags[t]) { contrib[t] = tags[t] * idea.tags[t]; score += contrib[t]; }
     });
     /* Buy/make intent: the bank has no buy/make tags, so read it off budget bands. */
-    var q5a = state.answers[flowOrder()[4]];
+    var q5a = state.answers.q5other || state.answers.q5couple || state.answers.q5kid;
     var intent = q5a ? q5a.label : null;
     var diyOnly = idea.budget.length === 1 && idea.budget[0] === "diy";
     if (intent === "Buy it" && diyOnly) score -= 4;
@@ -485,7 +494,7 @@ function renderQ(){
   var qid = order[state.qi];
   var q = qById(qid);
   $("q-progress").textContent = "Question " + (state.qi + 1) + " of " + flowOrder().length;
-  $("q-title").textContent = q.title;
+  $("q-title").textContent = qTitle(qid);
   $("q-hint").textContent = q.hint;
   var box = $("q-opts");
   box.innerHTML = "";
@@ -649,7 +658,7 @@ function buildResultsPrompt(results, beyond){
   });
   var ans = flowOrder().map(function(qid){
     var a = state.answers[qid];
-    return a ? qById(qid).title + ": " + a.label : null;
+    return a ? qTitle(qid) + ": " + a.label : null;
   }).filter(function(x){ return x; });
   var ask = beyond
     ? "Treat these as starting points, not final answers. Suggest 3 fresh costume ideas beyond them and give me a concrete plan for the best one: where to buy it or exactly how to DIY it this week. Keep it short and practical."
