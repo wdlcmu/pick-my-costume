@@ -522,7 +522,13 @@ function renderBrowse(){
     img.setAttribute("onerror", "this.style.display='none'");
     var h = document.createElement("h3"); h.textContent = idea.title;
     var p = document.createElement("p"); p.textContent = idea.blurb;
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "ghost"; b.textContent = "Ask my AI";
+    b.style.marginTop = "10px"; b.style.width = "100%";
+    var st = document.createElement("p"); st.className = "status";
+    b.onclick = (function(it, sel){ return function(){ copyIdeaPrompt(it, sel); }; })(idea, st);
     card.appendChild(img); card.appendChild(h); card.appendChild(p);
+    card.appendChild(b); card.appendChild(st);
     grid.appendChild(card);
   });
 }
@@ -559,8 +565,25 @@ function copyAIPrompt(results, statusEl){
   }
 }
 
-/* ================= SHARE ================= */
-function shareText(idea, statusEl){
+function copyIdeaPrompt(idea, statusEl){
+  var text = "I want to go as " + idea.title + " for Halloween. The idea: " + idea.blurb +
+    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" +
+    "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it (materials list with approximate costs, step by step). Keep it short and practical.";
+  function done(ok, msg){
+    statusEl.textContent = msg;
+    if (ok) Analytics.track("browse_ai_prompt_copied", {idea_id: idea.id});
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(
+      function(){ done(true, "Copied. Paste it into ChatGPT, Claude, Gemini, or any AI."); },
+      function(){ fallbackCopy(text, done); }
+    );
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+
+/* ================= SHARE ================= */function shareText(idea, statusEl){
   var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
   var text = SHARE.textTemplate(idea.title, aud);
   function done(ok, msg){
