@@ -368,7 +368,7 @@ var IDEAS = [
   {id:"fruit-basket", title:"Fruit Basket", blurb:"Each person wears one solid color and adds a paper leaf or stem. Everyone is a different fruit.", why:"Even toddlers can do it comfortably, and the family photo looks coordinated.", audience:["family"], budget:["diy","low"], tags:{couch:2,cute:3,simple:2,kid36:2,kidunder3:1}, rank:37},
   {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{couch:2,cute:3,simple:1,kid36:2,kidunder3:1,animals:1}, rank:27},
   {id:"rain-cloud-rainbow", title:"Rain Cloud and Rainbow", blurb:"One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.", why:"The two costumes clearly belong together without matching outfits.", audience:["couple"], budget:["diy","low"], tags:{couch:2,cute:3,matchyes:2,simple:1}, rank:41},
-  {id:"board-game-pieces", title:"Board Game Pieces", blurb:"Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.", why:"Everyone recognizes every piece, and the group looks like a set.", audience:["group"], budget:["diy","low"], tags:{funny:2,cute:1,crafty:1}, rank:40},
+  {id:"board-game-pieces", title:"Board Game Pieces", blurb:"Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.", why:"Everyone recognizes every piece, and the group looks like a set.", audience:["group"], budget:["diy","low"], tags:{funny:2,cute:1,crafty:1,games:2}, rank:40},
   {id:"under-the-sea", title:"Under the Sea", blurb:"Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.", why:"The go-all-out family theme; every age can scale their part up or down.", audience:["family"], budget:["diy","low"], tags:{cute:3,allout:2,crafty:1,kid36:1,animals:2}, rank:39},
   {id:"little-strawberry", title:"Little Strawberry", blurb:"Red shirt with black felt seeds and a green leaf collar.", why:"Works even if they refuse hats or accessories.", audience:["kid"], budget:["diy","low"], tags:{couch:2,cute:3,simple:2,kid36:2,kidunder3:1}, rank:28},
 
@@ -486,6 +486,10 @@ function scoreIdeas(){
     var effAns = state.answers.q4;
     var effTag = effAns && effAns.tags ? Object.keys(effAns.tags)[0] : null;
     if (effTag && !idea.tags[effTag]) score -= 6;
+    /* Interest is the strongest promise: a result that ignores what you're into is a broken promise. */
+    var intAns = state.answers.qinterest;
+    var intTag = intAns && intAns.tags ? Object.keys(intAns.tags)[0] : null;
+    if (intTag && !idea.tags[intTag]) score -= 100;
     return {idea: idea, score: score, contrib: contrib};
   });
   scored.sort(function(a, b){
@@ -517,7 +521,15 @@ function renderQ(){
   var box = $("q-opts");
   box.innerHTML = "";
   var current = state.answers[qid];
-  q.options.forEach(function(opt){
+  var opts = q.options;
+  if (qid === "qinterest") {
+    var aud0 = state.answers.q1 && state.answers.q1.value;
+    if (aud0) opts = opts.filter(function(opt){
+      var k = Object.keys(opt.tags)[0];
+      return IDEAS.some(function(i){ return i.audience.indexOf(aud0) !== -1 && (i.tags[k] > 0); });
+    });
+  }
+  opts.forEach(function(opt){
     var b = document.createElement("button");
     b.type = "button";
     var sel = current && current.label === opt.label;
@@ -532,6 +544,7 @@ function renderQ(){
     b.appendChild(tick); b.appendChild(lab);
     b.onclick = function(){
       state.answers[qid] = opt;
+      if (qid === "q1") delete state.answers.qinterest; // interest options depend on audience
       // Q1 answer can change which Q5 shows; drop a stale Q5 answer.
       var order2 = flowOrder();
       Object.keys(state.answers).forEach(function(k){
