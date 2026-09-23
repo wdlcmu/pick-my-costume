@@ -164,7 +164,7 @@ footer a{color:var(--accent)}
   <!-- BROWSE -->
   <section class="screen" id="s-browse">
     <p class="progress">Every idea in the bank</p>
-    <h2 class="q-title">All 40 ideas</h2>
+    <h2 class="q-title" id="browse-title">All ideas</h2>
     <p class="q-hint">Prefer browsing to quizzing? Filter the full shelf.</p>
     <div class="bfilters">
       <select id="browse-aud" aria-label="Filter by audience">
@@ -299,7 +299,17 @@ var IDEAS = [
   {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{scary:2,funny:1}, rank:38},
   {id:"goggle-crew", title:"Goggle Crew", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{cute:2,funny:1}, rank:39},
   {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1}, rank:41},
-  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Each other, all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40}
+  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Each other, all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40},
+  {id:"disco-ball", title:"Human Disco Ball", blurb:"Silver clothes with taped-on foil squares. You are the party light.", why:"High-impact look, and the DIY is literally cut squares, attach squares.", audience:["solo"], budget:["diy","low"], tags:{funny:2,couch:2,simple:1}, rank:42},
+  {id:"garden-gnome", title:"Garden Gnome", blurb:"Solid shirt, jeans, belt, and a red cone hat from felt or poster board.", why:"The silhouette does all the work; the rest is already in your closet.", audience:["solo"], budget:["diy","low"], tags:{funny:2,simple:2,cute:1}, rank:43},
+  {id:"sun-moon", title:"Sun and Moon", blurb:"One in yellow with cardboard rays, one in navy with paper stars and a crescent.", why:"Reads instantly as a pair, and both halves are equally easy.", audience:["couple"], budget:["diy"], tags:{cute:3,matchyes:2,simple:1}, rank:44},
+  {id:"moth-porch-light", title:"Moth and Porch Light", blurb:"One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.", why:"The joke lands in one second and it builds in under an hour.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:1,matchyes:2}, rank:45},
+  {id:"tooth-fairy", title:"Tooth and Tooth Fairy", blurb:"One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.", why:"An obvious pair, playful instead of elaborate.", audience:["couple"], budget:["diy"], tags:{funny:2,cute:2,matchyes:1}, rank:46},
+  {id:"breakfast-buffet", title:"Breakfast Buffet", blurb:"Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.", why:"Scales to any group size and nobody needs a full costume.", audience:["group","family"], budget:["diy","low"], tags:{funny:3,simple:1}, rank:47},
+  {id:"traffic-jam", title:"Traffic Jam", blurb:"Everyone picks a traffic symbol: stop sign, traffic light, cone, crosswalk, speed limit, construction worker.", why:"The theme is obvious even if each person only wears one homemade prop.", audience:["group"], budget:["diy"], tags:{funny:3,simple:2}, rank:48},
+  {id:"weather-system", title:"Weather System", blurb:"Assign sun, cloud, rain, lightning, snow, rainbow: solid-color clothes plus cardboard symbols.", why:"Everyone gets a different role and the group still looks cohesive.", audience:["group","family"], budget:["diy"], tags:{cute:2,funny:1,simple:1}, rank:49},
+  {id:"fruit-basket", title:"Fruit Basket", blurb:"Each person wears one solid color and adds a paper leaf or stem. Everyone is a different fruit.", why:"Even toddlers can do it comfortably, and the family photo looks coordinated.", audience:["family"], budget:["diy","low"], tags:{cute:3,simple:2,kid36:2,kidunder3:1}, rank:50},
+  {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{cute:3,simple:1,kid36:2,kidunder3:1}, rank:51},
 ];
 
 /* ================= CONFIG: SHARE ================= */
@@ -745,6 +755,9 @@ $("btn-return").onclick = function(){
 };
 $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-results").onclick = openBrowse;
+$("btn-browse-hero").textContent = "Browse all " + IDEAS.length;
+$("btn-browse-results").textContent = "Browse all " + IDEAS.length;
+$("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
 $("browse-aud").onchange = renderBrowse;
 $("browse-vibe").onchange = renderBrowse;
