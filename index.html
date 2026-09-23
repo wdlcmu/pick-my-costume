@@ -26,7 +26,7 @@
       if (window.posthog && posthog.init) {
         posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
           api_host: "https://us.i.posthog.com",
-          autocapture: true,
+          autocapture: false,
           capture_pageview: true,
           disable_session_recording: true
         });
@@ -119,6 +119,7 @@ button.ghost{
 .card .row button{min-height:48px;font-size:16px}
 .card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
 .status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
+.linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
 .promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:15px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
 .stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
 .stuck h3{margin:0 0 6px;font-size:20px}
@@ -503,9 +504,12 @@ function renderResults(results){
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
     var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
     var bImg = document.createElement("button"); bImg.type = "button"; bImg.className = "ghost"; bImg.textContent = "Save image card";
-    var bFind = document.createElement("button"); bFind.type = "button"; bFind.className = "ghost"; bFind.textContent = "Find this costume";
     var note = document.createElement("p"); note.className = "picked-note";
-    note.textContent = "\u2713 Saved as your pick";
+    var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 Saved as your pick \u2014 ";
+    var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your AI plan";
+    var planBox = document.createElement("div");
+    planBtn.onclick = function(){ showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied"); };
+    note.appendChild(noteTxt); note.appendChild(planBtn);
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
     bPick.onclick = function(){
@@ -515,14 +519,9 @@ function renderResults(results){
     };
     bShare.onclick = function(){ shareText(idea, status); };
     bImg.onclick = function(){ saveImage(idea, status); };
-    bFind.onclick = function(){
-      window.open("https://www.google.com/search?q=" + encodeURIComponent(idea.title + " costume"), "_blank");
-      Analytics.track("find_costume", {idea_id: idea.id});
-      status.textContent = "Opened a search for \"" + idea.title + " costume\" in a new tab.";
-    };
-    row.appendChild(bPick); row.appendChild(bShare); row.appendChild(bImg); row.appendChild(bFind);
+    row.appendChild(bPick); row.appendChild(bShare); row.appendChild(bImg);
     card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
-    card.appendChild(row); card.appendChild(note); card.appendChild(status);
+    card.appendChild(row); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
     box.appendChild(card);
   });
   var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
@@ -575,6 +574,12 @@ function renderBrowse(){
     card.appendChild(b); card.appendChild(st);
     grid.appendChild(card);
   });
+  if (!grid.children.length) {
+    var empty = document.createElement("p");
+    empty.className = "status";
+    empty.textContent = "No ideas match those filters. Try widening them a little.";
+    grid.appendChild(empty);
+  }
 }
 function openBrowse(){
   renderBrowse();
