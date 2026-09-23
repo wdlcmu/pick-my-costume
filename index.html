@@ -97,11 +97,6 @@ button.ghost{
 .card .row button{min-height:48px;font-size:16px}
 .card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
 .status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
-.faq{margin-top:48px}
-.faq h2{font-size:24px}
-.faq details{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
-.faq summary{font-size:17px;font-weight:700;cursor:pointer}
-.faq p{color:var(--muted);margin:8px 0 0}
 footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
@@ -189,27 +184,6 @@ footer a{color:var(--accent)}
       <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
     </div>
   </section>
-
-  <!-- FAQ -->
-  <div class="faq" id="faq">
-    <h2>Questions</h2>
-    <details>
-      <summary>Do I need an account?</summary>
-      <p>No. Nothing is stored anywhere except your own browser.</p>
-    </details>
-    <details>
-      <summary>Are these costumes I can actually buy?</summary>
-      <p>Ideas are starting points described generically. Search the name anywhere you shop.</p>
-    </details>
-    <details>
-      <summary>Can I use this for my kid, family, or group?</summary>
-      <p>Yes, that is what the first question is for.</p>
-    </details>
-    <details>
-      <summary>Who made this?</summary>
-      <p>Billy Litner, building one free tool a month. No ads, no signup.</p>
-    </details>
-  </div>
 
   <footer>
     <p>Built with Muse.<br>Made by Billy Litner. One free tool a month. No ads, no signup.<br><a href="https://myweeklymove.com">myweeklymove.com</a></p>
@@ -309,18 +283,18 @@ var IDEAS = [
   {id:"waldo", title:"Where's Waldo", blurb:"Striped shirt, beanie, glasses, cane.", why:"Instantly readable and great for hiding in group photos.", audience:["solo"], budget:["diy","low"], tags:{simple:3,funny:1}, rank:26},
   {id:"pbj", title:"Peanut Butter and Jelly", blurb:"One brown tee, one purple tee, both cut sandwich-round.", why:"The classic couples costume for a reason: cheap and adorable.", audience:["couple"], budget:["diy","low"], tags:{cute:3,funny:1,matchyes:2}, rank:27},
   {id:"salt-pepper", title:"Salt and Pepper", blurb:"One all-white, one all-black, with S and P signs.", why:"Zero shopping, and it works at any dress code.", audience:["couple"], budget:["diy"], tags:{simple:3,funny:1,matchyes:1}, rank:28},
-  {id:"mario-luigi", title:"Mario and Luigi", blurb:"Overalls, red and green hats and shirts, drawn mustaches.", why:"Matching without being cheesy, and the mustaches do the talking.", audience:["couple","family"], budget:["mid","diy"], tags:{cute:2,funny:1,matchyes:2}, rank:29},
+  {id:"plumber-duo", title:"Plumber Brothers", blurb:"Overalls, red and green caps and shirts, drawn mustaches.", why:"Matching without being cheesy, and the mustaches do the talking.", audience:["couple","family"], budget:["mid","diy"], tags:{cute:2,funny:1,matchyes:2}, rank:29},
   {id:"plug-socket", title:"Plug and Socket", blurb:"Cardboard plug and outlet worn front and back.", why:"Peak pun-couple energy, built from boxes in an afternoon.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:2,matchyes:2}, rank:30},
   {id:"cop-robber", title:"Cop and Robber", blurb:"One striped shirt with mask, one dark uniform with badge.", why:"Built-in photo poses and everyone gets the joke instantly.", audience:["couple"], budget:["diy","low"], tags:{funny:2,matchyes:1,matchloose:1}, rank:31},
-  {id:"thing12", title:"Thing 1 and Thing 2", blurb:"Red outfits, blue wigs, Thing 1 and Thing 2 signs.", why:"Chaos energy, matching, and comfortable all night.", audience:["couple","family"], budget:["mid"], tags:{cute:2,funny:2,matchyes:2}, rank:32},
+  {id:"chaos-twins", title:"Chaos Twins", blurb:"Red outfits, blue wigs, numbered signs.", why:"Chaos energy, matching, and comfortable all night.", audience:["couple","family"], budget:["mid"], tags:{cute:2,funny:2,matchyes:2}, rank:32},
   {id:"haunted-portraits", title:"Haunted Portraits", blurb:"Gray makeup, old-timey clothes, hold a gilt frame.", why:"Spooky, artsy, and you just stand still.", audience:["couple","group","family"], budget:["diy","mid"], tags:{scary:2,crafty:2,matchloose:2}, rank:33},
-  {id:"pacman", title:"Pac-Man Crew", blurb:"One yellow Pac-Man, the rest ghosts, all from round cardboard.", why:"Scales to any group size and the photos are perfect.", audience:["group","family"], budget:["diy","low"], tags:{funny:3,crafty:2}, rank:34},
+  {id:"arcade-crew", title:"Arcade Chase Crew", blurb:"One yellow chomper, the rest ghosts, all from round cardboard.", why:"Scales to any group size and the photos are perfect.", audience:["group","family"], budget:["diy","low"], tags:{funny:3,crafty:2}, rank:34},
   {id:"crayons", title:"Box of Crayons", blurb:"Everyone picks a color: matching tee plus a cone hat.", why:"No two people match, everyone matches. Ideal group costume.", audience:["group","family"], budget:["diy"], tags:{cute:3,simple:1}, rank:35},
   {id:"dominoes", title:"Dominoes", blurb:"Black tees with white dot stickers, stand in a row and fall.", why:"The bit writes itself and setup takes twenty minutes.", audience:["group","family"], budget:["diy"], tags:{funny:2,simple:2,couch:1}, rank:36},
-  {id:"scooby-gang", title:"Scooby Gang", blurb:"Assign Fred, Daphne, Velma, Shaggy, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group","family"], budget:["diy","mid"], tags:{cute:3,funny:1}, rank:37},
+  {id:"mystery-crew", title:"Mystery Crew", blurb:"Assign the leader, the style icon, the brains, the goofball, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group","family"], budget:["diy","mid"], tags:{cute:3,funny:1}, rank:37},
   {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{scary:2,funny:1}, rank:38},
-  {id:"minions", title:"Minions", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{cute:2,funny:1}, rank:39},
-  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard proton packs, name patches.", why:"Who you gonna call? Each other, all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40}
+  {id:"goggle-crew", title:"Goggle Crew", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{cute:2,funny:1}, rank:39},
+  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Each other, all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40}
 ];
 
 /* ================= CONFIG: SHARE ================= */
