@@ -504,11 +504,14 @@ function renderResults(results){
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
     var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
     var note = document.createElement("p"); note.className = "picked-note";
-    var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 Saved as your pick \u2014 ";
-    var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your AI how-to";
+    var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 You\u2019re going as " + idea.title + " \u2014 ";
+    var claimBtn = document.createElement("button"); claimBtn.type = "button"; claimBtn.className = "linkbtn"; claimBtn.textContent = "claim it in the group chat";
+    claimBtn.onclick = function(){ shareText(idea, status); };
+    var noteSep = document.createElement("span"); noteSep.textContent = " \u00B7 ";
+    var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your DIY guide";
     var planBox = document.createElement("div");
     planBtn.onclick = function(){ showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied"); };
-    note.appendChild(noteTxt); note.appendChild(planBtn);
+    note.appendChild(noteTxt); note.appendChild(claimBtn); note.appendChild(noteSep); note.appendChild(planBtn);
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
     bPick.onclick = function(){
