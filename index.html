@@ -397,7 +397,7 @@ var SHARE = {
     var lead = "I'm going as ";
     if (aud === "couple" || aud === "group" || aud === "family") lead = "We're going as ";
     else if (aud === "kid") lead = "My kid is going as ";
-    return lead + idea.title + " this Halloween. What are you? pickmycostume.com/c/" + idea.id;
+    return lead + idea.title + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id;
   }
 };
 
@@ -742,7 +742,7 @@ function addCopyShareRow(container, idea){
   var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy share text";
   var st = document.createElement("p"); st.className = "status";
   b.onclick = function(){
-    var text = "I\u2019m going as " + idea.title + " this Halloween. What are you? pickmycostume.com";
+    var text = "I\u2019m going as " + idea.title + " this Halloween. What are you going as? pickmycostume.com";
     doCopy(text, function(ok, msg){
       st.textContent = ok ? "Copied. Paste it into any message." : msg;
       if (ok) Analytics.track("share_text_copied", {idea_id: idea.id});
@@ -872,7 +872,7 @@ $("browse-vibe").onchange = renderBrowse;
     b.className = "cta";
     b.style.width = "100%";
     b.style.marginTop = "10px";
-    b.textContent = "What are you? Find my costume";
+    b.textContent = "What are you going as? Find my costume";
     b.onclick = function(){
       state = {qi: 0, answers: {}};
       clearK("pmc_pick_v1");
