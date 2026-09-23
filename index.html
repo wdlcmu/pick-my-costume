@@ -96,6 +96,17 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
+.bfilters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.bfilters select{
+  flex:1 1 160px;min-height:52px;padding:12px 14px;font-size:17px;
+  background:var(--card);color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px}
+.bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
+.bcard h3{margin:0 0 4px;font-size:17px}
+.bcard p{margin:0;font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -112,6 +123,7 @@ footer a{color:var(--accent)}
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
+      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 40</button></p>
       <p class="fine" style="margin-top:16px">Nothing leaves your browser. Your answers stay on your phone.</p>
     </div>
   </section>
@@ -136,6 +148,35 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
+      <button class="ghost" id="btn-browse-results" type="button">Browse all 40</button>
+    </div>
+  </section>
+
+  <!-- BROWSE -->
+  <section class="screen" id="s-browse">
+    <p class="progress">Every idea in the bank</p>
+    <h2 class="q-title">All 40 ideas</h2>
+    <p class="q-hint">Prefer browsing to quizzing? Filter the full shelf.</p>
+    <div class="bfilters">
+      <select id="browse-aud" aria-label="Filter by audience">
+        <option value="all">All audiences</option>
+        <option value="solo">Just me</option>
+        <option value="couple">Couple</option>
+        <option value="group">Group</option>
+        <option value="family">My whole family</option>
+        <option value="kid">My kid</option>
+      </select>
+      <select id="browse-vibe" aria-label="Filter by vibe">
+        <option value="all">All vibes</option>
+        <option value="funny">Funny</option>
+        <option value="scary">Scary</option>
+        <option value="cute">Cute</option>
+        <option value="simple">Simple</option>
+      </select>
+    </div>
+    <div class="bgrid" id="b-grid"></div>
+    <div class="navrow" style="margin-top:16px">
+      <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
     </div>
   </section>
 
@@ -151,7 +192,7 @@ footer a{color:var(--accent)}
       <p>Ideas are starting points described generically. Search the name anywhere you shop.</p>
     </details>
     <details>
-      <summary>Can I use this for my kid or my group?</summary>
+      <summary>Can I use this for my kid, family, or group?</summary>
       <p>Yes, that is what the first question is for.</p>
     </details>
     <details>
@@ -191,6 +232,7 @@ var QUESTIONS = [
     {label:"Just me", value:"solo", tags:{}},
     {label:"Couple", value:"couple", tags:{}},
     {label:"Group", value:"group", tags:{}},
+    {label:"My whole family", value:"family", tags:{}},
     {label:"My kid", value:"kid", tags:{}}
   ]},
   {id:"q2", title:"What vibe are you going for?", hint:"There are no wrong answers.", options:[
@@ -257,18 +299,18 @@ var IDEAS = [
   {id:"waldo", title:"Where's Waldo", blurb:"Striped shirt, beanie, glasses, cane.", why:"Instantly readable and great for hiding in group photos.", audience:["solo"], budget:["diy","low"], tags:{simple:3,funny:1}, rank:26},
   {id:"pbj", title:"Peanut Butter and Jelly", blurb:"One brown tee, one purple tee, both cut sandwich-round.", why:"The classic couples costume for a reason: cheap and adorable.", audience:["couple"], budget:["diy","low"], tags:{cute:3,funny:1,matchyes:2}, rank:27},
   {id:"salt-pepper", title:"Salt and Pepper", blurb:"One all-white, one all-black, with S and P signs.", why:"Zero shopping, and it works at any dress code.", audience:["couple"], budget:["diy"], tags:{simple:3,funny:1,matchyes:1}, rank:28},
-  {id:"mario-luigi", title:"Mario and Luigi", blurb:"Overalls, red and green hats and shirts, drawn mustaches.", why:"Matching without being cheesy, and the mustaches do the talking.", audience:["couple"], budget:["mid","diy"], tags:{cute:2,funny:1,matchyes:2}, rank:29},
+  {id:"mario-luigi", title:"Mario and Luigi", blurb:"Overalls, red and green hats and shirts, drawn mustaches.", why:"Matching without being cheesy, and the mustaches do the talking.", audience:["couple","family"], budget:["mid","diy"], tags:{cute:2,funny:1,matchyes:2}, rank:29},
   {id:"plug-socket", title:"Plug and Socket", blurb:"Cardboard plug and outlet worn front and back.", why:"Peak pun-couple energy, built from boxes in an afternoon.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:2,matchyes:2}, rank:30},
   {id:"cop-robber", title:"Cop and Robber", blurb:"One striped shirt with mask, one dark uniform with badge.", why:"Built-in photo poses and everyone gets the joke instantly.", audience:["couple"], budget:["diy","low"], tags:{funny:2,matchyes:1,matchloose:1}, rank:31},
-  {id:"thing12", title:"Thing 1 and Thing 2", blurb:"Red outfits, blue wigs, Thing 1 and Thing 2 signs.", why:"Chaos energy, matching, and comfortable all night.", audience:["couple"], budget:["mid"], tags:{cute:2,funny:2,matchyes:2}, rank:32},
-  {id:"haunted-portraits", title:"Haunted Portraits", blurb:"Gray makeup, old-timey clothes, hold a gilt frame.", why:"Spooky, artsy, and you just stand still.", audience:["couple","group"], budget:["diy","mid"], tags:{scary:2,crafty:2,matchloose:2}, rank:33},
-  {id:"pacman", title:"Pac-Man Crew", blurb:"One yellow Pac-Man, the rest ghosts, all from round cardboard.", why:"Scales to any group size and the photos are perfect.", audience:["group"], budget:["diy","low"], tags:{funny:3,crafty:2}, rank:34},
-  {id:"crayons", title:"Box of Crayons", blurb:"Everyone picks a color: matching tee plus a cone hat.", why:"No two people match, everyone matches. Ideal group costume.", audience:["group"], budget:["diy"], tags:{cute:3,simple:1}, rank:35},
-  {id:"dominoes", title:"Dominoes", blurb:"Black tees with white dot stickers, stand in a row and fall.", why:"The bit writes itself and setup takes twenty minutes.", audience:["group"], budget:["diy"], tags:{funny:2,simple:2,couch:1}, rank:36},
-  {id:"scooby-gang", title:"Scooby Gang", blurb:"Assign Fred, Daphne, Velma, Shaggy, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group"], budget:["diy","mid"], tags:{cute:3,funny:1}, rank:37},
+  {id:"thing12", title:"Thing 1 and Thing 2", blurb:"Red outfits, blue wigs, Thing 1 and Thing 2 signs.", why:"Chaos energy, matching, and comfortable all night.", audience:["couple","family"], budget:["mid"], tags:{cute:2,funny:2,matchyes:2}, rank:32},
+  {id:"haunted-portraits", title:"Haunted Portraits", blurb:"Gray makeup, old-timey clothes, hold a gilt frame.", why:"Spooky, artsy, and you just stand still.", audience:["couple","group","family"], budget:["diy","mid"], tags:{scary:2,crafty:2,matchloose:2}, rank:33},
+  {id:"pacman", title:"Pac-Man Crew", blurb:"One yellow Pac-Man, the rest ghosts, all from round cardboard.", why:"Scales to any group size and the photos are perfect.", audience:["group","family"], budget:["diy","low"], tags:{funny:3,crafty:2}, rank:34},
+  {id:"crayons", title:"Box of Crayons", blurb:"Everyone picks a color: matching tee plus a cone hat.", why:"No two people match, everyone matches. Ideal group costume.", audience:["group","family"], budget:["diy"], tags:{cute:3,simple:1}, rank:35},
+  {id:"dominoes", title:"Dominoes", blurb:"Black tees with white dot stickers, stand in a row and fall.", why:"The bit writes itself and setup takes twenty minutes.", audience:["group","family"], budget:["diy"], tags:{funny:2,simple:2,couch:1}, rank:36},
+  {id:"scooby-gang", title:"Scooby Gang", blurb:"Assign Fred, Daphne, Velma, Shaggy, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group","family"], budget:["diy","mid"], tags:{cute:3,funny:1}, rank:37},
   {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{scary:2,funny:1}, rank:38},
-  {id:"minions", title:"Minions", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1}, rank:39},
-  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard proton packs, name patches.", why:"Who you gonna call? Each other, all night.", audience:["group"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40}
+  {id:"minions", title:"Minions", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{cute:2,funny:1}, rank:39},
+  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard proton packs, name patches.", why:"Who you gonna call? Each other, all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40}
 ];
 
 /* ================= CONFIG: SHARE ================= */
@@ -276,7 +318,7 @@ var SHARE = {
   url: "pickmycostume.com",
   textTemplate: function(title, aud){
     var lead = "I'm going as ";
-    if (aud === "couple" || aud === "group") lead = "We're going as ";
+    if (aud === "couple" || aud === "group" || aud === "family") lead = "We're going as ";
     else if (aud === "kid") lead = "My kid is going as ";
     return lead + title + " this Halloween. What are you? pickmycostume.com";
   }
@@ -414,6 +456,13 @@ function renderResults(results){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
+    var im = document.createElement("img");
+    im.src = "images/" + idea.id + ".png";
+    im.alt = "";
+    im.style.width = "100%";
+    im.style.borderRadius = "10px";
+    im.style.marginBottom = "12px";
+    im.setAttribute("onerror", "this.style.display='none'");
     var h = document.createElement("h3"); h.textContent = idea.title;
     var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
     var wh = document.createElement("p"); wh.className = "why";
@@ -442,7 +491,7 @@ function renderResults(results){
       status.textContent = "Opened a search for \"" + idea.title + " costume\" in a new tab.";
     };
     row.appendChild(bPick); row.appendChild(bShare); row.appendChild(bImg); row.appendChild(bFind);
-    card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+    card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
     card.appendChild(row); card.appendChild(note); card.appendChild(status);
     box.appendChild(card);
   });
@@ -454,6 +503,33 @@ function renderResults(results){
   box.appendChild(aiRow);
   box.appendChild(aiStatus);
   show("s-results");
+}
+
+/* ================= BROWSE ================= */
+function renderBrowse(){
+  var aud = $("browse-aud").value;
+  var vibe = $("browse-vibe").value;
+  var grid = $("b-grid");
+  grid.innerHTML = "";
+  IDEAS.forEach(function(idea){
+    if (aud !== "all" && idea.audience.indexOf(aud) === -1) return;
+    if (vibe !== "all" && !(idea.tags[vibe] > 0)) return;
+    var card = document.createElement("div");
+    card.className = "bcard";
+    var img = document.createElement("img");
+    img.src = "images/" + idea.id + ".png";
+    img.alt = "";
+    img.setAttribute("onerror", "this.style.display='none'");
+    var h = document.createElement("h3"); h.textContent = idea.title;
+    var p = document.createElement("p"); p.textContent = idea.blurb;
+    card.appendChild(img); card.appendChild(h); card.appendChild(p);
+    grid.appendChild(card);
+  });
+}
+function openBrowse(){
+  renderBrowse();
+  Analytics.track("browse_opened", {});
+  show("s-browse");
 }
 
 /* ================= ASK MY AI ================= */
@@ -527,6 +603,7 @@ function fallbackCopy(text, done){
 }
 
 /* ================= IMAGE CARD ================= */
+var IMGCACHE = {};
 function drawCard(idea){
   var c = document.createElement("canvas");
   c.width = 1080; c.height = 1080;
@@ -538,17 +615,31 @@ function drawCard(idea){
   x.strokeStyle = v("--accent", "#ff8c1a"); x.lineWidth = 10;
   x.strokeRect(36, 36, 1008, 1008);
   x.textAlign = "center";
-  x.fillStyle = v("--accent", "#ff8c1a");
-  x.font = "120px serif"; x.fillText("\uD83C\uDF83", 540, 220);
-  x.fillStyle = v("--ink", "#fdf3e3");
-  x.font = "bold 84px Helvetica, Arial, sans-serif";
-  wrap(x, idea.title, 540, 400, 900, 96);
-  x.fillStyle = v("--muted", "#cdbcf0");
-  x.font = "44px Helvetica, Arial, sans-serif";
-  wrap(x, idea.blurb, 540, 620, 900, 58);
-  x.fillStyle = v("--accent", "#ff8c1a");
-  x.font = "40px Helvetica, Arial, sans-serif";
-  x.fillText("pickmycostume.com", 540, 960);
+  var im = IMGCACHE[idea.id];
+  if (im && im.complete && im.naturalWidth) {
+    x.drawImage(im, 230, 90, 620, 620);
+    x.fillStyle = v("--ink", "#fdf3e3");
+    x.font = "bold 72px Helvetica, Arial, sans-serif";
+    wrap(x, idea.title, 540, 800, 900, 84);
+    x.fillStyle = v("--muted", "#cdbcf0");
+    x.font = "40px Helvetica, Arial, sans-serif";
+    wrap(x, idea.blurb, 540, 900, 900, 52);
+    x.fillStyle = v("--accent", "#ff8c1a");
+    x.font = "40px Helvetica, Arial, sans-serif";
+    x.fillText("pickmycostume.com", 540, 1010);
+  } else {
+    x.fillStyle = v("--accent", "#ff8c1a");
+    x.font = "120px serif"; x.fillText("\uD83C\uDF83", 540, 220);
+    x.fillStyle = v("--ink", "#fdf3e3");
+    x.font = "bold 84px Helvetica, Arial, sans-serif";
+    wrap(x, idea.title, 540, 400, 900, 96);
+    x.fillStyle = v("--muted", "#cdbcf0");
+    x.font = "44px Helvetica, Arial, sans-serif";
+    wrap(x, idea.blurb, 540, 620, 900, 58);
+    x.fillStyle = v("--accent", "#ff8c1a");
+    x.font = "40px Helvetica, Arial, sans-serif";
+    x.fillText("pickmycostume.com", 540, 960);
+  }
   return c;
 }
 function wrap(x, text, cx, y, maxW, lh){
@@ -621,8 +712,18 @@ $("btn-return").onclick = function(){
     .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
   if (results.length) renderResults(results);
 };
+$("btn-browse-hero").onclick = openBrowse;
+$("btn-browse-results").onclick = openBrowse;
+$("btn-bback").onclick = function(){ show("s-hero"); };
+$("browse-aud").onchange = renderBrowse;
+$("browse-vibe").onchange = renderBrowse;
 
 (function init(){
+  IDEAS.forEach(function(it){
+    var im = new Image();
+    im.src = "images/" + it.id + ".png";
+    IMGCACHE[it.id] = im;
+  });
   var pick = load("pmc_pick_v1");
   var last = load("pmc_last_v1");
   var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
