@@ -15,6 +15,28 @@
 <meta name="twitter:description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account.">
 <meta name="twitter:image" content="https://pickmycostume.com/images/little-pumpkin.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>
+/* PostHog: anonymous usage stats only. Quiz answers are never sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: true,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+        if (window.Analytics && Analytics._flush) Analytics._flush();
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+</script>
 <style>
 /* ============ HALLOWEEN VISUAL IDENTITY ============
    The site's seasonal skin, confirmed by Billy. All theme colors
@@ -133,7 +155,7 @@ footer a{color:var(--accent)}
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
       <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 40</button></p>
-      <p class="fine" style="margin-top:16px">Nothing is sent anywhere. No account, no tracking, and your answers stay on your phone unless you choose to share them.</p>
+      <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
 
@@ -195,17 +217,27 @@ footer a{color:var(--accent)}
 
 </div>
 <script>
-/* Analytics shim. Swap for PostHog when the project is created. */
+/* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
 var Analytics = {
+  _q: [],
   track: function(name, props){
     try {
-      var q = [];
-      try { q = JSON.parse(localStorage.getItem("pmc_events") || "[]"); } catch(e){}
-      q.push({name: name, props: props || {}, t: Date.now()});
-      while (q.length > 100) q.shift();
-      try { localStorage.setItem("pmc_events", JSON.stringify(q)); } catch(e){}
+      if (window.posthog && posthog.capture) {
+        posthog.capture(name, props || {});
+      } else {
+        this._q.push([name, props || {}]);
+        if (this._q.length > 100) this._q.shift();
+      }
     } catch(e){}
     if (window.console && console.debug) console.debug("[pmc]", name, props || {});
+  },
+  _flush: function(){
+    try {
+      while (this._q.length) {
+        var e = this._q.shift();
+        if (window.posthog && posthog.capture) posthog.capture(e[0], e[1]);
+      }
+    } catch(e2){}
   }
 };
 
