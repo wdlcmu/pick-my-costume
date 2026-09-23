@@ -132,12 +132,6 @@ footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
 .about-body p{margin:0 0 14px;line-height:1.55}
-.bfilters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-.bfilters select{
-  flex:1 1 160px;min-height:52px;padding:12px 14px;font-size:17px;
-  background:var(--card);color:var(--ink);
-  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
-}
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px}
 .bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
@@ -194,44 +188,7 @@ footer a{color:var(--accent)}
   <section class="screen" id="s-browse">
     <p class="progress">Every idea in the bank</p>
     <h2 class="q-title" id="browse-title">All ideas</h2>
-    <p class="q-hint">Prefer browsing to quizzing? Filter the full shelf.</p>
-    <div class="bfilters">
-      <select id="browse-aud" aria-label="Filter by audience">
-        <option value="all">All audiences</option>
-        <option value="solo">Solo</option>
-        <option value="couple">Couple</option>
-        <option value="group">Group</option>
-        <option value="family">My whole family</option>
-        <option value="kid">My kid</option>
-      </select>
-      <select id="browse-vibe" aria-label="Filter by vibe">
-        <option value="all">All vibes</option>
-        <option value="funny">Funny</option>
-        <option value="scary">Scary</option>
-        <option value="cute">Cute</option>
-        <option value="simple">Simple</option>
-      </select>
-      <select id="browse-interest" aria-label="Filter by interest">
-        <option value="all">All interests</option>
-        <option value="animals">Animals</option>
-        <option value="princess">Princesses &amp; fairy tales</option>
-        <option value="heroes">Superheroes</option>
-        <option value="dinos">Dinosaurs &amp; monsters</option>
-        <option value="games">Video games</option>
-        <option value="tv">TV &amp; movie characters</option>
-      </select>
-      <select id="browse-effort" aria-label="Filter by effort">
-        <option value="all">All effort levels</option>
-        <option value="couch">Couch-level</option>
-        <option value="crafty">A little crafty</option>
-        <option value="allout">Go all out</option>
-      </select>
-      <select id="browse-get" aria-label="Filter by DIY or store-bought">
-        <option value="all">DIY or store-bought</option>
-        <option value="diy">Make it (DIY)</option>
-        <option value="buy">Buy it</option>
-      </select>
-    </div>
+    <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
       <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
@@ -659,22 +616,11 @@ function renderResults(results){
 
 /* ================= BROWSE ================= */
 function renderBrowse(){
-  var aud = $("browse-aud").value;
-  var vibe = $("browse-vibe").value;
-  var interest = $("browse-interest").value;
-  var effort = $("browse-effort").value;
-  var get = $("browse-get").value;
   var grid = $("b-grid");
   grid.innerHTML = "";
   /* Browse-all follows the editorial rank, not build order. */
   var ordered = IDEAS.slice().sort(function(a,b){ return a.rank - b.rank; });
   ordered.forEach(function(idea){
-    if (aud !== "all" && idea.audience.indexOf(aud) === -1) return;
-    if (vibe !== "all" && !(idea.tags[vibe] > 0)) return;
-    if (interest !== "all" && !(idea.tags[interest] > 0)) return;
-    if (effort !== "all" && !(idea.tags[effort] > 0)) return;
-    if (get === "diy" && idea.budget.indexOf("diy") === -1) return;
-    if (get === "buy" && idea.budget.indexOf("diy") !== -1) return;
     var card = document.createElement("div");
     card.className = "bcard";
     var img = document.createElement("img");
@@ -692,7 +638,7 @@ function renderBrowse(){
     var stShare = document.createElement("p"); stShare.className = "status";
     b.onclick = (function(it, sel){ return function(){ showPromptPreview(sel, buildIdeaPrompt(it), "browse_ai_prompt_copied"); }; })(idea, st);
     bShare.onclick = (function(it, sel, btn){ return function(){
-      var a = (aud !== "all") ? aud : ((it.audience && it.audience[0]) || "solo");
+      var a = (it.audience && it.audience[0]) || "solo";
       shareText(it, sel, btn, a);
     }; })(idea, stShare, bShare);
     var btnRow = document.createElement("div"); btnRow.className = "row"; btnRow.style.marginTop = "10px";
@@ -701,17 +647,7 @@ function renderBrowse(){
     card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
     grid.appendChild(card);
   });
-  if (!grid.children.length) {
-    var empty = document.createElement("p");
-    empty.className = "status";
-    empty.textContent = "No ideas match those filters. Try widening them a little.";
-    grid.appendChild(empty);
-  }
-  var n = grid.querySelectorAll(".bcard").length;
-  var filtered = aud !== "all" || vibe !== "all" || interest !== "all" || effort !== "all" || get !== "all";
-  $("browse-title").textContent = filtered
-    ? n + (n === 1 ? " idea" : " ideas")
-    : "All " + IDEAS.length + " ideas";
+  $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 }
 function openBrowse(){
   renderBrowse();
@@ -879,11 +815,6 @@ $("btn-bback").onclick = function(){ show("s-hero"); };
 $("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
 $("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
-$("browse-aud").onchange = renderBrowse;
-$("browse-vibe").onchange = renderBrowse;
-$("browse-interest").onchange = renderBrowse;
-$("browse-effort").onchange = renderBrowse;
-$("browse-get").onchange = renderBrowse;
 
 (function init(){
   /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
