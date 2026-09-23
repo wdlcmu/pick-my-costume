@@ -581,6 +581,7 @@ function renderResults(results){
       store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
       note.style.display = "block";
       hint.style.display = "none";
+      status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
       Analytics.track("pick_saved", {idea_id: idea.id});
       showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied");
       addCopyShareRow(planBox, idea);
@@ -752,7 +753,7 @@ function addCopyShareRow(container, idea){
       triedShare = true;
       navigator.share({text: text}).then(
         function(){ done(true, "Shared."); },
-        function(){ copyLink(); }
+        function(){ done(false, ""); } /* dismissed: clear status, no phantom clipboard copy */
       );
     }
   } catch(e){ triedShare = false; }
