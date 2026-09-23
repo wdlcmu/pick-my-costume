@@ -179,7 +179,7 @@ footer a{color:var(--accent)}
   <section class="screen" id="s-results">
     <p class="progress">Your three ideas</p>
     <h2 class="q-title">&#127875; Three costumes worth wearing</h2>
-    <p class="q-hint">Tap one to save your pick and unlock its DIY guide + share text.</p>
+    <p class="q-hint">Tap one to save your pick and get your AI costume plan.</p>
     <div id="r-cards"></div>
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
@@ -222,9 +222,10 @@ footer a{color:var(--accent)}
     <h2 class="q-title">What this is</h2>
     <div class="about-body">
       <p>Pick My Costume is a free Halloween costume picker. Answer a few quick questions and get three costume ideas, for yourself, your kid, your partner, your group, or the whole family.</p>
-      <p>Your answers score a hand-picked list of 67 ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
+      <p>Your answers score a hand-picked list of 70 ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
       <p>Your quiz answers never leave your phone. We only track anonymous usage stats.</p>
-      <p>Then what? On your results, tap &ldquo;This is my pick&rdquo; on a costume to get its DIY guide and share text.</p>
+      <p>Then what? On your results, tap &ldquo;This is my pick&rdquo; on a costume to save it and get your AI costume plan.</p>
+      <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
     </div>
     <div class="navrow" style="margin-top:16px">
@@ -319,22 +320,22 @@ var QUESTIONS = [
    (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
 var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3}, rank:1},
-  {id:"bluey-family", title:"Bluey Family", blurb:"Blue shirts and felt dog ears: Bluey, Bingo, Bandit, and Chilli.", why:"Four blue shirts, paper ears, and your kid completely loses it.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,tv:3}, rank:2},
+  {id:"bluey-family", title:"Blue Dog Family", blurb:"Blue shirts and felt dog ears: mama, dad, and the pups.", why:"Four blue shirts, paper ears, and your kid completely loses it.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,tv:3}, rank:2},
   {id:"incredibles-family", title:"Superhero Family", blurb:"Red sweatsuits, black eye masks, felt logo -- the whole family goes super.", why:"Scales from two to six people, and every age knows the movie.", audience:["family"], budget:["low","mid"], tags:{cute:2,funny:1,couch:1,simple:2,heroes:3,tv:2}, rank:3},
-  {id:"stitch-ohana", title:"Stitch Ohana", blurb:"Blue hoodie, big ears — Stitch, Lilo, or the whole ohana.", why:"Another blue favorite: ears, a blue hoodie, and maximum cute.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,tv:3}, rank:4},
+  {id:"stitch-ohana", title:"Blue Alien Ohana", blurb:"Blue hoodie, big ears — the alien, the girl, or the whole ohana.", why:"Another blue favorite: ears, a blue hoodie, and maximum cute.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,tv:3}, rank:4},
   {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1,tv:3}, rank:5},
-  {id:"wednesday-enid", title:"Wednesday & Enid", blurb:"Braids and black for Wednesday, color-pop and smiles for Enid.", why:"The deadpan duo — one broods, one sparkles, both nail it.", audience:["group","solo"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3}, rank:6},
+  {id:"wednesday-enid", title:"Gloom & Bloom", blurb:"Braids and black for Gloom, color-pop and smiles for Bloom.", why:"The deadpan duo — one broods, one sparkles, both nail it.", audience:["group","solo"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3}, rank:6},
   {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1,animals:3}, rank:7},
-  {id:"disney-princesses", title:"Disney Princesses", blurb:"A dress or a crown from the closet — every princess works.", why:"Every kid already has a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3}, rank:8},
-  {id:"iron-man", title:"Iron Man", blurb:"Red and gold plus a glowing chest circle — the suit does the talking.", why:"A red tee, gold tape, and a paper arc reactor. Instant hero.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2}, rank:9},
-  {id:"elphaba-glinda", title:"Elphaba & Glinda", blurb:"Green face paint and black for Elphaba, pink gown and crown for Glinda.", why:"The duo of the year — one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3}, rank:10},
+  {id:"disney-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet — every princess works.", why:"Every kid already has a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3}, rank:8},
+  {id:"iron-man", title:"The Tin Hero", blurb:"Red and gold plus a glowing chest circle — the suit does the talking.", why:"A red tee, gold tape, and a paper chest light. Instant hero.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2}, rank:9},
+  {id:"elphaba-glinda", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year — one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3}, rank:10},
   {id:"fuzzy-monster", title:"Fuzzy Monster", blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", why:"Ugly-cute is the whole point, and it is basically pajamas.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:3,funny:1,kidunder3:1,kid36:2,kid7plus:1,dinos:2}, rank:11},
   {id:"glow-skeleton", title:"Glow Skeleton", blurb:"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.", why:"Spooky after dark and visible to cars, which parents love.", audience:["kid"], budget:["low","diy"], tags:{couch:2,scary:2,cute:1,kid36:2,kid7plus:1}, rank:12},
-  {id:"minecraft-crew", title:"Minecraft Crew", blurb:"Cardboard-box heads: Steve, Alex, or a Creeper — pixelated and perfect.", why:"A box, some paint, and you're everyone's favorite blockhead.", audience:["kid","family","group"], budget:["diy","low"], tags:{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,games:3}, rank:13},
+  {id:"minecraft-crew", title:"Block Game Crew", blurb:"Cardboard-box heads: pick your blocky hero — pixelated and perfect.", why:"A box, some paint, and you're everyone's favorite blockhead.", audience:["kid","family","group"], budget:["diy","low"], tags:{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,games:3}, rank:13},
   {id:"spider-verse", title:"Web-Slinger Crew", blurb:"Red, black, and pink hoodies plus masks -- pick your spider.", why:"Everyone gets their own color and nobody fights over it.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1,couch:2,simple:2,heroes:3,tv:2}, rank:14},
-  {id:"little-mermaid-crew", title:"Little Mermaid Crew", blurb:"Ariel, Eric, King Triton, Ursula, or Sebastian the crab — pick your role.", why:"Everyone gets a starring role, from mermaid to sea witch.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"simple":1,"couch":1,"crafty":1,"kid36":2,"kid7plus":1,princess:3}, rank:15},
-  {id:"peppa-pig", title:"Peppa Pig Crew", blurb:"Pink clothes and a snout headband; George brings the dinosaur.", why:"The whole family becomes Peppa's world, straight from the closet.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,tv:3}, rank:16},
-  {id:"be-our-guest", title:"Be Our Guest Crew", blurb:"Belle, the Beast, Lumière the candle, Cogsworth the clock, Mrs. Potts.", why:"The enchanted objects steal the show, and they're all DIY.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"crafty":2,"kid36":1,"kid7plus":1,princess:2}, rank:17},
+  {id:"little-mermaid-crew", title:"Little Mermaid Crew", blurb:"The little mermaid, the prince, the sea king, the sea witch, or the crab — pick your role.", why:"Everyone gets a starring role, from mermaid to sea witch.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"simple":1,"couch":1,"crafty":1,"kid36":2,"kid7plus":1,princess:3}, rank:15},
+  {id:"peppa-pig", title:"Little Pig Family", blurb:"Pink clothes and a snout headband; little brother brings the dinosaur.", why:"The whole family becomes a piggy world, straight from the closet.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,tv:3}, rank:16},
+  {id:"be-our-guest", title:"Enchanted Castle Crew", blurb:"The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot — pick your role.", why:"The enchanted objects steal the show, and they're all DIY.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"crafty":2,"kid36":1,"kid7plus":1,princess:2}, rank:17},
   {id:"bumblebee", title:"Bumblebee", blurb:"Black sweats with yellow tape stripes and soft felt antennae.", why:"Cheap, cute, and you can make it the night before.", audience:["kid"], budget:["diy","low"], tags:{cute:2,funny:1,crafty:1,kidunder3:1,kid36:2,animals:2}, rank:18},
   {id:"baby-dino", title:"Baby Dinosaur", blurb:"Green hoodie, felt spikes down the back, stuffed tail.", why:"A hoodie costume means zero complaints about itching or slipping.", audience:["kid"], budget:["low","mid","diy"], tags:{cute:2,funny:1,couch:1,kidunder3:2,kid36:2,dinos:3}, rank:19},
   {id:"little-lion", title:"Little Lion", blurb:"Tan sweatsuit plus a fuzzy mane hood.", why:"Head to toe warm, and the mane hood photographs perfectly.", audience:["kid"], budget:["mid"], tags:{couch:2,cute:3,kidunder3:2,kid36:2,animals:2}, rank:20},
@@ -385,6 +386,9 @@ var IDEAS = [
   {id:"crowd-camouflage", title:"Crowd Camouflage", blurb:"Red-white striped shirt, beanie, round glasses. Hide in plain sight.", why:"You will still be found immediately, and that is the joke.", audience:["solo"], budget:["diy","low"], tags:{couch:2,simple:3,funny:1}, rank:65},
   {id:"error-404", title:"Error 404", blurb:"White tee that says Error 404: Costume Not Found.", why:"Gets a laugh with just a white tee and a marker.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:3,simple:2}, rank:66},
   {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Scary with zero shopping: it's just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{couch:2,scary:2,funny:1,make:2,dinos:2,tv:1}, rank:67},
+  {id:"safari-photographer", title:"Safari Photographer", blurb:"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.", why:"The camera does the talking, and the plush cub steals every photo.", audience:["solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,simple:1,animals:3}, rank:68},
+  {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3}, rank:69},
+  {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Everyone matches, everyone is comfortable, and the group photo is unbeatable.", audience:["family"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3}, rank:70},
 ];
 /* ================= CONFIG: SHARE ================= */
 var SHARE = {
@@ -587,14 +591,11 @@ function renderResults(results){
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
     var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
-    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to unlock your DIY guide + share text.";
+    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
-    var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 You\u2019re going as " + idea.title + " \u2014 ";
-    var kitBtn = document.createElement("button"); kitBtn.type = "button"; kitBtn.className = "linkbtn"; kitBtn.textContent = "get your share text + DIY guide";
+    note.textContent = "\u2713 You\u2019re going as " + idea.title;
     var planBox = document.createElement("div");
-    kitBtn.onclick = function(){ shareText(idea, status); showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied"); };
-    note.appendChild(noteTxt); note.appendChild(kitBtn);
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
     bPick.onclick = function(){
@@ -602,8 +603,10 @@ function renderResults(results){
       note.style.display = "block";
       hint.style.display = "none";
       Analytics.track("pick_saved", {idea_id: idea.id});
+      showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied");
+      addCopyShareRow(planBox, idea);
     };
-    bShare.onclick = function(){ shareText(idea, status); };
+    bShare.onclick = function(){ shareText(idea, status, bShare); };
     row.appendChild(bPick); row.appendChild(bShare);
     card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
     card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
@@ -733,31 +736,53 @@ function showPromptPreview(container, text, eventName){
   if (ta.scrollIntoView) ta.scrollIntoView({block:"nearest", behavior:"smooth"});
 }
 
-/* ================= SHARE ================= */function shareText(idea, statusEl){
+/* After a pick reveals the AI plan, the share pattern sits right beneath it. */
+function addCopyShareRow(container, idea){
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy share text";
+  var st = document.createElement("p"); st.className = "status";
+  b.onclick = function(){
+    var text = "I\u2019m going as " + idea.title + " this Halloween. What are you? pickmycostume.com";
+    doCopy(text, function(ok, msg){
+      st.textContent = ok ? "Copied. Paste it into any message." : msg;
+      if (ok) Analytics.track("share_text_copied", {idea_id: idea.id});
+    });
+  };
+  row.appendChild(b);
+  container.appendChild(row);
+  container.appendChild(st);
+}
+
+/* ================= SHARE ================= */function shareText(idea, statusEl, btn){
   var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
   var text = SHARE.textTemplate(idea, aud);
+  var url = "https://pickmycostume.com/c/" + idea.id;
   function done(ok, msg){
     statusEl.textContent = msg;
     if (ok) Analytics.track("share_text_copied", {idea_id: idea.id});
   }
-  function copyPath(){
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(
-        function(){ done(true, "Copied. Paste it into any message."); },
-        function(){ fallbackCopy(text, done); }
+  /* Desktop fallback: no share sheet, so copy the link instead. */
+  function copyLink(){
+    doCopy(url, function(ok, msg){
+      if (ok && btn){
+        var orig = btn.textContent;
+        btn.textContent = "Link copied \u2713";
+        setTimeout(function(){ btn.textContent = orig; }, 2000);
+      }
+      done(ok, ok ? "Link copied. Paste it into any message." : "Copy this link: " + url);
+    });
+  }
+  var triedShare = false;
+  try {
+    if (navigator.share) {
+      triedShare = true;
+      navigator.share({text: text}).then(
+        function(){ done(true, "Shared."); },
+        function(){ copyLink(); }
       );
-    } else {
-      fallbackCopy(text, done);
     }
-  }
-  if (navigator.share) {
-    navigator.share({text: text}).then(
-      function(){ done(true, "Shared."); },
-      function(){ copyPath(); }
-    );
-  } else {
-    copyPath();
-  }
+  } catch(e){ triedShare = false; }
+  if (!triedShare) copyLink();
 }
 function fallbackCopy(text, done){
   try {
