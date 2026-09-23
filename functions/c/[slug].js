@@ -14,7 +14,10 @@ export function onRequest(context) {
   if (!idea) return new Response("Not found", { status: 404 });
   var title = esc(idea.t), blurb = esc(idea.b);
   var img = "https://pickmycostume.com/images/" + slug + ".png";
-  var target = "/?idea=" + slug;
+  /* Preserve any extra query params (e.g. tracking tags) across the redirect. */
+  var _qp = new URLSearchParams(location.search || "");
+  _qp.set("idea", slug);
+  var target = "/?" + _qp.toString();
   var html = "<!DOCTYPE html>" +
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<title>" + title + " - Pick My Costume</title>" +
