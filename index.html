@@ -97,6 +97,10 @@ button.ghost{
 .card .row button{min-height:48px;font-size:16px}
 .card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
 .status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
+.promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:15px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
+.stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
+.stuck h3{margin:0 0 6px;font-size:20px}
+.stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
 footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
@@ -475,12 +479,25 @@ function renderResults(results){
     box.appendChild(card);
   });
   var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
+  var aiBox = document.createElement("div");
   var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
-  var aiStatus = document.createElement("p"); aiStatus.className = "status";
-  bAI.onclick = function(){ copyAIPrompt(results, aiStatus); };
+  bAI.onclick = function(){ showPromptPreview(aiBox, buildResultsPrompt(results, false), "ai_prompt_copied"); };
   aiRow.appendChild(bAI);
   box.appendChild(aiRow);
-  box.appendChild(aiStatus);
+  box.appendChild(aiBox);
+  /* Still stuck? escape hatch: none of the three results landed */
+  var stuck = document.createElement("div"); stuck.className = "stuck";
+  var sh = document.createElement("h3"); sh.textContent = "Still stuck?";
+  var sp = document.createElement("p");
+  sp.textContent = "None of these quite fit? Use the three ideas as starting points.";
+  var stuckRow = document.createElement("div"); stuckRow.className = "row";
+  var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "ghost";
+  bStuck.textContent = "Get an AI prompt from these 3 ideas";
+  var stuckBox = document.createElement("div");
+  bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(results, true), "stuck_prompt_copied"); };
+  stuckRow.appendChild(bStuck);
+  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(stuckBox);
+  box.appendChild(stuck);
   show("s-results");
 }
 
@@ -505,8 +522,8 @@ function renderBrowse(){
     var b = document.createElement("button");
     b.type = "button"; b.className = "ghost"; b.textContent = "Ask my AI";
     b.style.marginTop = "10px"; b.style.width = "100%";
-    var st = document.createElement("p"); st.className = "status";
-    b.onclick = (function(it, sel){ return function(){ copyIdeaPrompt(it, sel); }; })(idea, st);
+    var st = document.createElement("div");
+    b.onclick = (function(it, sel){ return function(){ showPromptPreview(sel, buildIdeaPrompt(it), "browse_ai_prompt_copied"); }; })(idea, st);
     card.appendChild(img); card.appendChild(h); card.appendChild(p);
     card.appendChild(b); card.appendChild(st);
     grid.appendChild(card);
@@ -519,7 +536,8 @@ function openBrowse(){
 }
 
 /* ================= ASK MY AI ================= */
-function copyAIPrompt(results, statusEl){
+/* The prompt text is always shown to the user before anything is copied. */
+function buildResultsPrompt(results, beyond){
   var lines = results.map(function(scored, i){
     var idea = scored.idea;
     return (i+1) + ". " + idea.title + " - " + idea.blurb + " Why it fits: " + whyLine(scored).replace(/^Why this fits you: /, "");
@@ -528,39 +546,48 @@ function copyAIPrompt(results, statusEl){
     var a = state.answers[qid];
     return a ? qById(qid).title + ": " + a.label : null;
   }).filter(function(x){ return x; });
-  var text = "I used a Halloween costume quiz (pickmycostume.com) and got these three ideas:\n" +
-    lines.join("\n") + "\n\nMy answers: " + ans.join("; ") + ".\n\n" +
-    "Help me pick one and give me a concrete plan: where to buy it or exactly how to DIY it this week. Keep it short and practical.";
-  function done(ok, msg){
-    statusEl.textContent = msg;
-    if (ok) Analytics.track("ai_prompt_copied", {});
+  var ask = beyond
+    ? "Treat these as starting points, not final answers. Suggest 3 fresh costume ideas beyond them and give me a concrete plan for the best one: where to buy it or exactly how to DIY it this week. Keep it short and practical."
+    : "Help me pick one and give me a concrete plan: where to buy it or exactly how to DIY it this week. Keep it short and practical.";
+  return "I used a Halloween costume quiz (pickmycostume.com) and got these three ideas:\n" +
+    lines.join("\n") + "\n\nMy answers: " + ans.join("; ") + ".\n\n" + ask;
+}
+function buildIdeaPrompt(idea){
+  return "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
+    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" +
+    "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it (materials list with approximate costs, step by step). Keep it short and practical.";
+}
+function doCopy(text, done){
+  function fin(ok, msg){
+    done(ok, msg);
   }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(
-      function(){ done(true, "Copied. Paste it into ChatGPT, Claude, Gemini, or any AI."); },
+      function(){ fin(true, "Copied. Paste it into ChatGPT, Claude, Gemini, or any AI."); },
       function(){ fallbackCopy(text, done); }
     );
   } else {
     fallbackCopy(text, done);
   }
 }
-
-function copyIdeaPrompt(idea, statusEl){
-  var text = "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
-    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" +
-    "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it (materials list with approximate costs, step by step). Keep it short and practical.";
-  function done(ok, msg){
-    statusEl.textContent = msg;
-    if (ok) Analytics.track("browse_ai_prompt_copied", {idea_id: idea.id});
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(
-      function(){ done(true, "Copied. Paste it into ChatGPT, Claude, Gemini, or any AI."); },
-      function(){ fallbackCopy(text, done); }
-    );
-  } else {
-    fallbackCopy(text, done);
-  }
+function showPromptPreview(container, text, eventName){
+  container.innerHTML = "";
+  var label = document.createElement("p"); label.className = "status";
+  label.textContent = "Copy this into your AI:";
+  var ta = document.createElement("textarea");
+  ta.className = "promptbox"; ta.setAttribute("readonly", ""); ta.value = text;
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy prompt";
+  var status = document.createElement("p"); status.className = "status";
+  b.onclick = function(){
+    doCopy(text, function(ok, msg){
+      status.textContent = msg;
+      if (ok) Analytics.track(eventName, {});
+    });
+  };
+  row.appendChild(b);
+  container.appendChild(label); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
+  if (ta.scrollIntoView) ta.scrollIntoView({block:"nearest", behavior:"smooth"});
 }
 
 /* ================= SHARE ================= */function shareText(idea, statusEl){
