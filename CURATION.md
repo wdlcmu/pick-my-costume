@@ -22,3 +22,7 @@ Product prices change; the bank is permanent. Costume instructions outlive price
 - Group/couple ideas need distinct roles for each person — everyone gets their own job, not just matching outfits.
 - Kid ideas favor warm layers, uncovered faces, no long hems.
 - When two ideas are similar, keep the one with the clearer title and drop the other.
+## Share pages
+- `/c/<slug>` is a Cloudflare Pages Function (`functions/c/[slug].js`) with per-idea og:/twitter: meta tags, so messengers unfurl the shared costume's own illustration. Humans are redirected to `/?idea=<slug>`, which shows a "Your friend is going as ..." landing with a quiz CTA.
+- Regenerate with `python3 gen_share_function.py` (reads the IDEAS bank in index.html) whenever ideas are added, removed, or renamed, and deploy the function file with the change.
+- The share text links to `pickmycostume.com/c/<slug>` (no trailing slash).

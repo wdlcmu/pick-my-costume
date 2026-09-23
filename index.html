@@ -352,11 +352,11 @@ var IDEAS = [
 /* ================= CONFIG: SHARE ================= */
 var SHARE = {
   url: "pickmycostume.com",
-  textTemplate: function(title, aud){
+  textTemplate: function(idea, aud){
     var lead = "I'm going as ";
     if (aud === "couple" || aud === "group" || aud === "family") lead = "We're going as ";
     else if (aud === "kid") lead = "My kid is going as ";
-    return lead + title + " this Halloween. What are you? pickmycostume.com";
+    return lead + idea.title + " this Halloween. What are you? pickmycostume.com/c/" + idea.id;
   }
 };
 
@@ -644,7 +644,7 @@ function showPromptPreview(container, text, eventName){
 
 /* ================= SHARE ================= */function shareText(idea, statusEl){
   var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
-  var text = SHARE.textTemplate(idea.title, aud);
+  var text = SHARE.textTemplate(idea, aud);
   function done(ok, msg){
     statusEl.textContent = msg;
     if (ok) Analytics.track("share_text_copied", {idea_id: idea.id});
@@ -809,6 +809,44 @@ $("browse-vibe").onchange = renderBrowse;
     im.src = "images/" + it.id + ".png";
     IMGCACHE[it.id] = im;
   });
+  /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
+  (function(){
+    var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
+    if (!m) return;
+    var idea = null;
+    IDEAS.forEach(function(it){ if (it.id === m[1]) idea = it; });
+    if (!idea) return;
+    var box = document.createElement("div");
+    box.className = "card";
+    box.style.marginBottom = "16px";
+    var im = document.createElement("img");
+    im.src = "images/" + idea.id + ".png";
+    im.alt = "";
+    im.style.width = "100%";
+    im.style.borderRadius = "10px";
+    im.style.marginBottom = "12px";
+    im.setAttribute("onerror", "this.style.display='none'");
+    var h = document.createElement("h3");
+    h.textContent = "Your friend is going as " + idea.title;
+    var p = document.createElement("p");
+    p.className = "blurb";
+    p.textContent = idea.blurb;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "cta";
+    b.style.width = "100%";
+    b.style.marginTop = "10px";
+    b.textContent = "What are you? Find my costume";
+    b.onclick = function(){
+      state = {qi: 0, answers: {}};
+      Analytics.track("quiz_started", {});
+      renderQ();
+    };
+    box.appendChild(im); box.appendChild(h); box.appendChild(p); box.appendChild(b);
+    var hero = $("s-hero");
+    hero.insertBefore(box, hero.firstChild);
+    Analytics.track("shared_idea_opened", {idea_id: idea.id});
+  })();
   var pick = load("pmc_pick_v1");
   var last = load("pmc_last_v1");
   var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
