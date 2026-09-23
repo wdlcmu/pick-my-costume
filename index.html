@@ -503,7 +503,6 @@ function renderResults(results){
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
     var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
-    var bImg = document.createElement("button"); bImg.type = "button"; bImg.className = "ghost"; bImg.textContent = "Save image card";
     var note = document.createElement("p"); note.className = "picked-note";
     var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 Saved as your pick \u2014 ";
     var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your AI plan";
@@ -518,8 +517,7 @@ function renderResults(results){
       Analytics.track("pick_saved", {idea_id: idea.id});
     };
     bShare.onclick = function(){ shareText(idea, status); };
-    bImg.onclick = function(){ saveImage(idea, status); };
-    row.appendChild(bPick); row.appendChild(bShare); row.appendChild(bImg);
+    row.appendChild(bPick); row.appendChild(bShare);
     card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
     card.appendChild(row); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
     box.appendChild(card);
@@ -684,86 +682,6 @@ function fallbackCopy(text, done){
   }
 }
 
-/* ================= IMAGE CARD ================= */
-var IMGCACHE = {};
-function drawCard(idea){
-  var c = document.createElement("canvas");
-  c.width = 1080; c.height = 1080;
-  var x = c.getContext("2d");
-  if (!x) return null;
-  var css = getComputedStyle(document.documentElement);
-  function v(n, fb){ var s = css.getPropertyValue(n).trim(); return s || fb; }
-  x.fillStyle = v("--bg", "#160d28"); x.fillRect(0, 0, 1080, 1080);
-  x.strokeStyle = v("--accent", "#ff8c1a"); x.lineWidth = 10;
-  x.strokeRect(36, 36, 1008, 1008);
-  x.textAlign = "center";
-  var im = IMGCACHE[idea.id];
-  if (im && im.complete && im.naturalWidth) {
-    x.drawImage(im, 230, 90, 620, 620);
-    x.fillStyle = v("--ink", "#fdf3e3");
-    x.font = "bold 72px Helvetica, Arial, sans-serif";
-    wrap(x, idea.title, 540, 800, 900, 84);
-    x.fillStyle = v("--muted", "#cdbcf0");
-    x.font = "40px Helvetica, Arial, sans-serif";
-    wrap(x, idea.blurb, 540, 900, 900, 52);
-    x.fillStyle = v("--accent", "#ff8c1a");
-    x.font = "40px Helvetica, Arial, sans-serif";
-    x.fillText("pickmycostume.com", 540, 1010);
-  } else {
-    x.fillStyle = v("--accent", "#ff8c1a");
-    x.font = "120px serif"; x.fillText("\uD83C\uDF83", 540, 220);
-    x.fillStyle = v("--ink", "#fdf3e3");
-    x.font = "bold 84px Helvetica, Arial, sans-serif";
-    wrap(x, idea.title, 540, 400, 900, 96);
-    x.fillStyle = v("--muted", "#cdbcf0");
-    x.font = "44px Helvetica, Arial, sans-serif";
-    wrap(x, idea.blurb, 540, 620, 900, 58);
-    x.fillStyle = v("--accent", "#ff8c1a");
-    x.font = "40px Helvetica, Arial, sans-serif";
-    x.fillText("pickmycostume.com", 540, 960);
-  }
-  return c;
-}
-function wrap(x, text, cx, y, maxW, lh){
-  var words = text.split(" "), lines = [], line = "";
-  words.forEach(function(w){
-    var t = line ? line + " " + w : w;
-    if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; }
-    else line = t;
-  });
-  lines.push(line);
-  lines.slice(0, 4).forEach(function(l, i){ x.fillText(l, cx, y + i * lh); });
-}
-function saveImage(idea, statusEl){
-  var c = drawCard(idea);
-  if (!c) { statusEl.textContent = "Could not make the image on this device."; return; }
-  var url = c.toDataURL("image/png");
-  if (isIOS()) {
-    // iOS Safari ignores <a download>: open in a new tab with save instructions.
-    var w = window.open("", "_blank");
-    if (w) {
-      w.document.write("<html><head><meta name='viewport' content='width=device-width,initial-scale=1'><title>" +
-        idea.title.replace(/</g, "&lt;") +
-        "</title></head><body style='margin:0;background:#160d28;color:#fdf3e3;font-family:sans-serif;text-align:center'>" +
-        "<p style='padding:16px'>Touch and hold the image, then tap Save to Photos.</p>" +
-        "<img src='" + url + "' style='max-width:100%'></body></html>");
-      w.document.close();
-      statusEl.textContent = "Opened in a new tab. Touch and hold the image, then tap Save to Photos.";
-      Analytics.track("image_saved", {idea_id: idea.id});
-    } else {
-      statusEl.textContent = "Pop-up was blocked. Allow pop-ups and try again.";
-    }
-    return;
-  }
-  var a = document.createElement("a");
-  a.href = url;
-  a.download = "pick-my-costume.png";
-  document.body.appendChild(a); a.click();
-  setTimeout(function(){ a.remove(); }, 800);
-  statusEl.textContent = "Saved. Send it to a friend.";
-  Analytics.track("image_saved", {idea_id: idea.id});
-}
-
 /* ================= WIRING ================= */
 $("btn-start").onclick = function(){
   state = {qi: 0, answers: {}};
@@ -804,11 +722,6 @@ $("browse-aud").onchange = renderBrowse;
 $("browse-vibe").onchange = renderBrowse;
 
 (function init(){
-  IDEAS.forEach(function(it){
-    var im = new Image();
-    im.src = "images/" + it.id + ".png";
-    IMGCACHE[it.id] = im;
-  });
   /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
   (function(){
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
