@@ -15,7 +15,7 @@ export function onRequest(context) {
   var title = esc(idea.t), blurb = esc(idea.b);
   var img = "https://pickmycostume.com/images/" + slug + ".png";
   /* Preserve any extra query params (e.g. tracking tags) across the redirect. */
-  var _qp = new URLSearchParams(location.search || "");
+  var _qp = new URLSearchParams(new URL(context.request.url).search);
   _qp.set("idea", slug);
   var target = "/?" + _qp.toString();
   var html = "<!DOCTYPE html>" +
