@@ -177,7 +177,7 @@ footer a{color:var(--accent)}
   <section class="screen" id="s-results">
     <p class="progress">Your three ideas</p>
     <h2 class="q-title">&#127875; Three costumes worth wearing</h2>
-    <p class="q-hint">Tap one to save it as your pick, or share it with a friend.</p>
+    <p class="q-hint">Tap one to save your pick and unlock its DIY guide + share text.</p>
     <div id="r-cards"></div>
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
@@ -222,9 +222,11 @@ footer a{color:var(--accent)}
       <p>Pick My Costume is a free Halloween costume picker. Answer a few quick questions and get three costume ideas, for yourself, your kid, your partner, your group, or the whole family.</p>
       <p>Your answers score a hand-picked list of 70 ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
       <p>Your quiz answers never leave your phone. We only track anonymous usage stats.</p>
+      <p>Then what? On your results, tap &ldquo;This is my pick&rdquo; on a costume to get its DIY guide and share text.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
     </div>
     <div class="navrow" style="margin-top:16px">
+      <button class="cta" id="btn-about-start" type="button">Find my costume</button>
       <button class="ghost" id="btn-about-back" type="button">&larr; Back</button>
     </div>
   </section>
@@ -801,6 +803,7 @@ $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
 $("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
+$("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
 $("browse-aud").onchange = renderBrowse;
 $("browse-vibe").onchange = renderBrowse;
