@@ -522,13 +522,10 @@ function renderResults(results){
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
     var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 You\u2019re going as " + idea.title + " \u2014 ";
-    var claimBtn = document.createElement("button"); claimBtn.type = "button"; claimBtn.className = "linkbtn"; claimBtn.textContent = "claim it in the group chat";
-    claimBtn.onclick = function(){ shareText(idea, status); };
-    var noteSep = document.createElement("span"); noteSep.textContent = " \u00B7 ";
-    var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your DIY guide";
+    var kitBtn = document.createElement("button"); kitBtn.type = "button"; kitBtn.className = "linkbtn"; kitBtn.textContent = "get your share text + DIY guide";
     var planBox = document.createElement("div");
-    planBtn.onclick = function(){ showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied"); };
-    note.appendChild(noteTxt); note.appendChild(claimBtn); note.appendChild(noteSep); note.appendChild(planBtn);
+    kitBtn.onclick = function(){ shareText(idea, status); showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied"); };
+    note.appendChild(noteTxt); note.appendChild(kitBtn);
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
     bPick.onclick = function(){
