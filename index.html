@@ -2,50 +2,604 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pick My Costume · Coming October 2026</title>
-<meta name="description" content="Answer five questions, get three costume ideas you'll actually wear. Free forever. No ads. No accounts.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pick My Costume - Five questions. Three costume ideas.</title>
+<meta name="description" content="Five questions. Three costume ideas. No email, no account.">
 <style>
-  :root { --accent: #e8590c; --ink: #1a1a1a; --muted: #6b7280; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: var(--ink); background: #ffffff; line-height: 1.5;
-    display: flex; flex-direction: column; min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-  main {
-    flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding: 3rem 1.5rem; max-width: 42rem; margin: 0 auto; width: 100%;
-  }
-  .kicker {
-    display: inline-block; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;
-    border: 1px solid var(--accent); border-radius: 999px; padding: 0.35rem 1rem;
-  }
-  h1 { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; }
-  .tagline { font-size: clamp(1.125rem, 4vw, 1.5rem); color: #374151; max-width: 32rem; margin-bottom: 2rem; }
-  .promise { font-size: 1rem; font-weight: 600; color: var(--ink); }
-  .promise span { color: var(--accent); }
-  footer {
-    text-align: center; padding: 2rem 1.5rem; border-top: 1px solid #e5e7eb;
-    font-size: 0.9375rem; color: var(--muted);
-  }
-  footer p { margin-bottom: 0.5rem; }
-  footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
+/* ============ HALLOWEEN VISUAL IDENTITY ============
+   The site's seasonal skin, confirmed by Billy. All theme colors
+   live in these variables: to re-skin later, swap this block only.
+   Selection state never relies on color alone (checkmark + border). */
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --btn-bg: #ff8c1a;
+  --btn-ink: #2a1500;
+  --radius: 14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+.hero{text-align:center;padding:56px 8px 32px}
+.hero .moon{font-size:56px}
+h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
+.tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
+.screen{display:none}
+.screen.on{display:block;animation:fadein .22s ease-out}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
+.q-title{font-size:28px;margin:0 0 6px}
+.q-hint{color:var(--muted);margin:0 0 20px}
+.opts{display:grid;gap:12px;margin-bottom:20px}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;
+  min-height:60px;padding:14px 16px;font-size:18px;text-align:left;
+  background:var(--card);color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+}
+.opt .tick{
+  flex:0 0 26px;height:26px;border:2px solid var(--muted);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:transparent;user-select:none;
+}
+.opt.sel{border-color:var(--sel-border);background:var(--sel-bg)}
+.opt.sel .tick{border-color:var(--accent);color:var(--accent)}
+.opt:hover{border-color:var(--accent)}
+button:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.cta:hover{filter:brightness(1.08)}
+button.ghost:hover{border-color:var(--accent)}
+.navrow{display:flex;gap:12px;flex-wrap:wrap}
+button.cta{
+  display:inline-block;min-height:56px;padding:14px 28px;font-size:18px;font-weight:700;
+  background:var(--btn-bg);color:var(--btn-ink);
+  border:0;border-radius:var(--radius);cursor:pointer;
+}
+button.ghost{
+  min-height:56px;padding:14px 20px;font-size:17px;
+  background:transparent;color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+}
+.card{
+  background:var(--card);border:2px solid var(--line);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+.card h3{margin:0 0 6px;font-size:24px}
+.card .blurb{margin:0 0 10px;font-size:17px}
+.card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
+.card .why b{color:var(--ink)}
+.card .row{display:flex;flex-wrap:wrap;gap:10px}
+.card .row button{min-height:48px;font-size:16px}
+.card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
+.status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
+.faq{margin-top:48px}
+.faq h2{font-size:24px}
+.faq details{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
+.faq summary{font-size:17px;font-weight:700;cursor:pointer}
+.faq p{color:var(--muted);margin:8px 0 0}
+footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}
+.returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
+.fine{font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
-<main>
-  <span class="kicker">Coming October 2026</span>
-  <h1>Pick My Costume</h1>
-  <p class="tagline">Answer five questions, get three costume ideas you'll actually wear.</p>
-  <p class="promise"><span>Free forever.</span> No ads. No accounts.</p>
-</main>
-<footer>
-  <p>Made by Billy. One free tool a month.</p>
-  <p><a href="https://myweeklymove.com">Start with My Weekly Move</a></p>
-</footer>
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="screen on" id="s-hero">
+    <div class="hero">
+      <div class="moon" aria-hidden="true">&#127769;</div>
+      <h1>Pick My Costume</h1>
+      <p class="tagline">Five questions. Three costume ideas. No email, no account.</p>
+      <div class="returnbox" id="returnbox" style="display:none">
+        <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
+        <button class="ghost" id="btn-return" type="button">See my ideas again</button>
+      </div>
+      <button class="cta" id="btn-start" type="button">Find my costume</button>
+      <p class="fine" style="margin-top:16px">Nothing leaves your browser. Your answers stay on your phone.</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="s-quiz">
+    <p class="progress" id="q-progress">Question 1 of 5</p>
+    <h2 class="q-title" id="q-title"></h2>
+    <p class="q-hint" id="q-hint"></p>
+    <div class="opts" id="q-opts"></div>
+    <div class="navrow">
+      <button class="ghost" id="q-back" type="button">&larr; Back</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="s-results">
+    <p class="progress">Your three ideas</p>
+    <h2 class="q-title">&#127875; Three costumes worth wearing</h2>
+    <p class="q-hint">Tap one to save it as your pick, or share it with a friend.</p>
+    <div id="r-cards"></div>
+    <div class="navrow" style="margin-top:8px">
+      <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
+      <button class="ghost" id="btn-restart" type="button">Start over</button>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <div class="faq" id="faq">
+    <h2>Questions</h2>
+    <details>
+      <summary>Do I need an account?</summary>
+      <p>No. Nothing is stored anywhere except your own browser.</p>
+    </details>
+    <details>
+      <summary>Are these costumes I can actually buy?</summary>
+      <p>Ideas are starting points described generically. Search the name anywhere you shop.</p>
+    </details>
+    <details>
+      <summary>Can I use this for my kid or my group?</summary>
+      <p>Yes, that is what the first question is for.</p>
+    </details>
+    <details>
+      <summary>Who made this?</summary>
+      <p>Billy, building one free tool a month. No ads, no signup.</p>
+    </details>
+  </div>
+
+  <footer>
+    <p>Built with Muse.<br>Made by Billy. One free tool a month. No ads, no signup.<br><a href="https://myweeklymove.com">myweeklymove.com</a></p>
+  </footer>
+
+</div>
+<script>
+/* Analytics shim. Swap for PostHog when the project is created. */
+var Analytics = {
+  track: function(name, props){
+    try {
+      var q = [];
+      try { q = JSON.parse(localStorage.getItem("pmc_events") || "[]"); } catch(e){}
+      q.push({name: name, props: props || {}, t: Date.now()});
+      while (q.length > 100) q.shift();
+      try { localStorage.setItem("pmc_events", JSON.stringify(q)); } catch(e){}
+    } catch(e){}
+    if (window.console && console.debug) console.debug("[pmc]", name, props || {});
+  }
+};
+
+function $(id){ return document.getElementById(id); }
+function store(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function load(k){ try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent || ""); }
+
+/* ================= CONFIG: QUESTIONS ================= */
+var QUESTIONS = [
+  {id:"q1", title:"Who is dressing up?", hint:"Pick the one that fits best.", options:[
+    {label:"Just me", value:"solo", tags:{}},
+    {label:"Couple", value:"couple", tags:{}},
+    {label:"Group", value:"group", tags:{}},
+    {label:"My kid", value:"kid", tags:{}}
+  ]},
+  {id:"q2", title:"What vibe are you going for?", hint:"There are no wrong answers.", options:[
+    {label:"Funny", tags:{funny:2}},
+    {label:"Scary", tags:{scary:2}},
+    {label:"Cute", tags:{cute:2}},
+    {label:"Keep it simple", tags:{simple:2}}
+  ]},
+  {id:"q3", title:"What is the budget?", hint:"Per costume, roughly.", options:[
+    {label:"Under $25", value:"low", tags:{}},
+    {label:"$25 to $60", value:"mid", tags:{}},
+    {label:"$60+", value:"high", tags:{}},
+    {label:"DIY from my closet", value:"diy", tags:{}}
+  ]},
+  {id:"q4", title:"How much effort?", hint:"Be honest. Couch-level is a fine answer.", options:[
+    {label:"Couch-level", tags:{couch:2}},
+    {label:"A little crafty", tags:{crafty:2}},
+    {label:"Go all out", tags:{allout:2}}
+  ]},
+  {id:"q5kid", title:"How old is the kid?", hint:"So we keep it age-safe.", options:[
+    {label:"Under 3", tags:{kidunder3:2}},
+    {label:"3 to 6", tags:{kid36:2}},
+    {label:"7+", tags:{kid7plus:2}}
+  ]},
+  {id:"q5couple", title:"Matching theme?", hint:"How coordinated are we talking?", options:[
+    {label:"Yes, obviously", tags:{matchyes:2}},
+    {label:"Loosely coordinated", tags:{matchloose:2}}
+  ]},
+  {id:"q5other", title:"Store-bought, homemade, or mix?", hint:"Last question.", options:[
+    {label:"Buy it", tags:{buy:2}},
+    {label:"Make it", tags:{make:2}},
+    {label:"A bit of both", tags:{mix:2}}
+  ]}
+];
+
+/* ================= CONFIG: IDEAS =================
+   rank = curated tiebreak order (lower wins). Billy finalizes. */
+var IDEAS = [
+  {id:"little-pumpkin", title:"Little Pumpkin", blurb:"Orange sweatsuit, green stem hat, done.", why:"Warm, soft, and nothing covers the face, so it survives a cold sidewalk.", audience:["kid"], budget:["low","diy"], tags:{cute:2,simple:2,couch:2,kidunder3:2,kid36:2}, rank:1},
+  {id:"little-shark", title:"Little Shark", blurb:"Gray hoodie with a felt fin glued on the back.", why:"Sharks are timeless even when the song is not, and it is just a hoodie with a fin.", audience:["kid"], budget:["low","mid"], tags:{cute:2,couch:1,kidunder3:2,kid36:2}, rank:2},
+  {id:"little-lion", title:"Little Lion", blurb:"Tan sweatsuit plus a fuzzy mane hood.", why:"Head to toe warm, and the mane hood photographs perfectly.", audience:["kid"], budget:["mid"], tags:{cute:3,kidunder3:2,kid36:2}, rank:3},
+  {id:"tiny-firefighter", title:"Tiny Firefighter", blurb:"Red sweats, a plastic helmet, and a toy hose if you are feeling it.", why:"The helmet does all the work, and every 3-year-old will wave at them.", audience:["kid"], budget:["low","mid"], tags:{simple:2,kidunder3:1,kid36:2,kid7plus:1}, rank:4},
+  {id:"bumblebee", title:"Bumblebee", blurb:"Black sweats with yellow tape stripes and soft felt antennae.", why:"Cheap, cute, and you can make it the night before.", audience:["kid"], budget:["diy","low"], tags:{cute:2,funny:1,crafty:1,kidunder3:1,kid36:2}, rank:5},
+  {id:"baby-dino", title:"Baby Dinosaur", blurb:"Green hoodie, felt spikes down the back, stuffed tail.", why:"A hoodie costume means zero complaints about itching or slipping.", audience:["kid"], budget:["low","mid","diy"], tags:{cute:2,funny:1,couch:1,kidunder3:2,kid36:2}, rank:6},
+  {id:"friendly-ghost", title:"Friendly Ghost", blurb:"A white poncho with a face drawn on in non-toxic fabric markers, not a sheet.", why:"No tripping, arms stay free for candy.", audience:["kid"], budget:["diy"], tags:{simple:2,funny:1,couch:1,kidunder3:1,kid36:2,kid7plus:1}, rank:7},
+  {id:"little-witch", title:"Little Witch", blurb:"Black cape, pointy hat, striped tights, green face paint.", why:"Classic, comfortable, and the green face paint keeps it from being just-a-witch.", audience:["kid"], budget:["low","diy"], tags:{cute:2,scary:1,kid36:2,kid7plus:1}, rank:8},
+  {id:"walking-taco", title:"Walking Taco", blurb:"Tan vest painted like a taco shell with felt toppings.", why:"Maximum laughs per dollar at the preschool parade.", audience:["kid"], budget:["diy","mid"], tags:{funny:3,crafty:2,kid36:2,kid7plus:1}, rank:9},
+  {id:"waldo-jr", title:"Where's Waldo, Junior", blurb:"Red-white striped shirt, beanie, round glasses if they will keep them on.", why:"You already own half of it, and group photos are great.", audience:["kid"], budget:["diy","low"], tags:{simple:2,cute:1,kid36:2,kid7plus:1}, rank:10},
+  {id:"little-scarecrow", title:"Little Scarecrow", blurb:"Flannel shirt, jeans, straw hat, triangle nose.", why:"Warm layers that are just clothes, so nothing gets rejected mid-evening.", audience:["kid"], budget:["diy"], tags:{cute:2,simple:1,kidunder3:1,kid36:2,kid7plus:1}, rank:11},
+  {id:"backyard-hero", title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", why:"Skip the mask, add a face-paint lightning bolt, still a hero.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:1,couch:1,kid36:2,kid7plus:1}, rank:12},
+  {id:"spider", title:"Eight-Legged Spider", blurb:"Black sweats with stuffed sock legs attached at the sides.", why:"Spooky from across the street, snuggly up close.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,kid7plus:1}, rank:13},
+  {id:"tiny-astronaut", title:"Tiny Astronaut", blurb:"White or silver sweats with flag and mission patches.", why:"Warm, simple, and the helmet is optional for little ones.", audience:["kid"], budget:["low","mid","diy"], tags:{simple:2,cute:1,kidunder3:1,kid36:2,kid7plus:1}, rank:14},
+  {id:"kitten", title:"Kitten", blurb:"Black clothes, headband ears, drawn-on whiskers.", why:"Five minutes of prep, all-night comfort.", audience:["kid"], budget:["diy"], tags:{cute:2,simple:1,couch:2,kidunder3:1,kid36:2,kid7plus:1}, rank:15},
+  {id:"little-mermaid", title:"Little Mermaid", blurb:"Shiny skirt over leggings, shell top or tee, no tail to trip on.", why:"All the sparkle, none of the can't-walk problems.", audience:["kid"], budget:["mid","diy"], tags:{cute:3,kid36:2,kid7plus:1}, rank:16},
+  {id:"lost-tourist", title:"Lost Tourist", blurb:"Hawaiian shirt, camera around neck, sunscreen stripe on the nose.", why:"Everything is in your closet already and it gets funnier all night.", audience:["solo"], budget:["diy","low"], tags:{funny:3,couch:2,simple:1}, rank:17},
+  {id:"error-404", title:"Error 404", blurb:"White tee that says Error 404: Costume Not Found.", why:"The lowest-effort costume that still gets a laugh.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:3,simple:2}, rank:18},
+  {id:"ceiling-fan", title:"Ceiling Fan", blurb:"Shirt that says Go Ceilings, carry pom-poms, cheer.", why:"A pun costume people actually remember the next day.", audience:["solo"], budget:["diy"], tags:{funny:3,crafty:1}, rank:19},
+  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with ten minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1}, rank:20},
+  {id:"plague-doctor", title:"Plague Doctor", blurb:"Long coat, wide hat, beaked mask.", why:"Genuinely unsettling and you get to keep the mask for years.", audience:["solo"], budget:["mid","high"], tags:{scary:3,allout:2}, rank:21},
+  {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Funny-scary and the costume is just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{scary:2,funny:1,make:2}, rank:22},
+  {id:"rosie", title:"Rosie the Riveter", blurb:"Denim shirt, red bandana, rolled sleeves.", why:"Tough, simple, and recognizable from across the room.", audience:["solo"], budget:["diy","low"], tags:{simple:2,cute:1}, rank:23},
+  {id:"bob-ross", title:"Bob Ross", blurb:"Curly wig, fake beard, palette, and a landscape tee.", why:"Everyone loves Bob Ross, and happy little trees are easy.", audience:["solo"], budget:["mid","diy"], tags:{funny:2,cute:2}, rank:24},
+  {id:"workout-80s", title:"80s Workout Video", blurb:"Neon leggings, headband, leg warmers.", why:"Thrift-store gold and you can jog in place all night.", audience:["solo"], budget:["low","diy"], tags:{funny:3,couch:1}, rank:25},
+  {id:"waldo", title:"Where's Waldo", blurb:"Striped shirt, beanie, glasses, cane.", why:"Instantly readable and great for hiding in group photos.", audience:["solo"], budget:["diy","low"], tags:{simple:3,funny:1}, rank:26},
+  {id:"pbj", title:"Peanut Butter and Jelly", blurb:"One brown tee, one purple tee, both cut sandwich-round.", why:"The classic couples costume for a reason: cheap and adorable.", audience:["couple"], budget:["diy","low"], tags:{cute:3,funny:1,matchyes:2}, rank:27},
+  {id:"salt-pepper", title:"Salt and Pepper", blurb:"One all-white, one all-black, with S and P signs.", why:"Zero shopping, and it works at any dress code.", audience:["couple"], budget:["diy"], tags:{simple:3,funny:1,matchyes:1}, rank:28},
+  {id:"mario-luigi", title:"Mario and Luigi", blurb:"Overalls, red and green hats and shirts, drawn mustaches.", why:"Matching without being cheesy, and the mustaches do the talking.", audience:["couple"], budget:["mid","diy"], tags:{cute:2,funny:1,matchyes:2}, rank:29},
+  {id:"plug-socket", title:"Plug and Socket", blurb:"Cardboard plug and outlet worn front and back.", why:"Peak pun-couple energy, built from boxes in an afternoon.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:2,matchyes:2}, rank:30},
+  {id:"cop-robber", title:"Cop and Robber", blurb:"One striped shirt with mask, one dark uniform with badge.", why:"Built-in photo poses and everyone gets the joke instantly.", audience:["couple"], budget:["diy","low"], tags:{funny:2,matchyes:1,matchloose:1}, rank:31},
+  {id:"thing12", title:"Thing 1 and Thing 2", blurb:"Red outfits, blue wigs, Thing 1 and Thing 2 signs.", why:"Chaos energy, matching, and comfortable all night.", audience:["couple"], budget:["mid"], tags:{cute:2,funny:2,matchyes:2}, rank:32},
+  {id:"haunted-portraits", title:"Haunted Portraits", blurb:"Gray makeup, old-timey clothes, hold a gilt frame.", why:"Spooky, artsy, and you just stand still.", audience:["couple","group"], budget:["diy","mid"], tags:{scary:2,crafty:2,matchloose:2}, rank:33},
+  {id:"pacman", title:"Pac-Man Crew", blurb:"One yellow Pac-Man, the rest ghosts, all from round cardboard.", why:"Scales to any group size and the photos are perfect.", audience:["group"], budget:["diy","low"], tags:{funny:3,crafty:2}, rank:34},
+  {id:"crayons", title:"Box of Crayons", blurb:"Everyone picks a color: matching tee plus a cone hat.", why:"No two people match, everyone matches. Ideal group costume.", audience:["group"], budget:["diy"], tags:{cute:3,simple:1}, rank:35},
+  {id:"dominoes", title:"Dominoes", blurb:"Black tees with white dot stickers, stand in a row and fall.", why:"The bit writes itself and setup takes twenty minutes.", audience:["group"], budget:["diy"], tags:{funny:2,simple:2,couch:1}, rank:36},
+  {id:"scooby-gang", title:"Scooby Gang", blurb:"Assign Fred, Daphne, Velma, Shaggy, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group"], budget:["diy","mid"], tags:{cute:3,funny:1}, rank:37},
+  {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{scary:2,funny:1}, rank:38},
+  {id:"minions", title:"Minions", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1}, rank:39},
+  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard proton packs, name patches.", why:"Who you gonna call? Each other, all night.", audience:["group"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1}, rank:40}
+];
+
+/* ================= CONFIG: SHARE ================= */
+var SHARE = {
+  url: "pickmycostume.com",
+  textTemplate: function(title, aud){
+    var lead = "I'm going as ";
+    if (aud === "couple" || aud === "group") lead = "We're going as ";
+    else if (aud === "kid") lead = "My kid is going as ";
+    return lead + title + " this Halloween. What are you? pickmycostume.com";
+  }
+};
+
+var TAG_WORDS = {
+  funny:"Funny", scary:"Scary", cute:"Cute", simple:"Simple",
+  couch:"low effort", crafty:"a little crafty", allout:"all-out effort",
+  buy:"store-bought", make:"homemade", mix:"mix of both",
+  matchyes:"matching", matchloose:"coordinated",
+  kidunder3:"toddler-friendly", kid36:"kid-approved", kid7plus:"big-kid approved"
+};
+
+/* ================= ENGINE ================= */
+var state = { qi: 0, answers: {} }; // answers: {qid: option}
+
+function qById(id){ return QUESTIONS.filter(function(q){ return q.id === id; })[0]; }
+
+function flowOrder(){
+  var aud = state.answers.q1 ? state.answers.q1.value : null;
+  var q5 = aud === "kid" ? "q5kid" : (aud === "couple" ? "q5couple" : "q5other");
+  return ["q1","q2","q3","q4",q5];
+}
+
+function answerTags(){
+  var tags = {};
+  flowOrder().forEach(function(qid){
+    var a = state.answers[qid];
+    if (!a || !a.tags) return;
+    Object.keys(a.tags).forEach(function(t){ tags[t] = (tags[t] || 0) + a.tags[t]; });
+  });
+  return tags;
+}
+
+/* Budget is a ceiling: a bigger budget includes cheaper bands. */
+var BUDGET_OK = {
+  low:  ["low","diy"],
+  mid:  ["mid","low","diy"],
+  high: ["high","mid","low","diy"],
+  diy:  ["diy"]
+};
+
+function scoreIdeas(){
+  var aud = state.answers.q1.value;
+  var bud = state.answers.q3.value;
+  var tags = answerTags();
+  var okBudgets = BUDGET_OK[bud] || [bud];
+  var pool = IDEAS.filter(function(i){
+    return i.audience.indexOf(aud) !== -1 && i.budget.some(function(b){ return okBudgets.indexOf(b) !== -1; });
+  });
+  if (pool.length < 3) {
+    pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
+  }
+  var scored = pool.map(function(idea){
+    var contrib = {};
+    var score = 0;
+    Object.keys(idea.tags).forEach(function(t){
+      if (tags[t]) { contrib[t] = tags[t] * idea.tags[t]; score += contrib[t]; }
+    });
+    return {idea: idea, score: score, contrib: contrib};
+  });
+  scored.sort(function(a, b){
+    if (b.score !== a.score) return b.score - a.score;
+    return a.idea.rank - b.idea.rank;
+  });
+  return scored.slice(0, 3);
+}
+
+function whyLine(scored){
+  var tops = Object.keys(scored.contrib)
+    .sort(function(a, b){ return scored.contrib[b] - scored.contrib[a]; })
+    .slice(0, 2)
+    .map(function(t){ return TAG_WORDS[t] || t; });
+  var head = tops.length ? tops.join(" + ") : "Picked for you";
+  return "Why this fits you: " + head + ". " + scored.idea.why;
+}
+
+/* ================= SCREENS ================= */
+function show(id){
+  var screens = document.querySelectorAll(".screen");
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove("on");
+  $(id).classList.add("on");
+  window.scrollTo(0, 0);
+}
+
+function renderQ(){
+  var order = flowOrder();
+  var qid = order[state.qi];
+  var q = qById(qid);
+  $("q-progress").textContent = "Question " + (state.qi + 1) + " of 5";
+  $("q-title").textContent = q.title;
+  $("q-hint").textContent = q.hint;
+  var box = $("q-opts");
+  box.innerHTML = "";
+  var current = state.answers[qid];
+  q.options.forEach(function(opt){
+    var b = document.createElement("button");
+    b.type = "button";
+    var sel = current && current.label === opt.label;
+    b.className = "opt" + (sel ? " sel" : "");
+    b.setAttribute("aria-pressed", sel ? "true" : "false");
+    var tick = document.createElement("span");
+    tick.className = "tick";
+    tick.textContent = "\u2713";
+    var lab = document.createElement("span");
+    lab.textContent = opt.label;
+    b.appendChild(tick); b.appendChild(lab);
+    b.onclick = function(){
+      state.answers[qid] = opt;
+      // Q1 answer can change which Q5 shows; drop a stale Q5 answer.
+      var order2 = flowOrder();
+      Object.keys(state.answers).forEach(function(k){
+        if (order2.indexOf(k) === -1) delete state.answers[k];
+      });
+      if (state.qi < order2.length - 1) { state.qi++; renderQ(); }
+      else { finishQuiz(); }
+    };
+    box.appendChild(b);
+  });
+  show("s-quiz");
+}
+
+function finishQuiz(){
+  var results = scoreIdeas();
+  store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), at: Date.now()});
+  Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; })});
+  renderResults(results);
+}
+
+function renderResults(results){
+  var box = $("r-cards");
+  box.innerHTML = "";
+  var pick = load("pmc_pick_v1");
+  results.forEach(function(scored){
+    var idea = scored.idea;
+    var card = document.createElement("div");
+    card.className = "card";
+    var h = document.createElement("h3"); h.textContent = idea.title;
+    var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
+    var wh = document.createElement("p"); wh.className = "why";
+    var wb = document.createElement("b"); wb.textContent = "Why this fits you";
+    wh.appendChild(wb);
+    wh.appendChild(document.createTextNode(": " + whyLine(scored).replace(/^Why this fits you: /, "")));
+    var row = document.createElement("div"); row.className = "row";
+    var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+    var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+    var bImg = document.createElement("button"); bImg.type = "button"; bImg.className = "ghost"; bImg.textContent = "Save image card";
+    var bFind = document.createElement("button"); bFind.type = "button"; bFind.className = "ghost"; bFind.textContent = "Find this costume";
+    var note = document.createElement("p"); note.className = "picked-note";
+    note.textContent = "\u2713 Saved as your pick";
+    if (pick && pick.ideaId === idea.id) note.style.display = "block";
+    var status = document.createElement("p"); status.className = "status";
+    bPick.onclick = function(){
+      store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+      note.style.display = "block";
+      Analytics.track("pick_saved", {idea_id: idea.id});
+    };
+    bShare.onclick = function(){ shareText(idea, status); };
+    bImg.onclick = function(){ saveImage(idea, status); };
+    bFind.onclick = function(){
+      window.open("https://www.google.com/search?q=" + encodeURIComponent(idea.title + " costume"), "_blank");
+      Analytics.track("find_costume", {idea_id: idea.id});
+      status.textContent = "Opened a search for \"" + idea.title + " costume\" in a new tab.";
+    };
+    row.appendChild(bPick); row.appendChild(bShare); row.appendChild(bImg); row.appendChild(bFind);
+    card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+    card.appendChild(row); card.appendChild(note); card.appendChild(status);
+    box.appendChild(card);
+  });
+  show("s-results");
+}
+
+/* ================= SHARE ================= */
+function shareText(idea, statusEl){
+  var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
+  var text = SHARE.textTemplate(idea.title, aud);
+  function done(ok, msg){
+    statusEl.textContent = msg;
+    if (ok) Analytics.track("share_text_copied", {idea_id: idea.id});
+  }
+  function copyPath(){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function(){ done(true, "Copied. Paste it into any message."); },
+        function(){ fallbackCopy(text, done); }
+      );
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  if (navigator.share) {
+    navigator.share({text: text}).then(
+      function(){ done(true, "Shared."); },
+      function(){ copyPath(); }
+    );
+  } else {
+    copyPath();
+  }
+}
+function fallbackCopy(text, done){
+  try {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.top = "0"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    done(ok, ok ? "Copied. Paste it into any message." : "Copy this: " + text);
+  } catch(e){
+    done(false, "Copy this: " + text);
+  }
+}
+
+/* ================= IMAGE CARD ================= */
+function drawCard(idea){
+  var c = document.createElement("canvas");
+  c.width = 1080; c.height = 1080;
+  var x = c.getContext("2d");
+  if (!x) return null;
+  var css = getComputedStyle(document.documentElement);
+  function v(n, fb){ var s = css.getPropertyValue(n).trim(); return s || fb; }
+  x.fillStyle = v("--bg", "#160d28"); x.fillRect(0, 0, 1080, 1080);
+  x.strokeStyle = v("--accent", "#ff8c1a"); x.lineWidth = 10;
+  x.strokeRect(36, 36, 1008, 1008);
+  x.textAlign = "center";
+  x.fillStyle = v("--accent", "#ff8c1a");
+  x.font = "120px serif"; x.fillText("\uD83C\uDF83", 540, 220);
+  x.fillStyle = v("--ink", "#fdf3e3");
+  x.font = "bold 84px Helvetica, Arial, sans-serif";
+  wrap(x, idea.title, 540, 400, 900, 96);
+  x.fillStyle = v("--muted", "#cdbcf0");
+  x.font = "44px Helvetica, Arial, sans-serif";
+  wrap(x, idea.blurb, 540, 620, 900, 58);
+  x.fillStyle = v("--accent", "#ff8c1a");
+  x.font = "40px Helvetica, Arial, sans-serif";
+  x.fillText("pickmycostume.com", 540, 960);
+  return c;
+}
+function wrap(x, text, cx, y, maxW, lh){
+  var words = text.split(" "), lines = [], line = "";
+  words.forEach(function(w){
+    var t = line ? line + " " + w : w;
+    if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; }
+    else line = t;
+  });
+  lines.push(line);
+  lines.slice(0, 4).forEach(function(l, i){ x.fillText(l, cx, y + i * lh); });
+}
+function saveImage(idea, statusEl){
+  var c = drawCard(idea);
+  if (!c) { statusEl.textContent = "Could not make the image on this device."; return; }
+  var url = c.toDataURL("image/png");
+  if (isIOS()) {
+    // iOS Safari ignores <a download>: open in a new tab with save instructions.
+    var w = window.open("", "_blank");
+    if (w) {
+      w.document.write("<html><head><meta name='viewport' content='width=device-width,initial-scale=1'><title>" +
+        idea.title.replace(/</g, "&lt;") +
+        "</title></head><body style='margin:0;background:#160d28;color:#fdf3e3;font-family:sans-serif;text-align:center'>" +
+        "<p style='padding:16px'>Touch and hold the image, then tap Save to Photos.</p>" +
+        "<img src='" + url + "' style='max-width:100%'></body></html>");
+      w.document.close();
+      statusEl.textContent = "Opened in a new tab. Touch and hold the image, then tap Save to Photos.";
+      Analytics.track("image_saved", {idea_id: idea.id});
+    } else {
+      statusEl.textContent = "Pop-up was blocked. Allow pop-ups and try again.";
+    }
+    return;
+  }
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "pick-my-costume.png";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ a.remove(); }, 800);
+  statusEl.textContent = "Saved. Send it to a friend.";
+  Analytics.track("image_saved", {idea_id: idea.id});
+}
+
+/* ================= WIRING ================= */
+$("btn-start").onclick = function(){
+  state = {qi: 0, answers: {}};
+  Analytics.track("quiz_started", {});
+  renderQ();
+};
+$("q-back").onclick = function(){
+  if (state.qi === 0) { show("s-hero"); return; }
+  state.qi--;
+  renderQ();
+};
+$("btn-rback").onclick = function(){
+  state.qi = flowOrder().length - 1;
+  renderQ();
+};
+$("btn-restart").onclick = function(){
+  state = {qi: 0, answers: {}};
+  renderQ();
+};
+$("btn-return").onclick = function(){
+  var last = load("pmc_last_v1");
+  if (!last || !last.results) return;
+  var byId = {};
+  IDEAS.forEach(function(i){ byId[i.id] = i; });
+  var results = last.results
+    .map(function(id){ return byId[id]; })
+    .filter(Boolean)
+    .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
+  if (results.length) renderResults(results);
+};
+
+(function init(){
+  var pick = load("pmc_pick_v1");
+  var last = load("pmc_last_v1");
+  var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
+  if (fresh && last && last.results && last.results.length) {
+    var idea = IDEAS.filter(function(i){ return i.id === pick.ideaId; })[0];
+    if (idea) {
+      $("return-pick").textContent = idea.title;
+      $("returnbox").style.display = "block";
+    }
+  }
+})();
+</script>
 </body>
 </html>
