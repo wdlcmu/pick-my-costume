@@ -446,7 +446,41 @@ function renderResults(results){
     card.appendChild(row); card.appendChild(note); card.appendChild(status);
     box.appendChild(card);
   });
+  var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
+  var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
+  var aiStatus = document.createElement("p"); aiStatus.className = "status";
+  bAI.onclick = function(){ copyAIPrompt(results, aiStatus); };
+  aiRow.appendChild(bAI);
+  box.appendChild(aiRow);
+  box.appendChild(aiStatus);
   show("s-results");
+}
+
+/* ================= ASK MY AI ================= */
+function copyAIPrompt(results, statusEl){
+  var lines = results.map(function(scored, i){
+    var idea = scored.idea;
+    return (i+1) + ". " + idea.title + " - " + idea.blurb + " Why it fits: " + whyLine(scored).replace(/^Why this fits you: /, "");
+  });
+  var ans = flowOrder().map(function(qid){
+    var a = state.answers[qid];
+    return a ? qById(qid).title + ": " + a.label : null;
+  }).filter(function(x){ return x; });
+  var text = "I used a Halloween costume quiz (pickmycostume.com) and got these three ideas:\n" +
+    lines.join("\n") + "\n\nMy answers: " + ans.join("; ") + ".\n\n" +
+    "Help me pick one and give me a concrete plan: where to buy it or exactly how to DIY it this week. Keep it short and practical.";
+  function done(ok, msg){
+    statusEl.textContent = msg;
+    if (ok) Analytics.track("ai_prompt_copied", {});
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(
+      function(){ done(true, "Copied. Paste it into ChatGPT, Claude, Gemini, or any AI."); },
+      function(){ fallbackCopy(text, done); }
+    );
+  } else {
+    fallbackCopy(text, done);
+  }
 }
 
 /* ================= SHARE ================= */
