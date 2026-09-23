@@ -118,6 +118,7 @@ button.ghost{
 .card .row{display:flex;flex-wrap:wrap;gap:10px}
 .card .row button{min-height:48px;font-size:16px}
 .card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
+.card .pick-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.75}
 .status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
 .linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
 .promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:15px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
@@ -517,6 +518,8 @@ function renderResults(results){
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
     var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to unlock your DIY guide + share text.";
+    if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
     var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 You\u2019re going as " + idea.title + " \u2014 ";
     var claimBtn = document.createElement("button"); claimBtn.type = "button"; claimBtn.className = "linkbtn"; claimBtn.textContent = "claim it in the group chat";
@@ -531,12 +534,13 @@ function renderResults(results){
     bPick.onclick = function(){
       store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
       note.style.display = "block";
+      hint.style.display = "none";
       Analytics.track("pick_saved", {idea_id: idea.id});
     };
     bShare.onclick = function(){ shareText(idea, status); };
     row.appendChild(bPick); row.appendChild(bShare);
     card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
-    card.appendChild(row); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+    card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
     box.appendChild(card);
   });
   var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
