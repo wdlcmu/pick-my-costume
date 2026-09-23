@@ -211,6 +211,26 @@ footer a{color:var(--accent)}
         <option value="cute">Cute</option>
         <option value="simple">Simple</option>
       </select>
+      <select id="browse-interest" aria-label="Filter by interest">
+        <option value="all">All interests</option>
+        <option value="animals">Animals</option>
+        <option value="princess">Princesses &amp; fairy tales</option>
+        <option value="heroes">Superheroes</option>
+        <option value="dinos">Dinosaurs &amp; monsters</option>
+        <option value="games">Video games</option>
+        <option value="tv">TV &amp; movie characters</option>
+      </select>
+      <select id="browse-effort" aria-label="Filter by effort">
+        <option value="all">All effort levels</option>
+        <option value="couch">Couch-level</option>
+        <option value="crafty">A little crafty</option>
+        <option value="allout">Go all out</option>
+      </select>
+      <select id="browse-get" aria-label="Filter by DIY or store-bought">
+        <option value="all">DIY or store-bought</option>
+        <option value="diy">Make it (DIY)</option>
+        <option value="buy">Buy it</option>
+      </select>
     </div>
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
@@ -641,6 +661,9 @@ function renderResults(results){
 function renderBrowse(){
   var aud = $("browse-aud").value;
   var vibe = $("browse-vibe").value;
+  var interest = $("browse-interest").value;
+  var effort = $("browse-effort").value;
+  var get = $("browse-get").value;
   var grid = $("b-grid");
   grid.innerHTML = "";
   /* Browse-all follows the editorial rank, not build order. */
@@ -648,6 +671,10 @@ function renderBrowse(){
   ordered.forEach(function(idea){
     if (aud !== "all" && idea.audience.indexOf(aud) === -1) return;
     if (vibe !== "all" && !(idea.tags[vibe] > 0)) return;
+    if (interest !== "all" && !(idea.tags[interest] > 0)) return;
+    if (effort !== "all" && !(idea.tags[effort] > 0)) return;
+    if (get === "diy" && idea.budget.indexOf("diy") === -1) return;
+    if (get === "buy" && idea.budget.indexOf("diy") !== -1) return;
     var card = document.createElement("div");
     card.className = "bcard";
     var img = document.createElement("img");
@@ -853,6 +880,9 @@ $("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
 $("browse-aud").onchange = renderBrowse;
 $("browse-vibe").onchange = renderBrowse;
+$("browse-interest").onchange = renderBrowse;
+$("browse-effort").onchange = renderBrowse;
+$("browse-get").onchange = renderBrowse;
 
 (function init(){
   /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
