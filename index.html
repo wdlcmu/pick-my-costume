@@ -314,7 +314,7 @@ var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{cute:2,funny:1,scary:1,crafty:1}, rank:19},
   {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with ten minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1}, rank:20},
   {id:"plague-doctor", title:"Plague Doctor", blurb:"Long coat, wide hat, beaked mask.", why:"Genuinely unsettling and you get to keep the mask for years.", audience:["solo"], budget:["mid","high"], tags:{scary:3,allout:2}, rank:21},
-  {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Funny-scary and the costume is just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{scary:2,funny:1,make:2}, rank:22},
+  {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Scary with zero shopping: it's just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{scary:2,funny:1,make:2}, rank:22},
   {id:"rosie", title:"Rosie the Riveter", blurb:"Denim shirt, red bandana, rolled sleeves.", why:"Tough, simple, and recognizable from across the room.", audience:["solo"], budget:["diy","low"], tags:{simple:2,cute:1}, rank:23},
   {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{cute:2,scary:1,crafty:1}, rank:24},
   {id:"workout-80s", title:"80s Workout Video", blurb:"Neon leggings, headband, leg warmers.", why:"Thrift-store gold and you can jog in place all night.", audience:["solo"], budget:["low","diy"], tags:{funny:3,couch:1}, rank:25},
@@ -385,7 +385,9 @@ function answerTags(){
   flowOrder().forEach(function(qid){
     var a = state.answers[qid];
     if (!a || !a.tags) return;
-    Object.keys(a.tags).forEach(function(t){ tags[t] = (tags[t] || 0) + a.tags[t]; });
+    /* Q2 (vibe) is the identity of the answer; count it double so effort never drowns it. */
+    var w = (qid === "q2") ? 2 : 1;
+    Object.keys(a.tags).forEach(function(t){ tags[t] = (tags[t] || 0) + w * a.tags[t]; });
   });
   return tags;
 }
@@ -415,6 +417,16 @@ function scoreIdeas(){
     Object.keys(idea.tags).forEach(function(t){
       if (tags[t]) { contrib[t] = tags[t] * idea.tags[t]; score += contrib[t]; }
     });
+    /* Buy/make intent: the bank has no buy/make tags, so read it off budget bands. */
+    var q5a = state.answers[flowOrder()[4]];
+    var intent = q5a ? q5a.label : null;
+    var diyOnly = idea.budget.length === 1 && idea.budget[0] === "diy";
+    if (intent === "Buy it" && diyOnly) score -= 4;
+    if (intent === "Make it" && idea.budget.indexOf("diy") !== -1) score += 2;
+    /* Vibe is a promise: an idea with zero overlap on the Q2 vibe never outranks one that matches it. */
+    var vibeAns = state.answers.q2;
+    var vibeTag = vibeAns && vibeAns.tags ? Object.keys(vibeAns.tags)[0] : null;
+    if (vibeTag && !idea.tags[vibeTag]) score -= 6;
     return {idea: idea, score: score, contrib: contrib};
   });
   scored.sort(function(a, b){
@@ -583,6 +595,10 @@ function renderBrowse(){
     empty.textContent = "No ideas match those filters. Try widening them a little.";
     grid.appendChild(empty);
   }
+  var n = grid.querySelectorAll(".bcard").length;
+  $("browse-title").textContent = (aud === "all" && vibe === "all")
+    ? "All " + IDEAS.length + " ideas"
+    : n + (n === 1 ? " idea" : " ideas");
 }
 function openBrowse(){
   renderBrowse();
