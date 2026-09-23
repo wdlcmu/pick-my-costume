@@ -129,6 +129,7 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
+.about-body p{margin:0 0 14px;line-height:1.55}
 .bfilters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
 .bfilters select{
   flex:1 1 160px;min-height:52px;padding:12px 14px;font-size:17px;
@@ -156,7 +157,7 @@ footer a{color:var(--accent)}
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
-      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 55 ideas</button></p>
+      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 70 ideas</button></p>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
@@ -181,7 +182,7 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
-      <button class="ghost" id="btn-browse-results" type="button">Browse all 55 ideas</button>
+      <button class="ghost" id="btn-browse-results" type="button">Browse all 70 ideas</button>
     </div>
   </section>
 
@@ -213,8 +214,23 @@ footer a{color:var(--accent)}
     </div>
   </section>
 
+  <!-- ABOUT -->
+  <section class="screen" id="s-about">
+    <p class="progress">About this site</p>
+    <h2 class="q-title">What this is</h2>
+    <div class="about-body">
+      <p>Pick My Costume is a free Halloween costume picker. Answer a few quick questions and get three costume ideas, for yourself, your kid, your partner, your group, or the whole family.</p>
+      <p>Your answers score a hand-picked list of 70 ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
+      <p>Your quiz answers never leave your phone. We only track anonymous usage stats.</p>
+      <p class="fine">Built with Muse. Made by Billy Litner.</p>
+    </div>
+    <div class="navrow" style="margin-top:16px">
+      <button class="ghost" id="btn-about-back" type="button">&larr; Back</button>
+    </div>
+  </section>
+
   <footer>
-    <p>Built with Muse.<br>Made by Billy Litner.</p>
+    <p><a href="#" id="about-link">About this site</a></p>
   </footer>
 
 </div>
@@ -784,6 +800,8 @@ $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
+$("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
+$("btn-about-back").onclick = function(){ show("s-hero"); };
 $("browse-aud").onchange = renderBrowse;
 $("browse-vibe").onchange = renderBrowse;
 
