@@ -4,7 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pick My Costume - Five questions. Three costume ideas.</title>
-<meta name="description" content="Five questions. Three costume ideas. No email, no account.">
+<meta name="description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/">
+<meta property="og:title" content="Pick My Costume - Five questions. Three costume ideas.">
+<meta property="og:description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
+<meta property="og:image" content="https://pickmycostume.com/images/little-pumpkin.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pick My Costume - Five questions. Three costume ideas.">
+<meta name="twitter:description" content="A free Halloween costume picker. Five questions, three ideas, no email, no account.">
+<meta name="twitter:image" content="https://pickmycostume.com/images/little-pumpkin.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 /* ============ HALLOWEEN VISUAL IDENTITY ============
    The site's seasonal skin, confirmed by Billy. All theme colors
@@ -197,12 +207,12 @@ footer a{color:var(--accent)}
     </details>
     <details>
       <summary>Who made this?</summary>
-      <p>Billy, building one free tool a month. No ads, no signup.</p>
+      <p>Billy Litner, building one free tool a month. No ads, no signup.</p>
     </details>
   </div>
 
   <footer>
-    <p>Built with Muse.<br>Made by Billy. One free tool a month. No ads, no signup.<br><a href="https://myweeklymove.com">myweeklymove.com</a></p>
+    <p>Built with Muse.<br>Made by Billy Litner. One free tool a month. No ads, no signup.<br><a href="https://myweeklymove.com">myweeklymove.com</a></p>
   </footer>
 
 </div>
@@ -519,6 +529,7 @@ function renderBrowse(){
     var img = document.createElement("img");
     img.src = "images/" + idea.id + ".png";
     img.alt = "";
+    img.loading = "lazy";
     img.setAttribute("onerror", "this.style.display='none'");
     var h = document.createElement("h3"); h.textContent = idea.title;
     var p = document.createElement("p"); p.textContent = idea.blurb;
@@ -566,7 +577,7 @@ function copyAIPrompt(results, statusEl){
 }
 
 function copyIdeaPrompt(idea, statusEl){
-  var text = "I want to go as " + idea.title + " for Halloween. The idea: " + idea.blurb +
+  var text = "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
     " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" +
     "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it (materials list with approximate costs, step by step). Keep it short and practical.";
   function done(ok, msg){
