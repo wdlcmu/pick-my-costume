@@ -708,9 +708,10 @@ function renderBrowse(){
     grid.appendChild(empty);
   }
   var n = grid.querySelectorAll(".bcard").length;
-  $("browse-title").textContent = (aud === "all" && vibe === "all")
-    ? "All " + IDEAS.length + " ideas"
-    : n + (n === 1 ? " idea" : " ideas");
+  var filtered = aud !== "all" || vibe !== "all" || interest !== "all" || effort !== "all" || get !== "all";
+  $("browse-title").textContent = filtered
+    ? n + (n === 1 ? " idea" : " ideas")
+    : "All " + IDEAS.length + " ideas";
 }
 function openBrowse(){
   renderBrowse();
