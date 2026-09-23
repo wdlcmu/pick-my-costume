@@ -129,7 +129,7 @@ footer a{color:var(--accent)}
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
       <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 40</button></p>
-      <p class="fine" style="margin-top:16px">Nothing leaves your browser. Your answers stay on your phone.</p>
+      <p class="fine" style="margin-top:16px">Nothing is sent anywhere. No account, no tracking, and your answers stay on your phone unless you choose to share them.</p>
     </div>
   </section>
 
@@ -264,7 +264,7 @@ var IDEAS = [
   {id:"friendly-ghost", title:"Friendly Ghost", blurb:"A white poncho with a face drawn on in non-toxic fabric markers, not a sheet.", why:"No tripping, arms stay free for candy.", audience:["kid"], budget:["diy"], tags:{simple:2,funny:1,couch:1,kidunder3:1,kid36:2,kid7plus:1}, rank:7},
   {id:"little-witch", title:"Little Witch", blurb:"Black cape, pointy hat, striped tights, green face paint.", why:"Classic, comfortable, and the green face paint keeps it from being just-a-witch.", audience:["kid"], budget:["low","diy"], tags:{cute:2,scary:1,kid36:2,kid7plus:1}, rank:8},
   {id:"walking-taco", title:"Walking Taco", blurb:"Tan vest painted like a taco shell with felt toppings.", why:"Maximum laughs per dollar at the preschool parade.", audience:["kid"], budget:["diy","mid"], tags:{funny:3,crafty:2,kid36:2,kid7plus:1}, rank:9},
-  {id:"little-camouflage", title:"Little Camouflage", blurb:"Red-white striped shirt, beanie, round glasses if they will keep them on.", why:"You already own half of it, and group photos are great.", audience:["kid"], budget:["diy","low"], tags:{simple:2,cute:1,kid36:2,kid7plus:1}, rank:10},
+  {id:"little-camouflage", title:"Striped Explorer", blurb:"Red-and-white striped shirt, red beanie, round glasses if they will keep them on.", why:"Comfy layers you already own, face stays free for photos.", audience:["kid"], budget:["diy","low"], tags:{simple:2,cute:1,kid36:2,kid7plus:1}, rank:10},
   {id:"little-scarecrow", title:"Little Scarecrow", blurb:"Flannel shirt, jeans, straw hat, triangle nose.", why:"Warm layers that are just clothes, so nothing gets rejected mid-evening.", audience:["kid"], budget:["diy"], tags:{cute:2,simple:1,kidunder3:1,kid36:2,kid7plus:1}, rank:11},
   {id:"backyard-hero", title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", why:"Skip the mask, add a face-paint lightning bolt, still a hero.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:1,couch:1,kid36:2,kid7plus:1}, rank:12},
   {id:"spider", title:"Eight-Legged Spider", blurb:"Black sweats with stuffed sock legs attached at the sides.", why:"Spooky from across the street, snuggly up close.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,kid7plus:1}, rank:13},
@@ -372,12 +372,7 @@ function scoreIdeas(){
 }
 
 function whyLine(scored){
-  var tops = Object.keys(scored.contrib)
-    .sort(function(a, b){ return scored.contrib[b] - scored.contrib[a]; })
-    .slice(0, 2)
-    .map(function(t){ return TAG_WORDS[t] || t; });
-  var head = tops.length ? tops.join(" + ") : "Picked for you";
-  return "Why this fits you: " + head + ". " + scored.idea.why;
+  return "Why this fits you: " + scored.idea.why;
 }
 
 /* ================= SCREENS ================= */
