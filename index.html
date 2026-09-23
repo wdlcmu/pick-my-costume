@@ -244,6 +244,7 @@ var Analytics = {
 
 function $(id){ return document.getElementById(id); }
 function store(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function clearK(k){ try { localStorage.removeItem(k); } catch(e){} }
 function load(k){ try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent || ""); }
 
@@ -453,6 +454,7 @@ function renderQ(){
     b.setAttribute("aria-pressed", sel ? "true" : "false");
     var tick = document.createElement("span");
     tick.className = "tick";
+    tick.setAttribute("aria-hidden", "true");
     tick.textContent = "\u2713";
     var lab = document.createElement("span");
     lab.textContent = opt.label;
@@ -688,6 +690,7 @@ function fallbackCopy(text, done){
 /* ================= WIRING ================= */
 $("btn-start").onclick = function(){
   state = {qi: 0, answers: {}};
+  clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
   Analytics.track("quiz_started", {});
   renderQ();
 };
@@ -702,6 +705,7 @@ $("btn-rback").onclick = function(){
 };
 $("btn-restart").onclick = function(){
   state = {qi: 0, answers: {}};
+  clearK("pmc_pick_v1");
   renderQ();
 };
 $("btn-return").onclick = function(){
@@ -755,6 +759,7 @@ $("browse-vibe").onchange = renderBrowse;
     b.textContent = "What are you? Find my costume";
     b.onclick = function(){
       state = {qi: 0, answers: {}};
+      clearK("pmc_pick_v1");
       Analytics.track("quiz_started", {});
       renderQ();
     };
