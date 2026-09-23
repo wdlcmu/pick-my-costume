@@ -155,7 +155,7 @@ footer a{color:var(--accent)}
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
-      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 40</button></p>
+      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 55 ideas</button></p>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
@@ -180,7 +180,7 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
-      <button class="ghost" id="btn-browse-results" type="button">Browse all 40</button>
+      <button class="ghost" id="btn-browse-results" type="button">Browse all 55 ideas</button>
     </div>
   </section>
 
@@ -505,7 +505,7 @@ function renderResults(results){
     var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
     var note = document.createElement("p"); note.className = "picked-note";
     var noteTxt = document.createElement("span"); noteTxt.textContent = "\u2713 Saved as your pick \u2014 ";
-    var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your AI plan";
+    var planBtn = document.createElement("button"); planBtn.type = "button"; planBtn.className = "linkbtn"; planBtn.textContent = "get your AI how-to";
     var planBox = document.createElement("div");
     planBtn.onclick = function(){ showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied"); };
     note.appendChild(noteTxt); note.appendChild(planBtn);
@@ -613,7 +613,7 @@ function doCopy(text, done){
   }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(
-      function(){ fin(true, "Copied. Paste it into ChatGPT, Claude, Gemini, or any AI."); },
+      function(){ fin(true, "Copied. Paste it into ChatGPT, Claude, Gemini, Muse, or any AI."); },
       function(){ fallbackCopy(text, done); }
     );
   } else {
@@ -714,8 +714,8 @@ $("btn-return").onclick = function(){
 };
 $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-results").onclick = openBrowse;
-$("btn-browse-hero").textContent = "Browse all " + IDEAS.length;
-$("btn-browse-results").textContent = "Browse all " + IDEAS.length;
+$("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
+$("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
 $("browse-aud").onchange = renderBrowse;
