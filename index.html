@@ -143,6 +143,8 @@ footer a{color:var(--accent)}
 .bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
 .bcard h3{margin:0 0 4px;font-size:17px}
 .bcard p{margin:0;font-size:14px;color:var(--muted)}
+.bcard .row{display:flex;flex-wrap:wrap;gap:10px}
+.bcard .row button{flex:1;min-height:48px;font-size:16px}
 </style>
 </head>
 <body>
@@ -657,11 +659,19 @@ function renderBrowse(){
     var p = document.createElement("p"); p.textContent = idea.blurb;
     var b = document.createElement("button");
     b.type = "button"; b.className = "ghost"; b.textContent = "Ask my AI";
-    b.style.marginTop = "10px"; b.style.width = "100%";
+    var bShare = document.createElement("button");
+    bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
     var st = document.createElement("div");
+    var stShare = document.createElement("p"); stShare.className = "status";
     b.onclick = (function(it, sel){ return function(){ showPromptPreview(sel, buildIdeaPrompt(it), "browse_ai_prompt_copied"); }; })(idea, st);
+    bShare.onclick = (function(it, sel, btn){ return function(){
+      var a = (aud !== "all") ? aud : ((it.audience && it.audience[0]) || "solo");
+      shareText(it, sel, btn, a);
+    }; })(idea, stShare, bShare);
+    var btnRow = document.createElement("div"); btnRow.className = "row"; btnRow.style.marginTop = "10px";
+    btnRow.appendChild(b); btnRow.appendChild(bShare);
     card.appendChild(img); card.appendChild(h); card.appendChild(p);
-    card.appendChild(b); card.appendChild(st);
+    card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
     grid.appendChild(card);
   });
   if (!grid.children.length) {
@@ -753,8 +763,8 @@ function addCopyShareRow(container, idea){
   container.appendChild(st);
 }
 
-/* ================= SHARE ================= */function shareText(idea, statusEl, btn){
-  var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
+/* ================= SHARE ================= */function shareText(idea, statusEl, btn, audOverride){
+  var aud = audOverride || ((state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo");
   var text = SHARE.textTemplate(idea, aud);
   var url = "https://pickmycostume.com/c/" + idea.id;
   function done(ok, msg){
