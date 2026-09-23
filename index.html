@@ -735,15 +735,15 @@ function addCopyShareRow(container, idea){
     statusEl.textContent = msg;
     if (ok) Analytics.track("share_text_copied", {idea_id: idea.id});
   }
-  /* Desktop fallback: no share sheet, so copy the link instead. */
+  /* Desktop fallback: no share sheet, so copy the full share text instead. */
   function copyLink(){
-    doCopy(url, function(ok, msg){
+    doCopy(text, function(ok, msg){
       if (ok && btn){
         var orig = btn.textContent;
-        btn.textContent = "Link copied \u2713";
+        btn.textContent = "Copied \u2713";
         setTimeout(function(){ btn.textContent = orig; }, 2000);
       }
-      done(ok, ok ? "Link copied. Paste it into any message." : "Copy this link: " + url);
+      done(ok, ok ? "Copied. Paste it into any message." : "Copy this: " + text);
     });
   }
   var triedShare = false;
