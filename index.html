@@ -695,7 +695,7 @@ $("btn-start").onclick = function(){
   renderQ();
 };
 $("q-back").onclick = function(){
-  if (state.qi === 0) { show("s-hero"); return; }
+  if (state.qi === 0) { show("s-hero"); refreshReturnBox(); return; }
   state.qi--;
   renderQ();
 };
@@ -768,6 +768,12 @@ $("browse-vibe").onchange = renderBrowse;
     hero.insertBefore(box, hero.firstChild);
     Analytics.track("shared_idea_opened", {idea_id: idea.id});
   })();
+  refreshReturnBox();
+})();
+function refreshReturnBox(){
+  var box = $("returnbox");
+  if (!box) return;
+  box.style.display = "none";
   var pick = load("pmc_pick_v1");
   var last = load("pmc_last_v1");
   var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
@@ -775,10 +781,10 @@ $("browse-vibe").onchange = renderBrowse;
     var idea = IDEAS.filter(function(i){ return i.id === pick.ideaId; })[0];
     if (idea) {
       $("return-pick").textContent = idea.title;
-      $("returnbox").style.display = "block";
+      box.style.display = "block";
     }
   }
-})();
+}
 </script>
 </body>
 </html>
