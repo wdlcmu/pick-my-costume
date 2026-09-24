@@ -1260,7 +1260,10 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   var curText = text;
   function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
   var label = document.createElement("p"); label.className = "status";
-  label.textContent = "Get your AI costume plan:";
+  /* Billy 2026-09-24: "Plan my costume" + helper, not "Get your AI costume plan". */
+  label.textContent = "Plan my costume";
+  var helper = document.createElement("p"); helper.className = "status";
+  helper.textContent = "Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.";
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", ""); ta.value = text;
   /* Billy 2026-09-24: the prompt text is a wall that buries the CTA. Buttons
@@ -1285,7 +1288,7 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
     });
   };
   row.appendChild(b);
-  container.appendChild(label); container.appendChild(toggle); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
+  container.appendChild(label); container.appendChild(helper); container.appendChild(toggle); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
   if (!noScroll && label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
   return { setText: function(t){ curText = t; ta.value = t; } };
 }
