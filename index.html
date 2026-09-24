@@ -174,13 +174,12 @@ footer a{color:var(--accent)}
 .bcard .row{display:flex;flex-wrap:wrap;gap:10px}
 .bcard .row button{flex:1;min-height:48px;font-size:14px}
 .bfilters{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
-/* Narrow phones get two rows (search full-width, selects side by side) instead
-   of three squeezed controls; wide screens stay on one row. Sticky kept. */
-.bfilters input[type=search]{flex:2 1 220px;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
-.bfilters select{flex:1 1 130px;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+/* Three selects share one row on wide screens and wrap on narrow phones.
+   16px type avoids iOS auto-zoom on tap. Sticky kept. */
+.bfilters select{flex:1 1 140px;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
 .bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .bempty{color:var(--muted);padding:24px 0;text-align:center}
-/* Sticky browse filters: the search + filter bar stays pinned while the grid
+/* Sticky browse filters: the filter bar stays pinned while the grid
    scrolls, so the 76 ideas never strand you without a way to narrow them.
    (Spirit Halloween pattern; Party City lets its toolbar scroll away.) */
 .bsticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 4px;border-bottom:1px solid var(--line)}
@@ -255,7 +254,6 @@ footer a{color:var(--accent)}
     <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
     <div class="bsticky">
     <div class="bfilters">
-      <input type="search" id="bf-q" placeholder="Search costumes..." aria-label="Search costumes" autocomplete="off">
       <select id="bf-aud" aria-label="Filter by who it is for">
         <option value="">Everyone</option>
         <option value="kid">Kids</option>
@@ -270,6 +268,17 @@ footer a{color:var(--accent)}
         <option value="scary">Scary</option>
         <option value="cute">Cute</option>
         <option value="simple">Keep it simple</option>
+      </select>
+      <select id="bf-int" aria-label="Filter by interest">
+        <option value="">Any interest</option>
+        <option value="animals">Animals</option>
+        <option value="princess">Princesses &amp; fairy tales</option>
+        <option value="heroes">Superheroes</option>
+        <option value="dinos">Dinosaurs &amp; monsters</option>
+        <option value="games">Video games</option>
+        <option value="tv">TV &amp; movie characters</option>
+        <option value="food">Food &amp; snacks</option>
+        <option value="sports">Sports</option>
       </select>
     </div>
     <p class="bcount" id="b-count"></p>
@@ -1059,11 +1068,10 @@ function renderBrowse(){
   var grid = $("b-grid");
   grid.innerHTML = "";
   /* Browse-all follows the editorial rank, not build order. */
-  var q20 = (typeof browseQ20 === "string" ? browseQ20 : "").trim().toLowerCase();
   var ordered = IDEAS.slice().sort(function(a,b){ return a.rank - b.rank; }).filter(function(idea){
     if (browseAud20 && idea.audience.indexOf(browseAud20) < 0) return false;
     if (browseVibe20 && !(idea.tags && idea.tags[browseVibe20] > 0)) return false;
-    if (q20 && (idea.title + " " + idea.blurb).toLowerCase().indexOf(q20) < 0) return false;
+    if (browseInt20 && !(idea.tags && idea.tags[browseInt20] > 0)) return false;
     return true;
   });
   ordered.forEach(function(idea){
@@ -1108,7 +1116,7 @@ function renderBrowse(){
   });
   if (!ordered.length){
     var _be = document.createElement("p"); _be.className = "bempty";
-    _be.textContent = "No ideas match. Try a shorter search or clear a filter.";
+    _be.textContent = "No ideas match. Try clearing a filter.";
     grid.appendChild(_be);
   }
   $("b-count").textContent = "Showing " + ordered.length + " of " + IDEAS.length + " ideas";
@@ -1194,19 +1202,10 @@ function openIdeaDetail(ideaId){
 }
 
 /* ================= E20: browse search + filters ================= */
-var browseQ20 = "", browseAud20 = "", browseVibe20 = "";
+var browseAud20 = "", browseVibe20 = "", browseInt20 = "";
 (function initE20(){
-  var qi = $("bf-q"), ai = $("bf-aud"), vi = $("bf-vibe");
-  if (!qi || !ai || !vi) return;
-  var deb = null;
-  qi.addEventListener("input", function(){
-    browseQ20 = qi.value;
-    if (deb) clearTimeout(deb);
-    deb = setTimeout(function(){
-      renderBrowse();
-      Analytics.track("browse_search", {qlen: qi.value.length});
-    }, 400);
-  });
+  var ai = $("bf-aud"), vi = $("bf-vibe"), ii = $("bf-int");
+  if (!ai || !vi || !ii) return;
   ai.addEventListener("change", function(){
     browseAud20 = ai.value; renderBrowse();
     Analytics.track("browse_filter", {kind: "audience", value: ai.value});
@@ -1214,6 +1213,10 @@ var browseQ20 = "", browseAud20 = "", browseVibe20 = "";
   vi.addEventListener("change", function(){
     browseVibe20 = vi.value; renderBrowse();
     Analytics.track("browse_filter", {kind: "vibe", value: vi.value});
+  });
+  ii.addEventListener("change", function(){
+    browseInt20 = ii.value; renderBrowse();
+    Analytics.track("browse_filter", {kind: "interest", value: ii.value});
   });
 })();
 
