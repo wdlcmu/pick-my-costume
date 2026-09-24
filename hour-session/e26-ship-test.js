@@ -8,9 +8,9 @@
         top 3; panel restore on re-render)
      C. one-hero results (hero + 2 compact runners-up, single shared detail;
         picked runner-up auto-reopens after a re-render)
-     D. personal role cards (per-name cards, "Send this card to <name>";
-        share-sheet branch when navigator.share exists, clipboard fallback
-        otherwise; blank names never make "Person N" cards)
+     D. personal role cards (one card per cast member, "Send this card to <name>"
+        with a name / "Send this card" without; share-sheet branch when
+        navigator.share exists, clipboard fallback otherwise)
      E. browse parity (card body opens full detail w/ pick + AI + share) & sticky bar
      F. flowOrder never exceeds 5 questions
 */
@@ -449,12 +449,16 @@ console.log("D. personal role cards");
   delete navigator.share; /* restore: the clipboard fallback is the default */
   /* one blank name: no "Person 2" fallback card */
   T_clearInp(inputs[1]);
+  /* Billy 2026-09-24: every cast member gets a card now; the unnamed card's
+     send button reads plain "Send this card", never "Person 2" */
   T_click(makeBtn);
   var pcards2 = T_byClass(panel, "pcard");
-  T_ok(pcards2.length === 1, "D15 only named people get cards (blank excluded)", pcards2.length);
+  T_ok(pcards2.length === 2, "D15 blank name still gets a card (one per member)", pcards2.length);
   T_ok(T_byClass(pcards2[0], "pcard-head")[0]._text === "Dido is going as Aussie Dog Family", "D16 named card keeps its real name");
-  var noFallback = T_findAll(panel, function(e){ return (e._text || "").indexOf("Person 2") >= 0; });
-  T_ok(noFallback.length === 0, "D17 no 'Person 2' fallback card", noFallback.length);
+  var unnamedSend = T_byText(pcards2[1], "BUTTON", "Send this card")[0];
+  T_ok(unnamedSend && unnamedSend._text === "Send this card", "D17 unnamed card send reads 'Send this card'", unnamedSend && unnamedSend._text);
+  var noFallback = T_findAll(panel, function(e){ return e.tagName === "BUTTON" && (e._text || "").indexOf("Person ") >= 0; });
+  T_ok(noFallback.length === 0, "D18 no send button says 'Person N'", noFallback.length);
 })();
 
 /* ---------- scenario E: browse parity + sticky bar ---------- */
