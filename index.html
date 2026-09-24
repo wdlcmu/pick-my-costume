@@ -162,6 +162,10 @@ footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
 .about-body p{margin:0 0 14px;line-height:1.55}
+.examplebox{margin:0 0 14px;padding:14px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
+.examplebox p{margin:0 0 8px}
+.examplebox p:last-child{margin-bottom:0}
+.ex-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px}
 .bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
@@ -295,12 +299,16 @@ footer a{color:var(--accent)}
     <p class="progress">About this site</p>
     <h2 class="q-title">What this is</h2>
     <div class="about-body">
-      <p>Pick My Costume is a free Halloween costume picker. Answer a few quick questions and get three costume ideas, for yourself, your kid, your partner, your group, or the whole family.</p>
-      <p>Your answers score a hand-picked list of <span id="idea-count">75</span> ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
-      <p>Your quiz answers never leave your phone. We only track anonymous usage stats.</p>
-      <p>Then what? On your results, tap &ldquo;This is my pick&rdquo; on a costume to save it and get your AI costume plan.</p>
+      <p>Answer 5 quick questions. Get 3 Halloween costume ideas picked for you, each with a one-line how-to. For yourself, your kid, your partner, your group, or the whole family.</p>
+      <div class="examplebox">
+        <p class="ex-label">Example</p>
+        <p>You answer: <b>couple, funny, low effort</b>.</p>
+        <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
+        <p>Tap &ldquo;This is my pick&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
+      </div>
+      <p>Your answers are scored against 76 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
-      <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey &mdash; each card shows its stat and source.</p>
+      <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
     </div>
     <div class="navrow" style="margin-top:16px">
@@ -693,6 +701,9 @@ function show(id){
   var screens = document.querySelectorAll(".screen");
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove("on");
   $(id).classList.add("on");
+  /* No self-link: the footer's About link hides while the About screen is up. */
+  var f = document.querySelector("footer");
+  if (f) f.style.display = (id === "s-about") ? "none" : "";
   window.scrollTo(0, 0);
 }
 
@@ -1249,6 +1260,18 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   label.textContent = "Get your AI costume plan:";
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", ""); ta.value = text;
+  /* Billy 2026-09-24: the prompt text is a wall that buries the CTA. Buttons
+     lead; the text sits one tap behind a preview toggle. Copy still works
+     without opening it (doCopy reads curText, not the textarea). */
+  ta.style.display = "none";
+  var toggle = document.createElement("button"); toggle.type = "button";
+  toggle.textContent = "Preview text";
+  toggle.style.cssText = "background:none;border:0;padding:0;margin:2px 0 0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0;";
+  toggle.onclick = function(){
+    var open = ta.style.display !== "none";
+    ta.style.display = open ? "none" : "block";
+    toggle.textContent = open ? "Preview text" : "Hide text";
+  };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
   var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
   var status = document.createElement("p"); status.className = "status";
@@ -1259,8 +1282,8 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
     });
   };
   row.appendChild(b);
-  container.appendChild(label); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
-  if (!noScroll && ta.scrollIntoView) ta.scrollIntoView({block:"nearest", behavior:"smooth"});
+  container.appendChild(label); container.appendChild(toggle); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
+  if (!noScroll && label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
   return { setText: function(t){ curText = t; ta.value = t; } };
 }
 
@@ -1284,6 +1307,16 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared){
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", "");
   ta.style.minHeight = "76px";
+  /* Billy 2026-09-24: buttons lead, text hides behind a preview toggle. */
+  ta.style.display = "none";
+  var toggle = document.createElement("button"); toggle.type = "button";
+  toggle.textContent = "Preview text";
+  toggle.style.cssText = "background:none;border:0;padding:0;margin:2px 0 0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0;";
+  toggle.onclick = function(){
+    var open = ta.style.display !== "none";
+    ta.style.display = open ? "none" : "block";
+    toggle.textContent = open ? "Preview text" : "Hide text";
+  };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
   var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Share this idea";
   var st = document.createElement("p"); st.className = "status";
@@ -1334,6 +1367,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared){
   };
   row.appendChild(b);
   container.appendChild(label);
+  container.appendChild(toggle);
   container.appendChild(ta);
   container.appendChild(row);
   container.appendChild(st);
@@ -1415,7 +1449,51 @@ var CASTS = {
     {r:"ice queen",kid:false,adult:true},{r:"snow princess",kid:true,adult:true},
     {r:"talking snowman",kid:true,adult:false},{r:"reindeer friend",kid:true,adult:false},
     {r:"mountain guide",kid:false,adult:true},{r:"snowflake sprite",kid:true,adult:false},
-    {r:"ice harvester",kid:false,adult:true},{r:"winter villager",kid:true,adult:true}]}
+    {r:"ice harvester",kid:false,adult:true},{r:"winter villager",kid:true,adult:true}]},
+  "rain-cloud-rainbow":{mode:"assign",filler:"rainbow",roles:[
+    {r:"rain cloud",kid:true,adult:true},{r:"rainbow",kid:true,adult:true}]},
+  "doctor-bride":{mode:"assign",filler:"the monster",roles:[
+    {r:"the monster",kid:true,adult:true},{r:"the bride",kid:true,adult:true}]},
+  "haunted-portraits":{mode:"assign",filler:"haunted ancestor",roles:[
+    {r:"haunted ancestor",kid:true,adult:true},{r:"gilded portrait",kid:true,adult:true}]},
+  "sun-moon":{mode:"assign",filler:"star",roles:[
+    {r:"sun",kid:true,adult:true},{r:"moon",kid:true,adult:true}]},
+  "moth-porch-light":{mode:"assign",filler:"moth",roles:[
+    {r:"moth",kid:true,adult:true},{r:"porch light",kid:true,adult:true}]},
+  "raptor-ranger":{mode:"assign",filler:"ranger",roles:[
+    {r:"ranger",kid:true,adult:true},{r:"raptor",kid:true,adult:true}]},
+  "cat-mouse":{mode:"assign",filler:"mouse",roles:[
+    {r:"cat",kid:true,adult:true},{r:"mouse",kid:true,adult:true}]},
+  "ketchup-mustard":{mode:"assign",filler:"ketchup",roles:[
+    {r:"ketchup",kid:true,adult:true},{r:"mustard",kid:true,adult:true}]},
+  "office-couple":{mode:"assign",filler:"coworker",roles:[
+    {r:"the boss",kid:true,adult:true},{r:"the assistant",kid:true,adult:true}]},
+  "burger-joint-couple":{mode:"assign",filler:"line cook",roles:[
+    {r:"burger chef",kid:true,adult:true},{r:"diner owner",kid:true,adult:true}]},
+  "plug-socket":{mode:"assign",filler:"extension cord",roles:[
+    {r:"plug",kid:true,adult:true},{r:"socket",kid:true,adult:true}]},
+  "salt-pepper":{mode:"assign",filler:"salt",roles:[
+    {r:"salt",kid:true,adult:true},{r:"pepper",kid:true,adult:true}]},
+  "tooth-fairy":{mode:"assign",filler:"tooth",roles:[
+    {r:"tooth",kid:true,adult:true},{r:"tooth fairy",kid:true,adult:true}]},
+  "web-hero-duo":{mode:"assign",filler:"web hero",roles:[
+    {r:"web hero",kid:true,adult:true},{r:"the partner",kid:true,adult:true}]},
+  "player-one-two":{mode:"assign",filler:"player three",roles:[
+    {r:"player one",kid:true,adult:true},{r:"player two",kid:true,adult:true}]},
+  "good-witch-bad-witch":{mode:"assign",filler:"munchkin",roles:[
+    {r:"good witch",kid:true,adult:true},{r:"bad witch",kid:true,adult:true}]},
+  "headless-horsemen":{mode:"assign",filler:"headless rider",roles:[
+    {r:"headless rider",kid:true,adult:true},{r:"pumpkin bearer",kid:true,adult:true},
+    {r:"night galloper",kid:true,adult:true}]},
+  "blue-alien-ohana":{mode:"assign",filler:"ohana friend",roles:[
+    {r:"blue alien",kid:true,adult:true},{r:"the girl",kid:true,adult:true},
+    {r:"ohana elder",kid:false,adult:true}]},
+  "fairy-tale-princesses":{mode:"choose",filler:"princess",pool:["tiara princess","gown princess","crown princess","cape princess","flower princess"]},
+  "robot-crew":{mode:"choose",filler:"cardboard robot",pool:["boxy robot","foil robot","bottle-cap robot","tall robot","round robot"]},
+  "cereal-crew":{mode:"choose",filler:"cereal box",pool:["cereal box","spoon","milk carton","cereal bowl","orange juice"]},
+  "haunted-animatronics":{mode:"choose",filler:"animatronic",pool:["glitchy mascot","flickering-eyed bot","jerky dancer","static singer"]},
+  "goggle-crew":{mode:"choose",filler:"goggle",pool:["tall goggle","short goggle","one-eyed goggle","two-eyed goggle"]},
+  "classic-ghost":{mode:"choose",filler:"sheet ghost",pool:["sheet ghost","ghost with glasses","tall ghost","tiny ghost"]}
 };
 /* Fit a cast to any group size. people: [{name, kid}]. overrides: {index: role} of the
    user's explicit dropdown picks. Auto-assignment skips overridden rows and never hands
