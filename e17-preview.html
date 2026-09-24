@@ -59,6 +59,11 @@
   --radius: 14px;
 }
 *{box-sizing:border-box}
+/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
+   rendered as dark browser-default blue on the dark background -- unreadable.
+   Every link now gets the accent-orange treatment (bold, underlined) so no
+   surface can silently regress to browser-default blue. */
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; color:var(--ink);
@@ -1062,7 +1067,12 @@ var CASTS = {
   "decades-crew":{mode:"choose",filler:"80s",pool:["50s","60s","70s","80s","90s","Y2K"]},
   "board-game-pieces":{mode:"choose",filler:"pawn",pool:["die","playing card","pawn","domino","chess knight"]},
   "block-game-crew":{mode:"choose",filler:"blocky hero",pool:["blocky hero","blocky villager","blocky knight","blocky monster"]},
-  "web-slinger-crew":{mode:"choose",filler:"spider-hero",pool:["red spider-hero","black spider-hero","pink spider-hero"]}
+  "web-slinger-crew":{mode:"choose",filler:"spider-hero",pool:["red spider-hero","black spider-hero","pink spider-hero"]},
+  "snow-sisters":{mode:"assign",filler:"snow friend",roles:[
+    {r:"ice queen",kid:false,adult:true},{r:"snow princess",kid:true,adult:true},
+    {r:"talking snowman",kid:true,adult:false},{r:"reindeer friend",kid:true,adult:false},
+    {r:"mountain guide",kid:false,adult:true},{r:"snowflake sprite",kid:true,adult:false},
+    {r:"ice harvester",kid:false,adult:true},{r:"winter villager",kid:true,adult:true}]}
 };
 /* Fit a cast to any group size. people: [{name, kid}]. overrides: {index: role} of the
    user's explicit dropdown picks. Auto-assignment skips overridden rows and never hands
