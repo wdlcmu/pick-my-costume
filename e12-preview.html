@@ -182,7 +182,7 @@ footer a{color:var(--accent)}
     </div>
   </section>
 
-  <!-- RESULTS (E12 PROTOTYPE: one hero pick + expand + browse tail) -->
+  <!-- RESULTS (E12 PROTOTYPE: one hero pick + visible runners-up + browse tail) -->
   <section class="screen" id="s-results">
     <p class="proto-banner">Prototype E12: one-hero results. Tap-test build, not the live site.</p>
     <p class="progress">Your costume</p>
@@ -676,8 +676,9 @@ function buildResultCard(scored, idx, pick){
     return card;
 }
 /* E12 PROTOTYPE (staged for Billy's tap test — not shipped): results lead
-   with ONE hero pick ("Here is what you got"), a tap-to-expand reveals the
-   other two, and a browse-all tail closes the page (the now-what). */
+   with ONE hero pick ("Here is what you got"), the other two show as visible
+   compact browse-style cards (thumbnail + name, tap to open the full card),
+   and a browse-all tail closes the page (the now-what). */
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
@@ -687,26 +688,54 @@ function renderResults(results){
   hero.className = "hero12";
   hero.appendChild(buildResultCard(results[0], 0, pick));
   box.appendChild(hero);
-  /* Tap-to-expand for the other two ideas. */
-  var exp = document.createElement("div");
-  exp.style.marginTop = "12px";
-  var bExp = document.createElement("button");
-  bExp.type = "button"; bExp.className = "ghost"; bExp.style.width = "100%";
-  bExp.textContent = "See 2 more ideas";
-  var expBox = document.createElement("div");
-  expBox.style.display = "none";
-  bExp.onclick = function(){
-    var show = expBox.style.display === "none";
-    expBox.style.display = show ? "" : "none";
-    bExp.textContent = show ? "Hide the other ideas" : "See 2 more ideas";
-    if (show && !expBox.children.length) {
-      expBox.appendChild(buildResultCard(results[1], 1, pick));
-      expBox.appendChild(buildResultCard(results[2], 2, pick));
-    }
-    Analytics.track("e12_more_shown", {});
-  };
-  exp.appendChild(bExp); exp.appendChild(expBox);
-  box.appendChild(exp);
+  /* Runners-up: the other two ideas, visible as compact browse-style cards
+     (thumbnail + name, per Billy's feedback). Tapping a card opens its full
+     result card inline; taps inside the open detail do not re-toggle. */
+  var ru = document.createElement("div");
+  ru.style.marginTop = "16px";
+  var ruH = document.createElement("h3");
+  ruH.textContent = "Also made your top 3";
+  ru.appendChild(ruH);
+  var ruGrid = document.createElement("div");
+  ruGrid.className = "bgrid";
+  ru.appendChild(ruGrid);
+  [results[1], results[2]].forEach(function(scored, i){
+    var idea = scored.idea;
+    var wrap = document.createElement("div");
+    var card = document.createElement("div");
+    card.className = "bcard";
+    card.style.cursor = "pointer";
+    var img = document.createElement("img");
+    img.src = "images/" + idea.id + ".png";
+    img.alt = idea.title;
+    img.loading = "lazy";
+    img.setAttribute("onerror", "this.style.display='none'");
+    var h = document.createElement("h3");
+    h.textContent = idea.title;
+    var hint = document.createElement("p");
+    hint.className = "status";
+    hint.textContent = "Tap for the full plan";
+    card.appendChild(img); card.appendChild(h); card.appendChild(hint);
+    var detail = document.createElement("div");
+    detail.style.display = "none";
+    detail.style.marginTop = "8px";
+    /* Taps inside the open detail must not bubble up and re-toggle the card. */
+    detail.addEventListener("click", function(e){ e.stopPropagation(); });
+    card.addEventListener("click", function(e){
+      var t = e.target;
+      if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
+      var show = detail.style.display === "none";
+      if (show && !detail.children.length) {
+        detail.appendChild(buildResultCard(scored, i + 1, load("pmc_pick_v1")));
+      }
+      detail.style.display = show ? "" : "none";
+      hint.textContent = show ? "Tap to hide" : "Tap for the full plan";
+      if (show) Analytics.track("e12_more_shown", {idea_id: idea.id});
+    });
+    wrap.appendChild(card); wrap.appendChild(detail);
+    ruGrid.appendChild(wrap);
+  });
+  box.appendChild(ru);
   var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
   var aiBox = document.createElement("div");
   var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
@@ -745,7 +774,7 @@ function renderResults(results){
   tail.style.marginTop = "20px";
   var th = document.createElement("h3"); th.textContent = "Or browse every idea";
   var tp = document.createElement("p"); tp.className = "q-hint";
-  tp.textContent = "All 75 ideas, same shelf as the quiz. Tap Ask my AI or Share on any of them.";
+  tp.textContent = "All " + IDEAS.length + " ideas, same shelf as the quiz. Tap Ask my AI or Share on any of them.";
   var tgrid = document.createElement("div"); tgrid.className = "bgrid";
   tail.appendChild(th); tail.appendChild(tp); tail.appendChild(tgrid);
   box.appendChild(tail);
