@@ -1191,18 +1191,24 @@ function renderBrowse(){
   var grid = $("b-grid");
   grid.innerHTML = "";
   /* Browse-all follows the editorial rank, not build order. Exact matches
-     first; when fewer than 3 ideas match, backfill with close matches
-     (ideas missing exactly one active filter) so a filter combo never
-     strands the user on a single lonely card. */
-  var exact = [], near = [];
+     first; when fewer than 6 ideas match, backfill with close matches so a
+     filter combo always shows a real shelf, never a lonely card or two.
+     Tier 1 misses exactly one active filter; tier 2 (only when 3+ filters
+     are active) misses two and fills whatever tier 1 could not. */
+  var exact = [], near1 = [], near2 = [];
   IDEAS.forEach(function(idea){
     var m = browseHits(idea);
     if (m.hits === m.active) exact.push(idea);
-    else if (m.active >= 2 && m.hits === m.active - 1) near.push(idea);
+    else if (m.active >= 2 && m.hits === m.active - 1) near1.push(idea);
+    else if (m.active >= 3 && m.hits === m.active - 2) near2.push(idea);
   });
   var byRank = function(a,b){ return a.rank - b.rank; };
-  exact.sort(byRank); near.sort(byRank);
-  if (exact.length < 3) near = near.slice(0, 12); else near = [];
+  exact.sort(byRank); near1.sort(byRank); near2.sort(byRank);
+  /* Guarantee at least 6 visible whenever filters leave fewer than 6
+     exact matches; cap the close section at 12 so the filters still
+     feel like they did something. */
+  var near = near1.concat(near2);
+  near = near.slice(0, exact.length < 6 ? Math.min(near.length, 6 - exact.length) : 0);
   exact.forEach(function(idea){ grid.appendChild(browseCard(idea)); });
   if (near.length){
     var _bh = document.createElement("p"); _bh.className = "bclose";
