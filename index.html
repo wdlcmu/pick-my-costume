@@ -784,10 +784,24 @@ function renderQ(){
   show("s-quiz");
 }
 
+/* Standing privacy rule: quiz answers never leave the device, and the idea
+   bank is never sent to analytics. This logs only a non-reversible djb2 hash
+   of the sorted "qid:value" answer pattern, so same-vs-different answer
+   patterns across retakes are measurable without exposing what anyone picked. */
+function answerFingerprint(){
+  var keys = Object.keys(state.answers).sort();
+  var s = keys.map(function(k){
+    var a = state.answers[k];
+    return k + ":" + (a && a.value !== undefined ? a.value : "");
+  }).join("|");
+  var h = 5381;
+  for (var i = 0; i < s.length; i++){ h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
+  return ("0000000" + h.toString(16)).slice(-8);
+}
 function finishQuiz(){
   var results = scoreIdeas();
   store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), at: Date.now()});
-  Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; })});
+  Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; }), answer_fingerprint: answerFingerprint()});
   /* E10: measure how often the conditional kid-age question is skipped. */
   if (state.answers.q1 && state.answers.q1.value === "kid" && !state.answers.q5kid) {
     Analytics.track("kid_age_skipped", {});
@@ -1939,6 +1953,10 @@ $("btn-rback").onclick = function(){
 $("btn-restart").onclick = function(){
   state = {qi: 0, answers: {}};
   clearK("pmc_pick_v1");
+  /* Retakes are quiz starts too: without this the funnel undercounts starts
+     (a completion with no preceding start). is_retake distinguishes them. */
+  var p = viaShareProps(); p.is_retake = true;
+  Analytics.track("quiz_started", p);
   renderQ();
 };
 $("btn-return").onclick = function(){
