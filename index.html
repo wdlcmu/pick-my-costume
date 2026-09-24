@@ -429,9 +429,39 @@ function qTitle(qid){
   return qById(qid).title;
 }
 
+/* E10: the kid-age question is asked only when the answer can change the
+   ordered top-3. After qinterest is answered we score the three hypothetical
+   age answers; if they all agree, q5kid is skipped (about 31% of kid quizzes
+   in simulation, 0.00% regret). The interest question therefore comes before
+   the age question in the kid flow. */
+var _inAgeCheck = false;
+function kidAgeNeeded(){
+  var qi = state.answers.qinterest;
+  if (!qi || !qi.tags) return true; /* undecidable yet: keep the question */
+  _inAgeCheck = true;
+  try {
+    var seen = {};
+    var saved = state.answers.q5kid;
+    qById("q5kid").options.forEach(function(o){
+      state.answers.q5kid = o;
+      seen[scoreIdeas().map(function(s){ return s.idea.id; }).join(",")] = true;
+    });
+    if (saved) state.answers.q5kid = saved; else delete state.answers.q5kid;
+    return Object.keys(seen).length > 1;
+  } finally {
+    _inAgeCheck = false;
+  }
+}
 function flowOrder(){
   var aud = state.answers.q1 ? state.answers.q1.value : null;
-  if (aud === "kid") return ["q1","q2","q4","q5kid","qinterest"];
+  if (aud === "kid") {
+    var order = ["q1","q2","q4","qinterest"];
+    /* The reentrancy guard: kidAgeNeeded -> scoreIdeas -> answerTags ->
+       flowOrder must not recurse into the age check. While checking, assume
+       the question is needed (matches production scoring exactly). */
+    if (_inAgeCheck || kidAgeNeeded()) order.push("q5kid");
+    return order;
+  }
   /* Every non-kid flow gets the occasion question. It replaced the dead
      buy/make (q5other) and matching-theme (q5couple) questions, and it gives
      the family flow its fifth question. */
@@ -569,6 +599,10 @@ function finishQuiz(){
   var results = scoreIdeas();
   store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), at: Date.now()});
   Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; })});
+  /* E10: measure how often the conditional kid-age question is skipped. */
+  if (state.answers.q1 && state.answers.q1.value === "kid" && !state.answers.q5kid) {
+    Analytics.track("kid_age_skipped", {});
+  }
   renderResults(results);
 }
 
