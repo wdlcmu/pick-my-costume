@@ -611,6 +611,21 @@ function whyLine(scored){
   return "Why this fits you: " + prefix + idea.why;
 }
 
+/* Recipient-channel inference for recipient_landing_viewed. Open-time UA
+   parsing only (the share sheet never reveals the destination app). Order
+   matters: in-app UAs also contain Safari tokens, so app checks come first.
+   iMessage opens are plain Safari and indistinguishable: safari_unknown. */
+function recipientChannel(){
+  var ua = navigator.userAgent || "";
+  if (/WhatsApp\//i.test(ua)) return "whatsapp";
+  if (/Instagram/i.test(ua)) return "instagram";
+  if (/FB_IAB\/MESSENGER/i.test(ua) || /FBAN\/Messenger/i.test(ua)) return "messenger";
+  if (/FBAN\//i.test(ua) || /FB_IAB/i.test(ua)) return "facebook_iab";
+  if (/GSA\//i.test(ua)) return "google_app";
+  if (/Safari\//.test(ua) && !/(Chrome|CriOS|FxiOS|EdgiOS|OPiOS)\//.test(ua)) return "safari_unknown";
+  if (/Chrome|CriOS/i.test(ua)) return "chrome";
+  return "other";
+}
 /* ================= SCREENS ================= */
 function show(id){
   var screens = document.querySelectorAll(".screen");
@@ -1101,7 +1116,13 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     box.appendChild(im); box.appendChild(h); box.appendChild(p); box.appendChild(b); box.appendChild(bb);
     var hero = $("s-hero");
     hero.insertBefore(box, hero.firstChild);
-    var _rlv = {idea_id: idea.id}; if (VIA_SHARE) _rlv.share_id = VIA_SHARE;
+    /* Recipient-channel inference (analytics only, no UX change). The Web
+       Share API never reveals the destination app at share time, so this is
+       open-time inference from the UA: Messenger/WhatsApp in-app browsers
+       tag their UAs; iMessage opens look like plain Safari and are
+       indistinguishable, logged as safari_unknown. */
+    var _rlv = {idea_id: idea.id, recipient_channel: recipientChannel()};
+    if (VIA_SHARE) _rlv.share_id = VIA_SHARE;
     Analytics.track("recipient_landing_viewed", _rlv);
   })();
   refreshReturnBox();
