@@ -165,11 +165,36 @@ footer a{color:var(--accent)}
 .bcard p{margin:0;font-size:14px;color:var(--muted)}
 .bcard .row{display:flex;flex-wrap:wrap;gap:10px}
 .bcard .row button{flex:1;min-height:48px;font-size:14px}
-.bfilters{display:flex;gap:8px;margin:0 0 8px}
-.bfilters input[type=search]{flex:2 1 0;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
-.bfilters select{flex:1 1 0;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
+/* Narrow phones get two rows (search full-width, selects side by side) instead
+   of three squeezed controls; wide screens stay on one row. Sticky kept. */
+.bfilters input[type=search]{flex:2 1 220px;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters select{flex:1 1 130px;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
 .bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .bempty{color:var(--muted);padding:24px 0;text-align:center}
+/* Sticky browse filters: the search + filter bar stays pinned while the grid
+   scrolls, so the 76 ideas never strand you without a way to narrow them.
+   (Spirit Halloween pattern; Party City lets its toolbar scroll away.) */
+.bsticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 4px;border-bottom:1px solid var(--line)}
+.bsticky .bcount{margin:2px 0 6px}
+/* One-hero results: the #1 idea is the answer; runners-up stay compact. */
+.hero12{border:3px solid var(--accent);border-radius:16px;padding:14px;background:var(--bg2)}
+.hero12 .card{border:none;background:transparent;padding:0;margin:0}
+.hero12 h3{margin-top:0}
+/* Personal role cards: one card per named person, with a single send CTA. */
+.pcards{margin:18px 0 0}
+.pclist{display:grid;gap:12px;margin-top:12px}
+.pcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
+.pcard-img{width:128px;height:128px;object-fit:cover;border-radius:12px;border:2px solid var(--line)}
+.pcard-head{font-size:22px;font-weight:800;margin:10px 0 2px}
+.pcard-sub{color:var(--muted);font-size:14px;margin:0 0 4px}
+.pcard-send{width:100%;margin-top:10px}
+.pcard .status{margin:8px 0 0}
+/* Fit refinement: a quiet results-screen follow-up, not a sixth question. */
+.fitref{margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2)}
+.fitref p{margin:0 0 8px;font-size:14px}
+.fitref .row{display:flex;gap:8px;flex-wrap:wrap}
+.fitref .row button.sel{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -204,9 +229,9 @@ footer a{color:var(--accent)}
 
   <!-- RESULTS -->
   <section class="screen" id="s-results">
-    <p class="progress">Your three ideas</p>
-    <h2 class="q-title">&#127875; Three costumes worth wearing</h2>
-    <p class="q-hint">Tap one to save your pick and get your AI costume plan.</p>
+    <p class="progress">Your costume</p>
+    <h2 class="q-title">&#127875; Here is what you got</h2>
+    <p class="q-hint">This is our top pick for you. Tap &ldquo;This is my pick&rdquo; to save it and get your AI costume plan, or see the other ideas below.</p>
     <div id="r-cards"></div>
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
@@ -220,6 +245,7 @@ footer a{color:var(--accent)}
     <p class="progress">Every idea in the bank</p>
     <h2 class="q-title" id="browse-title">All ideas</h2>
     <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
+    <div class="bsticky">
     <div class="bfilters">
       <input type="search" id="bf-q" placeholder="Search costumes..." aria-label="Search costumes" autocomplete="off">
       <select id="bf-aud" aria-label="Filter by who it is for">
@@ -238,6 +264,7 @@ footer a{color:var(--accent)}
       </select>
     </div>
     <p class="bcount" id="b-count"></p>
+    </div>
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
       <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
@@ -340,15 +367,11 @@ var QUESTIONS = [
     {label:"3 to 6", tags:{kid36:2}},
     {label:"7+", tags:{kid7plus:2}}
   ]},
-  /* E14: conditional fit question (Billy: "should you ask if I'm a male or
-     female?"). NOT an always-asked gender question: it appears only in
-     solo/kid flows and only when the answer can change the top 3. Wording is
-     about the look, not the person. */
-  {id:"qfit", title:"Which look feels more like you?", hint:"So the top pick suits the person wearing it.", options:[
-    {label:"Feminine looks", fit:"F"},
-    {label:"Masculine looks", fit:"M"},
-    {label:"Anything goes", fit:null}
-  ]},
+  /* qfit retired 2026-09-24: the conditional fit follow-up ("Which look feels
+     more like you?") could make a rare 6th quiz question, breaking Billy's
+     5-max. It now lives on the results screen as an optional refinement chip
+     row, shown only when the answer can change the top 3. Same scoring
+     effect, zero question tax. */
   {id:"qocc", title:"What's the Halloween plan?", hint:"So the pick fits the night.", options:[
     {label:"Trick-or-treating", tags:{occtreat:2}},
     {label:"House party", tags:{occparty:2}},
@@ -519,31 +542,9 @@ function kidAgeNeeded(){
     _inAgeCheck = false;
   }
 }
-/* E14: the fit question is asked only in solo/kid flows (it is ill-posed for a
-   couple/group/family), and only when the answer can change the ordered top-3.
-   After qinterest is answered we score the three hypothetical fit answers
-   (feminine / masculine / no preference); if they all agree, qfit is skipped.
-   Same conditional pattern as E10's kidAgeNeeded. */
-var _inFitCheck = false;
-function fitNeeded(){
-  var aud = state.answers.q1 ? state.answers.q1.value : null;
-  if (aud !== "solo" && aud !== "kid") return false;
-  var qi = state.answers.qinterest;
-  if (!qi || !qi.tags) return true; /* undecidable yet: keep the question */
-  _inFitCheck = true;
-  try {
-    var seen = {};
-    var saved = state.answers.qfit;
-    [{fit:"F"},{fit:"M"},{fit:null}].forEach(function(o){
-      state.answers.qfit = o;
-      seen[scoreIdeas().map(function(s){ return s.idea.id; }).join(",")] = true;
-    });
-    if (saved) state.answers.qfit = saved; else delete state.answers.qfit;
-    return Object.keys(seen).length > 1;
-  } finally {
-    _inFitCheck = false;
-  }
-}
+/* The fit follow-up used to be a conditional 6th quiz question here. It moved
+   to the results screen (fitRefinement in renderResults); the quiz never
+   exceeds 5 questions now. */
 function flowOrder(){
   var aud = state.answers.q1 ? state.answers.q1.value : null;
   if (aud === "kid") {
@@ -552,19 +553,12 @@ function flowOrder(){
        flowOrder must not recurse into the age check. While checking, assume
        the question is needed (matches production scoring exactly). */
     if (_inAgeCheck || kidAgeNeeded()) order.push("q5kid");
-    /* E14: at most one conditional question per quiz (5-max grant). Age is
-       evaluated first; the fit question gets the slot only when age is
-       skipped. In the kid flow the order therefore never exceeds 5. */
-    else if (_inFitCheck || fitNeeded()) order.push("qfit");
     return order;
   }
   /* Every non-kid flow gets the occasion question. It replaced the dead
      buy/make (q5other) and matching-theme (q5couple) questions, and it gives
      the family flow its fifth question. */
   var order2 = ["q1","q2","q4","qocc","qinterest"];
-  /* E14: solo only, and only when the answer can change the top 3. This can
-     make a rare 6th question; the progress indicator counts it honestly. */
-  if (aud === "solo" && (_inFitCheck || fitNeeded())) order2.push("qfit");
   return order2;
 }
 
@@ -752,11 +746,6 @@ function finishQuiz(){
   if (state.answers.q1 && state.answers.q1.value === "kid" && !state.answers.q5kid) {
     Analytics.track("kid_age_skipped", {});
   }
-  /* E14: measure how often the conditional fit question is skipped. */
-  var aud14 = state.answers.q1 && state.answers.q1.value;
-  if ((aud14 === "solo" || aud14 === "kid") && !state.answers.qfit) {
-    Analytics.track("fit_skipped", {});
-  }
   renderResults(results);
 }
 
@@ -792,7 +781,7 @@ function ideaMedia(idea){
 
 /* One result card, extracted so the "Still stuck?" section can render
    alternates (ranks 4-6) with the exact same card, including tap-to-pick. */
-function buildResultCard(scored, idx, pick){
+function buildResultCard(scored, idx, pick, noArt){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
@@ -815,12 +804,11 @@ function buildResultCard(scored, idx, pick){
     var planBox = document.createElement("div");
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
-    function doPick(){
-      store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
-      note.style.display = "block";
-      hint.style.display = "none";
-      status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
-      Analytics.track("pick_saved", {idea_id: idea.id});
+    /* Builds the pick panel below the card (share + AI plan, or the cast
+       panel for cast-enabled ideas). Split from doPick so a re-rendered
+       results page can restore the picked card's panel without re-recording
+       the pick. */
+    function mountPanel(){
       planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
       var shareBox = document.createElement("div");
       var aiPlanBox = document.createElement("div");
@@ -834,12 +822,28 @@ function buildResultCard(scored, idx, pick){
         addCopyShareRow(shareBox, idea);
         showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "pick_plan_copied", true);
       }
+      card.setAttribute("data-panel", "1");
+      panelOpenByIdea[idea.id] = true;
     }
+    function doPick(){
+      var already = load("pmc_pick_v1");
+      /* Re-tapping the picked card is a no-op: the panel stays exactly as the
+         user left it, so cast names, cast size, and role picks survive. */
+      if (already && already.ideaId === idea.id && card.getAttribute("data-panel")) return;
+      store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+      note.style.display = "block";
+      hint.style.display = "none";
+      bShare.style.display = "none"; /* the panel below has its own Share button; dedupe */
+      status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
+      Analytics.track("pick_saved", {idea_id: idea.id});
+      mountPanel();
+    }
+    card._mountPanel = mountPanel;
     bPick.onclick = doPick;
     /* The results header says "Tap one to save your pick": make the card body
        tappable too. Taps on buttons/links inside the card keep their own
        behavior, and a tap that was really a text selection is not a pick.
-       Re-tapping is idempotent (planBox is rebuilt, never stacked). */
+       Re-tapping the picked card is a no-op (see doPick). */
     card.style.cursor = "pointer";
     card.addEventListener("click", function(e){
       var t = e.target;
@@ -849,52 +853,188 @@ function buildResultCard(scored, idx, pick){
     });
     bShare.onclick = function(){ shareText(idea, status, bShare); };
     row.appendChild(bPick); row.appendChild(bShare);
-    card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+    if (!noArt){ card.appendChild(im); card.appendChild(h); } /* runner-up detail: art + title already shown above */
+    card.appendChild(bl); card.appendChild(wh);
     card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
     return card;
 }
+/* Tracks which ideas had their pick panel open in this session, so a
+   results re-render (fit refinement) can restore panels instead of wiping
+   them. Cast field values survive separately via castStateByIdea. */
+var panelOpenByIdea = {};
+/* Fit refinement: the retired conditional 6th quiz question, reborn as an
+   optional results-screen chip row. Shown only for solo/kid flows and only
+   when the fit answer can change the ordered top 3. Tapping a chip re-scores. */
+var FIT_OPTS = [
+  {label:"Feminine looks", fit:"F"},
+  {label:"Masculine looks", fit:"M"},
+  {label:"Anything goes", fit:null}
+];
+function fitChangesTop3(){
+  var aud = state.answers.q1 ? state.answers.q1.value : null;
+  if (aud !== "solo" && aud !== "kid") return false;
+  var qi = state.answers.qinterest;
+  if (!qi || !qi.tags) return false;
+  var seen = {};
+  var saved = state.answers.qfit;
+  FIT_OPTS.forEach(function(o){
+    state.answers.qfit = o;
+    seen[scoreIdeas().map(function(s){ return s.idea.id; }).join(",")] = true;
+  });
+  if (saved) state.answers.qfit = saved; else delete state.answers.qfit;
+  return Object.keys(seen).length > 1;
+}
+function buildFitRefinement(){
+  if (!fitChangesTop3()) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "fitref";
+  var p = document.createElement("p");
+  p.textContent = "Which look feels more like you? So the top pick suits the person wearing it.";
+  wrap.appendChild(p);
+  var row = document.createElement("div");
+  row.className = "row";
+  var cur = state.answers.qfit;
+  var curFit = (cur && ("fit" in cur)) ? cur.fit : null;
+  FIT_OPTS.forEach(function(o){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = o.label;
+    if (curFit === o.fit) b.className = "sel";
+    b.onclick = function(){
+      state.answers.qfit = o;
+      Analytics.track("fit_refined", {value: o.fit || "any"});
+      renderResults(scoreIdeas());
+    };
+    row.appendChild(b);
+  });
+  wrap.appendChild(row);
+  return wrap;
+}
+/* One-hero results: the #1 idea is the answer ("Here is what you got"); the
+   other two render as compact cards over a single shared full-width detail.
+   Tapping a runner-up opens its full card inline below the pair; only one is
+   open at a time. A browse-all button (not a 76-card tail) closes the page. */
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
   var pick = load("pmc_pick_v1");
-  results.forEach(function(scored, idx){
-    box.appendChild(buildResultCard(scored, idx, pick));
+  var cards = {}; /* idea id -> card element, for picked-panel restore */
+  var fr = buildFitRefinement();
+  if (fr) box.appendChild(fr);
+  /* Hero: the #1 idea, presented as the answer. */
+  var hero = document.createElement("div");
+  hero.className = "hero12";
+  var heroCard = buildResultCard(results[0], 0, pick);
+  cards[results[0].idea.id] = heroCard;
+  hero.appendChild(heroCard);
+  box.appendChild(hero);
+  /* Runners-up: compact cards; one shared full-width detail below the grid. */
+  var ru = document.createElement("div");
+  ru.style.marginTop = "16px";
+  var ruH = document.createElement("h3");
+  ruH.textContent = "Also made your top 3";
+  ru.appendChild(ruH);
+  var ruGrid = document.createElement("div");
+  ruGrid.className = "bgrid";
+  ru.appendChild(ruGrid);
+  var ruDetail = document.createElement("div");
+  ruDetail.style.display = "none";
+  ruDetail.style.marginTop = "12px";
+  ru.appendChild(ruDetail);
+  var openIdx = -1;
+  var ruHints = [];
+  var ruToggles = [];
+  [results[1], results[2]].forEach(function(scored, i){
+    var idea = scored.idea;
+    var card = document.createElement("div");
+    card.className = "bcard";
+    card.style.cursor = "pointer";
+    var img = document.createElement("img");
+    img.src = "images/" + idea.id + ".png";
+    img.alt = idea.title;
+    img.loading = "lazy";
+    img.setAttribute("onerror", "this.style.display='none'");
+    var h = document.createElement("h3");
+    h.textContent = idea.title;
+    var hint = document.createElement("p");
+    hint.className = "status";
+    hint.textContent = "Tap for the full plan";
+    card.appendChild(img); card.appendChild(h); card.appendChild(hint);
+    function toggleRu(e){
+      var t = e && e.target;
+      if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
+      try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
+      if (openIdx === i){
+        ruDetail.style.display = "none";
+        ruDetail.innerHTML = "";
+        hint.textContent = "Tap for the full plan";
+        openIdx = -1;
+      } else {
+        var detailCard = buildResultCard(scored, i + 1, load("pmc_pick_v1"), true);
+        cards[idea.id] = detailCard;
+        ruDetail.innerHTML = "";
+        ruDetail.appendChild(detailCard);
+        ruDetail.style.display = "";
+        for (var j = 0; j < ruHints.length; j++) ruHints[j].textContent = (j === i) ? "Tap to hide" : "Tap for the full plan";
+        openIdx = i;
+        Analytics.track("runnerup_opened", {idea_id: idea.id});
+      }
+    }
+    card.addEventListener("click", toggleRu);
+    ruToggles.push(toggleRu);
+    ruHints.push(hint);
+    ruGrid.appendChild(card);
   });
-  var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
+  /* If the saved pick is a runner-up whose panel was open, reopen its detail
+     so the restore at the end of renderResults remounts the panel (cast
+     names included) instead of silently dropping the user's pick. */
+  if (pick && panelOpenByIdea[pick.ideaId] && !cards[pick.ideaId]){
+    var rIdx = -1;
+    if (results[1] && results[1].idea.id === pick.ideaId) rIdx = 0;
+    else if (results[2] && results[2].idea.id === pick.ideaId) rIdx = 1;
+    if (rIdx >= 0) ruToggles[rIdx]();
+  }
+  box.appendChild(ru);
+  /* Results-level AI plan, with its own caption next to its button. */
+  var aiCap = document.createElement("p");
+  aiCap.className = "q-hint";
+  aiCap.style.marginTop = "16px";
+  aiCap.textContent = "One AI plan for all three ideas:";
+  var aiRow = document.createElement("div"); aiRow.className = "row";
   var aiBox = document.createElement("div");
   var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
   bAI.onclick = function(){ showPromptPreview(aiBox, buildResultsPrompt(results, false), "ai_prompt_copied"); };
   aiRow.appendChild(bAI);
-  box.appendChild(aiRow);
-  box.appendChild(aiBox);
-  /* Still stuck? escape hatch: none of the three results landed */
+  box.appendChild(aiCap); box.appendChild(aiRow); box.appendChild(aiBox);
+  /* Still stuck? escape hatch: none of the three results landed. One AI prompt
+     from the three ideas. (The old "Show 3 more ideas" is gone: the browse-all
+     button below covers it without stacking more cards on the page.) */
   var stuck = document.createElement("div"); stuck.className = "stuck";
   var sh = document.createElement("h3"); sh.textContent = "Still stuck?";
   var sp = document.createElement("p");
   sp.textContent = "None of these quite fit? Use the three ideas as starting points.";
   var stuckRow = document.createElement("div"); stuckRow.className = "row";
-  /* E9: the direct answer to "none of these fit" — three more ideas (ranks 4-6)
-     as full cards with tap-to-pick. Re-scores from the current answers; one tap. */
-  var bMore = document.createElement("button"); bMore.type = "button"; bMore.className = "ghost";
-  bMore.textContent = "Show 3 more ideas";
-  var moreBox = document.createElement("div");
-  bMore.onclick = function(){
-    var alt = scoreIdeas(true).slice(3, 6);
-    var pk = load("pmc_pick_v1");
-    moreBox.innerHTML = "";
-    alt.forEach(function(scored, i){ moreBox.appendChild(buildResultCard(scored, i + 3, pk)); });
-    bMore.disabled = true;
-    bMore.textContent = "Showing 3 more ideas";
-    Analytics.track("more_ideas_shown", {});
-  };
   var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "ghost";
   bStuck.textContent = "Get an AI prompt from these 3 ideas";
   var stuckBox = document.createElement("div");
   bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(results, true), "stuck_prompt_copied"); };
-  stuckRow.appendChild(bMore);
   stuckRow.appendChild(bStuck);
-  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(moreBox); stuck.appendChild(stuckBox);
+  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(stuckBox);
   box.appendChild(stuck);
+  /* Browse tail: one button, not a 76-card wall. The now-what for "none of
+     these fit", without making the results page a second browse surface. */
+  var tailBtn = document.createElement("button");
+  tailBtn.type = "button"; tailBtn.className = "ghost";
+  tailBtn.style.marginTop = "20px";
+  tailBtn.textContent = "Browse all " + IDEAS.length + " ideas";
+  tailBtn.onclick = openBrowse;
+  box.appendChild(tailBtn);
+  /* Restore panels that were open before a results re-render (fit refinement):
+     cast names, cast size, and roles survive; re-tapping never rebuilds. */
+  if (pick && cards[pick.ideaId] && panelOpenByIdea[pick.ideaId] &&
+      cards[pick.ideaId]._mountPanel && !cards[pick.ideaId].getAttribute("data-panel")){
+    cards[pick.ideaId]._mountPanel();
+  }
   show("s-results");
 }
 
@@ -1277,11 +1417,11 @@ function assignCast(ideaId, people, overrides){
   if (!cast) return people.map(function(){ return ""; });
   var claimed = [];
   Object.keys(overrides).forEach(function(k){ claimed.push(overrides[k]); });
-  var nameCount = {};
-  function named(base){
-    nameCount[base] = (nameCount[base] || 0) + 1;
-    return nameCount[base] > 1 ? base + " " + nameCount[base] : base;
-  }
+  /* Duplicate roles are handed out as-is ("pup", never "pup 2"): the suffixed
+     label exists in no dropdown and reads badly in headlines ("you're the
+     Pup 2"); two pups are honestly two pups. (Visual QA caught a "pup 2"
+     combobox vs "the pup" summary mismatch on 2026-09-24.) */
+  function named(base){ return base; }
   function unclaimed(base){ return claimed.indexOf(base) < 0; }
   if (cast.mode === "choose"){
     var pool = cast.pool.filter(unclaimed);
@@ -1299,8 +1439,8 @@ function assignCast(ideaId, people, overrides){
       if (!unclaimed(r.r)) continue;
       if (wantKid ? r.kid : r.adult){ used[i] = true; return named(r.r); }
     }
-    var f = named(cast.filler), guard = 0;
-    while (!unclaimed(f) && guard++ < 12) f = named(cast.filler);
+    var f = cast.filler, guard = 0;
+    while (!unclaimed(f) && guard++ < 12) f = cast.filler;
     return f;
   }
   /* Kids first, so kid-sized roles go to kids before adults claim the shared ones. */
@@ -1346,6 +1486,20 @@ function buildCastPrompt(idea, list){
 /* The cast-mapping panel. Replaces the generic share + AI sections after a pick
    on a cast-enabled idea. Names are read from the inputs at share/copy time and
    never touch analytics (see Privacy note above). */
+/* Cast state survives results re-renders (fit refinement) and result-card
+   re-taps: names, cast size, and role picks are keyed by idea id, not by the
+   transient panel DOM. The no-op re-tap guard in doPick means the panel is
+   never rebuilt out from under the user; this store means even a rebuild
+   restores what was there. */
+var castStateByIdea = {};
+function getCastState(ideaId, n){
+  var st = castStateByIdea[ideaId];
+  if (!st){ st = {size: (n || 2), names: [], kids: [], roles: []}; castStateByIdea[ideaId] = st; }
+  st.names.length = Math.max(st.names.length, st.size);
+  st.kids.length = Math.max(st.kids.length, st.size);
+  st.roles.length = Math.max(st.roles.length, st.size);
+  return st;
+}
 function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var box = document.createElement("div"); box.className = "castbox";
   /* Billy's bug, round 2 (2026-09-23): the result card has a click-to-pick
@@ -1360,7 +1514,16 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var sub = document.createElement("p"); sub.className = "status";
   sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and stay on this phone.";
   box.appendChild(h); box.appendChild(sub);
-  var size = 2, kids = 0, people = [], overrides = {};
+  var hadState = !!castStateByIdea[idea.id];
+  var st = getCastState(idea.id, cast.n);
+  var size = st.size, kids = 0, people = [], overrides = {};
+  /* Restore names/kid flags/role overrides from a previous panel for this
+     idea (results re-render or fit refinement), so nothing the user typed
+     is lost. */
+  if (st.names.length){
+    for (var _i = 0; _i < size; _i++) people.push({name: st.names[_i] || "", kid: !!st.kids[_i]});
+  }
+  Object.keys(st.roles).forEach(function(k){ if (st.roles[k]) overrides[k] = st.roles[k]; });
   var q1 = document.createElement("p"); q1.className = "castq"; q1.textContent = "How many people?";
   var q1r = document.createElement("div"); q1r.className = "castbtns";
   var q2 = document.createElement("p"); q2.className = "castq"; q2.textContent = "How many are kids?";
@@ -1384,6 +1547,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   }
   function setSize(n){
     size = n;
+    st.size = n;
     var kept = people.slice(0, n);
     for (var i = kept.length; i < n; i++) kept.push({name: "", kid: false});
     people = kept;
@@ -1392,12 +1556,22 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     Object.keys(overrides).forEach(function(k){ if (+k < n) no[k] = overrides[k]; });
     overrides = no;
     recountKids();
+    syncCastState();
     render();
   }
   function setKids(n){
     people.forEach(function(p, i){ p.kid = i >= people.length - n; });
     kids = n;
+    syncCastState();
     render();
+  }
+  /* Persist names, kid flags, and role overrides keyed by idea id, so a
+     results re-render (fit refinement) restores the panel as the user left it. */
+  function syncCastState(){
+    st.size = size;
+    st.names = people.map(function(p){ return p.name; });
+    st.kids = people.map(function(p){ return !!p.kid; });
+    st.roles = people.map(function(p, i){ return overrides[i] || null; });
   }
   function autoRoles(){
     return assignCast(idea.id, people, overrides);
@@ -1406,7 +1580,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var roles = autoRoles();
     return people.map(function(p, i){
       var nm = p.name.trim();
-      return {name: (nm || ("Person " + (i + 1))), kid: !!p.kid, role: overrides[i] || roles[i]};
+      return {name: (nm || ("Person " + (i + 1))), rawName: nm, kid: !!p.kid, role: overrides[i] || roles[i]};
     });
   }
   function render(){
@@ -1437,13 +1611,13 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       inp.placeholder = "Type a name"; inp.value = p.name; inp.maxLength = 24;
       inp.setAttribute("aria-label", "Name for person " + (i + 1) + " (optional)");
       inp.setAttribute("autocomplete", "off");
-      inp.oninput = function(){ p.name = inp.value; refreshOutputs(); };
+      inp.oninput = function(){ p.name = inp.value; syncCastState(); refreshOutputs(); };
       nameWrap.appendChild(lab); nameWrap.appendChild(inp);
       var tg = document.createElement("button"); tg.type = "button";
       tg.className = "casttoggle" + (p.kid ? " sel" : "");
       tg.textContent = p.kid ? "Kid" : "Adult";
       tg.setAttribute("aria-label", "Toggle kid or adult for person " + (i + 1));
-      tg.onclick = function(){ p.kid = !p.kid; recountKids(); render(); };
+      tg.onclick = function(){ p.kid = !p.kid; recountKids(); syncCastState(); render(); };
       var sel = document.createElement("select");
       sel.setAttribute("aria-label", "Role for person " + (i + 1));
       var opts = castRoleOptions(idea.id);
@@ -1455,7 +1629,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         if (o === cur) op.selected = true;
         sel.appendChild(op);
       });
-      sel.onchange = function(){ overrides[i] = sel.value; refreshOutputs(); };
+      sel.onchange = function(){ overrides[i] = sel.value; syncCastState(); refreshOutputs(); };
       row.appendChild(nameWrap); row.appendChild(tg); row.appendChild(sel);
       rows.appendChild(row);
     });
@@ -1480,7 +1654,97 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     aiHandle.setText(buildCastPrompt(idea, list));
   }
   Analytics.track("e17_cast_started", {idea_id: idea.id});
-  setSize(2);
+  /* Restored panels keep the size, kid flags, names, and roles the user left;
+     only a brand-new panel starts at two. (setSize(2) here used to wipe a
+     restored 4-person cast back to two.) */
+  if (hadState){ recountKids(); render(); } else { setSize(2); }
+  /* Personal role cards: one card per named person, each with a single
+     "Send this card to <name>" CTA. For spouses sending to each other and
+     groups sharing in group chat. */
+  var pcWrap = document.createElement("div");
+  pcWrap.className = "pcards";
+  var pcBtn = document.createElement("button");
+  pcBtn.type = "button"; pcBtn.className = "ghost";
+  pcBtn.textContent = "Make personal cards";
+  var pcList = document.createElement("div");
+  pcList.className = "pclist";
+  pcBtn.onclick = function(){
+    /* Fallback "Person N" names never make personal cards: only people with a
+       typed name get a card (a card reading "Send this card to Person 2"
+       would look like a bug, not a feature). */
+    var list = currentList().filter(function(p){ return p.rawName; });
+    pcList.innerHTML = "";
+    if (!list.length){
+      var empty = document.createElement("p");
+      empty.className = "status";
+      empty.textContent = "Type at least one name above to make personal cards.";
+      pcList.appendChild(empty);
+      return;
+    }
+    Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length});
+    list.forEach(function(p){
+      var card = document.createElement("div");
+      card.className = "pcard";
+      var img = document.createElement("img");
+      img.className = "pcard-img";
+      img.src = "images/" + idea.id + ".png";
+      img.alt = idea.title;
+      img.setAttribute("onerror", "this.style.display='none'");
+      var head = document.createElement("div");
+      head.className = "pcard-head";
+      head.textContent = p.name + " is going as " + idea.title;
+      var sub2 = document.createElement("p");
+      sub2.className = "pcard-sub";
+      sub2.textContent = "As the " + p.role + ".";
+      var send = document.createElement("button");
+      send.type = "button"; send.className = "cta pcard-send";
+      send.textContent = "Send this card to " + p.name;
+      var st2 = document.createElement("p");
+      st2.className = "status";
+      /* The CTA says "Send", so it sends: the native share sheet where the
+         phone has one, the clipboard everywhere else. The label stays honest
+         either way; the status line names what actually happened. */
+      send.onclick = function(){
+        var sid = newShareId();
+        var text = p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid;
+        function credited(via){
+          Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via});
+          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via});
+          if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
+        }
+        function copyFallback(){
+          doCopy(text, function(ok){
+            if (ok){
+              st2.textContent = "Copied. Paste it into any message.";
+              credited("clipboard");
+            } else {
+              st2.textContent = "Copy this: " + text;
+            }
+          });
+        }
+        if (typeof navigator !== "undefined" && navigator.share){
+          navigator.share({title: "Pick My Costume", text: text}).then(function(){
+            st2.textContent = "Shared.";
+            credited("share_sheet");
+          }, function(err){
+            if (err && err.name === "AbortError") return; /* closed the sheet; not an error */
+            copyFallback();
+          });
+        } else {
+          copyFallback();
+        }
+      };
+      card.appendChild(img);
+      card.appendChild(head);
+      card.appendChild(sub2);
+      card.appendChild(send);
+      card.appendChild(st2);
+      pcList.appendChild(card);
+    });
+  };
+  pcWrap.appendChild(pcBtn);
+  pcWrap.appendChild(pcList);
+  box.appendChild(pcWrap);
   return box;
 }
 
