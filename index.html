@@ -148,8 +148,8 @@ footer a{color:var(--accent)}
 .bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
 .bcard h3{margin:0 0 4px;font-size:17px}
 .bcard p{margin:0;font-size:14px;color:var(--muted)}
-.bcard .row{display:flex;flex-wrap:nowrap;gap:8px}
-.bcard .row button{flex:1 1 0;min-width:0;white-space:nowrap;font-size:12px;padding:8px 4px;min-height:44px;border-width:1px}
+.bcard .row{display:flex;flex-wrap:wrap;gap:10px}
+.bcard .row button{flex:1;min-height:48px;font-size:14px}
 </style>
 </head>
 <body>
@@ -711,19 +711,43 @@ function finishQuiz(){
   renderResults(results);
 }
 
+/* E22: animated loops for the top-10 ideas on result/landing detail views.
+   Video autoplays muted and loops; the PNG is the poster and the fallback.
+   Browse grid stays static PNG for load performance. Reduced-motion users
+   always get the static PNG. */
+var ANIMATED = {"neon-demon-hunter":1,"tin-hero":1,"blue-dog-family":1,"block-game-crew":1,"ramen-bowl":1,"snow-sisters":1,"fairy-tale-princesses":1,"tooth-fairy":1,"soccer-squad":1,"good-witch-bad-witch":1};
+function ideaMedia(idea){
+  var src = "images/" + idea.id + ".png";
+  var reduce = false;
+  try { reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(_){}
+  if (ANIMATED[idea.id] && !reduce){
+    var v = document.createElement("video");
+    v.src = "images/anim/" + idea.id + "-loop.mp4";
+    v.poster = src;
+    v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+    v.setAttribute("aria-hidden", "true");
+    v.style.width = "100%"; v.style.borderRadius = "10px"; v.style.marginBottom = "12px";
+    v.setAttribute("onerror", "this.style.display='none'");
+    return v;
+  }
+  var im = document.createElement("img");
+  im.src = src;
+  im.alt = "";
+  im.style.width = "100%";
+  im.style.borderRadius = "10px";
+  im.style.marginBottom = "12px";
+  im.setAttribute("onerror", "this.style.display='none'");
+  return im;
+}
+
 /* One result card, extracted so the "Still stuck?" section can render
    alternates (ranks 4-6) with the exact same card, including tap-to-pick. */
 function buildResultCard(scored, idx, pick){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
-    var im = document.createElement("img");
-    im.src = "images/" + idea.id + ".png";
-    im.alt = "";
-    im.style.width = "100%";
-    im.style.borderRadius = "10px";
-    im.style.marginBottom = "12px";
-    im.setAttribute("onerror", "this.style.display='none'");
+    var im = ideaMedia(idea);
     var h = document.createElement("h3"); h.textContent = idea.title;
     if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent="Top pick for you";card.appendChild(tp);}
     var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
@@ -1090,13 +1114,7 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     var box = document.createElement("div");
     box.className = "card";
     box.style.marginBottom = "16px";
-    var im = document.createElement("img");
-    im.src = "images/" + idea.id + ".png";
-    im.alt = "";
-    im.style.width = "100%";
-    im.style.borderRadius = "10px";
-    im.style.marginBottom = "12px";
-    im.setAttribute("onerror", "this.style.display='none'");
+    var im = ideaMedia(idea);
     var h = document.createElement("h3");
     h.textContent = "Your friend is going as " + idea.title;
     var p = document.createElement("p");
