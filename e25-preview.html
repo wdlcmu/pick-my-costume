@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PROTOTYPE E25 - Video-on-interaction browse (Pick My Costume)</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/">
+<meta property="og:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
+<meta property="og:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
+<meta property="og:image" content="https://pickmycostume.com/images/neon-demon-hunter.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
+<meta name="twitter:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
+<meta name="twitter:image" content="https://pickmycostume.com/images/neon-demon-hunter.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>
+/* PostHog: anonymous usage stats only. Quiz answers are never sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+        if (window.Analytics && Analytics._flush) Analytics._flush();
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+/* ============ HALLOWEEN VISUAL IDENTITY ============
+   The site's seasonal skin, confirmed by Billy. All theme colors
+   live in these variables: to re-skin later, swap this block only.
+   Selection state never relies on color alone (checkmark + border). */
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --btn-bg: #ff8c1a;
+  --btn-ink: #2a1500;
+  --radius: 14px;
+}
+*{box-sizing:border-box}
+/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
+   rendered as dark browser-default blue on the dark background -- unreadable.
+   Every link now gets the accent-orange treatment (bold, underlined) so no
+   surface can silently regress to browser-default blue. */
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+.hero{text-align:center;padding:56px 8px 32px}
+.hero .moon{font-size:56px}
+h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
+.tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
+.screen{display:none}
+.screen.on{display:block;animation:fadein .22s ease-out}
+#s-hero.on{display:flex;flex-direction:column;justify-content:center;min-height:85svh}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
+.q-title{font-size:28px;margin:0 0 6px}
+.q-hint{color:var(--muted);margin:0 0 20px}
+.opts{display:grid;gap:12px;margin-bottom:20px}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;
+  min-height:60px;padding:14px 16px;font-size:18px;text-align:left;
+  background:var(--card);color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+}
+.opt .tick{
+  flex:0 0 26px;height:26px;border:2px solid var(--muted);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:transparent;user-select:none;
+}
+.opt.sel{border-color:var(--sel-border);background:var(--sel-bg)}
+.opt.sel .tick{border-color:var(--accent);color:var(--accent)}
+.opt:hover{border-color:var(--accent)}
+button:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.cta:hover{filter:brightness(1.08)}
+button.ghost:hover{border-color:var(--accent)}
+.navrow{display:flex;gap:12px;flex-wrap:wrap}
+button.cta{
+  display:inline-block;min-height:56px;padding:14px 28px;font-size:18px;font-weight:700;
+  background:var(--btn-bg);color:var(--btn-ink);
+  border:0;border-radius:var(--radius);cursor:pointer;
+}
+button.ghost{
+  min-height:56px;padding:14px 20px;font-size:17px;
+  background:transparent;color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+}
+.card{
+  background:var(--card);border:2px solid var(--line);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+#r-cards .card img{width:100%;height:auto;display:block}
+/* Billy-reported 2026-09-23: the old 230px fixed height + object-fit:cover
+   cropped nearly every card image (73 of 75 bank illustrations are square,
+   so cover cut ~105px vertically at phone width — e.g. Walking Taco's legs).
+   Natural aspect ratio shows the full illustration on every card. */
+.card h3{margin:0 0 6px;font-size:24px}
+.toppick{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
+.castbox h3{margin:0 0 4px;font-size:20px}
+.castq{margin:12px 0 4px;font-weight:700;font-size:15px}
+.castbtns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.castbtns button{min-height:44px;min-width:52px;padding:8px 14px;font-size:15px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:10px;cursor:pointer;font-family:inherit}
+.castbtns button.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.castrow{display:flex;gap:8px;margin:8px 0;align-items:flex-end}
+.castname{flex:1.1;min-width:0}
+.castlab{display:block;font-size:11px;color:var(--muted);margin:0 0 2px}
+.castname input{width:100%;min-height:44px;padding:8px 10px;font-size:15px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;box-sizing:border-box}
+.castrow select{flex:1;min-height:44px;min-width:0;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
+.casttoggle{min-height:44px;padding:8px 10px;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;white-space:nowrap}
+.casttoggle.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.castline{font-size:15px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+.castline b{color:var(--ink)}
+.card .blurb{margin:0 0 10px;font-size:17px}
+.card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
+.card .why b{color:var(--ink)}
+.card .row{display:flex;flex-wrap:wrap;gap:10px}
+.card .row button{min-height:48px;font-size:14px;flex:1}
+.card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
+.card .pick-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.75}
+.status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
+.linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
+.promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:15px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
+.stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
+.stuck h3{margin:0 0 6px;font-size:20px}
+.stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
+footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}
+.returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
+.fine{font-size:13px;color:var(--muted)}
+.about-body p{margin:0 0 14px;line-height:1.55}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px}
+.bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
+.bcard h3{margin:0 0 4px;font-size:17px}
+.bcard p{margin:0;font-size:14px;color:var(--muted)}
+.bcard .row{display:flex;flex-wrap:wrap;gap:10px}
+.bcard .row button{flex:1;min-height:48px;font-size:14px}
+.proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+/* E25: video-on-interaction browse cards. Artwork wrapper holds the static PNG
+   plus a lazily-created video sibling; the badge hints the art is playable. */
+.e25media{position:relative;cursor:pointer}
+.e25media img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
+.e25video{width:100%;border-radius:8px;display:block;margin-bottom:8px}
+.e25badge{position:absolute;right:8px;bottom:14px;width:30px;height:30px;border-radius:50%;background:rgba(22,13,40,.72);color:#ffd97a;font-size:13px;line-height:30px;text-align:center;pointer-events:none}
+.bfilters{display:flex;gap:8px;margin:0 0 8px}
+.bfilters input[type=search]{flex:2 1 0;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters select{flex:1 1 0;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
+.bempty{color:var(--muted);padding:24px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="screen on" id="s-hero">
+    <div class="hero">
+      <div class="moon" aria-hidden="true">&#127769;</div>
+      <h1>Pick My Costume</h1>
+      <p class="tagline">A few quick questions. Three costume ideas. No email, no account.</p>
+      <div class="returnbox" id="returnbox" style="display:none">
+        <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
+        <button class="ghost" id="btn-return" type="button">See my ideas again</button>
+      </div>
+      <button class="cta" id="btn-start" type="button">Find my costume</button>
+      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 75 ideas</button></p>
+      <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="s-quiz">
+    <p class="progress" id="q-progress">Question 1 of 5</p>
+    <h2 class="q-title" id="q-title"></h2>
+    <p class="q-hint" id="q-hint"></p>
+    <div class="opts" id="q-opts"></div>
+    <div class="navrow">
+      <button class="ghost" id="q-back" type="button">&larr; Back</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="s-results">
+    <p class="progress">Your three ideas</p>
+    <h2 class="q-title">&#127875; Three costumes worth wearing</h2>
+    <p class="q-hint">Tap one to save your pick and get your AI costume plan.</p>
+    <div id="r-cards"></div>
+    <div class="navrow" style="margin-top:8px">
+      <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
+      <button class="ghost" id="btn-restart" type="button">Start over</button>
+      <button class="ghost" id="btn-browse-results" type="button">Browse all 75 ideas</button>
+    </div>
+  </section>
+
+  <!-- BROWSE -->
+  <section class="screen" id="s-browse">
+    <p class="proto-banner">Prototype E25: browse art plays its animation when you tap it (hover on desktop). Tap-test build, not the live site.</p>
+    <p class="progress">Every idea in the bank</p>
+    <h2 class="q-title" id="browse-title">All ideas</h2>
+    <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
+    <div class="bfilters">
+      <input type="search" id="bf-q" placeholder="Search costumes..." aria-label="Search costumes" autocomplete="off">
+      <select id="bf-aud" aria-label="Filter by who it is for">
+        <option value="">Everyone</option>
+        <option value="kid">Kids</option>
+        <option value="family">Family</option>
+        <option value="group">Group</option>
+        <option value="couple">Couple</option>
+        <option value="solo">Solo</option>
+      </select>
+      <select id="bf-eff" aria-label="Filter by effort">
+        <option value="">Any effort</option>
+        <option value="easy">Easy</option>
+        <option value="middle">Middle</option>
+        <option value="allout">All out</option>
+      </select>
+    </div>
+    <p class="bcount" id="b-count"></p>
+    <div class="bgrid" id="b-grid"></div>
+    <div class="navrow" style="margin-top:16px">
+      <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
+      <!-- E16: the browse screen had no door into the quiz. A browser is a
+           high-intent visitor; reuses the home screen's exact CTA copy. -->
+      <button class="cta" id="btn-bquiz" type="button">Find my costume</button>
+    </div>
+  </section>
+
+  <!-- BROWSE DETAIL: tapping a browse card opens the full pick flow here,
+       reusing the quiz result card components. -->
+  <section class="screen" id="s-detail">
+    <p class="progress">From browsing</p>
+    <h2 class="q-title">Costume detail</h2>
+    <div id="d-card"></div>
+    <div class="navrow" style="margin-top:16px">
+      <button class="ghost" id="btn-dback" type="button">&larr; Back to browse</button>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="screen" id="s-about">
+    <p class="progress">About this site</p>
+    <h2 class="q-title">What this is</h2>
+    <div class="about-body">
+      <p>Pick My Costume is a free Halloween costume picker. Answer a few quick questions and get three costume ideas, for yourself, your kid, your partner, your group, or the whole family.</p>
+      <p>Your answers score a hand-picked list of <span id="idea-count">75</span> ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
+      <p>Your quiz answers never leave your phone. We only track anonymous usage stats.</p>
+      <p>Then what? On your results, tap &ldquo;This is my pick&rdquo; on a costume to save it and get your AI costume plan.</p>
+      <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
+      <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey &mdash; each card shows its stat and source.</p>
+      <p class="fine">Built with Muse. Made by Billy Litner.</p>
+    </div>
+    <div class="navrow" style="margin-top:16px">
+      <button class="cta" id="btn-about-start" type="button">Find my costume</button>
+      <button class="ghost" id="btn-about-back" type="button">&larr; Back</button>
+    </div>
+  </section>
+
+  <footer>
+    <p><a href="#" id="about-link">About this site</a></p>
+  </footer>
+
+</div>
+<script>
+/* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
+var Analytics = {
+  _q: [],
+  track: function(name, props){
+    props = props || {};
+    try { if (typeof VIA_SHARE !== "undefined" && VIA_SHARE && !props.share_id && !props.via_share_id) props.via_share_id = VIA_SHARE; } catch(e){}
+    try {
+      if (window.posthog && posthog.capture) {
+        posthog.capture(name, props);
+      } else {
+        this._q.push([name, props || {}]);
+        if (this._q.length > 100) this._q.shift();
+      }
+    } catch(e){}
+    if (window.console && console.debug) console.debug("[pmc]", name, props || {});
+  },
+  _flush: function(){
+    try {
+      while (this._q.length) {
+        var e = this._q.shift();
+        if (window.posthog && posthog.capture) posthog.capture(e[0], e[1]);
+      }
+    } catch(e2){}
+  }
+};
+
+function $(id){ return document.getElementById(id); }
+function store(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function clearK(k){ try { localStorage.removeItem(k); } catch(e){} }
+function load(k){ try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent || ""); }
+
+/* ================= CONFIG: QUESTIONS ================= */
+var QUESTIONS = [
+  {id:"q1", title:"Who is dressing up?", hint:"Pick the one that fits best.", options:[
+    {label:"Solo", value:"solo", tags:{}},
+    {label:"My kid", value:"kid", tags:{}},
+    {label:"My family", value:"family", tags:{}},
+    {label:"Couple", value:"couple", tags:{}},
+    {label:"Group", value:"group", tags:{}}
+  ]},
+  {id:"q2", title:"What vibe are you going for?", hint:"There are no wrong answers.", options:[
+    {label:"Funny", tags:{funny:2}},
+    {label:"Scary", tags:{scary:2}},
+    {label:"Cute", tags:{cute:2}},
+    {label:"Keep it simple", tags:{simple:2}}
+  ]},
+  {id:"q4", title:"How much effort?", hint:"Be honest. Couch-level is a fine answer.", options:[
+    {label:"Couch-level", tags:{couch:2}},
+    {label:"A little crafty", tags:{crafty:2}},
+    {label:"Go all out", tags:{allout:2}}
+  ]},
+  {id:"q5kid", title:"How old is the kid?", hint:"So we keep it age-safe.", options:[
+    {label:"Under 3", tags:{kidunder3:2}},
+    {label:"3 to 6", tags:{kid36:2}},
+    {label:"7+", tags:{kid7plus:2}}
+  ]},
+  /* E14: conditional fit question (Billy: "should you ask if I'm a male or
+     female?"). NOT an always-asked gender question: it appears only in
+     solo/kid flows and only when the answer can change the top 3. Wording is
+     about the look, not the person. */
+  {id:"qfit", title:"Which look feels more like you?", hint:"So the top pick suits the person wearing it.", options:[
+    {label:"Feminine looks", fit:"F"},
+    {label:"Masculine looks", fit:"M"},
+    {label:"Anything goes", fit:null}
+  ]},
+  {id:"qocc", title:"What's the Halloween plan?", hint:"So the pick fits the night.", options:[
+    {label:"Trick-or-treating", tags:{occtreat:2}},
+    {label:"House party", tags:{occparty:2}},
+    {label:"Bar / club night", tags:{occbar:2}},
+    {label:"Handing out candy", tags:{occcandy:2}},
+    {label:"Low-key night in", tags:{occlowkey:2}}
+  ]},
+  {id:"qinterest", title:"What is your kid into?", hint:"Pick the closest match.", options:[
+    {label:"Animals", tags:{animals:2}},
+    {label:"Princesses & fairy tales", tags:{princess:2}},
+    {label:"Superheroes", tags:{heroes:2}},
+    {label:"Dinosaurs & monsters", tags:{dinos:2}},
+    {label:"Video games", tags:{games:2}},
+    {label:"TV & movie characters", tags:{tv:2}},
+    {label:"Food & snacks", tags:{food:2}},
+    {label:"Sports", tags:{sports:2}}
+  ]}
+];
+
+/* ================= CONFIG: IDEAS =================
+   rank = editorial order: browse-all sorting AND quiz tiebreak (lower wins).
+   Rubric: (1) 2026 trend heat, (2) fit for the core audience (parents/kids/family),
+   (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
+var IDEAS = [
+  {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, fit:"U", rank:1},
+  {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes. The easiest costume ever made.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,dinos:2,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"top 5 for kids and adults", fit:"U", rank:2},
+  {id:"blue-dog-family", title:"Blue Dog Family", blurb:"Blue shirts and felt dog ears: mama, dad, and the pups.", why:"Four blue shirts, paper ears, and your kid completely loses it.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", rank:3},
+  {id:"superhero-family", title:"Superhero Family", blurb:"Red sweatsuits, black eye masks, felt logo -- the whole family goes super.", why:"Scales from two to six people, and every age knows the movie.", audience:["family"], budget:["low","mid"], tags:{cute:2,funny:1,couch:1,simple:2,heroes:3,tv:2,occparty:1,occtreat:2}, fit:"U", rank:4},
+  {id:"blue-alien-ohana", title:"Blue Alien Ohana", blurb:"Blue hoodie, big ears: the alien, the girl, or the whole ohana.", why:"Everyone knows the alien without you saying a word, and the ears carry the whole costume.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", rank:5},
+  {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1,tv:3,occbar:2,occparty:2}, trending:true, trendLane:"Witch", trendStat:"4.8M adults planned it", fit:"F", rank:6},
+  {id:"gloom-bloom", title:"Gloom & Bloom", blurb:"Braids and black for Gloom, color-pop and smiles for Bloom.", why:"The deadpan duo: one broods, one sparkles, both nail it.", audience:["group","solo"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3,occbar:1,occparty:2}, fit:"F", rank:7},
+  {id:"deadpan-diva", title:"Deadpan Diva", blurb:"Black dress, two braids, pale makeup, and a stare that ends conversations.", why:"The goth icon: closet-easy, instantly readable, and the braids do half the work.", audience:["solo"], budget:["diy","low"], tags:{tv:3,scary:3,simple:2,couch:2,occbar:2,occparty:1}, fit:"F", rank:8},
+  {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1,animals:3,occparty:1,occtreat:2}, fit:"U", rank:9},
+  {id:"fairy-tale-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet. Every princess works.", why:"Every kid already has a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3,occparty:1,occtreat:2}, trending:true, trendLane:"Princess", trendStat:"2.2M kids planned it", fit:"F", rank:10},
+  {id:"tin-hero", title:"The Tin Hero", blurb:"Red and gold plus a glowing chest circle: the suit does the talking.", why:"Kids lose their minds over the chest light, and it costs less than the candy.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2,occbar:1,occparty:1,occtreat:2}, fit:"M", rank:11},
+  {id:"good-witch-bad-witch", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year: one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3,occbar:1,occparty:2}, trending:true, trendLane:"Witch", trendStat:"4.8M adults planned it", fit:"F", rank:12},
+  {id:"fuzzy-monster", title:"Fuzzy Monster", blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", why:"Ugly-cute is the whole point, and it is basically pajamas.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:3,funny:1,kidunder3:1,kid36:2,kid7plus:1,dinos:2,occlowkey:1,occtreat:2}, fit:"U", rank:13},
+  {id:"pocket-plush", title:"Pocket Plush Monster", blurb:"A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.", why:"You become the toy-aisle icon: ugly-cute, comfy, and every kid wants a hug.", audience:["kid"], budget:["diy","low"], tags:{cute:3,dinos:2,funny:2,simple:2,couch:1,kid36:2,kid7plus:2,kidunder3:1,occlowkey:1,occtreat:2}, fit:"U", rank:14},
+  {id:"soccer-squad", title:"Soccer Squad", blurb:"Jerseys for the players, black for the ref, one red card for the drama.", why:"World Cup year: everyone already owns half of this.", audience:["family","group"], budget:["low","diy"], tags:{cute:2,funny:2,simple:2,sports:2,occparty:2,occtreat:1}, fit:"U", rank:15},
+  {id:"glow-skeleton", title:"Glow Skeleton", blurb:"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.", why:"Spooky after dark and visible to cars, which parents love.", audience:["kid"], budget:["low","diy"], tags:{couch:2,scary:2,cute:1,kid36:2,kid7plus:1,occcandy:1,occtreat:3}, fit:"U", rank:16},
+  {id:"block-game-crew", title:"Block Game Crew", blurb:"Cardboard-box heads: pick your blocky hero. Pixelated and perfect.", why:"A box, some paint, and you're everyone's favorite blockhead.", audience:["kid","family","group"], budget:["diy","low"], tags:{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,games:3,occparty:2,occtreat:2}, fit:"U", rank:17},
+  {id:"web-slinger-crew", title:"Web-Slinger Crew", blurb:"Red, black, and pink hoodies plus masks -- pick your spider.", why:"Everyone gets their own color and nobody fights over it.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1,couch:2,simple:2,heroes:3,tv:2,occbar:1,occparty:2}, trending:true, trendLane:"Spider-Man", trendStat:"4.6M kids planned it", fit:"U", rank:18},
+  {id:"mermaid-crew", title:"Mermaid Crew", blurb:"The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.", why:"No filler roles in this crew: even the crab gets to be the star.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"simple":1,"couch":1,"crafty":1,"kid36":2,"kid7plus":1,princess:3,occparty:2,occtreat:1}, fit:"F", rank:19},
+  {id:"little-pig-family", title:"Little Pig Family", blurb:"Pink clothes and a snout headband; little brother brings the dinosaur.", why:"Four matching snouts in one photo never miss, and little brother's dinosaur is the plot twist.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", rank:20},
+  {id:"enchanted-castle-crew", title:"Enchanted Castle Crew", blurb:"The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role.", why:"The enchanted objects steal the show, and they're all DIY.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"crafty":2,"kid36":1,"kid7plus":1,princess:2,occparty:2,occtreat:1}, fit:"F", rank:21},
+  {id:"bumble-bee", title:"Bumble Bee", blurb:"Black sweats with yellow tape stripes and soft felt antennae.", why:"Yellow tape stripes read as bee instantly, and it builds the night before.", audience:["kid"], budget:["diy","low"], tags:{cute:2,funny:1,crafty:1,kidunder3:1,kid36:2,animals:2,occtreat:2}, fit:"U", rank:22},
+  {id:"baby-dino", title:"Baby Dinosaur", blurb:"Green hoodie, felt spikes down the back, stuffed tail.", why:"A hoodie costume means zero complaints about itching or slipping.", audience:["kid"], budget:["low","mid","diy"], tags:{cute:2,funny:1,couch:1,kidunder3:2,kid36:2,dinos:3,occtreat:2}, fit:"U", rank:23},
+  {id:"little-lion", title:"Little Lion", blurb:"Tan sweatsuit plus a fuzzy mane hood.", why:"Head to toe warm, and the mane hood photographs perfectly.", audience:["kid"], budget:["mid"], tags:{couch:2,cute:3,kidunder3:2,kid36:2,animals:2,occtreat:2}, fit:"U", rank:24},
+  {id:"tiny-firefighter", title:"Tiny Firefighter", blurb:"Red sweats, a plastic helmet, and a toy hose if you are feeling it.", why:"The helmet does all the work, and other 3-year-olds will wave at yours.", audience:["kid"], budget:["low","mid"], tags:{couch:2,simple:2,kidunder3:1,kid36:2,kid7plus:1,heroes:1,occtreat:2}, fit:"U", rank:25},
+  {id:"little-shark", title:"Little Shark", blurb:"Gray hoodie with a felt fin glued on the back.", why:"Sharks are timeless even when the song is not, and it is just a hoodie with a fin.", audience:["kid"], budget:["low","mid"], tags:{cute:2,couch:1,kidunder3:2,kid36:2,animals:2,occtreat:2}, fit:"U", rank:26},
+  {id:"walking-taco", title:"Walking Taco", blurb:"Tan vest painted like a taco shell with felt toppings.", why:"Maximum laughs per dollar at the preschool parade.", audience:["kid"], budget:["diy","mid"], tags:{funny:3,crafty:2,kid36:2,kid7plus:1,food:2,occparty:1,occtreat:2}, fit:"U", rank:27},
+  {id:"ramen-bowl", title:"Ramen Bowl", blurb:"Cardboard bowl rim, noodle-yarn hair, a foam egg on top.", why:"Cozy, funny, and the chopsticks make every photo.", audience:["kid","solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,kid36:2,food:2,occparty:2,occtreat:1}, fit:"U", rank:28},
+  {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{couch:2,cute:3,simple:1,kid36:2,kidunder3:1,animals:1,occtreat:2}, fit:"U", rank:29},
+  {id:"little-witch", title:"Little Witch", blurb:"Black cape, pointy hat, striped tights, green face paint.", why:"Classic, comfortable, and the green face paint keeps it from being just-a-witch.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:2,scary:1,kid36:2,kid7plus:1,occtreat:2}, fit:"F", rank:30},
+  {id:"spider", title:"Eight-Legged Spider", blurb:"Black sweats with stuffed sock legs attached at the sides.", why:"Spooky from across the street, snuggly up close.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,kid7plus:1,dinos:1,occtreat:2}, fit:"U", rank:31},
+  {id:"backyard-hero", title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", why:"Skip the mask, add a face-paint lightning bolt, still a hero.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:1,couch:1,kid36:2,kid7plus:1,heroes:3,occtreat:2}, fit:"U", rank:32},
+  {id:"pickle", title:"Pickle", blurb:"Green tunic, bumpy texture, smug grin. Peak comedy, zero effort.", why:"Everyone loves the pickle. Nobody knows why. That is the power.", audience:["solo"], budget:["diy","low"], tags:{funny:3,couch:2,food:2,occbar:2,occcandy:1,occparty:2}, fit:"U", rank:33},
+  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with ten minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1,dinos:2,occbar:3,occparty:2}, trending:true, trendLane:"Vampire", trendStat:"4.2M adults planned it", fit:"M", rank:34},
+  {id:"bamboo-demon", title:"Bamboo-Muzzle Demon", blurb:"Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.", why:"Cute demon energy: anime fans clock it instantly, everyone else just sees adorable.", audience:["solo"], budget:["diy","low"], tags:{tv:3,cute:3,scary:1,simple:2,couch:1,occbar:2,occparty:2}, fit:"F", rank:35},
+  {id:"emoji-crew", title:"Emoji Crew", blurb:"Everyone picks an emoji: a yellow tee plus a big printed face.", why:"Everyone gets their favorite emoji, and the group photo reads instantly.", audience:["group","family"], budget:["diy","low"], tags:{cute:3, funny:1, simple:2, couch:2,occparty:2,occtreat:1}, fit:"U", rank:36},
+  {id:"robot-crew", title:"Cardboard Robot Crew", blurb:"Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.", why:"Cardboard boxes scale to any headcount, and every robot looks intentionally janky.", audience:["group","family"], budget:["diy","low"], tags:{allout:2,funny:3,crafty:3,occparty:2}, fit:"U", rank:37},
+  {id:"cereal-crew", title:"Cereal Crew", blurb:"Solid-color clothes plus a cereal-box front you decorate.", why:"Everyone designs their own box, and the breakfast lineup is adorable.", audience:["group","family"], budget:["diy","low"], tags:{cute:3,simple:2,crafty:2,food:2,occparty:2,occtreat:1}, fit:"U", rank:38},
+  {id:"decades-crew", title:"Decades Crew", blurb:"Each person picks a decade and dresses from their own closet.", why:"Everyone gets their own era, and the decades together look intentional.", audience:["group","family"], budget:["diy","low"], tags:{funny:2, simple:2, couch:2, crafty:1,occbar:1,occparty:2}, fit:"U", rank:39},
+  {id:"under-the-sea", title:"Under the Sea", blurb:"Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.", why:"The go-all-out family theme; every age can scale their part up or down.", audience:["family"], budget:["diy","low"], tags:{cute:3,allout:2,crafty:1,kid36:1,animals:2,occparty:2,occtreat:1}, fit:"U", rank:40},
+  {id:"dino-rangers", title:"Dino Rangers", blurb:"Khaki outfits for the grown-ups, dino hoods for the kids -- leash a toy raptor.", why:"The kids get to be dinosaurs; that's the whole sell.", audience:["family"], budget:["low","mid"], tags:{funny:2,cute:2,couch:1,simple:1,crafty:2,dinos:3,occtreat:2}, fit:"U", rank:41},
+  {id:"board-game-pieces", title:"Board Game Pieces", blurb:"Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.", why:"Everyone recognizes every piece, and the group looks like a set.", audience:["group"], budget:["diy","low"], tags:{funny:2,cute:1,crafty:1,games:2,occbar:1,occparty:2}, fit:"U", rank:42},
+  {id:"rain-cloud-rainbow", title:"Rain Cloud and Rainbow", blurb:"One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.", why:"The two costumes clearly belong together without matching outfits.", audience:["couple"], budget:["diy","low"], tags:{couch:2,cute:3,matchyes:2,simple:1,occparty:2,occtreat:1}, fit:"U", rank:43},
+  {id:"doctor-bride", title:"The Doctor & the Bride", blurb:"Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.", why:"The classic monster duo: scary, cheap, and everyone knows who you are.", audience:["couple"], budget:["diy","low"], tags:{tv:2,scary:3,funny:1,simple:2,couch:1,matchyes:2,occbar:2,occparty:2}, fit:"U", rank:44},
+  {id:"breakfast-buffet", title:"Breakfast Buffet", blurb:"Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.", why:"Scales to any group size and nobody needs a full costume.", audience:["group","family"], budget:["diy","low"], tags:{couch:2,funny:3,simple:1,food:2,occparty:2,occtreat:1}, fit:"U", rank:45},
+  {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Scare each other all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1,tv:3,occparty:1,occtreat:2}, fit:"U", rank:46},
+  {id:"haunted-animatronics", title:"Haunted Animatronics", blurb:"Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves.", why:"Scary-funny in a group, and the photo booth line will find you.", audience:["solo","group"], budget:["diy","mid"], tags:{scary:2,funny:2,crafty:2,games:2,occbar:2,occparty:2}, fit:"U", rank:47},
+  {id:"mystery-crew", title:"Mystery Crew", blurb:"Assign the leader, the style icon, the brains, the goofball, and one very good dog.", why:"Everyone gets a character and the dog steals the show.", audience:["group","family"], budget:["diy","mid"], tags:{couch:2,cute:3,funny:1,tv:3,occparty:2,occtreat:1}, fit:"U", rank:48},
+  {id:"headless-horsemen", title:"Headless Horsemen", blurb:"Black capes, jack-o-lanterns held at shoulder height, group gallop.", why:"The visual is unreal in photos, and the bit is just walking menacingly together.", audience:["group"], budget:["low","diy"], tags:{couch:2,scary:2,funny:1,dinos:2,occbar:2,occparty:1}, fit:"M", rank:49},
+  {id:"haunted-portraits", title:"Haunted Portraits", blurb:"Gray makeup, old-timey clothes, hold a gilt frame.", why:"Spooky, artsy, and you just stand still.", audience:["couple","group","family"], budget:["diy","mid"], tags:{allout:2,scary:2,crafty:2,matchloose:2,occbar:1,occparty:2}, fit:"U", rank:50},
+  {id:"goggle-crew", title:"Goggle Crew", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family"], budget:["low","mid"], tags:{couch:2,cute:2,funny:1,tv:3,occparty:1,occtreat:2}, fit:"U", rank:51},
+  {id:"garden-gnome", title:"Garden Gnome", blurb:"Wear earth tones, make a pointy hat from cardboard, draw a white beard, carry a tiny fishing rod or garden shovel.", why:"Big silhouette, tiny fishing rod: the proportions are the whole joke.", audience:["solo"], budget:["diy","low"], tags:{couch:2,funny:2,simple:2,cute:1,princess:1,occcandy:2,occlowkey:2}, fit:"M", rank:52},
+  {id:"black-cat", title:"Black Cat Burglar", blurb:"Black sweatsuit, cat-ear headband, eye mask -- add a toy sack for burglar.", why:"Warm, cheap, and the ears do all the work.", audience:["solo"], budget:["low"], tags:{cute:2,funny:1,couch:3,simple:2,animals:3,occbar:2,occcandy:1,occlowkey:1}, fit:"F", rank:53},
+  {id:"block-monster", title:"Block Monster", blurb:"Wear all one solid color, square up your silhouette with foam or cardboard blocks on shoulders/limbs, draw a pixelated face.", why:"Video game people recognize it instantly, pure geometry, works at any scale.", audience:["solo"], budget:["low","diy"], tags:{funny:2,couch:2,simple:1,crafty:2,games:3,occbar:1,occparty:2}, fit:"U", rank:54},
+  {id:"space-crewmate", title:"Space Crewmate", blurb:"Colored sweatsuit plus a cardboard backpack -- pick red, you're always sus.", why:"One shopping trip and you're done.", audience:["solo"], budget:["low"], tags:{funny:3,couch:3,simple:2,games:3,occbar:1,occlowkey:1,occparty:2}, fit:"U", rank:55},
+  {id:"sun-moon", title:"Sun and Moon", blurb:"One in yellow with cardboard rays, one in navy with paper stars and a crescent.", why:"Two faces, one night: simple paint, big charm.", audience:["couple"], budget:["diy"], tags:{couch:2,cute:3,matchyes:2,simple:1,occlowkey:1,occparty:2}, fit:"U", rank:56},
+  {id:"moth-porch-light", title:"Moth and Porch Light", blurb:"One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.", why:"The joke lands in one second and it builds in under an hour.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:1,matchyes:2,animals:1,occcandy:1,occparty:2}, fit:"U", rank:57},
+  {id:"raptor-ranger", title:"Raptor & Ranger", blurb:"One khaki ranger, one green dino hood -- the ranger holds the leash.", why:"Funny from across the parking lot.", audience:["couple"], budget:["low"], tags:{funny:3,couch:2,simple:1,matchyes:2,dinos:3,occparty:2,occtreat:1}, fit:"U", rank:58},
+  {id:"cat-mouse", title:"Cat & Mouse", blurb:"Cat ears versus mouse ears -- spend the night chasing each other.", why:"Built-in party game, no props beyond the ears.", audience:["couple"], budget:["low"], tags:{funny:3,cute:2,couch:2,simple:2,matchyes:2,animals:2,occcandy:1,occparty:2}, fit:"U", rank:59},
+  {id:"ketchup-mustard", title:"Ketchup & Mustard", blurb:"Red bottle tunic and cap for one, yellow for the other.", why:"The couple costume everyone recognizes from across the room.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,matchyes:2,food:2,occbar:1,occparty:2}, fit:"U", rank:60},
+  {id:"plumber-duo", title:"Plumber Brothers", blurb:"Overalls, red and green caps and shirts, drawn mustaches.", why:"Matching without being cheesy, and the mustaches do the talking.", audience:["couple","family"], budget:["mid","diy"], tags:{couch:2,cute:2,funny:1,matchyes:2,games:2,occparty:1,occtreat:2}, fit:"M", rank:61},
+  {id:"office-couple", title:"Office Couple", blurb:"White shirts, name tags, and a teapot -- the office's finest.", why:"Instantly readable, and you can wear it to the office party.", audience:["couple"], budget:["low"], tags:{funny:3,couch:2,simple:2,matchyes:2,tv:3,occbar:2,occparty:2}, fit:"U", rank:62},
+  {id:"burger-joint-couple", title:"Burger Joint Couple", blurb:"White apron plus fake mustache, curly red wig plus glasses -- burger shop owners.", why:"A couples costume people actually recognize across the room.", audience:["couple"], budget:["low"], tags:{funny:3,cute:1,couch:2,simple:2,matchyes:2,tv:3,food:2,occbar:1,occparty:2}, fit:"U", rank:63},
+  {id:"plug-socket", title:"Plug and Socket", blurb:"Cardboard plug and outlet worn front and back.", why:"Peak pun-couple energy, built from boxes in an afternoon.", audience:["couple"], budget:["diy"], tags:{funny:3,crafty:2,matchyes:2,occbar:1,occparty:2}, fit:"U", rank:64},
+  {id:"salt-pepper", title:"Salt and Pepper", blurb:"One all-white, one all-black, with S and P signs.", why:"Zero shopping, and it works at any dress code.", audience:["couple"], budget:["diy"], tags:{couch:2,simple:3,funny:1,matchyes:1,occlowkey:1,occparty:1}, fit:"U", rank:65},
+  {id:"lost-tourist", title:"Lost Tourist", blurb:"Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder.", why:"Relatable, needs only closet pieces, instantly funny to wear.", audience:["solo"], budget:["diy","low"], tags:{funny:3,couch:2,simple:1,occbar:2,occcandy:1,occparty:1}, fit:"U", rank:66},
+  {id:"tooth-fairy", title:"Tooth and Tooth Fairy", blurb:"One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.", why:"An obvious pair, playful instead of elaborate.", audience:["couple"], budget:["diy"], tags:{couch:2,funny:2,cute:2,matchyes:1,princess:2,occparty:1,occtreat:1}, fit:"F", rank:67},
+  {id:"web-hero-duo", title:"Web Hero Duo", blurb:"Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.", why:"Classic duo with zero sewing required.", audience:["couple"], budget:["low"], tags:{cute:2,funny:1,couch:2,simple:2,matchyes:2,heroes:3,tv:2,occbar:1,occparty:2}, fit:"U", rank:68},
+  {id:"plague-doctor", title:"Plague Doctor", blurb:"Long coat, wide hat, beaked mask.", why:"Genuinely unsettling and you get to keep the mask for years.", audience:["solo"], budget:["mid","high"], tags:{scary:3,allout:2,occbar:3,occparty:1}, fit:"M", rank:69},
+  {id:"crowd-camouflage", title:"Crowd Camouflage", blurb:"Gray hoodie, dark pants, blank expression. Vanish into any crowd.", why:"Six of you walk in dressed identically. Nobody knows who arrived with whom.", audience:["solo"], budget:["diy","low"], tags:{couch:2,simple:3,funny:1,occbar:1,occlowkey:2,occparty:1}, fit:"U", rank:70},
+  {id:"error-404", title:"Error 404", blurb:"Wear all black with 'Page Not Found' printed on your chest; carry a phone with a cracked-screen prop or broken GPS.", why:"Instantly readable, tech crowd gets it, non-tech crowd gets it anyway.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:3,simple:2,occbar:2,occlowkey:1,occparty:1}, fit:"U", rank:71},
+  {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Scary with zero shopping: it's just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{couch:2,scary:2,funny:1,make:2,dinos:2,tv:1,occbar:2,occparty:2}, fit:"U", rank:72},
+  {id:"safari-photographer", title:"Safari Photographer", blurb:"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.", why:"The camera does the talking, and the plush cub steals every photo.", audience:["solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,simple:1,animals:3,occcandy:1,occparty:1,occtreat:1}, fit:"U", rank:73},
+  {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3,occbar:1,occparty:2}, fit:"U", rank:74},
+  {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Matching dino hoodies need zero coordination, and the spikes sell it from far away.", audience:["family"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3,occtreat:2}, fit:"U", rank:75},
+  {id:"snow-sisters", title:"Snow Sisters", blurb:"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.", why:"The family costume every kid already knows by heart, and the snowman is basically pajamas.", audience:["family","group","kid"], budget:["diy","low"], tags:{cute:3,simple:2,couch:1,crafty:1,kidunder3:1,kid36:2,kid7plus:2,princess:3,occparty:2,occtreat:2}, fit:"F", rank:76},
+];
+/* ================= CONFIG: SHARE ================= */
+function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+/* VIA_SHARE: anonymous id of the share link this visitor arrived through (?s=). Never an identity. */
+var VIA_SHARE = null;
+var NRF_URL = "https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion";
+/* Inline trending stat: the evidence for the flag, visible with no tap. */
+function trendStatEl(idea){
+  if(!idea.trending || !idea.trendLane || !idea.trendStat) return null;
+  var p = document.createElement("p"); p.className = "trendstat";
+  p.appendChild(document.createTextNode("Trending \u00b7 " + idea.trendLane + ": " + idea.trendStat + " ("));
+  var a = document.createElement("a"); a.href = NRF_URL; a.rel = "noopener"; a.textContent = "NRF, Sept 2026";
+  p.appendChild(a); p.appendChild(document.createTextNode(")"));
+  return p;
+}
+
+var SHARE = {
+  url: "pickmycostume.com",
+  textTemplate: function(idea, aud, sid){
+    var lead = "I'm going as ";
+    if (aud === "couple" || aud === "group" || aud === "family") lead = "We're going as ";
+    else if (aud === "kid") lead = "My kid is going as ";
+    var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid : "");
+    return lead + idea.title + " this Halloween. What are you going as? " + url;
+  }
+};
+
+var TAG_WORDS = {
+  funny:"Funny", scary:"Scary", cute:"Cute", simple:"Simple",
+  couch:"low effort", crafty:"a little crafty", allout:"all-out effort",
+  buy:"store-bought", make:"homemade", mix:"mix of both",
+  matchyes:"matching", matchloose:"coordinated",
+  kidunder3:"toddler-friendly", kid36:"kid-approved", kid7plus:"big-kid approved"
+};
+
+/* ================= ENGINE ================= */
+var state = { qi: 0, answers: {} }; // answers: {qid: option}
+
+function qById(id){ return QUESTIONS.filter(function(q){ return q.id === id; })[0]; }
+function qTitle(qid){
+  if (qid === "qinterest") {
+    var aud = state.answers.q1 ? state.answers.q1.value : null;
+    return (aud === "kid" || aud === "family") ? "What is your kid into?" : "What are you into?";
+  }
+  return qById(qid).title;
+}
+
+/* E10: the kid-age question is asked only when the answer can change the
+   ordered top-3. After qinterest is answered we score the three hypothetical
+   age answers; if they all agree, q5kid is skipped (about 31% of kid quizzes
+   in simulation, 0.00% regret). The interest question therefore comes before
+   the age question in the kid flow. */
+var _inAgeCheck = false;
+function kidAgeNeeded(){
+  var qi = state.answers.qinterest;
+  if (!qi || !qi.tags) return true; /* undecidable yet: keep the question */
+  _inAgeCheck = true;
+  try {
+    var seen = {};
+    var saved = state.answers.q5kid;
+    qById("q5kid").options.forEach(function(o){
+      state.answers.q5kid = o;
+      seen[scoreIdeas().map(function(s){ return s.idea.id; }).join(",")] = true;
+    });
+    if (saved) state.answers.q5kid = saved; else delete state.answers.q5kid;
+    return Object.keys(seen).length > 1;
+  } finally {
+    _inAgeCheck = false;
+  }
+}
+/* E14: the fit question is asked only in solo/kid flows (it is ill-posed for a
+   couple/group/family), and only when the answer can change the ordered top-3.
+   After qinterest is answered we score the three hypothetical fit answers
+   (feminine / masculine / no preference); if they all agree, qfit is skipped.
+   Same conditional pattern as E10's kidAgeNeeded. */
+var _inFitCheck = false;
+function fitNeeded(){
+  var aud = state.answers.q1 ? state.answers.q1.value : null;
+  if (aud !== "solo" && aud !== "kid") return false;
+  var qi = state.answers.qinterest;
+  if (!qi || !qi.tags) return true; /* undecidable yet: keep the question */
+  _inFitCheck = true;
+  try {
+    var seen = {};
+    var saved = state.answers.qfit;
+    [{fit:"F"},{fit:"M"},{fit:null}].forEach(function(o){
+      state.answers.qfit = o;
+      seen[scoreIdeas().map(function(s){ return s.idea.id; }).join(",")] = true;
+    });
+    if (saved) state.answers.qfit = saved; else delete state.answers.qfit;
+    return Object.keys(seen).length > 1;
+  } finally {
+    _inFitCheck = false;
+  }
+}
+function flowOrder(){
+  var aud = state.answers.q1 ? state.answers.q1.value : null;
+  if (aud === "kid") {
+    var order = ["q1","q2","q4","qinterest"];
+    /* The reentrancy guard: kidAgeNeeded -> scoreIdeas -> answerTags ->
+       flowOrder must not recurse into the age check. While checking, assume
+       the question is needed (matches production scoring exactly). */
+    if (_inAgeCheck || kidAgeNeeded()) order.push("q5kid");
+    /* E14: at most one conditional question per quiz (5-max grant). Age is
+       evaluated first; the fit question gets the slot only when age is
+       skipped. In the kid flow the order therefore never exceeds 5. */
+    else if (_inFitCheck || fitNeeded()) order.push("qfit");
+    return order;
+  }
+  /* Every non-kid flow gets the occasion question. It replaced the dead
+     buy/make (q5other) and matching-theme (q5couple) questions, and it gives
+     the family flow its fifth question. */
+  var order2 = ["q1","q2","q4","qocc","qinterest"];
+  /* E14: solo only, and only when the answer can change the top 3. This can
+     make a rare 6th question; the progress indicator counts it honestly. */
+  if (aud === "solo" && (_inFitCheck || fitNeeded())) order2.push("qfit");
+  return order2;
+}
+
+function answerTags(){
+  var tags = {};
+  flowOrder().forEach(function(qid){
+    var a = state.answers[qid];
+    if (!a || !a.tags) return;
+    /* Q2 (vibe) and the kid-interest question are the identity of the answer; count them double so effort never drowns them. */
+    var w = (qid === "q2" || qid === "qinterest") ? 2 : 1;
+    Object.keys(a.tags).forEach(function(t){ tags[t] = (tags[t] || 0) + w * a.tags[t]; });
+  });
+  return tags;
+}
+
+/* Budget is a ceiling: a bigger budget includes cheaper bands. */
+var BUDGET_OK = {
+  low:  ["low","diy"],
+  mid:  ["mid","low","diy"],
+  high: ["high","mid","low","diy"],
+  diy:  ["diy"]
+};
+
+function scoreIdeas(full){
+  var aud = state.answers.q1.value;
+  var tags = answerTags();
+  /* Budget is a ceiling: a bigger budget includes cheaper bands. Skipped when the flow has no budget question (kid flow). */
+  var budAns = state.answers.q3;
+  var pool;
+  if (budAns) {
+    var bud = budAns.value;
+    var okBudgets = BUDGET_OK[bud] || [bud];
+    pool = IDEAS.filter(function(i){
+      return i.audience.indexOf(aud) !== -1 && i.budget.some(function(b){ return okBudgets.indexOf(b) !== -1; });
+    });
+  } else {
+    pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
+  }
+  if (pool.length < 3) {
+    pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
+  }
+  var scored = pool.map(function(idea){
+    var contrib = {};
+    var score = 0;
+    Object.keys(idea.tags).forEach(function(t){
+      if (tags[t]) { contrib[t] = tags[t] * idea.tags[t]; score += contrib[t]; }
+    });
+    /* Occasion (qocc) needs no special code: its tags ride the generic tag
+       machinery above, positive-only by design. No mismatch penalty, so an
+       occasion answer can never override the interest promise. */
+    /* Vibe is a promise: an idea with zero overlap on the Q2 vibe never outranks one that matches it. */
+    var vibeAns = state.answers.q2;
+    var vibeTag = vibeAns && vibeAns.tags ? Object.keys(vibeAns.tags)[0] : null;
+    if (vibeTag && !idea.tags[vibeTag]) score -= 6;
+    /* Effort is a promise too: a couch-level answer never surfaces an all-out build. */
+    var effAns = state.answers.q4;
+    var effTag = effAns && effAns.tags ? Object.keys(effAns.tags)[0] : null;
+    if (effTag && !idea.tags[effTag]) score -= 6;
+    /* Presentation is a promise (E14): with a fit answer, an idea leaning the
+       other way never outranks one that fits. Unisex ideas always pass, and
+       the -6 can never override the -100 interest promise. */
+    var fitAns = state.answers.qfit;
+    var fitVal = fitAns && fitAns.fit ? fitAns.fit : null;
+    if (fitVal === "F" && idea.fit === "M") score -= 6;
+    else if (fitVal === "M" && idea.fit === "F") score -= 6;
+    /* Interest is the strongest promise: a result that ignores what you're into is a broken promise. */
+    var intAns = state.answers.qinterest;
+    var intTag = intAns && intAns.tags ? Object.keys(intAns.tags)[0] : null;
+    if (intTag && !idea.tags[intTag]) score -= 100;
+    return {idea: idea, score: score, contrib: contrib};
+  });
+  scored.sort(function(a, b){
+    if (b.score !== a.score) return b.score - a.score;
+    return a.idea.rank - b.idea.rank;
+  });
+  return full ? scored : scored.slice(0, 3);
+}
+
+/* E15: the "Why this fits you" line is composed from the user's actual answers,
+   then the idea's own static line. The header promises the line is about YOU;
+   a static line breaks that promise (Billy: "the 'why this fits' isn't curated
+   to my picks"). Every dynamic line references at least one real answer; if
+   composition fails, fall back to the static line. No em dashes.
+   E15b (Billy: "clearly duplicate not contextual"): the line LEADS with the
+   idea-specific reason, and each fragment has synonym variants picked by
+   result index, so identical answers still read differently on #1/#2/#3. */
+var FIT_FRAGMENTS = {
+  couch:["Couch-level effort","Almost no effort required","A truly minimal build"],
+  crafty:["A little crafty","A fun scissors-and-glue project","Some hands-on making involved"],
+  allout:["Worth going all out","A go-big-or-go-home build","Full-commitment costume energy"],
+  occtreat:["made for trick-or-treating","built for the trick-or-treat route","ready for door-to-door candy"],
+  occparty:["party-ready","made for the party","built to be seen at the party"],
+  occbar:["made for a night out","built for a night on the town","ready for the late-night scene"],
+  occcandy:["easy to wear while handing out candy","comfortable for candy duty","great for greeting trick-or-treaters"],
+  occlowkey:["made for a low-key night in","perfect for a quiet night in","built for staying in"]
+};
+function whyLine(scored, idx){
+  var idea = scored.idea, dyn = [], v = ((idx||0)%3+3)%3;
+  function firstTag(qid){
+    var a = state.answers[qid];
+    return (a && a.tags) ? Object.keys(a.tags)[0] : null;
+  }
+  var e = FIT_FRAGMENTS[firstTag("q4")], o = FIT_FRAGMENTS[firstTag("qocc")];
+  if (e) dyn.push(e[v]);
+  if (o) dyn.push(o[v]);
+  var tail = dyn.length ? " " + dyn.join(", ") + "." : "";
+  return "Why this fits you: " + idea.why + tail;
+}
+
+/* Recipient-channel inference for recipient_landing_viewed. Open-time UA
+   parsing only (the share sheet never reveals the destination app). Order
+   matters: in-app UAs also contain Safari tokens, so app checks come first.
+   iMessage opens are plain Safari and indistinguishable: safari_unknown. */
+function recipientChannel(){
+  var ua = navigator.userAgent || "";
+  if (/WhatsApp\//i.test(ua)) return "whatsapp";
+  if (/Instagram/i.test(ua)) return "instagram";
+  if (/FB_IAB\/MESSENGER/i.test(ua) || /FBAN\/Messenger/i.test(ua)) return "messenger";
+  if (/FBAN\//i.test(ua) || /FB_IAB/i.test(ua)) return "facebook_iab";
+  if (/GSA\//i.test(ua)) return "google_app";
+  if (/Safari\//.test(ua) && !/(Chrome|CriOS|FxiOS|EdgiOS|OPiOS)\//.test(ua)) return "safari_unknown";
+  if (/Chrome|CriOS/i.test(ua)) return "chrome";
+  return "other";
+}
+/* ================= SCREENS ================= */
+function show(id){
+  var screens = document.querySelectorAll(".screen");
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove("on");
+  $(id).classList.add("on");
+  window.scrollTo(0, 0);
+}
+
+function renderQ(){
+  var order = flowOrder();
+  var qid = order[state.qi];
+  var q = qById(qid);
+  $("q-progress").textContent = "Question " + (state.qi + 1) + " of " + flowOrder().length;
+  $("q-title").textContent = qTitle(qid);
+  $("q-hint").textContent = q.hint;
+  var box = $("q-opts");
+  box.innerHTML = "";
+  var current = state.answers[qid];
+  var opts = q.options;
+  if (qid === "qinterest") {
+    var aud0 = state.answers.q1 && state.answers.q1.value;
+    if (aud0) opts = opts.filter(function(opt){
+      var k = Object.keys(opt.tags)[0];
+      return IDEAS.some(function(i){ return i.audience.indexOf(aud0) !== -1 && (i.tags[k] > 0); });
+    });
+  }
+  opts.forEach(function(opt){
+    var b = document.createElement("button");
+    b.type = "button";
+    var sel = current && current.label === opt.label;
+    b.className = "opt" + (sel ? " sel" : "");
+    b.setAttribute("aria-pressed", sel ? "true" : "false");
+    var tick = document.createElement("span");
+    tick.className = "tick";
+    tick.setAttribute("aria-hidden", "true");
+    tick.textContent = "\u2713";
+    var lab = document.createElement("span");
+    lab.textContent = opt.label;
+    b.appendChild(tick); b.appendChild(lab);
+    b.onclick = function(){
+      state.answers[qid] = opt;
+      if (qid === "q1") delete state.answers.qinterest; // interest options depend on audience
+      // Q1 answer can change which Q5 shows; drop a stale Q5 answer.
+      var order2 = flowOrder();
+      Object.keys(state.answers).forEach(function(k){
+        if (order2.indexOf(k) === -1) delete state.answers[k];
+      });
+      if (state.qi < order2.length - 1) { state.qi++; renderQ(); }
+      else { finishQuiz(); }
+    };
+    box.appendChild(b);
+  });
+  show("s-quiz");
+}
+
+function finishQuiz(){
+  var results = scoreIdeas();
+  store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), at: Date.now()});
+  Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; })});
+  /* E10: measure how often the conditional kid-age question is skipped. */
+  if (state.answers.q1 && state.answers.q1.value === "kid" && !state.answers.q5kid) {
+    Analytics.track("kid_age_skipped", {});
+  }
+  /* E14: measure how often the conditional fit question is skipped. */
+  var aud14 = state.answers.q1 && state.answers.q1.value;
+  if ((aud14 === "solo" || aud14 === "kid") && !state.answers.qfit) {
+    Analytics.track("fit_skipped", {});
+  }
+  renderResults(results);
+}
+
+/* E22: animated loops for the top-10 ideas on result/landing detail views.
+   Video autoplays muted and loops; the PNG is the poster and the fallback.
+   Browse grid stays static PNG for load performance. Reduced-motion users
+   always get the static PNG. */
+var ANIMATED = {"neon-demon-hunter":1,"tin-hero":1,"blue-dog-family":1,"block-game-crew":1,"ramen-bowl":1,"snow-sisters":1,"fairy-tale-princesses":1,"tooth-fairy":1,"soccer-squad":1,"good-witch-bad-witch":1,"baby-dino":1,"backyard-hero":1,"bamboo-demon":1,"black-cat":1,"block-monster":1,"blue-alien-ohana":1,"board-game-pieces":1,"breakfast-buffet":1,"bumble-bee":1,"burger-joint-couple":1,"cat-mouse":1,"cereal-crew":1,"fuzzy-monster":1,"garden-gnome":1,"ghost-hunters":1,"gloom-bloom":1,"glow-skeleton":1,"goggle-crew":1,"haunted-animatronics":1,"haunted-portraits":1,"headless-horsemen":1,"ketchup-mustard":1,"little-lion":1,"little-pig-family":1,"little-shark":1,"little-witch":1,"lost-tourist":1,"mermaid-crew":1,"moth-porch-light":1,"mystery-crew":1,"office-couple":1,"pickle":1,"plague-doctor":1,"player-one-two":1,"plug-socket":1,"plumber-duo":1,"pocket-plush":1,"rain-cloud-rainbow":1,"raptor-ranger":1,"robot-crew":1,"safari-photographer":1,"safari-zoo-crew":1,"salt-pepper":1,"space-crewmate":1,"spider":1,"sun-moon":1,"superhero-family":1,"tiny-firefighter":1,"tiny-snail":1,"under-the-sea":1,"vampire":1,"walking-taco":1,"web-hero-duo":1,"web-slinger-crew":1,"zombie-coworker":1,"classic-ghost":1,"crowd-camouflage":1,"deadpan-diva":1,"decades-crew":1,"dino-rangers":1,"dinosaur-family":1,"doctor-bride":1,"emerald-witch":1,"emoji-crew":1,"enchanted-castle-crew":1,"error-404":1};
+function ideaMedia(idea){
+  var src = "images/" + idea.id + ".png";
+  var reduce = false;
+  try { reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(_){}
+  if (ANIMATED[idea.id] && !reduce){
+    var v = document.createElement("video");
+    v.src = "images/anim/" + idea.id + "-loop.mp4";
+    v.poster = src;
+    v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+    v.setAttribute("aria-hidden", "true");
+    v.style.width = "100%"; v.style.borderRadius = "10px"; v.style.marginBottom = "12px";
+    v.setAttribute("onerror", "this.style.display='none'");
+    return v;
+  }
+  var im = document.createElement("img");
+  im.src = src;
+  im.alt = "";
+  im.style.width = "100%";
+  im.style.borderRadius = "10px";
+  im.style.marginBottom = "12px";
+  im.setAttribute("onerror", "this.style.display='none'");
+  return im;
+}
+
+/* ================= E25: video-on-interaction browse cards (STAGED prototype) =================
+   Browse cards render the static PNG by default. Tapping the artwork toggles the
+   3s animation loop on touch devices; hovering plays it on desktop. An
+   IntersectionObserver pauses any loop scrolled out of view, and only one grid
+   video plays at a time, so the grid never runs 76 simultaneous loops.
+   prefers-reduced-motion always gets the static PNG. Taps on the artwork do NOT
+   open the detail view (E20b parity keeps working for taps on the card body,
+   title, blurb, and buttons). */
+var _e25Reduce = null, _e25Hover = null, _e25Playing = null, _e25IO = null;
+function e25Reduce(){
+  if (_e25Reduce === null){
+    _e25Reduce = false;
+    try { _e25Reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch(_){}
+  }
+  return _e25Reduce;
+}
+function e25Hoverable(){
+  if (_e25Hover === null){
+    _e25Hover = false;
+    try { _e25Hover = !!(window.matchMedia && window.matchMedia("(hover: hover)").matches); } catch(_){}
+  }
+  return _e25Hover;
+}
+function e25IO(){
+  if (!_e25IO && typeof IntersectionObserver !== "undefined"){
+    _e25IO = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (!en.isIntersecting && en.target && en.target._e25pause) en.target._e25pause();
+      });
+    }, {threshold: 0.2});
+  }
+  return _e25IO;
+}
+function e25PauseCurrent(){
+  if (_e25Playing && _e25Playing.pause) { try { _e25Playing.pause(); } catch(_){} }
+  _e25Playing = null;
+}
+function e25Wrap(img, ideaId){
+  var wrap = document.createElement("div");
+  wrap.className = "e25media";
+  var badge = document.createElement("span");
+  badge.className = "e25badge";
+  badge.textContent = "\u25B6";
+  badge.setAttribute("aria-hidden", "true");
+  var video = null;
+  function ensureVideo(){
+    if (video) return video;
+    video = document.createElement("video");
+    video.src = "images/anim/" + ideaId + "-loop.mp4";
+    video.poster = img.src;
+    video.muted = true; video.loop = true; video.playsInline = true;
+    video.preload = "none";
+    video.className = "e25video";
+    video.style.display = "none";
+    video.setAttribute("muted", ""); video.setAttribute("playsinline", "");
+    video.setAttribute("aria-hidden", "true");
+    video.addEventListener("error", function(){ pause(); }, true);
+    wrap.insertBefore(video, badge);
+    return video;
+  }
+  function play(){
+    if (e25Reduce()) return;
+    e25PauseCurrent();
+    var v = ensureVideo();
+    img.style.display = "none";
+    v.style.display = "block";
+    badge.style.display = "none";
+    _e25Playing = {pause: pause, id: ideaId};
+    try {
+      var pr = v.play();
+      if (pr && pr.catch) pr.catch(function(){ pause(); });
+    } catch(_){ pause(); }
+    try { Analytics.track("e25_video_played", {idea_id: ideaId}); } catch(_){}
+  }
+  function pause(){
+    if (video){ try { video.pause(); } catch(_){} video.style.display = "none"; }
+    img.style.display = "";
+    badge.style.display = "";
+    if (_e25Playing && _e25Playing.id === ideaId) _e25Playing = null;
+  }
+  function toggle(){
+    if (_e25Playing && _e25Playing.id === ideaId) pause(); else play();
+  }
+  wrap._e25pause = pause;
+  /* Artwork taps toggle video and stop here, so the E20b card-body tap
+     (open detail) does not fire on artwork taps. */
+  wrap.addEventListener("click", function(e){ e.stopPropagation(); toggle(); });
+  if (e25Hoverable()){
+    wrap.addEventListener("mouseenter", play);
+    wrap.addEventListener("mouseleave", pause);
+  }
+  var io = e25IO();
+  if (io) io.observe(wrap);
+  wrap.appendChild(img);
+  wrap.appendChild(badge);
+  return wrap;
+}
+
+/* One result card, extracted so the "Still stuck?" section can render
+   alternates (ranks 4-6) with the exact same card, including tap-to-pick. */
+function buildResultCard(scored, idx, pick){
+    var idea = scored.idea;
+    var card = document.createElement("div");
+    card.className = "card";
+    var im = ideaMedia(idea);
+    var h = document.createElement("h3"); h.textContent = idea.title;
+    if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent="Top pick for you";card.appendChild(tp);}
+    var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
+    var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
+    var wh = document.createElement("p"); wh.className = "why";
+    var wb = document.createElement("b"); wb.textContent = "Why this fits you";
+    wh.appendChild(wb);
+    wh.appendChild(document.createTextNode(": " + whyLine(scored, idx).replace(/^Why this fits you: /, "")));
+    var row = document.createElement("div"); row.className = "row";
+    var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+    var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
+    if (pick && pick.ideaId === idea.id) hint.style.display = "none";
+    var note = document.createElement("p"); note.className = "picked-note";
+    note.textContent = "\u2713 You\u2019re going as " + idea.title;
+    var planBox = document.createElement("div");
+    if (pick && pick.ideaId === idea.id) note.style.display = "block";
+    var status = document.createElement("p"); status.className = "status";
+    function doPick(){
+      store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+      note.style.display = "block";
+      hint.style.display = "none";
+      status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
+      Analytics.track("pick_saved", {idea_id: idea.id});
+      planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+      var shareBox = document.createElement("div");
+      var aiPlanBox = document.createElement("div");
+      var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
+      if (_cast && typeof buildCastPanel === "function"){
+        /* Cast mapping replaces the generic share + AI sections for cast-enabled ideas. */
+        planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
+      } else {
+        planBox.appendChild(shareBox); /* share leads */
+        planBox.appendChild(aiPlanBox); /* AI plan follows */
+        addCopyShareRow(shareBox, idea);
+        showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "pick_plan_copied", true);
+      }
+    }
+    bPick.onclick = doPick;
+    /* The results header says "Tap one to save your pick": make the card body
+       tappable too. Taps on buttons/links inside the card keep their own
+       behavior, and a tap that was really a text selection is not a pick.
+       Re-tapping is idempotent (planBox is rebuilt, never stacked). */
+    card.style.cursor = "pointer";
+    card.addEventListener("click", function(e){
+      var t = e.target;
+      if (t && t.closest && (t.closest("button") || t.closest("a"))) return;
+      try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
+      doPick();
+    });
+    bShare.onclick = function(){ shareText(idea, status, bShare); };
+    row.appendChild(bPick); row.appendChild(bShare);
+    card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+    card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+    return card;
+}
+function renderResults(results){
+  var box = $("r-cards");
+  box.innerHTML = "";
+  var pick = load("pmc_pick_v1");
+  results.forEach(function(scored, idx){
+    box.appendChild(buildResultCard(scored, idx, pick));
+  });
+  var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
+  var aiBox = document.createElement("div");
+  var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
+  bAI.onclick = function(){ showPromptPreview(aiBox, buildResultsPrompt(results, false), "ai_prompt_copied"); };
+  aiRow.appendChild(bAI);
+  box.appendChild(aiRow);
+  box.appendChild(aiBox);
+  /* Still stuck? escape hatch: none of the three results landed */
+  var stuck = document.createElement("div"); stuck.className = "stuck";
+  var sh = document.createElement("h3"); sh.textContent = "Still stuck?";
+  var sp = document.createElement("p");
+  sp.textContent = "None of these quite fit? Use the three ideas as starting points.";
+  var stuckRow = document.createElement("div"); stuckRow.className = "row";
+  /* E9: the direct answer to "none of these fit" — three more ideas (ranks 4-6)
+     as full cards with tap-to-pick. Re-scores from the current answers; one tap. */
+  var bMore = document.createElement("button"); bMore.type = "button"; bMore.className = "ghost";
+  bMore.textContent = "Show 3 more ideas";
+  var moreBox = document.createElement("div");
+  bMore.onclick = function(){
+    var alt = scoreIdeas(true).slice(3, 6);
+    var pk = load("pmc_pick_v1");
+    moreBox.innerHTML = "";
+    alt.forEach(function(scored, i){ moreBox.appendChild(buildResultCard(scored, i + 3, pk)); });
+    bMore.disabled = true;
+    bMore.textContent = "Showing 3 more ideas";
+    Analytics.track("more_ideas_shown", {});
+  };
+  var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "ghost";
+  bStuck.textContent = "Get an AI prompt from these 3 ideas";
+  var stuckBox = document.createElement("div");
+  bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(results, true), "stuck_prompt_copied"); };
+  stuckRow.appendChild(bMore);
+  stuckRow.appendChild(bStuck);
+  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(moreBox); stuck.appendChild(stuckBox);
+  box.appendChild(stuck);
+  show("s-results");
+}
+
+/* ================= BROWSE ================= */
+function renderBrowse(){
+  var grid = $("b-grid");
+  e25PauseCurrent(); /* E25: a re-render (search/filter keystroke) rebuilds cards */
+  grid.innerHTML = "";
+  /* Browse-all follows the editorial rank, not build order. */
+  var q20 = (typeof browseQ20 === "string" ? browseQ20 : "").trim().toLowerCase();
+  var ordered = IDEAS.slice().sort(function(a,b){ return a.rank - b.rank; }).filter(function(idea){
+    if (browseAud20 && idea.audience.indexOf(browseAud20) < 0) return false;
+    if (browseEff20 && effortOf20(idea) !== browseEff20) return false;
+    if (q20 && (idea.title + " " + idea.blurb).toLowerCase().indexOf(q20) < 0) return false;
+    return true;
+  });
+  ordered.forEach(function(idea){
+    var card = document.createElement("div");
+    card.className = "bcard";
+    var img = document.createElement("img");
+    img.src = "images/" + idea.id + ".png";
+    img.alt = "";
+    img.loading = "lazy";
+    img.setAttribute("onerror", "this.style.display='none'");
+    /* E25: animated ideas get the tap/hover video wrapper (static PNG default). */
+    var media = (ANIMATED[idea.id] && !e25Reduce()) ? e25Wrap(img, idea.id) : img;
+    var h = document.createElement("h3"); h.textContent = idea.title;
+    var p = document.createElement("p"); p.textContent = idea.blurb;
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "ghost"; b.textContent = "Ask my AI";
+    var bShare = document.createElement("button");
+    bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
+    var st = document.createElement("div");
+    var stShare = document.createElement("p"); stShare.className = "status";
+    b.onclick = (function(it, sel){ return function(){ showPromptPreview(sel, buildIdeaPrompt(it), "browse_ai_prompt_copied"); }; })(idea, st);
+    bShare.onclick = (function(it, sel, btn){ return function(){
+      var a = (it.audience && it.audience[0]) || "solo";
+      shareText(it, sel, btn, a);
+    }; })(idea, stShare, bShare);
+    var btnRow = document.createElement("div"); btnRow.className = "row"; btnRow.style.marginTop = "10px";
+    btnRow.appendChild(b); btnRow.appendChild(bShare);
+    card.appendChild(media);
+    var _tse2=trendStatEl(idea);if(_tse2)card.appendChild(_tse2);
+    card.appendChild(h); card.appendChild(p);
+    card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
+    /* E20 parity: tapping the card body (not the buttons) opens the full
+       pick flow. Buttons keep their own handlers; the closest("button") /
+       closest("a") guard keeps taps from double-firing. (E17 lesson: a
+       card-level click must never swallow control taps.) */
+    card.style.cursor = "pointer";
+    card.addEventListener("click", (function(id){ return function(e){
+      var t = e.target;
+      if (t && t.closest && (t.closest("button") || t.closest("a"))) return;
+      try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
+      openIdeaDetail(id);
+    }; })(idea.id));
+    grid.appendChild(card);
+  });
+  if (!ordered.length){
+    var _be = document.createElement("p"); _be.className = "bempty";
+    _be.textContent = "No ideas match. Try a shorter search or clear a filter.";
+    grid.appendChild(_be);
+  }
+  $("b-count").textContent = "Showing " + ordered.length + " of " + IDEAS.length + " ideas";
+}
+function openBrowse(){
+  renderBrowse();
+  Analytics.track("browse_opened", {});
+  show("s-browse");
+}
+
+/* ================= BROWSE DETAIL: E20 PARITY =================
+   Billy's product call: tapping a browse card opens the SAME full pick flow
+   as a quiz result card. Reuses the result card's components (trendStatEl,
+   addCopyShareRow, showPromptPreview, buildIdeaPrompt, shareText, ideaMedia)
+   and the E17 cast-panel hook point. The why-line is the STATIC bank line:
+   with no quiz answers in state, the dynamic answer-referencing composition
+   must NOT run (it would read stale or empty answers). */
+function buildBrowseDetailCard(idea){
+  var card = document.createElement("div");
+  card.className = "card";
+  card.appendChild(ideaMedia(idea));
+  var h = document.createElement("h3"); h.textContent = idea.title;
+  var _tse = trendStatEl(idea); if (_tse) card.appendChild(_tse);
+  var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
+  var wh = document.createElement("p"); wh.className = "why";
+  var wb = document.createElement("b"); wb.textContent = "Why this fits you";
+  wh.appendChild(wb);
+  wh.appendChild(document.createTextNode(": " + idea.why));
+  var row = document.createElement("div"); row.className = "row";
+  var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+  var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
+  var note = document.createElement("p"); note.className = "picked-note";
+  note.textContent = "\u2713 You\u2019re going as " + idea.title;
+  var planBox = document.createElement("div");
+  var status = document.createElement("p"); status.className = "status";
+  var pick = load("pmc_pick_v1");
+  if (pick && pick.ideaId === idea.id){ note.style.display = "block"; hint.style.display = "none"; }
+  function mountPickSections(){
+    planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+    var shareBox = document.createElement("div");
+    var aiPlanBox = document.createElement("div");
+    var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
+    if (_cast && typeof buildCastPanel === "function"){
+      /* E17 hook: cast mapping replaces the generic share + AI sections. */
+      planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
+    } else {
+      planBox.appendChild(shareBox); /* share leads */
+      planBox.appendChild(aiPlanBox); /* AI plan follows */
+      addCopyShareRow(shareBox, idea);
+      showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "browse_detail_plan_copied", true);
+    }
+  }
+  function doPick(){
+    store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+    note.style.display = "block";
+    hint.style.display = "none";
+    status.textContent = "";
+    Analytics.track("pick_saved", {idea_id: idea.id, via: "browse_detail"});
+    mountPickSections();
+  }
+  bPick.onclick = doPick;
+  bShare.onclick = function(){
+    var a = (idea.audience && idea.audience[0]) || "solo";
+    shareText(idea, status, bShare, a);
+  };
+  /* Already picked earlier (e.g. from the quiz): show its sections at once. */
+  if (pick && pick.ideaId === idea.id) mountPickSections();
+  row.appendChild(bPick); row.appendChild(bShare);
+  card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+  card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+  return card;
+}
+function openIdeaDetail(ideaId){
+  var idea = null;
+  for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
+  if (!idea) return;
+  var box = $("d-card");
+  box.innerHTML = "";
+  box.appendChild(buildBrowseDetailCard(idea));
+  Analytics.track("browse_detail_opened", {idea_id: idea.id});
+  show("s-detail");
+}
+
+/* ================= E20: browse search + filters ================= */
+var browseQ20 = "", browseAud20 = "", browseEff20 = "";
+function effortOf20(idea){
+  var t = idea.tags || {};
+  var easy = (t.couch || 0) + (t.simple || 0);
+  var hard = (t.crafty || 0) + (t.allout || 0);
+  if (hard >= 2 && hard > easy) return "allout";
+  if (easy >= 3 && easy > hard) return "easy";
+  return "middle";
+}
+(function initE20(){
+  var qi = $("bf-q"), ai = $("bf-aud"), ei = $("bf-eff");
+  if (!qi || !ai || !ei) return;
+  var deb = null;
+  qi.addEventListener("input", function(){
+    browseQ20 = qi.value;
+    if (deb) clearTimeout(deb);
+    deb = setTimeout(function(){
+      renderBrowse();
+      Analytics.track("browse_search", {qlen: qi.value.length});
+    }, 400);
+  });
+  ai.addEventListener("change", function(){
+    browseAud20 = ai.value; renderBrowse();
+    Analytics.track("browse_filter", {kind: "audience", value: ai.value});
+  });
+  ei.addEventListener("change", function(){
+    browseEff20 = ei.value; renderBrowse();
+    Analytics.track("browse_filter", {kind: "effort", value: ei.value});
+  });
+})();
+
+/* ================= ASK MY AI ================= */
+/* The prompt text is always shown to the user before anything is copied. */
+function buildResultsPrompt(results, beyond){
+  var lines = results.map(function(scored, i){
+    var idea = scored.idea;
+    return (i+1) + ". " + idea.title + " - " + idea.blurb + " Why it fits: " + whyLine(scored, i).replace(/^Why this fits you: /, "");
+  });
+  var ans = flowOrder().map(function(qid){
+    var a = state.answers[qid];
+    return a ? qTitle(qid) + ": " + a.label : null;
+  }).filter(function(x){ return x; });
+  var ask = beyond
+    ? "Treat these as starting points, not final answers. Suggest 3 fresh costume ideas beyond them and give me a concrete plan for the best one: where to buy it or exactly how to DIY it this week. Keep it short and practical."
+    : "Help me pick one and give me a concrete plan: where to buy it or exactly how to DIY it this week. Keep it short and practical.";
+  return "I used a Halloween costume quiz (pickmycostume.com) and got these three ideas:\n" +
+    lines.join("\n") + "\n\nMy answers: " + ans.join("; ") + ".\n\n" + ask;
+}
+function buildIdeaPrompt(idea){
+  return "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
+    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" +
+    "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it (materials list with approximate costs, step by step). Keep it short and practical.";
+}
+function doCopy(text, done){
+  function fin(ok, msg){
+    done(ok, msg);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(
+      function(){ fin(true, "Copied. Paste it into ChatGPT, Claude, Gemini, Muse, or any AI."); },
+      function(){ fallbackCopy(text, done); }
+    );
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function showPromptPreview(container, text, eventName, noScroll, xprops){
+  container.innerHTML = "";
+  var curText = text;
+  function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
+  var label = document.createElement("p"); label.className = "status";
+  label.textContent = "Get your AI costume plan:";
+  var ta = document.createElement("textarea");
+  ta.className = "promptbox"; ta.setAttribute("readonly", ""); ta.value = text;
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
+  var status = document.createElement("p"); status.className = "status";
+  b.onclick = function(){
+    doCopy(curText, function(ok, msg){
+      status.textContent = msg;
+      if (ok) Analytics.track(eventName, Object.assign({}, xp()));
+    });
+  };
+  row.appendChild(b);
+  container.appendChild(label); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
+  if (!noScroll && ta.scrollIntoView) ta.scrollIntoView({block:"nearest", behavior:"smooth"});
+  return { setText: function(t){ curText = t; ta.value = t; } };
+}
+
+/* After a pick, the share section leads and the AI plan follows beneath it. */
+function addCopyShareRow(container, idea, makeText, xprops){
+  var label = document.createElement("p"); label.className = "status";
+  function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
+  label.textContent = "Text this to a friend:";
+  var ta = document.createElement("textarea");
+  ta.className = "promptbox"; ta.setAttribute("readonly", "");
+  ta.style.minHeight = "76px";
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Share this idea";
+  var st = document.createElement("p"); st.className = "status";
+  function makeShare(){
+    var sid = newShareId();
+    var text = makeText ? makeText(sid)
+      : "I\u2019m going as " + idea.title + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
+    return {sid: sid, text: text};
+  }
+  var cur = makeShare();
+  ta.value = cur.text;
+  b.onclick = function(){
+    var sh = cur; /* what the preview shows is exactly what gets shared */
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid;
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      if (ok){
+        /* E8: the first share landed — invite a second one. The button stays
+           live with a fresh share_id (minted below), so the re-offer is one line. */
+        label.textContent = "Shared. Who else needs a costume?";
+        Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id}, xp()));
+        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id}, xp()));
+      }
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid}, xp()));
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    /* Phone: native share sheet. Fires share_created only when the share resolves;
+       a dismissed sheet is a cancel, not a share, so it fires nothing. */
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text, url: link}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+    cur = makeShare();
+    ta.value = cur.text;
+  };
+  row.appendChild(b);
+  container.appendChild(label);
+  container.appendChild(ta);
+  container.appendChild(row);
+  container.appendChild(st);
+  if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
+  /* E17: lets the cast panel refresh the preview text without rebuilding the row. */
+  return { refresh: function(){ cur = makeShare(); ta.value = cur.text; } };
+}
+
+/* ================= GROUP CAST MAPPING (shipped E23) =================
+   Cast mapping: name the people in your group and the site assigns each a coordinated costume role.
+   Billy's observation: his family was assigning "you are Ursula, you are Scuttle" by hand  --  the site should do it.
+   Hard rule (E7): NEVER trademarked character names. Roles are generic: sea witch, seagull, clownfish.
+   Data-driven and scalable: each group/family idea carries a cast list  --  roles with kid/adult sizing  --  and
+   assignCast() fits ANY group size automatically (kids take kid-sized roles first; overflow repeats the filler
+   role with numbering). mode "choose" covers pick-your-X ideas (animals, emojis, breakfasts, decades): a pool
+   the user picks from per person. Start: 20 ideas; expand by demand data.
+   Privacy: typed names live in JS memory only. They NEVER enter analytics events or logs  --  only the share
+   text the user explicitly sends. Analytics carries counts (group_size, kid_count) only.
+   State rule (Billy's bug 2026-09-23): NO control wipes any other state. Counts, names, kid/adult toggles and
+   role dropdowns all preserve each other. Growing/shrinking the group keeps every surviving person's name,
+   kid/adult flag and explicit role pick; only removed rows lose state (they're visibly gone). */
+var CASTS = {
+  "under-the-sea":{mode:"assign",filler:"sea creature",roles:[
+    {r:"sea witch",kid:false,adult:true},{r:"sea king",kid:false,adult:true},
+    {r:"clownfish",kid:true,adult:false},{r:"crab",kid:true,adult:false},
+    {r:"mermaid",kid:true,adult:true},{r:"prince",kid:true,adult:true},
+    {r:"seagull",kid:true,adult:true},{r:"jellyfish",kid:true,adult:true}]},
+  "mermaid-crew":{mode:"assign",filler:"sea creature",roles:[
+    {r:"sea witch",kid:false,adult:true},{r:"sea king",kid:false,adult:true},
+    {r:"crab",kid:true,adult:false},{r:"mermaid",kid:true,adult:true},
+    {r:"prince",kid:true,adult:true},{r:"seagull",kid:true,adult:true}]},
+  "superhero-family":{mode:"assign",filler:"superhero",roles:[
+    {r:"team captain",kid:false,adult:true},{r:"strong one",kid:true,adult:true},
+    {r:"speedster",kid:true,adult:true},{r:"shadow",kid:true,adult:true},
+    {r:"inventor",kid:true,adult:false},{r:"spark",kid:true,adult:false}]},
+  "blue-dog-family":{mode:"assign",filler:"pup",roles:[
+    {r:"mama dog",kid:false,adult:true},{r:"papa dog",kid:false,adult:true},
+    {r:"pup",kid:true,adult:false},{r:"pup",kid:true,adult:false},
+    {r:"pup",kid:true,adult:false},{r:"pup",kid:true,adult:false}]},
+  "little-pig-family":{mode:"assign",filler:"little pig",roles:[
+    {r:"mama pig",kid:false,adult:true},{r:"papa pig",kid:false,adult:true},
+    {r:"little pig",kid:true,adult:false},{r:"little pig",kid:true,adult:false},
+    {r:"little pig",kid:true,adult:false},{r:"dinosaur",kid:true,adult:false}]},
+  "dino-rangers":{mode:"assign",filler:"dino",roles:[
+    {r:"ranger",kid:false,adult:true},{r:"ranger",kid:false,adult:true},
+    {r:"little dino",kid:true,adult:false},{r:"little dino",kid:true,adult:false},
+    {r:"little dino",kid:true,adult:false},{r:"little dino",kid:true,adult:false}]},
+  "dinosaur-family":{mode:"assign",filler:"dino",roles:[
+    {r:"big dino",kid:false,adult:true},{r:"big dino",kid:false,adult:true},
+    {r:"little dino",kid:true,adult:false},{r:"little dino",kid:true,adult:false},
+    {r:"little dino",kid:true,adult:false},{r:"little dino",kid:true,adult:false}]},
+  "enchanted-castle-crew":{mode:"assign",filler:"castle guest",roles:[
+    {r:"candelabra",kid:false,adult:true},{r:"clock",kid:false,adult:true},
+    {r:"bookish princess",kid:true,adult:true},{r:"cursed prince",kid:true,adult:true},
+    {r:"teapot",kid:true,adult:true},{r:"dancing spoon",kid:true,adult:true}]},
+  "ghost-hunters":{mode:"assign",filler:"ghost hunter",roles:[
+    {r:"team leader",kid:false,adult:true},{r:"tech expert",kid:true,adult:true},
+    {r:"rookie",kid:true,adult:false},{r:"ghost",kid:true,adult:true}]},
+  "mystery-crew":{mode:"assign",filler:"crew member",roles:[
+    {r:"team leader",kid:true,adult:true},{r:"style icon",kid:true,adult:true},
+    {r:"brains",kid:true,adult:true},{r:"goofball",kid:true,adult:false},
+    {r:"dog",kid:true,adult:false}]},
+  "soccer-squad":{mode:"assign",filler:"player",roles:[
+    {r:"coach",kid:false,adult:true},{r:"ref",kid:false,adult:true},
+    {r:"striker",kid:true,adult:true},{r:"goalie",kid:true,adult:false},
+    {r:"superfan",kid:true,adult:true}]},
+  "gloom-bloom":{mode:"assign",filler:"guest",roles:[
+    {r:"gloom",kid:true,adult:true},{r:"bloom",kid:true,adult:true}]},
+  "plumber-duo":{mode:"assign",filler:"plumber",roles:[
+    {r:"plumber in red",kid:true,adult:true},{r:"plumber in green",kid:true,adult:true}]},
+  "safari-zoo-crew":{mode:"choose",filler:"zookeeper",pool:["lion","elephant","giraffe","zebra","monkey","panda","tiger","kangaroo"]},
+  "emoji-crew":{mode:"choose",filler:"smiley",pool:["smiley","heart-eyes","laughing-crying","cool shades","winking","mind-blown","party popper"]},
+  "breakfast-buffet":{mode:"choose",filler:"toast",pool:["fried egg","bacon","toast","pancake stack","orange juice","coffee cup"]},
+  "decades-crew":{mode:"choose",filler:"80s",pool:["50s","60s","70s","80s","90s","Y2K"]},
+  "board-game-pieces":{mode:"choose",filler:"pawn",pool:["die","playing card","pawn","domino","chess knight"]},
+  "block-game-crew":{mode:"choose",filler:"blocky hero",pool:["blocky hero","blocky villager","blocky knight","blocky monster"]},
+  "web-slinger-crew":{mode:"choose",filler:"spider-hero",pool:["red spider-hero","black spider-hero","pink spider-hero"]},
+  "snow-sisters":{mode:"assign",filler:"snow friend",roles:[
+    {r:"ice queen",kid:false,adult:true},{r:"snow princess",kid:true,adult:true},
+    {r:"talking snowman",kid:true,adult:false},{r:"reindeer friend",kid:true,adult:false},
+    {r:"mountain guide",kid:false,adult:true},{r:"snowflake sprite",kid:true,adult:false},
+    {r:"ice harvester",kid:false,adult:true},{r:"winter villager",kid:true,adult:true}]}
+};
+/* Fit a cast to any group size. people: [{name, kid}]. overrides: {index: role} of the
+   user's explicit dropdown picks. Auto-assignment skips overridden rows and never hands
+   out a role the user explicitly claimed somewhere else (assign mode; choose mode skips
+   claimed pool entries). Overridden indices get null here -- the caller prefers the
+   explicit pick. */
+function assignCast(ideaId, people, overrides){
+  overrides = overrides || {};
+  var cast = CASTS[ideaId];
+  if (!cast) return people.map(function(){ return ""; });
+  var claimed = [];
+  Object.keys(overrides).forEach(function(k){ claimed.push(overrides[k]); });
+  var nameCount = {};
+  function named(base){
+    nameCount[base] = (nameCount[base] || 0) + 1;
+    return nameCount[base] > 1 ? base + " " + nameCount[base] : base;
+  }
+  function unclaimed(base){ return claimed.indexOf(base) < 0; }
+  if (cast.mode === "choose"){
+    var pool = cast.pool.filter(unclaimed);
+    if (!pool.length) pool = cast.pool.slice();
+    return people.map(function(p, i){
+      if (overrides[i] !== undefined) return null;
+      return named(pool[i % pool.length]);
+    });
+  }
+  var used = {};
+  function firstFit(wantKid){
+    for (var i = 0; i < cast.roles.length; i++){
+      if (used[i]) continue;
+      var r = cast.roles[i];
+      if (!unclaimed(r.r)) continue;
+      if (wantKid ? r.kid : r.adult){ used[i] = true; return named(r.r); }
+    }
+    var f = named(cast.filler), guard = 0;
+    while (!unclaimed(f) && guard++ < 12) f = named(cast.filler);
+    return f;
+  }
+  /* Kids first, so kid-sized roles go to kids before adults claim the shared ones. */
+  var order = people.map(function(p, idx){ return idx; }).filter(function(idx){
+    return overrides[idx] === undefined;
+  }).sort(function(a, b){
+    return ((people[b].kid) ? 1 : 0) - ((people[a].kid) ? 1 : 0);
+  });
+  var roles = new Array(people.length);
+  order.forEach(function(idx){ roles[idx] = firstFit(!!people[idx].kid); });
+  return roles;
+}
+function castRoleOptions(ideaId){
+  var cast = CASTS[ideaId]; if (!cast) return [];
+  var opts = (cast.mode === "choose") ? cast.pool.slice() : cast.roles.map(function(r){ return r.r; });
+  var out = [];
+  opts.forEach(function(o){ if (out.indexOf(o) < 0) out.push(o); });
+  out.push(cast.filler);
+  return out;
+}
+function castLine(list){
+  return list.map(function(a){ return a.name + " is the " + a.role; }).join(", ");
+}
+function buildCastShareText(idea, list, sid){
+  return "We\u2019re going as " + idea.title + " this Halloween: " + castLine(list) +
+    ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
+}
+function buildCastPrompt(idea, list){
+  var lines = list.map(function(a){
+    return "- " + a.name + " (" + (a.kid ? "kid" : "adult") + ") is the " + a.role;
+  });
+  return "Plan our group Halloween costumes for " + idea.title + " (pickmycostume.com). The idea: " + idea.blurb +
+    "\n\nOur cast:\n" + lines.join("\n") +
+    "\n\nFor each person, give a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it this week (materials list with approximate costs, step by step). Keep it short and practical.";
+}
+/* The cast-mapping panel. Replaces the generic share + AI sections after a pick
+   on a cast-enabled idea. Names are read from the inputs at share/copy time and
+   never touch analytics (see Privacy note above). */
+function buildCastPanel(idea, cast, shareBox, aiPlanBox){
+  var box = document.createElement("div"); box.className = "castbox";
+  /* Billy's bug, round 2 (2026-09-23): the result card has a click-to-pick
+     handler that re-runs doPick() on ANY tap that is not on a button or link --
+     including taps on our name inputs and role selects. doPick() clears the
+     panel and rebuilds it from scratch, which read as "tapping to type resets
+     the cast". (Round 1's harness never fired bubbling clicks through the card
+     wrapper, so it missed this entirely.) Taps inside the cast panel keep
+     their own behavior and must never bubble up to the card. */
+  if (box.addEventListener) box.addEventListener("click", function(e){ e.stopPropagation(); });
+  var h = document.createElement("h3"); h.textContent = "Who\u2019s who?";
+  var sub = document.createElement("p"); sub.className = "status";
+  sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and stay on this phone.";
+  box.appendChild(h); box.appendChild(sub);
+  var size = 2, kids = 0, people = [], overrides = {};
+  var q1 = document.createElement("p"); q1.className = "castq"; q1.textContent = "How many people?";
+  var q1r = document.createElement("div"); q1r.className = "castbtns";
+  var q2 = document.createElement("p"); q2.className = "castq"; q2.textContent = "How many are kids?";
+  var q2r = document.createElement("div"); q2r.className = "castbtns";
+  var rows = document.createElement("div");
+  var line = document.createElement("p"); line.className = "castline";
+  box.appendChild(q1); box.appendChild(q1r);
+  box.appendChild(q2); box.appendChild(q2r);
+  box.appendChild(rows); box.appendChild(line);
+  /* The cast share row and the per-person AI plan live INSIDE the panel --
+     share first, AI plan follows (production order). Without this they were
+     populated but never attached, so the cast share text was invisible. */
+  box.appendChild(shareBox);
+  box.appendChild(aiPlanBox);
+  var shareHandle = null, aiHandle = null;
+  /* Kid flags are per-person and sticky. The count buttons set the last N slots as
+     kids in one tap; the Kid/Adult toggle fine-tunes individuals. Neither ever
+     touches names or explicit role picks. */
+  function recountKids(){
+    kids = people.reduce(function(n, p){ return n + (p.kid ? 1 : 0); }, 0);
+  }
+  function setSize(n){
+    size = n;
+    var kept = people.slice(0, n);
+    for (var i = kept.length; i < n; i++) kept.push({name: "", kid: false});
+    people = kept;
+    /* Only rows that visibly disappear lose state. */
+    var no = {};
+    Object.keys(overrides).forEach(function(k){ if (+k < n) no[k] = overrides[k]; });
+    overrides = no;
+    recountKids();
+    render();
+  }
+  function setKids(n){
+    people.forEach(function(p, i){ p.kid = i >= people.length - n; });
+    kids = n;
+    render();
+  }
+  function autoRoles(){
+    return assignCast(idea.id, people, overrides);
+  }
+  function currentList(){
+    var roles = autoRoles();
+    return people.map(function(p, i){
+      var nm = p.name.trim();
+      return {name: (nm || ("Person " + (i + 1))), kid: !!p.kid, role: overrides[i] || roles[i]};
+    });
+  }
+  function render(){
+    q1r.innerHTML = ""; q2r.innerHTML = "";
+    [2, 3, 4, 5, 6].forEach(function(n){
+      var b = document.createElement("button"); b.type = "button";
+      b.textContent = (n === 6) ? "6+" : String(n);
+      if (n === size) b.className = "sel";
+      b.onclick = function(){ setSize(n); };
+      q1r.appendChild(b);
+    });
+    for (var k = 0; k <= size; k++){
+      (function(kk){
+        var b = document.createElement("button"); b.type = "button";
+        b.textContent = String(kk);
+        if (kk === kids) b.className = "sel";
+        b.onclick = function(){ setKids(kk); };
+        q2r.appendChild(b);
+      })(k);
+    }
+    var roles = autoRoles();
+    rows.innerHTML = "";
+    people.forEach(function(p, i){
+      var row = document.createElement("div"); row.className = "castrow";
+      var nameWrap = document.createElement("div"); nameWrap.className = "castname";
+      var lab = document.createElement("span"); lab.className = "castlab"; lab.textContent = "Name";
+      var inp = document.createElement("input");
+      inp.placeholder = "Type a name"; inp.value = p.name; inp.maxLength = 24;
+      inp.setAttribute("aria-label", "Name for person " + (i + 1) + " (optional)");
+      inp.setAttribute("autocomplete", "off");
+      inp.oninput = function(){ p.name = inp.value; refreshOutputs(); };
+      nameWrap.appendChild(lab); nameWrap.appendChild(inp);
+      var tg = document.createElement("button"); tg.type = "button";
+      tg.className = "casttoggle" + (p.kid ? " sel" : "");
+      tg.textContent = p.kid ? "Kid" : "Adult";
+      tg.setAttribute("aria-label", "Toggle kid or adult for person " + (i + 1));
+      tg.onclick = function(){ p.kid = !p.kid; recountKids(); render(); };
+      var sel = document.createElement("select");
+      sel.setAttribute("aria-label", "Role for person " + (i + 1));
+      var opts = castRoleOptions(idea.id);
+      var cur = overrides[i] || roles[i];
+      if (opts.indexOf(cur) < 0) opts = opts.concat([cur]);
+      opts.forEach(function(o){
+        var op = document.createElement("option");
+        op.value = o; op.textContent = o;
+        if (o === cur) op.selected = true;
+        sel.appendChild(op);
+      });
+      sel.onchange = function(){ overrides[i] = sel.value; refreshOutputs(); };
+      row.appendChild(nameWrap); row.appendChild(tg); row.appendChild(sel);
+      rows.appendChild(row);
+    });
+    refreshOutputs();
+  }
+  function refreshOutputs(){
+    var list = currentList();
+    line.innerHTML = "";
+    var b = document.createElement("b"); b.textContent = "Your cast: ";
+    line.appendChild(b);
+    line.appendChild(document.createTextNode(castLine(list) + "."));
+    /* The share text and the AI prompt ARE the cast list  --  rebuilt from the
+       current inputs every time, so the preview is always what gets sent. */
+    if (!shareHandle){
+      /* xprops is a function so group_size/kid_count are read at event time, not build time. */
+      var xp = function(){ return {cast: 1, group_size: size, kid_count: kids}; };
+      shareHandle = addCopyShareRow(shareBox, idea,
+        function(sid){ return buildCastShareText(idea, currentList(), sid); }, xp);
+      aiHandle = showPromptPreview(aiPlanBox, "", "e17_cast_plan_copied", true, xp);
+    }
+    shareHandle.refresh();
+    aiHandle.setText(buildCastPrompt(idea, list));
+  }
+  Analytics.track("e17_cast_started", {idea_id: idea.id});
+  setSize(2);
+  return box;
+}
+
+/* ================= SHARE ================= */function shareText(idea, statusEl, btn, audOverride){
+  var aud = audOverride || ((state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo");
+  var sid = newShareId();
+  var text = SHARE.textTemplate(idea, aud, sid);
+  var url = "https://pickmycostume.com/c/" + idea.id;
+  function done(ok, msg){
+    statusEl.textContent = msg;
+    if (ok){
+      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid});
+      Analytics.track("share_created", {share_id: sid, idea_id: idea.id});
+      if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
+    }
+  }
+  /* Desktop fallback: no share sheet, so copy the full share text instead. */
+  function copyLink(){
+    doCopy(text, function(ok, msg){
+      if (ok && btn){
+        var orig = btn.textContent;
+        btn.textContent = "Copied \u2713";
+        setTimeout(function(){ btn.textContent = orig; }, 2000);
+      }
+      done(ok, ok ? "Copied. Paste it into any message." : "Copy this: " + text);
+    });
+  }
+  var triedShare = false;
+  try {
+    if (navigator.share) {
+      triedShare = true;
+      navigator.share({text: text}).then(
+        function(){ done(true, "Shared."); },
+        function(){ done(false, ""); } /* dismissed: clear status, no phantom clipboard copy */
+      );
+    }
+  } catch(e){ triedShare = false; }
+  if (!triedShare) copyLink();
+}
+function fallbackCopy(text, done){
+  try {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.top = "0"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    done(ok, ok ? "Copied. Paste it into any message." : "Copy this: " + text);
+  } catch(e){
+    done(false, "Copy this: " + text);
+  }
+}
+
+/* ================= WIRING ================= */
+$("btn-start").onclick = function(){
+  state = {qi: 0, answers: {}};
+  clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
+  Analytics.track("quiz_started", {});
+  renderQ();
+};
+$("q-back").onclick = function(){
+  if (state.qi === 0) { show("s-hero"); refreshReturnBox(); return; }
+  state.qi--;
+  renderQ();
+};
+$("btn-rback").onclick = function(){
+  state.qi = flowOrder().length - 1;
+  renderQ();
+};
+$("btn-restart").onclick = function(){
+  state = {qi: 0, answers: {}};
+  clearK("pmc_pick_v1");
+  renderQ();
+};
+$("btn-return").onclick = function(){
+  var last = load("pmc_last_v1");
+  if (!last || !last.results) return;
+  var byId = {};
+  IDEAS.forEach(function(i){ byId[i.id] = i; });
+  var results = last.results
+    .map(function(id){ return byId[id]; })
+    .filter(Boolean)
+    .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
+  if (results.length) renderResults(results);
+};
+$("btn-browse-hero").onclick = openBrowse;
+$("btn-browse-results").onclick = openBrowse;
+$("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
+$("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
+$("browse-title").textContent = "All " + IDEAS.length + " ideas";
+$("btn-bback").onclick = function(){ show("s-hero"); };
+/* E20 parity: back from a browse detail returns to the browse grid with the
+   current search/filter state intact (renderBrowse reads the live inputs). */
+$("btn-dback").onclick = function(){ renderBrowse(); show("s-browse"); };
+/* E16: browse -> quiz door. Same start behavior as the hero CTA, plus a
+   browse_quiz_started event so the morning brief can measure the door. */
+$("btn-bquiz").onclick = function(){
+  Analytics.track("browse_quiz_started", {});
+  $("btn-start").onclick();
+};
+$("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
+$("btn-about-start").onclick = $("btn-start").onclick;
+$("btn-about-back").onclick = function(){ show("s-hero"); };
+
+(function init(){
+  /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
+  (function(){
+    /* Anonymous share id: ?s=<sid> survives the /c/<slug> redirect. Never an identity. */
+    var sm = /[?&]s=([a-z0-9]+)/.exec(location.search || "");
+    if (sm) VIA_SHARE = sm[1];
+    var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
+    if (!m) return;
+    var idea = null;
+    IDEAS.forEach(function(it){ if (it.id === m[1]) idea = it; });
+    if (!idea) return;
+    var box = document.createElement("div");
+    box.className = "card";
+    box.style.marginBottom = "16px";
+    var im = ideaMedia(idea);
+    var h = document.createElement("h3");
+    h.textContent = "Your friend is going as " + idea.title;
+    var p = document.createElement("p");
+    p.className = "blurb";
+    p.textContent = idea.blurb;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "cta";
+    b.style.width = "100%";
+    b.style.marginTop = "10px";
+    b.textContent = "What are you going as? Find my costume";
+    b.onclick = function(){
+      state = {qi: 0, answers: {}};
+      clearK("pmc_pick_v1");
+      Analytics.track("quiz_started", {});
+      renderQ();
+    };
+    /* E17: the landing was quiz-or-nothing. A recipient who will not take a
+       quiz can still browse; the browse screen now has its own quiz door
+       (E16), so this is a loop, not a leak. */
+    var bb = document.createElement("button");
+    bb.type = "button";
+    bb.className = "ghost";
+    bb.style.width = "100%";
+    bb.style.marginTop = "8px";
+    bb.textContent = "Or browse all ideas";
+    bb.onclick = function(){
+      Analytics.track("landing_browse", {});
+      openBrowse();
+    };
+    box.appendChild(im); box.appendChild(h); box.appendChild(p); box.appendChild(b); box.appendChild(bb);
+    var hero = $("s-hero");
+    hero.insertBefore(box, hero.firstChild);
+    /* Recipient-channel inference (analytics only, no UX change). The Web
+       Share API never reveals the destination app at share time, so this is
+       open-time inference from the UA: Messenger/WhatsApp in-app browsers
+       tag their UAs; iMessage opens look like plain Safari and are
+       indistinguishable, logged as safari_unknown. */
+    var _rlv = {idea_id: idea.id, recipient_channel: recipientChannel()};
+    if (VIA_SHARE) _rlv.share_id = VIA_SHARE;
+    Analytics.track("recipient_landing_viewed", _rlv);
+  })();
+  refreshReturnBox();
+  var _ic = document.getElementById("idea-count"); if (_ic) _ic.textContent = IDEAS.length;
+})();
+function refreshReturnBox(){
+  var box = $("returnbox");
+  if (!box) return;
+  box.style.display = "none";
+  var pick = load("pmc_pick_v1");
+  var last = load("pmc_last_v1");
+  var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
+  if (fresh && last && last.results && last.results.length) {
+    var idea = IDEAS.filter(function(i){ return i.id === pick.ideaId; })[0];
+    if (idea) {
+      $("return-pick").textContent = idea.title;
+      box.style.display = "block";
+    }
+  }
+}
+</script>
+</body>
+</html>
