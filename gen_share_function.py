@@ -18,10 +18,41 @@ for slug in data:
     assert os.path.exists(os.path.join(ROOT, "images", slug + ".png")), \
         "missing illustration: " + slug
 
+# Old slugs renamed in the Sep 2026 IP sweep. Every alias must resolve to a
+# slug present in the current bank; the generator asserts this below.
+ALIASES = {
+    "bluey-family": "blue-dog-family",
+    "incredibles-family": "superhero-family",
+    "stitch-ohana": "blue-alien-ohana",
+    "wednesday-enid": "gloom-bloom",
+    "iron-man": "tin-hero",
+    "elphaba-glinda": "good-witch-bad-witch",
+    "minecraft-crew": "block-game-crew",
+    "spider-verse": "web-slinger-crew",
+    "spider-man-mj": "web-hero-duo",
+    "peppa-pig": "little-pig-family",
+    "jurassic-rangers": "dino-rangers",
+    "creeper": "block-monster",
+    "among-us": "space-crewmate",
+    "little-mermaid-crew": "mermaid-crew",
+    "bumblebee": "bumble-bee",
+    "jim-pam": "office-couple",
+    "bob-linda": "burger-joint-couple",
+    "be-our-guest": "enchanted-castle-crew",
+    "disney-princesses": "fairy-tale-princesses",
+}
+for old, new in ALIASES.items():
+    assert new in data, "alias target missing from bank: " + new
+    assert old not in data, "alias source still in bank: " + old
+
 FN = '''// Per-idea share pages: /c/<slug> unfurls the shared costume's own
 // illustration for messengers, then redirects humans to /?idea=<slug>.
 // Regenerate with gen_share_function.py when the idea bank changes.
 var IDEAS = %s;
+
+// Old slugs renamed in the Sep 2026 IP sweep: keep every share link ever
+// minted working by resolving them to the current canonical slug.
+var ALIASES = %s;
 
 function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;")
@@ -30,6 +61,7 @@ function esc(s) {
 
 export function onRequest(context) {
   var slug = context.params.slug || "";
+  if (ALIASES[slug]) slug = ALIASES[slug]; /* renamed slug -> canonical */
   var idea = IDEAS[slug];
   if (!idea) return new Response("Not found", { status: 404 });
   var title = esc(idea.t), blurb = esc(idea.b);
@@ -64,7 +96,7 @@ export function onRequest(context) {
     }
   });
 }
-''' % json.dumps(data)
+''' % (json.dumps(data), json.dumps(ALIASES))
 
 out = os.path.join(ROOT, "functions", "c", "[slug].js")
 os.makedirs(os.path.dirname(out), exist_ok=True)
