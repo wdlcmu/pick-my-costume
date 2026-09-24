@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pick My Costume - A few quick questions. Three costume ideas.</title>
+<meta name="robots" content="noindex,nofollow">
+<title>PROTOTYPE E20 - Browse search and filters (Pick My Costume)</title>
 <meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pickmycostume.com/">
@@ -150,10 +151,17 @@ footer a{color:var(--accent)}
 .bcard p{margin:0;font-size:14px;color:var(--muted)}
 .bcard .row{display:flex;flex-wrap:nowrap;gap:8px}
 .bcard .row button{flex:1 1 0;min-width:0;white-space:nowrap;font-size:12px;padding:8px 4px;min-height:44px;border-width:1px}
+.proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+.bfilters{display:flex;gap:8px;margin:0 0 8px}
+.bfilters input[type=search]{flex:2 1 0;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters select{flex:1 1 0;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
+.bempty{color:var(--muted);padding:24px 0;text-align:center}
 </style>
 </head>
 <body>
 <div class="wrap">
+    <p class="proto-banner">Prototype E20: browse search and filters. Tap-test build, not the live site.</p>
 
   <!-- HERO -->
   <section class="screen on" id="s-hero">
@@ -200,6 +208,24 @@ footer a{color:var(--accent)}
     <p class="progress">Every idea in the bank</p>
     <h2 class="q-title" id="browse-title">All ideas</h2>
     <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
+    <div class="bfilters">
+      <input type="search" id="bf-q" placeholder="Search costumes..." aria-label="Search costumes" autocomplete="off">
+      <select id="bf-aud" aria-label="Filter by who it is for">
+        <option value="">Everyone</option>
+        <option value="kid">Kids</option>
+        <option value="family">Family</option>
+        <option value="group">Group</option>
+        <option value="couple">Couple</option>
+        <option value="solo">Solo</option>
+      </select>
+      <select id="bf-eff" aria-label="Filter by effort">
+        <option value="">Any effort</option>
+        <option value="easy">Easy</option>
+        <option value="middle">Middle</option>
+        <option value="allout">All out</option>
+      </select>
+    </div>
+    <p class="bcount" id="b-count"></p>
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
       <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
@@ -824,7 +850,13 @@ function renderBrowse(){
   var grid = $("b-grid");
   grid.innerHTML = "";
   /* Browse-all follows the editorial rank, not build order. */
-  var ordered = IDEAS.slice().sort(function(a,b){ return a.rank - b.rank; });
+  var q20 = (typeof browseQ20 === "string" ? browseQ20 : "").trim().toLowerCase();
+  var ordered = IDEAS.slice().sort(function(a,b){ return a.rank - b.rank; }).filter(function(idea){
+    if (browseAud20 && idea.audience.indexOf(browseAud20) < 0) return false;
+    if (browseEff20 && effortOf20(idea) !== browseEff20) return false;
+    if (q20 && (idea.title + " " + idea.blurb).toLowerCase().indexOf(q20) < 0) return false;
+    return true;
+  });
   ordered.forEach(function(idea){
     var card = document.createElement("div");
     card.className = "bcard";
@@ -854,13 +886,50 @@ function renderBrowse(){
     card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
     grid.appendChild(card);
   });
-  $("browse-title").textContent = "All " + IDEAS.length + " ideas";
+  if (!ordered.length){
+    var _be = document.createElement("p"); _be.className = "bempty";
+    _be.textContent = "No ideas match. Try a shorter search or clear a filter.";
+    grid.appendChild(_be);
+  }
+  $("b-count").textContent = "Showing " + ordered.length + " of " + IDEAS.length + " ideas";
 }
 function openBrowse(){
   renderBrowse();
   Analytics.track("browse_opened", {});
   show("s-browse");
 }
+
+/* ================= E20: browse search + filters (prototype) ================= */
+var browseQ20 = "", browseAud20 = "", browseEff20 = "";
+function effortOf20(idea){
+  var t = idea.tags || {};
+  var easy = (t.couch || 0) + (t.simple || 0);
+  var hard = (t.crafty || 0) + (t.allout || 0);
+  if (hard >= 2 && hard > easy) return "allout";
+  if (easy >= 3 && easy > hard) return "easy";
+  return "middle";
+}
+(function initE20(){
+  var qi = $("bf-q"), ai = $("bf-aud"), ei = $("bf-eff");
+  if (!qi || !ai || !ei) return;
+  var deb = null;
+  qi.addEventListener("input", function(){
+    browseQ20 = qi.value;
+    if (deb) clearTimeout(deb);
+    deb = setTimeout(function(){
+      renderBrowse();
+      Analytics.track("browse_search", {qlen: qi.value.length});
+    }, 400);
+  });
+  ai.addEventListener("change", function(){
+    browseAud20 = ai.value; renderBrowse();
+    Analytics.track("browse_filter", {kind: "audience", value: ai.value});
+  });
+  ei.addEventListener("change", function(){
+    browseEff20 = ei.value; renderBrowse();
+    Analytics.track("browse_filter", {kind: "effort", value: ei.value});
+  });
+})();
 
 /* ================= ASK MY AI ================= */
 /* The prompt text is always shown to the user before anything is copied. */
