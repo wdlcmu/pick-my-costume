@@ -210,6 +210,18 @@ footer a{color:var(--accent)}
 .fitref .row button.sel{border-color:var(--accent);color:var(--accent)}
 /* E30 staging banner (same pattern as earlier previews). */
 .proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+/* E30 button contrast system: T2 secondary, tonal solid fill. */
+button.tonal{
+  min-height:56px;padding:14px 20px;font-size:17px;font-weight:700;
+  background:#c9b8f5;color:#241a4d;border:0;border-radius:var(--radius);cursor:pointer;
+}
+button.tonal:hover{filter:brightness(1.06)}
+/* E30 button contrast system: T3 tertiary, text-only for low-stakes actions. */
+button.textonly{
+  background:none;border:0;color:var(--ink);text-decoration:underline;
+  font-size:15px;min-height:44px;padding:10px 12px;cursor:pointer;font-family:inherit;
+}
+button.textonly:hover{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -224,10 +236,10 @@ footer a{color:var(--accent)}
       <p class="tagline">A few quick questions. Three costume ideas. No email, no account.</p>
       <div class="returnbox" id="returnbox" style="display:none">
         <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
-        <button class="ghost" id="btn-return" type="button">See my ideas again</button>
+        <button class="tonal" id="btn-return" type="button">See my ideas again</button>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
-      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 75 ideas</button></p>
+      <p style="margin:12px 0 0"><button class="tonal" id="btn-browse-hero" type="button">Browse all 75 ideas</button></p>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
@@ -239,7 +251,7 @@ footer a{color:var(--accent)}
     <p class="q-hint" id="q-hint"></p>
     <div class="opts" id="q-opts"></div>
     <div class="navrow">
-      <button class="ghost" id="q-back" type="button">&larr; Back</button>
+      <button class="textonly" id="q-back" type="button">&larr; Back</button>
     </div>
   </section>
 
@@ -250,8 +262,8 @@ footer a{color:var(--accent)}
     <p class="q-hint">This is our top pick for you. Tap &ldquo;This is my pick&rdquo; to save it and get your AI costume plan, or see the other ideas below.</p>
     <div id="r-cards"></div>
     <div class="navrow" style="margin-top:8px">
-      <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
-      <button class="ghost" id="btn-restart" type="button">Start over</button>
+      <button class="textonly" id="btn-rback" type="button">&larr; Back to questions</button>
+      <button class="textonly" id="btn-restart" type="button">Start over</button>
     </div>
   </section>
 
@@ -288,12 +300,18 @@ footer a{color:var(--accent)}
         <option value="food">Food &amp; snacks</option>
         <option value="sports">Sports</option>
       </select>
+      <select id="bf-eff" aria-label="Filter by effort">
+        <option value="">Any effort</option>
+        <option value="couch">Couch-level</option>
+        <option value="crafty">A little crafty</option>
+        <option value="allout">Go all out</option>
+      </select>
     </div>
     <p class="bcount" id="b-count"></p>
     </div>
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
-      <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
+      <button class="textonly" id="btn-bback" type="button">&larr; Back</button>
       <!-- E16: the browse screen had no door into the quiz. A browser is a
            high-intent visitor; reuses the home screen's exact CTA copy. -->
       <button class="cta" id="btn-bquiz" type="button">Find my costume</button>
@@ -307,7 +325,7 @@ footer a{color:var(--accent)}
     <h2 class="q-title">Costume detail</h2>
     <div id="d-card"></div>
     <div class="navrow" style="margin-top:16px">
-      <button class="ghost" id="btn-dback" type="button">&larr; Back to browse</button>
+      <button class="textonly" id="btn-dback" type="button">&larr; Back to browse</button>
     </div>
   </section>
 
@@ -330,7 +348,7 @@ footer a{color:var(--accent)}
     </div>
     <div class="navrow" style="margin-top:16px">
       <button class="cta" id="btn-about-start" type="button">Find my costume</button>
-      <button class="ghost" id="btn-about-back" type="button">&larr; Back</button>
+      <button class="textonly" id="btn-about-back" type="button">&larr; Back</button>
     </div>
   </section>
 
@@ -440,7 +458,7 @@ var IDEAS = [
   {id:"good-witch-bad-witch", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year: one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3,occbar:1,occparty:2}, trending:true, trendLane:"Witch", trendStat:"4.8M adults planned it", fit:"F", rank:12},
   {id:"fuzzy-monster", title:"Fuzzy Monster", blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", why:"Ugly-cute is the whole point, and it is basically pajamas.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:3,funny:1,kidunder3:1,kid36:2,kid7plus:1,dinos:2,occlowkey:1,occtreat:2}, fit:"U", rank:13},
   {id:"pocket-plush", title:"Pocket Plush Monster", blurb:"A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.", why:"You become the toy-aisle icon: ugly-cute, comfy, and built for hugs.", audience:["kid"], budget:["diy","low"], tags:{cute:3,dinos:2,funny:2,simple:2,couch:1,kid36:2,kid7plus:2,kidunder3:1,occlowkey:1,occtreat:2}, fit:"U", rank:14},
-  {id:"soccer-squad", title:"Soccer Squad", blurb:"Jerseys for the players, black for the ref, one red card for the drama.", why:"World Cup year: everyone already owns half of this.", audience:["family","group"], budget:["low","diy"], tags:{cute:2,funny:2,simple:2,sports:2,occparty:2,occtreat:1}, fit:"U", rank:15},
+  {id:"soccer-squad", title:"Soccer Squad", blurb:"Jerseys for the players, black for the ref, one red card for the drama.", why:"World Cup year: everyone already owns half of this.", audience:["family","group"], budget:["low","diy"], tags:{couch:2,cute:2,funny:2,simple:2,sports:2,occparty:2,occtreat:1}, fit:"U", rank:15},
   {id:"glow-skeleton", title:"Glow Skeleton", blurb:"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.", why:"Spooky after dark and visible to cars, which parents love.", audience:["kid"], budget:["low","diy"], tags:{couch:2,scary:2,cute:1,kid36:2,kid7plus:1,occcandy:1,occtreat:3}, fit:"U", rank:16},
   {id:"block-game-crew", title:"Block Game Crew", blurb:"Cardboard-box heads: pick your blocky hero. Pixelated and perfect.", why:"A box, some paint, and instant blockhead status.", audience:["kid","family","group"], budget:["diy","low"], tags:{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,games:3,occparty:2,occtreat:2}, fit:"U", rank:17},
   {id:"web-slinger-crew", title:"Web-Slinger Crew", blurb:"Red, black, and pink hoodies plus masks -- pick your spider.", why:"Everyone gets their own color and nobody fights over it.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1,couch:2,simple:2,heroes:3,tv:2,occbar:1,occparty:2}, trending:true, trendLane:"Spider-Man", trendStat:"4.6M kids planned it", fit:"U", rank:18},
@@ -652,17 +670,22 @@ function scoreIdeas(full){
     Object.keys(idea.tags).forEach(function(t){
       if (tags[t]) { contrib[t] = tags[t] * idea.tags[t]; score += contrib[t]; }
     });
-    /* Occasion (qocc) needs no special code: its tags ride the generic tag
-       machinery above, positive-only by design. No mismatch penalty, so an
-       occasion answer can never override the interest promise. */
+    /* Occasion is a promise: the night you picked shapes the pick. A -24
+       mismatch penalty (same strength as vibe/effort) made the occasion
+       answer move #1 on 13.9% of paths, up from 5.9%, so the question
+       finally earns its place. Still far below the -100 interest promise,
+       so the interest verdict always wins. */
+    var occAns = state.answers.qocc;
+    var occTag = occAns && occAns.tags ? Object.keys(occAns.tags)[0] : null;
+    if (occTag && !idea.tags[occTag]) score -= 24;
     /* Vibe is a promise: an idea with zero overlap on the Q2 vibe never outranks one that matches it. */
     var vibeAns = state.answers.q2;
     var vibeTag = vibeAns && vibeAns.tags ? Object.keys(vibeAns.tags)[0] : null;
-    if (vibeTag && !idea.tags[vibeTag]) score -= 6;
+    if (vibeTag && !idea.tags[vibeTag]) score -= 24;
     /* Effort is a promise too: a couch-level answer never surfaces an all-out build. */
     var effAns = state.answers.q4;
     var effTag = effAns && effAns.tags ? Object.keys(effAns.tags)[0] : null;
-    if (effTag && !idea.tags[effTag]) score -= 6;
+    if (effTag && !idea.tags[effTag]) score -= 24;
     /* Presentation is a promise (E14): with a fit answer, an idea leaning the
        other way never outranks one that fits. Unisex ideas always pass, and
        the -6 can never override the -100 interest promise. */
@@ -1036,7 +1059,7 @@ function renderResults(results){
     moreLead.textContent = "Not feeling these?";
     moreWrap.appendChild(moreLead);
     moreBtn = document.createElement("button");
-    moreBtn.type = "button"; moreBtn.className = "ghost"; moreBtn.style.width = "100%";
+    moreBtn.type = "button"; moreBtn.className = "tonal"; /* E30 T2 secondary */ moreBtn.style.width = "100%";
     var moreBody = document.createElement("div");
     moreBody.style.display = "none";
     moreBody.style.marginTop = "12px";
@@ -1120,7 +1143,7 @@ function renderResults(results){
   var browseWrap = document.createElement("div");
   browseWrap.style.marginTop = "16px";
   var browseBtn = document.createElement("button");
-  browseBtn.type = "button"; browseBtn.className = "ghost"; browseBtn.style.width = "100%";
+  browseBtn.type = "button"; browseBtn.className = "tonal"; /* E30 T2 secondary */ browseBtn.style.width = "100%";
   var browseBody = document.createElement("div");
   browseBody.style.display = "none";
   browseBody.style.marginTop = "12px";
@@ -1175,7 +1198,7 @@ function renderResults(results){
   aiCap.textContent = "One AI plan for your top ideas:";
   var aiRow = document.createElement("div"); aiRow.className = "row";
   var aiBox = document.createElement("div");
-  var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
+  var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "tonal"; /* E30 T2 secondary */ bAI.textContent = "Ask my AI";
   bAI.onclick = function(){ showPromptPreview(aiBox, buildResultsPrompt(top5, false), "ai_prompt_copied"); };
   aiRow.appendChild(bAI);
   box.appendChild(aiCap); box.appendChild(aiRow); box.appendChild(aiBox);
@@ -1185,7 +1208,7 @@ function renderResults(results){
   var sp = document.createElement("p");
   sp.textContent = "None of these quite fit? Use these ideas as starting points.";
   var stuckRow = document.createElement("div"); stuckRow.className = "row";
-  var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "ghost";
+  var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "tonal"; /* E30 T2 secondary */
   bStuck.textContent = "Get an AI prompt from these ideas";
   var stuckBox = document.createElement("div");
   bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(top5, true), "stuck_prompt_copied"); };
@@ -1222,23 +1245,29 @@ function buildBrowseCard(idea, onOpen){
   img.setAttribute("onerror", "this.style.display='none'");
   var h = document.createElement("h3"); h.textContent = idea.title;
   var p = document.createElement("p"); p.textContent = idea.blurb;
-  var b = document.createElement("button");
-  b.type = "button"; b.className = "ghost"; b.textContent = "Ask my AI";
-  var bShare = document.createElement("button");
-  bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
-  var st = document.createElement("div");
-  var stShare = document.createElement("p"); stShare.className = "status";
-  b.onclick = (function(it, sel){ return function(){ showPromptPreview(sel, buildIdeaPrompt(it), "browse_ai_prompt_copied"); }; })(idea, st);
-  bShare.onclick = (function(it, sel, btn){ return function(){
-    var a = (it.audience && it.audience[0]) || "solo";
-    shareText(it, sel, btn, a);
-  }; })(idea, stShare, bShare);
-  var btnRow = document.createElement("div"); btnRow.className = "row"; btnRow.style.marginTop = "10px";
-  btnRow.appendChild(b); btnRow.appendChild(bShare);
+  /* Billy 2026-09-24: one clear action per card face. The card body already
+     opens the full detail; this single primary button saves the pick AND
+     opens the same detail in picked state (share, personal cards, AI plan
+     all live inside). Card-face "Ask my AI" let users grab the plan without
+     picking, breaking the pick -> share -> plan funnel. */
+  var bPick = document.createElement("button");
+  bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+  bPick.style.width = "100%"; bPick.style.marginTop = "10px";
+  bPick.setAttribute("data-cardpick", idea.id);
+  bPick.onclick = function(){
+    /* Re-tapping a picked card is a funnel no-op: the pick is already
+       saved, just open the detail. */
+    var already = load("pmc_pick_v1");
+    if (!(already && already.ideaId === idea.id)){
+      store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+      Analytics.track("pick_saved", {idea_id: idea.id, via: "browse_card"});
+    }
+    onOpen(idea.id);
+  };
   card.appendChild(img);
   var _tse2=trendStatEl(idea);if(_tse2)card.appendChild(_tse2);
   card.appendChild(h); card.appendChild(p);
-  card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
+  card.appendChild(bPick);
   /* E20 parity: tapping the card body (not the buttons) opens the full
      pick flow. Buttons keep their own handlers; the closest("button") /
      closest("a") guard keeps taps from double-firing. (E17 lesson: a
@@ -1260,6 +1289,7 @@ function renderBrowse(){
     if (browseAud20 && idea.audience.indexOf(browseAud20) < 0) return false;
     if (browseVibe20 && !(idea.tags && idea.tags[browseVibe20] > 0)) return false;
     if (browseInt20 && !(idea.tags && idea.tags[browseInt20] > 0)) return false;
+    if (browseEff20 && !(idea.tags && idea.tags[browseEff20] > 0)) return false;
     return true;
   });
   ordered.forEach(function(idea){
@@ -1366,9 +1396,9 @@ function openInlineDetail(ideaId){
   try { box.scrollIntoView(); } catch(_){}
 }
 /* ================= E20: browse search + filters ================= */
-var browseAud20 = "", browseVibe20 = "", browseInt20 = "";
+var browseAud20 = "", browseVibe20 = "", browseInt20 = "", browseEff20 = "";
 (function initE20(){
-  var ai = $("bf-aud"), vi = $("bf-vibe"), ii = $("bf-int");
+  var ai = $("bf-aud"), vi = $("bf-vibe"), ii = $("bf-int"), ei = $("bf-eff");
   if (!ai || !vi || !ii) return;
   ai.addEventListener("change", function(){
     browseAud20 = ai.value; renderBrowse();
@@ -1381,6 +1411,10 @@ var browseAud20 = "", browseVibe20 = "", browseInt20 = "";
   ii.addEventListener("change", function(){
     browseInt20 = ii.value; renderBrowse();
     Analytics.track("browse_filter", {kind: "interest", value: ii.value});
+  });
+  if (ei) ei.addEventListener("change", function(){
+    browseEff20 = ei.value; renderBrowse();
+    Analytics.track("browse_filter", {kind: "effort", value: ei.value});
   });
 })();
 
@@ -1441,14 +1475,14 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   ta.style.display = "none";
   var toggle = document.createElement("button"); toggle.type = "button";
   toggle.textContent = "Preview text";
-  toggle.style.cssText = "background:none;border:0;padding:0;margin:2px 0 0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0;";
+  toggle.className = "textonly"; /* E30 T3 */;
   toggle.onclick = function(){
     var open = ta.style.display !== "none";
     ta.style.display = open ? "none" : "block";
     toggle.textContent = open ? "Preview text" : "Hide text";
   };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
-  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
+  var b = document.createElement("button"); b.type = "button"; b.className = "tonal"; /* E30 T2: Copy AI prompt */ b.textContent = "Copy AI prompt";
   var status = document.createElement("p"); status.className = "status";
   b.onclick = function(){
     doCopy(curText, function(ok, msg){
@@ -1486,7 +1520,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   ta.style.display = "none";
   var toggle = document.createElement("button"); toggle.type = "button";
   toggle.textContent = "Preview text";
-  toggle.style.cssText = "background:none;border:0;padding:0;margin:2px 0 0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0;";
+  toggle.className = "textonly"; /* E30 T3 */;
   toggle.onclick = function(){
     var open = ta.style.display !== "none";
     ta.style.display = open ? "none" : "block";
@@ -1497,7 +1531,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   /* Billy 2026-09-24: in the cast panel the personal cards are the primary
      share path, so the generic share sits quiet (ghost) below them. Solo
      ideas keep the orange CTA. */
-  b.className = quiet ? "ghost" : "cta"; b.textContent = "Share this idea";
+  b.className = quiet ? "tonal" : "cta"; /* E30 T2: quiet share stays subordinate to the send-card CTAs */ b.textContent = "Share this idea";
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
     var sid = newShareId();
@@ -1934,7 +1968,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var pcWrap = document.createElement("div");
   pcWrap.className = "pcards";
   var pcBtn = document.createElement("button");
-  pcBtn.type = "button"; pcBtn.className = "ghost";
+  pcBtn.type = "button"; pcBtn.className = "tonal"; /* E30 T2: Make personal cards */
   pcBtn.textContent = "Make personal cards";
   var pcList = document.createElement("div");
   pcList.className = "pclist";
@@ -2166,7 +2200,7 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
        (E16), so this is a loop, not a leak. */
     var bb = document.createElement("button");
     bb.type = "button";
-    bb.className = "ghost";
+    bb.className = "tonal"; /* E30 T2: landing "Or browse all ideas" */
     bb.style.width = "100%";
     bb.style.marginTop = "8px";
     bb.textContent = "Or browse all ideas";
