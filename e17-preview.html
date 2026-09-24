@@ -59,25 +59,6 @@
   --radius: 14px;
 }
 *{box-sizing:border-box}
-/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
-   rendered as dark browser-default blue on the dark background -- unreadable.
-   Every link now gets the accent-orange treatment (bold, underlined) so no
-   surface can silently regress to browser-default blue. */
-a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
-.proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
-.castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
-.castbox h3{margin:0 0 4px;font-size:20px}
-.castq{margin:12px 0 4px;font-weight:700;font-size:15px}
-.castbtns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
-.castbtns button{min-height:44px;min-width:52px;padding:8px 14px;font-size:15px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:10px;cursor:pointer;font-family:inherit}
-.castbtns button.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
-.castrow{display:flex;gap:8px;margin:8px 0;align-items:center}
-.castrow input{flex:1.1;min-height:44px;min-width:0;padding:8px 10px;font-size:15px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
-.castrow select{flex:1;min-height:44px;min-width:0;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
-.casttoggle{min-height:44px;padding:8px 10px;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;white-space:nowrap}
-.casttoggle.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
-.castline{font-size:15px;color:var(--muted);margin:10px 0 0;line-height:1.5}
-.castline b{color:var(--ink)}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; color:var(--ink);
@@ -140,6 +121,22 @@ button.ghost{
 .card h3{margin:0 0 6px;font-size:24px}
 .toppick{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:8px}
 .trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+.castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
+.castbox h3{margin:0 0 4px;font-size:20px}
+.castq{margin:12px 0 4px;font-weight:700;font-size:15px}
+.castbtns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.castbtns button{min-height:44px;min-width:52px;padding:8px 14px;font-size:15px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:10px;cursor:pointer;font-family:inherit}
+.castbtns button.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.castrow{display:flex;gap:8px;margin:8px 0;align-items:flex-end}
+.castname{flex:1.1;min-width:0}
+.castlab{display:block;font-size:11px;color:var(--muted);margin:0 0 2px}
+.castname input{width:100%;min-height:44px;padding:8px 10px;font-size:15px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;box-sizing:border-box}
+.castrow select{flex:1;min-height:44px;min-width:0;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
+.casttoggle{min-height:44px;padding:8px 10px;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;white-space:nowrap}
+.casttoggle.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.castline{font-size:15px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+.castline b{color:var(--ink)}
 .card .blurb{margin:0 0 10px;font-size:17px}
 .card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
 .card .why b{color:var(--ink)}
@@ -415,6 +412,7 @@ var IDEAS = [
   {id:"safari-photographer", title:"Safari Photographer", blurb:"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.", why:"The camera does the talking, and the plush cub steals every photo.", audience:["solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,simple:1,animals:3,occcandy:1,occparty:1,occtreat:1}, fit:"U", rank:73},
   {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3,occbar:1,occparty:2}, fit:"U", rank:74},
   {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Everyone matches, everyone is comfortable, and the group photo is unbeatable.", audience:["family"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3,occtreat:2}, fit:"U", rank:75},
+  {id:"snow-sisters", title:"Snow Sisters", blurb:"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.", why:"The family costume every kid already knows by heart, and the snowman is basically pajamas.", audience:["family","group","kid"], budget:["diy","low"], tags:{cute:3,simple:2,couch:1,crafty:1,kidunder3:1,kid36:2,kid7plus:2,princess:3,occparty:2,occtreat:2}, fit:"F", rank:76},
 ];
 /* ================= CONFIG: SHARE ================= */
 function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
@@ -1005,7 +1003,10 @@ function addCopyShareRow(container, idea, makeText, xprops){
    role with numbering). mode "choose" covers pick-your-X ideas (animals, emojis, breakfasts, decades): a pool
    the user picks from per person. Start: 20 ideas; expand by demand data.
    Privacy: typed names live in JS memory only. They NEVER enter analytics events or logs  --  only the share
-   text the user explicitly sends. Analytics carries counts (group_size, kid_count) only. */
+   text the user explicitly sends. Analytics carries counts (group_size, kid_count) only.
+   State rule (Billy's bug 2026-09-23): NO control wipes any other state. Counts, names, kid/adult toggles and
+   role dropdowns all preserve each other. Growing/shrinking the group keeps every surviving person's name,
+   kid/adult flag and explicit role pick; only removed rows lose state (they're visibly gone). */
 var CASTS = {
   "under-the-sea":{mode:"assign",filler:"sea creature",roles:[
     {r:"sea witch",kid:false,adult:true},{r:"sea king",kid:false,adult:true},
@@ -1063,29 +1064,47 @@ var CASTS = {
   "block-game-crew":{mode:"choose",filler:"blocky hero",pool:["blocky hero","blocky villager","blocky knight","blocky monster"]},
   "web-slinger-crew":{mode:"choose",filler:"spider-hero",pool:["red spider-hero","black spider-hero","pink spider-hero"]}
 };
-/* Fit a cast to any group size. people: [{name, kid}]. Returns an array of role strings. */
-function assignCast(ideaId, people){
+/* Fit a cast to any group size. people: [{name, kid}]. overrides: {index: role} of the
+   user's explicit dropdown picks. Auto-assignment skips overridden rows and never hands
+   out a role the user explicitly claimed somewhere else (assign mode; choose mode skips
+   claimed pool entries). Overridden indices get null here -- the caller prefers the
+   explicit pick. */
+function assignCast(ideaId, people, overrides){
+  overrides = overrides || {};
   var cast = CASTS[ideaId];
   if (!cast) return people.map(function(){ return ""; });
+  var claimed = [];
+  Object.keys(overrides).forEach(function(k){ claimed.push(overrides[k]); });
   var nameCount = {};
   function named(base){
     nameCount[base] = (nameCount[base] || 0) + 1;
     return nameCount[base] > 1 ? base + " " + nameCount[base] : base;
   }
+  function unclaimed(base){ return claimed.indexOf(base) < 0; }
   if (cast.mode === "choose"){
-    return people.map(function(p, i){ return named(cast.pool[i % cast.pool.length]); });
+    var pool = cast.pool.filter(unclaimed);
+    if (!pool.length) pool = cast.pool.slice();
+    return people.map(function(p, i){
+      if (overrides[i] !== undefined) return null;
+      return named(pool[i % pool.length]);
+    });
   }
   var used = {};
   function firstFit(wantKid){
     for (var i = 0; i < cast.roles.length; i++){
       if (used[i]) continue;
       var r = cast.roles[i];
+      if (!unclaimed(r.r)) continue;
       if (wantKid ? r.kid : r.adult){ used[i] = true; return named(r.r); }
     }
-    return named(cast.filler);
+    var f = named(cast.filler), guard = 0;
+    while (!unclaimed(f) && guard++ < 12) f = named(cast.filler);
+    return f;
   }
   /* Kids first, so kid-sized roles go to kids before adults claim the shared ones. */
-  var order = people.map(function(p, idx){ return idx; }).sort(function(a, b){
+  var order = people.map(function(p, idx){ return idx; }).filter(function(idx){
+    return overrides[idx] === undefined;
+  }).sort(function(a, b){
     return ((people[b].kid) ? 1 : 0) - ((people[a].kid) ? 1 : 0);
   });
   var roles = new Array(people.length);
@@ -1122,7 +1141,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var box = document.createElement("div"); box.className = "castbox";
   var h = document.createElement("h3"); h.textContent = "Who\u2019s who?";
   var sub = document.createElement("p"); sub.className = "status";
-  sub.textContent = "Cast your crew: two quick questions, then give everyone a role. Names stay on this phone.";
+  sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and stay on this phone.";
   box.appendChild(h); box.appendChild(sub);
   var size = 2, kids = 0, people = [], overrides = {};
   var q1 = document.createElement("p"); q1.className = "castq"; q1.textContent = "How many people?";
@@ -1135,22 +1154,34 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   box.appendChild(q2); box.appendChild(q2r);
   box.appendChild(rows); box.appendChild(line);
   var shareHandle = null, aiHandle = null;
+  /* Kid flags are per-person and sticky. The count buttons set the last N slots as
+     kids in one tap; the Kid/Adult toggle fine-tunes individuals. Neither ever
+     touches names or explicit role picks. */
+  function recountKids(){
+    kids = people.reduce(function(n, p){ return n + (p.kid ? 1 : 0); }, 0);
+  }
   function setSize(n){
-    size = n; if (kids > size) kids = size;
-    people = [];
-    /* Kids default to the last slots — the usual "grown-ups first, kids last" listing. */
-    for (var i = 0; i < size; i++) people.push({name: "", kid: i >= size - kids});
-    overrides = {};
+    size = n;
+    var kept = people.slice(0, n);
+    for (var i = kept.length; i < n; i++) kept.push({name: "", kid: false});
+    people = kept;
+    /* Only rows that visibly disappear lose state. */
+    var no = {};
+    Object.keys(overrides).forEach(function(k){ if (+k < n) no[k] = overrides[k]; });
+    overrides = no;
+    recountKids();
     render();
   }
   function setKids(n){
+    people.forEach(function(p, i){ p.kid = i >= people.length - n; });
     kids = n;
-    people.forEach(function(p, i){ p.kid = i >= size - kids; });
-    overrides = {};
     render();
   }
+  function autoRoles(){
+    return assignCast(idea.id, people, overrides);
+  }
   function currentList(){
-    var roles = assignCast(idea.id, people);
+    var roles = autoRoles();
     return people.map(function(p, i){
       var nm = p.name.trim();
       return {name: (nm || ("Person " + (i + 1))), kid: !!p.kid, role: overrides[i] || roles[i]};
@@ -1174,20 +1205,23 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         q2r.appendChild(b);
       })(k);
     }
-    var roles = assignCast(idea.id, people);
+    var roles = autoRoles();
     rows.innerHTML = "";
     people.forEach(function(p, i){
       var row = document.createElement("div"); row.className = "castrow";
+      var nameWrap = document.createElement("div"); nameWrap.className = "castname";
+      var lab = document.createElement("span"); lab.className = "castlab"; lab.textContent = "Name";
       var inp = document.createElement("input");
-      inp.placeholder = "Person " + (i + 1); inp.value = p.name; inp.maxLength = 24;
-      inp.setAttribute("aria-label", "Name for person " + (i + 1));
+      inp.placeholder = "Type a name"; inp.value = p.name; inp.maxLength = 24;
+      inp.setAttribute("aria-label", "Name for person " + (i + 1) + " (optional)");
       inp.setAttribute("autocomplete", "off");
       inp.oninput = function(){ p.name = inp.value; refreshOutputs(); };
+      nameWrap.appendChild(lab); nameWrap.appendChild(inp);
       var tg = document.createElement("button"); tg.type = "button";
       tg.className = "casttoggle" + (p.kid ? " sel" : "");
       tg.textContent = p.kid ? "Kid" : "Adult";
       tg.setAttribute("aria-label", "Toggle kid or adult for person " + (i + 1));
-      tg.onclick = function(){ p.kid = !p.kid; overrides = {}; render(); };
+      tg.onclick = function(){ p.kid = !p.kid; recountKids(); render(); };
       var sel = document.createElement("select");
       sel.setAttribute("aria-label", "Role for person " + (i + 1));
       var opts = castRoleOptions(idea.id);
@@ -1200,7 +1234,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         sel.appendChild(op);
       });
       sel.onchange = function(){ overrides[i] = sel.value; refreshOutputs(); };
-      row.appendChild(inp); row.appendChild(tg); row.appendChild(sel);
+      row.appendChild(nameWrap); row.appendChild(tg); row.appendChild(sel);
       rows.appendChild(row);
     });
     refreshOutputs();
