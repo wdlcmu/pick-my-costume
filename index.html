@@ -314,7 +314,7 @@ var IDEAS = [
   {id:"wednesday-enid", title:"Gloom & Bloom", blurb:"Braids and black for Gloom, color-pop and smiles for Bloom.", why:"The deadpan duo: one broods, one sparkles, both nail it.", audience:["group","solo"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3}, rank:7},
   {id:"deadpan-diva", title:"Deadpan Diva", blurb:"Black dress, two braids, pale makeup, and a stare that ends conversations.", why:"The goth icon: closet-easy, instantly readable, and the braids do half the work.", audience:["solo"], budget:["diy","low"], tags:{tv:3,scary:3,simple:2,couch:2}, rank:8},
   {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1,animals:3}, rank:9},
-  {id:"disney-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet. Every princess works.", why:"Every kid already has a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3}, trending:true, trendLane:"Princess", trendStat:"2.2M kids planned it", rank:10},
+  {id:"fairy-tale-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet. Every princess works.", why:"Every kid already has a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3}, trending:true, trendLane:"Princess", trendStat:"2.2M kids planned it", rank:10},
   {id:"iron-man", title:"The Tin Hero", blurb:"Red and gold plus a glowing chest circle: the suit does the talking.", why:"A red tee, gold tape, and a paper chest light. Instant hero.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2}, rank:11},
   {id:"elphaba-glinda", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year: one goes dark, one goes dazzling.", audience:["group","solo"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3}, trending:true, trendLane:"Witch", trendStat:"4.8M adults planned it", rank:12},
   {id:"fuzzy-monster", title:"Fuzzy Monster", blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", why:"Ugly-cute is the whole point, and it is basically pajamas.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:3,funny:1,kidunder3:1,kid36:2,kid7plus:1,dinos:2}, rank:13},
@@ -611,8 +611,13 @@ function renderResults(results){
       hint.style.display = "none";
       status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
       Analytics.track("pick_saved", {idea_id: idea.id});
-      showPromptPreview(planBox, buildIdeaPrompt(idea), "pick_plan_copied");
-      addCopyShareRow(planBox, idea);
+      planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+      var shareBox = document.createElement("div");
+      var aiPlanBox = document.createElement("div");
+      planBox.appendChild(shareBox); /* share leads */
+      planBox.appendChild(aiPlanBox); /* AI plan follows */
+      addCopyShareRow(shareBox, idea);
+      showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "pick_plan_copied", true);
     };
     bShare.onclick = function(){ shareText(idea, status, bShare); };
     row.appendChild(bPick); row.appendChild(bShare);
@@ -721,7 +726,7 @@ function doCopy(text, done){
     fallbackCopy(text, done);
   }
 }
-function showPromptPreview(container, text, eventName){
+function showPromptPreview(container, text, eventName, noScroll){
   container.innerHTML = "";
   var label = document.createElement("p"); label.className = "status";
   label.textContent = "Get your AI costume plan:";
@@ -738,10 +743,10 @@ function showPromptPreview(container, text, eventName){
   };
   row.appendChild(b);
   container.appendChild(label); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
-  if (ta.scrollIntoView) ta.scrollIntoView({block:"nearest", behavior:"smooth"});
+  if (!noScroll && ta.scrollIntoView) ta.scrollIntoView({block:"nearest", behavior:"smooth"});
 }
 
-/* After a pick reveals the AI plan, the share pattern sits right beneath it. */
+/* After a pick, the share section leads and the AI plan follows beneath it. */
 function addCopyShareRow(container, idea){
   var label = document.createElement("p"); label.className = "status";
   label.textContent = "Text this to a friend:";
@@ -758,15 +763,34 @@ function addCopyShareRow(container, idea){
   var cur = makeShare();
   ta.value = cur.text;
   b.onclick = function(){
-    var sh = cur; /* what the preview shows is exactly what gets copied */
-    doCopy(sh.text, function(ok, msg){
-      st.textContent = ok ? "Copied. Paste it into any message." : msg;
+    var sh = cur; /* what the preview shows is exactly what gets shared */
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid;
+    function doneShare(ok, msg){
+      st.textContent = msg;
       if (ok){
-        Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sh.sid});
         Analytics.track("share_created", {share_id: sh.sid, idea_id: idea.id});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id});
       }
-    });
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sh.sid});
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    /* Phone: native share sheet. Fires share_created only when the share resolves;
+       a dismissed sheet is a cancel, not a share, so it fires nothing. */
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text, url: link}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
     cur = makeShare();
     ta.value = cur.text;
   };
@@ -775,6 +799,7 @@ function addCopyShareRow(container, idea){
   container.appendChild(ta);
   container.appendChild(row);
   container.appendChild(st);
+  if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
 }
 
 /* ================= SHARE ================= */function shareText(idea, statusEl, btn, audOverride){
