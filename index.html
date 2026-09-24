@@ -1626,10 +1626,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   box.appendChild(q2); box.appendChild(q2r);
   box.appendChild(rows); box.appendChild(line);
   /* The cast share row, personal cards, and the per-person AI plan live INSIDE
-     the panel -- share first, personal cards next, AI plan last (production
-     order). Without this they were populated but never attached, so the cast
+     the panel -- personal cards first, share next, AI plan last (Billy
+     2026-09-24: the share comes after the personal card, one flow).
+     Without this they were populated but never attached, so the cast
      share text was invisible. */
-  box.appendChild(shareBox);
   box.appendChild(aiPlanBox);
   var shareHandle = null, aiHandle = null;
   /* Kid flags are per-person and sticky. The count buttons set the last N slots as
@@ -1840,10 +1840,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   };
   pcWrap.appendChild(pcBtn);
   pcWrap.appendChild(pcList);
-  /* Post-pick order: share, then personal cards (the quicker upsell), then
-     the AI plan text. Cards lead because they are visual and one-tap; the
-     AI prompt is a wall of text. */
+  /* Billy 2026-09-24: one flow -- cast, personal cards, share, AI plan.
+     The share used to lead the panel; it now comes after the personal
+     cards so there is a single share path instead of two competing ones. */
   box.insertBefore(pcWrap, aiPlanBox);
+  box.insertBefore(shareBox, aiPlanBox);
   return box;
 }
 
