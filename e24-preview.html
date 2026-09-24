@@ -144,11 +144,12 @@ button.ghost{
 .castline b{color:var(--ink)}
 .pcards{margin:18px 0 0}
 .pclist{display:grid;gap:12px;margin-top:12px}
-.pcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+.pcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
 .pcard-img{width:128px;height:128px;object-fit:cover;border-radius:12px;border:2px solid var(--line)}
 .pcard-head{font-size:22px;font-weight:800;margin:10px 0 2px}
-.pcard-sub{color:var(--muted);font-size:14px;margin:0 0 8px}
-.pcard .promptbox{width:100%}
+.pcard-sub{color:var(--muted);font-size:14px;margin:0 0 4px}
+.pcard-send{width:100%;margin-top:10px}
+.pcard .status{margin:8px 0 0}
 .card .blurb{margin:0 0 10px;font-size:17px}
 .card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
 .card .why b{color:var(--ink)}
@@ -243,7 +244,7 @@ footer a{color:var(--accent)}
       <p>Your answers score a hand-picked list of <span id="idea-count">75</span> ideas. Your vibe and what you're into count double; effort level and the details tune the rest. No randomness, no account, no email.</p>
       <p>Your quiz answers never leave your phone. We only track anonymous usage stats.</p>
       <p>Then what? On your results, tap &ldquo;This is my pick&rdquo; on a costume to save it and get your AI costume plan.</p>
-      <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
+      <p>Questions or a costume we should add? Email <a href="/cdn-cgi/l/email-protection#147c7178787b54647d777f796d777b67606179713a777b79"><span class="__cf_email__" data-cfemail="b0d8d5dcdcdff0c0d9d3dbddc9d3dfc3c4c5ddd59ed3dfdd">[email&#160;protected]</span></a>.</p>
       <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey &mdash; each card shows its stat and source.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
     </div>
@@ -258,7 +259,7 @@ footer a{color:var(--accent)}
   </footer>
 
 </div>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
 var Analytics = {
   _q: [],
@@ -1043,8 +1044,8 @@ var CASTS = {
     {r:"inventor",kid:true,adult:false},{r:"spark",kid:true,adult:false}]},
   "blue-dog-family":{mode:"assign",filler:"pup",roles:[
     {r:"mama dog",kid:false,adult:true},{r:"papa dog",kid:false,adult:true},
-    {r:"pup",kid:true,adult:false},{r:"pup",kid:true,adult:false},
-    {r:"pup",kid:true,adult:false},{r:"pup",kid:true,adult:false}]},
+    {r:"big pup",kid:true,adult:false},{r:"little pup",kid:true,adult:false},
+    {r:"big pup",kid:true,adult:false},{r:"little pup",kid:true,adult:false}]},
   "little-pig-family":{mode:"assign",filler:"little pig",roles:[
     {r:"mama pig",kid:false,adult:true},{r:"papa pig",kid:false,adult:true},
     {r:"little pig",kid:true,adult:false},{r:"little pig",kid:true,adult:false},
@@ -1141,21 +1142,28 @@ function castRoleOptions(ideaId){
   var opts = (cast.mode === "choose") ? cast.pool.slice() : cast.roles.map(function(r){ return r.r; });
   var out = [];
   opts.forEach(function(o){ if (out.indexOf(o) < 0) out.push(o); });
-  out.push(cast.filler);
+  /* Filler doubles as a generic overflow role; don't list it twice when it
+     already appears as a named role (Billy saw the dup in the pup dropdown). */
+  if (out.indexOf(cast.filler) < 0) out.push(cast.filler);
   return out;
 }
 function castLine(list){
   return list.map(function(a){ return a.name + " is the " + a.role; }).join(", ");
 }
 function buildCastShareText(idea, list, sid){
-  return "We\u2019re going as " + idea.title + " this Halloween: " + castLine(list) +
+  /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
+  var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
+  return lead + idea.title + " this Halloween: " + castLine(list) +
     ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
     return "- " + a.name + " (" + (a.kid ? "kid" : "adult") + ") is the " + a.role;
   });
-  return "Plan our group Halloween costumes for " + idea.title + " (pickmycostume.com). The idea: " + idea.blurb +
+  var head = (list.length === 1)
+    ? "Plan my Halloween costume for " + idea.title + " (pickmycostume.com). The idea: " + idea.blurb
+    : "Plan our group Halloween costumes for " + idea.title + " (pickmycostume.com). The idea: " + idea.blurb;
+  return head +
     "\n\nOur cast:\n" + lines.join("\n") +
     "\n\nFor each person, give a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it this week (materials list with approximate costs, step by step). Keep it short and practical.";
 }
@@ -1227,7 +1235,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   }
   function render(){
     q1r.innerHTML = ""; q2r.innerHTML = "";
-    [2, 3, 4, 5, 6].forEach(function(n){
+    [1, 2, 3, 4, 5, 6].forEach(function(n){
       var b = document.createElement("button"); b.type = "button";
       b.textContent = (n === 6) ? "6+" : String(n);
       if (n === size) b.className = "sel";
@@ -1326,12 +1334,41 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       var sub2 = document.createElement("p"); sub2.className = "pcard-sub";
       sub2.textContent = idea.title + " \u00B7 this Halloween";
       card.appendChild(img); card.appendChild(head); card.appendChild(sub2);
-      var sb = document.createElement("div");
-      card.appendChild(sb);
-      var xp = function(){ return {cast: 1, personal_card: 1, group_size: size, kid_count: kids}; };
-      addCopyShareRow(sb, idea, function(sid){
-        return a.name + ", you\u2019re the " + capRole(a.role) + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
-      }, xp);
+      /* Billy 2026-09-24: one visible primary CTA per card. The real behavior is
+         sending this card to a specific person (spouse, group chat), so the button
+         names them. No preview box, no secondary labels -- the button IS the action. */
+      var send = document.createElement("button"); send.type = "button";
+      send.className = "cta pcard-send";
+      send.textContent = "Send this card to " + a.name;
+      var st = document.createElement("p"); st.className = "status";
+      send.onclick = function(){
+        var sid = newShareId();
+        var text = a.name + ", you\u2019re the " + capRole(a.role) + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
+        var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid;
+        var xp = {cast: 1, personal_card: 1, group_size: size, kid_count: kids};
+        function doneShare(ok, msg){
+          st.textContent = msg;
+          if (ok){
+            Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id}, xp));
+            if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id}, xp));
+          }
+        }
+        var usedNative = false;
+        if (navigator.share){
+          try {
+            usedNative = true;
+            navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+              function(){ doneShare(true, "Shared."); },
+              function(){ doneShare(false, ""); }
+            );
+          } catch(e){ usedNative = false; }
+        }
+        if (!usedNative) doCopy(text, function(ok, msg){
+          if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sid}, xp));
+          doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+        });
+      };
+      card.appendChild(send); card.appendChild(st);
       pcList.appendChild(card);
     });
     Analytics.track("e24_cards_made", {idea_id: idea.id, card_count: list.length, group_size: size, kid_count: kids});
