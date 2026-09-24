@@ -58,11 +58,6 @@
   --radius: 14px;
 }
 *{box-sizing:border-box}
-/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
-   rendered as dark browser-default blue on the dark background -- unreadable.
-   Every link now gets the accent-orange treatment (bold, underlined) so no
-   surface can silently regress to browser-default blue. */
-a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; color:var(--ink);
@@ -399,6 +394,7 @@ var IDEAS = [
   {id:"safari-photographer", title:"Safari Photographer", blurb:"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.", why:"The camera does the talking, and the plush cub steals every photo.", audience:["solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,simple:1,animals:3,occcandy:1,occparty:1,occtreat:1}, fit:"U", rank:73},
   {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3,occbar:1,occparty:2}, fit:"U", rank:74},
   {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Everyone matches, everyone is comfortable, and the group photo is unbeatable.", audience:["family"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3,occtreat:2}, fit:"U", rank:75},
+  {id:"snow-sisters", title:"Snow Sisters", blurb:"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.", why:"The family costume every kid already knows by heart, and the snowman is basically pajamas.", audience:["family","group","kid"], budget:["diy","low"], tags:{cute:3,simple:2,couch:1,crafty:1,kidunder3:1,kid36:2,kid7plus:2,princess:3,occparty:2,occtreat:2}, fit:"F", rank:76},
 ];
 /* ================= CONFIG: SHARE ================= */
 function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
