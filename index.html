@@ -776,6 +776,9 @@ function addCopyShareRow(container, idea){
     function doneShare(ok, msg){
       st.textContent = msg;
       if (ok){
+        /* E8: the first share landed — invite a second one. The button stays
+           live with a fresh share_id (minted below), so the re-offer is one line. */
+        label.textContent = "Shared. Who else needs a costume?";
         Analytics.track("share_created", {share_id: sh.sid, idea_id: idea.id});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id});
       }
