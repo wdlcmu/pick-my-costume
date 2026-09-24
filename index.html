@@ -821,7 +821,7 @@ function buildResultCard(scored, idx, pick, noArt){
     wh.appendChild(document.createTextNode(": " + whyLine(scored, idx).replace(/^Why this fits you: /, "")));
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
-    var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+    var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "cta"; bShare.textContent = "Share this idea";
     var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
@@ -1147,7 +1147,7 @@ function buildBrowseDetailCard(idea){
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
   var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
-  var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+  var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "cta"; bShare.textContent = "Share this idea";
   var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
   var note = document.createElement("p"); note.className = "picked-note";
   note.textContent = "\u2713 You\u2019re going as " + idea.title;
@@ -1321,7 +1321,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared){
     toggle.textContent = open ? "Preview text" : "Hide text";
   };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
-  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Share this idea";
+  var b = document.createElement("button"); b.type = "button"; b.className = "cta"; b.textContent = "Share this idea";
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
     var sid = newShareId();
