@@ -1303,7 +1303,7 @@ function revealAiPlan(aiBox){
 }
 
 /* After a pick, the share section leads and the AI plan follows beneath it. */
-function addCopyShareRow(container, idea, makeText, xprops, onShared){
+function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   var label = document.createElement("p"); label.className = "status";
   function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
   label.textContent = "Text this to a friend:";
@@ -1321,7 +1321,11 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared){
     toggle.textContent = open ? "Preview text" : "Hide text";
   };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
-  var b = document.createElement("button"); b.type = "button"; b.className = "cta"; b.textContent = "Share this idea";
+  var b = document.createElement("button"); b.type = "button";
+  /* Billy 2026-09-24: in the cast panel the personal cards are the primary
+     share path, so the generic share sits quiet (ghost) below them. Solo
+     ideas keep the orange CTA. */
+  b.className = quiet ? "ghost" : "cta"; b.textContent = "Share this idea";
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
     var sid = newShareId();
@@ -1604,7 +1608,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   if (box.addEventListener) box.addEventListener("click", function(e){ e.stopPropagation(); });
   var h = document.createElement("h3"); h.textContent = "Who\u2019s who?";
   var sub = document.createElement("p"); sub.className = "status";
-  sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and stay on this phone.";
+  sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and never stored anywhere. I never see them.";
   box.appendChild(h); box.appendChild(sub);
   var hadState = !!castStateByIdea[idea.id];
   var st = getCastState(idea.id, cast.n);
@@ -1741,7 +1745,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       var xp = function(){ return {cast: 1, group_size: size, kid_count: kids}; };
       shareHandle = addCopyShareRow(shareBox, idea,
         function(sid){ return buildCastShareText(idea, currentList(), sid); }, xp,
-        function(){ revealAiPlan(aiPlanBox); });
+        function(){ revealAiPlan(aiPlanBox); }, true);
       aiHandle = showPromptPreview(aiPlanBox, "", "e17_cast_plan_copied", true, xp);
     }
     shareHandle.refresh();
@@ -1752,9 +1756,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      only a brand-new panel starts at two. (setSize(2) here used to wipe a
      restored 4-person cast back to two.) */
   if (hadState){ recountKids(); render(); } else { setSize(2); }
-  /* Personal role cards: one card per named person, each with a single
-     "Send this card to <name>" CTA. For spouses sending to each other and
-     groups sharing in group chat. */
+  /* Personal role cards: one card per cast member, each with a single send
+     CTA ("Send this card to <name>", or "Send this card" with no name).
+     For spouses sending to each other and groups sharing in group chat. */
   var pcWrap = document.createElement("div");
   pcWrap.className = "pcards";
   var pcBtn = document.createElement("button");
@@ -1763,18 +1767,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var pcList = document.createElement("div");
   pcList.className = "pclist";
   pcBtn.onclick = function(){
-    /* Fallback "Person N" names never make personal cards: only people with a
-       typed name get a card (a card reading "Send this card to Person 2"
-       would look like a bug, not a feature). */
-    var list = currentList().filter(function(p){ return p.rawName; });
+    /* Billy 2026-09-24: every cast member gets a card, named or not. The send
+       button reads "Send this card to <name>" with a typed name, plain
+       "Send this card" without one -- never "Send this card to Person 1". */
+    var list = currentList();
     pcList.innerHTML = "";
-    if (!list.length){
-      var empty = document.createElement("p");
-      empty.className = "status";
-      empty.textContent = "Type at least one name above to make personal cards.";
-      pcList.appendChild(empty);
-      return;
-    }
     Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length});
     list.forEach(function(p){
       var card = document.createElement("div");
@@ -1792,7 +1789,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       sub2.textContent = "As the " + p.role + ".";
       var send = document.createElement("button");
       send.type = "button"; send.className = "cta pcard-send";
-      send.textContent = "Send this card to " + p.name;
+      send.textContent = p.rawName ? ("Send this card to " + p.name) : "Send this card";
       var st2 = document.createElement("p");
       st2.className = "status";
       /* The CTA says "Send", so it sends: the native share sheet where the
