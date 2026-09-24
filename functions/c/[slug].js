@@ -28,6 +28,7 @@ export function onRequest(context) {
     "<title>" + title + " - Pick My Costume</title>" +
     "<meta property=\"og:type\" content=\"website\">" +
     "<meta property=\"og:url\" content=\"https://pickmycostume.com/c/" + slug + "\">" +
+    "<link rel=\"canonical\" href=\"https://pickmycostume.com/c/" + slug + "\">" +
     "<meta property=\"og:title\" content=\"" + title + " - Pick My Costume\">" +
     "<meta property=\"og:description\" content=\"" + blurb + "\">" +
     "<meta property=\"og:image\" content=\"" + img + "\">" +
