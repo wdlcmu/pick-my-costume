@@ -110,9 +110,9 @@ button.cta{
 }
 button.ghost{
   min-height:56px;padding:14px 20px;font-size:17px;
-  background:transparent;color:var(--ink);
-  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
-}
+  background:rgba(255,255,255,.05);color:var(--ink);
+  border:2px solid #7a5fc4;border-radius:var(--radius);cursor:pointer;
+} /* Billy 2026-09-24: lifted border from var(--line) for contrast; washes out on dark cards */
 .card{
   background:var(--card);border:2px solid var(--line);
   border-radius:var(--radius);padding:20px;margin-bottom:16px;
@@ -223,7 +223,7 @@ footer a{color:var(--accent)}
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
-      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 75 ideas</button></p>
+      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 100 ideas</button></p>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
@@ -248,7 +248,7 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
-      <button class="ghost" id="btn-browse-results" type="button">Browse all 75 ideas</button>
+      <button class="ghost" id="btn-browse-results" type="button">Browse all 100 ideas</button>
     </div>
   </section>
 
@@ -326,7 +326,7 @@ footer a{color:var(--accent)}
         <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
         <p>Tap &ldquo;This is my pick&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
       </div>
-      <p>Your answers are scored against 76 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
+      <p>Your answers are scored against 100 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
       <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
@@ -505,6 +505,30 @@ var IDEAS = [
   {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3,occbar:1,occparty:2}, fit:"U", rank:74},
   {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Matching dino hoodies need zero coordination, and the spikes sell it from far away.", audience:["family"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3,occtreat:2}, fit:"U", rank:75},
   {id:"snow-sisters", title:"Snow Sisters", blurb:"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.", why:"The family costume every kid already knows by heart, and the snowman is basically pajamas.", audience:["family","group","kid"], budget:["diy","low"], tags:{cute:3,simple:2,couch:1,crafty:1,kidunder3:1,kid36:2,kid7plus:2,princess:3,occparty:2,occtreat:2}, fit:"F", rank:76},
+  {id:"sushi-roll", title:"Sushi Roll", blurb:"A white-sheet wrap with felt salmon and pom-pom wasabi. Chopsticks optional.", why:"It turns bedsheets into the most photogenic thing at the party.", audience:["solo"], budget:["diy"], tags:{cute:2,crafty:2,food:2,occparty:2}, fit:"U", rank:77},
+  {id:"deviled-egg", title:"Deviled Egg", blurb:"White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.", why:"The yolk-and-horns combo reads from twenty feet away with zero explaining.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:2,food:2,occbar:2}, fit:"U", rank:78},
+  {id:"pizza-slice", title:"Pizza Slice", blurb:"A big cardboard triangle, painted golden with felt pepperoni.", why:"Cardboard and felt become the rare costume kids and adults both reach for.", audience:["solo","kid"], budget:["diy"], tags:{funny:2,crafty:2,kid36:2,food:2,occtreat:2}, fit:"U", rank:79},
+  {id:"popcorn-bucket", title:"Popcorn Bucket", blurb:"A striped cardboard-box body with balloon popcorn on top.", why:"The balloon popcorn bounces when they walk, which sells the whole thing.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,food:2,occtreat:2}, fit:"U", rank:80},
+  {id:"ice-cream-cone", title:"Ice Cream Cone", blurb:"A tan paper cone hat and a sprinkle-dotted scoop shirt.", why:"Three cheap pieces read as ice cream instantly, no explanation needed.", audience:["kid","solo"], budget:["diy"], tags:{cute:2,couch:2,kid36:2,food:2,occparty:2}, fit:"U", rank:81},
+  {id:"pbj", title:"Peanut Butter & Jelly", blurb:"One in brown with a PB label, one in purple with a J label.", why:"Two solid-color outfits and two labels make the most recognizable duo in the room.", audience:["couple"], budget:["diy"], tags:{funny:2,couch:2,food:2,occparty:2}, fit:"U", rank:82},
+  {id:"bacon-eggs", title:"Bacon & Eggs", blurb:"Wavy bacon stripes and a sunny-side-up egg yolk.", why:"The wavy bacon stripes make the pair readable from across the room.", audience:["couple"], budget:["diy"], tags:{funny:2,couch:2,food:2,occcandy:2}, fit:"U", rank:83},
+  {id:"peas-pod", title:"Peas in a Pod", blurb:"Green shirts in a row under one long felt pod sash.", why:"The shared sash turns any group into one costume people actually remember.", audience:["group","family"], budget:["diy"], tags:{cute:2,allout:2,food:2,occparty:2}, fit:"U", rank:84},
+  {id:"basketball-star", title:"Basketball Star", blurb:"Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.", why:"Real gear plus one theatrical touch beats a store-bought uniform.", audience:["solo","kid"], budget:["diy"], tags:{simple:2,couch:2,kid7plus:2,sports:2,occparty:2}, fit:"U", rank:85},
+  {id:"referee", title:"Referee", blurb:"A striped shirt, a whistle, and a yellow penalty flag.", why:"The whistle gives you a bit to perform instead of just standing around.", audience:["solo","group"], budget:["low","diy"], tags:{funny:2,couch:2,sports:2,occparty:2}, fit:"U", rank:86},
+  {id:"boxer", title:"Boxer", blurb:"Bathrobe, toy gloves, bruise makeup, and entrance music.", why:"The entrance music does half the work before a single punch is thrown.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:2,sports:2,occbar:2}, fit:"M", rank:87},
+  {id:"cheerleader", title:"Cheerleader", blurb:"Team colors and pom-poms made from cut plastic bags.", why:"Homemade pom-poms and a chant beat a store costume for half the price.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,sports:2,occtreat:2}, fit:"F", rank:88},
+  {id:"tennis-duo", title:"Tennis Duo", blurb:"All-white outfits, headbands, toy rackets, and a tube of balls.", why:"The all-white dress code makes two people look like a team instantly.", audience:["couple"], budget:["low","diy"], tags:{simple:2,couch:2,sports:2,occlowkey:2}, fit:"U", rank:89},
+  {id:"bowling-pins", title:"Bowling Pins", blurb:"White outfits with red neck stripes, plus one bowler in black.", why:"The bowler-and-pins bit gives the group something to do all night.", audience:["group","family"], budget:["diy"], tags:{funny:2,crafty:2,sports:2,occparty:2}, fit:"U", rank:90},
+  {id:"cardboard-knight", title:"Cardboard Knight", blurb:"Silver-painted cardboard armor and a pool-noodle sword.", why:"Spray paint turns moving boxes into armor that looks genuinely cool.", audience:["solo","kid"], budget:["diy"], tags:{funny:2,allout:2,kid7plus:2,heroes:3,occtreat:2}, fit:"U", rank:91},
+  {id:"ninja", title:"Ninja", blurb:"All black with a belt sash and a slit headband.", why:"One headband turns pajamas into a stealth mission.", audience:["kid","solo"], budget:["diy"], tags:{scary:2,couch:2,kid36:2,heroes:3,occtreat:2}, fit:"U", rank:92},
+  {id:"caped-duo", title:"Caped Duo", blurb:"Matching sheet capes, felt masks, and your own emblems.", why:"Matching emblems make it yours instead of a store superhero.", audience:["couple"], budget:["diy"], tags:{funny:2,crafty:2,heroes:3,occparty:2}, fit:"U", rank:93},
+  {id:"hero-squad", title:"Hero Squad", blurb:"Color-coded capes and masks, one team pose for photos.", why:"Color-coded capes make a big group look coordinated with almost no sewing.", audience:["group"], budget:["diy"], tags:{funny:2,allout:2,heroes:3,occparty:2}, fit:"U", rank:94},
+  {id:"astronaut", title:"Astronaut", blurb:"White sweats, a paper-bag helmet, and a flag patch.", why:"The paper-bag helmet is the whole trick and it actually works.", audience:["solo"], budget:["diy"], tags:{simple:2,couch:2,heroes:3,occbar:2}, fit:"U", rank:95},
+  {id:"robot-ranger", title:"Robot Ranger", blurb:"Silver boxes, dryer-vent arms, and sticker dials.", why:"Boxes and stickers build a robot that moves and beeps on command.", audience:["kid","family"], budget:["diy"], tags:{cute:2,allout:2,kid36:2,heroes:3,occtreat:2}, fit:"U", rank:96},
+  {id:"penguin-huddle", title:"Penguin Huddle", blurb:"Black shirts, felt bellies, beak headbands. Waddle together.", why:"The group waddle is funnier than any single penguin could be.", audience:["group"], budget:["diy"], tags:{funny:2,couch:2,animals:2,occparty:2}, fit:"U", rank:97},
+  {id:"prince-princess", title:"Prince & Princess", blurb:"A crown and cape, a thrifted gown and tiara.", why:"Thrifted velvet reads richer than a plastic packaged costume.", audience:["couple"], budget:["low","diy"], tags:{cute:2,couch:2,princess:3,occbar:2}, fit:"U", rank:98},
+  {id:"dino-herd", title:"Dino Herd", blurb:"Green ponchos with felt spikes and stuffed-sock tails.", why:"A line of stomping dinos gets a bigger reaction than one T-Rex alone.", audience:["group"], budget:["diy"], tags:{scary:2,crafty:2,dinos:2,occtreat:2}, fit:"U", rank:99},
+  {id:"pixel-ghost", title:"Pixel Ghost", blurb:"A white sheet cut in chunky pixel squares with felt eyes.", why:"The zigzag pixel edge makes a sheet ghost feel brand new.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,games:3,occtreat:2}, fit:"U", rank:100},
 ];
 /* ================= CONFIG: SHARE ================= */
 function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
@@ -824,7 +848,7 @@ function finishQuiz(){
    Video autoplays muted and loops; the PNG is the poster and the fallback.
    Browse grid stays static PNG for load performance. Reduced-motion users
    always get the static PNG. */
-var ANIMATED = {"neon-demon-hunter":1,"tin-hero":1,"blue-dog-family":1,"block-game-crew":1,"ramen-bowl":1,"snow-sisters":1,"fairy-tale-princesses":1,"tooth-fairy":1,"soccer-squad":1,"good-witch-bad-witch":1,"baby-dino":1,"backyard-hero":1,"bamboo-demon":1,"black-cat":1,"block-monster":1,"blue-alien-ohana":1,"board-game-pieces":1,"breakfast-buffet":1,"bumble-bee":1,"burger-joint-couple":1,"cat-mouse":1,"cereal-crew":1,"fuzzy-monster":1,"garden-gnome":1,"ghost-hunters":1,"gloom-bloom":1,"glow-skeleton":1,"goggle-crew":1,"haunted-animatronics":1,"haunted-portraits":1,"headless-horsemen":1,"ketchup-mustard":1,"little-lion":1,"little-pig-family":1,"little-shark":1,"little-witch":1,"lost-tourist":1,"mermaid-crew":1,"moth-porch-light":1,"mystery-crew":1,"office-couple":1,"pickle":1,"plague-doctor":1,"player-one-two":1,"plug-socket":1,"plumber-duo":1,"pocket-plush":1,"rain-cloud-rainbow":1,"raptor-ranger":1,"robot-crew":1,"safari-photographer":1,"safari-zoo-crew":1,"salt-pepper":1,"space-crewmate":1,"spider":1,"sun-moon":1,"superhero-family":1,"tiny-firefighter":1,"tiny-snail":1,"under-the-sea":1,"vampire":1,"walking-taco":1,"web-hero-duo":1,"web-slinger-crew":1,"zombie-coworker":1,"classic-ghost":1,"crowd-camouflage":1,"deadpan-diva":1,"decades-crew":1,"dino-rangers":1,"dinosaur-family":1,"doctor-bride":1,"emerald-witch":1,"emoji-crew":1,"enchanted-castle-crew":1,"error-404":1};
+var ANIMATED = {"neon-demon-hunter":1,"tin-hero":1,"blue-dog-family":1,"block-game-crew":1,"ramen-bowl":1,"snow-sisters":1,"fairy-tale-princesses":1,"tooth-fairy":1,"soccer-squad":1,"good-witch-bad-witch":1,"baby-dino":1,"backyard-hero":1,"bamboo-demon":1,"black-cat":1,"block-monster":1,"blue-alien-ohana":1,"board-game-pieces":1,"breakfast-buffet":1,"bumble-bee":1,"burger-joint-couple":1,"cat-mouse":1,"cereal-crew":1,"fuzzy-monster":1,"garden-gnome":1,"ghost-hunters":1,"gloom-bloom":1,"glow-skeleton":1,"goggle-crew":1,"haunted-animatronics":1,"haunted-portraits":1,"headless-horsemen":1,"ketchup-mustard":1,"little-lion":1,"little-pig-family":1,"little-shark":1,"little-witch":1,"lost-tourist":1,"mermaid-crew":1,"moth-porch-light":1,"mystery-crew":1,"office-couple":1,"pickle":1,"plague-doctor":1,"player-one-two":1,"plug-socket":1,"plumber-duo":1,"pocket-plush":1,"rain-cloud-rainbow":1,"raptor-ranger":1,"robot-crew":1,"safari-photographer":1,"safari-zoo-crew":1,"salt-pepper":1,"space-crewmate":1,"spider":1,"sun-moon":1,"superhero-family":1,"tiny-firefighter":1,"tiny-snail":1,"under-the-sea":1,"vampire":1,"walking-taco":1,"web-hero-duo":1,"web-slinger-crew":1,"zombie-coworker":1,"classic-ghost":1,"crowd-camouflage":1,"deadpan-diva":1,"decades-crew":1,"dino-rangers":1,"dinosaur-family":1,"doctor-bride":1,"emerald-witch":1,"emoji-crew":1,"enchanted-castle-crew":1,"error-404":1,"sushi-roll":1,"deviled-egg":1,"pizza-slice":1,"popcorn-bucket":1,"ice-cream-cone":1,"pbj":1,"bacon-eggs":1,"peas-pod":1,"basketball-star":1,"referee":1,"boxer":1,"cheerleader":1,"tennis-duo":1,"bowling-pins":1,"cardboard-knight":1,"ninja":1,"caped-duo":1,"hero-squad":1,"astronaut":1,"robot-ranger":1,"penguin-huddle":1,"prince-princess":1,"dino-herd":1,"pixel-ghost":1};
 function ideaMedia(idea){
   var src = "images/" + idea.id + ".png";
   var reduce = false;
@@ -981,7 +1005,7 @@ function buildFitRefinement(){
 /* One-hero results: the #1 idea is the answer ("Here is what you got"); the
    other two render as compact cards over a single shared full-width detail.
    Tapping a runner-up opens its full card inline below the pair; only one is
-   open at a time. A browse-all button (not a 76-card tail) closes the page. */
+   open at a time. A browse-all button (not a 100-card tail) closes the page. */
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
@@ -1017,17 +1041,16 @@ function renderResults(results){
     var card = document.createElement("div");
     card.className = "bcard";
     card.style.cursor = "pointer";
-    var img = document.createElement("img");
-    img.src = "images/" + idea.id + ".png";
-    img.alt = idea.title;
-    img.loading = "lazy";
-    img.setAttribute("onerror", "this.style.display='none'");
+    /* Billy 2026-09-24: runners-up play their animation loops right on the
+       card (ideaMedia), same as the hero. Previously a static PNG here and
+       the expanded detail skipped art entirely, so #2/#3 never animated. */
+    var im = ideaMedia(idea);
     var h = document.createElement("h3");
     h.textContent = idea.title;
     var hint = document.createElement("p");
     hint.className = "status";
     hint.textContent = "Tap for the full plan";
-    card.appendChild(img); card.appendChild(h); card.appendChild(hint);
+    card.appendChild(im); card.appendChild(h); card.appendChild(hint);
     function toggleRu(e){
       var t = e && e.target;
       if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
@@ -1551,7 +1574,41 @@ var CASTS = {
   "cereal-crew":{mode:"choose",filler:"cereal box",pool:["cereal box","spoon","milk carton","cereal bowl","orange juice"]},
   "haunted-animatronics":{mode:"choose",filler:"animatronic",pool:["glitchy mascot","flickering-eyed bot","jerky dancer","static singer"]},
   "goggle-crew":{mode:"choose",filler:"goggle",pool:["tall goggle","short goggle","one-eyed goggle","two-eyed goggle"]},
-  "classic-ghost":{mode:"choose",filler:"sheet ghost",pool:["sheet ghost","ghost with glasses","tall ghost","tiny ghost"]}
+  "classic-ghost":{mode:"choose",filler:"sheet ghost",pool:["sheet ghost","ghost with glasses","tall ghost","tiny ghost"]},
+  "pbj":{mode:"assign",filler:"sandwich",roles:[
+    {r:"peanut butter",kid:true,adult:true},{r:"jelly",kid:true,adult:true}]},
+  "bacon-eggs":{mode:"assign",filler:"breakfast",roles:[
+    {r:"bacon",kid:true,adult:true},{r:"eggs",kid:true,adult:true}]},
+  "peas-pod":{mode:"assign",filler:"pea",roles:[
+    {r:"pea",kid:true,adult:true},{r:"pea",kid:true,adult:true},
+    {r:"pea",kid:true,adult:true},{r:"pea",kid:true,adult:true},
+    {r:"pea",kid:true,adult:true},{r:"pea",kid:true,adult:true}]},
+  "referee":{mode:"assign",filler:"player",roles:[
+    {r:"head referee",kid:false,adult:true},{r:"player",kid:true,adult:true},
+    {r:"player",kid:true,adult:true}]},
+  "tennis-duo":{mode:"assign",filler:"tennis player",roles:[
+    {r:"server",kid:true,adult:true},{r:"receiver",kid:true,adult:true}]},
+  "bowling-pins":{mode:"assign",filler:"pin",roles:[
+    {r:"bowler",kid:false,adult:true},{r:"pin",kid:true,adult:true},
+    {r:"pin",kid:true,adult:true},{r:"pin",kid:true,adult:true},
+    {r:"pin",kid:true,adult:true},{r:"pin",kid:true,adult:true}]},
+  "caped-duo":{mode:"assign",filler:"hero",roles:[
+    {r:"hero",kid:true,adult:true},{r:"sidekick",kid:true,adult:true}]},
+  "hero-squad":{mode:"assign",filler:"hero",roles:[
+    {r:"red hero",kid:true,adult:true},{r:"blue hero",kid:true,adult:true},
+    {r:"green hero",kid:true,adult:true},{r:"gold hero",kid:true,adult:true}]},
+  "penguin-huddle":{mode:"assign",filler:"penguin",roles:[
+    {r:"penguin",kid:true,adult:true},{r:"penguin",kid:true,adult:true},
+    {r:"penguin",kid:true,adult:true},{r:"penguin",kid:true,adult:true},
+    {r:"penguin",kid:true,adult:true},{r:"penguin",kid:true,adult:true}]},
+  "prince-princess":{mode:"assign",filler:"royal",roles:[
+    {r:"prince",kid:true,adult:true},{r:"princess",kid:true,adult:true}]},
+  "dino-herd":{mode:"assign",filler:"dino",roles:[
+    {r:"t-rex",kid:true,adult:true},{r:"raptor",kid:true,adult:true},
+    {r:"triceratops",kid:true,adult:true},{r:"stegosaurus",kid:true,adult:true}]},
+  "robot-ranger":{mode:"assign",filler:"ranger",roles:[
+    {r:"ranger",kid:true,adult:true},{r:"robot",kid:true,adult:false},
+    {r:"ranger",kid:true,adult:true}]}
 };
 /* Fit a cast to any group size. people: [{name, kid}]. overrides: {index: role} of the
    user's explicit dropdown picks. Auto-assignment skips overridden rows and never hands
