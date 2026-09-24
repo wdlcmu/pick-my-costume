@@ -313,6 +313,28 @@ console.log("P5/P6. propagation guard + send behavior preserved");
   T_ok(stText.indexOf("Copied") === 0, "P6.2 clipboard fallback still works", stText);
 })();
 
+/* ---------- scenario P7: AI plan copy (Billy 2026-09-24) ---------- */
+console.log("P7. AI plan copy");
+(function(){
+  T_clearLS();
+  for (var k in castStateByIdea) delete castStateByIdea[k];
+  for (var k2 in panelOpenByIdea) delete panelOpenByIdea[k2];
+  state = { qi: 0, answers: {} };
+  state.answers = { q1: T_O("q1","Solo"), q2: T_O("q2","Scary"), q4: T_O("q4","Go all out"),
+    qocc: T_O("qocc","Bar / club night"),
+    qinterest: qById("qinterest").options.filter(function(o){ return o.tags.tv; })[0] };
+  renderResults(scoreIdeas());
+  var card = T_byClass(T_byClass($("r-cards"), "hero12")[0], "card")[0];
+  T_click(T_byText(card, "BUTTON", "This is my pick")[0]);
+  var header = T_byText(card, "P", "Plan my costume")[0];
+  T_ok(!!header, "P7.1 'Plan my costume' header present");
+  var helper = T_byText(card, "P", "Paste it into any AI for a step-by-step plan")[0];
+  T_ok(!!helper, "P7.2 helper text present");
+  T_ok(!!T_byText(card, "BUTTON", "Copy AI prompt")[0], "P7.3 'Copy AI prompt' button unchanged");
+  var old = T_findAll(card, function(e){ return (e._text || "").indexOf("Get your AI costume plan") >= 0; });
+  T_ok(old.length === 0, "P7.4 old header gone", old.length);
+})();
+
 console.log("\n==== e27-share-hierarchy-test: " + T_pass + " passed, " + T_fail + " failed ====");
 if (T_fail) process.exit(1);
 
