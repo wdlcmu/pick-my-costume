@@ -150,6 +150,10 @@ button.ghost{
 .status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
 .linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
 .promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:15px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
+/* After a successful share, the AI plan section gets a brief highlight so it
+   reads as the immediate next step (added by revealAiPlan). */
+.ai-flash{animation:aiFlash 1.6s ease-out}
+@keyframes aiFlash{0%{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}100%{outline:2px solid transparent;outline-offset:4px}}
 .stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
 .stuck h3{margin:0 0 6px;font-size:20px}
 .stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
@@ -819,7 +823,7 @@ function buildResultCard(scored, idx, pick, noArt){
       } else {
         planBox.appendChild(shareBox); /* share leads */
         planBox.appendChild(aiPlanBox); /* AI plan follows */
-        addCopyShareRow(shareBox, idea);
+        addCopyShareRow(shareBox, idea, null, null, function(){ revealAiPlan(aiPlanBox); });
         showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "pick_plan_copied", true);
       }
       card.setAttribute("data-panel", "1");
@@ -1142,7 +1146,7 @@ function buildBrowseDetailCard(idea){
     } else {
       planBox.appendChild(shareBox); /* share leads */
       planBox.appendChild(aiPlanBox); /* AI plan follows */
-      addCopyShareRow(shareBox, idea);
+      addCopyShareRow(shareBox, idea, null, null, function(){ revealAiPlan(aiPlanBox); });
       showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "browse_detail_plan_copied", true);
     }
   }
@@ -1267,8 +1271,20 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   return { setText: function(t){ curText = t; ta.value = t; } };
 }
 
+/* After a successful share, the AI plan is the immediate now-what: scroll it
+   into view and give it a brief highlight so it reads as the next step.
+   No new screens, no modals. */
+function revealAiPlan(aiBox){
+  if (!aiBox) return;
+  try { if (aiBox.scrollIntoView) aiBox.scrollIntoView({block: "nearest", behavior: "smooth"}); } catch(e){}
+  aiBox.classList.remove("ai-flash");
+  void aiBox.offsetWidth; /* restart the animation on back-to-back shares */
+  aiBox.classList.add("ai-flash");
+  setTimeout(function(){ aiBox.classList.remove("ai-flash"); }, 1800);
+}
+
 /* After a pick, the share section leads and the AI plan follows beneath it. */
-function addCopyShareRow(container, idea, makeText, xprops){
+function addCopyShareRow(container, idea, makeText, xprops, onShared){
   var label = document.createElement("p"); label.className = "status";
   function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
   label.textContent = "Text this to a friend:";
@@ -1297,6 +1313,8 @@ function addCopyShareRow(container, idea, makeText, xprops){
         label.textContent = "Shared. Who else needs a costume?";
         Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id}, xp()));
         if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id}, xp()));
+        /* The share landed: the AI plan is the immediate now-what. */
+        if (typeof onShared === "function") onShared();
       }
     }
     function copyFallback(){
@@ -1533,9 +1551,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   box.appendChild(q1); box.appendChild(q1r);
   box.appendChild(q2); box.appendChild(q2r);
   box.appendChild(rows); box.appendChild(line);
-  /* The cast share row and the per-person AI plan live INSIDE the panel --
-     share first, AI plan follows (production order). Without this they were
-     populated but never attached, so the cast share text was invisible. */
+  /* The cast share row, personal cards, and the per-person AI plan live INSIDE
+     the panel -- share first, personal cards next, AI plan last (production
+     order). Without this they were populated but never attached, so the cast
+     share text was invisible. */
   box.appendChild(shareBox);
   box.appendChild(aiPlanBox);
   var shareHandle = null, aiHandle = null;
@@ -1647,7 +1666,8 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       /* xprops is a function so group_size/kid_count are read at event time, not build time. */
       var xp = function(){ return {cast: 1, group_size: size, kid_count: kids}; };
       shareHandle = addCopyShareRow(shareBox, idea,
-        function(sid){ return buildCastShareText(idea, currentList(), sid); }, xp);
+        function(sid){ return buildCastShareText(idea, currentList(), sid); }, xp,
+        function(){ revealAiPlan(aiPlanBox); });
       aiHandle = showPromptPreview(aiPlanBox, "", "e17_cast_plan_copied", true, xp);
     }
     shareHandle.refresh();
@@ -1711,6 +1731,8 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via});
           Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via});
           if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
+          /* The card share landed: the AI plan is the immediate now-what. */
+          revealAiPlan(aiPlanBox);
         }
         function copyFallback(){
           doCopy(text, function(ok){
@@ -1744,7 +1766,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   };
   pcWrap.appendChild(pcBtn);
   pcWrap.appendChild(pcList);
-  box.appendChild(pcWrap);
+  /* Post-pick order: share, then personal cards (the quicker upsell), then
+     the AI plan text. Cards lead because they are visual and one-tap; the
+     AI prompt is a wall of text. */
+  box.insertBefore(pcWrap, aiPlanBox);
   return box;
 }
 
