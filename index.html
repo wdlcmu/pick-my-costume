@@ -154,6 +154,11 @@ button.ghost{
    reads as the immediate next step (added by revealAiPlan). */
 .ai-flash{animation:aiFlash 1.6s ease-out}
 @keyframes aiFlash{0%{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}100%{outline:2px solid transparent;outline-offset:4px}}
+/* Billy 2026-09-24: "get a color behind the AI plan". The AI plan reads as one
+   distinct block: a soft orange wash drawn from the accent (no new hue),
+   comfortable padding, rounded corners. Applied by showPromptPreview to the
+   plan container, so every surface that renders the block gets the tint. */
+.ai-plan{background:rgba(255,140,26,.10);border-radius:var(--radius);padding:14px 16px;margin-top:12px}
 .stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
 .stuck h3{margin:0 0 6px;font-size:20px}
 .stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
@@ -1249,6 +1254,11 @@ function doCopy(text, done){
 }
 function showPromptPreview(container, text, eventName, noScroll, xprops){
   container.innerHTML = "";
+  /* Billy 2026-09-24: tinted block behind the AI plan. This is the single
+     choke point for every AI-plan block (quiz pick panels, browse detail,
+     cast panel, results-level, browse cards, recipient landing), so the tint
+     lands everywhere the block renders. */
+  if (container.classList) container.classList.add("ai-plan");
   var curText = text;
   function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
   var label = document.createElement("p"); label.className = "status";
