@@ -454,7 +454,7 @@ var BUDGET_OK = {
   diy:  ["diy"]
 };
 
-function scoreIdeas(){
+function scoreIdeas(full){
   var aud = state.answers.q1.value;
   var tags = answerTags();
   /* Budget is a ceiling: a bigger budget includes cheaper bands. Skipped when the flow has no budget question (kid flow). */
@@ -499,7 +499,7 @@ function scoreIdeas(){
     if (b.score !== a.score) return b.score - a.score;
     return a.idea.rank - b.idea.rank;
   });
-  return scored.slice(0, 3);
+  return full ? scored : scored.slice(0, 3);
 }
 
 function whyLine(scored){
@@ -568,11 +568,9 @@ function finishQuiz(){
   renderResults(results);
 }
 
-function renderResults(results){
-  var box = $("r-cards");
-  box.innerHTML = "";
-  var pick = load("pmc_pick_v1");
-  results.forEach(function(scored, idx){
+/* One result card, extracted so the "Still stuck?" section can render
+   alternates (ranks 4-6) with the exact same card, including tap-to-pick. */
+function buildResultCard(scored, idx, pick){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
@@ -631,7 +629,14 @@ function renderResults(results){
     row.appendChild(bPick); row.appendChild(bShare);
     card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
     card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
-    box.appendChild(card);
+    return card;
+}
+function renderResults(results){
+  var box = $("r-cards");
+  box.innerHTML = "";
+  var pick = load("pmc_pick_v1");
+  results.forEach(function(scored, idx){
+    box.appendChild(buildResultCard(scored, idx, pick));
   });
   var aiRow = document.createElement("div"); aiRow.className = "row"; aiRow.style.marginTop = "8px";
   var aiBox = document.createElement("div");
@@ -646,12 +651,27 @@ function renderResults(results){
   var sp = document.createElement("p");
   sp.textContent = "None of these quite fit? Use the three ideas as starting points.";
   var stuckRow = document.createElement("div"); stuckRow.className = "row";
+  /* E9: the direct answer to "none of these fit" — three more ideas (ranks 4-6)
+     as full cards with tap-to-pick. Re-scores from the current answers; one tap. */
+  var bMore = document.createElement("button"); bMore.type = "button"; bMore.className = "ghost";
+  bMore.textContent = "Show 3 more ideas";
+  var moreBox = document.createElement("div");
+  bMore.onclick = function(){
+    var alt = scoreIdeas(true).slice(3, 6);
+    var pk = load("pmc_pick_v1");
+    moreBox.innerHTML = "";
+    alt.forEach(function(scored, i){ moreBox.appendChild(buildResultCard(scored, i + 3, pk)); });
+    bMore.disabled = true;
+    bMore.textContent = "Showing 3 more ideas";
+    Analytics.track("more_ideas_shown", {});
+  };
   var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "ghost";
   bStuck.textContent = "Get an AI prompt from these 3 ideas";
   var stuckBox = document.createElement("div");
   bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(results, true), "stuck_prompt_copied"); };
+  stuckRow.appendChild(bMore);
   stuckRow.appendChild(bStuck);
-  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(stuckBox);
+  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(moreBox); stuck.appendChild(stuckBox);
   box.appendChild(stuck);
   show("s-results");
 }
