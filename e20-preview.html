@@ -235,6 +235,17 @@ footer a{color:var(--accent)}
     </div>
   </section>
 
+  <!-- BROWSE DETAIL: tapping a browse card opens the full pick flow here,
+       reusing the quiz result card's components. Staged E20 parity build. -->
+  <section class="screen" id="s-detail">
+    <p class="progress">From browsing</p>
+    <h2 class="q-title">Costume detail</h2>
+    <div id="d-card"></div>
+    <div class="navrow" style="margin-top:16px">
+      <button class="ghost" id="btn-dback" type="button">&larr; Back to browse</button>
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section class="screen" id="s-about">
     <p class="progress">About this site</p>
@@ -884,6 +895,17 @@ function renderBrowse(){
     var _tse2=trendStatEl(idea);if(_tse2)card.appendChild(_tse2);
     card.appendChild(h); card.appendChild(p);
     card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
+    /* E20 parity: tapping the card body (not the buttons) opens the full
+       pick flow. Buttons keep their own handlers; the closest("button") /
+       closest("a") guard keeps taps from double-firing. (E17 lesson: a
+       card-level click must never swallow control taps.) */
+    card.style.cursor = "pointer";
+    card.addEventListener("click", (function(id){ return function(e){
+      var t = e.target;
+      if (t && t.closest && (t.closest("button") || t.closest("a"))) return;
+      try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
+      openIdeaDetail(id);
+    }; })(idea.id));
     grid.appendChild(card);
   });
   if (!ordered.length){
@@ -897,6 +919,86 @@ function openBrowse(){
   renderBrowse();
   Analytics.track("browse_opened", {});
   show("s-browse");
+}
+
+/* ================= BROWSE DETAIL: E20 PARITY (staged) =================
+   Billy's product call: tapping a browse card opens the SAME full pick flow
+   as a quiz result card. Reuses the result card's components (trendStatEl,
+   addCopyShareRow, showPromptPreview, buildIdeaPrompt, shareText) and the
+   E17 cast-panel hook point. The why-line is the STATIC bank line: with no
+   quiz answers in state, the dynamic answer-referencing composition must
+   NOT run (it would read stale or empty answers). */
+function buildBrowseDetailCard(idea){
+  var card = document.createElement("div");
+  card.className = "card";
+  var im = document.createElement("img");
+  im.src = "images/" + idea.id + ".png";
+  im.alt = "";
+  im.style.width = "100%";
+  im.style.borderRadius = "10px";
+  im.style.marginBottom = "12px";
+  im.setAttribute("onerror", "this.style.display='none'");
+  var h = document.createElement("h3"); h.textContent = idea.title;
+  var _tse = trendStatEl(idea); if (_tse) card.appendChild(_tse);
+  var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
+  var wh = document.createElement("p"); wh.className = "why";
+  var wb = document.createElement("b"); wb.textContent = "Why this fits you";
+  wh.appendChild(wb);
+  wh.appendChild(document.createTextNode(": " + idea.why));
+  var row = document.createElement("div"); row.className = "row";
+  var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+  var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share this idea";
+  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
+  var note = document.createElement("p"); note.className = "picked-note";
+  note.textContent = "\u2713 You\u2019re going as " + idea.title;
+  var planBox = document.createElement("div");
+  var status = document.createElement("p"); status.className = "status";
+  var pick = load("pmc_pick_v1");
+  if (pick && pick.ideaId === idea.id){ note.style.display = "block"; hint.style.display = "none"; }
+  function mountPickSections(){
+    planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+    var shareBox = document.createElement("div");
+    var aiPlanBox = document.createElement("div");
+    var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
+    if (_cast && typeof buildCastPanel === "function"){
+      /* E17 hook: cast mapping replaces the generic share + AI sections. */
+      planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
+    } else {
+      planBox.appendChild(shareBox); /* share leads */
+      planBox.appendChild(aiPlanBox); /* AI plan follows */
+      addCopyShareRow(shareBox, idea);
+      showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "browse_detail_plan_copied", true);
+    }
+  }
+  function doPick(){
+    store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+    note.style.display = "block";
+    hint.style.display = "none";
+    status.textContent = "";
+    Analytics.track("pick_saved", {idea_id: idea.id, via: "browse_detail"});
+    mountPickSections();
+  }
+  bPick.onclick = doPick;
+  bShare.onclick = function(){
+    var a = (idea.audience && idea.audience[0]) || "solo";
+    shareText(idea, status, bShare, a);
+  };
+  /* Already picked earlier (e.g. from the quiz): show its sections at once. */
+  if (pick && pick.ideaId === idea.id) mountPickSections();
+  row.appendChild(bPick); row.appendChild(bShare);
+  card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+  card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+  return card;
+}
+function openIdeaDetail(ideaId){
+  var idea = null;
+  for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
+  if (!idea) return;
+  var box = $("d-card");
+  box.innerHTML = "";
+  box.appendChild(buildBrowseDetailCard(idea));
+  Analytics.track("browse_detail_opened", {idea_id: idea.id});
+  show("s-detail");
 }
 
 /* ================= E20: browse search + filters (prototype) ================= */
@@ -1135,6 +1237,9 @@ $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
+/* E20 parity: back from a browse detail returns to the browse grid with the
+   current search/filter state intact (renderBrowse reads the live inputs). */
+$("btn-dback").onclick = function(){ renderBrowse(); show("s-browse"); };
 /* E16: browse -> quiz door. Same start behavior as the hero CTA, plus a
    browse_quiz_started event so the morning brief can measure the door. */
 $("btn-bquiz").onclick = function(){
