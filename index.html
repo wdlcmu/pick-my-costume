@@ -58,6 +58,11 @@
   --radius: 14px;
 }
 *{box-sizing:border-box}
+/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
+   rendered as dark browser-default blue on the dark background -- unreadable.
+   Every link now gets the accent-orange treatment (bold, underlined) so no
+   surface can silently regress to browser-default blue. */
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0; color:var(--ink);
