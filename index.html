@@ -605,7 +605,7 @@ function renderResults(results){
     var planBox = document.createElement("div");
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
-    bPick.onclick = function(){
+    function doPick(){
       store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
       note.style.display = "block";
       hint.style.display = "none";
@@ -618,7 +618,19 @@ function renderResults(results){
       planBox.appendChild(aiPlanBox); /* AI plan follows */
       addCopyShareRow(shareBox, idea);
       showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "pick_plan_copied", true);
-    };
+    }
+    bPick.onclick = doPick;
+    /* The results header says "Tap one to save your pick": make the card body
+       tappable too. Taps on buttons/links inside the card keep their own
+       behavior, and a tap that was really a text selection is not a pick.
+       Re-tapping is idempotent (planBox is rebuilt, never stacked). */
+    card.style.cursor = "pointer";
+    card.addEventListener("click", function(e){
+      var t = e.target;
+      if (t && t.closest && (t.closest("button") || t.closest("a"))) return;
+      try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
+      doPick();
+    });
     bShare.onclick = function(){ shareText(idea, status, bShare); };
     row.appendChild(bPick); row.appendChild(bShare);
     card.appendChild(im); card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
