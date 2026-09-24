@@ -504,6 +504,15 @@ var IDEAS = [
 function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
 /* VIA_SHARE: anonymous id of the share link this visitor arrived through (?s=). Never an identity. */
 var VIA_SHARE = null;
+/* E29: origin label of the arriving share link (?o=card|generic). Read at
+   landing time and carried into recipient_landing_viewed + quiz_started so
+   friend-quiz-starts are measurable per share origin. */
+var VIA_SHARE_ORIGIN = null;
+function viaShareProps(){
+  var p = {};
+  if (VIA_SHARE){ p.via_share_id = VIA_SHARE; if (VIA_SHARE_ORIGIN) p.share_origin = VIA_SHARE_ORIGIN; }
+  return p;
+}
 var NRF_URL = "https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion";
 /* Inline trending stat: the evidence for the flag, visible with no tap. */
 function trendStatEl(idea){
@@ -517,11 +526,18 @@ function trendStatEl(idea){
 
 var SHARE = {
   url: "pickmycostume.com",
-  textTemplate: function(idea, aud, sid){
+  /* E29 share-origin experiment (Billy 2026-09-24): every share link carries
+     its origin in ?o= -- "card" for personal-card sends, "generic" for
+     "Share this idea"/"Share" buttons. The /c/<slug> Pages function preserves
+     extra query params across the redirect, so the origin survives to the
+     recipient landing. Decision rule: at 50 opened share links, compare
+     friend-quiz-starts per origin; card >= 2x generic -> cards become the
+     only share path on cast ideas. */
+  textTemplate: function(idea, aud, sid, origin){
     var lead = "I'm going as ";
     if (aud === "couple" || aud === "group" || aud === "family") lead = "We're going as ";
     else if (aud === "kid") lead = "My kid is going as ";
-    var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid : "");
+    var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
     return lead + idea.title + " this Halloween. What are you going as? " + url;
   }
 };
@@ -1335,29 +1351,29 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   function makeShare(){
     var sid = newShareId();
     var text = makeText ? makeText(sid)
-      : "I\u2019m going as " + idea.title + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
+      : "I\u2019m going as " + idea.title + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
     return {sid: sid, text: text};
   }
   var cur = makeShare();
   ta.value = cur.text;
   b.onclick = function(){
     var sh = cur; /* what the preview shows is exactly what gets shared */
-    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid;
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=generic";
     function doneShare(ok, msg){
       st.textContent = msg;
       if (ok){
         /* E8: the first share landed — invite a second one. The button stays
            live with a fresh share_id (minted below), so the re-offer is one line. */
         label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id}, xp()));
-        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id}, xp()));
+        Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "generic"}, xp()));
+        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
         /* The share landed: the AI plan is the immediate now-what. */
         if (typeof onShared === "function") onShared();
       }
     }
     function copyFallback(){
       doCopy(sh.text, function(ok, msg){
-        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid}, xp()));
+        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "generic"}, xp()));
         doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
       });
     }
@@ -1571,7 +1587,7 @@ function buildCastShareText(idea, list, sid){
   /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
-    ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
+    ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
@@ -1802,11 +1818,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
          either way; the status line names what actually happened. */
       send.onclick = function(){
         var sid = newShareId();
-        var text = p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid;
+        var text = p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card";
         function credited(via){
-          Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via});
-          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via});
-          if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
+          Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
+          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card"});
+          if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "card"});
           /* The card share landed: the AI plan is the immediate now-what. */
           revealAiPlan(aiPlanBox);
         }
@@ -1858,9 +1874,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   function done(ok, msg){
     statusEl.textContent = msg;
     if (ok){
-      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid});
-      Analytics.track("share_created", {share_id: sid, idea_id: idea.id});
-      if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
+      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic"});
+      Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic"});
+      if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"});
     }
   }
   /* Desktop fallback: no share sheet, so copy the full share text instead. */
@@ -1906,7 +1922,9 @@ function fallbackCopy(text, done){
 $("btn-start").onclick = function(){
   state = {qi: 0, answers: {}};
   clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
-  Analytics.track("quiz_started", {});
+  /* E29: on a recipient landing this attributes the quiz start to the
+     arriving share id + origin. viaShareProps() is empty otherwise. */
+  Analytics.track("quiz_started", viaShareProps());
   renderQ();
 };
 $("q-back").onclick = function(){
@@ -1959,6 +1977,9 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     /* Anonymous share id: ?s=<sid> survives the /c/<slug> redirect. Never an identity. */
     var sm = /[?&]s=([a-z0-9]+)/.exec(location.search || "");
     if (sm) VIA_SHARE = sm[1];
+    /* E29: origin label (?o=card|generic) survives the same redirect. */
+    var om = /[?&]o=(card|generic)/.exec(location.search || "");
+    if (om) VIA_SHARE_ORIGIN = om[1];
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
     var idea = null;
@@ -1982,7 +2003,9 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     b.onclick = function(){
       state = {qi: 0, answers: {}};
       clearK("pmc_pick_v1");
-      Analytics.track("quiz_started", {});
+      /* E29: a quiz started from a shared landing attributes to the share id
+         + origin, so friend-quiz-starts are measurable per share origin. */
+      Analytics.track("quiz_started", viaShareProps());
       renderQ();
     };
     /* E17: the landing was quiz-or-nothing. A recipient who will not take a
@@ -2008,6 +2031,7 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
        indistinguishable, logged as safari_unknown. */
     var _rlv = {idea_id: idea.id, recipient_channel: recipientChannel()};
     if (VIA_SHARE) _rlv.share_id = VIA_SHARE;
+    if (VIA_SHARE_ORIGIN) _rlv.share_origin = VIA_SHARE_ORIGIN;
     Analytics.track("recipient_landing_viewed", _rlv);
   })();
   refreshReturnBox();
