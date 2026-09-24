@@ -849,7 +849,6 @@ function buildResultCard(scored, idx, pick, noArt){
     wh.appendChild(document.createTextNode(": " + whyLine(scored, idx).replace(/^Why this fits you: /, "")));
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
-    var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "cta"; bShare.textContent = "Share this idea";
     var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
@@ -886,7 +885,6 @@ function buildResultCard(scored, idx, pick, noArt){
       store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
       note.style.display = "block";
       hint.style.display = "none";
-      bShare.style.display = "none"; /* the panel below has its own Share button; dedupe */
       status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
       Analytics.track("pick_saved", {idea_id: idea.id});
       mountPanel();
@@ -904,8 +902,7 @@ function buildResultCard(scored, idx, pick, noArt){
       try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
       doPick();
     });
-    bShare.onclick = function(){ shareText(idea, status, bShare); };
-    row.appendChild(bPick); row.appendChild(bShare);
+    row.appendChild(bPick); /* "This is my pick" stands alone full-width: the post-pick panel owns the single share path */
     if (!noArt){ card.appendChild(im); card.appendChild(h); } /* runner-up detail: art + title already shown above */
     card.appendChild(bl); card.appendChild(wh);
     card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
@@ -1153,7 +1150,6 @@ function buildBrowseDetailCard(idea){
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
   var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
-  var bShare = document.createElement("button"); bShare.type = "button"; bShare.className = "cta"; bShare.textContent = "Share this idea";
   var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
   var note = document.createElement("p"); note.className = "picked-note";
   note.textContent = "\u2713 You\u2019re going as " + idea.title;
@@ -1185,13 +1181,9 @@ function buildBrowseDetailCard(idea){
     mountPickSections();
   }
   bPick.onclick = doPick;
-  bShare.onclick = function(){
-    var a = (idea.audience && idea.audience[0]) || "solo";
-    shareText(idea, status, bShare, a);
-  };
   /* Already picked earlier (e.g. from the quiz): show its sections at once. */
   if (pick && pick.ideaId === idea.id) mountPickSections();
-  row.appendChild(bPick); row.appendChild(bShare);
+  row.appendChild(bPick); /* pick stands alone full-width; the post-pick "Text this to a friend" section is the single share path */
   card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
   card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
   return card;
