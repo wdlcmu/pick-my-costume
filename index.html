@@ -198,6 +198,9 @@ footer a{color:var(--accent)}
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
       <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
+      <!-- E16: the browse screen had no door into the quiz. A browser is a
+           high-intent visitor; reuses the home screen's exact CTA copy. -->
+      <button class="cta" id="btn-bquiz" type="button">Find my costume</button>
     </div>
   </section>
 
@@ -1034,6 +1037,12 @@ $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
+/* E16: browse -> quiz door. Same start behavior as the hero CTA, plus a
+   browse_quiz_started event so the morning brief can measure the door. */
+$("btn-bquiz").onclick = function(){
+  Analytics.track("browse_quiz_started", {});
+  $("btn-start").onclick();
+};
 $("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
 $("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
@@ -1076,7 +1085,20 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
       Analytics.track("quiz_started", {});
       renderQ();
     };
-    box.appendChild(im); box.appendChild(h); box.appendChild(p); box.appendChild(b);
+    /* E17: the landing was quiz-or-nothing. A recipient who will not take a
+       quiz can still browse; the browse screen now has its own quiz door
+       (E16), so this is a loop, not a leak. */
+    var bb = document.createElement("button");
+    bb.type = "button";
+    bb.className = "ghost";
+    bb.style.width = "100%";
+    bb.style.marginTop = "8px";
+    bb.textContent = "Or browse all ideas";
+    bb.onclick = function(){
+      Analytics.track("landing_browse", {});
+      openBrowse();
+    };
+    box.appendChild(im); box.appendChild(h); box.appendChild(p); box.appendChild(b); box.appendChild(bb);
     var hero = $("s-hero");
     hero.insertBefore(box, hero.firstChild);
     var _rlv = {idea_id: idea.id}; if (VIA_SHARE) _rlv.share_id = VIA_SHARE;
