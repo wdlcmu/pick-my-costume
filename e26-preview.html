@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pick My Costume - A few quick questions. Three costume ideas.</title>
 <meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
@@ -165,9 +166,11 @@ footer a{color:var(--accent)}
 .bcard p{margin:0;font-size:14px;color:var(--muted)}
 .bcard .row{display:flex;flex-wrap:wrap;gap:10px}
 .bcard .row button{flex:1;min-height:48px;font-size:14px}
-.bfilters{display:flex;gap:8px;margin:0 0 8px}
-.bfilters input[type=search]{flex:2 1 0;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
-.bfilters select{flex:1 1 0;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
+/* Narrow phones get two rows (search full-width, selects side by side) instead
+   of three squeezed controls; wide screens stay on one row. Sticky kept. */
+.bfilters input[type=search]{flex:2 1 220px;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters select{flex:1 1 130px;min-width:0;padding:10px 6px;font-size:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
 .bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .bempty{color:var(--muted);padding:24px 0;text-align:center}
 /* Sticky browse filters: the search + filter bar stays pinned while the grid
@@ -941,6 +944,7 @@ function renderResults(results){
   ru.appendChild(ruDetail);
   var openIdx = -1;
   var ruHints = [];
+  var ruToggles = [];
   [results[1], results[2]].forEach(function(scored, i){
     var idea = scored.idea;
     var card = document.createElement("div");
@@ -957,8 +961,8 @@ function renderResults(results){
     hint.className = "status";
     hint.textContent = "Tap for the full plan";
     card.appendChild(img); card.appendChild(h); card.appendChild(hint);
-    card.addEventListener("click", function(e){
-      var t = e.target;
+    function toggleRu(e){
+      var t = e && e.target;
       if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
       try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
       if (openIdx === i){
@@ -976,10 +980,21 @@ function renderResults(results){
         openIdx = i;
         Analytics.track("runnerup_opened", {idea_id: idea.id});
       }
-    });
+    }
+    card.addEventListener("click", toggleRu);
+    ruToggles.push(toggleRu);
     ruHints.push(hint);
     ruGrid.appendChild(card);
   });
+  /* If the saved pick is a runner-up whose panel was open, reopen its detail
+     so the restore at the end of renderResults remounts the panel (cast
+     names included) instead of silently dropping the user's pick. */
+  if (pick && panelOpenByIdea[pick.ideaId] && !cards[pick.ideaId]){
+    var rIdx = -1;
+    if (results[1] && results[1].idea.id === pick.ideaId) rIdx = 0;
+    else if (results[2] && results[2].idea.id === pick.ideaId) rIdx = 1;
+    if (rIdx >= 0) ruToggles[rIdx]();
+  }
   box.appendChild(ru);
   /* Results-level AI plan, with its own caption next to its button. */
   var aiCap = document.createElement("p");
@@ -1403,11 +1418,11 @@ function assignCast(ideaId, people, overrides){
   if (!cast) return people.map(function(){ return ""; });
   var claimed = [];
   Object.keys(overrides).forEach(function(k){ claimed.push(overrides[k]); });
-  var nameCount = {};
-  function named(base){
-    nameCount[base] = (nameCount[base] || 0) + 1;
-    return nameCount[base] > 1 ? base + " " + nameCount[base] : base;
-  }
+  /* Duplicate roles are handed out as-is ("pup", never "pup 2"): the suffixed
+     label exists in no dropdown and reads badly in headlines ("you're the
+     Pup 2"); two pups are honestly two pups. (Visual QA caught a "pup 2"
+     combobox vs "the pup" summary mismatch on 2026-09-24.) */
+  function named(base){ return base; }
   function unclaimed(base){ return claimed.indexOf(base) < 0; }
   if (cast.mode === "choose"){
     var pool = cast.pool.filter(unclaimed);
@@ -1425,8 +1440,8 @@ function assignCast(ideaId, people, overrides){
       if (!unclaimed(r.r)) continue;
       if (wantKid ? r.kid : r.adult){ used[i] = true; return named(r.r); }
     }
-    var f = named(cast.filler), guard = 0;
-    while (!unclaimed(f) && guard++ < 12) f = named(cast.filler);
+    var f = cast.filler, guard = 0;
+    while (!unclaimed(f) && guard++ < 12) f = cast.filler;
     return f;
   }
   /* Kids first, so kid-sized roles go to kids before adults claim the shared ones. */
@@ -1500,6 +1515,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var sub = document.createElement("p"); sub.className = "status";
   sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and stay on this phone.";
   box.appendChild(h); box.appendChild(sub);
+  var hadState = !!castStateByIdea[idea.id];
   var st = getCastState(idea.id, cast.n);
   var size = st.size, kids = 0, people = [], overrides = {};
   /* Restore names/kid flags/role overrides from a previous panel for this
@@ -1565,7 +1581,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var roles = autoRoles();
     return people.map(function(p, i){
       var nm = p.name.trim();
-      return {name: (nm || ("Person " + (i + 1))), kid: !!p.kid, role: overrides[i] || roles[i]};
+      return {name: (nm || ("Person " + (i + 1))), rawName: nm, kid: !!p.kid, role: overrides[i] || roles[i]};
     });
   }
   function render(){
@@ -1639,7 +1655,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     aiHandle.setText(buildCastPrompt(idea, list));
   }
   Analytics.track("e17_cast_started", {idea_id: idea.id});
-  setSize(2);
+  /* Restored panels keep the size, kid flags, names, and roles the user left;
+     only a brand-new panel starts at two. (setSize(2) here used to wipe a
+     restored 4-person cast back to two.) */
+  if (hadState){ recountKids(); render(); } else { setSize(2); }
   /* Personal role cards: one card per named person, each with a single
      "Send this card to <name>" CTA. For spouses sending to each other and
      groups sharing in group chat. */
@@ -1651,7 +1670,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var pcList = document.createElement("div");
   pcList.className = "pclist";
   pcBtn.onclick = function(){
-    var list = currentList().filter(function(p){ return p.name; });
+    /* Fallback "Person N" names never make personal cards: only people with a
+       typed name get a card (a card reading "Send this card to Person 2"
+       would look like a bug, not a feature). */
+    var list = currentList().filter(function(p){ return p.rawName; });
     pcList.innerHTML = "";
     if (!list.length){
       var empty = document.createElement("p");
@@ -1680,19 +1702,38 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       send.textContent = "Send this card to " + p.name;
       var st2 = document.createElement("p");
       st2.className = "status";
+      /* The CTA says "Send", so it sends: the native share sheet where the
+         phone has one, the clipboard everywhere else. The label stays honest
+         either way; the status line names what actually happened. */
       send.onclick = function(){
         var sid = newShareId();
         var text = p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid;
-        doCopy(text, function(ok){
-          if (ok){
-            st2.textContent = "Copied. Paste it into any message.";
-            Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid});
-            Analytics.track("share_created", {share_id: sid, idea_id: idea.id});
-            if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
-          } else {
-            st2.textContent = "Copy this: " + text;
-          }
-        });
+        function credited(via){
+          Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via});
+          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via});
+          if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id});
+        }
+        function copyFallback(){
+          doCopy(text, function(ok){
+            if (ok){
+              st2.textContent = "Copied. Paste it into any message.";
+              credited("clipboard");
+            } else {
+              st2.textContent = "Copy this: " + text;
+            }
+          });
+        }
+        if (typeof navigator !== "undefined" && navigator.share){
+          navigator.share({title: "Pick My Costume", text: text}).then(function(){
+            st2.textContent = "Shared.";
+            credited("share_sheet");
+          }, function(err){
+            if (err && err.name === "AbortError") return; /* closed the sheet; not an error */
+            copyFallback();
+          });
+        } else {
+          copyFallback();
+        }
       };
       card.appendChild(img);
       card.appendChild(head);
