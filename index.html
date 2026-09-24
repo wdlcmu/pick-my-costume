@@ -184,6 +184,7 @@ footer a{color:var(--accent)}
 .bfilters select{flex:1 1 140px;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
 .bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .bempty{color:var(--muted);padding:24px 0;text-align:center}
+.bclose{margin:18px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 /* Sticky browse filters: the filter bar stays pinned while the grid
    scrolls, so the 76 ideas never strand you without a way to narrow them.
    (Spirit Halloween pattern; Party City lets its toolbar scroll away.) */
@@ -262,8 +263,7 @@ footer a{color:var(--accent)}
       <select id="bf-aud" aria-label="Filter by who it is for">
         <option value="">Everyone</option>
         <option value="kid">Kids</option>
-        <option value="family">Family</option>
-        <option value="group">Group</option>
+        <option value="famgroup">Family &amp; group</option>
         <option value="couple">Couple</option>
         <option value="solo">Solo</option>
       </select>
@@ -1130,18 +1130,24 @@ function renderResults(results){
 }
 
 /* ================= BROWSE ================= */
-function renderBrowse(){
-  var grid = $("b-grid");
-  grid.innerHTML = "";
-  /* Browse-all follows the editorial rank, not build order. */
-  var ordered = IDEAS.slice().sort(function(a,b){ return a.rank - b.rank; }).filter(function(idea){
-    if (browseAud20 && idea.audience.indexOf(browseAud20) < 0) return false;
-    if (browseVibe20 && !(idea.tags && idea.tags[browseVibe20] > 0)) return false;
-    if (browseInt20 && !(idea.tags && idea.tags[browseInt20] > 0)) return false;
-    if (browseEff20 && !(idea.tags && idea.tags[browseEff20] > 0)) return false;
-    return true;
-  });
-  ordered.forEach(function(idea){
+/* Browse filter matching. Audience "famgroup" is the merged Family/Group
+   option: an idea matches if it serves either audience. Returns the count
+   of matched filters and the count of active filters. */
+function browseHits(idea){
+  var hits = 0, active = 0;
+  if (browseAud20){
+    active++;
+    var aok = browseAud20 === "famgroup"
+      ? (idea.audience.indexOf("family") >= 0 || idea.audience.indexOf("group") >= 0)
+      : idea.audience.indexOf(browseAud20) >= 0;
+    if (aok) hits++;
+  }
+  if (browseVibe20){ active++; if (idea.tags && idea.tags[browseVibe20] > 0) hits++; }
+  if (browseInt20){ active++; if (idea.tags && idea.tags[browseInt20] > 0) hits++; }
+  if (browseEff20){ active++; if (idea.tags && idea.tags[browseEff20] > 0) hits++; }
+  return {hits: hits, active: active};
+}
+function browseCard(idea){
     var card = document.createElement("div");
     card.className = "bcard";
     var img = document.createElement("img");
@@ -1179,14 +1185,37 @@ function renderBrowse(){
       try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
       openIdeaDetail(id);
     }; })(idea.id));
-    grid.appendChild(card);
+    return card;
+}
+function renderBrowse(){
+  var grid = $("b-grid");
+  grid.innerHTML = "";
+  /* Browse-all follows the editorial rank, not build order. Exact matches
+     first; when fewer than 3 ideas match, backfill with close matches
+     (ideas missing exactly one active filter) so a filter combo never
+     strands the user on a single lonely card. */
+  var exact = [], near = [];
+  IDEAS.forEach(function(idea){
+    var m = browseHits(idea);
+    if (m.hits === m.active) exact.push(idea);
+    else if (m.active >= 2 && m.hits === m.active - 1) near.push(idea);
   });
-  if (!ordered.length){
+  var byRank = function(a,b){ return a.rank - b.rank; };
+  exact.sort(byRank); near.sort(byRank);
+  if (exact.length < 3) near = near.slice(0, 12); else near = [];
+  exact.forEach(function(idea){ grid.appendChild(browseCard(idea)); });
+  if (near.length){
+    var _bh = document.createElement("p"); _bh.className = "bclose";
+    _bh.textContent = "Close matches";
+    grid.appendChild(_bh);
+    near.forEach(function(idea){ grid.appendChild(browseCard(idea)); });
+  }
+  if (!exact.length && !near.length){
     var _be = document.createElement("p"); _be.className = "bempty";
     _be.textContent = "No ideas match. Try clearing a filter.";
     grid.appendChild(_be);
   }
-  $("b-count").textContent = "Showing " + ordered.length + " of " + IDEAS.length + " ideas";
+  $("b-count").textContent = "Showing " + exact.length + " of " + IDEAS.length + " ideas";
 }
 function openBrowse(){
   renderBrowse();
