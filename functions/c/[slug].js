@@ -23,7 +23,12 @@ export function onRequest(context) {
   var _qp = new URLSearchParams(new URL(context.request.url).search);
   _qp.set("idea", slug);
   var target = "/?" + _qp.toString();
-  var html = "<!DOCTYPE html>" +
+  /* Shared metadata head: identical for every visitor. iMessage's
+     sender-side preview fetch uses a spoofed composite UA (Safari plus
+     Facebook/Twitter crawler strings); per Apple TN3156 it runs no JS and
+     follows no meta refresh, so it gets clean metadata-only HTML with no
+     redirect machinery. The tags are identical for everyone: not cloaking. */
+  var head = "<!DOCTYPE html>" +
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<title>" + title + " - Pick My Costume</title>" +
     "<meta property=\"og:type\" content=\"website\">" +
@@ -40,11 +45,23 @@ export function onRequest(context) {
     "<meta name=\"twitter:title\" content=\"" + title + " - Pick My Costume\">" +
     "<meta name=\"twitter:description\" content=\"" + blurb + "\">" +
     "<meta name=\"twitter:image\" content=\"" + img + "\">" +
-    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
-    "<noscript><meta http-equiv=\"refresh\" content=\"0;url=" + target + "\"></noscript>" +
-    "<script>location.replace(\"" + target + "\");</script>" +
-    "</head><body><p>Taking you to Pick My Costume&hellip; " +
-    "<a href=\"" + target + "\">" + title + "</a></p></body></html>";
+    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+  var _ua = (context.request.headers.get("user-agent") || "").toLowerCase();
+  var _imsgFetch = _ua.indexOf("facebookexternalhit") !== -1 &&
+                   _ua.indexOf("facebot") !== -1 &&
+                   _ua.indexOf("twitterbot") !== -1;
+  var html;
+  if (_imsgFetch) {
+    html = head +
+      "</head><body><h1>" + title + "</h1><p>" + blurb + "</p>" +
+      "<p><a href=\"https://pickmycostume.com/\">Pick My Costume</a></p></body></html>";
+  } else {
+    html = head +
+      "<noscript><meta http-equiv=\"refresh\" content=\"0;url=" + target + "\"></noscript>" +
+      "<script>location.replace(\"" + target + "\");</script>" +
+      "</head><body><p>Taking you to Pick My Costume&hellip; " +
+      "<a href=\"" + target + "\">" + title + "</a></p></body></html>";
+  }
   return new Response(html, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
