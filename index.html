@@ -1447,6 +1447,7 @@ function buildVibeFeedback(idea){
           Analytics.track("pick_feedback_text", {idea_id: idea.id, text: inp.value.slice(0, 140)});
           thanks("no");
         };
+        inp.addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); send.click(); } });
         fbRow.appendChild(inp); fbRow.appendChild(send);
         try { inp.focus(); } catch(_){}
       } else {
