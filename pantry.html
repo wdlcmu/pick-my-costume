@@ -74,6 +74,37 @@
     text-decoration:none;border-radius:10px;padding:10px 16px;min-height:44px;line-height:1.4}
   .foot{margin-top:28px;color:var(--muted);font-size:13px;line-height:1.6;text-align:center}
   .empty{color:var(--muted);font-size:14px;text-align:center;padding:18px 0}
+  .searchwrap{position:relative;margin:0 0 10px}
+  #search{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:12px;padding:14px;font-size:16px;min-height:52px}
+  #search:focus{outline:none;border-color:var(--accent)}
+  #search::placeholder{color:var(--muted)}
+  .searchlist{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--card2);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;z-index:20;
+    max-height:300px;overflow-y:auto}
+  .searchlist[hidden]{display:none}
+  .sopt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;
+    color:var(--ink);padding:13px 14px;font-size:15px;cursor:pointer;border-bottom:1px solid var(--line);
+    min-height:48px;-webkit-tap-highlight-color:transparent}
+  .sopt:last-child{border-bottom:0}
+  .sopt .g{margin-left:auto;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .sopt.sel,.sopt:active{background:var(--accent);color:var(--accent-ink)}
+  .sopt.sel .g,.sopt:active .g{color:var(--accent-ink)}
+  .snone{padding:13px 14px;font-size:14px;color:var(--muted)}
+  .mychips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+  .mychips:empty{margin:0}
+  .mychip{display:inline-flex;align-items:center;gap:8px;background:var(--card2);
+    border:1px solid var(--accent);border-radius:20px;padding:8px 8px 8px 14px;font-size:14px;color:var(--ink)}
+  .mychip.staple{border-style:dashed;border-color:var(--line)}
+  .mychip button{border:0;background:var(--line);color:var(--ink);border-radius:50%;width:26px;height:26px;
+    font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent}
+  .browse{margin:2px 0 0}
+  .browse summary{cursor:pointer;color:var(--muted);font-size:14px;padding:12px 0;list-style:none;
+    -webkit-tap-highlight-color:transparent;min-height:44px}
+  .browse summary::-webkit-details-marker{display:none}
+  .browse summary::before{content:"+ ";color:var(--accent);font-weight:800}
+  .browse[open] summary::before{content:"\2212 "}
 </style>
 </head>
 <body>
@@ -84,11 +115,20 @@
   </div>
 
   <h1>What do you have?</h1>
-  <p class="sub">Tick everything already in your house. We rank all 108 costumes by what you can make tonight, no guessing.</p>
+  <p class="sub">Type what you already own. We rank all 108 costumes by what you can make tonight, no guessing.</p>
 
-  <p class="staple-note"><b>We assume every home has scissors, tape, and paper + pen.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p>
+  <div class="searchwrap">
+    <input id="search" type="text" placeholder="Type what you have: bedsheet, red paint, cardboard..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search your stuff" role="combobox" aria-expanded="false" aria-controls="searchlist">
+    <div id="searchlist" class="searchlist" role="listbox" hidden></div>
+  </div>
+  <div id="mychips" class="mychips" aria-live="polite"></div>
 
-  <div id="groups"></div>
+  <p class="staple-note"><b>We assume every home has scissors, tape, and paper + pen.</b> Remove any you don't actually have. Everything else only counts if you add it.</p>
+
+  <details class="browse" id="browse">
+    <summary>Browse everything <span id="browcount"></span></summary>
+    <div id="groups"></div>
+  </details>
 
   <div class="actions">
     <button class="btn btn-ghost" id="reset" type="button">Start over</button>
@@ -127,6 +167,30 @@ function esc(s){
 function groupOk(g){ return g.some(id => id && ticked.has(id)); }
 function reqOk(m){ return m.g.every(groupOk); }
 
+function persist(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify([...ticked])); } catch (e) {}
+}
+function addItem(id){
+  if (ticked.has(id)) return;
+  ticked.add(id); persist();
+  renderChips(); syncBrowse(); render();
+}
+function removeItem(id){
+  ticked.delete(id); persist();
+  renderChips(); syncBrowse(); render();
+}
+function renderChips(){
+  const host = document.getElementById('mychips');
+  const items = DATA.pantry.filter(p => ticked.has(p.id));
+  host.innerHTML = items.map(p =>
+    '<span class="mychip' + (p.staple ? ' staple' : '') + '">' + esc(p.label) +
+    '<button type="button" data-id="' + p.id + '" aria-label="Remove ' + esc(p.label) + '">×</button></span>'
+  ).join('');
+  host.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', ev => { ev.stopPropagation(); removeItem(b.dataset.id); });
+  });
+}
+// browse fallback lives inside a collapsed <details>
 function renderGroups(){
   const host = document.getElementById('groups');
   host.innerHTML = DATA.groups.map(gr => {
@@ -144,11 +208,94 @@ function renderGroups(){
     cb.addEventListener('change', () => {
       if (cb.checked) ticked.add(cb.dataset.id); else ticked.delete(cb.dataset.id);
       cb.closest('.check').classList.toggle('on', cb.checked);
-      try { localStorage.setItem(LS_KEY, JSON.stringify([...ticked])); } catch (e) {}
-      render();
+      persist(); renderChips(); render();
     });
   });
+  document.getElementById('browcount').textContent = '(' + DATA.pantry.length + ' items)';
 }
+function syncBrowse(){
+  document.querySelectorAll('#groups input[type=checkbox]').forEach(cb => {
+    cb.checked = ticked.has(cb.dataset.id);
+    cb.closest('.check').classList.toggle('on', cb.checked);
+  });
+}
+
+// type-ahead search
+const searchInput = document.getElementById('search');
+const searchList = document.getElementById('searchlist');
+let sopts = [], selIdx = -1;
+
+function norm(s){ return s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+function groupLabel(gid){
+  const g = DATA.groups.find(x => x.id === gid);
+  return g ? g.label : gid;
+}
+function searchItems(q){
+  q = norm(q);
+  if (!q) return [];
+  return DATA.pantry
+    .filter(p => !ticked.has(p.id))
+    .map(p => ({ p: p, i: norm(p.label).indexOf(q) }))
+    .filter(x => x.i >= 0)
+    .sort((a, b) => a.i - b.i || (a.p.label < b.p.label ? -1 : 1))
+    .slice(0, 8);
+}
+function openList(){
+  sopts = searchItems(searchInput.value);
+  selIdx = -1;
+  if (!sopts.length){
+    searchList.innerHTML = searchInput.value.trim()
+      ? '<div class="snone">Nothing matches. Try the browse list below.</div>' : '';
+    searchList.hidden = !searchInput.value.trim();
+  } else {
+    searchList.innerHTML = sopts.map((x, i) =>
+      '<button type="button" role="option" class="sopt" data-i="' + i + '" id="sopt' + i + '">' +
+      esc(x.p.label) + '<span class="g">' + esc(groupLabel(x.p.group)) + '</span></button>'
+    ).join('');
+    searchList.hidden = false;
+    searchList.querySelectorAll('.sopt').forEach(b => {
+      b.addEventListener('pointerdown', ev => { ev.preventDefault(); pickOpt(+b.dataset.i); });
+    });
+  }
+  searchInput.setAttribute('aria-expanded', String(!searchList.hidden));
+}
+function closeList(){
+  searchList.hidden = true;
+  searchInput.setAttribute('aria-expanded', 'false');
+}
+function pickOpt(i){
+  const x = sopts[i];
+  if (!x) return;
+  addItem(x.p.id);
+  searchInput.value = '';
+  closeList();
+  searchInput.focus();
+}
+function paintSel(){
+  searchList.querySelectorAll('.sopt').forEach((b, i) => {
+    b.classList.toggle('sel', i === selIdx);
+    b.setAttribute('aria-selected', String(i === selIdx));
+  });
+  if (selIdx >= 0) searchInput.setAttribute('aria-activedescendant', 'sopt' + selIdx);
+  else searchInput.removeAttribute('aria-activedescendant');
+}
+searchInput.addEventListener('input', openList);
+searchInput.addEventListener('focus', openList);
+searchInput.addEventListener('keydown', ev => {
+  if (ev.key === 'ArrowDown'){
+    ev.preventDefault();
+    if (sopts.length){ selIdx = (selIdx + 1) % sopts.length; paintSel(); }
+  } else if (ev.key === 'ArrowUp'){
+    ev.preventDefault();
+    if (sopts.length){ selIdx = (selIdx - 1 + sopts.length) % sopts.length; paintSel(); }
+  } else if (ev.key === 'Enter'){
+    if (selIdx >= 0){ ev.preventDefault(); pickOpt(selIdx); }
+    else if (sopts.length === 1){ ev.preventDefault(); pickOpt(0); }
+  } else if (ev.key === 'Escape'){ closeList(); }
+});
+document.addEventListener('pointerdown', ev => {
+  if (!ev.target.closest('.searchwrap')) closeList();
+});
 
 function score(it){
   const missing = [];
@@ -193,7 +340,7 @@ function render(){
 
   const stat = document.getElementById('stat');
   stat.innerHTML = '<b>' + t0.length + '</b> you can make tonight, <b>' + t1.length +
-    '</b> almost there.<p>Tick more boxes and the list reshuffles around your stuff.</p>';
+    '</b> almost there.<p>Add more of your stuff and the list reshuffles.</p>';
 
   // unlock suggestions: single-item gaps only, ranked by costumes unlocked
   const unlockMap = {};
@@ -226,19 +373,23 @@ function render(){
       ? list.map(cardHtml).join('')
       : '<p class="empty">' + emptyMsg + '</p>';
   };
-  put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.');
+  put('tier0', t0, 'Nothing fully covered yet. Add what you own above, or grab one item below.');
   put('tier1', t1, 'Nothing is just 1 or 2 things away right now.');
   put('tier2', t2, '');
 }
 
 document.getElementById('reset').addEventListener('click', () => {
   ticked = new Set(STAPLES);
-  try { localStorage.setItem(LS_KEY, JSON.stringify([...ticked])); } catch (e) {}
+  persist();
+  searchInput.value = '';
+  closeList();
+  renderChips();
   renderGroups();
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
+renderChips();
 renderGroups();
 render();
 </script>
