@@ -137,8 +137,8 @@ button.ghost{
 .castrow{display:flex;gap:8px;margin:8px 0;align-items:flex-end}
 .castname{flex:1.1;min-width:0}
 .castlab{display:block;font-size:11px;color:var(--muted);margin:0 0 2px}
-.castname input{width:100%;min-height:44px;padding:8px 10px;font-size:15px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;box-sizing:border-box}
-.castrow select{flex:1;min-height:44px;min-width:0;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
+.castname input{width:100%;min-height:44px;padding:8px 10px;font-size:16px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;box-sizing:border-box}
+.castrow select{flex:1;min-height:44px;min-width:0;font-size:16px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
 .casttoggle{min-height:44px;padding:8px 10px;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;white-space:nowrap}
 .casttoggle.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
 .castline{font-size:15px;color:var(--muted);margin:10px 0 0;line-height:1.5}
@@ -1657,7 +1657,7 @@ function browseCard(idea){
       var t = e.target;
       if (t && t.closest && (t.closest("button") || t.closest("a"))) return;
       try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
-      openIdeaDetail(id);
+      openIdeaDetail(id, "Why it's great");
     }; })(idea.id));
     return card;
 }
