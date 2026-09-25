@@ -267,7 +267,7 @@ footer a{color:var(--accent)}
 /* Pinpoint capture: optional "who exactly?" input on the hero. Zero question
    tax: it never becomes a quiz question, it just boosts one idea to #1. */
 .pinpoint{margin:14px 0 4px;max-width:340px;margin-left:auto;margin-right:auto}
-.pinpoint input{width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid var(--line);border-radius:var(--radius);font-size:16px;font-family:inherit;background:var(--card);color:var(--ink)}
+.pinpoint-row{display:flex;gap:8px;align-items:stretch}.pinpoint-row input{flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;border:2px solid var(--line);border-radius:var(--radius);font-size:16px;font-family:inherit;background:var(--card);color:var(--ink)}.pinpoint-go{flex:0 0 auto;padding:0 16px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit}
 .pinpoint input:focus{outline:none;border-color:var(--accent)}
 .pinpoint-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .pinpoint-chips button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
@@ -310,7 +310,7 @@ footer a{color:var(--accent)}
       <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Already have someone in mind? <span style="color:var(--muted)">(optional)</span></p>
-        <input id="pinpoint-input" type="text" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?">
+        <div class="pinpoint-row"><input id="pinpoint-input" type="text" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <div class="pinpoint-chips" id="pinpoint-chips"></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
@@ -2912,6 +2912,9 @@ function renderPinpointChips(){
   });
 }
 function pinpointNote(msg){ var n = $("pinpoint-note"); if (n) n.textContent = msg; }
+function pinpointGo(){ $("btn-start").click(); }
+$("pinpoint-go").onclick = pinpointGo;
+$("pinpoint-input").addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); pinpointGo(); } });
 $("btn-start").onclick = function(){
   state = {qi: 0, answers: {}};
   /* Pinpoint: read the optional input before the quiz resets anything else. */
