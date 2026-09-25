@@ -81,10 +81,11 @@ body{
 .textlink{background:none;border:0;padding:8px;color:var(--muted);text-decoration:underline;font-size:14px;cursor:pointer;font-family:inherit}
 /*Billy 2026-09-25: visual proof strip. Four real top-save costumes with
   photos above the fold so visitors see the taste before starting the quiz.*/
-.proofrow{display:flex;gap:10px;justify-content:center;margin:2px auto 0;max-width:560px}
-.proofrow a{flex:1 1 0;min-width:0;text-decoration:none}
+.proofrow{display:flex;gap:12px;overflow-x:auto;margin:2px -20px 0;padding:4px 20px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.proofrow::-webkit-scrollbar{display:none}
+.proofrow a{flex:0 0 168px;scroll-snap-align:start;text-decoration:none}
 .proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;display:block;border:1px solid var(--line)}
-.proofrow span{display:block;font-size:12px;margin-top:5px;color:var(--muted);text-align:center;line-height:1.3}
+.proofrow span{display:block;font-size:12px;margin-top:5px;color:var(--muted);text-align:center;line-height:1.3;white-space:nowrap}
 h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
 .screen{display:none}
@@ -334,6 +335,7 @@ footer a{color:var(--accent)}
 
   <!-- BROWSE -->
   <section class="screen" id="s-browse">
+    <p style="margin:0 0 6px"><button type="button" class="textlink" id="btn-browse-back">&larr; Back</button></p>
     <p class="progress">Every idea in the bank</p>
     <h2 class="q-title" id="browse-title">All ideas</h2>
     <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
@@ -1809,7 +1811,11 @@ function renderBrowse(){
     : (near.length ? "No exact matches. Closest ideas below. Try clearing a filter."
                    : "No ideas match. Try clearing a filter.");
 }
+/* Billy 2026-09-25: browse back button returns to the screen browse was opened from (hero or results). */
+var browseReturnTo = "s-hero";
 function openBrowse(){
+  var cur = document.querySelector(".screen.on");
+  browseReturnTo = (cur && cur.id && cur.id !== "s-browse") ? cur.id : "s-hero";
   renderBrowse();
   Analytics.track("browse_opened", {thumb_arm: thumbArm()});
   show("s-browse");
@@ -2910,6 +2916,7 @@ $("btn-return").onclick = function(){
   if (results.length) renderResults(results);
 };
 $("btn-browse-hero").onclick = openBrowse;
+$("btn-browse-back").onclick = function(){ show(browseReturnTo); };
 $("btn-browse-results").onclick = openBrowse;
 $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
