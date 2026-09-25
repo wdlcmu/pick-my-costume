@@ -1400,7 +1400,7 @@ function pantryMissing(ideaId){
 function shareVariant(){
   try {
     var v = localStorage.getItem("pmc_share_variant");
-    if (v === "A" || v === "B" || v === "C") return v;
+    if (v === "A" || v === "B" || v === "C" || v === "D") return v; /* one user stays in one arm */
     var r = Math.random();
     v = r < 0.25 ? "A" : (r < 0.5 ? "B" : (r < 0.75 ? "C" : "D"));
     localStorage.setItem("pmc_share_variant", v);
