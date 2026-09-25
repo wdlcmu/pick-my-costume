@@ -78,19 +78,22 @@ body{
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
 .hero{text-align:center;padding:56px 8px 32px}
 .hero .moon{font-size:56px}
-.textlink{background:none;border:0;padding:8px;color:var(--muted);text-decoration:underline;font-size:14px;cursor:pointer;font-family:inherit}
+.textlink{background:none;border:0;padding:8px;color:var(--muted);text-decoration:underline;font-size:14px;cursor:pointer;font-family:inherit;min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
 /*Billy 2026-09-25: visual proof strip. Real top-save costumes with photos
   above the fold so visitors see the taste before starting the quiz. Names
   sit on the photo with a scrim (the streaming-rail pattern) so they never
   get buried; the rail ends with a quiz CTA card.*/
-.proofrow{display:flex;gap:12px;overflow-x:auto;margin:2px -20px 0;padding:4px 20px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.proofrow::-webkit-scrollbar{display:none}
-.proofrow a{flex:0 0 168px;scroll-snap-align:start;text-decoration:none;position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
-.proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.proofrow span{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 10px;font-size:13px;font-weight:600;color:#fff;text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:linear-gradient(transparent,rgba(10,6,24,.85))}
-.proofrow .proofcta{flex:0 0 168px;scroll-snap-align:start;border:none;border-radius:10px;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:#2a1a05;font-family:inherit;background:linear-gradient(160deg,#f5a623,#e8830c)}
-.proofrow .proofcta b{font-size:17px}
-.proofrow .proofcta i{font-style:normal;font-size:13px;font-weight:600}
+/* Billy 2026-09-25: the proof strip is proof, not a gallery. A slim row of
+   small thumbnails; the hero CTA stays the dominant action on the page. */
+.proofstrip{margin-top:14px}
+.proofrow{display:flex;gap:8px;justify-content:center;margin:6px 0 0;padding:0}
+.proofrow a{flex:0 0 78px;max-width:78px;text-decoration:none;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+.proofrow img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.proofrow span{display:block;font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+/* "More ways to explore": the quiet secondary surfaces live here, below the strip. */
+.explore{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.explore-head{margin:0 0 12px}
+.explore .pantry-link{display:inline-block;min-height:44px;box-sizing:border-box;padding:12px 20px;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-size:15px;text-decoration:none}
 h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
 .screen{display:none}
@@ -299,22 +302,19 @@ footer a{color:var(--accent)}
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
       <div class="proofstrip">
-        <p class="fine" style="margin:18px 0 8px">Real ideas you might get:</p>
+        <p class="fine" style="margin:0 0 6px">Real ideas you might get:</p>
         <div class="proofrow">
           <a href="/c/snow-sisters"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
           <a href="/c/lost-tourist"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-          <a href="/c/ghost-hunters"><img src="photos/ghost-hunters.webp" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
-          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
           <a href="/c/mermaid-crew"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
-          <a href="/c/little-pig-family"><img src="photos/little-pig-family.webp" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
-          <a href="/c/breakfast-buffet"><img src="photos/breakfast-buffet.webp" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
-          <a href="/c/safari-zoo-crew"><img src="photos/safari-zoo-crew.webp" alt="Safari Zoo Crew costume" loading="lazy"><span>Safari / Zoo Crew</span></a>
-          <button type="button" class="proofcta" id="btn-proof-quiz"><b>Your turn</b><i>Take the quiz &rarr;</i></button>
+          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
         </div>
       </div>
       <!-- Billy 2026-09-25: social proof uses the real Sep 25 7-day snapshot (30 completions). Refresh weekly. -->
       <p class="fine" style="margin:10px 0 0">30 people found their costume this week.</p>
-      <p style="margin:14px 0 0"><a class="ghost" href="/pantry" style="text-decoration:none;display:inline-block;padding:10px 16px;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
+      <div class="explore">
+        <p class="fine explore-head">More ways to explore</p>
+        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Already have someone in mind? <span style="color:var(--muted)">(optional)</span></p>
@@ -323,6 +323,7 @@ footer a{color:var(--accent)}
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 100 ideas</button></p>
+      </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
@@ -3186,7 +3187,6 @@ $("btn-return").onclick = function(){
 };
 $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
-$("btn-proof-quiz").onclick = function(){ $("btn-start").click(); };
 /* Proof-strip tap tracking: which homepage proof cards get tapped. */
 (function(){
   var links = document.querySelectorAll(".proofrow a");
