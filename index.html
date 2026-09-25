@@ -2281,6 +2281,14 @@ function castLine(list){
   return list.map(function(a){ return a.name + " is the " + a.role; }).join(", ");
 }
 function buildCastShareText(idea, list, sid){
+  /* Reddit 2026-09-25: blank names produced "Person 1 is the ..." in the
+     share text, which reads like a form letter. When any name is blank, send
+     the short generic invitation instead -- it reads like a recruit, which is
+     the right frame when you have not named the cast yet. */
+  var anyBlank = list.some(function(a){ return !a.rawName; });
+  if (anyBlank){
+    return "Want to do " + idea.title + " this Halloween? What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+  }
   /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
