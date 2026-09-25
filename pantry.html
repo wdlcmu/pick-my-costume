@@ -99,7 +99,10 @@
   .mychip.staple{border-style:dashed;border-color:var(--line)}
   .mychip button{border:0;background:var(--line);color:var(--ink);border-radius:50%;width:26px;height:26px;
     font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    -webkit-tap-highlight-color:transparent}
+    -webkit-tap-highlight-color:transparent;position:relative}
+  /* Z5 tap targets: invisible hit-area padding brings the x button to
+     44x44 without changing its 26px visual size. */
+  .mychip button::after{content:"";position:absolute;inset:-9px;cursor:pointer}
   .browse{margin:2px 0 0}
   .browse summary{cursor:pointer;color:var(--muted);font-size:14px;padding:12px 0;list-style:none;
     -webkit-tap-highlight-color:transparent;min-height:44px}
