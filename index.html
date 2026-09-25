@@ -179,6 +179,13 @@ button.ghost{
 .howto-open{padding:14px 16px}
 .howto-open h3{margin:0 0 10px;font-size:18px}
 .howto-open .howto-body{padding:0}
+/* Billy 2026-09-24: materials read as chips, not a wall of bullets. The
+   build list gets a copy button: parents take it to the store. */
+.howto-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.howto-chip{display:inline-block;padding:6px 12px;background:var(--card);border:2px solid var(--line);border-radius:999px;font-size:14px;line-height:1.3}
+.howto-copyrow{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+button.howto-copy{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0}
+.howto-copyrow .status{margin:0}
 .stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
 .stuck h3{margin:0 0 6px;font-size:20px}
 .stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
@@ -186,6 +193,9 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
+/* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
+   tagline, never a ticking widget. Hides itself after Oct 31. */
+.tminus{margin:10px 0 0;font-size:15px;font-weight:700;color:var(--accent)}
 .about-body p{margin:0 0 14px;line-height:1.55}
 .examplebox{margin:0 0 14px;padding:14px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
 .examplebox p{margin:0 0 8px}
@@ -239,6 +249,7 @@ footer a{color:var(--accent)}
       <div class="moon" aria-hidden="true">&#127769;</div>
       <h1>Pick My Costume</h1>
       <p class="tagline">A few quick questions. Three costume ideas. No email, no account.</p>
+      <p class="tminus" id="tminus" style="display:none"></p>
       <div class="returnbox" id="returnbox" style="display:none">
         <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
@@ -929,16 +940,42 @@ function buildInstructions(idea, opts){
   var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
   if (!ins || !ins.m || !ins.s) return null;
   var via = opts.via || "card";
+  /* Plain-text build list for the copy button: materials + numbered steps. */
+  function buildListText(){
+    var lines = [idea.title + " - build list", "", "You need:"];
+    ins.m.forEach(function(m){ lines.push("- " + m); });
+    lines.push("", "Steps:");
+    ins.s.forEach(function(s, i){ lines.push((i + 1) + ". " + s); });
+    return lines.join("\n");
+  }
   function sectionBody(){
     var wrap = document.createElement("div");
     wrap.className = "howto-body";
+    var copyRow = document.createElement("div");
+    copyRow.className = "howto-copyrow";
+    var cb = document.createElement("button");
+    cb.type = "button"; cb.className = "howto-copy";
+    cb.textContent = "Copy build list";
+    var cst = document.createElement("span"); cst.className = "status";
+    cb.onclick = function(e){
+      if (e && e.stopPropagation) e.stopPropagation();
+      doCopy(buildListText(), function(ok, msg){
+        cst.textContent = ok ? "Copied. Take it to the store." : msg;
+        if (ok) Analytics.track("build_steps_copied", {idea_id: idea.id, via: via});
+      });
+    };
+    copyRow.appendChild(cb); copyRow.appendChild(cst);
+    wrap.appendChild(copyRow);
     var mh = document.createElement("h4"); mh.textContent = "You need";
     wrap.appendChild(mh);
-    var ul = document.createElement("ul");
+    var chips = document.createElement("div");
+    chips.className = "howto-chips";
     ins.m.forEach(function(m){
-      var li = document.createElement("li"); li.textContent = m; ul.appendChild(li);
+      var c = document.createElement("span");
+      c.className = "howto-chip"; c.textContent = m;
+      chips.appendChild(c);
     });
-    wrap.appendChild(ul);
+    wrap.appendChild(chips);
     var sh = document.createElement("h4"); sh.textContent = "Steps";
     wrap.appendChild(sh);
     var ol = document.createElement("ol");
@@ -1193,17 +1230,8 @@ function renderResults(results){
     if (rIdx >= 0) ruToggles[rIdx]();
   }
   box.appendChild(ru);
-  /* Results-level AI plan, with its own caption next to its button. */
-  var aiCap = document.createElement("p");
-  aiCap.className = "q-hint";
-  aiCap.style.marginTop = "16px";
-  aiCap.textContent = "One AI plan for all three ideas:";
-  var aiRow = document.createElement("div"); aiRow.className = "row";
-  var aiBox = document.createElement("div");
-  var bAI = document.createElement("button"); bAI.type = "button"; bAI.className = "ghost"; bAI.textContent = "Ask my AI";
-  bAI.onclick = function(){ showPromptPreview(aiBox, buildResultsPrompt(results, false), "ai_prompt_copied"); };
-  aiRow.appendChild(bAI);
-  box.appendChild(aiCap); box.appendChild(aiRow); box.appendChild(aiBox);
+  /* Results-level AI entry lives in the "Still stuck?" box below: one AI
+     button per results page, not two. */
   /* Still stuck? escape hatch: none of the three results landed. One AI prompt
      from the three ideas. (The old "Show 3 more ideas" is gone: the browse-all
      button below covers it without stacking more cards on the page.) */
@@ -1219,14 +1247,8 @@ function renderResults(results){
   stuckRow.appendChild(bStuck);
   stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(stuckBox);
   box.appendChild(stuck);
-  /* Browse tail: one button, not a 76-card wall. The now-what for "none of
-     these fit", without making the results page a second browse surface. */
-  var tailBtn = document.createElement("button");
-  tailBtn.type = "button"; tailBtn.className = "ghost";
-  tailBtn.style.marginTop = "20px";
-  tailBtn.textContent = "Browse all " + IDEAS.length + " ideas";
-  tailBtn.onclick = openBrowse;
-  box.appendChild(tailBtn);
+  /* The now-what for "none of these fit" lives in the navrow below
+     ("Browse all N ideas"), so no second browse button is rendered here. */
   /* Restore panels that were open before a results re-render (fit refinement):
      cast names, cast size, and roles survive; re-tapping never rebuilds. */
   if (pick && cards[pick.ideaId] && panelOpenByIdea[pick.ideaId] &&
@@ -2014,7 +2036,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var pcWrap = document.createElement("div");
   pcWrap.className = "pcards";
   var pcBtn = document.createElement("button");
-  pcBtn.type = "button"; pcBtn.className = "ghost";
+  pcBtn.type = "button"; pcBtn.className = "cta";
   pcBtn.textContent = "Make personal cards";
   var pcList = document.createElement("div");
   pcList.className = "pclist";
@@ -2274,6 +2296,22 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     if (VIA_SHARE) _rlv.via_share_id = VIA_SHARE;
     if (VIA_SHARE_ORIGIN) _rlv.share_origin = VIA_SHARE_ORIGIN;
     Analytics.track("recipient_landing_viewed", _rlv);
+  })();
+  /* Billy 2026-09-24: T-minus clock. Days until Halloween under the hero
+     tagline. Copy escalates on its own in the final week; hides after Oct 31. */
+  (function(){
+    var el = $("tminus");
+    if (!el) return;
+    var now = new Date();
+    var hw = new Date(now.getFullYear(), 9, 31);
+    var days = Math.ceil((hw.getTime() - now.getTime()) / 86400000);
+    if (days <= 0) return; /* hidden: style starts display:none */
+    var msg;
+    if (days === 1) msg = "🎃 Halloween is tomorrow: pick a costume you can build tonight";
+    else if (days <= 7) msg = "🎃 Halloween is in " + days + " days: every idea here builds from your closet";
+    else msg = "🎃 " + days + " days until Halloween";
+    el.textContent = msg;
+    el.style.display = "";
   })();
   refreshReturnBox();
   var _ic = document.getElementById("idea-count"); if (_ic) _ic.textContent = IDEAS.length;
