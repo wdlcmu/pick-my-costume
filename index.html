@@ -78,6 +78,7 @@ body{
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
 .hero{text-align:center;padding:56px 8px 32px}
 .hero .moon{font-size:56px}
+.textlink{background:none;border:0;padding:8px;color:var(--muted);text-decoration:underline;font-size:14px;cursor:pointer;font-family:inherit}
 /*Billy 2026-09-25: visual proof strip. Four real top-save costumes with
   photos above the fold so visitors see the taste before starting the quiz.*/
 .proofrow{display:flex;gap:10px;justify-content:center;margin:2px auto 0;max-width:560px}
@@ -276,17 +277,11 @@ footer a{color:var(--accent)}
     <div class="hero">
       <div class="moon" aria-hidden="true">&#127769;</div>
       <h1>Pick My Costume</h1>
-      <p class="tagline">A few quick questions. Three costume ideas. No email, no account.</p>
+      <p class="tagline">Find a Halloween costume you'll actually want to wear. Three ideas in 2 minutes. No email, no account.</p>
       <p class="tminus" id="tminus" style="display:none"></p>
       <div class="returnbox" id="returnbox" style="display:none">
         <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
-      </div>
-      <div class="pinpoint" id="pinpoint">
-        <p class="fine" style="margin:0 0 6px">Already have someone in mind? <span style="color:var(--muted)">(optional)</span></p>
-        <input id="pinpoint-input" type="text" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?">
-        <div class="pinpoint-chips" id="pinpoint-chips"></div>
-        <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
       <div class="proofstrip">
@@ -298,7 +293,17 @@ footer a{color:var(--accent)}
           <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
         </div>
       </div>
-      <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 100 ideas</button> <button class="ghost" id="btn-surprise" type="button" title="Pick a random costume for me">Surprise me</button> <a class="ghost" href="/pantry" style="text-decoration:none;display:inline-block;padding:10px 16px;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
+      <!-- Billy 2026-09-25: social proof uses the real Sep 25 7-day snapshot (30 completions). Refresh weekly. -->
+      <p class="fine" style="margin:10px 0 0">30 people found their costume this week.</p>
+      <p style="margin:14px 0 0"><a class="ghost" href="/pantry" style="text-decoration:none;display:inline-block;padding:10px 16px;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
+      <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
+      <div class="pinpoint" id="pinpoint" style="margin-top:16px">
+        <p class="fine" style="margin:0 0 6px">Already have someone in mind? <span style="color:var(--muted)">(optional)</span></p>
+        <input id="pinpoint-input" type="text" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?">
+        <div class="pinpoint-chips" id="pinpoint-chips"></div>
+        <p class="pinpoint-note" id="pinpoint-note"></p>
+      </div>
+      <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 100 ideas</button></p>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
   </section>
@@ -702,7 +707,7 @@ var SHARE = {
   textTemplate: function(idea, aud, sid, origin){
     var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
     /* 2026-09-25 social-handoff experiment: reciprocal ask, same as shareTextFor. */
-    return shareCaptionFor(idea) + " Take the 2-min quiz and send me what you get: " + url;
+    return shareCaptionFor(idea) + " " + shareAsk() + url;
   }
 };
 
@@ -1309,13 +1314,35 @@ var SHARE_CAPTIONS = {
 function shareCaptionFor(idea){
   return SHARE_CAPTIONS[idea.id] || ("I am going as " + idea.title + " this Halloween.");
 }
+/* Billy 2026-09-25: share-message A/B/C test. Arm persists per session in
+   localStorage so one user stays in one arm. Every share_created carries
+   share_msg_variant so recipient opens/quiz starts cut by arm.
+   A = generic invitation. B = personal pick. C = reciprocal challenge (control,
+   the 2026-09-25 social-handoff copy). Metric: link open rate -> recipient
+   quiz starts -> recipient completions. A message wins only if recipients act. */
+function shareVariant(){
+  try {
+    var v = localStorage.getItem("pmc_share_variant");
+    if (v === "A" || v === "B" || v === "C") return v;
+    var r = Math.random();
+    v = r < 0.34 ? "A" : (r < 0.67 ? "B" : "C");
+    localStorage.setItem("pmc_share_variant", v);
+    return v;
+  } catch(_){ return "C"; }
+}
+function shareAsk(person){
+  var v = shareVariant(), p = person || "me";
+  if (v === "A") return "Take this 2-min Halloween costume quiz and see what you get: ";
+  if (v === "B") return "What do you think? Take the quiz: ";
+  return "Take the 2-min quiz and send " + p + " what you get: ";
+}
 function shareTextFor(idea, sid, origin){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin;
   /* 2026-09-25 social-handoff experiment: the old copy asked an open question
      ("What are you going as?"). The reciprocal ask ("send me what you get")
      tests whether the share reads as an invitation to participate, not a
      broadcast. Metric: share_created + share_text_copied per pick_saved. */
-  var text = shareCaptionFor(idea) + " Take the 2-min quiz and send me what you get: " + link;
+  var text = shareCaptionFor(idea) + " " + shareAsk() + link;
   /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
      not just the costume name. Kid/family shares append the materials. */
   var aud = state.answers.q1 ? state.answers.q1.value : null;
@@ -1371,6 +1398,53 @@ function buildResultCard(scored, idx, pick, noArt){
        the pick. */
     function mountPanel(){
       planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+      /* Billy 2026-09-25 (from the outside critique): post-save feedback.
+         "Was this the right vibe?" Yes/No; a No opens a one-line box for
+         what would be better. Feeds the costume bank's demand signals.
+         Tracked as pick_feedback / pick_feedback_text. */
+      (function(){
+        var fbRow = document.createElement("div");
+        fbRow.style.cssText = "margin:0 0 12px;font-size:14px";
+        var fbQ = document.createElement("span");
+        fbQ.textContent = "Was this the right vibe? ";
+        fbRow.appendChild(fbQ);
+        [["Yes","yes"],["No","no"]].forEach(function(pair){
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "ghost";
+          b.style.cssText = "padding:6px 12px;margin-left:6px;font-size:13px";
+          b.textContent = pair[0];
+          b.onclick = function(){
+            Analytics.track("pick_feedback", {idea_id: idea.id, vote: pair[1]});
+            fbRow.innerHTML = "";
+            var thx = document.createElement("span");
+            thx.style.color = "var(--muted)";
+            thx.textContent = pair[1] === "yes" ? "Great, have fun with it." : "Got it. What would be better?";
+            fbRow.appendChild(thx);
+            if (pair[1] === "no"){
+              var inp = document.createElement("input");
+              inp.type = "text"; inp.maxLength = 140;
+              inp.placeholder = "e.g. scarier, for a toddler...";
+              inp.style.cssText = "display:block;width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-family:inherit";
+              var send = document.createElement("button");
+              send.type = "button"; send.className = "ghost";
+              send.style.cssText = "margin-top:8px;padding:8px 14px;font-size:13px";
+              send.textContent = "Send";
+              send.onclick = function(){
+                Analytics.track("pick_feedback_text", {idea_id: idea.id, text: inp.value.slice(0, 140)});
+                fbRow.innerHTML = "";
+                var thx2 = document.createElement("span");
+                thx2.style.color = "var(--muted)";
+                thx2.textContent = "Thanks, that helps.";
+                fbRow.appendChild(thx2);
+              };
+              fbRow.appendChild(inp); fbRow.appendChild(send);
+              try { inp.focus(); } catch(_){}
+            }
+          };
+          fbRow.appendChild(b);
+        });
+        planBox.appendChild(fbRow);
+      })();
       var shareBox = document.createElement("div");
       var aiPlanBox = document.createElement("div");
       var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
@@ -2089,7 +2163,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
         /* E8: the first share landed — invite a second one. The button stays
            live with a fresh share_id (minted below), so the re-offer is one line. */
         label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "generic"}, xp()));
+        Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant()}, xp()));
         if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
         /* The share landed: the AI plan is the immediate now-what. */
         if (typeof onShared === "function") onShared();
@@ -2353,12 +2427,12 @@ function buildCastShareText(idea, list, sid){
   var anyBlank = list.some(function(a){ return !a.rawName; });
   if (anyBlank){
     /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-    return "Want to do " + idea.title + " this Halloween? Take the 2-min quiz and send me what you get: pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    return "Want to do " + idea.title + " this Halloween? " + shareAsk() + "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
   }
   /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
-    ". Take the 2-min quiz and send me what you get: pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    ". " + shareAsk() + "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
@@ -2421,7 +2495,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
     function doneShare(ok, msg){
       qsStatus.textContent = msg;
-      if (ok) Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic_quick"});
+      if (ok) Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic_quick", share_msg_variant: shareVariant()});
     }
     if (navigator.share) {
       navigator.share({text: text, url: link}).then(function(){ doneShare(true, "Shared."); }, function(){});
@@ -2648,11 +2722,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
         var text = fp.rawName
-          ? (fp.name + " picked " + idea.title + " for Halloween! Take the 2-min quiz and send them what you get: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
-          : ("Want to do " + idea.title + " this Halloween? Take the 2-min quiz and send me what you get: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
+          ? (fp.name + " picked " + idea.title + " for Halloween! " + shareAsk("them") + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          : ("Want to do " + idea.title + " this Halloween? " + shareAsk() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
-          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card"});
+          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card", share_msg_variant: shareVariant()});
           if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "card"});
           /* The card share landed: the AI plan is the immediate now-what. */
           revealAiPlan(aiPlanBox);
@@ -2708,7 +2782,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     statusEl.textContent = msg;
     if (ok){
       Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic"});
-      Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic"});
+      Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant()});
       if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"});
     }
   }
@@ -2824,14 +2898,6 @@ $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-results").onclick = openBrowse;
 $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
-/* Surprise me: pick a random idea and open its detail. From BuzzFeed research:
-   the "Surprise me" shuffle is a low-friction delight for the undecided. */
-$("btn-surprise").onclick = function(){
-  var idea = IDEAS[Math.floor(Math.random() * IDEAS.length)];
-  Analytics.track("surprise_me", {idea_id: idea.id});
-  /* Surprise is a no-quiz pick: same honest heading as the no-quiz result card. */
-  openIdeaDetail(idea.id, "Why it's a great pick");
-};
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
 /* E20 parity: back from a browse detail returns to the browse grid with the
