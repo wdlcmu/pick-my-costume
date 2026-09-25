@@ -86,8 +86,10 @@ body{
 /* Billy 2026-09-25: the proof strip is proof, not a gallery. A slim row of
    small thumbnails; the hero CTA stays the dominant action on the page. */
 .proofstrip{margin-top:14px}
-.proofrow{display:flex;gap:8px;justify-content:center;margin:6px 0 0;padding:0}
-.proofrow a{flex:0 0 78px;max-width:78px;text-decoration:none;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+/* Billy 2026-09-25: the strip is a horizontal swipe rail, not a fixed row. */
+.proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.proofrow::-webkit-scrollbar{display:none}
+.proofrow a{flex:0 0 78px;scroll-snap-align:start;text-decoration:none;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
 .proofrow img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 .proofrow span{display:block;font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
 /* "More ways to explore": the quiet secondary surfaces live here, below the strip. */
@@ -308,6 +310,10 @@ footer a{color:var(--accent)}
           <a href="/c/lost-tourist"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
           <a href="/c/mermaid-crew"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
           <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
+          <a href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses.webp" alt="Fairy Tale Princesses costume" loading="lazy"><span>Fairy Tale Princesses</span></a>
+          <a href="/c/deadpan-diva"><img src="photos/deadpan-diva.webp" alt="Deadpan Diva costume" loading="lazy"><span>Deadpan Diva</span></a>
+          <a href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew.webp" alt="Enchanted Castle Crew costume" loading="lazy"><span>Enchanted Castle Crew</span></a>
+          <a href="/c/neon-demon-hunter"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
         </div>
       </div>
       <!-- Billy 2026-09-25: social proof uses the real Sep 25 7-day snapshot (30 completions). Refresh weekly. -->
