@@ -2288,15 +2288,16 @@ function ideaFact(idea, kind){
   if (kind === "difficulty") return ef ? ef.difficulty : null;
   return null;
 }
-function shareImage(idea){
+function shareImage(idea, onDone){
   Analytics.track("share_image_tapped", {idea_id: idea.id});
+  function settled(){ if (onDone) onDone(); }
   drawShareImage(idea, function(cv){
     function finish(blob){
       var file = new File([blob], "halloween-costume.png", {type: "image/png"});
       if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})){
         navigator.share({files: [file], title: "My Halloween costume"})
-          .then(function(){ Analytics.track("share_image_saved", {idea_id: idea.id, via: "sheet"}); })
-          .catch(function(){ /* dismissed: not a share */ });
+          .then(function(){ Analytics.track("share_image_saved", {idea_id: idea.id, via: "sheet"}); settled(); })
+          .catch(function(){ settled(); /* dismissed: not a share */ });
       } else {
         var a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
@@ -2304,9 +2305,10 @@ function shareImage(idea){
         document.body.appendChild(a); a.click();
         setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 4000);
         Analytics.track("share_image_saved", {idea_id: idea.id, via: "download"});
+        settled();
       }
     }
-    if (cv.toBlob) cv.toBlob(finish, "image/png");
+    if (cv.toBlob) cv.toBlob(finish, "image/png"); else settled();
   });
 }
 
@@ -2339,7 +2341,11 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   /* Dev 2026-09-25 experiment: one-tap phone-sized share image. */
   var bi = document.createElement("button"); bi.type = "button";
   bi.className = "ghost"; bi.textContent = "Save image";
-  bi.onclick = function(){ shareImage(idea); };
+  bi.onclick = function(){
+    var rearmShare = armShareOnce(bi);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    shareImage(idea, rearmShare);
+  };
   row.appendChild(b); row.appendChild(bi);
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
@@ -2354,10 +2360,13 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   var cur = makeShare();
   ta.value = cur.text;
   b.onclick = function(){
+    var rearmShare = armShareOnce(b);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
     var sh = cur; /* what the preview shows is exactly what gets shared */
     var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=generic";
     function doneShare(ok, msg){
       st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
       if (ok){
         /* E8: the first share landed — invite a second one. The button stays
            live with a fresh share_id (minted below), so the re-offer is one line. */
@@ -2689,12 +2698,15 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   qsBtn.textContent = "Share this idea";
   var qsStatus = document.createElement("p"); qsStatus.className = "status"; qsStatus.style.margin = "6px 0 0";
   qsBtn.onclick = function(){
+    var rearmShare = armShareOnce(qsBtn);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
     var sid = newShareId();
     var text = shareTextFor(idea, sid, "generic");
     var qch = !!window.__pmcChallenge; /* shareTextFor just set this for this idea */
     var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
     function doneShare(ok, msg){
       qsStatus.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
       if (ok) Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic_quick", share_msg_variant: shareVariant(), challenge: qch});
     }
     if (navigator.share) {
@@ -2914,6 +2926,8 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
          phone has one, the clipboard everywhere else. The label stays honest
          either way; the status line names what actually happened. */
       send.onclick = function(){
+        var rearmShare = armShareOnce(send);
+        if (!rearmShare) return; /* double-tap: a share is already in flight */
         var sid = newShareId();
         /* Names typed after "Make personal cards" still count: read the live
            inputs at send time, not the card-build snapshot. */
@@ -2925,6 +2939,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
           ? (fp.name + " picked " + idea.title + " for Halloween! " + shareAsk("them") + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
           : ("Want to do " + idea.title + " this Halloween? " + shareAsk() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
+          rearmShare(); /* the share settled: sent or copied */
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
           /* Card text is built inline above (never the challenge text); the flag is not consulted. */
           Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card", share_msg_variant: shareVariant(), challenge: false});
@@ -2947,7 +2962,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
             st2.textContent = "Shared.";
             credited("share_sheet");
           }, function(err){
-            if (err && err.name === "AbortError") return; /* closed the sheet; not an error */
+            if (err && err.name === "AbortError"){ rearmShare(); return; } /* closed the sheet; not an error */
             copyFallback();
           });
         } else {
@@ -2974,13 +2989,30 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   return box;
 }
 
+/* Billy 2026-09-25: one tap = one share. A rapid double-tap used to invoke
+   navigator.share twice and the message could send twice. Call at the top of
+   every share-button handler: disables the button and returns a rearm()
+   function that MUST run when the share settles (sent, dismissed, or copied).
+   Returns null when a share is already in flight, in which case the tap is
+   ignored. Re-arming twice is safe. */
+function armShareOnce(btn){
+  if (!btn) return function(){};
+  if (btn.disabled) return null;
+  btn.disabled = true;
+  var live = true;
+  return function rearm(){ if (live){ live = false; btn.disabled = false; } };
+}
+
 /* ================= SHARE ================= */function shareText(idea, statusEl, btn, audOverride){
+  var rearmShare = armShareOnce(btn);
+  if (!rearmShare) return; /* double-tap: a share is already in flight */
   var aud = audOverride || ((state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo");
   var sid = newShareId();
   var text = SHARE.textTemplate(idea, aud, sid);
   var url = "https://pickmycostume.com/c/" + idea.id;
   function done(ok, msg){
     statusEl.textContent = msg;
+    rearmShare(); /* the share settled: sent, dismissed, or copied */
     if (ok){
       Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic"});
       /* Browse share text comes from SHARE.textTemplate (never the challenge text). */
