@@ -224,6 +224,17 @@ footer a{color:var(--accent)}
 .bsticky .bcount{margin:2px 0 6px}
 /* One-hero results: the #1 idea is the answer; runners-up stay compact. */
 .hero12{border:3px solid var(--accent);border-radius:16px;padding:14px;background:var(--bg2)}
+/* Shareable result card: "Your 2026 Halloween costume." The kicker names the
+   year so screenshots feel current; the fact row answers the four questions
+   every recipient asks (vibe, build time, budget, difficulty) at a glance. */
+.rkicker{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:0 0 8px}
+.factrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.fact{flex:1 1 0;min-width:70px;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 8px;text-align:center}
+.fact b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fact span{font-size:13px;font-weight:700}
+.fitreasons{margin:10px 0}
+.fitreasons>ul{margin:6px 0 0;padding-left:20px}
+.fitreasons li{margin:4px 0;font-size:15px}
 .hero12 .card{border:none;background:transparent;padding:0;margin:0}
 .hero12 h3{margin-top:0}
 /* Personal role cards: one card per named person, with a single send CTA. */
@@ -629,11 +640,8 @@ var SHARE = {
      friend-quiz-starts per origin; card >= 2x generic -> cards become the
      only share path on cast ideas. */
   textTemplate: function(idea, aud, sid, origin){
-    var lead = "I'm going as ";
-    if (aud === "couple" || aud === "group" || aud === "family") lead = "We're going as ";
-    else if (aud === "kid") lead = "My kid is going as ";
     var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
-    return lead + idea.title + " this Halloween. What are you going as? " + url;
+    return shareCaptionFor(idea) + " What are you going as? " + url;
   }
 };
 
@@ -1028,19 +1036,122 @@ function buildInstructions(idea, opts){
   }
   return root;
 }
+/* ================= SHAREABLE RESULT CARD =================
+   The hero result is "Your 2026 Halloween costume": kicker, big visual,
+   fit reasons grounded in the user's actual answers, and a fact row
+   (vibe / build time / budget / difficulty). Share captions are punchy,
+   group-chat-ready lines per idea; the fallback stays plain. The loop
+   question ("What are you going as?") always rides along so recipients
+   get pulled into the quiz. */
+var EFFORT_FACTS = {
+  couch:  {build: "Under 30 minutes", difficulty: "Easy"},
+  crafty: {build: "1 to 2 hours", difficulty: "Medium"},
+  allout: {build: "A weekend project", difficulty: "Ambitious"}
+};
+var BUDGET_FACTS = {diy: "From your closet", low: "Under $20", mid: "$20 to $50"};
+function ideaEffortKey(idea){
+  var tags = idea.tags || {}, best = "crafty", bestV = 0;
+  /* Ties resolve toward the higher effort: if an idea scores for both
+     crafty and all-out, the build guide reflects the ambitious version. */
+  ["couch", "crafty", "allout"].forEach(function(k){
+    if ((tags[k] || 0) >= bestV){ bestV = tags[k] || 0; best = k; }
+  });
+  return bestV > 0 ? best : "crafty";
+}
+function ideaBudgetLabel(idea){
+  var b = idea.budget || [];
+  if (b.indexOf("diy") >= 0) return BUDGET_FACTS.diy;
+  if (b.indexOf("low") >= 0) return BUDGET_FACTS.low;
+  return BUDGET_FACTS.mid;
+}
+var AUDIENCE_PHRASE = {
+  "Solo": "going solo", "My kid": "your kid", "My family": "the whole family",
+  "Couple": "couples", "Group": "groups"
+};
+/* Fit reasons: the idea-specific why first, then the dynamic effort/occasion
+   fragments, then plain-English reflections of the user's own answers. Every
+   reason is grounded in real data, never invented. */
+function fitReasons(scored, idx){
+  var idea = scored.idea, out = [idea.why];
+  var wl = whyLine(scored, idx).replace(/^Why this fits you: /, "");
+  var tail = wl.slice(idea.why.length).trim();
+  if (tail) out.push(tail.charAt(0).toUpperCase() + tail.slice(1));
+  function ansLabel(qid){
+    var a = state.answers[qid];
+    return a ? a.label : null;
+  }
+  var vibe = ansLabel("q2");
+  if (vibe) out.push("Matches the " + vibe.toLowerCase() + " vibe you picked.");
+  var aud = ansLabel("q1");
+  if (aud && AUDIENCE_PHRASE[aud]) out.push("Built for " + AUDIENCE_PHRASE[aud] + ".");
+  return out.slice(0, 4);
+}
+/* Punchy, group-chat-ready share captions, one per top idea. Billy's voice:
+   plainspoken, specific, funny. The loop question is appended by the share
+   builder, not baked in here. */
+var SHARE_CAPTIONS = {
+  "web-slinger-crew": "Your friendly neighborhood crew is suiting up.",
+  "blue-dog-family": "The whole family is going as cartoon dogs. The 4-year-old has completely lost it.",
+  "block-game-crew": "We are going as the game. Built from actual boxes in the garage.",
+  "bamboo-demon": "Pink kimono. Bamboo muzzle. Not saying a word all night.",
+  "emerald-witch": "Green from head to toe. The hat alone took an hour.",
+  "tin-hero": "The Tin Hero rides again. Cardboard never looked this good.",
+  "snow-sisters": "The cold never bothered us anyway. (Sorry. Had to.)",
+  "fairy-tale-princesses": "Every princess. One group photo. Zero fights over who is who.",
+  "ramen-bowl": "Going as a bowl of ramen. The chopsticks are pool noodles.",
+  "classic-ghost": "A sheet. Two eye holes. Peak Halloween.",
+  "good-witch-bad-witch": "One of us is the good witch. Guess which.",
+  "superhero-family": "The whole family is going super. Capes from old pillowcases.",
+  "haunted-animatronics": "The animatronics are haunted. The kids are thrilled. The parents are tired.",
+  "soccer-squad": "The whole squad is suiting up. Shin guards optional.",
+  "mermaid-crew": "We are going as mermaids. No swimming involved.",
+  "gloom-bloom": "Half gloom, half bloom. Like October itself.",
+  "ghost-hunters": "We are busting ghosts on Saturday. Fight me.",
+  "plumber-duo": "It is-a us. The plumbers.",
+  "breakfast-buffet": "We are going as breakfast. All of it.",
+  "burger-joint-couple": "We are the burger joint. Come hungry.",
+  "neon-demon-hunter": "Pop star by day. Demon hunter by night.",
+  "cereal-crew": "Part of a complete breakfast.",
+  "safari-zoo-crew": "The zoo crew is loose.",
+  "tooth-fairy": "The tooth fairy is collecting this year. Check under your pillow.",
+  "bumble-bee": "Buzz buzz."
+};
+function shareCaptionFor(idea){
+  return SHARE_CAPTIONS[idea.id] || ("I am going as " + idea.title + " this Halloween.");
+}
+function shareTextFor(idea, sid, origin){
+  var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin;
+  return shareCaptionFor(idea) + " What are you going as? " + link;
+}
 function buildResultCard(scored, idx, pick, noArt){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
     var im = ideaMedia(idea);
     var h = document.createElement("h3"); h.textContent = idea.title;
+    if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your 2026 Halloween costume";card.appendChild(kc);}
     if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent="Top pick for you";card.appendChild(tp);}
     var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
     var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
-    var wh = document.createElement("p"); wh.className = "why";
-    var wb = document.createElement("b"); wb.textContent = "Why this fits you";
-    wh.appendChild(wb);
-    wh.appendChild(document.createTextNode(": " + whyLine(scored, idx).replace(/^Why this fits you: /, "")));
+    /* Fact row: the four questions every recipient asks, answered at a glance. */
+    var _fr = document.createElement("div"); _fr.className = "factrow";
+    var _ek = ideaEffortKey(idea);
+    var _vibeA = (state.answers.q2 && state.answers.q2.label) ? state.answers.q2.label : "Any";
+    [["Vibe", _vibeA], ["Build", EFFORT_FACTS[_ek].build], ["Budget", ideaBudgetLabel(idea)], ["Difficulty", EFFORT_FACTS[_ek].difficulty]].forEach(function(f){
+      var _d = document.createElement("div"); _d.className = "fact";
+      var _b = document.createElement("b"); _b.textContent = f[0];
+      var _s = document.createElement("span"); _s.textContent = f[1];
+      _d.appendChild(_b); _d.appendChild(_s); _fr.appendChild(_d);
+    });
+    /* Fit reasons: a grounded list (idea why, effort/occasion fragments, the
+       user's own answers reflected back) replaces the single why paragraph. */
+    var _rs = document.createElement("div"); _rs.className = "fitreasons";
+    var _rb = document.createElement("b"); _rb.textContent = "Why this fits you"; _rs.appendChild(_rb);
+    var _ul = document.createElement("ul");
+    fitReasons(scored, idx).forEach(function(r){
+      var _li = document.createElement("li"); _li.textContent = r; _ul.appendChild(_li);
+    });
+    _rs.appendChild(_ul);
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
     var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
@@ -1098,7 +1209,7 @@ function buildResultCard(scored, idx, pick, noArt){
     });
     row.appendChild(bPick); /* "This is my pick" stands alone full-width: the post-pick panel owns the single share path */
     if (!noArt){ card.appendChild(im); card.appendChild(h); } /* runner-up detail: art + title already shown above */
-    card.appendChild(bl); card.appendChild(wh);
+    card.appendChild(bl); card.appendChild(_fr); card.appendChild(_rs);
     var _howto = buildInstructions(idea, {via: "result_card"});
     if (_howto) card.appendChild(_howto);
     card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
@@ -1582,8 +1693,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
     var sid = newShareId();
-    var text = makeText ? makeText(sid)
-      : "I\u2019m going as " + idea.title + " this Halloween. What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    var text = makeText ? makeText(sid) : shareTextFor(idea, sid, "generic");
     return {sid: sid, text: text};
   }
   var cur = makeShare();
