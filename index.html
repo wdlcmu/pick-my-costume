@@ -686,7 +686,8 @@ var SHARE = {
      only share path on cast ideas. */
   textTemplate: function(idea, aud, sid, origin){
     var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
-    return shareCaptionFor(idea) + " What are you going as? " + url;
+    /* 2026-09-25 social-handoff experiment: reciprocal ask, same as shareTextFor. */
+    return shareCaptionFor(idea) + " Take the 2-min quiz and send me what you get: " + url;
   }
 };
 
@@ -1295,7 +1296,11 @@ function shareCaptionFor(idea){
 }
 function shareTextFor(idea, sid, origin){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin;
-  var text = shareCaptionFor(idea) + " What are you going as? " + link;
+  /* 2026-09-25 social-handoff experiment: the old copy asked an open question
+     ("What are you going as?"). The reciprocal ask ("send me what you get")
+     tests whether the share reads as an invitation to participate, not a
+     broadcast. Metric: share_created + share_text_copied per pick_saved. */
+  var text = shareCaptionFor(idea) + " Take the 2-min quiz and send me what you get: " + link;
   /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
      not just the costume name. Kid/family shares append the materials. */
   var aud = state.answers.q1 ? state.answers.q1.value : null;
@@ -2025,7 +2030,9 @@ function shareImage(idea){
 function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   var label = document.createElement("p"); label.className = "status";
   function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
-  label.textContent = "Text this to a friend:";
+  /* 2026-09-25 social-handoff experiment: the share block reads as a social
+     next step, not a utility. */
+  label.textContent = "Send it to your people \u2014 see what they get:";
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", "");
   ta.style.minHeight = "76px";
@@ -2330,12 +2337,13 @@ function buildCastShareText(idea, list, sid){
      the right frame when you have not named the cast yet. */
   var anyBlank = list.some(function(a){ return !a.rawName; });
   if (anyBlank){
-    return "Want to do " + idea.title + " this Halloween? What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    /* 2026-09-25 social-handoff experiment: reciprocal ask. */
+    return "Want to do " + idea.title + " this Halloween? Take the 2-min quiz and send me what you get: pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
   }
   /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
-    ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    ". Take the 2-min quiz and send me what you get: pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
@@ -2625,8 +2633,8 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
         var text = fp.rawName
-          ? (fp.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
-          : ("Want to do " + idea.title + " this Halloween? What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
+          ? (fp.name + " picked " + idea.title + " for Halloween! Take the 2-min quiz and send them what you get: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          : ("Want to do " + idea.title + " this Halloween? Take the 2-min quiz and send me what you get: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
           Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card"});
@@ -2843,7 +2851,10 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     box.style.marginBottom = "16px";
     var im = ideaMedia(idea);
     var h = document.createElement("h3");
-    h.textContent = "Your friend is going as " + idea.title;
+    /* 2026-09-25 recipient-handoff experiment: preserve the social context
+       and ask the reciprocal question up front. Metric: recipient quiz
+       starts per recipient_landing_viewed. */
+    h.textContent = "Your friend picked " + idea.title + ". What would you pick?";
     var p = document.createElement("p");
     p.className = "blurb";
     p.textContent = idea.blurb;
@@ -2875,9 +2886,13 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
       openBrowse();
     };
     box.appendChild(im); box.appendChild(h); box.appendChild(p);
-    var _howtoS = buildInstructions(idea, {expanded: true, via: "share_landing"});
-    if (_howtoS) box.appendChild(_howtoS);
+    /* 2026-09-25 recipient-handoff experiment: the quiz CTA comes before the
+       build guide. A recipient who gets the full guide first can leave
+       satisfied without ever participating. The guide stays one tap away,
+       collapsed, and opening it still tracks build_steps_viewed. */
     box.appendChild(b); box.appendChild(bb);
+    var _howtoS = buildInstructions(idea, {via: "share_landing"});
+    if (_howtoS) box.appendChild(_howtoS);
     var hero = $("s-hero");
     hero.insertBefore(box, hero.firstChild);
     /* Recipient-channel inference (analytics only, no UX change). The Web
