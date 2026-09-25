@@ -1330,6 +1330,18 @@ function shareVariant(){
     return v;
   } catch(_){ return "C"; }
 }
+/* Browse thumbnail experiment: photo vs transparent cutout.
+   Arm persists per session in localStorage; card thumbnails (not detail
+   hero, not share images) switch presentation. Analytics carries thumb_arm. */
+function thumbArm(){
+  try {
+    var v = localStorage.getItem("pmc_thumb_arm");
+    if (v === "photo" || v === "cutout") return v;
+    v = Math.random() < 0.5 ? "photo" : "cutout";
+    localStorage.setItem("pmc_thumb_arm", v);
+    return v;
+  } catch(_){ return "photo"; }
+}
 function shareAsk(person){
   var v = shareVariant(), p = person || "me";
   if (v === "A") return "Take this 2-min Halloween costume quiz and see what you get: ";
@@ -1719,10 +1731,13 @@ function browseCard(idea){
     var card = document.createElement("div");
     card.className = "bcard";
     var img = document.createElement("img");
-    img.src = "photos/" + idea.id + ".webp";
+    /* Thumb experiment: cutout arm shows the transparent-background cutout.
+       onerror falls back to the photo so a missing cutout never blanks a card. */
+    var _ta = thumbArm();
+    img.src = _ta === "cutout" ? "images/cutout/" + idea.id + ".webp" : "photos/" + idea.id + ".webp";
     img.alt = "";
     img.loading = "lazy";
-    img.setAttribute("onerror", "this.style.display='none'");
+    img.setAttribute("onerror", "if(!this.dataset.fbk){this.dataset.fbk=1;this.src='photos/" + idea.id + ".webp';}else{this.style.display='none';}");
     var h = document.createElement("h3"); h.textContent = idea.title;
     var p = document.createElement("p"); p.textContent = idea.blurb;
     var b = document.createElement("button");
@@ -1796,7 +1811,7 @@ function renderBrowse(){
 }
 function openBrowse(){
   renderBrowse();
-  Analytics.track("browse_opened", {});
+  Analytics.track("browse_opened", {thumb_arm: thumbArm()});
   show("s-browse");
 }
 
@@ -1847,7 +1862,7 @@ function buildBrowseDetailCard(idea, whyHead){
     note.style.display = "block";
     hint.style.display = "none";
     status.textContent = "";
-    Analytics.track("pick_saved", {idea_id: idea.id, via: "browse_detail"});
+    Analytics.track("pick_saved", {idea_id: idea.id, via: "browse_detail", thumb_arm: thumbArm()});
     mountPickSections();
   }
   bPick.onclick = doPick;
@@ -1867,7 +1882,7 @@ function openIdeaDetail(ideaId, whyHead){
   var box = $("d-card");
   box.innerHTML = "";
   box.appendChild(buildBrowseDetailCard(idea, whyHead));
-  Analytics.track("browse_detail_opened", {idea_id: idea.id});
+  Analytics.track("browse_detail_opened", {idea_id: idea.id, thumb_arm: thumbArm()});
   show("s-detail");
 }
 
