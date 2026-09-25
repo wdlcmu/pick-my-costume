@@ -562,21 +562,68 @@ var QUESTIONS = [
 
 /* ================= CONFIG: PINPOINT =================
    Billy 2026-09-25: kids don't think in categories ("superheroes"), they think
-   in characters ("Spider-Man", "Ariel"). This optional hero-screen input maps
-   a typed or tapped name to a trademark-safe site idea, which is pinned to #1.
+   in characters ("Spider-Man", "Ariel"). This optional hero-screen surface
+   resolves any specific name or typed query to that costume's detail view:
+   chips jump straight to their idea; typed text checks this alias map first
+   (exact, then per-token), then fuzzy-matches idea titles via pinpointScore.
+   A query with no real match shows the 3 closest ideas with honest copy and
+   NEVER silently runs a generic quiz.
    Normalized key (lowercase, alphanumerics only) -> {idea, label}.
-   The pin is verified by hour-session/pinpoint-paths.js: every (key x quiz
-   path) must return the mapped idea at #1. Add keys here AND re-run the test. */
-var PINPOINT_MAP = {"spiderman":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidermen":{"idea":"web-slinger-crew","label":"Spider-Man"},"milesmorales":{"idea":"web-slinger-crew","label":"Spider-Man"},"gwenstacy":{"idea":"web-slinger-crew","label":"Spider-Man"},"ghostspider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidergwen":{"idea":"web-slinger-crew","label":"Spider-Man"},"ariel":{"idea":"mermaid-crew","label":"Ariel"},"littlemermaid":{"idea":"mermaid-crew","label":"Ariel"},"wednesday":{"idea":"deadpan-diva","label":"Wednesday"},"wednesdayaddams":{"idea":"deadpan-diva","label":"Wednesday"},"nezuko":{"idea":"bamboo-demon","label":"Nezuko"},"kpopdemonhunters":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"huntrix":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"rumi":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"bluey":{"idea":"blue-dog-family","label":"Bluey"},"bingo":{"idea":"blue-dog-family","label":"Bluey"},"mario":{"idea":"plumber-duo","label":"Mario"},"luigi":{"idea":"plumber-duo","label":"Mario"},"elsa":{"idea":"snow-sisters","label":"Frozen"},"anna":{"idea":"snow-sisters","label":"Frozen"},"frozen":{"idea":"snow-sisters","label":"Frozen"},"olaf":{"idea":"snow-sisters","label":"Frozen"},"elphaba":{"idea":"good-witch-bad-witch","label":"Wicked"},"glinda":{"idea":"good-witch-bad-witch","label":"Wicked"},"wicked":{"idea":"good-witch-bad-witch","label":"Wicked"},"pokemon":{"idea":"pocket-plush","label":"Pokémon"},"pikachu":{"idea":"pocket-plush","label":"Pokémon"},"minecraft":{"idea":"block-game-crew","label":"Minecraft"},"steve":{"idea":"block-game-crew","label":"Minecraft"},"creeper":{"idea":"block-game-crew","label":"Minecraft"},"amongus":{"idea":"space-crewmate","label":"Among Us"},"stitch":{"idea":"blue-alien-ohana","label":"Stitch"},"fnaf":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"freddyfazbear":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"fivenightsatfreddys":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"minion":{"idea":"goggle-crew","label":"Minions"},"minions":{"idea":"goggle-crew","label":"Minions"},"ghostbusters":{"idea":"ghost-hunters","label":"Ghostbusters"},"peppa":{"idea":"little-pig-family","label":"Peppa Pig"},"peppapig":{"idea":"little-pig-family","label":"Peppa Pig"},"dracula":{"idea":"vampire","label":"Dracula"},"vampire":{"idea":"vampire","label":"Vampire"},"greekgods":{"idea":"the-olympians","label":"Greek gods"},"olympians":{"idea":"the-olympians","label":"Greek gods"},"zeus":{"idea":"the-olympians","label":"Zeus"},"athena":{"idea":"the-olympians","label":"Athena"},"odyssey":{"idea":"the-olympians","label":"The Odyssey"},"toystory":{"idea":"toy-box-crew","label":"Toy Story"},"woody":{"idea":"toy-box-crew","label":"Toy Story"},"buzzlightyear":{"idea":"toy-box-crew","label":"Toy Story"},"sajaboys":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"jinu":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"babysaja":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"howtotrainyourdragon":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"hiccup":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"astrid":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"toothless":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"squidgame":{"idea":"numbered-players","label":"Squid Game"},"insideout":{"idea":"emotion-crew","label":"Inside Out"},"insideout2":{"idea":"emotion-crew","label":"Inside Out"},"anxiety":{"idea":"emotion-crew","label":"Inside Out"},"mariokart":{"idea":"kart-racers","label":"Mario Kart"},"catinthehat":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing1":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing2":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"alvinandthechipmunks":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"alvin":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"starwars":{"idea":"galaxy-knights","label":"Star Wars"},"jedi":{"idea":"galaxy-knights","label":"Star Wars"},"lightsaber":{"idea":"galaxy-knights","label":"Star Wars"},"barbie":{"idea":"plastic-dream-crew","label":"Barbie"},"ken":{"idea":"plastic-dream-crew","label":"Barbie"},"wizard":{"idea":"wizard","label":"Wizard"},"wizards":{"idea":"wizard","label":"Wizard"},};
-var PINPOINT_CHIPS = ["Spider-Man","Ariel","Wednesday","Bluey","Mario","Nezuko","Pok\u00e9mon","Frozen"];
+   Audited by hour-session/pinpoint-resolve.js: every key's idea must exist
+   in the bank, every PINPOINT_CHIPS label must resolve, and spot resolution
+   cases must land on the right idea. Add keys here AND re-run the test.
+   (hour-session/pinpoint-paths.js still verifies the legacy pin mechanism.) */
+var PINPOINT_MAP = {"spiderman":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidermen":{"idea":"web-slinger-crew","label":"Spider-Man"},"milesmorales":{"idea":"web-slinger-crew","label":"Spider-Man"},"gwenstacy":{"idea":"web-slinger-crew","label":"Spider-Man"},"ghostspider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidergwen":{"idea":"web-slinger-crew","label":"Spider-Man"},"ariel":{"idea":"mermaid-crew","label":"Ariel"},"littlemermaid":{"idea":"mermaid-crew","label":"Ariel"},"wednesday":{"idea":"deadpan-diva","label":"Wednesday"},"wednesdayaddams":{"idea":"deadpan-diva","label":"Wednesday"},"nezuko":{"idea":"bamboo-demon","label":"Nezuko"},"kpopdemonhunters":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"huntrix":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"rumi":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"bluey":{"idea":"blue-dog-family","label":"Bluey"},"bingo":{"idea":"blue-dog-family","label":"Bluey"},"mario":{"idea":"plumber-duo","label":"Mario"},"luigi":{"idea":"plumber-duo","label":"Mario"},"elsa":{"idea":"snow-sisters","label":"Frozen"},"anna":{"idea":"snow-sisters","label":"Frozen"},"frozen":{"idea":"snow-sisters","label":"Frozen"},"olaf":{"idea":"snow-sisters","label":"Frozen"},"elphaba":{"idea":"good-witch-bad-witch","label":"Wicked"},"glinda":{"idea":"good-witch-bad-witch","label":"Wicked"},"wicked":{"idea":"good-witch-bad-witch","label":"Wicked"},"pokemon":{"idea":"pocket-plush","label":"Pokémon"},"pikachu":{"idea":"pocket-plush","label":"Pokémon"},"minecraft":{"idea":"block-game-crew","label":"Minecraft"},"steve":{"idea":"block-game-crew","label":"Minecraft"},"creeper":{"idea":"block-game-crew","label":"Minecraft"},"amongus":{"idea":"space-crewmate","label":"Among Us"},"stitch":{"idea":"blue-alien-ohana","label":"Stitch"},"fnaf":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"freddyfazbear":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"fivenightsatfreddys":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"minion":{"idea":"goggle-crew","label":"Minions"},"minions":{"idea":"goggle-crew","label":"Minions"},"ghostbusters":{"idea":"ghost-hunters","label":"Ghostbusters"},"peppa":{"idea":"little-pig-family","label":"Peppa Pig"},"peppapig":{"idea":"little-pig-family","label":"Peppa Pig"},"dracula":{"idea":"vampire","label":"Dracula"},"vampire":{"idea":"vampire","label":"Vampire"},"greekgods":{"idea":"the-olympians","label":"Greek gods"},"olympians":{"idea":"the-olympians","label":"Greek gods"},"zeus":{"idea":"the-olympians","label":"Zeus"},"athena":{"idea":"the-olympians","label":"Athena"},"odyssey":{"idea":"the-olympians","label":"The Odyssey"},"toystory":{"idea":"toy-box-crew","label":"Toy Story"},"woody":{"idea":"toy-box-crew","label":"Toy Story"},"buzzlightyear":{"idea":"toy-box-crew","label":"Toy Story"},"sajaboys":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"jinu":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"babysaja":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"howtotrainyourdragon":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"hiccup":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"astrid":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"toothless":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"squidgame":{"idea":"numbered-players","label":"Squid Game"},"insideout":{"idea":"emotion-crew","label":"Inside Out"},"insideout2":{"idea":"emotion-crew","label":"Inside Out"},"anxiety":{"idea":"emotion-crew","label":"Inside Out"},"mariokart":{"idea":"kart-racers","label":"Mario Kart"},"catinthehat":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing1":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing2":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"alvinandthechipmunks":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"alvin":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"starwars":{"idea":"galaxy-knights","label":"Star Wars"},"jedi":{"idea":"galaxy-knights","label":"Star Wars"},"lightsaber":{"idea":"galaxy-knights","label":"Star Wars"},"barbie":{"idea":"plastic-dream-crew","label":"Barbie"},"ken":{"idea":"plastic-dream-crew","label":"Barbie"},"wizard":{"idea":"wizard","label":"Wizard"},"wizards":{"idea":"wizard","label":"Wizard"},"belle":{"idea":"enchanted-castle-crew","label":"Belle"},"beautyandthebeast":{"idea":"enchanted-castle-crew","label":"Belle"},"beast":{"idea":"enchanted-castle-crew","label":"Belle"},"princess":{"idea":"fairy-tale-princesses","label":"Princess"},"princesses":{"idea":"fairy-tale-princesses","label":"Princess"},"superhero":{"idea":"superhero-family","label":"Superhero"},"superheroes":{"idea":"superhero-family","label":"Superhero"},"superheros":{"idea":"superhero-family","label":"Superhero"},"disney":{"idea":"enchanted-castle-crew","label":"Disney princess"},"disneyprincess":{"idea":"enchanted-castle-crew","label":"Disney princess"},"disneyprincesses":{"idea":"enchanted-castle-crew","label":"Disney princess"},"mermaid":{"idea":"mermaid-crew","label":"Mermaid"},"mermaids":{"idea":"mermaid-crew","label":"Mermaid"},"spider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spiders":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidey":{"idea":"web-slinger-crew","label":"Spider-Man"},};
+var PINPOINT_CHIPS = ["Spider-Man","Ariel","Wednesday","Bluey","Mario","Nezuko","Pok\u00e9mon","Frozen","Belle"];
 function pinpointNormalize(s){
-  return (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  /* Fold diacritics first so "Pok\u00e9mon" -> "pokemon", not "pokmon". */
+  var t = (s || "").toLowerCase();
+  if (t.normalize) t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return t.replace(/[^a-z0-9]/g, "");
 }
 function pinpointMatch(raw){
   var key = pinpointNormalize(raw);
   if (!key) return null;
   var hit = PINPOINT_MAP[key];
   return hit ? {label: hit.label, idea: hit.idea, raw: raw} : null;
+}
+/* Token-overlap scoring against titles, blurbs, and tag keys. Powers the
+   fuzzy typed-query match and the honest closest-3 fallback. titleHit marks
+   that at least one query word landed in the idea's title, which is the
+   bar a fuzzy match must clear. */
+function pinpointScore(raw){
+  var words = (raw || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/ +/).filter(function(w){ return w.length >= 3; });
+  var scored = IDEAS.map(function(idea){
+    var title = idea.title.toLowerCase();
+    var hay = (title + " " + idea.blurb).toLowerCase();
+    var tags = Object.keys(idea.tags || {});
+    var score = 0, titleHit = false;
+    words.forEach(function(w){
+      if (title.indexOf(w) !== -1){ score += 2; titleHit = true; }
+      else if (hay.indexOf(w) !== -1) score += 2;
+      for (var i = 0; i < tags.length; i++){
+        if (tags[i].indexOf(w) !== -1 || w.indexOf(tags[i]) !== -1) score += 1;
+      }
+    });
+    return {idea: idea, score: score, titleHit: titleHit};
+  });
+  scored.sort(function(a, b){ return (b.score - a.score) || (a.idea.rank - b.idea.rank); });
+  return scored;
+}
+/* Pure resolution for a typed query: exact alias, then per-token alias
+   ("Disney Halloween" -> the Disney alias), then a fuzzy title match.
+   Anything else is an honest nomatch; the caller shows the closest 3. */
+function pinpointResolve(raw){
+  var hit = pinpointMatch(raw);
+  if (hit) return {kind: "match", label: hit.label, idea: hit.idea};
+  var words = (raw || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/ +/).filter(Boolean);
+  for (var i = 0; i < words.length; i++){
+    var th = pinpointMatch(words[i]);
+    if (th) return {kind: "match", label: th.label, idea: th.idea};
+  }
+  var scored = pinpointScore(raw);
+  if (scored.length && scored[0].titleHit) return {kind: "fuzzy", label: (raw || "").trim(), idea: scored[0].idea.id};
+  return {kind: "nomatch"};
 }
 
 /* ================= CONFIG: IDEAS =================
@@ -1987,10 +2034,16 @@ function buildBrowseDetailCard(idea, whyHead){
   card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
   return card;
 }
-function openIdeaDetail(ideaId, whyHead){
+/* detailReturnTo: where the detail screen's back button goes. Browse taps
+   return to the shelf; pinpoint (hero) taps return to the hero. */
+var detailReturnTo = "s-browse";
+function openIdeaDetail(ideaId, whyHead, returnTo){
   var idea = null;
   for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
   if (!idea) return;
+  detailReturnTo = (returnTo === "s-hero") ? "s-hero" : "s-browse";
+  var db = $("btn-dback");
+  if (db) db.innerHTML = (detailReturnTo === "s-hero") ? "&larr; Back" : "&larr; Back to browse";
   var box = $("d-card");
   box.innerHTML = "";
   box.appendChild(buildBrowseDetailCard(idea, whyHead));
@@ -2975,9 +3028,11 @@ function fallbackCopy(text, done){
 }
 
 /* ================= WIRING ================= */
-/* Pinpoint capture (Billy 2026-09-25): the optional "who exactly?" input.
-   A matched name pins its trademark-safe idea to #1; an unmatched name gets
-   an honest note and the quiz proceeds normally. Chips fill the input. */
+/* Pinpoint capture (Billy 2026-09-25): the optional "who exactly?" surface.
+   Any specific name or typed query resolves to that costume's detail view:
+   chips jump straight to their idea; typed text resolves via pinpointResolve.
+   A query with no real match shows the 3 closest ideas with honest copy.
+   This surface NEVER silently runs a generic quiz. */
 function renderPinpointChips(){
   var box = $("pinpoint-chips");
   if (!box || box.children.length) return;
@@ -2985,32 +3040,83 @@ function renderPinpointChips(){
     var b = document.createElement("button");
     b.type = "button"; b.textContent = label;
     b.onclick = function(){
-      $("pinpoint-input").value = label;
-      pinpointNote("");
+      var hit = pinpointMatch(label);
+      if (hit) pinpointOpenIdea(hit, "chip");
+      else { $("pinpoint-input").value = label; pinpointTypedGo(); }
     };
     box.appendChild(b);
   });
 }
 function pinpointNote(msg){ var n = $("pinpoint-note"); if (n) n.textContent = msg; }
-function pinpointGo(){ $("btn-start").click(); }
+function pinpointNomatchBox(){
+  var box = $("pinpoint-nomatch");
+  if (box) return box;
+  box = document.createElement("div");
+  box.id = "pinpoint-nomatch";
+  box.className = "pinpoint-chips";
+  box.style.display = "none";
+  var note = $("pinpoint-note");
+  if (note && note.parentNode) note.parentNode.insertBefore(box, note.nextSibling);
+  return box;
+}
+function pinpointClearNomatch(){
+  var box = $("pinpoint-nomatch");
+  if (box){ box.innerHTML = ""; box.style.display = "none"; }
+}
+/* Open the matched idea's full detail (photo, plan, share, pick) as if the
+   user had tapped its browse card. Back returns to the hero, not the shelf. */
+function pinpointOpenIdea(hit, kind){
+  pinpointNote("");
+  pinpointClearNomatch();
+  Analytics.track("pinpoint_resolved", {kind: kind, query: hit.raw || hit.label, idea: hit.idea, label: hit.label});
+  openIdeaDetail(hit.idea, "You asked for " + hit.label + ": our DIY take", "s-hero");
+}
+function pinpointTypedGo(){
+  var raw = $("pinpoint-input") ? $("pinpoint-input").value.trim() : "";
+  if (!raw) return;
+  var res = pinpointResolve(raw);
+  if (res.kind === "nomatch"){
+    Analytics.track("pinpoint_nomatch", {query: raw});
+    pinpointNote("No exact match, but these are close.");
+    var scored = pinpointScore(raw);
+    var top = scored.filter(function(s){ return s.score > 0; }).slice(0, 3);
+    if (!top.length){
+      /* Nothing even close: fall back to the most popular ideas. */
+      top = IDEAS.slice().sort(function(a, b){ return a.rank - b.rank; }).slice(0, 3)
+        .map(function(idea){ return {idea: idea, score: 0}; });
+    }
+    var box = pinpointNomatchBox();
+    box.innerHTML = ""; box.style.display = "";
+    top.forEach(function(s){
+      (function(idea){
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = idea.title;
+        b.onclick = function(){
+          pinpointOpenIdea({label: idea.title, idea: idea.id, raw: raw}, "nomatch");
+        };
+        box.appendChild(b);
+      })(s.idea);
+    });
+    return;
+  }
+  pinpointOpenIdea({label: res.label, idea: res.idea, raw: raw}, res.kind === "fuzzy" ? "typed-fuzzy" : "typed");
+}
+function pinpointGo(){ pinpointTypedGo(); }
 $("pinpoint-go").onclick = pinpointGo;
 $("pinpoint-input").addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); pinpointGo(); } });
+/* Typing again clears the honest-note state so a stale closest-3 can't linger. */
+$("pinpoint-input").addEventListener("input", function(){ pinpointNote(""); pinpointClearNomatch(); });
 $("btn-start").onclick = function(){
   state = {qi: 0, answers: {}};
-  /* Pinpoint: read the optional input before the quiz resets anything else. */
-  var raw = $("pinpoint-input") ? $("pinpoint-input").value : "";
-  var hit = pinpointMatch(raw);
-  if (raw && raw.trim() && !hit){
-    pinpointNote("We don't have a DIY take on \u201c" + raw.trim().slice(0, 24) + "\u201d yet. Answer the questions and we'll find you something good.");
-  } else {
-    pinpointNote("");
-  }
-  state.pinpoint = hit || null;
+  /* Pinpoint is its own surface now: chips and typed queries resolve to a
+     costume's detail directly. Starting the quiz is an explicit choice and
+     always runs a clean, unpinned run. */
+  state.pinpoint = null;
+  pinpointNote(""); pinpointClearNomatch();
   clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
   /* E29: on a recipient landing this attributes the quiz start to the
      arriving share id + origin. viaShareProps() is empty otherwise. */
   var qp = viaShareProps();
-  if (hit) qp.pinpoint = hit.label;
   Analytics.track("quiz_started", qp);
   renderQ();
 };
@@ -3067,7 +3173,10 @@ $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 /* E20 parity: back from a browse detail returns to the browse grid with the
    current search/filter state intact (renderBrowse reads the live inputs). */
-$("btn-dback").onclick = function(){ renderBrowse(); show("s-browse"); };
+$("btn-dback").onclick = function(){
+  if (detailReturnTo === "s-hero"){ show("s-hero"); refreshReturnBox(); }
+  else { renderBrowse(); show("s-browse"); }
+};
 /* E16: browse -> quiz door. Same start behavior as the hero CTA, plus a
    browse_quiz_started event so the morning brief can measure the door. */
 $("btn-bquiz").onclick = function(){
