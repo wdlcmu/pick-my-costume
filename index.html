@@ -2547,7 +2547,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       img.setAttribute("onerror", "this.style.display='none'");
       var head = document.createElement("div");
       head.className = "pcard-head";
-      head.textContent = p.name + " is going as " + idea.title;
+      /* Reddit 2026-09-25: a blank name must never render "Person 1" on a
+         card a friend will see. Unnamed cards use the recruit frame. */
+      head.textContent = p.rawName ? (p.name + " is going as " + idea.title)
+                                   : ("Going as " + idea.title);
       var sub2 = document.createElement("p");
       sub2.className = "pcard-sub";
       sub2.textContent = "As the " + p.role + ".";
@@ -2561,7 +2564,12 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
          either way; the status line names what actually happened. */
       send.onclick = function(){
         var sid = newShareId();
-        var text = p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card";
+        /* Reddit 2026-09-25: blank name on a personal card sends the generic
+           invitation, never "Person 1 is going as ...". o=card is kept so the
+           card-vs-generic experiment still attributes. */
+        var text = p.rawName
+          ? (p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          : ("Want to do " + idea.title + " this Halloween? What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
           Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card"});
