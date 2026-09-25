@@ -334,7 +334,7 @@ footer a{color:var(--accent)}
   <section class="screen" id="s-results">
     <p class="progress">Your costume</p>
     <h2 class="q-title">&#127875; Here is what you got</h2>
-    <p class="q-hint">This is our top pick for you. Tap &ldquo;This is my pick&rdquo; to save it and plan your costume, or see the other ideas below.</p>
+    <p class="q-hint">This is our top pick for you. Tap &ldquo;Claim this costume&rdquo; to save it and plan your costume, or see the other ideas below.</p>
     <div id="r-cards"></div>
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
@@ -422,7 +422,7 @@ footer a{color:var(--accent)}
         <p class="ex-label">Example</p>
         <p>You answer: <b>couple, funny, low effort</b>.</p>
         <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
-        <p>Tap &ldquo;This is my pick&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
+        <p>Tap &ldquo;Claim this costume&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
       </div>
       <p>Your answers are scored against 100 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
@@ -1487,7 +1487,7 @@ function buildResultCard(scored, idx, pick, noArt){
     });
     _rs.appendChild(_ul);
     var row = document.createElement("div"); row.className = "row";
-    var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+    var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "Claim this costume";
     var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
@@ -1888,7 +1888,7 @@ function buildBrowseDetailCard(idea, whyHead){
   wh.appendChild(wb);
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
-  var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
+  var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "Claim this costume";
   var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
   var note = document.createElement("p"); note.className = "picked-note";
   note.textContent = "\u2713 You\u2019re going as " + idea.title;
