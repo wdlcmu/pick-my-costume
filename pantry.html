@@ -119,7 +119,7 @@
   <p class="sub">Type what you already own. We rank all 108 costumes by what you can make tonight, no guessing.</p>
 
   <div class="searchwrap">
-    <input id="search" type="text" placeholder="Type what you have: bedsheet, red paint, cardboard..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search your stuff" role="combobox" aria-expanded="false" aria-controls="searchlist">
+    <input id="search" type="text" placeholder="Type what you have: bedsheet, red paint, cardboard..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search your stuff" enterkeyhint="go" role="combobox" aria-expanded="false" aria-controls="searchlist">
     <div id="searchlist" class="searchlist" role="listbox" hidden></div>
   </div>
   <div id="mychips" class="mychips" aria-live="polite"></div>
@@ -292,8 +292,9 @@ searchInput.addEventListener('keydown', ev => {
     ev.preventDefault();
     if (sopts.length){ selIdx = (selIdx - 1 + sopts.length) % sopts.length; paintSel(); }
   } else if (ev.key === 'Enter'){
-    if (selIdx >= 0){ ev.preventDefault(); pickOpt(selIdx); }
-    else if (sopts.length === 1){ ev.preventDefault(); pickOpt(0); }
+    ev.preventDefault();
+    if (selIdx >= 0){ pickOpt(selIdx); }
+    else if (sopts.length){ pickOpt(0); }
   } else if (ev.key === 'Escape'){ closeList(); }
 });
 document.addEventListener('pointerdown', ev => {
