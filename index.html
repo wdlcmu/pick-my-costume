@@ -385,7 +385,6 @@ footer a{color:var(--accent)}
     </div>
     <div class="bgrid" id="b-grid"></div>
     <div class="navrow" style="margin-top:16px">
-      <button class="ghost" id="btn-bback" type="button">&larr; Back</button>
       <!-- E16: the browse screen had no door into the quiz. A browser is a
            high-intent visitor; reuses the home screen's exact CTA copy. -->
       <button class="cta" id="btn-bquiz" type="button">Find my costume</button>
@@ -1018,14 +1017,14 @@ function finishQuiz(){
   renderResults(results);
 }
 
-/* E22: animated loops for the top-10 ideas on result/landing detail views.
-   Video autoplays muted and loops; the PNG is the poster and the fallback.
-   Browse grid stays static PNG for load performance. Reduced-motion users
-   always get the static PNG. */
-var ANIMATED = {"neon-demon-hunter":1,"tin-hero":1,"blue-dog-family":1,"block-game-crew":1,"ramen-bowl":1,"snow-sisters":1,"fairy-tale-princesses":1,"tooth-fairy":1,"soccer-squad":1,"good-witch-bad-witch":1,"baby-dino":1,"backyard-hero":1,"bamboo-demon":1,"black-cat":1,"block-monster":1,"blue-alien-ohana":1,"board-game-pieces":1,"breakfast-buffet":1,"bumble-bee":1,"burger-joint-couple":1,"cat-mouse":1,"cereal-crew":1,"fuzzy-monster":1,"garden-gnome":1,"ghost-hunters":1,"gloom-bloom":1,"glow-skeleton":1,"goggle-crew":1,"haunted-animatronics":1,"haunted-portraits":1,"headless-horsemen":1,"ketchup-mustard":1,"little-lion":1,"little-pig-family":1,"little-shark":1,"little-witch":1,"lost-tourist":1,"mermaid-crew":1,"moth-porch-light":1,"mystery-crew":1,"office-couple":1,"pickle":1,"plague-doctor":1,"player-one-two":1,"plug-socket":1,"plumber-duo":1,"pocket-plush":1,"rain-cloud-rainbow":1,"raptor-ranger":1,"robot-crew":1,"safari-photographer":1,"safari-zoo-crew":1,"salt-pepper":1,"space-crewmate":1,"spider":1,"sun-moon":1,"superhero-family":1,"tiny-firefighter":1,"tiny-snail":1,"under-the-sea":1,"vampire":1,"walking-taco":1,"web-hero-duo":1,"web-slinger-crew":1,"zombie-coworker":1,"classic-ghost":1,"crowd-camouflage":1,"deadpan-diva":1,"decades-crew":1,"dino-rangers":1,"dinosaur-family":1,"doctor-bride":1,"emerald-witch":1,"emoji-crew":1,"enchanted-castle-crew":1,"error-404":1,"sushi-roll":1,"deviled-egg":1,"pizza-slice":1,"popcorn-bucket":1,"ice-cream-cone":1,"pbj":1,"bacon-eggs":1,"peas-pod":1,"basketball-star":1,"referee":1,"boxer":1,"cheerleader":1,"tennis-duo":1,"bowling-pins":1,"cardboard-knight":1,"ninja":1,"caped-duo":1,"hero-squad":1,"astronaut":1,"robot-ranger":1,"penguin-huddle":1,"prince-princess":1,"dino-herd":1,"pixel-ghost":1,"wizard":1};
-/* Photo cutover (2026-09-25): the photorealistic DIY concept photo leads on
-   detail views; the illustration is secondary ("Concept sketch"). Photos
-   carry a subtle AI-generated label. */
+/* E22: animated loops on result/landing detail views. Video autoplays muted
+   and loops; the photo is the poster. Only ids with a real photorealistic
+   loop deployed on the CDN are listed here (27 as of 2026-09-25). Reduced-
+   motion users always get just the static photo. */
+var ANIMATED = {"snow-sisters":1,"lost-tourist":1,"mermaid-crew":1,"blue-dog-family":1,"astronaut":1,"basketball-star":1,"bowling-pins":1,"boxer":1,"caped-duo":1,"cardboard-knight":1,"cheerleader":1,"deviled-egg":1,"dino-herd":1,"hero-squad":1,"ice-cream-cone":1,"ninja":1,"pbj":1,"peas-pod":1,"penguin-huddle":1,"pixel-ghost":1,"pizza-slice":1,"popcorn-bucket":1,"referee":1,"robot-ranger":1,"sushi-roll":1,"tennis-duo":1,"wizard":1};
+/* Photo-first detail (2026-09-25): the photorealistic DIY concept photo leads;
+   where a real animated loop exists it plays underneath, labeled
+   "See it in motion." No cartoon sketches, no secondary illustrations. */
 function ideaMedia(idea){
   var wrap = document.createElement("div");
   var photo = document.createElement("img");
@@ -1040,13 +1039,13 @@ function ideaMedia(idea){
   tag.textContent = "AI-generated concept photo";
   tag.style.cssText = "font-size:11px;color:#9a8fb8;margin-bottom:12px;";
   wrap.appendChild(tag);
-  var cap = document.createElement("div");
-  cap.textContent = "Concept sketch";
-  cap.style.cssText = "font-size:11px;color:#9a8fb8;margin:10px 0 4px;";
-  wrap.appendChild(cap);
   var reduce = false;
   try { reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(_){}
   if (ANIMATED[idea.id] && !reduce){
+    var cap = document.createElement("div");
+    cap.textContent = "See it in motion.";
+    cap.style.cssText = "font-size:11px;color:#9a8fb8;margin:10px 0 4px;";
+    wrap.appendChild(cap);
     var v = document.createElement("video");
     v.src = "images/anim/" + idea.id + "-loop.mp4";
     v.poster = "photos/" + idea.id + ".webp";
@@ -1057,15 +1056,6 @@ function ideaMedia(idea){
     v.style.borderRadius = "10px"; v.style.marginBottom = "12px";
     v.setAttribute("onerror", "this.style.display='none'");
     wrap.appendChild(v);
-  } else {
-    var im = document.createElement("img");
-    im.src = "images/" + idea.id + ".png";
-    im.alt = "";
-    im.loading = "lazy";
-    im.style.width = "100%"; im.style.maxWidth = "340px";
-    im.style.borderRadius = "10px"; im.style.marginBottom = "12px";
-    im.setAttribute("onerror", "this.style.display='none'");
-    wrap.appendChild(im);
   }
   return wrap;
 }
@@ -2919,11 +2909,22 @@ $("btn-return").onclick = function(){
 };
 $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
+/* Proof-strip tap tracking: which homepage proof cards get tapped. */
+(function(){
+  var links = document.querySelectorAll(".proofrow a");
+  for (var i = 0; i < links.length; i++){
+    (function(a){
+      a.addEventListener("click", function(){
+        var m = (a.getAttribute("href") || "").match(/\/c\/([a-z0-9-]+)/);
+        Analytics.track("proofstrip_tapped", {idea_id: m ? m[1] : ""});
+      });
+    })(links[i]);
+  }
+})();
 $("btn-browse-results").onclick = openBrowse;
 $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
-$("btn-bback").onclick = function(){ show("s-hero"); };
 /* E20 parity: back from a browse detail returns to the browse grid with the
    current search/filter state intact (renderBrowse reads the live inputs). */
 $("btn-dback").onclick = function(){ renderBrowse(); show("s-browse"); };
