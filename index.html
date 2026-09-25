@@ -989,7 +989,7 @@ function renderQ(){
    patterns across retakes are measurable without exposing what anyone picked. */
 function finishQuiz(){
   var results = scoreIdeas();
-  store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), at: Date.now()});
+  store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), answers: state.answers, at: Date.now()});
   Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; }), question_count: Object.keys(state.answers).length});
   renderResults(results);
 }
@@ -1691,7 +1691,7 @@ function openBrowse(){
    and the E17 cast-panel hook point. The why-line is the STATIC bank line:
    with no quiz answers in state, the dynamic answer-referencing composition
    must NOT run (it would read stale or empty answers). */
-function buildBrowseDetailCard(idea){
+function buildBrowseDetailCard(idea, whyHead){
   var card = document.createElement("div");
   card.className = "card";
   card.appendChild(ideaMedia(idea));
@@ -1699,7 +1699,7 @@ function buildBrowseDetailCard(idea){
   var _tse = trendStatEl(idea); if (_tse) card.appendChild(_tse);
   var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
   var wh = document.createElement("p"); wh.className = "why";
-  var wb = document.createElement("b"); wb.textContent = hasQuizAnswers() ? "Why this fits you" : "Why it's great";
+  var wb = document.createElement("b"); wb.textContent = whyHead || (hasQuizAnswers() ? "Why this fits you" : "Why it's great");
   wh.appendChild(wb);
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
@@ -1744,13 +1744,13 @@ function buildBrowseDetailCard(idea){
   card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
   return card;
 }
-function openIdeaDetail(ideaId){
+function openIdeaDetail(ideaId, whyHead){
   var idea = null;
   for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
   if (!idea) return;
   var box = $("d-card");
   box.innerHTML = "";
-  box.appendChild(buildBrowseDetailCard(idea));
+  box.appendChild(buildBrowseDetailCard(idea, whyHead));
   Analytics.track("browse_detail_opened", {idea_id: idea.id});
   show("s-detail");
 }
@@ -2291,7 +2291,12 @@ function castRoleOptions(ideaId){
   return out;
 }
 function castLine(list){
-  return list.map(function(a){ return a.name + " is the " + a.role; }).join(", ");
+  /* Roles are inconsistent about the article ("the monster" vs "ghost"):
+     add "the" only when the role doesn't already start with one. */
+  return list.map(function(a){ return a.name + " is " + roleArt(a.role); }).join(", ");
+}
+function roleArt(role){
+  return /^(the|a|an)\s/i.test(role) ? role : "the " + role;
 }
 function buildCastShareText(idea, list, sid){
   /* Reddit 2026-09-25: blank names produced "Person 1 is the ..." in the
@@ -2309,14 +2314,21 @@ function buildCastShareText(idea, list, sid){
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
-    return "- " + a.name + " (" + (a.kid ? "kid" : "adult") + ") is the " + a.role;
+    return "- " + a.name + " (" + (a.kid ? "kid" : "adult") + ") is " + roleArt(a.role);
   });
+  /* Billy 2026-09-25: the group prompt asked the AI to invent the materials
+     from scratch, ignoring the site's own "How to make it" instructions (the
+     solo prompt already passes them). Pass ours in and tell it to build on them. */
+  var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
+  var known = ins
+    ? "\n\nHere is what I already know about making it. Materials: " + ins.m.join("; ") + ". Steps: " + ins.s.join(" ")
+    : "";
   var head = (list.length === 1)
     ? "Plan my Halloween costume for " + idea.title + " (pickmycostume.com). The idea: " + idea.blurb
     : "Plan our group Halloween costumes for " + idea.title + " (pickmycostume.com). The idea: " + idea.blurb;
-  return head +
+  return head + known +
     "\n\nOur cast:\n" + lines.join("\n") +
-    "\n\nFor each person, give a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it this week (materials list with approximate costs, step by step). Keep it short and practical.";
+    "\n\nFor each person, give a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it: start from the materials and steps above, fill in any gaps, add approximate costs, step by step. Keep it short and practical.";
 }
 /* The cast-mapping panel. Replaces the generic share + AI sections after a pick
    on a cast-enabled idea. Names are read from the inputs at share/copy time and
@@ -2399,7 +2411,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      Without this they were populated but never attached, so the cast
      share text was invisible. */
   box.appendChild(aiPlanBox);
-  var shareHandle = null, aiHandle = null;
+  var shareHandle = null, aiHandle = null, pcCards = [];
   /* Kid flags are per-person and sticky. The count buttons set the last N slots as
      kids in one tap; the Kid/Adult toggle fine-tunes individuals. Neither ever
      touches names or explicit role picks. */
@@ -2514,6 +2526,19 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     }
     shareHandle.refresh();
     aiHandle.setText(buildCastPrompt(idea, list));
+    /* Personal cards stay in sync with the name/role inputs: a name typed
+       after "Make personal cards" updates the card head, the send label, and
+       (via the send-time read) the text that actually gets sent. */
+    if (pcCards.length){
+      var fresh = currentList();
+      pcCards.forEach(function(c){
+        var cp = fresh[c.idx];
+        if (!cp) return;
+        c.head.textContent = cp.rawName ? (cp.name + " is going as " + idea.title) : ("Going as " + idea.title);
+        c.send.textContent = cp.rawName ? ("Send this card to " + cp.name) : "Send this card";
+        c.sub2.textContent = "As " + roleArt(cp.role) + ".";
+      });
+    }
   }
   Analytics.track("e17_cast_started", {idea_id: idea.id});
   /* Restored panels keep the size, kid flags, names, and roles the user left;
@@ -2536,8 +2561,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
        "Send this card" without one -- never "Send this card to Person 1". */
     var list = currentList();
     pcList.innerHTML = "";
+    pcCards = [];
     Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length});
-    list.forEach(function(p){
+    list.forEach(function(p, idx){
       var card = document.createElement("div");
       card.className = "pcard";
       var img = document.createElement("img");
@@ -2553,7 +2579,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
                                    : ("Going as " + idea.title);
       var sub2 = document.createElement("p");
       sub2.className = "pcard-sub";
-      sub2.textContent = "As the " + p.role + ".";
+      sub2.textContent = "As " + roleArt(p.role) + ".";
       var send = document.createElement("button");
       send.type = "button"; send.className = "cta pcard-send";
       send.textContent = p.rawName ? ("Send this card to " + p.name) : "Send this card";
@@ -2564,11 +2590,14 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
          either way; the status line names what actually happened. */
       send.onclick = function(){
         var sid = newShareId();
+        /* Names typed after "Make personal cards" still count: read the live
+           inputs at send time, not the card-build snapshot. */
+        var fp = currentList()[idx] || p;
         /* Reddit 2026-09-25: blank name on a personal card sends the generic
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
-        var text = p.rawName
-          ? (p.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+        var text = fp.rawName
+          ? (fp.name + " is going as " + idea.title + " this Halloween! What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
           : ("Want to do " + idea.title + " this Halloween? What are you going as? https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
@@ -2604,6 +2633,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       card.appendChild(sub2);
       card.appendChild(send);
       card.appendChild(st2);
+      pcCards.push({head: head, send: send, sub2: sub2, idx: idx});
       pcList.appendChild(card);
     });
   };
@@ -2727,6 +2757,9 @@ $("btn-restart").onclick = function(){
 $("btn-return").onclick = function(){
   var last = load("pmc_last_v1");
   if (!last || !last.results) return;
+  /* Restored quiz results are still quiz results: bring the answers back so
+     the headings stay honest ("Why this fits you", not the no-quiz header). */
+  if (last.answers) state.answers = last.answers;
   var byId = {};
   IDEAS.forEach(function(i){ byId[i.id] = i; });
   var results = last.results
@@ -2744,7 +2777,8 @@ $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-surprise").onclick = function(){
   var idea = IDEAS[Math.floor(Math.random() * IDEAS.length)];
   Analytics.track("surprise_me", {idea_id: idea.id});
-  openIdeaDetail(idea.id);
+  /* Surprise is a no-quiz pick: same honest heading as the no-quiz result card. */
+  openIdeaDetail(idea.id, "Why it's a great pick");
 };
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 $("btn-bback").onclick = function(){ show("s-hero"); };
