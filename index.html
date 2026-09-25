@@ -30,6 +30,9 @@
           capture_pageview: true,
           disable_session_recording: true
         });
+        /* Internal devices (Billy's own phone/laptop, flagged via ?internal=1)
+           tag even the automatic pageview as internal. */
+        try { if (typeof pmcInternal === "function" && pmcInternal() && posthog.register) posthog.register({internal: true}); } catch(e){}
         if (window.Analytics && Analytics._flush) Analytics._flush();
       }
     } catch(e){}
@@ -361,11 +364,33 @@ footer a{color:var(--accent)}
 </div>
 <script>
 /* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
+/* Internal-traffic marking (analytics only, no UX change). Visiting any page
+   with ?internal=1 once sets localStorage pmc_internal=1 on that device
+   (Billy's own phone/laptop); ?internal=0 clears it. Every tracked event from
+   a flagged device carries internal:true. ?probe=/ ?sim= QA runs are marked
+   internal for that pageview without persisting the flag. The Monday digest
+   filters internal:true out, so the funnel counts genuine visitors only.
+   Family members on unflagged devices count as genuine. */
+var _PMC_INTERNAL = null;
+function pmcInternal(){
+  if (_PMC_INTERNAL !== null) return _PMC_INTERNAL;
+  var flag = false;
+  try {
+    var q = location.search || "";
+    if (/[?&]internal=1(?:&|$)/.test(q)) { try { localStorage.setItem("pmc_internal", "1"); } catch(e){} flag = true; }
+    else if (/[?&]internal=0(?:&|$)/.test(q)) { try { localStorage.removeItem("pmc_internal"); } catch(e){} }
+    else if (/[?&](probe|sim)=/.test(q)) { flag = true; }
+    else { try { flag = localStorage.getItem("pmc_internal") === "1"; } catch(e){} }
+  } catch(e2){}
+  _PMC_INTERNAL = flag;
+  return flag;
+}
 var Analytics = {
   _q: [],
   track: function(name, props){
     props = props || {};
     try { if (typeof VIA_SHARE !== "undefined" && VIA_SHARE && !props.share_id && !props.via_share_id) props.via_share_id = VIA_SHARE; } catch(e){}
+    try { if (pmcInternal()) props.internal = true; } catch(e){}
     try {
       if (window.posthog && posthog.capture) {
         posthog.capture(name, props);
@@ -2243,7 +2268,10 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
        tag their UAs; iMessage opens look like plain Safari and are
        indistinguishable, logged as safari_unknown. */
     var _rlv = {idea_id: idea.id, recipient_channel: recipientChannel()};
-    if (VIA_SHARE) _rlv.share_id = VIA_SHARE;
+    /* The share this recipient arrived through is via_share_id (not share_id:
+       share_id is reserved for the id a share CREATES). This lets one share be
+       traced share_created.share_id -> recipient_landing_viewed.via_share_id. */
+    if (VIA_SHARE) _rlv.via_share_id = VIA_SHARE;
     if (VIA_SHARE_ORIGIN) _rlv.share_origin = VIA_SHARE_ORIGIN;
     Analytics.track("recipient_landing_viewed", _rlv);
   })();
