@@ -1077,6 +1077,24 @@ function scoreIdeas(full){
     var _intPool = pool.filter(function(i){ return i.tags[_hIntTag]; });
     if (_intPool.length >= 3) pool = _intPool;
   }
+  /* Vibe hard filter (Billy 2026-09-25, critic round 2): the vibe answer is a
+     promise about the top 3, not a nudge. Funny needs funny>=2 AND
+     scary<=funny (no scary-dominant "joke garnish"); Scary needs scary>=1;
+     Cute needs cute>=1. Relax only if the pool would drop below 3 -- same
+     pattern as the interest filter. */
+  var _hVibeAns = state.answers.q2;
+  var _hVibeTag = _hVibeAns && _hVibeAns.tags ? Object.keys(_hVibeAns.tags)[0] : null;
+  function _vibeOk(i){
+    var t = i.tags;
+    if (_hVibeTag === "funny") return (t.funny||0) >= 2 && (t.scary||0) <= (t.funny||0);
+    if (_hVibeTag === "scary") return (t.scary||0) >= 1;
+    if (_hVibeTag === "cute") return (t.cute||0) >= 1;
+    return true;
+  }
+  if (_hVibeTag){
+    var _vibePool = pool.filter(_vibeOk);
+    if (_vibePool.length >= 3) pool = _vibePool;
+  }
   /* Bar/club night is a hard venue filter: venue.bar 0 ideas (face-covering
      masks, box heads, stilts, oversized/fragile/hot builds) cannot do bar
      night. Same <3 fallback. */
