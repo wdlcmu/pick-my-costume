@@ -40,6 +40,7 @@
   .check.on{border-color:var(--accent);background:var(--card2)}
   .check .tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:10px;
     padding:2px 7px;margin-left:auto;white-space:nowrap}
+  .pthumb{flex:0 0 40px;width:40px;height:40px;object-fit:cover;border-radius:10px;background:#221d33}
   .actions{display:flex;gap:10px;margin:22px 0 6px}
   .btn{flex:1;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;min-height:52px}
   .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
@@ -200,6 +201,7 @@ function renderGroups(){
         '<label class="check' + (ticked.has(p.id) ? ' on' : '') + '">' +
         '<input type="checkbox" data-id="' + p.id + '"' + (ticked.has(p.id) ? ' checked' : '') +
         ' aria-label="' + esc(p.label) + '">' +
+        '<img class="pthumb" src="pantry-photos/pantry-' + p.id + '.webp" alt="" loading="lazy">' +
         '<span>' + esc(p.label) + '</span>' +
         (p.staple ? '<span class="tag">assumed</span>' : '') + '</label>'
       ).join('') + '</div></fieldset>';
@@ -250,6 +252,7 @@ function openList(){
   } else {
     searchList.innerHTML = sopts.map((x, i) =>
       '<button type="button" role="option" class="sopt" data-i="' + i + '" id="sopt' + i + '">' +
+      '<img class="pthumb" src="pantry-photos/pantry-' + x.p.id + '.webp" alt="" loading="lazy">' +
       esc(x.p.label) + '<span class="g">' + esc(groupLabel(x.p.group)) + '</span></button>'
     ).join('');
     searchList.hidden = false;
