@@ -841,6 +841,16 @@ function scoreIdeas(full){
   if (pool.length < 3) {
     pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
   }
+  /* Vibe-vs-interest resolution (Billy 2026-09-25: "wasn't actually scary tho
+     I picked scary"): when the pool holds an idea matching BOTH the picked
+     vibe and the picked interest, the vibe promise is absolute -- a non-vibe
+     idea takes -100 and can never outrank it. When no idea matches both, the
+     interest promise wins and the vibe penalty stays at the old -24. */
+  var _vibeAns = state.answers.q2;
+  var _vibeTag = _vibeAns && _vibeAns.tags ? Object.keys(_vibeAns.tags)[0] : null;
+  var _intAns = state.answers.qinterest;
+  var _intTag = _intAns && _intAns.tags ? Object.keys(_intAns.tags)[0] : null;
+  var _vibeAndIntPossible = _vibeTag && _intTag && pool.some(function(i){ return i.tags[_vibeTag] && i.tags[_intTag]; });
   function scoreOne(idea){
     var contrib = {};
     var score = 0;
@@ -855,10 +865,10 @@ function scoreIdeas(full){
     var occAns = state.answers.qocc;
     var occTag = occAns && occAns.tags ? Object.keys(occAns.tags)[0] : null;
     if (occTag && !idea.tags[occTag]) score -= 24;
-    /* Vibe is a promise: an idea with zero overlap on the Q2 vibe never outranks one that matches it. */
+    /* Vibe is a promise when the pool can keep it: see the resolution note above. */
     var vibeAns = state.answers.q2;
     var vibeTag = vibeAns && vibeAns.tags ? Object.keys(vibeAns.tags)[0] : null;
-    if (vibeTag && !idea.tags[vibeTag]) score -= 24;
+    if (vibeTag && !idea.tags[vibeTag]) score -= _vibeAndIntPossible ? 100 : 24;
     /* Effort is a promise too: a couch-level answer never surfaces an all-out build. */
     var effAns = state.answers.q4;
     var effTag = effAns && effAns.tags ? Object.keys(effAns.tags)[0] : null;
