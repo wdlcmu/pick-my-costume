@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pick My Costume - Links</title>
+<meta name="description" content="Find the costume from the reel. Every idea has a free DIY build guide.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #14101f;
+    color: #f4efff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 32px;
+  }
+  .brand {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .brand span { color: #ff8c42; }
+  .tagline {
+    color: #b9a8e8;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 28px;
+    max-width: 320px;
+    line-height: 1.5;
+  }
+  .tile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 380px;
+    background: #1e1830;
+    border: 1px solid #3a2d5c;
+    border-radius: 16px;
+    padding: 12px 16px 12px 12px;
+    margin-bottom: 14px;
+    text-decoration: none;
+    color: #f4efff;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+  .tile:active { transform: scale(0.98); border-color: #ff8c42; }
+  .tile img {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #2a2145;
+  }
+  .tile .label { font-weight: 700; font-size: 16px; }
+  .tile .sub { color: #b9a8e8; font-size: 13px; margin-top: 2px; line-height: 1.4; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #14101f;
+    background: #ff8c42;
+    border-radius: 20px;
+    padding: 2px 8px;
+    margin-bottom: 4px;
+  }
+  .quiz-tile { border-style: dashed; justify-content: center; text-align: center; }
+  footer {
+    margin-top: auto;
+    padding-top: 28px;
+    color: #6f5f9a;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="brand">Pick My <span>Costume</span></div>
+  <p class="tagline">Saw a costume in a reel? Tap it below to open its free DIY build guide.</p>
+
+  <a class="tile" href="/c/ramen-bowl">
+    <img src="/images/ramen-bowl.png" alt="Ramen Bowl costume">
+    <div>
+      <div class="badge">LATEST REEL</div>
+      <div class="label">Ramen Bowl</div>
+      <div class="sub">Cardboard bowl, noodle yarn hair, foam egg. Free build guide.</div>
+    </div>
+  </a>
+
+  <a class="tile" href="/c/neon-demon-hunter">
+    <img src="/images/neon-demon-hunter.png" alt="Neon Demon Hunter costume">
+    <div>
+      <div class="label">Neon Demon Hunter</div>
+      <div class="sub">Black outfit, neon tape details, toy sword. Free build guide.</div>
+    </div>
+  </a>
+
+  <a class="tile quiz-tile" href="/">
+    <div>
+      <div class="label">Take the 2-minute quiz</div>
+      <div class="sub">Get 3 costume ideas picked for you.</div>
+    </div>
+  </a>
+
+  <footer>Built with Muse. Made by Billy Litner.</footer>
+</body>
+</html>
