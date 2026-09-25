@@ -3493,6 +3493,20 @@ $("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
 $("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
 
+/* Share-landing headline (Billy 2026-09-25 bugfix): "Your friend picked X"
+   renders ONLY on genuine share arrivals (?s=<sid> present -- every share
+   URL the site mints carries it). Any other arrival at ?idea=<slug>
+   (homepage proof rail, direct link, browse) shows the costume name as the
+   headline. The challenge variant is share-context copy too, so it also
+   requires the share param. Pure function so the gate can assert it. */
+function shareLandingHeadline(idea, search){
+  var q = search || "";
+  var isShare = /[?&]s=[a-z0-9]+/.test(q);
+  var isChallenge = /[?&]ch=1/.test(q);
+  if (isShare && isChallenge) return "Your friend can make " + idea.title + " with stuff they own. See what YOU can make.";
+  if (isShare) return "Your friend picked " + idea.title + ". What would you pick?";
+  return idea.title;
+}
 (function init(){
   /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
   (function(){
@@ -3521,10 +3535,10 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     var h = document.createElement("h3");
     /* 2026-09-25 recipient-handoff experiment: preserve the social context
        and ask the reciprocal question up front. Metric: recipient quiz
-       starts per recipient_landing_viewed. */
-    h.textContent = chm
-      ? ("Your friend can make " + idea.title + " with stuff they own. See what YOU can make.")
-      : ("Your friend picked " + idea.title + ". What would you pick?");
+       starts per recipient_landing_viewed. 2026-09-25 bugfix: the friend
+       headline renders only on genuine share arrivals (see
+       shareLandingHeadline); homepage proof-rail taps show the title. */
+    h.textContent = shareLandingHeadline(idea, location.search || "");
     var p = document.createElement("p");
     p.className = "blurb";
     p.textContent = idea.blurb;
