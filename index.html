@@ -1186,6 +1186,13 @@ var AUDIENCE_PHRASE = {
 /* Fit reasons: the idea-specific why first, then the dynamic effort/occasion
    fragments, then plain-English reflections of the user's own answers. Every
    reason is grounded in real data, never invented. */
+/* Billy 2026-09-25: "Why this fits you" is a lie when we know nothing about
+   the user (Surprise me, browse-without-quiz). With no quiz answers the
+   header must not claim personal fit. */
+function hasQuizAnswers(){
+  for (var k in state.answers) if (Object.prototype.hasOwnProperty.call(state.answers, k)) return true;
+  return false;
+}
 function fitReasons(scored, idx){
   var idea = scored.idea, out = [];
   /* Pinpoint: when this card IS the named character's match, lead with it. */
@@ -1301,7 +1308,7 @@ function buildResultCard(scored, idx, pick, noArt){
     /* Fit reasons: a grounded list (idea why, effort/occasion fragments, the
        user's own answers reflected back) replaces the single why paragraph. */
     var _rs = document.createElement("div"); _rs.className = "fitreasons";
-    var _rb = document.createElement("b"); _rb.textContent = "Why this fits you"; _rs.appendChild(_rb);
+    var _rb = document.createElement("b"); _rb.textContent = hasQuizAnswers() ? "Why this fits you" : "Why it's a great pick"; _rs.appendChild(_rb);
     var _ul = document.createElement("ul");
     fitReasons(scored, idx).forEach(function(r){
       var _li = document.createElement("li"); _li.textContent = r; _ul.appendChild(_li);
@@ -1692,7 +1699,7 @@ function buildBrowseDetailCard(idea){
   var _tse = trendStatEl(idea); if (_tse) card.appendChild(_tse);
   var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
   var wh = document.createElement("p"); wh.className = "why";
-  var wb = document.createElement("b"); wb.textContent = "Why this fits you";
+  var wb = document.createElement("b"); wb.textContent = hasQuizAnswers() ? "Why this fits you" : "Why it's great";
   wh.appendChild(wb);
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
@@ -1789,9 +1796,16 @@ function buildResultsPrompt(results, beyond){
     lines.join("\n") + "\n\nMy answers: " + ans.join("; ") + ".\n\n" + ask;
 }
 function buildIdeaPrompt(idea){
+  /* Billy 2026-09-25: the prompt ignored the site's own "How to make it"
+     instructions, so the AI started from scratch. Pass our materials and
+     steps in and tell it to build on them. */
+  var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
+  var known = ins
+    ? "\n\nHere is what I already know about making it. Materials: " + ins.m.join("; ") + ". Steps: " + ins.s.join(" ")
+    : "";
   return "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
-    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" +
-    "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it (materials list with approximate costs, step by step). Keep it short and practical.";
+    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" + known +
+    "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it: start from the materials and steps above, fill in any gaps, add approximate costs, step by step. Keep it short and practical.";
 }
 function doCopy(text, done){
   function fin(ok, msg){
