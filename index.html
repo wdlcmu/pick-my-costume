@@ -9,11 +9,11 @@
 <meta property="og:url" content="https://pickmycostume.com/">
 <meta property="og:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
 <meta property="og:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
-<meta property="og:image" content="https://pickmycostume.com/images/neon-demon-hunter.png">
+<meta property="og:image" content="https://pickmycostume.com/photos/neon-demon-hunter.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
 <meta name="twitter:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
-<meta name="twitter:image" content="https://pickmycostume.com/images/neon-demon-hunter.png">
+<meta name="twitter:image" content="https://pickmycostume.com/photos/neon-demon-hunter.webp">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
 /* PostHog: anonymous usage stats only. Quiz answers are never sent. Session replay is off. */
@@ -999,29 +999,51 @@ function finishQuiz(){
    Browse grid stays static PNG for load performance. Reduced-motion users
    always get the static PNG. */
 var ANIMATED = {"neon-demon-hunter":1,"tin-hero":1,"blue-dog-family":1,"block-game-crew":1,"ramen-bowl":1,"snow-sisters":1,"fairy-tale-princesses":1,"tooth-fairy":1,"soccer-squad":1,"good-witch-bad-witch":1,"baby-dino":1,"backyard-hero":1,"bamboo-demon":1,"black-cat":1,"block-monster":1,"blue-alien-ohana":1,"board-game-pieces":1,"breakfast-buffet":1,"bumble-bee":1,"burger-joint-couple":1,"cat-mouse":1,"cereal-crew":1,"fuzzy-monster":1,"garden-gnome":1,"ghost-hunters":1,"gloom-bloom":1,"glow-skeleton":1,"goggle-crew":1,"haunted-animatronics":1,"haunted-portraits":1,"headless-horsemen":1,"ketchup-mustard":1,"little-lion":1,"little-pig-family":1,"little-shark":1,"little-witch":1,"lost-tourist":1,"mermaid-crew":1,"moth-porch-light":1,"mystery-crew":1,"office-couple":1,"pickle":1,"plague-doctor":1,"player-one-two":1,"plug-socket":1,"plumber-duo":1,"pocket-plush":1,"rain-cloud-rainbow":1,"raptor-ranger":1,"robot-crew":1,"safari-photographer":1,"safari-zoo-crew":1,"salt-pepper":1,"space-crewmate":1,"spider":1,"sun-moon":1,"superhero-family":1,"tiny-firefighter":1,"tiny-snail":1,"under-the-sea":1,"vampire":1,"walking-taco":1,"web-hero-duo":1,"web-slinger-crew":1,"zombie-coworker":1,"classic-ghost":1,"crowd-camouflage":1,"deadpan-diva":1,"decades-crew":1,"dino-rangers":1,"dinosaur-family":1,"doctor-bride":1,"emerald-witch":1,"emoji-crew":1,"enchanted-castle-crew":1,"error-404":1,"sushi-roll":1,"deviled-egg":1,"pizza-slice":1,"popcorn-bucket":1,"ice-cream-cone":1,"pbj":1,"bacon-eggs":1,"peas-pod":1,"basketball-star":1,"referee":1,"boxer":1,"cheerleader":1,"tennis-duo":1,"bowling-pins":1,"cardboard-knight":1,"ninja":1,"caped-duo":1,"hero-squad":1,"astronaut":1,"robot-ranger":1,"penguin-huddle":1,"prince-princess":1,"dino-herd":1,"pixel-ghost":1};
+/* Photo cutover (2026-09-25): the photorealistic DIY concept photo leads on
+   detail views; the illustration is secondary ("Concept sketch"). Photos
+   carry a subtle AI-generated label. */
 function ideaMedia(idea){
-  var src = "images/" + idea.id + ".png";
+  var wrap = document.createElement("div");
+  var photo = document.createElement("img");
+  photo.src = "photos/" + idea.id + ".webp";
+  photo.alt = "";
+  photo.style.width = "100%";
+  photo.style.borderRadius = "10px";
+  photo.style.marginBottom = "4px";
+  photo.setAttribute("onerror", "this.style.display='none'");
+  wrap.appendChild(photo);
+  var tag = document.createElement("div");
+  tag.textContent = "AI-generated concept photo";
+  tag.style.cssText = "font-size:11px;color:#9a8fb8;margin-bottom:12px;";
+  wrap.appendChild(tag);
+  var cap = document.createElement("div");
+  cap.textContent = "Concept sketch";
+  cap.style.cssText = "font-size:11px;color:#9a8fb8;margin:10px 0 4px;";
+  wrap.appendChild(cap);
   var reduce = false;
   try { reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(_){}
   if (ANIMATED[idea.id] && !reduce){
     var v = document.createElement("video");
     v.src = "images/anim/" + idea.id + "-loop.mp4";
-    v.poster = src;
+    v.poster = "images/" + idea.id + ".png";
     v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
     v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
     v.setAttribute("aria-hidden", "true");
-    v.style.width = "100%"; v.style.borderRadius = "10px"; v.style.marginBottom = "12px";
+    v.style.width = "100%"; v.style.maxWidth = "340px";
+    v.style.borderRadius = "10px"; v.style.marginBottom = "12px";
     v.setAttribute("onerror", "this.style.display='none'");
-    return v;
+    wrap.appendChild(v);
+  } else {
+    var im = document.createElement("img");
+    im.src = "images/" + idea.id + ".png";
+    im.alt = "";
+    im.loading = "lazy";
+    im.style.width = "100%"; im.style.maxWidth = "340px";
+    im.style.borderRadius = "10px"; im.style.marginBottom = "12px";
+    im.setAttribute("onerror", "this.style.display='none'");
+    wrap.appendChild(im);
   }
-  var im = document.createElement("img");
-  im.src = src;
-  im.alt = "";
-  im.style.width = "100%";
-  im.style.borderRadius = "10px";
-  im.style.marginBottom = "12px";
-  im.setAttribute("onerror", "this.style.display='none'");
-  return im;
+  return wrap;
 }
 
 /* One result card, extracted so the "Still stuck?" section can render
@@ -1603,7 +1625,7 @@ function browseCard(idea){
     var card = document.createElement("div");
     card.className = "bcard";
     var img = document.createElement("img");
-    img.src = "images/" + idea.id + ".png";
+    img.src = "photos/" + idea.id + ".webp";
     img.alt = "";
     img.loading = "lazy";
     img.setAttribute("onerror", "this.style.display='none'");
@@ -1804,7 +1826,7 @@ function buildIdeaPrompt(idea){
     ? "\n\nHere is what I already know about making it. Materials: " + ins.m.join("; ") + ". Steps: " + ins.s.join(" ")
     : "";
   return "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
-    " Reference image: https://pickmycostume.com/images/" + idea.id + ".png" + known +
+    " Reference image: https://pickmycostume.com/photos/" + idea.id + ".webp" + known +
     "\n\nGive me a concrete plan with two options: 1) where to buy it (what to search for, what to check for fit and quality), 2) exactly how to DIY it: start from the materials and steps above, fill in any gaps, add approximate costs, step by step. Keep it short and practical.";
 }
 function doCopy(text, done){
@@ -1934,7 +1956,7 @@ function drawShareImage(idea, done){
     var factLines = wrap(facts, W - 140, "400 32px system-ui, sans-serif").slice(0, 2);
     /* Adaptive trim: worst-case text (2+3+2 lines) would collide with the
        footer at H-64. Shed caption/fact lines until the block fits. */
-    while (titleLines.length*78 + 6 + capLines.length*50 + 22 + factLines.length*44 > 322 &&
+    while (titleLines.length*78 + 6 + capLines.length*50 + 22 + factLines.length*44 > 278 &&
            (capLines.length > 1 || factLines.length > 1 || titleLines.length > 1)){
       if (capLines.length > 2) capLines.pop();
       else if (factLines.length > 1) factLines.pop();
@@ -1952,6 +1974,9 @@ function drawShareImage(idea, done){
     g.fillStyle = "#8f7fb8";
     g.font = "400 32px system-ui, sans-serif";
     factLines.forEach(function(l){ g.fillText(l, W/2, y); y += 44; });
+    g.fillStyle = "#8f7fb8";
+    g.font = "400 26px system-ui, sans-serif";
+    g.fillText("AI-generated concept photo", W/2, H - 108);
     g.fillStyle = "#ffb347";
     g.font = "700 40px system-ui, sans-serif";
     g.fillText("pickmycostume.com", W/2, H - 64);
@@ -1960,7 +1985,7 @@ function drawShareImage(idea, done){
   var img = new Image();
   img.onload = function(){ paint(img); };
   img.onerror = function(){ paint(null); };
-  img.src = "images/" + idea.id + ".png";
+  img.src = "photos/" + idea.id + ".webp";
 }
 /* Fact-row values for the image card; mirrors the hero card's four cells. */
 function ideaFact(idea, kind){
@@ -2568,9 +2593,12 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       card.className = "pcard";
       var img = document.createElement("img");
       img.className = "pcard-img";
-      img.src = "images/" + idea.id + ".png";
+      img.src = "photos/" + idea.id + ".webp";
       img.alt = idea.title;
       img.setAttribute("onerror", "this.style.display='none'");
+      var ailab = document.createElement("div");
+      ailab.textContent = "AI-generated concept photo";
+      ailab.style.cssText = "font-size:10px;color:#9a8fb8;margin-top:2px;";
       var head = document.createElement("div");
       head.className = "pcard-head";
       /* Reddit 2026-09-25: a blank name must never render "Person 1" on a
@@ -2629,6 +2657,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         }
       };
       card.appendChild(img);
+      card.appendChild(ailab);
       card.appendChild(head);
       card.appendChild(sub2);
       card.appendChild(send);
