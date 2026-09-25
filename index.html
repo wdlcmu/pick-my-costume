@@ -145,6 +145,7 @@ button.ghost{
    Natural aspect ratio shows the full illustration on every card. */
 .card h3{margin:0 0 6px;font-size:24px}
 .toppick{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.rolebadge{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;margin-bottom:8px;background:var(--bg2);color:var(--ink);border:1px solid var(--line)}
 .pantrybadge{display:inline-block;font-size:12px;font-weight:600;line-height:1;color:#5b6467;background:transparent;border:1px solid #c9cfd1;border-radius:999px;padding:5px 10px;margin:6px 0 0}
 .trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
@@ -1336,6 +1337,47 @@ function ideaBudgetLabel(idea){
   if (b.indexOf("low") >= 0) return BUDGET_FACTS.low;
   return BUDGET_FACTS.mid;
 }
+/* Result roles (Billy 2026-09-25): the top 3 earn their labels; labels are
+   computed, never hardcoded. #1 is always "Best Match". "Easiest" goes to
+   the unique lowest build-difficulty idea only when it is clearly easier
+   (margin >= 2 on the 0-7 scale below) and it is not #1. "Wildcard" goes to
+   the runner-up with clearly the largest tag distance from #1 (margin >= 3).
+   When a distinction is not clear, the card keeps neutral numbering --
+   never a forced label. */
+function buildDifficulty(idea){
+  var er = {couch:0, crafty:1, allout:2}[ideaEffortKey(idea)];
+  var b = idea.budget || [], br = 3;
+  if (b.indexOf("diy") >= 0) br = 0;
+  else if (b.indexOf("low") >= 0) br = 1;
+  else if (b.indexOf("mid") >= 0) br = 2;
+  return er * 2 + br; /* 0 = closet + under-30-min, 7 = high-budget weekend project */
+}
+function tagDistance(a, b){
+  var keys = {}, k;
+  var ta = a.tags || {}, tb = b.tags || {};
+  for (k in ta) keys[k] = 1;
+  for (k in tb) keys[k] = 1;
+  var d = 0;
+  for (k in keys) d += Math.abs((ta[k] || 0) - (tb[k] || 0));
+  return d;
+}
+function resultRoles(results){
+  var roles = ["Best Match", null, null];
+  if (!results || results.length < 3) return roles;
+  var diff = [0, 1, 2].map(function(i){ return buildDifficulty(results[i].idea); });
+  var minD = Math.min(diff[0], diff[1], diff[2]);
+  var minCount = diff.filter(function(d){ return d === minD; }).length;
+  var nextD = Math.min.apply(null, diff.filter(function(d){ return d > minD; }));
+  var minIdx = diff.indexOf(minD);
+  if (minCount === 1 && minIdx > 0 && (nextD - minD) >= 2) roles[minIdx] = "Easiest";
+  var d2 = tagDistance(results[0].idea, results[1].idea);
+  var d3 = tagDistance(results[0].idea, results[2].idea);
+  if (Math.abs(d2 - d3) >= 3){
+    var wi = d2 > d3 ? 1 : 2;
+    roles[wi] = roles[wi] ? roles[wi] + " \u00B7 Wildcard" : "Wildcard";
+  }
+  return roles;
+}
 var AUDIENCE_PHRASE = {
   "Solo": "going solo", "My kid": "your kid", "My family": "the whole family",
   "Couple": "couples", "Group": "groups"
@@ -1578,7 +1620,7 @@ function buildVibeFeedback(idea){
   });
   return fbRow;
 }
-function buildResultCard(scored, idx, pick, noArt){
+function buildResultCard(scored, idx, pick, noArt, role){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
@@ -1598,7 +1640,8 @@ function buildResultCard(scored, idx, pick, noArt){
       _pb.title = "Based on your pantry";
     }
     if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your 2026 Halloween costume";card.appendChild(kc);}
-    if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent="Top pick for you";card.appendChild(tp);}
+    if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent=role||"Top pick for you";card.appendChild(tp);}
+    if(idx>0&&role){var rb=document.createElement("span");rb.className="rolebadge";rb.textContent=role;card.appendChild(rb);}
     var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
     var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
     /* Fact row: the four questions every recipient asks, answered at a glance. */
@@ -1794,7 +1837,11 @@ function renderResults(results){
   /* Hero: the #1 idea, presented as the answer. */
   var hero = document.createElement("div");
   hero.className = "hero12";
-  var heroCard = buildResultCard(results[0], 0, pick);
+  /* Result roles: computed labels (Best Match / Easiest / Wildcard); a
+     runner-up with no earned role keeps neutral numbering. */
+  var roles = resultRoles(results);
+  var roleLabel = function(i){ return roles[i] || ("No. " + (i + 1)); };
+  var heroCard = buildResultCard(results[0], 0, pick, false, roles[0]);
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
@@ -1827,10 +1874,13 @@ function renderResults(results){
     if (_ru){ _ru.style.aspectRatio = "3/2"; _ru.style.objectFit = "cover"; }
     var h = document.createElement("h3");
     h.textContent = idea.title;
+    var rbadge = document.createElement("span");
+    rbadge.className = "rolebadge";
+    rbadge.textContent = roleLabel(i + 1);
     var hint = document.createElement("p");
     hint.className = "status";
     hint.textContent = "Tap for the full plan";
-    card.appendChild(im); card.appendChild(h); card.appendChild(hint);
+    card.appendChild(rbadge); card.appendChild(im); card.appendChild(h); card.appendChild(hint);
     function toggleRu(e){
       var t = e && e.target;
       if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
@@ -1841,7 +1891,7 @@ function renderResults(results){
         hint.textContent = "Tap for the full plan";
         openIdx = -1;
       } else {
-        var detailCard = buildResultCard(scored, i + 1, load("pmc_pick_v1"), true);
+        var detailCard = buildResultCard(scored, i + 1, load("pmc_pick_v1"), true, roleLabel(i + 1));
         cards[idea.id] = detailCard;
         ruDetail.innerHTML = "";
         ruDetail.appendChild(detailCard);
