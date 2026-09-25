@@ -980,20 +980,10 @@ function renderQ(){
    bank is never sent to analytics. This logs only a non-reversible djb2 hash
    of the sorted "qid:value" answer pattern, so same-vs-different answer
    patterns across retakes are measurable without exposing what anyone picked. */
-function answerFingerprint(){
-  var keys = Object.keys(state.answers).sort();
-  var s = keys.map(function(k){
-    var a = state.answers[k];
-    return k + ":" + (a && a.value !== undefined ? a.value : "");
-  }).join("|");
-  var h = 5381;
-  for (var i = 0; i < s.length; i++){ h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
-  return ("0000000" + h.toString(16)).slice(-8);
-}
 function finishQuiz(){
   var results = scoreIdeas();
   store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), at: Date.now()});
-  Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; }), answer_fingerprint: answerFingerprint()});
+  Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; }), question_count: Object.keys(state.answers).length});
   renderResults(results);
 }
 
