@@ -1041,7 +1041,7 @@ function ideaMedia(idea){
   if (ANIMATED[idea.id] && !reduce){
     var v = document.createElement("video");
     v.src = "images/anim/" + idea.id + "-loop.mp4";
-    v.poster = "images/" + idea.id + ".png";
+    v.poster = "photos/" + idea.id + ".webp";
     v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
     v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
     v.setAttribute("aria-hidden", "true");
