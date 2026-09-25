@@ -2328,6 +2328,31 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var sub = document.createElement("p"); sub.className = "status";
   sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and never stored anywhere. I never see them.";
   box.appendChild(h); box.appendChild(sub);
+  /* Reddit 2026-09-25: the share was buried behind the Who's who form. One-tap
+     generic share sits at the top so users can skip the form entirely. */
+  var quickShare = document.createElement("div"); quickShare.className = "row"; quickShare.style.margin = "8px 0 12px";
+  var qsBtn = document.createElement("button"); qsBtn.type = "button"; qsBtn.className = "cta";
+  qsBtn.textContent = "Share this idea";
+  var qsStatus = document.createElement("p"); qsStatus.className = "status"; qsStatus.style.margin = "6px 0 0";
+  qsBtn.onclick = function(){
+    var sid = newShareId();
+    var text = shareTextFor(idea, sid, "generic");
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    function doneShare(ok, msg){
+      qsStatus.textContent = msg;
+      if (ok) Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic_quick"});
+    }
+    if (navigator.share) {
+      navigator.share({text: text, url: link}).then(function(){ doneShare(true, "Shared."); }, function(){});
+    } else {
+      doCopy(text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic_quick"});
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+  };
+  quickShare.appendChild(qsBtn);
+  box.appendChild(quickShare); box.appendChild(qsStatus);
   var hadState = !!castStateByIdea[idea.id];
   var st = getCastState(idea.id, cast.n);
   var size = st.size, kids = 0, people = [], overrides = {};
