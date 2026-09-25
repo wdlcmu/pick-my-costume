@@ -209,9 +209,11 @@ footer a{color:var(--accent)}
 .bcard .row{display:flex;flex-wrap:wrap;gap:10px}
 .bcard .row button{flex:1;min-height:48px;font-size:14px}
 .bfilters{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
+.bfl{display:flex;flex-direction:column;gap:4px;flex:1 1 140px;min-width:0}
+.bfl>span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding-left:2px}
 /* Three selects share one row on wide screens and wrap on narrow phones.
    16px type avoids iOS auto-zoom on tap. Sticky kept. */
-.bfilters select{flex:1 1 140px;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bfilters select{flex:1 1 auto;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
 .bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .bempty{color:var(--muted);padding:24px 0;text-align:center}
 .bclose{margin:18px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
@@ -291,6 +293,7 @@ footer a{color:var(--accent)}
     <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
     <div class="bsticky">
     <div class="bfilters">
+      <label class="bfl"><span>Who</span>
       <select id="bf-aud" aria-label="Filter by who it is for">
         <option value="">Everyone</option>
         <option value="kid">Kids</option>
@@ -298,6 +301,8 @@ footer a{color:var(--accent)}
         <option value="couple">Couple</option>
         <option value="solo">Solo</option>
       </select>
+      </label>
+      <label class="bfl"><span>Vibe</span>
       <select id="bf-vibe" aria-label="Filter by vibe">
         <option value="">Any vibe</option>
         <option value="funny">Funny</option>
@@ -305,6 +310,8 @@ footer a{color:var(--accent)}
         <option value="cute">Cute</option>
         <option value="simple">Keep it simple</option>
       </select>
+      </label>
+      <label class="bfl"><span>Interest</span>
       <select id="bf-int" aria-label="Filter by interest">
         <option value="">Any interest</option>
         <option value="animals">Animals</option>
@@ -316,12 +323,15 @@ footer a{color:var(--accent)}
         <option value="food">Food &amp; snacks</option>
         <option value="sports">Sports</option>
       </select>
+      </label>
+      <label class="bfl"><span>Effort</span>
       <select id="bf-eff" aria-label="Filter by effort">
         <option value="">Any effort</option>
         <option value="couch">Couch-level</option>
         <option value="crafty">A little crafty</option>
         <option value="allout">Go all out</option>
       </select>
+      </label>
     </div>
     <p class="bcount" id="b-count"></p>
     </div>
@@ -1350,7 +1360,10 @@ function renderBrowse(){
     _be.textContent = "No ideas match. Try clearing a filter.";
     grid.appendChild(_be);
   }
-  $("b-count").textContent = "Showing " + exact.length + " of " + IDEAS.length + " ideas";
+  $("b-count").textContent = exact.length
+    ? "Showing " + exact.length + " of " + IDEAS.length + " ideas"
+    : (near.length ? "No exact matches. Closest ideas below. Try clearing a filter."
+                   : "No ideas match. Try clearing a filter.");
 }
 function openBrowse(){
   renderBrowse();
