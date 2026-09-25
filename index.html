@@ -2136,7 +2136,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
   /* 2026-09-25 social-handoff experiment: the share block reads as a social
      next step, not a utility. */
-  label.textContent = "Send it to your people \u2014 see what they get:";
+  label.textContent = "Send it to your people. See what they get:";
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", "");
   ta.style.minHeight = "76px";
