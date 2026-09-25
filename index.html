@@ -1069,14 +1069,10 @@ function finishQuiz(){
   renderResults(results);
 }
 
-/* E22: animated loops on result/landing detail views. Video autoplays muted
-   and loops; the photo is the poster. Only ids with a real photorealistic
-   loop deployed on the CDN are listed here (27 as of 2026-09-25). Reduced-
-   motion users always get just the static photo. */
-var ANIMATED = {"snow-sisters":1,"lost-tourist":1,"mermaid-crew":1,"blue-dog-family":1,"astronaut":1,"basketball-star":1,"bowling-pins":1,"boxer":1,"caped-duo":1,"cardboard-knight":1,"cheerleader":1,"deviled-egg":1,"dino-herd":1,"hero-squad":1,"ice-cream-cone":1,"ninja":1,"pbj":1,"peas-pod":1,"penguin-huddle":1,"pixel-ghost":1,"pizza-slice":1,"popcorn-bucket":1,"referee":1,"robot-ranger":1,"sushi-roll":1,"tennis-duo":1};
-/* Photo-first detail (2026-09-25): the photorealistic DIY concept photo leads;
-   where a real animated loop exists it plays underneath, labeled
-   "See it in motion." No cartoon sketches, no secondary illustrations. */
+/* Detail media (2026-09-25): the photorealistic DIY concept photo only.
+   Billy: tapping a card shows the single photo, no "See it in motion"
+   animated-loop block on detail/share views. No cartoon sketches, no
+   secondary illustrations. */
 function ideaMedia(idea, photoOnly){
   var wrap = document.createElement("div");
   var photo = document.createElement("img");
@@ -1091,26 +1087,6 @@ function ideaMedia(idea, photoOnly){
   tag.textContent = "AI-generated concept photo";
   tag.style.cssText = "font-size:11px;color:#9a8fb8;margin-bottom:12px;";
   wrap.appendChild(tag);
-  var reduce = false;
-  try { reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(_){}
-  /* Billy 2026-09-25: compact runner-up cards are photo-only so the pair is
-     always uniform; motion lives on the full card (hero + expanded detail). */
-  if (ANIMATED[idea.id] && !reduce && !photoOnly){
-    var cap = document.createElement("div");
-    cap.textContent = "See it in motion.";
-    cap.style.cssText = "font-size:11px;color:#9a8fb8;margin:10px 0 4px;";
-    wrap.appendChild(cap);
-    var v = document.createElement("video");
-    v.src = "images/anim/" + idea.id + "-loop.mp4";
-    v.poster = "photos/" + idea.id + ".webp";
-    v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
-    v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
-    v.setAttribute("aria-hidden", "true");
-    v.style.width = "100%"; v.style.maxWidth = "340px";
-    v.style.borderRadius = "10px"; v.style.marginBottom = "12px";
-    v.setAttribute("onerror", "this.style.display='none'");
-    wrap.appendChild(v);
-  }
   return wrap;
 }
 
