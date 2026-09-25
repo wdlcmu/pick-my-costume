@@ -78,6 +78,12 @@ body{
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
 .hero{text-align:center;padding:56px 8px 32px}
 .hero .moon{font-size:56px}
+/*Billy 2026-09-25: visual proof strip. Four real top-save costumes with
+  photos above the fold so visitors see the taste before starting the quiz.*/
+.proofrow{display:flex;gap:10px;justify-content:center;margin:2px auto 0;max-width:560px}
+.proofrow a{flex:1 1 0;min-width:0;text-decoration:none}
+.proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;display:block;border:1px solid var(--line)}
+.proofrow span{display:block;font-size:12px;margin-top:5px;color:var(--muted);text-align:center;line-height:1.3}
 h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
 .screen{display:none}
@@ -283,6 +289,15 @@ footer a{color:var(--accent)}
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
+      <div class="proofstrip">
+        <p class="fine" style="margin:18px 0 8px">Real ideas you might get:</p>
+        <div class="proofrow">
+          <a href="/c/snow-sisters"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
+          <a href="/c/lost-tourist"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
+          <a href="/c/mermaid-crew"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
+          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
+        </div>
+      </div>
       <p style="margin:12px 0 0"><button class="ghost" id="btn-browse-hero" type="button">Browse all 100 ideas</button> <button class="ghost" id="btn-surprise" type="button" title="Pick a random costume for me">Surprise me</button> <a class="ghost" href="/pantry" style="text-decoration:none;display:inline-block;padding:10px 16px;border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
@@ -303,7 +318,7 @@ footer a{color:var(--accent)}
   <section class="screen" id="s-results">
     <p class="progress">Your costume</p>
     <h2 class="q-title">&#127875; Here is what you got</h2>
-    <p class="q-hint">This is our top pick for you. Tap &ldquo;This is my pick&rdquo; to save it and get your AI costume plan, or see the other ideas below.</p>
+    <p class="q-hint">This is our top pick for you. Tap &ldquo;This is my pick&rdquo; to save it and plan your costume, or see the other ideas below.</p>
     <div id="r-cards"></div>
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
@@ -1343,7 +1358,7 @@ function buildResultCard(scored, idx, pick, noArt){
     _rs.appendChild(_ul);
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
-    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
+    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
     note.textContent = "\u2713 You\u2019re going as " + idea.title;
@@ -1731,7 +1746,7 @@ function buildBrowseDetailCard(idea, whyHead){
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
   var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "This is my pick";
-  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to get your AI costume plan.";
+  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
   var note = document.createElement("p"); note.className = "picked-note";
   note.textContent = "\u2713 You\u2019re going as " + idea.title;
   var planBox = document.createElement("div");
