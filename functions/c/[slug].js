@@ -103,6 +103,12 @@ export function onRequest(context) {
      at request time from the real query string, exactly like the top CTA. */
   var _qz = new URLSearchParams();
   if (_s) _qz.set("s", _s);
+  /* 2026-09-26 red-team W2: the quiz-bound links (bottom quizline + the
+     recipient banner's "Find your costume" CTA) preserved ?s= but dropped
+     &o=, so taps through them lost share-origin attribution for the running
+     card-vs-generic and SMS experiments. Preserve o like the top CTA does. */
+  var _o = _qp.get("o") || "";
+  if (_o) _qz.set("o", _o);
   var quizTarget = "/?" + _qz.toString();
   var quizTargetAttr = quizTarget.replace(/&/g, "&amp;");
   /* Static guide body: the same HTML for every visitor (curl fetchers, AI
