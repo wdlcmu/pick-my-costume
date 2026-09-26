@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Costume Duel — prototype</title>
+<title>Costume Duel - prototype</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#1a1033;color:#f5efff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5;padding:20px 16px 64px}
@@ -32,7 +32,7 @@ button.pick:active{background:#3a2666}
 <div class="wrap">
 
 <div class="step on" id="s1">
-  <span class="pill">PROTOTYPE — not live</span>
+  <span class="pill">PROTOTYPE - not live</span>
   <h1>⚔️ Costume Duel</h1>
   <p class="sub">Your friend took the quiz and got a costume. Take it yourself and see how you match up.</p>
   <div class="vs">
@@ -42,7 +42,7 @@ button.pick:active{background:#3a2666}
       <div class="what">Neon Demon Hunter</div>
     </div>
   </div>
-  <p class="sub">Quick — answer 2 questions and we'll pick yours:</p>
+  <p class="sub">Quick: answer 2 questions and we'll pick yours:</p>
   <p style="font-weight:700">Who's the costume for?</p>
   <button class="pick" data-q1="me">Just me</button>
   <button class="pick" data-q1="couple">Me + partner</button>
@@ -50,7 +50,7 @@ button.pick:active{background:#3a2666}
 </div>
 
 <div class="step" id="s2">
-  <span class="pill">PROTOTYPE — not live</span>
+  <span class="pill">PROTOTYPE - not live</span>
   <h1>⚔️ Costume Duel</h1>
   <p style="font-weight:700">How much effort?</p>
   <button class="pick" data-q2="low">As little as possible</button>
@@ -59,7 +59,7 @@ button.pick:active{background:#3a2666}
 </div>
 
 <div class="step" id="s3">
-  <span class="pill">PROTOTYPE — not live</span>
+  <span class="pill">PROTOTYPE - not live</span>
   <h1>⚔️ The verdict</h1>
   <div class="vs">
     <div class="fighter">
@@ -78,25 +78,27 @@ button.pick:active{background:#3a2666}
     <div class="vlabel">The verdict</div>
     <div id="verdict-text">Two different lanes. The group chat will have opinions.</div>
   </div>
-  <a class="cta" href="#" onclick="return false">Send my result back →</a>
-  <p class="fine">This closes the loop — your friend gets your pick, and the duel continues.</p>
+  <a class="cta" href="#" id="proto-share">Send my result back →</a>
+  <p class="fine" id="proto-share-status">This closes the loop, your friend gets your pick, and the duel continues.</p>
   <a class="ghost" href="#" onclick="show(1);return false">↺ Try different answers</a>
 </div>
 
 </div>
 <script>
 var picks = {
-  "me-low":    {img:"/photos/classic-ghost.webp", name:"Classic Ghost", verdict:"Two different lanes. Your friend went full cyber-slayer, you went bedsheet. The group chat will have opinions."},
+  "me-low":    {img:"/photos/classic-ghost.webp", name:"Classic Ghost", verdict:"Two different lanes. Your friend went full cyber-slayer, you went with the timeless classic. Both are valid Halloween strategies."},
   "me-mid":    {img:"/photos/lost-tourist.webp", name:"Lost Tourist", verdict:"Chaos vs chaos. Neon Demon Hunter brings the drama, Lost Tourist brings the comedy. Honestly a great duo."},
   "me-high":   {img:"/photos/neon-demon-hunter.webp", name:"Neon Demon Hunter", verdict:"Great minds. You both got Neon Demon Hunter. Matching costumes, zero discussion needed."},
-  "couple-low":{img:"/photos/just-married.webp", name:"Just Married", verdict:"Your friend is hunting demons solo while you're doing couples costumes. Different parties, probably."},
+  "couple-low":{img:"/photos/just-married.webp", name:"Just Married", verdict:"Your friend is hunting demons solo while you are doing a couples costume. Double the costume, double the candy."},
   "couple-mid":{img:"/photos/blue-dog-family.webp", name:"Aussie Dog Family", verdict:"Wholesome vs edgy. One of you is getting candy, the other is getting compliments. Both win."},
   "couple-high":{img:"/photos/good-witch-bad-witch.webp", name:"Good Witch / Bad Witch", verdict:"Duo potential. Both picks are high-drama group-friendly builds. The Halloween party just got interesting."},
   "family-low":{img:"/photos/crowd-camouflage.webp", name:"Crowd Camouflage", verdict:"Your friend went solo hunter, you went full family incognito. The blank name tag is doing heavy lifting."},
-  "family-mid":{img:"/photos/snow-sisters.webp", name:"Snow Sisters", verdict:"Family energy vs solo energy. Both are strong picks — but only one of you has to coordinate four people."},
+  "family-mid":{img:"/photos/snow-sisters.webp", name:"Snow Sisters", verdict:"Family energy vs solo energy. Both are strong picks, but only one of you has to coordinate four people."},
   "family-high":{img:"/photos/mermaid-crew.webp", name:"Mermaid Crew", verdict:"Duo potential. Both builds are all-in group efforts. Someone's living room is about to become a craft store."}
 };
 var q1 = null;
+var currentPick = null;
+var shareArmed = true;
 function show(n){
   document.querySelectorAll(".step").forEach(function(s){ s.classList.remove("on"); });
   document.getElementById("s"+n).classList.add("on");
@@ -109,11 +111,38 @@ document.querySelectorAll("[data-q2]").forEach(function(b){
   b.addEventListener("click", function(){
     var q2 = b.getAttribute("data-q2");
     var p = picks[q1+"-"+q2] || picks["me-low"];
+    currentPick = p;
     document.getElementById("my-img").src = p.img;
     document.getElementById("my-what").textContent = p.name;
     document.getElementById("verdict-text").textContent = p.verdict;
     show(3);
   });
+});
+</script>
+<script>
+/* P1-4: the share-back is real now: native share sheet, clipboard fallback,
+   fires once per tap. */
+document.getElementById("proto-share").addEventListener("click", function(e){
+  e.preventDefault();
+  if (!shareArmed) return;
+  shareArmed = false;
+  var st = document.getElementById("proto-share-status");
+  var name = (currentPick && currentPick.name) || "a costume";
+  var text = "I got " + name + " on the Costume Duel. Your turn: https://pickmycostume.com/duel-prototype.html";
+  function done(ok, msg){ st.textContent = msg; shareArmed = true; }
+  if (navigator.share){
+    navigator.share({title: "Costume Duel", text: text}).then(
+      function(){ done(true, "Shared. Your friend gets your pick."); },
+      function(){ done(false, ""); }
+    );
+  } else if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(
+      function(){ done(true, "Copied. Paste it to your friend."); },
+      function(){ done(false, "Copy failed, sorry."); }
+    );
+  } else {
+    done(false, "");
+  }
 });
 </script>
 </body>
