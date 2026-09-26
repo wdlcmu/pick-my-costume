@@ -4405,15 +4405,23 @@ $("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
 $("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
 
+/* Arrival-context gate (2026-09-25 attribution fix): a journey is a genuine
+   share arrival ONLY when the URL carries ?s=<sid> (every share URL the site
+   mints carries it; the /c/ function preserves it across the redirect).
+   Plain ?idea=<slug> visits (homepage proof rail, direct links, browse) are
+   on-site navigation, never recipient journeys. Pure function so
+   arrival-context-gate.js can assert it. */
+function isGenuineShareArrival(search){
+  return /[?&]s=[a-z0-9]+/.test(search || "");
+}
 /* Share-landing headline (Billy 2026-09-25 bugfix): "Your friend picked X"
-   renders ONLY on genuine share arrivals (?s=<sid> present -- every share
-   URL the site mints carries it). Any other arrival at ?idea=<slug>
+   renders ONLY on genuine share arrivals. Any other arrival at ?idea=<slug>
    (homepage proof rail, direct link, browse) shows the costume name as the
    headline. The challenge variant is share-context copy too, so it also
    requires the share param. Pure function so the gate can assert it. */
 function shareLandingHeadline(idea, search){
   var q = search || "";
-  var isShare = /[?&]s=[a-z0-9]+/.test(q);
+  var isShare = isGenuineShareArrival(q);
   var isChallenge = /[?&]ch=1/.test(q);
   if (isShare && isChallenge) return "Your friend can make " + idea.title + " with stuff they own. See what YOU can make.";
   if (isShare) return "Your friend picked " + idea.title + ". What would you pick?";
@@ -4515,7 +4523,11 @@ function shareLandingHeadline(idea, search){
        traced share_created.share_id -> recipient_landing_viewed.via_share_id. */
     if (VIA_SHARE) _rlv.via_share_id = VIA_SHARE;
     if (VIA_SHARE_ORIGIN) _rlv.share_origin = VIA_SHARE_ORIGIN;
-    Analytics.track("recipient_landing_viewed", _rlv);
+    /* 2026-09-25 attribution fix: recipient_landing_viewed fires ONLY on
+       genuine shared-link arrivals. Normal on-site ?idea=<slug> navigation
+       (proof rail, direct, browse) must never count as a recipient landing;
+       the old code fired on every ?idea= pageview and polluted the series. */
+    if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", _rlv);
   })();
   /* Billy 2026-09-24: T-minus clock. Days until Halloween under the hero
      tagline. Copy escalates on its own in the final week; hides after Oct 31. */
