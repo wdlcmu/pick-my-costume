@@ -19,6 +19,7 @@
 <meta name="twitter:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
 <meta name="twitter:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
 <meta name="twitter:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
+<link rel="canonical" href="https://pickmycostume.com/">
 <!-- Organization entity anchor (AI-citation onsite checklist item 15):
      cheap standard-practice structured data so assistants and search
      crawlers have a canonical entity for the site. Honest facts only;
@@ -30,7 +31,7 @@
      Honest markup only: every question and answer below appears verbatim in
      the visible FAQ section above the footer, added in the same edit. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no email, no checkout. Answer 5 questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store."}},{"@type":"Question","name":"Do I need to download anything?","acceptedAnswer":{"@type":"Answer","text":"No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits."}},{"@type":"Question","name":"What if I do not like the ideas I get?","acceptedAnswer":{"@type":"Answer","text":"Answer the quiz differently and try again, or skip the quiz and browse all 137 costume guides yourself. Every guide shows what you need, what it costs, and how long it takes."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no email, no checkout. Answer 5 questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store."}},{"@type":"Question","name":"Do I need to download anything?","acceptedAnswer":{"@type":"Answer","text":"No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits."}},{"@type":"Question","name":"What if I do not like the ideas I get?","acceptedAnswer":{"@type":"Answer","text":"Answer the quiz differently and try again, or skip the quiz and browse all 137 costume guides yourself. Every guide shows what you need, what it costs, and how long it takes."}}]}
 </script>
 <!-- HowTo for the quiz flow (AI-citation onsite checklist: answer-shape).
      Honest data only: "2 minutes" and "free forever" are the landing's own
@@ -38,7 +39,7 @@
      "How it works" strip below verbatim. Costume build times and prices
      live on each /c/ guide's own HowTo, not here. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","name":"How to pick your Halloween costume","description":"Answer 5 quick questions and get 3 costume ideas picked for you from 137 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer 5 questions","text":"Five quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 137 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Claim it and make it","text":"Tap \"Claim this costume\" to save it, text it to your group, and open the guide for materials, cost, and build steps."}]}
+{"@context":"https://schema.org","@type":"HowTo","publisher":{"@id":"https://pickmycostume.com/#organization"},"name":"How to pick your Halloween costume","description":"Answer 5 quick questions and get 3 costume ideas picked for you from 137 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer 5 questions","text":"Five quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 137 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Claim it and make it","text":"Tap \"Claim this costume\" to save it, text it to your group, and open the guide for materials, cost, and build steps."}]}
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -3944,7 +3945,6 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
     ta.style.display = open ? "none" : "block";
     toggle.textContent = open ? "Preview text" : "Hide text";
   };
-  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
   var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
   var status = document.createElement("p"); status.className = "status";
   b.onclick = function(){
@@ -4117,6 +4117,25 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     ta.style.display = open ? "none" : "block";
     toggle.textContent = open ? "Preview text" : "Hide text";
   };
+  /* 2026-09-26 copy-then-bail fix: a manual copy from the preview textarea
+     (select-all + copy) used to fire no events at all, so the copy was
+     invisible in dashboards. Nothing new is minted here: the share_id is
+     read from the ?s= link already embedded in the copied text, so the
+     event's share_id always matches the link the recipient will open. The
+     copy itself becomes the share, with the same paired events as the
+     button copy path. No new controls, so the whole-card click guard is
+     untouched. A partial copy without the link fires nothing, since there
+     is no attributable share in it. */
+  ta.addEventListener("copy", function(e){
+    if (e && e.target !== ta) return;
+    var m = /[?&]s=([a-z0-9]{8})/.exec(ta.value);
+    if (!m) return;
+    var msid = m[1];
+    var mchallenge = /[?&]ch=1/.test(ta.value);
+    Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: msid, share_origin: "generic", via: "clipboard-manual"}, xp()));
+    Analytics.track("share_created", Object.assign({share_id: msid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: mchallenge}, xp()));
+    if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: msid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
+  });
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
   var b = document.createElement("button"); b.type = "button";
   /* Billy 2026-09-24: in the cast panel the personal cards are the primary
