@@ -567,6 +567,10 @@ footer a{color:var(--accent)}
            refreshReturnBox(). -->
       <p class="fine" id="resume-wrap" style="margin:6px 0 0;text-align:center" hidden><button type="button" class="resume-link" id="btn-resume">See my ideas again</button></p>
       <p class="tminus" id="tminus" style="display:none"></p>
+      <!-- Billy 2026-09-26: Halloween night weather. Geolocation + Open-Meteo
+           forecast for Oct 31. Renders async under the countdown; silent when
+           geolocation is denied, the forecast is out of range, or fetch fails. -->
+      <p class="fine" id="hw-weather" style="margin:6px 0 0;text-align:center" hidden></p>
       <!-- Billy 2026-09-26: personalized returning hero. Shown only when a
            fresh pmc_pick_v1 plus usable pmc_last_v1 exist; the generic
            first-timer elements (.firstonly) hide for these visitors. One calm
@@ -892,7 +896,7 @@ footer a{color:var(--accent)}
   </section>
 
   <footer>
-    <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/group-costumes">Group packs</a></p>
+    <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending this week</a> &middot; <a href="/group-costumes">Group packs</a></p>
   </footer>
 
 </div>
@@ -2986,6 +2990,61 @@ var EXPERIMENT1_ONE_TAP_SHARE = false;
    "Can't decide? Ask the group"; home shuffle button: "Can't decide? Let me
    pick for you"). Flag off: DOM is byte-identical to today. */
 var EXPERIMENT_ROULETTE_ENTRY = false;
+/* Share arm D store-run tier (2026-09-26 design call, staged): the pantry
+   dare today fires only at strict pantry zero, so it can never fire for the
+   ~125 buy-only ideas and D sessions fall back to the C copy for them.
+   OFF (false): arm D is exactly as today -- strict-zero dare or C fallback;
+   every line below is inert and share output is byte-identical. ON (true): a
+   D session whose pick sits at the store-run tier (everything tickable
+   owned, only buy-only items remain) shares the store-run dare instead of
+   the C fallback. */
+var EXPERIMENT_ARM_D_STORE_RUN = false;
+/* Store-run dare wording. Billy has not picked the A/B/C store-run copy; when
+   he does, replace these two strings verbatim. The 1/N split mirrors the
+   badge tier. No em dashes. */
+var ARM_D_STORE_RUN_1 = "with one store run";
+var ARM_D_STORE_RUN_N = "with a store run";
+/* Count of missing materials that have NO pantry id anywhere (true buy-only:
+   no tick can cover them). Mirrors pantryMissing's walk so the gate can never
+   disagree with it. 0 for unknown ideas. */
+function pantryBuyOnlyMissing(ideaId){
+  var list = PANTRY_MATS.mats[ideaId];
+  if (!list) return 0;
+  var ticked = pantryTicked();
+  var n = 0;
+  for (var i = 0; i < list.length; i++){
+    var ok = false, hasId = false;
+    for (var g = 0; g < list[i].length && !ok; g++){
+      var grp = list[i][g];
+      for (var k = 0; k < grp.length; k++){
+        if (grp[k]){ hasId = true; if (ticked.has(grp[k])){ ok = true; break; } }
+      }
+    }
+    if (!ok && !hasId) n++;
+  }
+  return n;
+}
+/* The "store run" tier: something is missing, but every missing material is
+   buy-only, so there is nothing left to tick. pantryMissing returns -1 for
+   unknown ideas; the tier is false there. */
+function pantryStoreRunTier(ideaId){
+  var miss = pantryMissing(ideaId);
+  return miss > 0 && pantryBuyOnlyMissing(ideaId) === miss;
+}
+/* The dare's middle clause, parameterized on the buy-only count so the share
+   text and the recipient headline agree (1 vs 2+). */
+function armDStoreRunPhrase(n){
+  return n <= 1 ? ARM_D_STORE_RUN_1 : ARM_D_STORE_RUN_N;
+}
+/* The dare kind for the share just built by shareTextFor: "pantry-zero",
+   "store-run", or null. Null whenever the store-run tier is off, so flag-off
+   analytics payloads are byte-identical to today. */
+function armDChallengeKind(){
+  if (!EXPERIMENT_ARM_D_STORE_RUN) return null;
+  if (window.__pmcStoreChallenge) return "store-run";
+  if (window.__pmcChallenge) return "pantry-zero";
+  return null;
+}
 function shareVariant(){
   try {
     var v = localStorage.getItem("pmc_share_variant");
@@ -3036,10 +3095,20 @@ function shareTextFor(idea, sid, origin){
      the pantry honestly covers the pick, computed here at share time.
      pantryMissing returns -1 for unknown ideas; the challenge never fires
      on -1. A D session that cannot challenge falls back to the C copy via
-     shareAsk(). */
+     shareAsk().
+     2026-09-26 store-run tier (flag-gated): the strict-zero dare can never
+     fire for buy-only ideas, so D was dead copy for ~125 picks. When
+     EXPERIMENT_ARM_D_STORE_RUN is on, a D session at the store-run tier
+     (pantryStoreRunTier: everything tickable owned, only buy-only items
+     remain) shares the store-run dare instead of the C fallback. The link
+     carries &ch=2&chn=<buy-only count> so the recipient headline agrees
+     with the share text; &ch=1 keeps its strict-zero meaning on old links. */
   var challenge = (shareVariant() === "D" && pantryMissing(idea.id) === 0);
+  var storeCh = EXPERIMENT_ARM_D_STORE_RUN && shareVariant() === "D" && !challenge && pantryStoreRunTier(idea.id);
   window.__pmcChallenge = challenge;
-  var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin + (challenge ? "&ch=1" : "");
+  window.__pmcStoreChallenge = storeCh;
+  var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin
+    + (challenge ? "&ch=1" : (storeCh ? "&ch=2&chn=" + pantryBuyOnlyMissing(idea.id) : ""));
   /* Arm G (novel-find 2026-09-26: BuzzFeed Spirit Halloween Costume
      Generator). The pick hides behind its off-brand name, so the share
      reads as a guess-the-costume riddle. Early return keeps the kid/family
@@ -3059,7 +3128,9 @@ function shareTextFor(idea, sid, origin){
      broadcast. Metric: share_created + share_text_copied per pick_saved. */
   var text = challenge
     ? ("I can make " + idea.title + " tonight with stuff already in my house. What can you make with yours? Find out in 2 minutes. " + link)
-    : (shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + link);
+    : (storeCh
+      ? ("I can make " + idea.title + " " + armDStoreRunPhrase(pantryBuyOnlyMissing(idea.id)) + ". What can you make with yours? Find out in 2 minutes. " + link)
+      : (shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + link));
   /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
      not just the costume name. Kid/family shares append the materials. */
   var aud = state.answers.q1 ? state.answers.q1.value : null;
@@ -3173,8 +3244,16 @@ function renderSpinResult(idea){
    land. 2026-09-26 Billy: the slot-machine ticker is gone -- the pick is
    drawn once up front and revealed immediately with a short fade. */
 var spinChain = 0, spinBusy = false;
+/* 2026-09-26 pm3 red-team: the spin is synchronous now (the slot-machine
+   ticker was removed), so spinBusy/the disabled button engage and disengage
+   inside ONE task -- they can never catch a second tap, and a real double-tap
+   fires two full spins (double spin_started analytics + the result flashing
+   from one pick to another). Debounce on top: taps within 900ms of the last
+   completed spin are ignored; a deliberate later tap or "Spin again" works. */
+var lastSpinAt = 0;
 function startSpin(source){
   if (spinBusy) return; /* re-entrant tap mid-spin: ignore, first spin stands */
+  if (Date.now() - lastSpinAt < 900) return; /* double-tap debounce */
   spinBusy = true;
   var myChain = ++spinChain;
   Analytics.track("spin_started", Object.assign({source: source || "explore"}, viaShareProps()));
@@ -3197,6 +3276,7 @@ function startSpin(source){
   function finishSpin(){
     if (myChain !== spinChain) return; /* superseded: a newer chain owns the panel */
     spinBusy = false;
+    lastSpinAt = Date.now(); /* debounce anchor: a tap <900ms later is a double-tap */
     if (mainBtn) mainBtn.disabled = false;
     if (guideLink) guideLink.style.visibility = "";
     renderSpinResult(target);
@@ -4087,14 +4167,17 @@ function buildRevealSharePrompt(idea){
     if (!rearmShare) return; /* double-tap: a share is already in flight */
     var sid = newShareId();
     var text = shareTextFor(idea, sid, "reveal");
-    var challenge = !!window.__pmcChallenge;
+    var challenge = !!window.__pmcChallenge || !!window.__pmcStoreChallenge;
+    var ckind = armDChallengeKind();
     function doneShare(ok, msg){
       rearmShare(); /* the share settled: sent, dismissed, or copied */
       if (ok){
         /* E8 pattern: one quiet line, re-offer, stays live so the next tap
            mints a fresh share id. */
         btn.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "reveal", share_msg_variant: shareVariant(), challenge: challenge});
+        var rscp = {share_id: sid, idea_id: idea.id, share_origin: "reveal", share_msg_variant: shareVariant(), challenge: challenge};
+        if (ckind) rscp.challenge_kind = ckind;
+        Analytics.track("share_created", rscp);
         if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "reveal"});
       } else if (msg){
         btn.textContent = msg;
@@ -4110,7 +4193,11 @@ function buildRevealSharePrompt(idea){
       } catch(e){ /* fall through to clipboard copy */ }
     }
     doCopy(text, function(ok, msg){
-      if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "reveal", via: "clipboard"});
+      if (ok){
+        var rtcp = {idea_id: idea.id, share_id: sid, share_origin: "reveal", via: "clipboard", share_msg_variant: shareVariant()};
+        if (ckind) rtcp.challenge_kind = ckind;
+        Analytics.track("share_text_copied", rtcp);
+      }
       doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
     });
   };
@@ -5623,15 +5710,24 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     var m = /[?&]s=([a-z0-9]{8})/.exec(ta.value);
     if (!m) return;
     var msid = m[1];
-    var mchallenge = /[?&]ch=1/.test(ta.value);
+    var mchm = /[?&]ch=([12])(?:&|$)/.exec(ta.value);
+    var mchallenge = !!mchm;
+    /* 2026-09-26 arm D store-run tier: the dare kind is parsed from the link
+       in the copied text. Gated on the flag so flag-off payloads are
+       byte-identical. */
+    var mchallengeKind = (mchm && EXPERIMENT_ARM_D_STORE_RUN) ? (mchm[1] === "2" ? "store-run" : "pantry-zero") : null;
     /* 2026-09-26 teaser share: the preview can hold a teaser payload now, so
        read the origin from the link in the copied text instead of assuming
        generic. Generic and cast texts still parse as generic; behavior for
        them is unchanged. */
     var mom = /[?&]o=([a-z]+)/.exec(ta.value);
     var morigin = mom ? mom[1] : "generic";
-    Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: msid, share_origin: morigin, via: "clipboard-manual"}, xp()));
-    Analytics.track("share_created", Object.assign({share_id: msid, idea_id: idea.id, share_origin: morigin, share_msg_variant: shareVariant(), challenge: mchallenge}, xp()));
+    var mtcp = {idea_id: idea.id, share_id: msid, share_origin: morigin, via: "clipboard-manual", share_msg_variant: shareVariant()};
+    if (mchallengeKind) mtcp.challenge_kind = mchallengeKind;
+    Analytics.track("share_text_copied", Object.assign(mtcp, xp()));
+    var mscp = {share_id: msid, idea_id: idea.id, share_origin: morigin, share_msg_variant: shareVariant(), challenge: mchallenge};
+    if (mchallengeKind) mscp.challenge_kind = mchallengeKind;
+    Analytics.track("share_created", Object.assign(mscp, xp()));
     if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: msid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
   });
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
@@ -5673,7 +5769,9 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
        link, so the replace always hits; if it ever missed, the text simply
        keeps its generic link, never a duplicate. */
     var fullText = sh.text.replace(/([?&]o=)generic/, "$1sms");
-    Analytics.track("share_sms_tapped", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "sms", share_msg_variant: shareVariant(), challenge: sh.challenge}, xp()));
+    var sstp = {share_id: sh.sid, idea_id: idea.id, share_origin: "sms", share_msg_variant: shareVariant(), challenge: sh.challenge};
+    if (sh.challenge_kind) sstp.challenge_kind = sh.challenge_kind;
+    Analytics.track("share_sms_tapped", Object.assign(sstp, xp()));
     /* 2026-09-26 red-team: the sms: deep link gives no send confirmation --
        tapping "Text it" then cancelling in Messages must NOT count as a
        share_created (it was inflating the completion metric the SMS
@@ -5794,10 +5892,13 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     var sid = newShareId();
     var text = makeText ? makeText(sid) : shareTextFor(idea, sid, "generic");
     /* The challenge tag must describe the text actually shared. shareTextFor
-       sets window.__pmcChallenge for this idea at build time; cast shares
-       (makeText) never carry the challenge text. Captured here, not at the
-       async track call, so it cannot go stale. */
-    return {sid: sid, text: text, challenge: makeText ? false : !!window.__pmcChallenge};
+       sets window.__pmcChallenge / window.__pmcStoreChallenge for this idea
+       at build time; cast shares (makeText) never carry the challenge text.
+       Captured here, not at the async track call, so it cannot go stale. */
+    var ckind = makeText ? null : armDChallengeKind();
+    /* challenge is true for either dare; the kind rides challenge_kind. */
+    var anyCh = makeText ? false : (!!window.__pmcChallenge || !!window.__pmcStoreChallenge);
+    return {sid: sid, text: text, challenge: anyCh, challenge_kind: ckind};
   }
   var cur = makeShare();
   ta.value = cur.text;
@@ -5810,8 +5911,12 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
        must carry the same flag. Share sheets that surface the attachment URL
        instead of the text link otherwise land the recipient on the generic
        headline and the dare UX never appears, while analytics marked the
-       share as a challenge. */
-    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=generic" + (sh.challenge ? "&ch=1" : "");
+       share as a challenge.
+       2026-09-26 arm D store-run tier: the same rule for &ch=2&chn=N. The
+       fragment is read from the text link itself so the two can never
+       disagree; cast shares never carry it. */
+    var chfrag = /[?&]ch=2&chn=\d+/.exec(sh.text);
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=generic" + (chfrag ? chfrag[0] : (sh.challenge ? "&ch=1" : ""));
     function doneShare(ok, msg){
       st.textContent = msg;
       rearmShare(); /* the share settled: sent, dismissed, or copied */
@@ -5819,7 +5924,9 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
         /* E8: the first share landed — invite a second one. The button stays
            live with a fresh share_id (minted below), so the re-offer is one line. */
         label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: sh.challenge}, xp()));
+        var scp = {share_id: sh.sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: sh.challenge};
+        if (sh.challenge_kind) scp.challenge_kind = sh.challenge_kind;
+        Analytics.track("share_created", Object.assign(scp, xp()));
         if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
         /* The share landed: the AI plan is the immediate now-what. */
         if (typeof onShared === "function") onShared();
@@ -5827,7 +5934,14 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     }
     function copyFallback(){
       doCopy(sh.text, function(ok, msg){
-        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "generic"}, xp()));
+        if (ok){
+          /* 2026-09-26 arm D store-run tier: the copy event carries the arm
+             and dare kind so copy-then-bail (the cheapest share lever) cuts
+             by arm. Props are additive; flag-off payloads unchanged. */
+          var scpp = {idea_id: idea.id, share_id: sh.sid, share_origin: "generic", share_msg_variant: shareVariant()};
+          if (sh.challenge_kind) scpp.challenge_kind = sh.challenge_kind;
+          Analytics.track("share_text_copied", Object.assign(scpp, xp()));
+        }
         doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
       });
     }
@@ -7306,6 +7420,16 @@ function shareLandingHeadline(idea, search){
   var isShare = isGenuineShareArrival(q);
   var isChallenge = /[?&]ch=1(?:&|$)/.test(q);
   if (isShare && isChallenge) return "Your friend can make " + idea.title + " with stuff they own. See what YOU can make.";
+  /* 2026-09-26 arm D store-run tier: the sharer's dare named a store run,
+     not a full pantry make. ?chn= carries the buy-only count so the headline
+     agrees with the share text (1 vs 2+); absent or unparseable defaults to
+     the plural, which is never wrong for the tier. Pure function: headline
+     text only, no DOM. */
+  var isStoreChallenge = /[?&]ch=2(?:&|$)/.test(q);
+  if (isShare && isStoreChallenge){
+    var chnm = /[?&]chn=(\d+)/.exec(q);
+    return "Your friend can make " + idea.title + " " + armDStoreRunPhrase(chnm ? +chnm[1] : 2) + ". See what YOU can make.";
+  }
   /* 2026-09-26 red-team recipient audit (pm2): pair arrivals showed the
      generic headline while the CTA already asked to match -- headline and
      CTA now agree. Vote arrivals said "Your friend picked X", which is
@@ -7369,6 +7493,10 @@ function shareLandingHeadline(idea, search){
        across the redirect, so ch=1 survives. Non-challenge landings below are
        untouched. */
     var chm = /[?&]ch=1(?:&|$)/.exec(location.search || "");
+    /* 2026-09-26 arm D store-run tier: &ch=2 is the store-run dare. Same dare
+       UX as &ch=1 (the recipient checks their own pantry against the pick);
+       only the headline names the store run. */
+    var chm2 = /[?&]ch=2(?:&|$)/.exec(location.search || "");
     var box = document.createElement("div");
     box.className = "card";
     box.style.marginBottom = "16px";
@@ -7391,7 +7519,7 @@ function shareLandingHeadline(idea, search){
     /* 2026-09-26 pair-share: a recipient arriving to match a friend's pick
        gets the match ask on the primary CTA. Unknown slugs keep the default. */
     var _pairFor = (VIA_SHARE_ORIGIN === "pair" && typeof PAIR_IDEA_ID !== "undefined" && PAIR_IDEA_ID) ? pairIdeaById(PAIR_IDEA_ID) : null;
-    b.textContent = chm ? "See what YOU can make" : (_pairFor ? "Find YOUR costume to match" : "What are you going as? Find my costume");
+    b.textContent = (chm || chm2) ? "See what YOU can make" : (_pairFor ? "Find YOUR costume to match" : "What are you going as? Find my costume");
     b.onclick = function(){
       state = {qi: 0, answers: {}};
       clearK("pmc_pick_v1");
@@ -7457,7 +7585,7 @@ function shareLandingHeadline(idea, search){
        tag their UAs; iMessage opens look like plain Safari and are
        indistinguishable, logged as safari_unknown. */
     var _rlv = {idea_id: idea.id, recipient_channel: recipientChannel()};
-    if (chm) _rlv.challenge_landing = true;
+    if (chm || chm2){ _rlv.challenge_landing = true; _rlv.challenge_kind = chm2 ? "store-run" : "pantry-zero"; }
     /* The share this recipient arrived through is via_share_id (not share_id:
        share_id is reserved for the id a share CREATES). This lets one share be
        traced share_created.share_id -> recipient_landing_viewed.via_share_id. */
@@ -8054,6 +8182,63 @@ function shareLandingHeadline(idea, search){
     else msg = "🎃 " + days + " days until Halloween";
     el.textContent = msg;
     el.style.display = "";
+  })();
+  /* Billy 2026-09-26: Halloween night weather. On homepage load, check the
+     cache; otherwise request geolocation (permission prompt) and fetch the
+     Oct 31 forecast from Open-Meteo (free, no key). Renders a small line
+     under the countdown, e.g. "Halloween night: 48°F, 20% chance of rain.
+     Plan for a jacket." Denied geolocation, out-of-range forecast (Oct 31 is
+     past Open-Meteo's 16-day window until mid-October), or fetch failure:
+     stays silent, no nag. Async, never blocks load. Cached in
+     pmc_hw_weather_v1 keyed by Halloween date. */
+  (function(){
+    var el = $("hw-weather");
+    if (!el) return;
+    var now = new Date();
+    var yr = now.getFullYear();
+    /* Past Halloween: tminus hides too, nothing to forecast. */
+    if (now.getTime() > new Date(yr, 9, 31, 23, 59, 59).getTime()) return;
+    var hwDate = yr + "-10-31";
+    function render(tmin, precip){
+      var msg = "Halloween night: " + Math.round(tmin) + "°F";
+      if (precip > 0) msg += ", " + Math.round(precip) + "% chance of rain";
+      else msg += ", clear";
+      var notes = [];
+      if (tmin < 50) notes.push("Plan for a jacket");
+      if (precip > 30) notes.push("Waterproof it");
+      if (notes.length) msg += ". " + notes.join(". ");
+      el.textContent = msg;
+      el.hidden = false;
+      try { Analytics.track("halloween_weather_shown", {tmin_f: Math.round(tmin), precip_pct: Math.round(precip)}); } catch(e){}
+    }
+    var cached = load("pmc_hw_weather_v1");
+    if (cached && cached.date === hwDate && typeof cached.tmin === "number"){
+      render(cached.tmin, cached.precip || 0);
+      return;
+    }
+    if (!("geolocation" in navigator) || typeof fetch !== "function") return;
+    try {
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var lat = pos.coords.latitude.toFixed(4);
+        var lon = pos.coords.longitude.toFixed(4);
+        var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat +
+          "&longitude=" + lon +
+          "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+          "&temperature_unit=fahrenheit&timezone=auto" +
+          "&start_date=" + hwDate + "&end_date=" + hwDate;
+        fetch(url).then(function(r){ return r.json(); }).then(function(j){
+          /* Oct 31 beyond the 16-day forecast window: no daily data yet.
+             Stay silent; the line appears once the forecast reaches it. */
+          if (!j || !j.daily || !j.daily.time || j.daily.time.indexOf(hwDate) < 0) return;
+          var tmin = j.daily.temperature_2m_min[0];
+          var precip = j.daily.precipitation_probability_max[0];
+          if (typeof tmin !== "number") return;
+          if (typeof precip !== "number" || precip === null) precip = 0;
+          store("pmc_hw_weather_v1", {date: hwDate, tmin: tmin, precip: precip, at: Date.now()});
+          render(tmin, precip);
+        }).catch(function(){ /* silent */ });
+      }, function(){ /* denied/unavailable: silent */ }, {timeout: 9000, maximumAge: 86400000});
+    } catch(e){ /* silent */ }
   })();
   refreshReturnBox();
   renderPinpointChips();
