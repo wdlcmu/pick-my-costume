@@ -3,6 +3,8 @@
   <url><loc>https://pickmycostume.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://pickmycostume.com/group-costumes</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://pickmycostume.com/costumes</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pickmycostume.com/classroom</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://pickmycostume.com/compare</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://pickmycostume.com/c/neon-demon-hunter</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://pickmycostume.com/c/classic-ghost</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://pickmycostume.com/c/blue-dog-family</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
