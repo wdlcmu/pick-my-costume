@@ -226,6 +226,14 @@ a.howto-copy{text-decoration:underline}
 .howto-quick-steps{margin:0 0 10px;padding-left:20px}
 .howto-quick-steps li{margin:0 0 8px;font-size:15px;line-height:1.45}
 .howto-tip{margin:4px 0 0;font-size:14px;color:var(--muted);font-style:italic}
+/* Billy 2026-09-25: per-person cast plans (Buy + DIY per role). */
+.personplans{margin:16px 0}
+.personplans h3{font-size:17px;margin:0 0 10px}
+.personplan{background:#f8f6f0;border:1px solid #e2ddd2;border-radius:10px;padding:12px 14px;margin:0 0 12px}
+.personplan h4{font-size:15px;margin:0 0 8px}
+.pp-opt{font-weight:700;font-size:14px;margin:10px 0 4px}
+.pp-buy{font-size:14px;line-height:1.5;margin:0 0 6px}
+.pp-easy{font-size:14px;line-height:1.5;background:#eef6ee;border-radius:8px;padding:10px 12px;margin:12px 0 0}
 .howto-faq{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
 .howto-faq summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
 .howto-faq summary::-webkit-details-marker{display:none}
@@ -4069,6 +4077,69 @@ function getCastState(ideaId, n){
   st.roles.length = Math.max(st.roles.length, st.size);
   return st;
 }
+/* Billy 2026-09-25: per-person plans, ChatGPT-style. Each cast member gets
+   their own card with two options: Buy (what to search for, expected cost,
+   fit checks) and DIY (the quick-guide steps tailored to their role).
+   Generated from MAKE_PLANS + role data, no AI needed. */
+function buySearchFor(role, idea){
+  var r = role.toLowerCase().replace(/^(the|a)\s+/, "");
+  var t = idea.title.toLowerCase().replace(/costume(s)?/g, "").trim();
+  return r + " " + t + " costume";
+}
+function buildPersonPlans(idea, list){
+  var box = document.createElement("div");
+  box.className = "personplans";
+  /* Local shortener (firstSentence lives in a different scope). */
+  function short(s){
+    var i = s.indexOf(". ");
+    return (i > 0 ? s.slice(0, i + 1) : s).trim();
+  }
+  var mp = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
+  if (!mp || !list.length) return box;
+  var h = document.createElement("h3");
+  h.textContent = "Your plan, per person";
+  box.appendChild(h);
+  list.forEach(function(p, i){
+    var card = document.createElement("div");
+    card.className = "personplan";
+    var who = document.createElement("h4");
+    var label = p.name ? (p.name + " \u2014 " + p.role) : ("Person " + (i + 1) + " \u2014 " + p.role);
+    who.textContent = label;
+    card.appendChild(who);
+    /* Buy option */
+    var buyH = document.createElement("p"); buyH.className = "pp-opt";
+    buyH.textContent = "Option 1: Buy";
+    card.appendChild(buyH);
+    var buyP = document.createElement("p"); buyP.className = "pp-buy";
+    buyP.textContent = "Search for \u201C" + buySearchFor(p.role, idea) + "\u201D. " +
+      "Expect about " + mp.cost + " per person. Check the size chart, not just your normal size, and make sure anything on the head feels comfortable for hours.";
+    card.appendChild(buyP);
+    /* DIY option: quick-guide steps, role in the header */
+    var diyH = document.createElement("p"); diyH.className = "pp-opt";
+    diyH.textContent = "Option 2: DIY \u2014 about " + mp.cost + ", " + mp.time;
+    card.appendChild(diyH);
+    var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
+    var tip = null, n = 0;
+    mp.steps.forEach(function(s){
+      if (/^optional/i.test(s)){ if (!tip) tip = s; return; }
+      if (n >= 5) return; n++;
+      var li = document.createElement("li"); li.textContent = short(s);
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+    if (tip){
+      var tp = document.createElement("p"); tp.className = "howto-tip";
+      tp.textContent = "Tip: " + short(tip.replace(/^optional[^:]*:\s*/i, ""));
+      card.appendChild(tp);
+    }
+    box.appendChild(card);
+  });
+  /* Easiest version: the one-line recommendation. */
+  var easy = document.createElement("p"); easy.className = "pp-easy";
+  easy.textContent = "Easiest version: buy the headpiece or accessory kit for each person and use clothes you already own. You get the character read without sewing a thing.";
+  box.appendChild(easy);
+  return box;
+}
 function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var box = document.createElement("div"); box.className = "castbox";
   /* Billy's bug, round 2 (2026-09-23): the result card has a click-to-pick
@@ -4111,6 +4182,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      Without this they were populated but never attached, so the cast
      share text was invisible. */
   box.appendChild(aiPlanBox);
+  /* Billy 2026-09-25: per-person Buy + DIY plans render natively in the panel,
+     rebuilt on every render so names and roles stay in sync. */
+  var plansBox = document.createElement("div");
+  box.insertBefore(plansBox, aiPlanBox);
   var shareHandle = null, aiHandle = null, pcCards = [];
   /* Kid flags are per-person and sticky. The count buttons set the last N slots as
      kids in one tap; the Kid/Adult toggle fine-tunes individuals. Neither ever
@@ -4226,6 +4301,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     }
     shareHandle.refresh();
     aiHandle.setText(buildCastPrompt(idea, list));
+    /* Per-person plans stay in sync with names and roles. */
+    plansBox.innerHTML = "";
+    plansBox.appendChild(buildPersonPlans(idea, list));
     /* Personal cards stay in sync with the name/role inputs: a name typed
        after "Make personal cards" updates the card head, the send label, and
        (via the send-time read) the text that actually gets sent. */
