@@ -845,6 +845,9 @@ footer a{color:var(--accent)}
   var PLACEHOLDER = "data:image/svg+xml;utf8," + encodeURIComponent(SVG);
   window._pmcImgFallback = function(img){
     if (!img || img.tagName !== "IMG" || img.dataset.pmcFbk) return false;
+    /* Element-level fallback wins: images with their own onerror (e.g. the
+       browse cutout arm falling back to the photo) manage their own chain. */
+    if (img.getAttribute("onerror")) return false;
     img.dataset.pmcFbk = "1";
     img.src = PLACEHOLDER;
     return true;
@@ -966,6 +969,39 @@ function recoverShouldShow(rec, snoozedAt, nowMs){
   return true;
 }
 
+/* ================= Quiz-abandon resume (2026-09-26 evening) ================
+   Gap: quiz progress was never persisted; a user who closed the tab mid-quiz
+   was gone. Every answered question now saves pmc_quiz_v1 {answers, at}.
+   A return visit with answers but no completion gets one slim banner above
+   the hero: "Pick up where you left off?" Continue restores the saved
+   answers and resumes at the first unanswered question; Not now dismisses
+   for this visit. Purely additive: finishers never see it (finishQuiz clears
+   the marker), one-session users are untouched, and any query string (?s=
+   arrivals, ?pick= detail views) suppresses the banner so recipients keep
+   the normal recipient experience. Answers never leave the device; the
+   resume events carry counts only. Pure core (quizResumeShouldShow,
+   quizResumeIndex) is unit-tested by hour-session/quiz-resume-gate.js. */
+var QUIZ_RESUME_MAX_AGE_MS = 30*24*60*60*1000;
+function quizResumeShouldShow(saved, nowMs){
+  if (!saved || !saved.answers || !saved.at) return false;
+  if (Object.keys(saved.answers).length === 0) return false;
+  if ((nowMs - saved.at) > QUIZ_RESUME_MAX_AGE_MS) return false;
+  return true;
+}
+function quizResumeSave(){
+  /* Called after each answered question, once the answer set is cleaned for
+     the current flow. finishQuiz clears the marker, so its presence always
+     means "abandoned mid-quiz". */
+  store("pmc_quiz_v1", {answers: state.answers, at: Date.now()});
+}
+function quizResumeIndex(){
+  /* First question in the current flow with no answer. -1 when everything
+     is answered (defensive; completion clears the marker first). */
+  var order = flowOrder();
+  for (var i = 0; i < order.length; i++) if (!state.answers[order[i]]) return i;
+  return -1;
+}
+
 function $(id){ return document.getElementById(id); }
 function store(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 function clearK(k){ try { localStorage.removeItem(k); } catch(e){} }
@@ -1035,11 +1071,10 @@ var QUESTIONS = [
    NEVER silently runs a generic quiz.
    Normalized key (lowercase, alphanumerics only) -> {idea, label}.
    Audited by hour-session/pinpoint-resolve.js: every key's idea must exist
-   in the bank, every PINPOINT_CHIPS label must resolve, and spot resolution
-   cases must land on the right idea. Add keys here AND re-run the test.
+   in the bank, and spot resolution cases must land on the right idea.
+   Add keys here AND re-run the test.
    (hour-session/pinpoint-paths.js still verifies the legacy pin mechanism.) */
 var PINPOINT_MAP = {"spiderman":{"idea":"web-slinger-crew","label":"Spider hero"},"spidermen":{"idea":"web-slinger-crew","label":"Spider hero"},"milesmorales":{"idea":"web-slinger-crew","label":"Spider hero"},"gwenstacy":{"idea":"web-slinger-crew","label":"Spider hero"},"ghostspider":{"idea":"web-slinger-crew","label":"Spider hero"},"spidergwen":{"idea":"web-slinger-crew","label":"Spider hero"},"ariel":{"idea":"mermaid-crew","label":"Mermaid princess"},"littlemermaid":{"idea":"mermaid-crew","label":"Mermaid princess"},"wednesday":{"idea":"deadpan-diva","label":"Goth girl"},"wednesdayaddams":{"idea":"deadpan-diva","label":"Goth girl"},"nezuko":{"idea":"bamboo-demon","label":"Bamboo demon"},"kpopdemonhunters":{"idea":"neon-demon-hunter","label":"Demon hunters"},"huntrix":{"idea":"neon-demon-hunter","label":"Demon hunters"},"rumi":{"idea":"neon-demon-hunter","label":"Demon hunters"},"bluey":{"idea":"blue-dog-family","label":"Blue dog"},"bingo":{"idea":"blue-dog-family","label":"Blue dog"},"mario":{"idea":"plumber-duo","label":"Plumber hero"},"luigi":{"idea":"plumber-duo","label":"Plumber hero"},"elsa":{"idea":"snow-sisters","label":"Ice princess"},"anna":{"idea":"snow-sisters","label":"Ice princess"},"frozen":{"idea":"snow-sisters","label":"Ice princess"},"olaf":{"idea":"snow-sisters","label":"Ice princess"},"elphaba":{"idea":"good-witch-bad-witch","label":"Green witch"},"glinda":{"idea":"good-witch-bad-witch","label":"Green witch"},"wicked":{"idea":"good-witch-bad-witch","label":"Green witch"},"pokemon":{"idea":"pocket-plush","label":"Plush monster"},"pikachu":{"idea":"pocket-plush","label":"Plush monster"},"minecraft":{"idea":"block-game-crew","label":"Block game"},"steve":{"idea":"block-game-crew","label":"Block game"},"creeper":{"idea":"block-game-crew","label":"Block game"},"amongus":{"idea":"space-crewmate","label":"Space crewmate"},"stitch":{"idea":"blue-alien-ohana","label":"Blue alien"},"fnaf":{"idea":"haunted-animatronics","label":"Haunted pizzeria"},"freddyfazbear":{"idea":"haunted-animatronics","label":"Haunted pizzeria"},"fivenightsatfreddys":{"idea":"haunted-animatronics","label":"Haunted pizzeria"},"minion":{"idea":"goggle-crew","label":"Yellow helpers"},"minions":{"idea":"goggle-crew","label":"Yellow helpers"},"ghostbusters":{"idea":"ghost-hunters","label":"Ghost hunters"},"peppa":{"idea":"little-pig-family","label":"Pig family"},"peppapig":{"idea":"little-pig-family","label":"Pig family"},"dracula":{"idea":"vampire","label":"Vampire"},"vampire":{"idea":"vampire","label":"Vampire"},"greekgods":{"idea":"the-olympians","label":"Greek gods"},"olympians":{"idea":"the-olympians","label":"Greek gods"},"zeus":{"idea":"the-olympians","label":"Zeus"},"athena":{"idea":"the-olympians","label":"Athena"},"odyssey":{"idea":"the-olympians","label":"The Odyssey"},"toystory":{"idea":"toy-box-crew","label":"Toy box crew"},"woody":{"idea":"toy-box-crew","label":"Toy box crew"},"buzzlightyear":{"idea":"toy-box-crew","label":"Toy box crew"},"sajaboys":{"idea":"demon-boy-band","label":"Demon hunters"},"jinu":{"idea":"demon-boy-band","label":"Demon hunters"},"babysaja":{"idea":"demon-boy-band","label":"Demon hunters"},"howtotrainyourdragon":{"idea":"dragon-rider-duo","label":"Dragon rider"},"hiccup":{"idea":"dragon-rider-duo","label":"Dragon rider"},"astrid":{"idea":"dragon-rider-duo","label":"Dragon rider"},"toothless":{"idea":"dragon-rider-duo","label":"Dragon rider"},"squidgame":{"idea":"numbered-players","label":"Numbered players"},"insideout":{"idea":"emotion-crew","label":"Emotion crew"},"insideout2":{"idea":"emotion-crew","label":"Emotion crew"},"anxiety":{"idea":"emotion-crew","label":"Emotion crew"},"mariokart":{"idea":"kart-racers","label":"Kart racers"},"catinthehat":{"idea":"tall-hat-crew","label":"Tall-hat cat"},"thing1":{"idea":"tall-hat-crew","label":"Tall-hat cat"},"thing2":{"idea":"tall-hat-crew","label":"Tall-hat cat"},"alvinandthechipmunks":{"idea":"chipmunk-trio","label":"Chipmunk trio"},"alvin":{"idea":"chipmunk-trio","label":"Chipmunk trio"},"starwars":{"idea":"galaxy-knights","label":"Galaxy knights"},"jedi":{"idea":"galaxy-knights","label":"Galaxy knights"},"lightsaber":{"idea":"galaxy-knights","label":"Galaxy knights"},"barbie":{"idea":"plastic-dream-crew","label":"Dream dolls"},"ken":{"idea":"plastic-dream-crew","label":"Dream dolls"},"wizard":{"idea":"wizard","label":"Wizard"},"wizards":{"idea":"wizard","label":"Wizard"},"belle":{"idea":"enchanted-castle-crew","label":"Enchanted princess"},"beautyandthebeast":{"idea":"enchanted-castle-crew","label":"Enchanted princess"},"beast":{"idea":"enchanted-castle-crew","label":"Enchanted princess"},"princess":{"idea":"fairy-tale-princesses","label":"Princess"},"princesses":{"idea":"fairy-tale-princesses","label":"Princess"},"superhero":{"idea":"superhero-family","label":"Superhero"},"superheroes":{"idea":"superhero-family","label":"Superhero"},"superheros":{"idea":"superhero-family","label":"Superhero"},"disney":{"idea":"enchanted-castle-crew","label":"Fairy-tale princess"},"disneyprincess":{"idea":"enchanted-castle-crew","label":"Fairy-tale princess"},"disneyprincesses":{"idea":"enchanted-castle-crew","label":"Fairy-tale princess"},"mermaid":{"idea":"mermaid-crew","label":"Mermaid"},"mermaids":{"idea":"mermaid-crew","label":"Mermaid"},"spider":{"idea":"web-slinger-crew","label":"Spider hero"},"spiders":{"idea":"web-slinger-crew","label":"Spider hero"},"spidey":{"idea":"web-slinger-crew","label":"Spider hero"},};
-var PINPOINT_CHIPS = ["Spider-Man","Ariel","Wednesday","Bluey","Mario","Nezuko","Pok\u00e9mon","Frozen","Belle"];
 /* Homepage search chips (Variant C, Billy 2026-09-25): popular searches
    wired to the full search intelligence (aliases + attribute filters) via
    the browse shelf. "tonight" uses the same <=30-min plan criterion as the
@@ -1434,7 +1469,6 @@ function viaShareProps(){
   if (VIA_SHARE){ p.via_share_id = VIA_SHARE; if (VIA_SHARE_ORIGIN) p.share_origin = VIA_SHARE_ORIGIN; }
   return p;
 }
-var NRF_URL = "https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion";
 /* Inline trending stat: the evidence for the flag, visible with no tap. */
 function trendStatEl(idea){
   if(!idea.trending || !idea.trendLane || !idea.trendStat) return null;
@@ -1843,6 +1877,8 @@ function renderQ(){
       Object.keys(state.answers).forEach(function(k){
         if (order2.indexOf(k) === -1) delete state.answers[k];
       });
+      /* Quiz-abandon resume (2026-09-26 evening): persist per-question progress. */
+      quizResumeSave();
       if (state.qi < order2.length - 1) { state.qi++; renderQ(); }
       else { finishQuiz(); }
     };
@@ -1856,6 +1892,7 @@ function renderQ(){
    of the sorted "qid:value" answer pattern, so same-vs-different answer
    patterns across retakes are measurable without exposing what anyone picked. */
 function finishQuiz(){
+  clearK("pmc_quiz_v1"); /* completed quizzes have nothing to resume */
   var results = scoreIdeas();
   store("pmc_last_v1", {results: results.map(function(r){ return r.idea.id; }), answers: state.answers, at: Date.now()});
   Analytics.track("quiz_completed", {idea_ids: results.map(function(r){ return r.idea.id; }), question_count: Object.keys(state.answers).length});
@@ -4358,8 +4395,8 @@ var SEARCH_SUGGESTIONS = [
   {label:"Couples", q:"couples", w:86},
   {label:"Peanut Butter and Jelly", q:"peanut butter jelly", w:84},
   {label:"Doll couple", q:"barbie ken", w:70},
-  {label:"Ghostbusters", q:"ghostbusters", w:68},
-  {label:"Among Us", q:"among us", w:66},
+  {label:"Ghost hunters", q:"ghostbusters", w:68},
+  {label:"Space crewmate", q:"among us", w:66},
   {label:"Decades", q:"decades", w:64}
 ];
 
@@ -6646,6 +6683,7 @@ $("btn-start").onclick = function(){
   state.pinpoint = null;
   pinpointNote(""); pinpointClearNomatch();
   clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
+  clearK("pmc_quiz_v1"); /* a fresh run replaces any abandoned attempt */
   /* E29: on a recipient landing this attributes the quiz start to the
      arriving share id + origin. viaShareProps() is empty otherwise. */
   var qp = viaShareProps();
@@ -6666,6 +6704,7 @@ $("btn-rtop").onclick = $("btn-rback").onclick;
 $("btn-restart").onclick = function(){
   state = {qi: 0, answers: {}};
   clearK("pmc_pick_v1");
+  clearK("pmc_quiz_v1"); /* a fresh run replaces any abandoned attempt */
   /* Retakes are quiz starts too: without this the funnel undercounts starts
      (a completion with no preceding start). is_retake distinguishes them. */
   var p = viaShareProps(); p.is_retake = true;
@@ -6685,6 +6724,7 @@ function nextKid(){
   ["q1","qocc","q4"].forEach(function(k){ if (state.answers[k]) keep[k] = state.answers[k]; });
   state.answers = keep;
   clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
+  clearK("pmc_quiz_v1"); /* next-kid is a new run; any abandoned attempt is replaced */
   var p = viaShareProps(); p.is_retake = true; p.retake_kind = "next_kid";
   Analytics.track("quiz_started", p);
   state.qi = flowOrder().indexOf("q2");
@@ -6704,6 +6744,7 @@ $("btn-return").onclick = function(){
     .filter(Boolean)
     .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
   if (results.length) renderResults(results);
+  else $("btn-start").onclick(); /* saved ideas left the bank: fresh quiz, no dead tap */
 };
 /* Billy 2026-09-26: returning-hero secondary + one quiet share entry point.
    Retake runs the same clean quiz start as the hero CTA. */
