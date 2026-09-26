@@ -736,7 +736,7 @@ function buildPantryVoteText(cands, sid){
   var lines = ['Help us pick what to make for Halloween! Reply with 1, 2, or 3.'];
   cands.slice(0, 3).forEach(function(r, i){
     lines.push((i + 1) + '. ' + r.it.title + ' (' + pvGapLine(r) + ') - ' +
-      'pickmycostume.com/c/' + r.it.id + '?s=' + sid + '&o=pantryvote');
+      'https://pickmycostume.com/c/' + r.it.id + '?s=' + sid + '&o=pantryvote');
   });
   var d = daysToHalloween();
   lines.push(d > 1 ? 'Halloween is ' + d + ' days out. Decide fast.'
@@ -907,9 +907,18 @@ function render(){
 
   const stat = document.getElementById('stat');
   /* Billy 2026-09-25: alive opening. The count is real on first paint because
-     the assumed basics (scissors, tape, paper+pen) are pre-ticked. */
-  stat.innerHTML = 'With just the basics, you can already make <b>' + t0.length + '</b> tonight' +
-    (t1.length ? ', and <b>' + t1.length + '</b> more are one supply away.' : '.') +
+     the assumed basics (scissors, tape, paper+pen) are pre-ticked.
+     2026-09-26 red-team: the lead must match the actual ticked set ("just the
+     basics" is wrong once the user ticks more), the almost-bucket is 1-or-2
+     away (not "one supply away"), and a zero make-tonight count gets an
+     honest zero-state instead of "you can make 0 tonight". */
+  const onlyBasics = ticked.size === STAPLES.length && STAPLES.every(id => ticked.has(id));
+  const lead = onlyBasics ? 'With just the basics' : 'With what you have ticked';
+  const madeBit = t0.length ? lead + ', you can make <b>' + t0.length + '</b> tonight'
+    : 'Nothing is fully covered yet';
+  const almostBit = t1.length ? (t0.length ? ', and ' : ' - ') + '<b>' + t1.length + '</b> ' +
+    (t1.length === 1 ? 'is' : 'are') + ' 1 or 2 supplies away.' : '.';
+  stat.innerHTML = madeBit + almostBit +
     '<p>Tick what else you own and the list reshuffles around your stuff.</p>';
 
   // unlock suggestions: single-item gaps only, ranked by costumes unlocked
