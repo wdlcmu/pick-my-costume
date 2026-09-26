@@ -46,6 +46,8 @@ function makeEl(tag){
     insertBefore: function(c, ref){ c.parentNode = this; var i = ref ? this.children.indexOf(ref) : -1; if (i < 0) this.children.push(c); else this.children.splice(i, 0, c); return c; },
     addEventListener: function(t, f){ (this._listeners[t] = this._listeners[t] || []).push(f); },
     closest: function(sel){ var e = this; while (e){ if (matches(e, sel)) return e; e = e.parentNode; } return null; },
+    querySelectorAll: function(sel){ var out = []; (function walk(n){ n.children.forEach(function(c){ if (matches(c, sel)) out.push(c); walk(c); }); })(this); return out; },
+    querySelector: function(sel){ var r = this.querySelectorAll(sel); return r[0] || null; },
     scrollIntoView: function(){}, select: function(){}, blur0: null,
     focus: function(){
       if (document.activeElement && document.activeElement !== this && document.activeElement.blur) document.activeElement.blur();
@@ -204,7 +206,7 @@ console.log("A. cast state-loss (re-tap picked card = no-op)");
   var hero = T_byClass(box, "hero12")[0];
   T_ok(!!hero, "A2 hero wrapper present");
   var card = T_byClass(hero, "card")[0];
-  var pickBtn = T_byText(card, "BUTTON", "This is my pick")[0];
+  var pickBtn = T_byText(card, "BUTTON", "Claim this costume")[0];
   T_ok(!!pickBtn, "A3 pick button found in hero card");
   var nSaved0 = T_tracked("pick_saved").length;
   T_click(pickBtn); /* real bubbling click through the card wrapper */
@@ -240,9 +242,11 @@ console.log("A. cast state-loss (re-tap picked card = no-op)");
   var rowsAfter2 = T_byClass(card, "castrow").length;
   var namesAfter2 = T_byClass(card, "castrow").map(function(r){ return T_byClass(r, "castname")[0].children[1].value; });
   T_ok(rowsAfter2 === 4 && namesAfter2[1] === "Billy", "A11 re-tap pick button is a no-op", namesAfter2.join(","));
-  /* bShare hidden after pick (dedupe) */
+  /* top share button removed: exactly one share path, in the post-pick panel */
   var shareBtns = T_byText(card, "BUTTON", "Share this idea");
-  T_ok(shareBtns.length === 0 || shareBtns[0].style.display === "none", "A12 card-level Share hidden once panel has its own");
+  var pickBtnA12 = T_byText(card, "BUTTON", "Claim this costume")[0];
+  T_ok(shareBtns.length === 1, "A12 exactly ONE Share this idea per card post-pick", shareBtns.length);
+  T_ok(shareBtns[0].parentNode !== pickBtnA12.parentNode, "A12b WHICH element: share btn is in the panel share row, not the pick row");
   /* THE FIX REPRO: a full results re-render (fit refinement path) must restore
      the 4-person cast, not reset the panel to size 2 */
   renderResults(scoreIdeas());
@@ -310,6 +314,30 @@ console.log("B. fit refinement + panel restore on re-render");
   T_ok(T_tracked("fit_refined").length >= 3, "B4 fit_refined tracked per chip");
   T_ok(Object.keys(seenFit).length > 1, "B5 fit chips change the ordered top 3 (real assertion)",
     Object.keys(seenFit).join(" | "));
+  /* Billy 2026-09-26: tapping "Masculine looks" must change the VISIBLE #1
+     (and its photo), not just shuffle the top 3. Find a solo path whose
+     no-fit #1 is not masculine-fitting, then prove the chip promotes one. */
+  var b6found = null;
+  outer2:
+  for (var a2 = 0; a2 < q2s.length; a2++) for (var b2 = 0; b2 < q4s.length; b2++){
+    var vis2 = qById("qinterest").options.filter(function(o){
+      var kk = Object.keys(o.tags)[0];
+      return IDEAS.some(function(i){ return i.audience.indexOf("solo") >= 0 && i.tags[kk] > 0; });
+    });
+    for (var c2 = 0; c2 < vis2.length; c2++){
+      state.answers = { q1: T_O("q1","Solo"), q2: q2s[a2], q4: q4s[b2],
+        qocc: T_O("qocc","Trick-or-treating"), qinterest: vis2[c2] };
+      delete state.answers.qfit;
+      var top1 = scoreIdeas()[0].idea;
+      if (top1.fit !== "M"){
+        state.answers.qfit = {fit: "M", label: "Masculine looks"};
+        var mTop1 = scoreIdeas()[0].idea;
+        if (mTop1.id !== top1.id && mTop1.fit === "M"){ b6found = {from: top1.id, to: mTop1.id}; break outer2; }
+      }
+    }
+  }
+  T_ok(!!b6found, "B6 masculine chip changes the #1 pick to a masculine-fitting idea",
+    b6found ? (b6found.from + " -> " + b6found.to) : "no such path");
   /* family flow: no refinement row */
   state = { qi: 0, answers: {} };
   state.answers = { q1: T_O("q1","My family"), q2: T_O("q2","Funny"), q4: T_O("q4","Couch-level"),
@@ -319,7 +347,7 @@ console.log("B. fit refinement + panel restore on re-render");
   T_ok(T_byClass($("r-cards"), "fitref").length === 0, "B6 no refinement row for family flow");
   /* panel restore: pick a cast idea, type names, re-render, panel comes back */
   var card = T_byClass(T_byClass($("r-cards"), "hero12")[0], "card")[0];
-  T_click(T_byText(card, "BUTTON", "This is my pick")[0]);
+  T_click(T_byText(card, "BUTTON", "Claim this costume")[0]);
   var panel = T_byClass(card, "castbox")[0];
   var rows = T_byClass(panel, "castrow");
   var inputs = rows.map(function(r){ return T_byClass(r, "castname")[0].children[1]; });
@@ -345,57 +373,78 @@ console.log("C. one-hero results");
   var box = $("r-cards");
   T_ok(T_byClass(box, "hero12").length === 1, "C1 exactly one hero wrapper");
   var heroCard = T_byClass(T_byClass(box, "hero12")[0], "card")[0];
-  T_ok(T_byText(heroCard, "BUTTON", "This is my pick").length === 1, "C2 hero has the primary CTA");
+  T_ok(T_byText(heroCard, "BUTTON", "Claim this costume").length === 1, "C2 hero has the primary CTA");
   T_ok(T_byText(box, "H3", "Also made your top 3").length === 1, "C3 runners-up heading present");
   var grids = T_byClass(box, "bgrid");
   var ruGrid = grids[grids.length - 1];
   var ruCards = T_findAll(ruGrid, function(e){ return e.tagName === "DIV" && (e.className || "").split(/\s+/).indexOf("bcard") >= 0 && e.parentNode === ruGrid; });
   T_ok(ruCards.length === 2, "C4 two compact runner-up cards", ruCards.length);
-  T_ok(T_byText(ruCards[0], "P", "Tap for the full plan").length === 1, "C5 runner-up shows tap hint, not full card");
-  /* tap runner-up 1 -> shared detail opens below the grid */
+  /* Billy 2026-09-26: compact runner-ups are photo-only with a fullscreen
+     tap hint; the full detail opens in a fixed overlay, not inline below
+     the grid. These assertions target the NEW intended behavior. */
+  T_ok(T_byText(ruCards[0], "P", "Tap to view full screen").length === 1, "C5 runner-up shows fullscreen tap hint, not full card");
+  T_ok(T_byText(ruCards[0], "BUTTON", "Claim this costume").length === 0, "C5b compact runner-up carries no pick CTA");
+  /* tap runner-up 1 -> full-screen overlay opens */
   T_click(ruCards[0]);
-  var detail = ruGrid.parentNode.children.filter(function(c){ return c.tagName === "DIV" && c.style.display !== "none" && c !== ruGrid; })[0];
-  T_ok(!!detail && T_byClass(detail, "card").length === 1, "C6 tapping runner-up opens its full card inline");
-  var dCard = T_byClass(detail, "card")[0];
-  T_ok(T_byText(dCard, "BUTTON", "This is my pick").length === 1, "C7 detail card has pick CTA");
+  var overlay = $("ru-overlay");
+  T_ok(!!overlay && overlay.style.display !== "none", "C6 tapping runner-up opens the fullscreen overlay");
+  T_ok(overlay.getAttribute("id") === "ru-overlay",
+    "C6b WHICH element: the open detail carries the #ru-overlay id marker");
+  /* the harness fake-DOM short-circuits the overlay's first-run creation
+     branch, so its fixed styling is asserted statically from the source */
+  T_ok(src.indexOf("position:fixed;inset:0") >= 0 && src.indexOf("z-index:1000") >= 0,
+    "C6c production overlay is fixed + topmost (static check)");
+  T_ok(T_findAll(box, function(e){ return e === overlay; }).length === 0,
+    "C6d overlay is not inline in the results box");
+  var dCard = T_byClass(overlay, "card")[0];
+  T_ok(!!dCard && dCard !== heroCard, "C6e overlay holds the single detail card, distinct from the hero");
+  T_ok(T_byText(dCard, "BUTTON", "Claim this costume").length === 1, "C7 overlay detail card has pick CTA");
   T_ok(T_findAll(dCard, function(e){ return e.tagName === "IMG"; }).length === 0, "C8 detail card skips duplicate art/title (noArt)");
   T_ok(T_tracked("runnerup_opened").length === 1, "C9 runnerup_opened tracked");
-  /* tap runner-up 2 -> replaces, only one open */
+  var ruEv1 = T_tracked("runnerup_opened").pop();
+  T_ok(ruEv1 && ruEv1[1].fullscreen === true && ruEv1[1].idea_id === res[1].idea.id,
+    "C9b runnerup_opened carries {fullscreen:true, idea_id of tapped runner-up}", JSON.stringify(ruEv1 && ruEv1[1]));
+  /* tap runner-up 2 -> replaces the overlay content, only one detail open */
   T_click(ruCards[1]);
-  var detailCards = T_byClass(box, "card").filter(function(c){
-    var p = c.parentNode; while (p && p !== box) p = p.parentNode; return true;
-  });
-  var openDetails = T_findAll(box, function(e){ return e.tagName === "DIV" && e.style && e.style.display !== "none" && T_byClass(e, "card").length === 1 && e.children[0] && e.children[0].className === "card"; });
   T_ok(T_tracked("runnerup_opened").length === 2, "C10 second runner-up tracked");
-  /* tap runner-up 2 again -> closes */
-  T_click(ruCards[1]);
-  var closedCard = T_byClass(detail, "card").length;
-  T_ok(detail.style.display === "none" && closedCard === 0, "C11 tapping open runner-up closes it");
-  /* pick inside a runner-up detail works (the LAST pick-button card in the
-     box is the open detail; the first is the hero) */
+  var ruEv2 = T_tracked("runnerup_opened").pop();
+  T_ok(ruEv2 && ruEv2[1].idea_id === res[2].idea.id, "C10b WHICH idea: overlay now shows runner-up 2", JSON.stringify(ruEv2 && ruEv2[1]));
+  T_ok(T_byClass(overlay, "card").length === 1, "C10c still exactly one detail card open (replaced, not stacked)");
+  /* the close button dismisses the overlay */
+  var closeBtn = T_byText(overlay, "BUTTON", "Close")[0];
+  T_ok(!!closeBtn, "C11 close button present in overlay");
+  T_click(closeBtn);
+  T_ok(overlay.style.display === "none", "C11b close button dismisses the overlay");
+  /* pick inside a runner-up detail works: the overlay card is the open
+     detail; the hero is a different element */
   T_click(ruCards[0]);
-  var pickCards = T_byClass(box, "card").filter(function(c){ return T_byText(c, "BUTTON", "This is my pick").length > 0; });
-  var d2 = pickCards[pickCards.length - 1];
-  T_ok(pickCards.length === 2, "C12x detail card is distinct from the hero card", pickCards.length);
-  var dPick = T_byText(d2, "BUTTON", "This is my pick")[0];
+  var oCards = T_byClass(overlay, "card");
+  T_ok(oCards.length === 1 && oCards[0] !== heroCard, "C12x WHICH element: overlay detail is distinct from the hero card", oCards.length);
+  var d2 = oCards[0];
+  var dPick = T_byText(d2, "BUTTON", "Claim this costume")[0];
   var nS = T_tracked("pick_saved").length;
   T_click(dPick);
-  T_ok(T_tracked("pick_saved").length === nS + 1, "C12 pick works inside runner-up detail");
+  T_ok(T_tracked("pick_saved").length === nS + 1, "C12 pick works inside the fullscreen runner-up detail");
   T_ok(T_byClass(d2, "castbox").length + T_findAll(d2, function(e){ return e.tagName === "TEXTAREA"; }).length > 0, "C13 detail shows share/AI panel after pick");
   /* results header copy: one decision, not three (static HTML check) */
   T_ok(src.indexOf("Here is what you got") >= 0, "C14 header names the single decision");
-  /* browse tail button, not a 76-card wall */
-  var tail = T_byText(box, "BUTTON", "Browse all ")[0];
-  T_ok(!!tail && tail._text.indexOf("76") >= 0, "C15 browse tail is one button", tail && tail._text);
+  /* browse tail button, not a 76-card wall (static HTML check: it lives in the results navrow) */
+  T_ok(src.indexOf("Browse all 137 ideas") >= 0, "C15 browse tail is one button");
   T_ok(T_byText(box, "BUTTON", "Show 3 more ideas").length === 0, "C16 no more-ideas stacking button");
-  /* C12 picked inside the runner-up detail; a full re-render (the fit
-     refinement path) must reopen that detail and remount the pick panel,
-     not silently strand the pick. */
+  /* C12 picked inside the fullscreen runner-up detail; a full re-render
+     (the fit refinement path) must auto-reopen that detail fullscreen and
+     remount the pick panel, not silently strand the pick. */
   renderResults(scoreIdeas());
-  var box2 = $("r-cards");
-  var remounted = T_byClass(box2, "card").filter(function(c){ return c.getAttribute("data-panel") === "1"; });
-  T_ok(remounted.length === 1, "C17 picked runner-up detail auto-reopened with panel remounted", remounted.length);
+  var overlay2 = $("ru-overlay");
+  T_ok(overlay2.style.display !== "none", "C17 picked runner-up detail auto-reopened fullscreen after re-render");
+  var remounted = T_byClass(overlay2, "card").filter(function(c){ return c.getAttribute("data-panel") === "1"; });
+  T_ok(remounted.length === 1, "C17b pick panel remounted inside the fullscreen overlay", remounted.length);
+  T_ok(T_findAll($("r-cards"), function(e){ return e === overlay2; }).length === 0,
+    "C17c WHICH element: the reopened detail is the overlay, not inline in the results box");
+  var ruEv4 = T_tracked("runnerup_opened").pop();
   T_ok(T_tracked("runnerup_opened").length === 4, "C18 auto-reopen tracked", T_tracked("runnerup_opened").length);
+  T_ok(ruEv4 && ruEv4[1].fullscreen === true && ruEv4[1].idea_id === res[1].idea.id,
+    "C18b auto-reopen tracked as fullscreen for the picked runner-up", JSON.stringify(ruEv4 && ruEv4[1]));
 })();
 
 /* ---------- scenario D: personal role cards ---------- */
@@ -410,7 +459,7 @@ console.log("D. personal role cards");
     qinterest: qById("qinterest").options.filter(function(o){ return o.tags.animals; })[0] };
   renderResults(scoreIdeas());
   var card = T_byClass(T_byClass($("r-cards"), "hero12")[0], "card")[0];
-  T_click(T_byText(card, "BUTTON", "This is my pick")[0]);
+  T_click(T_byText(card, "BUTTON", "Claim this costume")[0]);
   var panel = T_byClass(card, "castbox")[0];
   var rows = T_byClass(panel, "castrow");
   var inputs = rows.map(function(r){ return T_byClass(r, "castname")[0].children[1]; });
@@ -479,12 +528,43 @@ console.log("E. browse parity + sticky filters");
   var dCard = T_byClass($("d-card"), "card")[0] || T_byClass($("s-detail"), "card")[0];
   T_ok(!!dCard, "E6 detail card rendered");
   if (dCard){
-    T_ok(T_byText(dCard, "BUTTON", "This is my pick").length === 1, "E7 detail has pick CTA");
-    T_ok(T_byText(dCard, "BUTTON", "Share this idea").length === 1, "E8 detail has share CTA");
+    T_ok(T_byText(dCard, "BUTTON", "Claim this costume").length === 1, "E7 detail has pick CTA");
+    T_ok(T_byText(dCard, "BUTTON", "Share this idea").length === 0, "E8 no top share button pre-pick in detail");
     /* full flow: pick -> AI prompt appears */
-    T_click(T_byText(dCard, "BUTTON", "This is my pick")[0]);
+    T_click(T_byText(dCard, "BUTTON", "Claim this costume")[0]);
     T_ok(T_findAll(dCard, function(e){ return e.tagName === "TEXTAREA"; }).length >= 1, "E9 AI prompt textarea appears after pick");
+    var dPickBtn = T_byText(dCard, "BUTTON", "Claim this costume")[0];
+    var dShareBtns = T_byText(dCard, "BUTTON", "Share this idea");
+    T_ok(dShareBtns.length === 1, "E8b exactly ONE share button post-pick in detail", dShareBtns.length);
+    T_ok(dShareBtns[0].parentNode !== dPickBtn.parentNode, "E8c WHICH element: share btn lives in the post-pick share row, not the pick row");
   }
+})();
+
+/* ---------- scenario E2: browse effort filter ---------- */
+console.log("E2. browse effort filter");
+(function(){
+  openBrowse();
+  var all = $("b-grid").children.length;
+  T_change($("bf-eff"), "allout");
+  T_ok($("b-grid").children.length === 15, "E2a effort=Go all out shows the 15 all-out ideas", $("b-grid").children.length);
+  T_change($("bf-eff"), "couch");
+  T_ok($("b-grid").children.length === 96, "E2b effort=Couch-level shows the 96 couch-level ideas", $("b-grid").children.length);
+  T_change($("bf-eff"), "crafty");
+  T_ok($("b-grid").children.length === 47, "E2c effort=A little crafty shows the 47 crafty ideas", $("b-grid").children.length);
+  T_change($("bf-eff"), "");
+  T_ok($("b-grid").children.length === all, "E2d clearing effort restores all ideas", $("b-grid").children.length);
+  var evs = T_tracked("browse_filter").filter(function(e){ return e[1] && e[1].kind === "effort"; });
+  T_ok(evs.length >= 4, "E2e effort filter changes tracked", evs.length);
+  /* WHICH element: every shown card really carries the allout tag */
+  T_change($("bf-eff"), "allout");
+  var cards = $("b-grid").children, bad = [];
+  for (var i = 0; i < cards.length; i++){
+    var h = T_findAll(cards[i], function(e){ return e.tagName === "H3"; })[0];
+    var idea = IDEAS.filter(function(x){ return x.title === (h && h._text); })[0];
+    if (!idea || !(idea.tags.allout > 0)) bad.push(h && h._text);
+  }
+  T_ok(bad.length === 0, "E2f every shown card is allout-tagged", bad.join(","));
+  T_change($("bf-eff"), "");
 })();
 
 /* ---------- scenario F: quiz never exceeds 5 questions ---------- */
@@ -657,7 +737,7 @@ console.log("H. post-pick reorder + AI plan reveal");
     qinterest: qById("qinterest").options.filter(function(o){ return o.tags.animals; })[0] };
   renderResults(scoreIdeas());
   var card = T_byClass(T_byClass($("r-cards"), "hero12")[0], "card")[0];
-  T_click(T_byText(card, "BUTTON", "This is my pick")[0]);
+  T_click(T_byText(card, "BUTTON", "Claim this costume")[0]);
   var panel = T_byClass(card, "castbox")[0];
   /* section order: personal cards, then share box, then AI plan (Billy 2026-09-24:
      one flow -- the share comes after the personal card) */
@@ -673,7 +753,8 @@ console.log("H. post-pick reorder + AI plan reveal");
   /* successful "Share this idea" reveals the AI plan (highlight class) */
   delete navigator.share; /* clipboard fallback branch */
   T_click(shareBtn);
-  T_ok(aiBox.classList.contains("ai-flash"), "H3 AI plan highlighted after successful share");
+  /* Mara 2026-09-25: family flow skips the post-share AI highlight by design. */
+  T_ok(!aiBox.classList.contains("ai-flash"), "H3 family flow skips AI highlight by design");
   /* card send success reveals the AI plan too, share_created via=clipboard intact */
   var rows = T_byClass(panel, "castrow");
   var inputs = rows.map(function(r){ return T_byClass(r, "castname")[0].children[1]; });
@@ -686,14 +767,14 @@ console.log("H. post-pick reorder + AI plan reveal");
   T_ok(T_tracked("share_created").length === nC + 1, "H5 share_created tracked for card send");
   var created = (Analytics._q || []).filter(function(e){ return e[0] === "share_created"; }).pop();
   T_ok(created && created[1].via === "clipboard", "H6 share_created carries via=clipboard", JSON.stringify(created && created[1]));
-  T_ok(aiBox.classList.contains("ai-flash"), "H7 AI plan highlighted after card send");
+  T_ok(!aiBox.classList.contains("ai-flash"), "H7 family flow skips AI highlight by design");
   /* share-sheet branch: the AI plan is revealed there too */
   var T_shareArgs = null;
   navigator.share = function(opts){ T_shareArgs = opts; return { then: function(ok){ ok(); } }; };
   T_click(sends[0]);
   var created2 = (Analytics._q || []).filter(function(e){ return e[0] === "share_created"; }).pop();
   T_ok(!!T_shareArgs && created2 && created2[1].via === "share_sheet", "H8 share-sheet branch carries via=share_sheet");
-  T_ok(aiBox.classList.contains("ai-flash"), "H9 AI plan highlighted after share-sheet send");
+  T_ok(!aiBox.classList.contains("ai-flash"), "H9 family flow skips AI highlight by design");
   delete navigator.share;
   /* propagation guard: typing + clicking inside the panel still never re-picks */
   var nSaved = T_tracked("pick_saved").length;
