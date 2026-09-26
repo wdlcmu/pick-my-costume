@@ -2865,8 +2865,15 @@ function shareTextFor(idea, sid, origin){
      Generator). The pick hides behind its off-brand name, so the share
      reads as a guess-the-costume riddle. Early return keeps the kid/family
      materials list off - it would leak the answer. Measured by
-     share_msg_variant like every other arm. */
-  if (shareVariant() === "G") return "My off-brand Halloween costume name is '" + offBrandName(idea) + "'. Guess what I am really going as? Take the 2-min quiz and send me yours: " + link;
+     share_msg_variant like every other arm.
+     2026-09-26 red-team recipient audit (pm2): the riddle still leaked
+     twice -- the /c/ URL slug names the costume and the unfurl card shows
+     its title and photo. A bare homepage link keeps the riddle a riddle;
+     the recipient still lands on the friend banner and the quiz. */
+  if (shareVariant() === "G"){
+    var glink = "https://pickmycostume.com/?s=" + sid + "&o=" + origin;
+    return "My off-brand Halloween costume name is '" + offBrandName(idea) + "'. Guess what I am really going as? Take the 2-min quiz and send me yours: " + glink;
+  }
   /* 2026-09-25 social-handoff experiment: the old copy asked an open question
      ("What are you going as?"). The reciprocal ask ("send me what you get")
      tests whether the share reads as an invitation to participate, not a
@@ -3964,7 +3971,19 @@ function renderResults(results){
     var hint = document.createElement("p");
     hint.className = "status";
     hint.textContent = "Tap to view full screen";
-    card.appendChild(rbadge); card.appendChild(im); card.appendChild(h); card.appendChild(hint);
+    /* Pantry badge on runner-ups too (2026-09-26 QA): this is exactly where
+       users compare options, so it matches the hero card's badge. */
+    var _pm2 = pantryMissing(idea.id);
+    var _pb2 = null;
+    if (_pm2 >= 0){
+      _pb2 = document.createElement("span");
+      _pb2.className = "pantrybadge";
+      _pb2.textContent = _pm2 === 0 ? "Make tonight" : ("Needs " + _pm2 + (_pm2 === 1 ? " thing" : " things"));
+      _pb2.title = "Based on your pantry";
+    }
+    card.appendChild(rbadge); card.appendChild(im); card.appendChild(h);
+    if (_pb2) card.appendChild(_pb2);
+    card.appendChild(hint);
     function toggleRu(e){
       var t = e && e.target;
       if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
@@ -6870,6 +6889,14 @@ function shareLandingHeadline(idea, search){
   var isShare = isGenuineShareArrival(q);
   var isChallenge = /[?&]ch=1(?:&|$)/.test(q);
   if (isShare && isChallenge) return "Your friend can make " + idea.title + " with stuff they own. See what YOU can make.";
+  /* 2026-09-26 red-team recipient audit (pm2): pair arrivals showed the
+     generic headline while the CTA already asked to match -- headline and
+     CTA now agree. Vote arrivals said "Your friend picked X", which is
+     wrong: X is a finalist, not a pick. */
+  var isPair = /[?&]o=pair(?:&|$)/.test(q);
+  var isVote = /[?&]o=vote(?:&|$)/.test(q);
+  if (isShare && isPair) return "Your friend is going as " + idea.title + ". Find YOUR costume to match.";
+  if (isShare && isVote) return "Your friend wants your vote: is " + idea.title + " the one?";
   if (isShare) return "Your friend picked " + idea.title + ". What would you pick?";
   return idea.title;
 }
@@ -7213,6 +7240,67 @@ function shareLandingHeadline(idea, search){
       rb.appendChild(p1); rb.appendChild(row);
       hero.insertBefore(rb, hero.firstChild);
       Analytics.track("recovery_nudge_shown", {idea_id: rec.ideaId});
+    } catch(e){}
+  })();
+  /* Quiz-abandon resume banner (2026-09-26 evening): a return visit with an
+     abandoned quiz gets one slim banner above the hero. Continue restores the
+     saved answers and resumes at the first unanswered question; Not now
+     dismisses for this visit only. Any query string suppresses it: share
+     arrivals (?s=) keep the normal recipient experience, and ?pick= detail
+     views already have their own flow. Additive: no existing element, event,
+     or experiment is touched. Copy is plain English, no em dashes. */
+  (function(){
+    try {
+      if (location.search) return;
+      var hero = $("s-hero");
+      if (!hero || $("pmc-resume-banner") || $("pmc-friend-banner")) return;
+      var saved = load("pmc_quiz_v1");
+      if (!quizResumeShouldShow(saved, Date.now())) return;
+      /* Drop answers for questions no longer in the bank (bank edits between
+         visits); an empty set means there is nothing to resume. */
+      var valid = {};
+      Object.keys(saved.answers).forEach(function(k){ if (qById(k)) valid[k] = saved.answers[k]; });
+      var n = Object.keys(valid).length;
+      if (!n) return;
+      var rb = document.createElement("div");
+      rb.id = "pmc-resume-banner";
+      rb.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
+      var p1 = document.createElement("p");
+      p1.style.cssText = "margin:0 0 10px;font-weight:700;color:#333;line-height:1.4";
+      p1.textContent = "Pick up where you left off? You answered " + n + " of " + flowOrder().length + ".";
+      var row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:10px;align-items:stretch;";
+      var go = document.createElement("button");
+      go.type = "button";
+      go.textContent = "Continue";
+      go.style.cssText = "flex:1;text-align:center;font-weight:700;font-size:17px;color:#2a1500;background:#ff8c1a;border:0;border-radius:14px;padding:14px 0;display:block;cursor:pointer;";
+      go.onclick = function(){
+        var s2 = load("pmc_quiz_v1");
+        if (!quizResumeShouldShow(s2, Date.now())) { if (rb.parentNode) rb.parentNode.removeChild(rb); return; }
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        Object.keys(s2.answers).forEach(function(k){ if (qById(k)) state.answers[k] = s2.answers[k]; });
+        /* The flow can shift with the q1 answer; drop anything no longer asked. */
+        var order = flowOrder();
+        Object.keys(state.answers).forEach(function(k){ if (order.indexOf(k) === -1) delete state.answers[k]; });
+        state.qi = quizResumeIndex();
+        if (state.qi < 0) { clearK("pmc_quiz_v1"); if (rb.parentNode) rb.parentNode.removeChild(rb); $("btn-start").onclick(); return; }
+        Analytics.track("quiz_resume_continue", {answered_count: Object.keys(state.answers).length});
+        if (rb.parentNode) rb.parentNode.removeChild(rb);
+        renderQ();
+      };
+      var no = document.createElement("button");
+      no.type = "button";
+      no.textContent = "Not now";
+      no.style.cssText = "padding:14px 20px;font-size:17px;background:rgba(0,0,0,.04);color:#333;border:2px solid #d8c9ae;border-radius:14px;cursor:pointer;";
+      no.onclick = function(){
+        Analytics.track("quiz_resume_dismissed", {answered_count: n});
+        if (rb.parentNode) rb.parentNode.removeChild(rb);
+      };
+      row.appendChild(go); row.appendChild(no);
+      rb.appendChild(p1); rb.appendChild(row);
+      hero.insertBefore(rb, hero.firstChild);
+      Analytics.track("quiz_resume_shown", {answered_count: n});
     } catch(e){}
   })();
   /* Pantry parity (2026-09-25): pantry.html cards deep-link here with
