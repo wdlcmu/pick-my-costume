@@ -216,6 +216,17 @@ button.ghost{
 button.howto-copy,.howto-copy{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0}
 a.howto-copy{text-decoration:underline}
 .howto-copyrow .status{margin:0}
+/* Guide decision triple + parent FAQs: the most quotable bank fields,
+   rendered visibly (not just stored) so AI assistants can cite them. */
+.howto-triple{margin:0 0 12px;font-size:14px;font-weight:700;color:var(--muted)}
+.howto-faq{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.howto-faq summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
+.howto-faq summary::-webkit-details-marker{display:none}
+.howto-faq summary::before{content:"+";color:var(--accent);font-weight:700;margin-right:8px}
+.howto-faq[open] summary::before{content:"\2212"}
+.howto-faq dl{margin:10px 0 0}
+.howto-faq dt{font-weight:700;font-size:15px;margin:10px 0 3px}
+.howto-faq dd{margin:0;font-size:15px;line-height:1.55}
 .stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
 .stuck h3{margin:0 0 6px;font-size:20px}
 .stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
@@ -1475,9 +1486,17 @@ function buildInstructions(idea, opts){
     if (!adultAudience()) return m;
     return m.replace(/^Kids:\s*/i, "").replace(/per kid\b/gi, "per person").replace(/per child\b/gi, "per person");
   }
-  /* Plain-text build list for the copy button: materials + numbered steps. */
+  /* Plain-text build list for the copy button: decision triple, materials,
+     numbered steps. */
+  function tripleText(){
+    var t = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; });
+    return t.length ? t.join(" \u00B7 ") : "";
+  }
   function buildListText(){
-    var lines = [idea.title + " - build list", "", "You need:"];
+    var lines = [idea.title + " - build list"];
+    var _tr = tripleText();
+    if (_tr) lines.push(_tr);
+    lines.push("", "You need:");
     ins.m.forEach(function(m){ lines.push("- " + adaptMaterial(m)); });
     lines.push("", "Steps:");
     var n = 0;
@@ -1534,6 +1553,13 @@ function buildInstructions(idea, opts){
     copyRow.appendChild(eb);
     copyRow.appendChild(cst);
     wrap.appendChild(copyRow);
+    /* Decision triple: the guide's most quotable line, first under the h3. */
+    var _tr = tripleText();
+    if (_tr){
+      var tp = document.createElement("p");
+      tp.className = "howto-triple"; tp.textContent = _tr;
+      wrap.appendChild(tp);
+    }
     var mh = document.createElement("h4"); mh.textContent = "You need";
     wrap.appendChild(mh);
     var chips = document.createElement("div");
@@ -1562,6 +1588,25 @@ function buildInstructions(idea, opts){
       ol.appendChild(li);
     });
     wrap.appendChild(ol);
+    /* Parent FAQs as a collapsible block: visible on expand, simple markup. */
+    if (ins.faqs && ins.faqs.length){
+      var fdet = document.createElement("details");
+      fdet.className = "howto-faq";
+      var fsum = document.createElement("summary");
+      fsum.textContent = "Common questions";
+      fdet.appendChild(fsum);
+      var fdl = document.createElement("dl");
+      ins.faqs.forEach(function(f){
+        var dt = document.createElement("dt"); dt.textContent = f[0];
+        var dd = document.createElement("dd"); dd.textContent = f[1];
+        fdl.appendChild(dt); fdl.appendChild(dd);
+      });
+      fdet.appendChild(fdl);
+      /* E17 lesson: taps inside the card must not re-run doPick and wipe
+         state. The disclosure stops its own clicks. */
+      fdet.addEventListener("click", function(e){ e.stopPropagation(); });
+      wrap.appendChild(fdet);
+    }
     return wrap;
   }
   var root;
