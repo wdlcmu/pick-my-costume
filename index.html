@@ -1863,7 +1863,16 @@ var SHARE_CAPTIONS = {
   "pixel-ghost": "Retro ghost. Eight bits of spooky."
 };
 function shareCaptionFor(idea){
-  return SHARE_CAPTIONS[idea.id] || ("I am going as " + idea.title + " this Halloween.");
+  var line = "I am going as " + idea.title + " this Halloween.";
+  var cap = SHARE_CAPTIONS[idea.id];
+  if (!cap) return line;
+  /* Red-team 2026-09-26: 28 of the 49 captions never name the costume, so the
+     share text reads as a riddle ("A sheet. Two eye holes. Peak Halloween.")
+     and the recipient must parse the URL slug to know what it is. Keep the
+     caption's flavor, but always lead with the identity line unless the
+     caption already says what they are going as. */
+  if (/going as/i.test(cap)) return cap;
+  return line + " " + cap;
 }
 /* 2026-09-25 pantry-aware experiment helpers. PANTRY_MATS is the regenerated
    119-idea requirement map: {staples:[6 pantry ids], mats:{ideaId:[materials]}}.
