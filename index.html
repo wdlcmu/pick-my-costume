@@ -533,6 +533,21 @@ footer a{color:var(--accent)}
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">What materials or clothes are already in your house?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick the clothes and materials already in your house, we rank costumes by what you own.</p>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 137 ideas</button></p>
+      <p style="margin:16px 0 0"><button type="button" id="btn-spin" class="ghost">Can&#39;t decide? Spin the roulette</button></p>
+      <div id="spin-panel" class="card" style="display:none;margin-top:12px">
+        <p class="fine" style="margin:0 0 8px">The roulette says:</p>
+        <div id="spin-media" aria-hidden="true"></div>
+        <h3 id="spin-title" style="margin:8px 0 4px"></h3>
+        <p class="fine" id="spin-triple" style="margin:0 0 6px"></p>
+        <p class="blurb" id="spin-blurb" style="margin:0 0 8px"></p>
+        <p id="spin-announce" role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"></p>
+        <div class="row" style="display:flex;gap:10px;margin-top:8px">
+          <button type="button" id="btn-spin-again" class="cta" style="flex:1">Spin again</button>
+          <button type="button" id="btn-spin-share" class="ghost" style="flex:1">Share my spin</button>
+        </div>
+        <p style="margin:10px 0 0"><a id="spin-guide-link" href="/c/classic-ghost">See the full guide</a> <span class="fine">or</span> <button type="button" id="btn-spin-quiz" class="textlink">take the 2-minute quiz</button></p>
+        <p class="status" id="spin-status" style="margin:8px 0 0"></p>
+      </div>
       </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
@@ -1287,6 +1302,9 @@ var DUEL_IDEA_ID = null;
    quiz links on "Find my +1's costume" shares so the results page can render
    the "How you two pair up" panel. */
 var PAIR_IDEA_ID = null;
+/* 2026-09-26 costume roulette experiment: ?spin=<sender idea slug> rides
+   the spin share link so the recipient banner can name the spin result. */
+var SPIN_IDEA_ID = null;
 function viaShareProps(){
   var p = {};
   if (VIA_SHARE){ p.via_share_id = VIA_SHARE; if (VIA_SHARE_ORIGIN) p.share_origin = VIA_SHARE_ORIGIN; }
@@ -2719,6 +2737,145 @@ function pairTextFor(idea, sid){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
   return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match mine: " + link;
 }
+/* 2026-09-26 costume roulette experiment ("Can't decide? Spin the
+   roulette"): a zero-question entry point for the undecided. Uniform
+   random over all 137 ideas, one tap, no quiz -- the funnel for the
+   weakest link in the share loop, the procrastinator who never starts.
+   The result card carries its own share path with new share origin "spin"
+   (link: https://pickmycostume.com/?s=<sid>&o=spin&spin=<slug>), so the
+   spin -> share -> friend-spins loop is measurable per origin exactly like
+   teaser/pair/duel. The recipient banner names the spin result and its
+   CTA spins for the recipient. Metric: spin_started -> spin_result_shown
+   -> share_created (share_origin spin) -> recipient_landing_viewed ->
+   quiz_started, spin vs generic/card. Decision candidate: at 50 opened
+   spin links, spin needs clearly more friend quiz starts per share than
+   generic to earn a hero placement. Additive only: one explore-section
+   panel plus one friend-banner branch; the quiz, share cards, and /c/
+   surfaces are untouched. */
+function spinTextFor(idea, sid){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=spin&spin=" + idea.id;
+  var tri = "";
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var ins = INSTRUCTIONS[idea.id];
+    tri = [ins.time, ins.cost].filter(function(x){ return x; }).join(", ");
+  }
+  return "The costume roulette landed on " + idea.title + " for me this Halloween" + (tri ? " (" + tri + ")" : "") + ". Spin yours: " + link;
+}
+function spinIdeaById(id){
+  var found = null;
+  IDEAS.forEach(function(it){ if (it.id === id) found = it; });
+  return found;
+}
+function spinTriple(idea){
+  if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[idea.id]) return "";
+  var ins = INSTRUCTIONS[idea.id];
+  /* Proof-rail style triple: "25 min · $3-10 · Easy". Middot matches the
+     site; no em/en dashes anywhere in user-facing spin copy. */
+  return [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(" · ");
+}
+function renderSpinResult(idea){
+  window.__pmcSpinIdea = idea;
+  var media = $("spin-media");
+  media.innerHTML = "";
+  /* Photo only: the card re-renders on every spin, so skip the 29 autoplay
+     videos and keep it light. */
+  media.appendChild(ideaMedia(idea, true));
+  $("spin-title").textContent = idea.title;
+  $("spin-triple").textContent = spinTriple(idea);
+  $("spin-blurb").textContent = idea.blurb;
+  var gl = $("spin-guide-link");
+  gl.href = "/c/" + idea.id;
+  gl.textContent = "See the full " + idea.title + " guide";
+  $("spin-status").textContent = "";
+  /* The flashing title is aria-hidden (decorative ticker); announce only
+     the settled result. */
+  $("spin-announce").textContent = "The roulette picked " + idea.title + ".";
+  Analytics.track("spin_result_shown", Object.assign({idea_id: idea.id}, viaShareProps()));
+}
+function startSpin(source){
+  Analytics.track("spin_started", Object.assign({source: source || "explore"}, viaShareProps()));
+  var panel = $("spin-panel");
+  panel.style.display = "";
+  var titleEl = $("spin-title");
+  var again = $("btn-spin-again"), shareBtn = $("btn-spin-share");
+  again.disabled = true; shareBtn.disabled = true;
+  /* Slot-machine ticker: flash random titles, then settle. The pick is
+     drawn once, up front, uniformly over all 137 ideas -- the ticker is
+     theater, not selection. */
+  var target = IDEAS[Math.floor(Math.random() * IDEAS.length)];
+  $("spin-media").innerHTML = "";
+  $("spin-triple").textContent = "";
+  $("spin-blurb").textContent = "";
+  $("spin-announce").textContent = "Spinning.";
+  var ticks = 0;
+  var timer = setInterval(function(){
+    var r = IDEAS[Math.floor(Math.random() * IDEAS.length)];
+    titleEl.textContent = r.title;
+    if (++ticks >= 8){
+      clearInterval(timer);
+      renderSpinResult(target);
+      again.disabled = false; shareBtn.disabled = false;
+    }
+  }, 70);
+}
+$("btn-spin").onclick = function(){
+  startSpin("explore");
+  var panel = $("spin-panel");
+  if (panel && panel.scrollIntoView) panel.scrollIntoView({block: "nearest"});
+};
+$("btn-spin-again").onclick = function(){ startSpin("spin-again"); };
+$("btn-spin-quiz").onclick = function(e){
+  if (e && e.preventDefault) e.preventDefault();
+  /* Mirror the hero "Find my costume" start exactly: clean state, old picks
+     cleared, recipient-attributed event when VIA_SHARE is set. */
+  state = {qi: 0, answers: {}};
+  clearK("pmc_pick_v1");
+  Analytics.track("quiz_started", viaShareProps());
+  renderQ();
+};
+/* 2026-09-26 costume roulette: "Share my spin" mirrors the teaser/pair
+   share machinery exactly -- armShareOnce guard, native sheet when
+   available, clipboard fallback on desktop, share_created only on a
+   resolved share, a dismissed sheet counts as a cancel. The manual-copy
+   textarea listener parses ?o= from the copied text, so "spin" attributes
+   correctly with no change there. */
+$("btn-spin-share").onclick = function(){
+  var idea = window.__pmcSpinIdea;
+  if (!idea) return;
+  var rearmShare = armShareOnce($("btn-spin-share"));
+  if (!rearmShare) return; /* double-tap: a share is already in flight */
+  var sid = newShareId();
+  var text = spinTextFor(idea, sid);
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=spin&spin=" + idea.id;
+  var st = $("spin-status");
+  function doneShare(ok, msg){
+    st.textContent = msg;
+    rearmShare(); /* the share settled: sent, dismissed, or copied */
+    if (ok){
+      Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "spin", share_msg_variant: shareVariant()}, viaShareProps()));
+      if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "spin"}, viaShareProps()));
+    }
+  }
+  function copyFallback(){
+    doCopy(text, function(ok, msg){
+      if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sid, share_origin: "spin"}, viaShareProps()));
+      doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+    });
+  }
+  /* Phone: native share sheet. Fires share_created only when the share
+     resolves; a dismissed sheet is a cancel, not a share. */
+  var usedNative = false;
+  if (navigator.share){
+    try {
+      usedNative = true;
+      navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+        function(){ doneShare(true, "Shared. See what they spin."); },
+        function(){ doneShare(false, ""); }
+      );
+    } catch(e){ usedNative = false; }
+  }
+  if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+};
 /* 2026-09-26 family-vote distribution experiment: the quiz returns 3
    finalists because the user cannot decide. This turns indecision into a
    share: one text with all three finalists, numbered for a group-chat
@@ -6465,8 +6622,10 @@ function shareLandingHeadline(idea, search){
        2026-09-26 pantry-vote experiment: ?o=pantryvote marks links from the
        pantry house-vote box; same survival rule. */
     /* 2026-09-26 pair-share experiment: ?o=pair marks "Find my +1's costume"
-       shares; same survival rule as the other origins. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair)/.exec(location.search || "");
+       shares; same survival rule as the other origins.
+       2026-09-26 costume roulette experiment: ?o=spin marks "Spin the
+       roulette" shares; same survival rule. */
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin)/.exec(location.search || "");
     /* 2026-09-26 red-team: gift added -- openGiftFlow mints ?o=gift&gift=1 and
        its comment promises share_origin=gift on the recipient side, but the
        origin regex never recognized gift, so gift recipients arrived with no
@@ -6484,6 +6643,10 @@ function shareLandingHeadline(idea, search){
        redirect the same way ?duel= does. */
     var pm = /[?&]pair=([a-z0-9-]+)/.exec(location.search || "");
     if (pm) PAIR_IDEA_ID = pm[1];
+    /* 2026-09-26 costume roulette: ?spin=<sender idea slug> rides the spin
+       share link so the recipient banner can name the spin result. */
+    var spm = /[?&]spin=([a-z0-9-]+)/.exec(location.search || "");
+    if (spm) SPIN_IDEA_ID = spm[1];
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
     var idea = null;
@@ -6680,6 +6843,29 @@ function shareLandingHeadline(idea, search){
       /* 2026-09-26 red-team: the duel banner branch never fired
          recipient_landing_viewed, so hand-crafted /?s=&o=duel&duel= arrivals
          undercounted recipient opens. Same payload as the teaser branch. */
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 costume roulette: genuine ?o=spin arrivals get the spin
+       banner. The sender's spin result IS the hook (like the pair share),
+       so it names the costume. One tap scrolls to the roulette and spins
+       for the recipient. Unknown slugs fall through to the generic banner.
+       Fires recipient_landing_viewed here because the ?idea= block never
+       runs on a bare /?s= arrival. */
+    var _spinTheirs = (VIA_SHARE_ORIGIN === "spin" && typeof SPIN_IDEA_ID !== "undefined" && SPIN_IDEA_ID) ? spinIdeaById(SPIN_IDEA_ID) : null;
+    if (_spinTheirs){
+      var spb = document.createElement("button");
+      spb.type = "button";
+      spb.id = "pmc-friend-banner";
+      spb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      spb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend spun the costume roulette and got " + _spinTheirs.title + ".</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Spin yours. One tap, no questions.</p>";
+      spb.onclick = function(){
+        startSpin("recipient-banner");
+        var panel = $("spin-panel");
+        if (panel && panel.scrollIntoView) panel.scrollIntoView({block: "start"});
+      };
+      hero.insertBefore(spb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
