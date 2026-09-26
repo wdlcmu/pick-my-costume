@@ -517,10 +517,6 @@ footer a{color:var(--accent)}
         <p class="fine explore-head">More ways to explore</p>
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
-      <p style="margin:12px 0 0"><a class="pantry-link" href="/classroom" title="One theme for the whole class, or one costume per kid, plus a single class shopping list">Classroom costumes</a></p>
-      <p class="fine" style="margin:6px 0 0">Teachers: one theme for the whole class, or one costume per kid, with one class shopping list.</p>
-      <p style="margin:12px 0 0"><a class="pantry-link" href="/flyer" title="Print a one-page Halloween flyer for your classroom, waiting room, library board, or party">Print a flyer</a></p>
-      <p class="fine" style="margin:6px 0 0">Teachers, offices, hosts: a one-page flyer plus newsletter text, ready to print.</p>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 137 ideas</button></p>
       </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
@@ -1286,7 +1282,7 @@ var SHARE = {
      friend-quiz-starts per origin; card >= 2x generic -> cards become the
      only share path on cast ideas. */
   textTemplate: function(idea, aud, sid, origin){
-    var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
+    var url = "https://pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
     /* 2026-09-25 social-handoff experiment: reciprocal ask, same as shareTextFor. */
     return shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + url;
   }
@@ -4978,12 +4974,12 @@ function buildCastShareText(idea, list, sid){
   var anyBlank = list.some(function(a){ return !a.rawName; });
   if (anyBlank){
     /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-    return "Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    return "Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
   }
   /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
-    ". " + shareAsk(null, idea.title) + "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    ". " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
@@ -5884,9 +5880,12 @@ function shareLandingHeadline(idea, search){
        fall through to the generic friend banner. */
     var _duelTheirs = (typeof DUEL_IDEA_ID !== "undefined" && DUEL_IDEA_ID) ? duelIdeaById(DUEL_IDEA_ID) : null;
     if (_duelTheirs){
-      var db = document.createElement("div");
+      /* 2026-09-26 red-team a11y: a button, not a div with onclick, so
+         keyboard and screen-reader users can activate it too. */
+      var db = document.createElement("button");
+      db.type = "button";
       db.id = "pmc-friend-banner";
-      db.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      db.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
       db.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Costume duel: your friend picked " + _duelTheirs.title + ".</p>" +
         "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Answer 2 quick questions, see how you match up, and send your pick back.</p>";
       db.onclick = function(){ startDuelFlow(); };
