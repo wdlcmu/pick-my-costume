@@ -122,6 +122,10 @@ body{
 .chip{flex:0 0 auto;background:none;border:1px solid var(--line);border-radius:999px;min-height:44px;padding:10px 18px;font-size:14px;color:var(--muted);cursor:pointer;font-family:inherit;box-sizing:border-box;white-space:nowrap}
 .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .proofrow{transition:opacity .18s ease}
+/* Billy 2026-09-26: .proofrow sets display:flex, which overrides the hidden
+   attribute's UA display:none -- the Discover tabs changed highlight but all
+   three panels stayed visible. This restores hidden everywhere. */
+[hidden]{display:none!important}
 .proofrow.fading{opacity:0}
 .proofrow .proofmeta{display:block;font-size:10px;color:var(--muted);text-align:center;padding:0 2px 6px;line-height:1.2}
 /* Billy 2026-09-26: quiz goal-gradient bar. Starts at 15%, never 0%. */
@@ -4713,8 +4717,14 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   bsms.style.padding = "10px 0"; bsms.style.display = "block";
   bsms.onclick = function(){
     var sh = makeShare();
-    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=sms" + (sh.challenge ? "&ch=1" : "");
-    var fullText = sh.text + " " + link;
+    /* 2026-09-26 red-team: sh.text already embeds the ?s= link (o=generic),
+       so appending a second link doubled the URL in the SMS body -- and the
+       first (o=generic) link won the tap, defeating the o=sms attribution.
+       Rewrite the embedded link's origin instead. Every share-text builder
+       (shareTextFor all arms, buildCastShareText both branches) embeds the
+       link, so the replace always hits; if it ever missed, the text simply
+       keeps its generic link, never a duplicate. */
+    var fullText = sh.text.replace(/([?&]o=)generic/, "$1sms");
     Analytics.track("share_sms_tapped", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "sms", share_msg_variant: shareVariant(), challenge: sh.challenge}, xp()));
     /* 2026-09-26 red-team: the sms: deep link gives no send confirmation --
        tapping "Text it" then cancelling in Messages must NOT count as a
