@@ -464,12 +464,12 @@ footer a{color:var(--accent)}
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
       <!-- Experiment 8 (stream B, 2026-09-26): quiz start social proof.
-           Hypothesis: "165 people found their costume this week" reduces
-           cold-start hesitation. Refreshed 2026-09-26 (BuzzFeed recon):
-           count moved directly under the CTA with first-person microcopy.
-           Measure: quiz_started rate. -->
+           2026-09-26 honesty fix: the "165 people found their costume this
+           week" claim was unverifiable (no derivation script, Monday cron
+           never wrote its source/window) and violated the no-fabricated-
+           proof rule, so the proof line is removed. The hero keeps the
+           honest "5 questions, 2 minutes, free forever" line. -->
       <p class="fine" style="margin:8px 0 0;text-align:center">5 questions · 2 minutes · free forever</p>
-      <p class="fine" style="margin:6px 0 0;text-align:center"><strong id="hero-proof">165 people found their costume this week. You're next.</strong></p>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">137</span> costumes directly</p>
         <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
@@ -554,6 +554,7 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
+      <button class="ghost" id="btn-nextkid" type="button">Pick for another kid</button>
       <button class="ghost" id="btn-browse-results" type="button">Browse all 137 ideas</button>
     </div>
   </section>
@@ -2521,29 +2522,20 @@ function thumbArm(){
     return v;
   } catch(_){ return "photo"; }
 }
-function proofCount(){
-  /* Red-team 2026-09-26: the E-arm share copy hardcoded "165 people" while
-     the Monday proof-strip cron rewrites the hero number. Read the live hero
-     count so the share text can never contradict the site; the hardcoded
-     value is only a fallback for contexts without the hero in the DOM. */
-  try {
-    var el = document.getElementById("hero-proof");
-    if (el){ var m = /(\d[\d,]*)/.exec(el.textContent || ""); if (m) return m[1]; }
-  } catch(e){}
-  return "165";
-}
 function shareAsk(person, ideaTitle){
   var v = shareVariant(), p = person || "me";
   if (v === "A") return "Take this 2-min Halloween costume quiz and see what you get: ";
   if (v === "B") return "What do you think? Take the quiz: ";
   /* Experiment 6 (stream B, 2026-09-26): new share message variants E/F.
-     E = social proof (live hero count, never a stale hardcode).
+     E = library size (honest count, verifiable in the repo).
+     2026-09-26 honesty fix: E originally read
+     proofCount() + " people found their costume this week", an unverifiable
+     claim with no derivation -- replaced with the honest 137-idea count and
+     proofCount() removed.
      F = curiosity gap naming the sharer's pick.
      Measure: recipient quiz starts by share_msg_variant. */
-  if (v === "E") return proofCount() + " people found their costume this week. Take the 2-min quiz: ";
+  if (v === "E") return "137 costume ideas. Take the 2-min quiz: ";
   if (v === "F" && ideaTitle) return "I got " + ideaTitle + " - what will you get? Take the quiz: ";
-  /* Arm D falls back to the C (reciprocal) copy whenever it is not firing its
-     challenge text; the challenge text itself lives in shareTextFor only. */
   return "Take the 2-min quiz and send " + p + " what you get: ";
 }
 function shareTextFor(idea, sid, origin){
@@ -3242,6 +3234,9 @@ function buildAnswerChips(){
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
+  /* Next-kid rematch shows only for kid-flow results: the family flow plans
+     the household in one run, and other audiences have no sibling case. */
+  $("btn-nextkid").style.display = (state.answers.q1 && state.answers.q1.value === "kid") ? "" : "none";
   var ac = buildAnswerChips();
   if (ac) box.appendChild(ac);
   var pick = load("pmc_pick_v1");
@@ -5809,6 +5804,25 @@ $("btn-restart").onclick = function(){
   Analytics.track("quiz_started", p);
   renderQ();
 };
+/* 2026-09-26 next-kid rematch: families have 2+ kids (q5kid's "Mixed ages"
+   option exists because moms of 2+ bounced on the singular), and siblings
+   usually want DIFFERENT costumes, not one shared pick. From a kid-flow
+   result, one tap keeps the shared household answers (who = kid, Halloween
+   plan, effort) and re-asks only vibe + interest: a 2-tap quiz instead of 5.
+   More picks per session means more share attempts from the family persona,
+   which is where the loop has ever worked. quiz_started carries
+   retake_kind so next-kid sessions read separately from plain retakes. */
+function nextKid(){
+  var keep = {};
+  ["q1","qocc","q4"].forEach(function(k){ if (state.answers[k]) keep[k] = state.answers[k]; });
+  state.answers = keep;
+  clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
+  var p = viaShareProps(); p.is_retake = true; p.retake_kind = "next_kid";
+  Analytics.track("quiz_started", p);
+  state.qi = flowOrder().indexOf("q2");
+  renderQ();
+}
+$("btn-nextkid").onclick = nextKid;
 $("btn-return").onclick = function(){
   var last = load("pmc_last_v1");
   if (!last || !last.results) return;
