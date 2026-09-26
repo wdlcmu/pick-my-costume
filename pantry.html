@@ -40,6 +40,8 @@
   .check.on{border-color:var(--accent);background:var(--card2)}
   .check .tag{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:10px;
     padding:2px 7px;margin-left:auto;white-space:nowrap}
+  .check .emo{font-size:17px;line-height:1}
+  .chip .emo{font-size:13px}
   .actions{display:flex;gap:10px;margin:22px 0 6px}
   .btn{flex:1;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;min-height:52px}
   .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
@@ -124,6 +126,72 @@ try {
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+const SUPPLY_EMOJI = {
+  "scissors": "\u2702\uFE0F",
+  "tape": "\U0001FA79",
+  "paper-pen": "\U0001F4DD",
+  "tape-white": "\u2B1C",
+  "tape-silver": "\u26AA",
+  "tape-gray": "\U0001F518",
+  "tape-red": "\U0001F7E5",
+  "tape-yellow": "\U0001F7E8",
+  "tape-black": "\u2B1B",
+  "glue": "\U0001F9F4",
+  "safety-pins": "\U0001F4CE",
+  "markers": "\U0001F58A\uFE0F",
+  "stickers": "\u2B50",
+  "foil": "\u2728",
+  "balloons": "\U0001F388",
+  "paper-red": "\U0001F7E5",
+  "paper-yellow": "\U0001F7E8",
+  "paper-green": "\U0001F7E9",
+  "paper-blue": "\U0001F7E6",
+  "paper-black": "\u2B1B",
+  "paper-white": "\u2B1C",
+  "paper-orange": "\U0001F7E7",
+  "paper-pink": "\U0001FA77",
+  "paper-brown": "\U0001F7EB",
+  "paper-gray": "\U0001F518",
+  "cardboard": "\U0001F4E6",
+  "paper-bag": "\U0001F6CD\uFE0F",
+  "paper-plates": "\U0001F37D\uFE0F",
+  "newspaper": "\U0001F4F0",
+  "white-tshirt": "\U0001F455",
+  "tshirt": "\U0001F3BD",
+  "black-clothes": "\U0001F5A4",
+  "sweatsuit": "\U0001F9E5",
+  "bedsheet": "\U0001F6CF\uFE0F",
+  "pillowcase": "\U0001F4A4",
+  "socks": "\U0001F9E6",
+  "stuffing": "\u2601\uFE0F",
+  "headband": "\U0001F380",
+  "red-headband": "\U0001F534",
+  "sunglasses": "\U0001F60E",
+  "yarn": "\U0001F9F6",
+  "hat": "\U0001F9E2",
+  "paint-red": "\U0001F484",
+  "paint-black": "\u26AB",
+  "paint-white": "\u26AA",
+  "paint-green": "\U0001F7E2",
+  "paint-brown": "\U0001F7E4",
+  "paint-blue": "\U0001F535",
+  "paint-pink": "\U0001FA77",
+  "paint-gold": "\U0001F31F",
+  "paint-purple": "\U0001F7E3",
+  "paint-yellow": "\U0001F7E1",
+  "paint-gray": "\U0001F518",
+  "felt": "\U0001F308",
+  "pipe-cleaners": "\U0001F3A8"
+};
+function emo(id){
+  const e = id && SUPPLY_EMOJI[id];
+  return e ? '<span class="emo" aria-hidden="true">' + e + '</span> ' : '';
+}
+function repId(m){
+  for (const g of (m.g || [])) for (const id of (g || [])) if (id && SUPPLY_EMOJI[id]) return id;
+  return null;
+}
 function groupOk(g){ return g.some(id => id && ticked.has(id)); }
 function reqOk(m){ return m.g.every(groupOk); }
 
@@ -136,7 +204,7 @@ function renderGroups(){
         '<label class="check' + (ticked.has(p.id) ? ' on' : '') + '">' +
         '<input type="checkbox" data-id="' + p.id + '"' + (ticked.has(p.id) ? ' checked' : '') +
         ' aria-label="' + esc(p.label) + '">' +
-        '<span>' + esc(p.label) + '</span>' +
+        '<span>' + emo(p.id) + esc(p.label) + '</span>' +
         (p.staple ? '<span class="tag">assumed</span>' : '') + '</label>'
       ).join('') + '</div></fieldset>';
   }).join('');
@@ -152,8 +220,9 @@ function renderGroups(){
 
 function score(it){
   const missing = [];
-  it.mats.forEach(m => { if (!reqOk(m)) missing.push(m.t); });
-  return { it: it, have: it.mats.length - missing.length, total: it.mats.length, missing: missing };
+  const missingIds = [];
+  it.mats.forEach(m => { if (!reqOk(m)) { missing.push(m.t); missingIds.push(repId(m)); } });
+  return { it: it, have: it.mats.length - missing.length, total: it.mats.length, missing: missing, missingIds: missingIds };
 }
 
 function normUnlock(t){
@@ -172,7 +241,7 @@ function cardHtml(r, i){
   const miss = r.missing.length === 0
     ? '<p class="ready">Nothing to buy. You are ready.</p>'
     : '<div class="chips"><span class="chip-label">Still need:</span>' +
-      r.missing.map(m => '<span class="chip">' + esc(m) + '</span>').join('') + '</div>';
+      r.missing.map((m, i) => '<span class="chip">' + emo(r.missingIds[i]) + esc(m) + '</span>').join('') + '</div>';
   return '<div class="card' + cls + '">' +
     '<img class="thumb" src="photos/' + r.it.id + '.webp" alt="" loading="lazy" onerror="this.remove()">' +
     '<div class="rank">#' + (i + 1) + '</div>' +
