@@ -492,7 +492,7 @@ footer a{color:var(--accent)}
         <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
         <p>Tap &ldquo;Claim this costume&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
       </div>
-      <p>Your answers are scored against 100 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
+      <p>Your answers are scored against 137 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
       <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
@@ -1155,29 +1155,11 @@ function answerTags(){
   return tags;
 }
 
-/* Budget is a ceiling: a bigger budget includes cheaper bands. */
-var BUDGET_OK = {
-  low:  ["low","diy"],
-  mid:  ["mid","low","diy"],
-  high: ["high","mid","low","diy"],
-  diy:  ["diy"]
-};
-
 function scoreIdeas(full){
   var aud = state.answers.q1.value;
   var tags = answerTags();
-  /* Budget is a ceiling: a bigger budget includes cheaper bands. Skipped when the flow has no budget question (kid flow). */
-  var budAns = state.answers.q3;
-  var pool;
-  if (budAns) {
-    var bud = budAns.value;
-    var okBudgets = BUDGET_OK[bud] || [bud];
-    pool = IDEAS.filter(function(i){
-      return i.audience.indexOf(aud) !== -1 && i.budget.some(function(b){ return okBudgets.indexOf(b) !== -1; });
-    });
-  } else {
-    pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
-  }
+  /* q3 (budget) was retired: the pool is audience-only. */
+  var pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
   if (pool.length < 3) {
     pool = IDEAS.filter(function(i){ return i.audience.indexOf(aud) !== -1; });
   }
@@ -1223,11 +1205,9 @@ function scoreIdeas(full){
          (face-covering mask, box head, stilts) can never appear on a bar
          path, even when the pool is thin -- the old <3 fallback served the
          banned idea anyway. Backfill from the bar-safe audience pool
-         (budget respected as in the main pool) so the top 3 never comes
-         back short. */
+         so the top 3 never comes back short. */
       var _fill = IDEAS.filter(function(i){
         if (i.audience.indexOf(aud) === -1 || !_barOk(i) || _barPool.indexOf(i) !== -1) return false;
-        if (budAns && okBudgets && !i.budget.some(function(b){ return okBudgets.indexOf(b) !== -1; })) return false;
         return true;
       });
       _barPool = _barPool.concat(_fill);
@@ -3107,7 +3087,7 @@ function renderBrowse(){
         for (_ti = 0; _ti < _tt.length; _ti++){
           if (idea.title.toLowerCase().indexOf(_tt[_ti]) < 0) return;
         }
-        if (!_tt.length && !_spec.aliasIds.length && !_spec.filters.length) return;
+        if (!_tt.length && (_spec.aliasIds.length || !_spec.filters.length)) return;
       }
       for (var _fi = 0; _fi < _spec.filters.length; _fi++){
         if (!_spec.filters[_fi](idea)) return;
