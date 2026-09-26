@@ -32,6 +32,14 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no email, no checkout. Answer 5 questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store."}},{"@type":"Question","name":"Do I need to download anything?","acceptedAnswer":{"@type":"Answer","text":"No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits."}},{"@type":"Question","name":"What if I do not like the ideas I get?","acceptedAnswer":{"@type":"Answer","text":"Answer the quiz differently and try again, or skip the quiz and browse all 137 costume guides yourself. Every guide shows what you need, what it costs, and how long it takes."}}]}
 </script>
+<!-- HowTo for the quiz flow (AI-citation onsite checklist: answer-shape).
+     Honest data only: "2 minutes" and "free forever" are the landing's own
+     claims; 137 is the real bank count; every step mirrors the visible
+     "How it works" strip below verbatim. Costume build times and prices
+     live on each /c/ guide's own HowTo, not here. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HowTo","name":"How to pick your Halloween costume","description":"Answer 5 quick questions and get 3 costume ideas picked for you from 137 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer 5 questions","text":"Five quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 137 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Claim it and make it","text":"Tap \"Claim this costume\" to save it, text it to your group, and open the guide for materials, cost, and build steps."}]}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
 /* PostHog: anonymous usage stats only. Quiz answers are never sent. Session replay is off. */
@@ -305,6 +313,14 @@ footer a{color:var(--accent)}
 .homefaq summary{font-weight:700;cursor:pointer;font-size:15px}
 .homefaq summary::-webkit-details-marker{display:none}
 .homefaq p{margin:8px 0 4px;color:var(--muted);font-size:15px;line-height:1.55}
+/* Homepage How it works (AI-citation onsite checklist: answer-shape).
+   Static crawlable 3-step strip; the HowTo JSON-LD in <head> mirrors these
+   steps verbatim, so structured data never runs ahead of the page. */
+.homehow{margin:56px auto 0;max-width:640px;text-align:left}
+.homehow h2{font-size:20px;margin:0 0 8px}
+.homehow ol{margin:0;padding:0 0 0 22px}
+.homehow li{margin:0 0 10px;color:var(--muted);font-size:15px;line-height:1.55}
+.homehow li b{color:var(--ink)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
 /* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
@@ -445,7 +461,7 @@ footer a{color:var(--accent)}
            collections (Trending / Make tonight / New) instead of stacked
            rails, so discovery never competes with the quiz CTA. -->
       <div class="discover" id="discover">
-        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/trending.html" style="color:var(--accent)">Top 10 nationally →</a></p>
+        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/trending.html" style="color:var(--accent)">Top 10 nationally →</a> · <a href="/compare.html" style="color:var(--accent)">Easy classics, compared →</a></p>
         <div class="chiprow" role="tablist" aria-label="Costume collections">
           <button class="chip on" role="tab" aria-selected="true" aria-controls="row-trending" data-tab="row-trending" type="button">Trending</button>
           <button class="chip" role="tab" aria-selected="false" aria-controls="row-tonight" data-tab="row-tonight" type="button">Make tonight</button>
@@ -618,6 +634,19 @@ footer a{color:var(--accent)}
     </div>
   </section>
 
+  <!-- Homepage How it works (AI-citation onsite checklist: answer-shape).
+       Static, crawlable 3-step strip. The HowTo JSON-LD in <head> mirrors
+       these steps verbatim, so the structured data never runs ahead of
+       what visitors can read. -->
+  <section class="homehow" aria-label="How it works">
+    <h2>How it works</h2>
+    <ol>
+      <li><b>Answer 5 questions.</b> Five quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever.</li>
+      <li><b>Get 3 ideas picked for you.</b> Your answers are scored against 137 hand-picked costume ideas. Each idea comes with a one-line how-to.</li>
+      <li><b>Claim it and make it.</b> Tap "Claim this costume" to save it, text it to your group, and open the guide for materials, cost, and build steps.</li>
+    </ol>
+  </section>
+
   <section class="homefaq" aria-label="Frequently asked questions">
     <h2>Quick answers</h2>
     <details>
@@ -751,7 +780,7 @@ var QUESTIONS = [
   {id:"qocc", title:"What's the Halloween plan?", hint:"So the pick fits the night.", options:[
     {label:"Trick-or-treating", tags:{occtreat:2}},
     {label:"House party", tags:{occparty:2}},
-    {label:"Bar / club night", tags:{occbar:2}},
+    {label:"Bar / club night", value:"bar", tags:{occbar:2}},
     {label:"Handing out candy", tags:{occcandy:2}},
     {label:"Low-key night in", tags:{occlowkey:2}}
   ]},
@@ -4819,7 +4848,12 @@ function armShareOnce(btn){
     statusEl.textContent = msg;
     rearmShare(); /* the share settled: sent, dismissed, or copied */
     if (ok){
-      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic"});
+      /* 2026-09-26 red-team W3: this event fired under the name
+         "share_text_copied" even when the text went out through the native
+         share sheet (never copied). The via discriminator keeps the event
+         name stable for dashboards while telling the two apart. triedShare
+         is var-hoisted and always assigned before done() can run. */
+      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic", via: triedShare ? "share_sheet" : "clipboard"});
       /* Browse share text comes from SHARE.textTemplate (never the challenge text). */
       Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: false});
       if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"});
@@ -5069,7 +5103,7 @@ function isGenuineShareArrival(search){
 function shareLandingHeadline(idea, search){
   var q = search || "";
   var isShare = isGenuineShareArrival(q);
-  var isChallenge = /[?&]ch=1/.test(q);
+  var isChallenge = /[?&]ch=1(?:&|$)/.test(q);
   if (isShare && isChallenge) return "Your friend can make " + idea.title + " with stuff they own. See what YOU can make.";
   if (isShare) return "Your friend picked " + idea.title + ". What would you pick?";
   return idea.title;
