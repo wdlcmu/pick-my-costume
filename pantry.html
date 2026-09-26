@@ -45,7 +45,8 @@
   .actions{display:flex;gap:10px;margin:22px 0 6px}
   .searchrow{margin:14px 0 2px}
   .searchrow input{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--card);
-    color:var(--ink);font-size:15px;padding:13px 14px;min-height:52px;-webkit-appearance:none;appearance:none}
+    color:var(--ink);font-size:16px;padding:13px 14px;min-height:52px;-webkit-appearance:none;appearance:none}
+  /* 2026-09-26 red-team D12: was 15px, which triggers iOS Safari auto-zoom on focus. 16px+ avoids it. */
   .searchrow input::placeholder{color:var(--muted)}
   .searchrow input:focus{outline:2px solid var(--accent);outline-offset:1px}
   .matchnote{font-size:12.5px;color:var(--muted);margin:6px 2px 0;display:none}
@@ -85,6 +86,7 @@
     padding:14px 16px;font-size:14px;line-height:1.5;margin:0 0 16px}
   .challenge b{color:var(--accent)}
   .challenge .csub{color:var(--muted);font-size:13px;margin:6px 0 0}
+  .cdismiss{margin-top:8px;min-height:44px;padding:8px 18px;border-radius:10px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:14px;cursor:pointer;font-family:inherit}
   .foot{margin-top:28px;color:var(--muted);font-size:13px;line-height:1.6;text-align:center}
   .empty{color:var(--muted);font-size:14px;text-align:center;padding:18px 0}
 </style>
@@ -175,60 +177,60 @@ function esc(s){
 
 const SUPPLY_EMOJI = {
   "scissors": "\u2702\uFE0F",
-  "tape": "\U0001FA79",
-  "paper-pen": "\U0001F4DD",
+  "tape": "🩹",
+  "paper-pen": "📝",
   "tape-white": "\u2B1C",
   "tape-silver": "\u26AA",
-  "tape-gray": "\U0001F518",
-  "tape-red": "\U0001F7E5",
-  "tape-yellow": "\U0001F7E8",
+  "tape-gray": "🔘",
+  "tape-red": "🟥",
+  "tape-yellow": "🟨",
   "tape-black": "\u2B1B",
-  "glue": "\U0001F9F4",
-  "safety-pins": "\U0001F4CE",
-  "markers": "\U0001F58A\uFE0F",
+  "glue": "🧴",
+  "safety-pins": "📎",
+  "markers": "🖊\uFE0F",
   "stickers": "\u2B50",
   "foil": "\u2728",
-  "balloons": "\U0001F388",
-  "paper-red": "\U0001F7E5",
-  "paper-yellow": "\U0001F7E8",
-  "paper-green": "\U0001F7E9",
-  "paper-blue": "\U0001F7E6",
+  "balloons": "🎈",
+  "paper-red": "🟥",
+  "paper-yellow": "🟨",
+  "paper-green": "🟩",
+  "paper-blue": "🟦",
   "paper-black": "\u2B1B",
   "paper-white": "\u2B1C",
-  "paper-orange": "\U0001F7E7",
-  "paper-pink": "\U0001FA77",
-  "paper-brown": "\U0001F7EB",
-  "paper-gray": "\U0001F518",
-  "cardboard": "\U0001F4E6",
-  "paper-bag": "\U0001F6CD\uFE0F",
-  "paper-plates": "\U0001F37D\uFE0F",
-  "newspaper": "\U0001F4F0",
-  "white-tshirt": "\U0001F455",
-  "tshirt": "\U0001F3BD",
-  "black-clothes": "\U0001F5A4",
-  "sweatsuit": "\U0001F9E5",
-  "bedsheet": "\U0001F6CF\uFE0F",
-  "pillowcase": "\U0001F4A4",
-  "socks": "\U0001F9E6",
+  "paper-orange": "🟧",
+  "paper-pink": "🩷",
+  "paper-brown": "🟫",
+  "paper-gray": "🔘",
+  "cardboard": "📦",
+  "paper-bag": "🛍\uFE0F",
+  "paper-plates": "🍽\uFE0F",
+  "newspaper": "📰",
+  "white-tshirt": "👕",
+  "tshirt": "🎽",
+  "black-clothes": "🖤",
+  "sweatsuit": "🧥",
+  "bedsheet": "🛏\uFE0F",
+  "pillowcase": "💤",
+  "socks": "🧦",
   "stuffing": "\u2601\uFE0F",
-  "headband": "\U0001F380",
-  "red-headband": "\U0001F534",
-  "sunglasses": "\U0001F60E",
-  "yarn": "\U0001F9F6",
-  "hat": "\U0001F9E2",
-  "paint-red": "\U0001F484",
+  "headband": "🎀",
+  "red-headband": "🔴",
+  "sunglasses": "😎",
+  "yarn": "🧶",
+  "hat": "🧢",
+  "paint-red": "💄",
   "paint-black": "\u26AB",
   "paint-white": "\u26AA",
-  "paint-green": "\U0001F7E2",
-  "paint-brown": "\U0001F7E4",
-  "paint-blue": "\U0001F535",
-  "paint-pink": "\U0001FA77",
-  "paint-gold": "\U0001F31F",
-  "paint-purple": "\U0001F7E3",
-  "paint-yellow": "\U0001F7E1",
-  "paint-gray": "\U0001F518",
-  "felt": "\U0001F308",
-  "pipe-cleaners": "\U0001F3A8"
+  "paint-green": "🟢",
+  "paint-brown": "🟤",
+  "paint-blue": "🔵",
+  "paint-pink": "🩷",
+  "paint-gold": "🌟",
+  "paint-purple": "🟣",
+  "paint-yellow": "🟡",
+  "paint-gray": "🔘",
+  "felt": "🌈",
+  "pipe-cleaners": "🎨"
 };
 function emo(id){
   const e = id && SUPPLY_EMOJI[id];
@@ -243,7 +245,40 @@ function reqOk(m){ return m.g.every(groupOk); }
 
 function supplyHit(labelText, q){
   q = (q || '').toLowerCase().trim();
-  return !q || labelText.toLowerCase().indexOf(q) !== -1;
+  if (!q) return true;
+  var label = labelText.toLowerCase();
+  if (label.indexOf(q) !== -1) return true;
+  /* Experiment 7 (stream B, 2026-09-26): typo-tolerant pantry search.
+     Hypothesis: "scisors" returning nothing is a dead end. Fuzzy match
+     with Levenshtein distance <= 2 catches typos.
+     Measure: search success rate (non-zero results).
+     2026-09-26 red-team D7: a flat <= 2 threshold is far too loose for short
+     queries. "tape" (4 chars) matched "paper" (distance 2), so searching
+     "tape" returned 32 of 55 supplies including every paper color. Scale the
+     threshold by query length: 1 typo for short queries, 2 for longer ones. */
+  var maxDist = Math.max(1, Math.floor(q.length / 4));
+  var words = label.split(/[^a-z0-9]+/);
+  for (var i = 0; i < words.length; i++){
+    if (words[i].length < 3) continue;
+    if (levenshtein(words[i], q) <= maxDist) return true;
+  }
+  return false;
+}
+/* Levenshtein distance for typo tolerance. */
+function levenshtein(a, b){
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  var m = [], i, j;
+  for (i = 0; i <= b.length; i++) m[i] = [i];
+  for (j = 0; j <= a.length; j++) m[0][j] = j;
+  for (i = 1; i <= b.length; i++){
+    for (j = 1; j <= a.length; j++){
+      m[i][j] = b.charAt(i-1) === a.charAt(j-1)
+        ? m[i-1][j-1]
+        : Math.min(m[i-1][j-1] + 1, m[i][j-1] + 1, m[i-1][j] + 1);
+    }
+  }
+  return m[b.length][a.length];
 }
 function applySearch(){
   const input = document.getElementById('supply-search');
@@ -380,11 +415,17 @@ function applyChallenge(){
   const banner = document.getElementById('challenge-banner');
   if (banner) {
     banner.hidden = false;
-    banner.innerHTML = title
+    banner.innerHTML = (title
       ? 'Your friend can make <b>' + esc(title) + '</b> with what is in their house. ' +
         'We ticked their supplies below. Untick what you do not own and see what <b>you</b> can make.'
       : 'Your friend challenged you to a pantry cook-off. ' +
-        'We ticked their supplies below. Untick what you do not own and see what <b>you</b> can make.';
+        'We ticked their supplies below. Untick what you do not own and see what <b>you</b> can make.') +
+      /* 2026-09-26 red-team D5: the dare banner had no dismiss. Once the
+         recipient starts unticking, the banner has served its purpose but
+         kept shouting. A small dismiss is reversible and low-risk. */
+      ' <button type="button" id="challenge-dismiss" class="cdismiss">Got it</button>';
+    const dis = document.getElementById('challenge-dismiss');
+    if (dis) dis.addEventListener('click', function(){ banner.hidden = true; });
   }
   track('pantry_challenge_opened', { supply_count: ids.length, pick: q.pick || null, share_id: q.s || null });
 }
@@ -442,7 +483,7 @@ function cardHtml(r, i){
     '<h3>' + esc(r.it.title) + '</h3>' +
     '<p class="have">You have <b>' + r.have + ' of ' + r.total + '</b> requirements</p>' +
     miss +
-    '<a class="go" href="/c/' + r.it.id + '">How to make it</a></div>';
+    '<a class="go" href="index.html?pick=' + r.it.id + '">How to make it</a></div>';
 }
 
 function render(){
@@ -489,6 +530,36 @@ function render(){
       ).join('');
     lastUnlocks = unlocks;
     document.getElementById('copylist').addEventListener('click', copyUnlocks);
+    /* Experiment 2 (stream B, 2026-09-26): Pantry challenge viral nudge.
+       Hypothesis: the ?kit= dare link is powerful but undiscovered. A
+       "dare your friends" CTA after pantry completion drives viral loops.
+       Measure: pantry_challenge_started -> pantry_challenge_opened. */
+    if (!document.getElementById('dare-cta')) {
+      var dareDiv = document.createElement('div');
+      dareDiv.id = 'dare-cta';
+      dareDiv.style.cssText = 'margin-top:16px;padding:16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;text-align:center;';
+      dareDiv.innerHTML = '<p style="margin:0 0 8px;font-weight:600;">Think your friends can beat your pantry?</p>' +
+        '<button class="btn btn-cta" id="dare-btn" type="button" style="margin-top:4px;">Dare 3 friends to beat me</button>';
+      uh.appendChild(dareDiv);
+      document.getElementById('dare-btn').addEventListener('click', function(){
+        var tickedIds = [];
+        try { tickedIds = JSON.parse(localStorage.getItem('pantry2') || '[]'); } catch(e){}
+        if (typeof Analytics !== 'undefined') Analytics.track('pantry_challenge_started', {ticked_count: tickedIds.length});
+        /* 2026-09-26 red-team D13: this used to join raw supply IDs with commas
+           (ticked.slice(0,12).join(',')), but kitDecode expects dot-separated
+           base36 indices — so every dare link decoded to empty and the
+           recipient never saw the challenge. Use the real kitEncode. */
+        var kit = kitEncode(tickedIds);
+        var dareLink = 'https://pickmycostume.com/pantry?kit=' + kit;
+        var dareText = 'I can make ' + unlocks.reduce(function(a,u){return a+u.ideas.length;},0) + ' costumes with what is in my house. Beat my pantry: ' + dareLink;
+        if (navigator.share) {
+          navigator.share({title: 'Beat my pantry', text: dareText}).catch(function(){});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(dareText);
+          this.textContent = 'Copied. Paste it to 3 friends.';
+        }
+      });
+    }
   } else { uh.hidden = true; uh.innerHTML = ''; lastUnlocks = []; }
 
   const put = (id, list, emptyMsg) => {
