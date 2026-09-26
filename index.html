@@ -19,6 +19,13 @@
 <meta name="twitter:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
 <meta name="twitter:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
 <meta name="twitter:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
+<!-- Organization entity anchor (AI-citation onsite checklist item 15):
+     cheap standard-practice structured data so assistants and search
+     crawlers have a canonical entity for the site. Honest facts only;
+     no invented sameAs links. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","@id":"https://pickmycostume.com/#organization","name":"Pick My Costume","url":"https://pickmycostume.com/","description":"A free Halloween costume picker. A few quick questions, three ideas, no email, no account."}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
 /* PostHog: anonymous usage stats only. Quiz answers are never sent. Session replay is off. */
@@ -2379,7 +2386,11 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     card.style.cursor = "pointer";
     card.addEventListener("click", function(e){
       var t = e.target;
-      if (t && t.closest && (t.closest("button") || t.closest("a"))) return;
+      /* E17 lesson + 2026-09-26 red-team: the card-level tap must never
+         swallow control taps. Match the runner-up handler's guard: buttons,
+         links, AND form controls are excluded, so a future input added to a
+         hero card without its own stopPropagation cannot re-run doPick. */
+      if (t && t.closest && (t.closest("button") || t.closest("a") || t.closest("textarea") || t.closest("input") || t.closest("select"))) return;
       try { if (window.getSelection && window.getSelection().toString()) return; } catch(_){}
       doPick();
     });
@@ -3955,10 +3966,13 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=sms" + (sh.challenge ? "&ch=1" : "");
     var fullText = sh.text + " " + link;
     Analytics.track("share_sms_tapped", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "sms", share_msg_variant: shareVariant(), challenge: sh.challenge}, xp()));
-    /* sms:?&body= works on iOS; sms:?body= on Android. Use the iOS form. */
+    /* 2026-09-26 red-team: the sms: deep link gives no send confirmation --
+       tapping "Text it" then cancelling in Messages must NOT count as a
+       share_created (it was inflating the completion metric the SMS
+       experiment measures against share_sms_tapped). A completed send is
+       untrackable here; the tap is the honest event.
+       sms:?&body= works on iOS; sms:?body= on Android. iOS form used. */
     bsms.href = "sms:?&body=" + encodeURIComponent(fullText);
-    /* Count as share_created: user took a concrete send action. */
-    Analytics.track("share_created", Object.assign({share_id: sh.sid, idea_id: idea.id, share_origin: "sms", share_msg_variant: shareVariant(), challenge: sh.challenge}, xp()));
     if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "sms"}, xp()));
     st.textContent = "Opening messages with your costume text ready.";
     cur = makeShare(); ta.value = cur.text;
