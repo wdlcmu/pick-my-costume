@@ -407,6 +407,20 @@ footer a{color:var(--accent)}
 /* Z5 tap targets: pinpoint chip buttons must clear 44x44px on touch. */
 .pinpoint-chips button{min-height:44px;min-width:44px;padding:10px 18px;box-sizing:border-box}
 .pinpoint-note{font-size:13px;color:var(--muted);margin:6px 0 0;min-height:18px}
+/* 2026-09-26 duel: lightweight 2-question recipient flow. Dark-theme cards
+   matching the site; tap targets clear 44px (Z5 rule). */
+.duel-hero-photo{width:100%;max-width:280px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;display:block;margin:12px auto}
+.duel-vs{display:flex;gap:10px;align-items:stretch;margin:16px 0}
+.duel-fighter{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center;min-width:0}
+.duel-fighter img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;display:block}
+.duel-fighter .who{font-size:12px;color:var(--muted);margin:8px 0 2px}
+.duel-fighter .what{font-weight:800;font-size:15px;line-height:1.3}
+.duel-vs-badge{align-self:center;font-size:22px;font-weight:900;color:var(--accent);flex:0 0 auto}
+.duel-verdict{background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:16px;margin:16px 0;font-size:16px}
+.duel-verdict .vlabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800;margin-bottom:6px}
+.duel-triple{font-size:14px;color:var(--muted);margin:8px 0 0}
+.duel-step{display:none}
+.duel-step.on{display:block}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
@@ -472,8 +486,8 @@ footer a{color:var(--accent)}
           <!-- Proof-strip photo-quality blocklist (never promote): neon-demon-hunter (taste + never top-saved, permanent), wizard (adult-presenting photo). tin-hero re-verified 2026-09-26 (regenerated: kid now, cleared). -->
           <div class="proofrow" id="row-trending" role="tabpanel" aria-label="Popular costumes this week">
             <a href="/c/snow-sisters" role="listitem"><span class="proofbadge">🔥 #1</span><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
-            <a href="/c/lost-tourist" role="listitem"><span class="proofbadge">🔥 #2</span><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-            <a href="/c/blue-dog-family" role="listitem"><span class="proofbadge">🔥 #3</span><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+            <a href="/c/blue-dog-family" role="listitem"><span class="proofbadge">🔥 #2</span><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+            <a href="/c/lost-tourist" role="listitem"><span class="proofbadge">🔥 #3</span><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
             <a href="/c/mermaid-crew" role="listitem"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
             <a href="/c/ghost-hunters" role="listitem"><img src="photos/ghost-hunters.webp" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
             <a href="/c/little-pig-family" role="listitem"><img src="photos/little-pig-family.webp" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
@@ -536,6 +550,55 @@ footer a{color:var(--accent)}
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
       <button class="ghost" id="btn-browse-results" type="button">Browse all 137 ideas</button>
+    </div>
+  </section>
+
+  <!-- DUEL: lightweight 2-question recipient flow for ?duel= arrivals -->
+  <section class="screen" id="s-duel">
+    <div class="duel-step on" id="duel-s1">
+      <p class="progress">Costume duel</p>
+      <h2 class="q-title">Your friend picked <span id="duel-friend-name"></span></h2>
+      <img class="duel-hero-photo" id="duel-friend-photo" src="" alt="">
+      <p class="q-hint">Two quick questions and we will pick yours, then see how you match up.</p>
+      <p style="font-weight:700;margin:18px 0 8px">Who is the costume for?</p>
+      <div class="opts" id="duel-q1"></div>
+    </div>
+    <div class="duel-step" id="duel-s2">
+      <p class="progress">Costume duel</p>
+      <h2 class="q-title">How much effort?</h2>
+      <p class="q-hint">Be honest. Your couch will know.</p>
+      <div class="opts" id="duel-q2"></div>
+      <div class="navrow">
+        <button class="ghost" id="duel-back1" type="button">&larr; Back</button>
+      </div>
+    </div>
+    <div class="duel-step" id="duel-s3">
+      <p class="progress">Costume duel</p>
+      <h2 class="q-title">You vs your friend</h2>
+      <div class="duel-vs">
+        <div class="duel-fighter">
+          <img id="duel-v-friend-img" src="" alt="">
+          <div class="who">Your friend</div>
+          <div class="what" id="duel-v-friend-name"></div>
+        </div>
+        <div class="duel-vs-badge">VS</div>
+        <div class="duel-fighter">
+          <img id="duel-v-my-img" src="" alt="">
+          <div class="who">You</div>
+          <div class="what" id="duel-v-my-name"></div>
+        </div>
+      </div>
+      <div class="duel-verdict">
+        <div class="vlabel">The verdict</div>
+        <div id="duel-verdict-text"></div>
+        <p class="duel-triple" id="duel-triple"></p>
+      </div>
+      <button class="cta" id="duel-share" type="button">Send them your pick</button>
+      <p class="fine" id="duel-share-status" style="text-align:center;min-height:20px"></p>
+      <div class="navrow" style="margin-top:8px">
+        <button class="ghost" id="duel-retry" type="button">Try different answers</button>
+        <button class="ghost" id="duel-fullquiz" type="button">Take the full quiz instead</button>
+      </div>
     </div>
   </section>
 
@@ -2522,7 +2585,7 @@ function buildVoteText(results, sid){
       var ins = INSTRUCTIONS[idea.id];
       tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
     }
-    var url = "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=vote";
+    var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=vote";
     lines.push((i + 1) + ". " + idea.title + (tri ? " (" + tri + ")" : "") + " - " + url);
   });
   var d = daysToHalloween();
@@ -2641,21 +2704,33 @@ function duelTriple(idea){
    audience tags for duo potential, the effort field for the easy match. */
 function duelVerdict(mine, theirs){
   var groupish = function(a){ return (a || []).indexOf("family") >= 0 || (a || []).indexOf("group") >= 0; };
-  if (groupish(mine.audience) && groupish(theirs.audience)) return "Duo potential: we are both looking at group-friendly builds.";
+  if (mine.id === theirs.id) return "Identical picks. You two are either soulmates or sharing a brain.";
+  if (groupish(mine.audience) && groupish(theirs.audience)) return "Both going big-group energy. The Halloween party just got a theme.";
   var easyish = function(idea){
     if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[idea.id]) return false;
     return /^easy/i.test(INSTRUCTIONS[idea.id].effort || "");
   };
-  if (easyish(mine) && easyish(theirs)) return "Matched on easy: both builds are easy.";
-  return "Two different lanes. The group chat will have opinions.";
+  if (easyish(mine) && easyish(theirs)) return "Both low-effort, both brilliant. Efficiency is a costume too.";
+  return "Totally different lanes, and honestly both strong. May the best costume win.";
 }
 function buildDuelShareText(mine, theirs, sid){
-  var url = "pickmycostume.com/c/" + mine.id + "?s=" + sid + "&o=duel";
+  /* P1-1: the share-back carries ?duel=<my pick> so the sender's quiz can
+     render the compare the other way, and the https:// scheme so every
+     client linkifies it. */
+  var url = "https://pickmycostume.com/c/" + mine.id + "?s=" + sid + "&o=duel&duel=" + mine.id;
   var tri = duelTriple(mine);
   if (mine.id === theirs.id){
     return "Great minds: we both got " + mine.title + (tri ? " (" + tri + ")" : "") + " on the costume quiz. " + url;
   }
-  return "I took the costume quiz and got " + mine.title + (tri ? " (" + tri + ")" : "") + ". You got " + theirs.title + ". " + duelVerdict(mine, theirs) + " " + url;
+  /* Billy 2026-09-26: fun competition, never a put-down. The challenge is
+     playful — both outcomes are good, the fun is in the matchup. */
+  var challenges = [
+    "Costume duel: I got " + mine.title + ". Your turn, let's see what the quiz deals you. ",
+    "I took the costume quiz and got " + mine.title + ". I challenge you to beat it. ",
+    "The quiz gave me " + mine.title + ". Think you've got a better one in you? "
+  ];
+  var pick = challenges[Math.floor(Math.random() * challenges.length)];
+  return pick + url;
 }
 /* The results-page duel panel. Rendered by renderResults right after the
    hero card, only for genuine share arrivals carrying ?duel=. */
@@ -2678,39 +2753,7 @@ function buildDuelBox(ownIdea){
   dbtn.type = "button"; dbtn.className = "ghost";
   dbtn.textContent = "Send them your pick";
   var dst = document.createElement("div"); dst.className = "status"; dst.style.marginTop = "6px";
-  dbtn.onclick = function(){
-    var rearmShare = armShareOnce(dbtn);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sid = newShareId();
-    var text = buildDuelShareText(mine, theirs, sid);
-    function trackShareback(via){
-      Analytics.track("duel_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "duel", duel_idea_id: theirs.id, own_idea_id: mine.id, share_msg_variant: shareVariant(), via: via});
-      Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "duel"});
-    }
-    function doneShare(ok, msg){
-      dst.textContent = msg;
-      rearmShare();
-      if (ok) trackShareback("share_sheet");
-    }
-    if (navigator.share){
-      try {
-        navigator.share({title: "Pick My Costume", text: text}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){
-        doCopy(text, function(ok, msg){
-          dst.textContent = msg; rearmShare();
-          if (ok) trackShareback("clipboard");
-        });
-      }
-    } else {
-      doCopy(text, function(ok, msg){
-        dst.textContent = msg; rearmShare();
-        if (ok) trackShareback("clipboard");
-      });
-    }
-  };
+  dbtn.onclick = function(){ duelShareback(mine, theirs, dbtn, dst); };
   drow.appendChild(dbtn);
   dbox.appendChild(dh); dbox.appendChild(dp); dbox.appendChild(drow); dbox.appendChild(dst);
   var cprops = viaShareProps();
@@ -2718,6 +2761,148 @@ function buildDuelBox(ownIdea){
   Analytics.track("duel_compare_shown", cprops);
   return dbox;
 }
+/* Shared share-back: fires the native share sheet (or clipboard fallback)
+   exactly once per tap; the armShareOnce guard re-arms after it settles.
+   Used by the results-page duel box and the 2-question duel flow. */
+function duelShareback(mine, theirs, btn, statusEl){
+  var rearmShare = armShareOnce(btn);
+  if (!rearmShare) return; /* double-tap: a share is already in flight */
+  var sid = newShareId();
+  var text = buildDuelShareText(mine, theirs, sid);
+  function trackShareback(via){
+    Analytics.track("duel_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "duel", duel_idea_id: theirs.id, own_idea_id: mine.id, share_msg_variant: shareVariant(), via: via});
+    Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "duel"});
+  }
+  function doneShare(ok, msg){
+    statusEl.textContent = msg;
+    rearmShare();
+    if (ok) trackShareback("share_sheet");
+  }
+  if (navigator.share){
+    try {
+      navigator.share({title: "Pick My Costume", text: text}).then(
+        function(){ doneShare(true, "Shared."); },
+        function(){ doneShare(false, ""); }
+      );
+    } catch(e){
+      doCopy(text, function(ok, msg){
+        statusEl.textContent = msg; rearmShare();
+        if (ok) trackShareback("clipboard");
+      });
+    }
+  } else {
+    doCopy(text, function(ok, msg){
+      statusEl.textContent = msg; rearmShare();
+      if (ok) trackShareback("clipboard");
+    });
+  }
+}
+/* 2026-09-26 duel: the lightweight 2-question recipient flow. For genuine
+   ?duel= arrivals the banner launches this instead of the full 5-question
+   quiz: friend's costume -> 2 quick questions -> you-vs-them verdict ->
+   share-back. The recipient's pick is drawn from the real idea bank by
+   audience + effort, best bank rank wins, deterministic per answer pair.
+   Privacy: like the quiz, only structural metadata is tracked, never the
+   answer content. */
+var DUEL_ANS = {q1: null, q2: null};
+function duelPick(audKey, effKey){
+  var auds = audKey === "couple" ? ["couple"] : audKey === "family" ? ["family", "group"] : ["solo"];
+  var effs = effKey === "high" ? ["Medium"] : effKey === "low" ? ["Easy"] : ["Easy", "Medium"];
+  var cands = [];
+  IDEAS.forEach(function(it){
+    var aok = false;
+    for (var i = 0; i < auds.length; i++){ if (it.audience.indexOf(auds[i]) >= 0){ aok = true; break; } }
+    if (!aok) return;
+    var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[it.id] : null;
+    if (!ins || effs.indexOf(ins.effort) < 0) return;
+    cands.push(it);
+  });
+  cands.sort(function(a, b){ return (a.rank || 999) - (b.rank || 999); });
+  return cands[0] || null;
+}
+function duelShowStep(n){
+  ["duel-s1", "duel-s2", "duel-s3"].forEach(function(id, i){
+    $(id).classList.toggle("on", i === n - 1);
+  });
+  window.scrollTo(0, 0);
+}
+function duelOptButton(label, value, onPick){
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "opt";
+  var tick = document.createElement("span");
+  tick.className = "tick";
+  tick.setAttribute("aria-hidden", "true");
+  tick.textContent = "✓";
+  var lab = document.createElement("span");
+  lab.textContent = label;
+  b.appendChild(tick); b.appendChild(lab);
+  b.onclick = function(){ onPick(value); };
+  return b;
+}
+function startDuelFlow(){
+  var theirs = duelIdeaById(DUEL_IDEA_ID);
+  if (!theirs) return; /* unknown slug: stay on the landing */
+  DUEL_ANS = {q1: null, q2: null};
+  try { Analytics.track("duel_started", viaShareProps()); } catch(_){}
+  $("duel-friend-name").textContent = theirs.title;
+  var fimg = $("duel-friend-photo");
+  fimg.src = "photos/" + theirs.id + ".webp";
+  fimg.alt = theirs.title + " costume";
+  var q1box = $("duel-q1");
+  q1box.innerHTML = "";
+  [["Just me", "solo"], ["Me + partner", "couple"], ["The whole family", "family"]].forEach(function(pair){
+    q1box.appendChild(duelOptButton(pair[0], pair[1], function(v){
+      DUEL_ANS.q1 = v;
+      var q2box = $("duel-q2");
+      q2box.innerHTML = "";
+      [["As little as possible", "low"], ["A fun weekend project", "mid"], ["Go all out", "high"]].forEach(function(p2){
+        q2box.appendChild(duelOptButton(p2[0], p2[1], function(v2){
+          DUEL_ANS.q2 = v2;
+          finishDuelFlow(theirs);
+        }));
+      });
+      duelShowStep(2);
+      show("s-duel");
+    }));
+  });
+  duelShowStep(1);
+  show("s-duel");
+}
+function finishDuelFlow(theirs){
+  var mine = duelPick(DUEL_ANS.q1, DUEL_ANS.q2);
+  if (!mine) mine = theirs; /* every bucket is populated; this is a backstop */
+  var matched = mine.id === theirs.id;
+  $("duel-v-friend-img").src = "photos/" + theirs.id + ".webp";
+  $("duel-v-friend-img").alt = theirs.title + " costume";
+  $("duel-v-friend-name").textContent = theirs.title;
+  $("duel-v-my-img").src = "photos/" + mine.id + ".webp";
+  $("duel-v-my-img").alt = mine.title + " costume";
+  $("duel-v-my-name").textContent = mine.title;
+  $("duel-verdict-text").textContent = matched
+    ? "Great minds: you both got " + mine.title + "."
+    : "Your friend picked " + theirs.title + ". The quiz gave you " + mine.title + ". " + duelVerdict(mine, theirs);
+  var tri = duelTriple(mine);
+  $("duel-triple").textContent = tri ? ("Your build: " + tri + ".") : "";
+  var shareBtn = $("duel-share");
+  var statusEl = $("duel-share-status");
+  statusEl.textContent = "";
+  shareBtn.onclick = function(){ duelShareback(mine, theirs, shareBtn, statusEl); };
+  $("duel-retry").onclick = function(){ startDuelFlow(); };
+  $("duel-fullquiz").onclick = function(){
+    state = {qi: 0, answers: {}};
+    state.pinpoint = null;
+    try { Analytics.track("quiz_started", viaShareProps()); } catch(_){}
+    renderQ();
+  };
+  duelShowStep(3);
+  show("s-duel");
+  var cprops = viaShareProps();
+  cprops.duel_idea_id = theirs.id; cprops.own_idea_id = mine.id; cprops.matched = matched;
+  cprops.duel_flow = "two_question";
+  try { Analytics.track("duel_compare_shown", cprops); } catch(_){}
+}
+
 /* Billy 2026-09-25: the vibe check lives on the hero card itself, not just
    inside the post-pick panel, so we hear from people who did NOT pick it
    too. Answered state persists per idea; answering never triggers a pick. */
@@ -5694,6 +5879,20 @@ function shareLandingHeadline(idea, search){
     if (/[?&](idea|pick|ch)=/.test(q)) return;
     var hero = $("s-hero");
     if (!hero || $("pmc-friend-banner")) return;
+    /* 2026-09-26 duel: genuine ?duel= arrivals get the duel banner and the
+       lightweight 2-question flow instead of the full quiz. Unknown slugs
+       fall through to the generic friend banner. */
+    var _duelTheirs = (typeof DUEL_IDEA_ID !== "undefined" && DUEL_IDEA_ID) ? duelIdeaById(DUEL_IDEA_ID) : null;
+    if (_duelTheirs){
+      var db = document.createElement("div");
+      db.id = "pmc-friend-banner";
+      db.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      db.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Costume duel: your friend picked " + _duelTheirs.title + ".</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Answer 2 quick questions, see how you match up, and send your pick back.</p>";
+      db.onclick = function(){ startDuelFlow(); };
+      hero.insertBefore(db, hero.firstChild);
+      return;
+    }
     var b = document.createElement("div");
     b.id = "pmc-friend-banner";
     b.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
