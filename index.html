@@ -1579,6 +1579,10 @@ var MAKE_PLANS = {
   "fossil-hunter": {buy: ["Khaki vest", "Toy magnifying glass", "Canvas pouch or fanny pack", "Cardboard for bones"], cost: "~$8", time: "~25 min", steps: ["Cut chunky bone shapes from the cardboard and shade the edges.", "Tuck the bones into the pouch with tops peeking out.", "Wear the vest with the pouch on the belt.", "Carry the brush and magnifying glass in the vest pockets."]},
 };/* ================= CONFIG: SHARE ================= */
 function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+/* 2026-09-26 evening block-map experiment flag (OFF). With the flag off,
+   ?o=block is not a recognized origin and every block-map builder returns
+   null, so the rendered DOM is byte-identical to the pre-experiment tree. */
+var BLOCK_MAP_EXP = false;
 /* VIA_SHARE: anonymous id of the share link this visitor arrived through (?s=). Never an identity. */
 var VIA_SHARE = null;
 /* E29: origin label of the arriving share link (?o=card|generic|sms|vote).
@@ -3427,6 +3431,124 @@ function pairTextFor(idea, sid){
    generic to earn a hero placement. Additive only: one explore-section
    panel plus one friend-banner branch; the quiz, share cards, and /c/
    surfaces are untouched. */
+/* ------------------------------------------------------------------
+   2026-09-26 evening experiment: the Block Map (flag-gated, OFF).
+   Sender picks a costume, names their house, and shares a chain link:
+   ?s=<sid>&o=block&map=<entry1>,<entry2>,...
+   Each entry is <house-name>~<idea-slug> (URL-safe chars only). The
+   recipient sees who is already on the map, adds their own house after the
+   quiz, and re-shares: every recipient becomes a sender, like a chain
+   letter. With the flag off, blockMapEntries() returns null and every
+   builder below returns null, so the DOM is unchanged. */
+function blockMapEncode(entries){
+  var seen = {};
+  return (entries || []).slice(0, 20).map(function(e){
+    /* Keep dashes: decode() produces dash-names, and the add-mode flow
+       re-encodes them, so the cleaner must be idempotent. */
+    var n = String(e.name || "").toLowerCase().replace(/[^a-z0-9 -]/g, "").trim().replace(/[- ]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 24);
+    var id = String(e.idea || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 48);
+    return (n && id) ? n + "~" + id : "";
+  }).filter(function(t){
+    if (!t || seen[t]) return false;
+    seen[t] = true;
+    return true;
+  }).join(",");
+}
+function blockMapDecode(s){
+  if (!s) return [];
+  return String(s).split(",").slice(0, 20).map(function(tok){
+    var p = tok.split("~");
+    if (p.length !== 2) return null;
+    if (!/^[a-z0-9-]{1,24}$/.test(p[0])) return null;
+    if (!/^[a-z0-9-]{1,48}$/.test(p[1])) return null;
+    return {name: p[0], idea: p[1]};
+  }).filter(Boolean);
+}
+/* Arriving chain, or null when the flag is off / no chain / garbage. */
+function blockMapEntries(){
+  if (typeof BLOCK_MAP_EXP === "undefined" || !BLOCK_MAP_EXP) return null;
+  var m = /[?&]map=([A-Za-z0-9~.,-]+)/.exec(location.search || "");
+  if (!m) return null;
+  var es;
+  try { es = blockMapDecode(decodeURIComponent(m[1])); } catch(e){ return null; }
+  return es.length ? es : null;
+}
+function blockMapHouseName(slug){
+  return String(slug || "").split("-").map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
+}
+function blockMapShareText(idea, chain, sid){
+  var url = "https://pickmycostume.com/?s=" + sid + "&o=block&map=" + chain;
+  return "Our house is going as " + idea.title + " for Halloween. We started a block costume map so nobody on our street doubles up. Add your house: " + url;
+}
+/* Results-page block map box. Sender mode when no chain arrived; add mode
+   when the visitor arrived on a ?o=block chain. Renders only with the flag
+   on (buildBlockMapBox returns null otherwise). */
+function buildBlockMapBox(idea){
+  if (typeof BLOCK_MAP_EXP === "undefined" || !BLOCK_MAP_EXP) return null;
+  var mine = idea;
+  var chain = blockMapEntries(); /* null unless a ?o=block chain arrived */
+  var b = document.createElement("div");
+  b.className = "stuck"; b.id = "block-map-box";
+  var h = document.createElement("h3");
+  var p = document.createElement("p");
+  var input = document.createElement("input");
+  input.type = "text"; input.placeholder = "House name, e.g. The Smiths";
+  input.maxLength = 24; input.setAttribute("aria-label", "House name for the block map");
+  input.style.cssText = "width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #e3c78f;border-radius:10px;font:inherit;margin:0 0 10px";
+  var row = document.createElement("div"); row.className = "row";
+  var btn = document.createElement("button"); btn.type = "button"; btn.className = "ghost";
+  var status = document.createElement("div"); status.className = "status"; status.style.marginTop = "6px";
+  if (chain && chain.length){
+    h.textContent = "You are on the block map";
+    var names = chain.map(function(e){
+      var it = (typeof pairIdeaById === "function") ? pairIdeaById(e.idea) : null;
+      return blockMapHouseName(e.name) + " - " + (it ? it.title : "a secret pick");
+    });
+    p.textContent = "Houses so far: " + names.join("; ") + ". Add your house and pass the map on.";
+    btn.textContent = "Add my house and share the map";
+  } else {
+    h.textContent = "Start the block costume map";
+    p.textContent = "Nobody on your street should double up. Share a map link, neighbors add their houses, everyone sees who is going as what.";
+    btn.textContent = "Share the block map";
+  }
+  btn.onclick = function(){
+    var houseName = input.value.trim();
+    if (!houseName){
+      status.textContent = "Type a house name first so neighbors know it is you.";
+      return;
+    }
+    var rearm = armShareOnce(btn); if (!rearm) return;
+    var sid = newShareId();
+    var entries = (chain || []).slice();
+    entries.push({name: houseName, idea: mine.id});
+    var newChain = blockMapEncode(entries);
+    var text = blockMapShareText(mine, newChain, sid);
+    function finish(ok, via, msg){
+      status.textContent = msg; rearm();
+      if (ok){
+        Analytics.track("block_map_created", {share_id: sid, share_origin: "block", idea_id: mine.id, chain_length: entries.length, via: via});
+        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: mine.id, share_origin: "block", share_msg_variant: shareVariant()}, viaShareProps()));
+        if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "block"});
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text}).then(
+          function(){ finish(true, "share_sheet", "Shared. Neighbors can add their houses from the link."); },
+          function(){ finish(false, "share_sheet", ""); }
+        );
+      } catch(e){
+        doCopy(text, function(ok, msg){ finish(ok, "clipboard", ok ? "Copied. Send it to the neighbors." : msg); });
+      }
+    } else {
+      doCopy(text, function(ok, msg){ finish(ok, "clipboard", ok ? "Copied. Send it to the neighbors." : msg); });
+    }
+  };
+  row.appendChild(btn);
+  b.appendChild(h); b.appendChild(p); b.appendChild(input); b.appendChild(row); b.appendChild(status);
+  return b;
+}
+/* END BLOCK MAP */
 function spinTextFor(idea, sid){
   var link = "https://pickmycostume.com/?s=" + sid + "&o=spin&spin=" + idea.id;
   var tri = "";
@@ -4545,6 +4667,10 @@ function renderResults(results){
   /* 2026-09-26 reveal-moment share prompt: one calm line at the
      peak-delight second, one tap to share, never buried in the pick panel. */
   box.appendChild(buildRevealSharePrompt(results[0].idea));
+  /* 2026-09-26 evening block-map experiment: additive, flag-gated; the
+     builder returns null with the flag off so nothing renders. */
+  var bmBox = buildBlockMapBox(results[0].idea);
+  if (bmBox) box.appendChild(bmBox);
   /* 2026-09-26 duel experiment: the quiz return leg. Renders only for
      genuine share arrivals carrying ?duel= (buildDuelBox returns null
      otherwise). Sits right under the #1 pick: the social payoff is
@@ -8224,14 +8350,17 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block)/.exec(location.search || "");
+    /* 2026-09-26 evening block-map experiment: ?o=block is only recognized
+       when the flag is on, so arrivals with the flag off behave exactly as
+       before the experiment existed. */
     /* 2026-09-26 micro-quiz share experiment: ?o=micro marks "Send one
        question" shares; same survival rule as the other origins. */
     /* 2026-09-26 red-team: gift added -- openGiftFlow mints ?o=gift&gift=1 and
        its comment promises share_origin=gift on the recipient side, but the
        origin regex never recognized gift, so gift recipients arrived with no
        share_origin on recipient_landing_viewed/quiz_started. */
-    if (om) VIA_SHARE_ORIGIN = om[1];
+    if (om && (om[1] !== "block" || BLOCK_MAP_EXP)) VIA_SHARE_ORIGIN = om[1];
     /* 2026-09-26 duel experiment: ?duel=<sender idea slug> rides the /c/
        quiz links on share arrivals so results can render the compare panel
        and close the quiz return leg.
@@ -8478,6 +8607,37 @@ function shareLandingHeadline(idea, search){
         if (panel && panel.scrollIntoView) panel.scrollIntoView({block: "start"});
       };
       hero.insertBefore(spb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 evening block-map experiment: genuine ?o=block arrivals
+       with a valid ?map= chain see the map roster and one tap to add their
+       house (starts the quiz, attributed share_origin=block). With the flag
+       off blockMapEntries() is always null, so this never renders. */
+    var _bmChain = (typeof VIA_SHARE_ORIGIN !== "undefined" && VIA_SHARE_ORIGIN === "block") ? blockMapEntries() : null;
+    if (_bmChain){
+      var bb = document.createElement("button");
+      bb.type = "button";
+      bb.id = "pmc-friend-banner";
+      bb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      var _bmNames = _bmChain.slice(0, 3).map(function(e){
+        var it = (typeof pairIdeaById === "function") ? pairIdeaById(e.idea) : null;
+        return blockMapHouseName(e.name) + " (" + (it ? it.title : "secret pick") + ")";
+      });
+      var _bmMore = _bmChain.length > 3 ? " and " + (_bmChain.length - 3) + " more" : "";
+      bb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">The block costume map is live.</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + _bmNames.join(", ") + _bmMore + " are on it. Take the 2-minute quiz to get your pick and add your house.</p>";
+      bb.onclick = function(){
+        /* Mirror the teaser banner start exactly: clean state, no pinpoint
+           residue, old picks cleared, recipient-attributed event. */
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(bb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
