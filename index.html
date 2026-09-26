@@ -2579,6 +2579,18 @@ function shareTextFor(idea, sid, origin){
   }
   return text;
 }
+/* 2026-09-26 teaser share experiment: send the quiz, not the pick. Every
+   other share hands the recipient the answer (a full costume guide), so the
+   quiz is redundant and friend quiz starts sit near zero. The teaser
+   withholds the pick; the link opens the quiz itself, and ?duel=<sender
+   slug> rides along so the results-page duel box reveals the friend's pick
+   in the You-vs-friend compare after the recipient finishes. New share
+   origin "teaser", measured against generic/card. Metric: friend quiz
+   starts per share_created, teaser vs generic. */
+function teaserTextFor(idea, sid){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
+  return "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is. Take the quiz and send me what you get: " + link;
+}
 /* 2026-09-26 family-vote distribution experiment: the quiz returns 3
    finalists because the user cannot decide. This turns indecision into a
    share: one text with all three finalists, numbered for a group-chat
@@ -3096,7 +3108,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
       doPick();
     });
     row.appendChild(bPick); /* "This is my pick" stands alone full-width: the post-pick panel owns the single share path */
-    if (!noArt){ card.appendChild(im); card.appendChild(h); } /* runner-up detail: art + title already shown above */
+    if (!noArt){ card.appendChild(im); card.appendChild(h); } /* noArt=true only when the caller renders art+title itself; the fullscreen runner-up overlay passes false so the detail matches the #1 card */
     if (_pb) card.appendChild(_pb); /* pantry badge: right after the title on the hero; before the blurb on runner-up detail */
     card.appendChild(bl); card.appendChild(_fr); card.appendChild(_rs);
     var _howto = buildInstructions(idea, {via: "result_card"});
@@ -3205,7 +3217,7 @@ function buildAnswerChips(){
   wrap.style.margin = "0 0 12px";
   var cap = document.createElement("p");
   cap.className = "fine"; cap.style.margin = "0 0 6px";
-  cap.textContent = "Your answers \u2014 tap one to change it and see new picks:";
+  cap.textContent = "Your answers. Tap one to change it and see new picks:";
   wrap.appendChild(cap);
   var row = document.createElement("div");
   row.style.display = "flex"; row.style.flexWrap = "wrap"; row.style.gap = "6px";
@@ -3316,7 +3328,7 @@ function renderResults(results){
     closeBtn.style.cssText = "position:sticky;top:0;margin-bottom:12px;z-index:1001";
     closeBtn.onclick = function(){ overlay.style.display = "none"; };
     overlay.appendChild(closeBtn);
-    var detailCard = buildResultCard(scored, idx + 1, load("pmc_pick_v1"), true, roleLabel(idx + 1), roleNote(idx + 1));
+    var detailCard = buildResultCard(scored, idx + 1, load("pmc_pick_v1"), false, roleLabel(idx + 1), roleNote(idx + 1));
     cards[scored.idea.id] = detailCard;
     var contentDiv = document.createElement("div");
     contentDiv.appendChild(detailCard);
@@ -4693,8 +4705,14 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     if (!m) return;
     var msid = m[1];
     var mchallenge = /[?&]ch=1/.test(ta.value);
-    Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: msid, share_origin: "generic", via: "clipboard-manual"}, xp()));
-    Analytics.track("share_created", Object.assign({share_id: msid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: mchallenge}, xp()));
+    /* 2026-09-26 teaser share: the preview can hold a teaser payload now, so
+       read the origin from the link in the copied text instead of assuming
+       generic. Generic and cast texts still parse as generic; behavior for
+       them is unchanged. */
+    var mom = /[?&]o=([a-z]+)/.exec(ta.value);
+    var morigin = mom ? mom[1] : "generic";
+    Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: msid, share_origin: morigin, via: "clipboard-manual"}, xp()));
+    Analytics.track("share_created", Object.assign({share_id: msid, idea_id: idea.id, share_origin: morigin, share_msg_variant: shareVariant(), challenge: mchallenge}, xp()));
     if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: msid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
   });
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
@@ -4749,6 +4767,57 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     cur = makeShare(); ta.value = cur.text;
   };
   row.appendChild(bsms);
+  /* 2026-09-26 teaser share experiment: a second share action that sends the
+     quiz instead of the pick (see teaserTextFor). Full-width ghost row under
+     the main three so the existing button layout is untouched. Mirrors the
+     "Share this idea" machinery exactly: native sheet when available,
+     clipboard fallback on desktop, share_created only on a resolved share,
+     a dismissed sheet counts as a cancel. */
+  var trow = document.createElement("div"); trow.className = "row"; trow.style.marginTop = "8px";
+  var bteaser = document.createElement("button");
+  bteaser.type = "button"; bteaser.className = "ghost";
+  bteaser.style.width = "100%";
+  bteaser.textContent = "Send the quiz, hide my pick";
+  bteaser.onclick = function(){
+    var rearmShare = armShareOnce(bteaser);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var sh = {sid: sid, text: teaserTextFor(idea, sid), challenge: false};
+    var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        /* E8: the first share landed -- invite a second one. */
+        label.textContent = "Shared. Who else needs a costume?";
+        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "teaser", share_msg_variant: shareVariant()}, xp()));
+        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "teaser"}, xp()));
+        /* The share landed: the AI plan is the immediate now-what. */
+        if (typeof onShared === "function") onShared();
+      }
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "teaser"}, xp()));
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    /* Phone: native share sheet. Fires share_created only when the share resolves;
+       a dismissed sheet is a cancel, not a share, so it fires nothing. */
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text, url: link}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+    cur = makeShare(); ta.value = cur.text;
+  };
+  trow.appendChild(bteaser);
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
     var sid = newShareId();
@@ -4811,6 +4880,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   container.appendChild(toggle);
   container.appendChild(ta);
   container.appendChild(row);
+  container.appendChild(trow);
   container.appendChild(st);
   if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
   /* E17: lets the cast panel refresh the preview text without rebuilding the row. */
@@ -5791,7 +5861,10 @@ function detailGoBack(){
   else if (detailReturnTo === "s-pantry"){ location.href = "/pantry"; }
   else { renderBrowse(); show("s-browse"); }
 }
-function detailGoHome(){ show("s-hero"); refreshReturnBox(); window.scrollTo(0,0); }
+function detailGoHome(){ show("s-hero"); refreshReturnBox(); window.scrollTo(0,0);
+  /* Billy 2026-09-26: clear stale ?pick=<slug> so Home is really home --
+     a refresh must not reopen the detail. */
+  if (window.history && history.replaceState && location.search) history.replaceState(null, "", location.pathname); }
 $("btn-dback").onclick = detailGoBack;
 $("btn-dhome").onclick = detailGoHome;
 $("btn-dtopback").onclick = detailGoBack;
@@ -5842,11 +5915,14 @@ function shareLandingHeadline(idea, search){
        results-page vote box; it must survive exactly the same way.
        2026-09-26 pantry-vote experiment: ?o=pantryvote marks links from the
        pantry house-vote box; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser)/.exec(location.search || "");
     if (om) VIA_SHARE_ORIGIN = om[1];
     /* 2026-09-26 duel experiment: ?duel=<sender idea slug> rides the /c/
        quiz links on share arrivals so results can render the compare panel
-       and close the quiz return leg. */
+       and close the quiz return leg.
+       2026-09-26 teaser share experiment: ?o=teaser marks quiz-not-pick
+       shares; the pick slug still rides ?duel= so the results page can
+       reveal it in the You-vs-friend compare. */
     var dm = /[?&]duel=([a-z0-9-]+)/.exec(location.search || "");
     if (dm) DUEL_IDEA_ID = dm[1];
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
@@ -5903,6 +5979,22 @@ function shareLandingHeadline(idea, search){
       openBrowse();
     };
     box.appendChild(im); box.appendChild(h); box.appendChild(p);
+    /* 2026-09-26 red-team: a duel share recipient who taps the /c/ page's
+       top banner CTA lands here (?idea= + ?duel=) with no duel entry -- the
+       duel banner is suppressed on ?idea= landings, so the duel died on the
+       most prominent tap target. A valid duel slug gets its own entry button
+       ahead of the full-quiz CTA. */
+    var _duelFor = (typeof duelIdeaById === "function" && typeof DUEL_IDEA_ID !== "undefined" && DUEL_IDEA_ID) ? duelIdeaById(DUEL_IDEA_ID) : null;
+    if (_duelFor){
+      var dbtn = document.createElement("button");
+      dbtn.type = "button";
+      dbtn.className = "cta";
+      dbtn.style.width = "100%";
+      dbtn.style.marginTop = "10px";
+      dbtn.textContent = "Duel " + _duelFor.title + ": answer 2 questions";
+      dbtn.onclick = function(){ startDuelFlow(); };
+      box.appendChild(dbtn);
+    }
     /* 2026-09-25 recipient-handoff experiment: the quiz CTA comes before the
        build guide. A recipient who gets the full guide first can leave
        satisfied without ever participating. The guide stays one tap away,
@@ -5954,6 +6046,34 @@ function shareLandingHeadline(idea, search){
     if (/[?&](idea|pick|ch)=/.test(q)) return;
     var hero = $("s-hero");
     if (!hero || $("pmc-friend-banner")) return;
+    /* 2026-09-26 teaser share: the sender withheld their pick (?o=teaser),
+       so this banner must NOT reveal it -- no duel banner, no pick name.
+       The full quiz is the dare; the results-page duel box reveals the
+       friend's pick in the You-vs-friend compare after the recipient has
+       their own pick. Fires recipient_landing_viewed here because the
+       ?idea= block (the only other place that fires it) never runs on a
+       bare /?s= arrival; without this the teaser funnel has no open rate. */
+    if (VIA_SHARE_ORIGIN === "teaser"){
+      var tb = document.createElement("button");
+      tb.type = "button";
+      tb.id = "pmc-friend-banner";
+      tb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      tb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend took the 2-minute quiz and will not tell you what they got.</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Take it yourself. When you finish, you will see both picks side by side.</p>";
+      tb.onclick = function(){
+        /* Mirror the hero "Find my costume" start exactly: clean state, no
+           pinpoint residue, old picks cleared, recipient-attributed event. */
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(tb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
     /* 2026-09-26 duel: genuine ?duel= arrivals get the duel banner and the
        lightweight 2-question flow instead of the full quiz. Unknown slugs
        fall through to the generic friend banner. */
@@ -5971,9 +6091,13 @@ function shareLandingHeadline(idea, search){
       hero.insertBefore(db, hero.firstChild);
       return;
     }
-    var b = document.createElement("div");
+    /* 2026-09-26 red-team a11y: a button, not a div with onclick, so
+       keyboard and screen-reader users can activate it too (matches the
+       duel banner above). */
+    var b = document.createElement("button");
+    b.type = "button";
     b.id = "pmc-friend-banner";
-    b.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+    b.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
     b.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend just found their costume.</p>" +
       "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">They sent you this link. Tap to take the 2-minute quiz and find yours.</p>";
     b.onclick = function(){
