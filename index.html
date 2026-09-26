@@ -652,18 +652,18 @@ footer a{color:var(--accent)}
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">What materials or clothes are already in your house?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick the clothes and materials already in your house, we rank costumes by what you own.</p>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 137 ideas</button></p>
-      <p style="margin:16px 0 0"><button type="button" id="btn-spin" class="ghost">Can&#39;t decide? Spin the roulette</button></p>
+      <p style="margin:16px 0 0"><button type="button" id="btn-spin" class="ghost">Can&#39;t decide? Let me pick for you</button></p>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
-        <p class="fine" style="margin:0 0 8px">The roulette says:</p>
+        <p class="fine" style="margin:0 0 8px">Here&#39;s a pick for you:</p>
         <div id="spin-media" aria-hidden="true"></div>
         <h3 id="spin-title" style="margin:8px 0 4px"></h3>
-        <style>#spin-title.spinning::after{content:"";display:inline-block;width:14px;height:14px;margin-left:8px;vertical-align:-2px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spinrot 0.7s linear infinite}@keyframes spinrot{to{transform:rotate(360deg)}}</style>
+        <style>#spin-panel.spin-reveal{animation:fadein .3s ease-out}</style>
         <p class="fine" id="spin-triple" style="margin:0 0 6px"></p>
         <p class="blurb" id="spin-blurb" style="margin:0 0 8px"></p>
         <p id="spin-announce" role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"></p>
         <div class="row" style="display:flex;gap:10px;margin-top:8px">
-          <button type="button" id="btn-spin-again" class="cta" style="flex:1">Spin again</button>
-          <button type="button" id="btn-spin-share" class="ghost" style="flex:1">Share my spin</button>
+          <button type="button" id="btn-spin-again" class="cta" style="flex:1">Pick again</button>
+          <button type="button" id="btn-spin-share" class="ghost" style="flex:1">Share my pick</button>
         </div>
         <p style="margin:10px 0 0"><a id="spin-guide-link" href="/c/classic-ghost">See the full guide</a> <span class="fine">or</span> <button type="button" id="btn-spin-quiz" class="textlink">take the 2-minute quiz</button></p>
         <p class="status" id="spin-status" style="margin:8px 0 0"></p>
@@ -851,7 +851,7 @@ footer a{color:var(--accent)}
         <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
         <p>Tap &ldquo;Claim this costume&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
       </div>
-      <p>Your answers are scored against 137 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
+      <p>Your answers are scored against 137 hand-picked ideas. No account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
       <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
       <p class="fine">Built with Muse. Made by Billy Litner.</p>
@@ -2970,14 +2970,14 @@ function buildClosetBadge(idea){
    "make it personal" upgrade. No half-states: the flag gates the whole
    reorder, and the flag-off DOM is byte-identical to today. */
 var EXPERIMENT1_ONE_TAP_SHARE = false;
-/* Roulette entry experiment (2026-09-26, staged): the costume roulette lives
+/* Roulette entry experiment (2026-09-26, staged): the costume shuffle lives
    4-5 phone viewports down on the homepage under "More ways to explore" with
    nothing hinting it exists, while the results page is where indecision peaks.
-   When ON (true): a subordinate "Feeling lucky? Spin the roulette" entry
-   appears under the results-page vote box (one tap returns home and spins),
+   When ON (true): a subordinate "Can't decide? Let me pick for you" entry
+   appears under the results-page vote box (one tap returns home and picks),
    and the "Can't decide?" wordings are disambiguated (vote box heading:
-   "Can't decide? Ask the group"; home roulette button: "Feeling lucky? Spin
-   the roulette"). Flag off: DOM is byte-identical to today. */
+   "Can't decide? Ask the group"; home shuffle button: "Can't decide? Let me
+   pick for you"). Flag off: DOM is byte-identical to today. */
 var EXPERIMENT_ROULETTE_ENTRY = false;
 function shareVariant(){
   try {
@@ -3064,6 +3064,24 @@ function shareTextFor(idea, sid, origin){
   }
   return text;
 }
+/* 2026-09-26 plan-share format ("Share the plan, not the picture"): Billy's
+   priority is encouraging sharing, and the AI illustrations may be what makes
+   shares feel joke-y. This second share format leads with practical facts
+   (time, cost, difficulty) instead of the illustration, so it reads as a
+   recommendation, not a meme. New share origin "plan", measured against
+   generic/teaser. Metric: share_created per origin, plan vs generic. */
+function planTextFor(idea, sid, origin){
+  var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "plan");
+  var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
+  var parts = [];
+  if (ins){
+    if (ins.time) parts.push(String(ins.time).replace(/^~/, "").replace(/\bmin\b/i, "minutes"));
+    if (ins.cost) parts.push(String(ins.cost).replace(/^~/, "").replace(/\$(\d+)-(\d+)/, "$$$1 to $$$2"));
+    if (ins.effort) parts.push(String(ins.effort).toLowerCase());
+  }
+  var plan = parts.length ? parts.join(", ") : "DIY costume guide";
+  return idea.title + ": " + plan + ". " + link;
+}
 /* 2026-09-26 teaser share experiment: send the quiz, not the pick. Every
    other share hands the recipient the answer (a full costume guide), so the
    quiz is redundant and friend quiz starts sit near zero. The teaser
@@ -3089,8 +3107,7 @@ function pairTextFor(idea, sid){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
   return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match mine: " + link;
 }
-/* 2026-09-26 costume roulette experiment ("Can't decide? Spin the
-   roulette"): a zero-question entry point for the undecided. Uniform
+/* 2026-09-26 costume roulette experiment ("Can't decide? Let me pick for you"): a zero-question entry point for the undecided. Uniform
    random over all 137 ideas, one tap, no quiz -- the funnel for the
    weakest link in the share loop, the procrastinator who never starts.
    The result card carries its own share path with new share origin "spin"
@@ -3111,7 +3128,7 @@ function spinTextFor(idea, sid){
     var ins = INSTRUCTIONS[idea.id];
     tri = [ins.time, ins.cost].filter(function(x){ return x; }).join(", ");
   }
-  return "The costume roulette landed on " + idea.title + " for me this Halloween" + (tri ? " (" + tri + ")" : "") + ". Spin yours: " + link;
+  return "The shuffle picked " + idea.title + " for me this Halloween" + (tri ? " (" + tri + ")" : "") + ". Get your pick: " + link;
 }
 function spinIdeaById(id){
   var found = null;
@@ -3141,13 +3158,13 @@ function renderSpinResult(idea){
   $("spin-status").textContent = "";
   /* The flashing title is aria-hidden (decorative ticker); announce only
      the settled result. */
-  $("spin-announce").textContent = "The roulette picked " + idea.title + ".";
+  $("spin-announce").textContent = "The shuffle picked " + idea.title + ".";
   Analytics.track("spin_result_shown", Object.assign({idea_id: idea.id}, viaShareProps()));
 }
-/* 2026-09-26 roulette race fix: a second tap during the 3.7s spin started a
-   second ticker chain and the panel visibly swapped results after landing.
-   spinBusy ignores re-entrant calls (the first spin stands); spinChain is the
-   hard backstop so a stale chain can never land. */
+/* 2026-09-26 roulette race fix: spinBusy ignores re-entrant calls (the first
+   spin stands); spinChain is the hard backstop so a stale chain can never
+   land. 2026-09-26 Billy: the slot-machine ticker is gone -- the pick is
+   drawn once up front and revealed immediately with a short fade. */
 var spinChain = 0, spinBusy = false;
 function startSpin(source){
   if (spinBusy) return; /* re-entrant tap mid-spin: ignore, first spin stands */
@@ -3156,64 +3173,45 @@ function startSpin(source){
   Analytics.track("spin_started", Object.assign({source: source || "explore"}, viaShareProps()));
   var panel = $("spin-panel");
   panel.style.display = "";
-  var titleEl = $("spin-title");
   var mainBtn = $("btn-spin");
   if (mainBtn) mainBtn.disabled = true; /* was never disabled: the double-tap vector */
   var again = $("btn-spin-again"), shareBtn = $("btn-spin-share");
   again.disabled = true; shareBtn.disabled = true;
   var guideLink = $("spin-guide-link");
   if (guideLink) guideLink.style.visibility = "hidden"; /* hide the stale link until landing */
-  /* Slot-machine ticker: flash random titles, then settle. The pick is
-     drawn once, up front, uniformly over all 137 ideas -- the ticker is
-     theater, not selection. */
+  /* The pick is drawn once, up front, uniformly over all 137 ideas, and
+     revealed immediately with a short fade -- a tool answering, not a
+     casino wheel. (The 3.7s slot-machine ticker was removed 2026-09-26.) */
   var target = IDEAS[Math.floor(Math.random() * IDEAS.length)];
   $("spin-media").innerHTML = "";
   $("spin-triple").textContent = "";
   $("spin-blurb").textContent = "";
-  $("spin-announce").textContent = "Spinning.";
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  titleEl.classList.add("spinning");
   function finishSpin(){
     if (myChain !== spinChain) return; /* superseded: a newer chain owns the panel */
     spinBusy = false;
     if (mainBtn) mainBtn.disabled = false;
     if (guideLink) guideLink.style.visibility = "";
-    titleEl.classList.remove("spinning");
     renderSpinResult(target);
     again.disabled = false; shareBtn.disabled = false;
   }
-  if (reduceMotion){
-    finishSpin();
-  } else {
-    /* Billy 2026-09-26: slow it down and make it feel like a real wheel --
-       fast first, then winding down. Ease-out quad on the interval:
-       ~70ms -> ~350ms over 14 ticks, about 3.7s total. */
-    var ticks = 0, maxTicks = 14, t0 = 70, t1 = 350;
-    (function tick(){
-      if (myChain !== spinChain) return; /* superseded mid-ticker: stop silently */
-      var r = IDEAS[Math.floor(Math.random() * IDEAS.length)];
-      titleEl.textContent = r.title;
-      if (++ticks >= maxTicks){
-        finishSpin();
-        return;
-      }
-      var p = ticks / maxTicks;
-      var eased = 1 - Math.pow(1 - p, 2);
-      setTimeout(tick, t0 + (t1 - t0) * eased);
-    })();
-  }
+  /* Restart the reveal fade so it re-triggers on every spin. */
+  panel.classList.remove("spin-reveal");
+  void panel.offsetWidth;
+  if (!reduceMotion) panel.classList.add("spin-reveal");
+  finishSpin();
 }
 $("btn-spin").onclick = function(){
   startSpin("explore");
   var panel = $("spin-panel");
   if (panel && panel.scrollIntoView) panel.scrollIntoView({block: "nearest"});
 };
-/* Roulette entry experiment (2026-09-26, staged): the home roulette button
+/* Roulette entry experiment (2026-09-26, staged): the home shuffle button
    shares its "Can't decide?" lead-in with the results vote-box heading. When
    the flag is on, give the button distinct wording. Flag off: untouched. */
 if (EXPERIMENT_ROULETTE_ENTRY){
   var _rsb = $("btn-spin");
-  if (_rsb) _rsb.textContent = "Feeling lucky? Spin the roulette";
+  if (_rsb) _rsb.textContent = "Can't decide? Let me pick for you";
 }
 $("btn-spin-again").onclick = function(){ startSpin("spin-again"); };
 $("btn-spin-quiz").onclick = function(e){
@@ -3309,7 +3307,7 @@ function buildVoteBox(results){
   vbox.className = "stuck"; vbox.id = "vote-box";
   var vh = document.createElement("h3");
   /* Roulette entry experiment (2026-09-26, staged): disambiguate from the
-     home roulette's "Can't decide? Spin the roulette" when the flag is on.
+     home shuffle's "Can't decide? Let me pick for you" when the flag is on.
      Flag off: the original heading. */
   vh.textContent = EXPERIMENT_ROULETTE_ENTRY ? "Can't decide? Ask the group" : "Can't decide?";
   var vp = document.createElement("p");
@@ -3390,8 +3388,8 @@ function buildVoteBox(results){
   vrow.appendChild(vbtn);
   vbox.appendChild(vh); vbox.appendChild(vp); vbox.appendChild(vrow); vbox.appendChild(vpanel);
   /* Roulette entry experiment (2026-09-26, staged): a subordinate entry point
-     to the homepage roulette for the indecisive moment the vote box serves.
-     One tap returns to the home screen and spins, mirroring the recipient
+     to the homepage shuffle for the indecisive moment the vote box serves.
+     One tap returns to the home screen and picks, mirroring the recipient
      spin-banner pattern (startSpin + scrollIntoView). A real <button>, so
      keyboard and screen-reader users can activate it too. */
   if (EXPERIMENT_ROULETTE_ENTRY){
@@ -3402,7 +3400,7 @@ function buildVoteBox(results){
     ror.textContent = "Or ";
     var rbtn = document.createElement("button");
     rbtn.type = "button"; rbtn.className = "textlink"; rbtn.id = "btn-roulette-entry";
-    rbtn.textContent = "Feeling lucky? Spin the roulette";
+    rbtn.textContent = "Can't decide? Let me pick for you";
     rbtn.onclick = function(){
       Analytics.track("roulette_entry_tapped", {from: "results-vote-box"});
       show("s-hero");
@@ -4060,6 +4058,57 @@ function buildAnswerChips(){
   wrap.appendChild(row);
   return wrap;
 }
+/* 2026-09-26 reveal-moment share prompt (Billy: encourage sharing). The
+   peak-delight second is when the #1 pick lands, not after the user digs
+   into the pick panel. One calm line, one tap, no popup: the native share
+   sheet on phones, clipboard copy on desktop. The share text is the same
+   build the pick panel uses (audience-grounded captions, kid/family
+   materials list), under a new origin "reveal" so the share funnel
+   attributes it separately from the panel's "generic". */
+function buildRevealSharePrompt(idea){
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.id = "reveal-share-prompt";
+  btn.textContent = "Know someone still hunting? Send them this.";
+  /* Quiet text-button styling, inline so a stale stylesheet cannot break
+     it. A <button> keeps taps here from re-running doPick via the
+     card-level click guard. */
+  btn.style.cssText = "display:block;width:100%;background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;cursor:pointer;padding:10px 8px;min-height:44px;font-family:inherit;text-align:center";
+  Analytics.track("reveal_prompt_shown", {idea_id: idea.id, share_origin: "reveal"});
+  btn.onclick = function(){
+    var rearmShare = armShareOnce(btn);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var text = shareTextFor(idea, sid, "reveal");
+    var challenge = !!window.__pmcChallenge;
+    function doneShare(ok, msg){
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        /* E8 pattern: one quiet line, re-offer, stays live so the next tap
+           mints a fresh share id. */
+        btn.textContent = "Shared. Who else needs a costume?";
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "reveal", share_msg_variant: shareVariant(), challenge: challenge});
+        if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "reveal"});
+      } else if (msg){
+        btn.textContent = msg;
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text}).then(
+          function(){ doneShare(true, ""); },
+          function(){ doneShare(false, ""); } /* dismissed sheet: a cancel, not a share */
+        );
+        return;
+      } catch(e){ /* fall through to clipboard copy */ }
+    }
+    doCopy(text, function(ok, msg){
+      if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "reveal", via: "clipboard"});
+      doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+    });
+  };
+  return btn;
+}
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
@@ -4101,6 +4150,9 @@ function renderResults(results){
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
+  /* 2026-09-26 reveal-moment share prompt: one calm line at the
+     peak-delight second, one tap to share, never buried in the pick panel. */
+  box.appendChild(buildRevealSharePrompt(results[0].idea));
   /* 2026-09-26 duel experiment: the quiz return leg. Renders only for
      genuine share arrivals carrying ?duel= (buildDuelBox returns null
      otherwise). Sits right under the #1 pick: the social payoff is
@@ -5678,6 +5730,53 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     cur = makeShare(); ta.value = cur.text;
   };
   trow.appendChild(bteaser);
+  /* 2026-09-26 plan share ("Share the plan, not the picture"): a second share
+     action that leads with practical facts (time, cost, difficulty) instead
+     of the illustration, so the share reads as a recommendation, not a meme.
+     Full-width ghost row under the teaser so the existing button layout is
+     untouched. Mirrors the teaser machinery: native sheet when available,
+     clipboard fallback on desktop, share_created only on a resolved share. */
+  var prow = document.createElement("div"); prow.className = "row"; prow.style.marginTop = "8px";
+  var bplan = document.createElement("button");
+  bplan.type = "button"; bplan.className = "ghost";
+  bplan.style.width = "100%";
+  bplan.textContent = "Share the plan, not the picture";
+  bplan.onclick = function(){
+    var rearmShare = armShareOnce(bplan);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var sh = {sid: sid, text: planTextFor(idea, sid, "plan"), challenge: false};
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        label.textContent = "Shared. Who else needs a costume?";
+        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "plan", share_msg_variant: shareVariant()}, xp()));
+        Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sid, share_origin: "plan", via: "plan-button"}, xp()));
+        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "plan"}, xp()));
+        if (typeof onShared === "function") onShared();
+      }
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok, msg){
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback();
+    cur = makeShare(); ta.value = cur.text;
+  };
+  prow.appendChild(bplan);
+  container.appendChild(prow);
   /* 2026-09-26 pair-share relocation: the "Find my +1's costume" row used to
      live here, repeated inside every share block (results cards, browse
      detail, cast panels). It now lives once as a calm next-step on the quiz
@@ -7227,8 +7326,8 @@ function shareLandingHeadline(idea, search){
        pantry house-vote box; same survival rule. */
     /* 2026-09-26 pair-share experiment: ?o=pair marks "Find my +1's costume"
        shares; same survival rule as the other origins.
-       2026-09-26 costume roulette experiment: ?o=spin marks "Spin the
-       roulette" shares; same survival rule. */
+       2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
+       picked" shares; same survival rule. */
     var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin)/.exec(location.search || "");
     /* 2026-09-26 red-team: gift added -- openGiftFlow mints ?o=gift&gift=1 and
        its comment promises share_origin=gift on the recipient side, but the
@@ -7469,8 +7568,8 @@ function shareLandingHeadline(idea, search){
       spb.type = "button";
       spb.id = "pmc-friend-banner";
       spb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
-      spb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend spun the costume roulette and got " + _spinTheirs.title + ".</p>" +
-        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Spin yours. One tap, no questions.</p>";
+      spb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend let the shuffle pick and got " + _spinTheirs.title + ".</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Get your pick. One tap, no questions.</p>";
       spb.onclick = function(){
         startSpin("recipient-banner");
         var panel = $("spin-panel");
