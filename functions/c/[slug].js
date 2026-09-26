@@ -56,6 +56,12 @@ export function onRequest(context) {
   _qp.set("idea", slug);
   var target = "/?" + _qp.toString();
   var targetAttr = target.replace(/&/g, "&amp;");
+  /* The bottom quiz link keeps ?s= too: a recipient who taps it must still
+     count as arriving via their friend's share. Only s is carried; the
+     idea param belongs to the guide CTA above, not a fresh quiz. */
+  var _quizHref = "https://pickmycostume.com/" +
+    (_qp.has("s") ? "?s=" + encodeURIComponent(_qp.get("s")) : "");
+  var _quizAttr = esc(_quizHref);
   /* Static guide body: the same HTML for every visitor (curl fetchers, AI
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
@@ -124,7 +130,7 @@ export function onRequest(context) {
     "<h2>Steps</h2><ol>" + _steps + "</ol>" +
     _faqs +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">Open this costume in Pick My Costume</a></p>" +
-    "<p class=\"quizline\">Want one picked for you? <a href=\"https://pickmycostume.com/\">Take the 2-minute quiz</a> - free, no signup.</p>" +
+    "<p class=\"quizline\">Want one picked for you? <a href=\"" + _quizAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "</main></body></html>";
   return new Response(html, {
     headers: {
