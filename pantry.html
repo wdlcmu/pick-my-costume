@@ -100,6 +100,10 @@
   <p class="sub">Tick everything already in your house. We rank all 137 costumes by what you can make tonight, no guessing.</p>
 
   <p class="staple-note"><b>We assume every home has scissors, tape, and paper + pen.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p>
+  <!-- Billy 2026-09-25: the opening leads with the alive number, not a dead
+       "0 you can make tonight". With just the assumed basics, the count is
+       already real the moment the page loads. -->
+  <div class="stat" id="stat" role="status" aria-live="polite" style="margin:12px 0"></div>
   <div class="challenge" id="challenge-banner" hidden></div>
 
   <div class="searchrow">
@@ -113,8 +117,6 @@
     <button class="btn btn-ghost" id="reset" type="button">Start over</button>
     <button class="btn" id="challenge" type="button" style="background:var(--accent);color:var(--accent-ink)">Challenge a friend</button>
   </div>
-
-  <div class="stat" id="stat" role="status" aria-live="polite"></div>
   <div class="unlock" id="unlock" hidden></div>
 
   <div class="reshead"><h2>Make tonight</h2><span>you have everything</span></div>
@@ -368,8 +370,12 @@ function applyChallenge(){
   if (!q.kit) return;
   const ids = kitDecode(q.kit);
   if (!ids.length) return;
+  /* 2026-09-26 red-team: keep the challenger's kit in memory only. A cold
+     recipient just peeking at the dare must not have their OWN saved pantry
+     (pantry2) silently replaced before they touch anything. The recipient's
+     first tick/untick persists naturally via the change handler, which the
+     banner below already instructs them to do. */
   ticked = new Set(ids);
-  try { localStorage.setItem(LS_KEY, JSON.stringify(ids)); } catch (e) {}
   const title = ideaTitle(q.pick);
   const banner = document.getElementById('challenge-banner');
   if (banner) {
@@ -450,8 +456,11 @@ function render(){
   const t2 = rows.filter(r => r.missing.length >= 3).sort(byMissing);
 
   const stat = document.getElementById('stat');
-  stat.innerHTML = '<b>' + t0.length + '</b> you can make tonight, <b>' + t1.length +
-    '</b> almost there.<p>Tick more boxes and the list reshuffles around your stuff.</p>';
+  /* Billy 2026-09-25: alive opening. The count is real on first paint because
+     the assumed basics (scissors, tape, paper+pen) are pre-ticked. */
+  stat.innerHTML = 'With just the basics, you can already make <b>' + t0.length + '</b> tonight' +
+    (t1.length ? ', and <b>' + t1.length + '</b> more are one supply away.' : '.') +
+    '<p>Tick what else you own and the list reshuffles around your stuff.</p>';
 
   // unlock suggestions: single-item gaps only, ranked by costumes unlocked
   const unlockMap = {};
