@@ -82,6 +82,19 @@ placed*, not a *bet won*. This ledger exists so we never confuse the two.
 - **Learning:** what we'd do differently.
 - **Status:** won / lost / running / staged / declined / shipped-awaiting-read.
 
+### Ledger/dashboard reconciliation (2026-09-25)
+
+The dashboard (experiments/dashboard/build.py) parses only `###` entries.
+It counted 33 while the ledger held ~38 records: five entries lived only
+as list-form bullets — three under "Deliberately not shipped" (E11, the
+multi-select, the filter drawer) and two under "In flight" (the four
+funny dinosaurs, the homepage experiment program) — so the dashboard
+silently dropped them. All five are now `###` entries, so the counts
+match again. "Never got a closeout" stays list-form on purpose: it is a
+backlog todo list, not ledger entries. If the counts ever drift again,
+check here first: bullets, malformed field lines, or the parser's
+meta-section filter are the usual suspects — not missing bets.
+
 ---
 
 ## Running right now (live A/B tests)
@@ -417,14 +430,39 @@ stranger traffic to judge them yet. They are NOT wins.
 
 ## Deliberately not shipped
 
-- **Interest question keeps all its options (E11).** Tested 2026-09-23:
-  no change justified; findability is solved at the data level (E7's
-  cross-tags), not by shrinking the question. Status: closed (no-change).
-- **"Pick up to 2 interests" multi-select.** Billy proposed it, then
-  killed it himself: "ignore that idea, do a higher ROI question." Do not
-  resurface. Status: declined.
-- **Mobile filter drawer.** Rejected as over-engineering for 3 controls;
-  sticky single-row bar won (competitor recon backed it). Status: closed.
+### Interest question keeps all its options (E11)
+- **Status:** closed (no-change).
+- **Hypothesis:** narrowing the interest question's ~10 options to 6
+  broader ones would ease choice overload without hurting #1 quality.
+- **Assumptions:** the interest question is the load-bearing wall of the
+  quiz (100% outcome power in the Sep 23 ablation); findability can be
+  solved at the data level (E7's cross-tags) instead of by shrinking the
+  question.
+- **Projected / decision rule:** simulated; the #1 result must carry the
+  picked interest on every answer path.
+- **Observed:** tested 2026-09-23 — no change justified; findability is
+  solved at the data level (E7's cross-tags), not by shrinking the
+  question.
+- **Learning:** the interest promise is the one thing the quiz may never
+  break.
+
+### "Pick up to 2 interests" multi-select
+- **Status:** declined (Billy's call).
+- **Hypothesis:** make the interest question optional with up to 2
+  selections (Billy's proposal).
+- **Observed:** Billy proposed it, then killed it himself 2026-09-23
+  ~19:44 PDT: "ignore that idea, do a higher ROI question." Do not
+  resurface. E6 (the occasion question) was the higher-ROI answer.
+
+### Mobile filter drawer
+- **Status:** closed (rejected as over-engineering).
+- **Hypothesis:** a mobile filter drawer for the browse filters.
+- **Assumptions:** competitor recon (HalloweenCostumes and Spirit
+  Halloween use drawers, but for 10+ facet groups); our catalog needs
+  exactly 3 controls (search + audience + effort).
+- **Observed:** rejected 2026-09-24 as over-engineering — a drawer would
+  add open/close state, scroll-lock, and a11y machinery for 3 controls.
+  The sticky single-row bar won; phone visual QA confirmed it works.
 
 ---
 
@@ -457,12 +495,24 @@ stranger traffic to judge them yet. They are NOT wins.
 
 ## In flight (not yet decided)
 
-- **Four funny dinosaur costumes** (Extinct Party Animal, Dino Tourist,
-  Raptor Barista, Emotional Support Dinosaur) — merging into the bank as
-  ranks 120-123, gates then deploy. Fills the solo/funny/dinos thin cell
-  the critic exposed.
-- **Homepage experiment program** — cold audit + 3 staged variants +
-  simulated persona runs; Billy picks the winner. (Spawned 2026-09-25.)
+### Four funny dinosaur costumes
+- **Status:** in flight.
+- **Hypothesis:** four funny dinosaur costumes (Extinct Party Animal, Dino
+  Tourist, Raptor Barista, Emotional Support Dinosaur) fill the
+  solo/funny/dinos thin cell the critic exposed, without orphaning
+  anything.
+- **Observed:** ledger entry written 2026-09-25 as "merging into the bank
+  as ranks 120-123, gates then deploy." Repo state 2026-09-25: all four
+  ideas verified present in the index.html bank at ranks 120-123 with
+  make-plans data — the merge appears done; the ledger status is stale
+  and wants a proper closeout check before it flips to shipped.
+
+### Homepage experiment program
+- **Status:** in flight.
+- **Hypothesis:** cold audit + 3 staged variants (control / social-proof /
+  search-first) + simulated persona runs; Billy picks the winner.
+- **Observed:** spawned 2026-09-25. hour-session/homepage-variants/ holds
+  the three variant pages plus the sim-results file. No read yet.
 
 ---
 
