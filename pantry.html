@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What do you have? - Pick My Costume</title>
-<meta name="description" content="Tick what is already in your house and we will rank all 108 costume ideas by how little you still need.">
+<meta name="description" content="Tick what is already in your house and we will rank all 119 costume ideas by how little you still need.">
 <style>
   :root{
     --bg:#14101f; --card:#1e1830; --card2:#2a2145; --line:#352a55;
@@ -103,6 +103,29 @@
   /* Z5 tap targets: invisible hit-area padding brings the x button to
      44x44 without changing its 26px visual size. */
   .mychip button::after{content:"";position:absolute;inset:-9px;cursor:pointer}
+  /* Visual item grid: recognition over recall (Billy 2026-09-25).
+     Tappable photo tiles, 3 columns on phones, 44px+ targets. */
+  .tilecat{margin:20px 0 4px}
+  .tilecat h2{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:0 0 8px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .tile{position:relative;background:var(--card);border:2px solid var(--line);border-radius:14px;
+    padding:8px 6px 10px;cursor:pointer;text-align:center;min-height:44px;color:var(--ink);
+    font-family:inherit;-webkit-tap-highlight-color:transparent;user-select:none}
+  .tile img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;background:#221d33;display:block;pointer-events:none}
+  .tile .tlabel{display:block;font-size:12.5px;line-height:1.25;margin-top:6px;pointer-events:none}
+  .tile .tick{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;
+    background:rgba(20,16,31,.75);border:1.5px solid var(--line);color:transparent;
+    display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;pointer-events:none}
+  .tile.on{border-color:var(--accent);background:var(--card2)}
+  .tile.on .tick{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .findmore{font-size:13.5px;color:var(--muted);margin:16px 0 0;line-height:1.5}
+  /* Result cards with bank photos + progress (Billy 2026-09-25: no more text-only cards) */
+  .card{display:flex;gap:12px;align-items:flex-start}
+  .card .cphoto{flex:0 0 96px;width:96px;height:96px;object-fit:cover;border-radius:12px;background:#221d33}
+  .card .cbody{flex:1;min-width:0}
+  .pbar{height:8px;background:#171226;border-radius:6px;margin:2px 0 8px;overflow:hidden}
+  .pbar i{display:block;height:100%;background:var(--green);border-radius:6px}
+  .card.almost .pbar i{background:var(--yellow)}
   .browse{margin:2px 0 0}
   .browse summary{cursor:pointer;color:var(--muted);font-size:14px;padding:12px 0;list-style:none;
     -webkit-tap-highlight-color:transparent;min-height:44px}
@@ -119,20 +142,18 @@
   </div>
 
   <h1>What do you have?</h1>
-  <p class="sub">Type what you already own. We rank all 108 costumes by what you can make tonight, no guessing.</p>
-
-  <div class="searchwrap">
-    <input id="search" type="text" placeholder="Type what you have: bedsheet, red paint, cardboard..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search your stuff" enterkeyhint="go" role="combobox" aria-expanded="false" aria-controls="searchlist">
-    <div id="searchlist" class="searchlist" role="listbox" hidden></div>
-  </div>
-  <div id="mychips" class="mychips" aria-live="polite"></div>
+  <p class="sub">Tap what you already own. We rank all 119 costumes by what you can make tonight, no guessing.</p>
 
   <p class="staple-note"><b>We guessed most homes have these 6 basics: scissors, tape, paper + pen, aluminum foil, cardboard, and socks.</b> Tap &times; on anything you don't actually have. Everything else only counts if you add it.</p>
 
-  <details class="browse" id="browse">
-    <summary>Browse everything <span id="browcount"></span></summary>
-    <div id="groups"></div>
-  </details>
+  <div id="groups"></div>
+
+  <p class="findmore">Something specific, like a paint color? Type it here &mdash; the grid covers the common stuff.</p>
+  <div class="searchwrap">
+    <input id="search" type="text" placeholder="Type something specific: gold paint, red tape..." autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search your stuff" enterkeyhint="go" role="combobox" aria-expanded="false" aria-controls="searchlist">
+    <div id="searchlist" class="searchlist" role="listbox" hidden></div>
+  </div>
+  <div id="mychips" class="mychips" aria-live="polite"></div>
 
   <div class="actions">
     <button class="btn btn-ghost" id="reset" type="button">Start over</button>
@@ -165,6 +186,18 @@ try {
   ticked = new Set(JSON.parse(localStorage.getItem(LS_KEY) || 'null') || STAPLES);
 } catch (e) { ticked = new Set(STAPLES); }
 
+/* Visual tile grid (Billy 2026-09-25): recognition over recall. 44 common
+   household items as tappable photo tiles in small categories. The remaining
+   11 long-tail items (color tape/paper/paint variants) stay reachable through
+   the type-ahead search, which covers all 55 pantry items. */
+const CATEGORIES = [
+  { label: 'Closet & linens', items: ['white-tshirt','tshirt','black-clothes','sweatsuit','bedsheet','pillowcase','socks','stuffing','headband','red-headband','sunglasses','hat','yarn'] },
+  { label: 'Craft drawer', items: ['scissors','tape','paper-pen','foil','glue','safety-pins','markers','stickers','balloons','felt','pipe-cleaners'] },
+  { label: 'Paper & boxes', items: ['cardboard','paper-bag','paper-plates','newspaper','paper-white','paper-black','paper-red','paper-blue','paper-green','paper-yellow'] },
+  { label: 'Paint & makeup', items: ['paint-black','paint-white','paint-red','paint-green','paint-blue','paint-pink','paint-brown','paint-yellow','paint-gray','paint-gold'] }
+];
+function pantryById(id){ return DATA.pantry.find(p => p.id === id); }
+
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -194,34 +227,35 @@ function renderChips(){
     b.addEventListener('click', ev => { ev.stopPropagation(); removeItem(b.dataset.id); });
   });
 }
-// browse fallback lives inside a collapsed <details>
+// visual tile grid: always visible, tap toggles "I have this"
 function renderGroups(){
   const host = document.getElementById('groups');
-  host.innerHTML = DATA.groups.map(gr => {
-    const items = DATA.pantry.filter(p => p.group === gr.id);
-    return '<fieldset><legend>' + esc(gr.label) + '</legend><div class="checks">' +
+  host.innerHTML = CATEGORIES.map(cat => {
+    const items = cat.items.map(pantryById).filter(Boolean);
+    return '<div class="tilecat"><h2>' + esc(cat.label) + '</h2><div class="tiles">' +
       items.map(p =>
-        '<label class="check' + (ticked.has(p.id) ? ' on' : '') + '">' +
-        '<input type="checkbox" data-id="' + p.id + '"' + (ticked.has(p.id) ? ' checked' : '') +
-        ' aria-label="' + esc(p.label) + '">' +
-        '<img class="pthumb" src="pantry-photos/pantry-' + p.id + '.webp" alt="" loading="lazy">' +
-        '<span>' + esc(p.label) + '</span>' +
-        (p.staple ? '<span class="tag">assumed</span>' : '') + '</label>'
-      ).join('') + '</div></fieldset>';
+        '<button type="button" class="tile' + (ticked.has(p.id) ? ' on' : '') + '" data-id="' + p.id + '"' +
+        ' aria-pressed="' + ticked.has(p.id) + '" aria-label="' + esc(p.label) + '">' +
+        '<img src="pantry-photos/pantry-' + p.id + '.webp" alt="" loading="lazy">' +
+        '<span class="tlabel">' + esc(p.label) + '</span>' +
+        '<span class="tick" aria-hidden="true">&#10003;</span></button>'
+      ).join('') + '</div></div>';
   }).join('');
-  host.querySelectorAll('input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', () => {
-      if (cb.checked) ticked.add(cb.dataset.id); else ticked.delete(cb.dataset.id);
-      cb.closest('.check').classList.toggle('on', cb.checked);
+  host.querySelectorAll('.tile').forEach(t => {
+    t.addEventListener('click', () => {
+      const id = t.dataset.id;
+      if (ticked.has(id)) ticked.delete(id); else ticked.add(id);
+      t.classList.toggle('on', ticked.has(id));
+      t.setAttribute('aria-pressed', String(ticked.has(id)));
       persist(); renderChips(); render();
     });
   });
-  document.getElementById('browcount').textContent = '(' + DATA.pantry.length + ' items)';
 }
 function syncBrowse(){
-  document.querySelectorAll('#groups input[type=checkbox]').forEach(cb => {
-    cb.checked = ticked.has(cb.dataset.id);
-    cb.closest('.check').classList.toggle('on', cb.checked);
+  document.querySelectorAll('#groups .tile').forEach(t => {
+    const on = ticked.has(t.dataset.id);
+    t.classList.toggle('on', on);
+    t.setAttribute('aria-pressed', String(on));
   });
 }
 
@@ -250,7 +284,7 @@ function openList(){
   selIdx = -1;
   if (!sopts.length){
     searchList.innerHTML = searchInput.value.trim()
-      ? '<div class="snone">Nothing matches. Try the browse list below.</div>' : '';
+      ? '<div class="snone">Nothing matches. Try the photo grid above.</div>' : '';
     searchList.hidden = !searchInput.value.trim();
   } else {
     searchList.innerHTML = sopts.map((x, i) =>
@@ -323,16 +357,21 @@ function normUnlock(t){
 
 function cardHtml(r, i){
   const cls = r.missing.length === 0 ? ' zero' : (r.missing.length <= 2 ? ' almost' : '');
+  const pct = r.total ? Math.round(r.have / r.total * 100) : 0;
   const miss = r.missing.length === 0
     ? '<p class="ready">Nothing to buy. You are ready.</p>'
     : '<div class="chips"><span class="chip-label">Still need:</span>' +
       r.missing.map(m => '<span class="chip">' + esc(m) + '</span>').join('') + '</div>';
   return '<div class="card' + cls + '">' +
+    '<img class="cphoto" src="photos/' + r.it.id + '.webp" alt="" loading="lazy">' +
+    '<div class="cbody">' +
     '<div class="rank">#' + (i + 1) + '</div>' +
     '<h3>' + esc(r.it.title) + '</h3>' +
+    '<div class="pbar" role="img" aria-label="You have ' + r.have + ' of ' + r.total + ' requirements">' +
+    '<i style="width:' + pct + '%"></i></div>' +
     '<p class="have">You have <b>' + r.have + ' of ' + r.total + '</b> requirements</p>' +
     miss +
-    '<a class="go" href="/c/' + r.it.id + '">How to make it</a></div>';
+    '<a class="go" href="/c/' + r.it.id + '">How to make it</a></div></div>';
 }
 
 function render(){
