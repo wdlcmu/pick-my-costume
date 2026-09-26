@@ -63,6 +63,12 @@
   .unlock-row:first-of-type{border-top:0}
   .unlock-row .n{color:var(--yellow);font-weight:800}
   .unlock-row .w{color:var(--muted);font-size:12.5px;display:block;margin-top:2px}
+  .pvvote{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:18px 0 6px}
+  .pvvote h3{font-size:17px;margin:0 0 4px}
+  .pvvote p{font-size:13.5px;color:var(--muted);margin:0 0 10px;line-height:1.45}
+  .pvvote .pvrow{display:flex;gap:8px;flex-wrap:wrap}
+  .pvvote textarea{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .pvstatus{font-size:13px;color:var(--muted);min-height:18px}
   .reshead{display:flex;align-items:baseline;justify-content:space-between;margin:24px 0 10px}
   .reshead h2{font-size:20px;margin:0}
   .reshead span{font-size:13px;color:var(--muted)}
@@ -100,7 +106,6 @@
 <div class="wrap">
   <div class="topbar">
     <a class="brand" href="/">Pick My <span>Costume</span></a>
-    <span class="proto">prototype</span>
   </div>
 
   <h1>What do you have?</h1>
@@ -134,12 +139,14 @@
   <p class="tier-sub">One quick grab and these are yours. We never call anything missing 3+ things "almost".</p>
   <div id="tier1"></div>
 
+  <div class="pvvote" id="pvote" hidden></div>
+
   <div class="reshead"><h2>Bigger build</h2><span>3+ things to gather</span></div>
   <p class="tier-sub">Worth it if you love the idea, but plan a real shopping trip.</p>
   <div id="tier2"></div>
 
-  <p class="foot">Prototype for now. Tap a costume to see the full build guide with materials and steps.</p>
-  <p class="foot">Planning for a whole class? Try the <a href="/classroom" style="color:var(--accent);font-weight:700">classroom costume planner</a>.</p>
+  <p class="foot">Tap a costume to see the full build guide with materials and steps.</p>
+  <p class="foot">Free, no signup. Built with Muse. Made by Billy Litner.</p>
 </div>
 
 <script>
@@ -172,6 +179,9 @@ function track(name, props){
 })();
 const STAPLES = DATA.pantry.filter(p => p.staple).map(p => p.id);
 let ticked;
+/* 2026-09-26 challenge rematch: when the page loads from a ?kit= dare link,
+   CH holds the challenger's kit so the recipient can answer the dare back. */
+let CH = null;
 try {
   ticked = new Set(JSON.parse(localStorage.getItem(LS_KEY) || 'null') || STAPLES);
 } catch (e) { ticked = new Set(STAPLES); }
@@ -559,6 +569,31 @@ function challengeClaim(){
   return 'I am ' + n + ' ' + (n === 1 ? 'supply' : 'supplies') +
     ' away from making ' + top.it.title + ' tonight. What can you make with yours? ';
 }
+/* 2026-09-26 challenge rematch: the answerer's kit travels in ?kit= and the
+   challenger's kit travels in ?opp=, so the original challenger gets a real
+   verdict on arrival instead of a second one-way dare. ?vs= chains the share
+   ids for attribution. Fully client-side, like the challenge itself. */
+function rematchLink(){
+  const kit = kitEncode([...ticked]);
+  const pick = topIdeaId();
+  const sid = newShareId();
+  return { url: 'https://pickmycostume.com/pantry?kit=' + kit + '&opp=' + kitEncode(CH.kit) +
+           '&pick=' + pick + '&s=' + sid + '&vs=' + (CH.sid || ''),
+           pick: pick, sid: sid, count: ticked.size };
+}
+/* Same honest structure as challengeClaim: name a fully-makeable idea when
+   one exists, otherwise tell the truth about the gap. Framed as an answer. */
+function rematchClaim(){
+  const rows = DATA.ideas.map(score);
+  rows.sort((a, b) => (a.missing.length - b.missing.length) || (a.total - b.total));
+  const top = rows[0];
+  if (!top) return 'I answered your pantry dare. ';
+  if (top.missing.length === 0)
+    return 'I can make ' + top.it.title + ' tonight with stuff in my house. Beat that. ';
+  const n = top.missing.length;
+  return 'I am ' + n + ' ' + (n === 1 ? 'supply' : 'supplies') +
+    ' away from ' + top.it.title + '. Beat that. ';
+}
 function onChallenge(){
   const btn = document.getElementById('challenge');
   /* 2026-09-26 recipient-harness: double-tap guard. A second tap before the
@@ -566,26 +601,43 @@ function onChallenge(){
      pantry_challenge_shared track). Re-enabled when the share settles. */
   if (btn && btn.disabled) return;
   if (btn) btn.disabled = true;
-  const ch = challengeLink();
-  const text = challengeClaim() + ch.url;
+  /* 2026-09-26 rematch: a dare recipient answers instead of starting a new
+     dare. The rematch link carries both kits so the original challenger
+     gets a verdict. */
+  const isRematch = !!CH;
+  const ch = isRematch ? rematchLink() : challengeLink();
+  const text = (isRematch ? rematchClaim() : challengeClaim()) + ch.url;
   const done = function(ok){
     if (btn) {
       btn.disabled = false;
-      const old = 'Challenge a friend';
-      btn.textContent = ok ? 'Copied. Send it to a friend.' : 'Copy failed. Long-press the link.';
+      const old = isRematch ? 'Send the rematch' : 'Challenge a friend';
+      btn.textContent = ok
+        ? (isRematch ? 'Copied. Send it back to your friend.' : 'Copied. Send it to a friend.')
+        : 'Copy failed. Long-press the link.';
       setTimeout(function(){ btn.textContent = old; }, 2600);
     }
   };
-  track('pantry_challenge_created', { supply_count: ch.count, top_idea: ch.pick, share_id: ch.sid });
+  track('pantry_challenge_created', { supply_count: ch.count, top_idea: ch.pick, share_id: ch.sid, is_rematch: isRematch });
+  if (isRematch) track('pantry_challenge_answered', { share_id: ch.sid, vs_share_id: CH.sid, supply_count: ch.count, top_idea: ch.pick });
+  /* 2026-09-26 red-team: navigator.share can throw synchronously (not just
+     reject) on some browsers; without a catch the button stays disabled
+     forever. Match the index.html share path: try/catch around the call,
+     fallback copy on any failure. */
+  var usedNative = false;
   if (navigator.share) {
-    navigator.share({ title: 'Beat my pantry', text: text }).then(
-      function(){ track('pantry_challenge_shared', { share_id: ch.sid }); done(true); },
-      function(){ fallbackCopy(text, function(){ done(true); }); });
-  } else {
-    fallbackCopy(text, function(){ done(true); });
+    try {
+      usedNative = true;
+      navigator.share({ title: 'Beat my pantry', text: text }).then(
+        function(){ track('pantry_challenge_shared', { share_id: ch.sid }); done(true); },
+        function(){ fallbackCopy(text, function(){ done(true); }); });
+    } catch (e) { usedNative = false; }
   }
+  if (!usedNative) fallbackCopy(text, function(){ done(true); });
 }
-/* Recipient side: pre-tick the challenger's kit and show the dare banner. */
+/* Recipient side: pre-tick the challenger's kit and show the dare banner.
+   2026-09-26 rematch: remember the challenger's kit (CH) so the recipient's
+   challenge button becomes "Send the rematch"; a ?opp= arrival renders the
+   verdict comparing both kits instead of a second one-way dare. */
 function applyChallenge(){
   let q = {};
   try {
@@ -594,6 +646,10 @@ function applyChallenge(){
   if (!q.kit) return;
   const ids = kitDecode(q.kit);
   if (!ids.length) return;
+  CH = { kit: ids, pick: q.pick || null, sid: q.s || null };
+  /* The recipient answers the dare, so the button offers the rematch. */
+  const cbtn = document.getElementById('challenge');
+  if (cbtn) cbtn.textContent = 'Send the rematch';
   /* 2026-09-26 red-team: keep the challenger's kit in memory only. A cold
      recipient just peeking at the dare must not have their OWN saved pantry
      (pantry2) silently replaced before they touch anything. The recipient's
@@ -609,25 +665,162 @@ function applyChallenge(){
      pick against the challenger's kit (ticked === their kit here) and tell
      the truth about the gap. */
   const gap = idea ? score(idea).missing.length : 0;
+  const oppIds = q.opp ? kitDecode(q.opp) : [];
+  const isRematch = oppIds.length > 0 && !!idea;
   const banner = document.getElementById('challenge-banner');
   if (banner) {
     banner.hidden = false;
-    banner.innerHTML = (title
-      ? (gap === 0
-          ? 'Your friend can make <b>' + esc(title) + '</b> with what is in their house. '
-          : 'Your friend is <b>' + gap + ' ' + (gap === 1 ? 'supply' : 'supplies') +
-            '</b> away from making <b>' + esc(title) + '</b>. ')
-      : 'Your friend challenged you to a pantry cook-off. ') +
-        'We ticked their supplies below. Untick what you do not own and see what <b>you</b> can make.' +
-      /* 2026-09-26 red-team D5: the dare banner had no dismiss. Once the
-         recipient starts unticking, the banner has served its purpose but
-         kept shouting. A small dismiss is reversible and low-risk. */
-      ' <button type="button" id="challenge-dismiss" class="cdismiss">Got it</button>';
+    let html;
+    if (isRematch) {
+      /* Verdict: both kits scored against the featured pick. ticked is the
+         answerer's kit here; the challenger's kit arrives in ?opp=. */
+      const myGap = gap;
+      const oppGap = scoreAgainst(idea, new Set(oppIds)).missing.length;
+      const line = (myGap === 0 && oppGap === 0)
+        ? 'You can both make <b>' + esc(title) + '</b> tonight. First one finished sends a photo.'
+        : 'Rematch: your friend is <b>' + oppGap + ' ' + (oppGap === 1 ? 'supply' : 'supplies') +
+          '</b> away from <b>' + esc(title) + '</b>. You are <b>' + myGap + ' ' +
+          (myGap === 1 ? 'supply' : 'supplies') + '</b> away. ' +
+          (myGap < oppGap ? 'You are closer. Finish it.'
+            : myGap > oppGap ? 'They are closer. Time to catch up.'
+            : 'Dead even.');
+      html = line + ' We ticked the supplies your friend answered with below. Your own saved list is untouched.' +
+        /* 2026-09-26 red-team D5: the dare banner had no dismiss. Once the
+           recipient starts unticking, the banner has served its purpose but
+           kept shouting. A small dismiss is reversible and low-risk. */
+        ' <button type="button" id="challenge-dismiss" class="cdismiss">Got it</button>';
+      track('pantry_rematch_opened', { supply_count: ids.length, opp_supply_count: oppIds.length,
+        pick: q.pick, share_id: q.s || null, vs_share_id: q.vs || null });
+    } else {
+      html = (title
+        ? (gap === 0
+            ? 'Your friend can make <b>' + esc(title) + '</b> with what is in their house. '
+            : 'Your friend is <b>' + gap + ' ' + (gap === 1 ? 'supply' : 'supplies') +
+              '</b> away from making <b>' + esc(title) + '</b>. ')
+        : 'Your friend challenged you to a pantry cook-off. ') +
+          'We ticked their supplies below. Untick what you do not own and see what <b>you</b> can make.' +
+        /* 2026-09-26 red-team D5: the dare banner had no dismiss. Once the
+           recipient starts unticking, the banner has served its purpose but
+           kept shouting. A small dismiss is reversible and low-risk. */
+        ' <button type="button" id="challenge-dismiss" class="cdismiss">Got it</button>';
+    }
+    banner.innerHTML = html;
     const dis = document.getElementById('challenge-dismiss');
     if (dis) dis.addEventListener('click', function(){ banner.hidden = true; });
   }
-  track('pantry_challenge_opened', { supply_count: ids.length, pick: q.pick || null, share_id: q.s || null });
+  track('pantry_challenge_opened', { supply_count: ids.length, pick: q.pick || null, share_id: q.s || null, is_rematch: isRematch });
 }
+/* 2026-09-26 pantry house vote: the pantry ranks by makeability, and the
+   top of that list is exactly where household indecision lives ("we could
+   make three of these tonight - which one?"). The vote box turns that
+   indecision into a share: the top 3 make-tonight/almost candidates,
+   numbered 1-2-3 with honest gap stakes and their own ?s=&o=pantryvote
+   links. The vote itself happens in the chat via replies - no backend,
+   no tally UI, nothing to maintain.
+   Measure: pantry_vote_opened -> pantry_vote_copied / pantry_vote_shared,
+   all with share_origin "pantryvote"; recipient opens attribute through
+   the existing ?s=&o= allowlist in index.html. */
+function daysToHalloween(){
+  var now = new Date();
+  var h = new Date(now.getFullYear(), 9, 31, 23, 59, 59);
+  if (h.getTime() < now.getTime()) h = new Date(now.getFullYear() + 1, 9, 31, 23, 59, 59);
+  return Math.max(0, Math.round((h.getTime() - now.getTime()) / 86400000));
+}
+function pvGapLine(r){
+  if (r.missing.length === 0) return 'nothing to buy';
+  var what = r.missing.length === 1 ? '1 thing away' : r.missing.length + ' things away';
+  return what + ': ' + r.missing.join(', ');
+}
+function buildPantryVoteText(cands, sid){
+  var lines = ['Help us pick what to make for Halloween! Reply with 1, 2, or 3.'];
+  cands.slice(0, 3).forEach(function(r, i){
+    lines.push((i + 1) + '. ' + r.it.title + ' (' + pvGapLine(r) + ') - ' +
+      'pickmycostume.com/c/' + r.it.id + '?s=' + sid + '&o=pantryvote');
+  });
+  var d = daysToHalloween();
+  lines.push(d > 1 ? 'Halloween is ' + d + ' days out. Decide fast.'
+    : (d === 1 ? 'Halloween is tomorrow. Decide fast.' : 'Halloween is today. Decide fast.'));
+  return lines.join('\n');
+}
+function renderPantryVote(t0, t1){
+  var box = document.getElementById('pvote');
+  var cands = t0.concat(t1).slice(0, 3);
+  if (cands.length < 2){ box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  /* Rebuilt on every render() because each tick reshuffles the list. The
+     panel starts closed so no share text can go stale between ticks; the
+     share id is minted fresh on each panel open. */
+  box.innerHTML =
+    '<h3>Can\'t decide what to make?</h3>' +
+    '<p>Send your top ' + cands.length + ' to the house group chat in one text. ' +
+    'Everyone replies 1, 2, or 3 and the costume picks itself.</p>' +
+    '<div class="pvrow"><button class="btn" id="pvote-btn" type="button">Let the house vote</button></div>' +
+    '<div id="pvote-panel" style="display:none;margin-top:10px"></div>';
+  document.getElementById('pvote-btn').addEventListener('click', function(){
+    var panel = document.getElementById('pvote-panel');
+    var btn = this;
+    if (panel.style.display !== 'none'){
+      panel.style.display = 'none'; btn.textContent = 'Let the house vote'; return;
+    }
+    var sid = newShareId();
+    var ids = cands.map(function(r){ return r.it.id; });
+    var text = buildPantryVoteText(cands, sid);
+    track('pantry_vote_opened', { share_id: sid, idea_ids: ids, share_origin: 'pantryvote' });
+    panel.innerHTML = '';
+    var ta = document.createElement('textarea');
+    ta.readOnly = true; ta.rows = 7 + cands.length;
+    ta.style.cssText = 'width:100%;box-sizing:border-box;font-size:14px';
+    ta.value = text;
+    var row = document.createElement('div'); row.className = 'pvrow'; row.style.marginTop = '8px';
+    var bCopy = document.createElement('button');
+    bCopy.type = 'button'; bCopy.className = 'btn btn-ghost'; bCopy.textContent = 'Copy vote text';
+    var bShare = document.createElement('button');
+    bShare.type = 'button'; bShare.className = 'btn btn-ghost'; bShare.textContent = 'Share';
+    var st = document.createElement('div'); st.className = 'pvstatus'; st.style.marginTop = '6px';
+    bCopy.onclick = function(){
+      var doneCopy = function(){
+        bCopy.textContent = 'Copied \u2713';
+        setTimeout(function(){ bCopy.textContent = 'Copy vote text'; }, 2000);
+        track('pantry_vote_copied', { share_id: sid, idea_ids: ids, share_origin: 'pantryvote', via: 'clipboard' });
+        st.textContent = 'Copied. Paste it in the group chat.';
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(doneCopy, function(){ fallbackCopy(text, doneCopy); });
+      } else { fallbackCopy(text, doneCopy); }
+    };
+    bShare.onclick = function(){
+      if (bShare.disabled) return; /* double-tap guard: one share per tap */
+      bShare.disabled = true;
+      var rearm = function(){ bShare.disabled = false; };
+      var viaCopy = function(){
+        fallbackCopy(text, function(){
+          track('pantry_vote_shared', { share_id: sid, idea_ids: ids, share_origin: 'pantryvote', via: 'clipboard' });
+          st.textContent = 'Copied. Paste it in the group chat.';
+          rearm();
+        });
+      };
+      /* Red-team pattern from the challenge share: navigator.share can
+         throw synchronously on some browsers, so try/catch the call. */
+      if (navigator.share){
+        try {
+          navigator.share({ title: 'What should we make?', text: text }).then(
+            function(){
+              track('pantry_vote_shared', { share_id: sid, idea_ids: ids, share_origin: 'pantryvote', via: 'share_sheet' });
+              st.textContent = 'Sent. Whoever replies first wins.';
+              rearm();
+            },
+            function(){ viaCopy(); });
+        } catch (e) { viaCopy(); }
+      } else { viaCopy(); }
+    };
+    panel.appendChild(ta);
+    row.appendChild(bCopy); row.appendChild(bShare);
+    panel.appendChild(row); panel.appendChild(st);
+    panel.style.display = 'block';
+    btn.textContent = 'Hide the vote text';
+  });
+}
+
 function renderGroups(){
   const host = document.getElementById('groups');
   host.innerHTML = DATA.groups.map(gr => {
@@ -657,6 +850,15 @@ function score(it){
   const missingIds = [];
   it.mats.forEach(m => { if (!reqOk(m)) { missing.push(m.t); missingIds.push(repId(m)); } });
   return { it: it, have: it.mats.length - missing.length, total: it.mats.length, missing: missing, missingIds: missingIds };
+}
+/* 2026-09-26 challenge rematch: score one idea against an arbitrary kit
+   without disturbing the live ticked set, so the verdict can compare the
+   answerer's kit against the challenger's kit honestly. */
+function scoreAgainst(it, kitSet){
+  const saved = ticked;
+  ticked = kitSet;
+  try { return score(it); }
+  finally { ticked = saved; }
 }
 
 function normUnlock(t){
@@ -776,6 +978,7 @@ function render(){
   put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.');
   put('tier1', t1, 'Nothing is just 1 or 2 things away right now.');
   put('tier2', t2, '');
+  renderPantryVote(t0, t1);
 }
 
 document.getElementById('reset').addEventListener('click', () => {
@@ -794,3 +997,4 @@ document.getElementById('challenge').addEventListener('click', onChallenge);
 </script>
 </body>
 </html>
+
