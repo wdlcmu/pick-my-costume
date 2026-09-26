@@ -2782,13 +2782,13 @@ function duelShareback(mine, theirs, btn, statusEl){
       );
     } catch(e){
       doCopy(text, function(ok, msg){
-        statusEl.textContent = msg; rearmShare();
+        statusEl.textContent = ok ? "Copied. Send it back to your friend." : msg; rearmShare();
         if (ok) trackShareback("clipboard");
       });
     }
   } else {
     doCopy(text, function(ok, msg){
-      statusEl.textContent = msg; rearmShare();
+      statusEl.textContent = ok ? "Copied. Send it back to your friend." : msg; rearmShare();
       if (ok) trackShareback("clipboard");
     });
   }
