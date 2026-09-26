@@ -3177,6 +3177,163 @@ function teaserTextFor(idea, sid){
   var picked = "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is.";
   return picked + " Take the quiz and send me what you get: " + link;
 }
+/* 2026-09-26 micro-quiz share experiment ("Send one question"): the
+   lowest-friction share on the site. The sender taps a button; the
+   recipient's link opens with a single question rendered in place (no
+   tap-to-start, no 5-question commitment). One tap answers, the quiz makes
+   its honest one-question guess, and the full quiz is one more tap away.
+   New share origin "micro", measured against generic/card/teaser/duel.
+   Metric: friend quiz starts per share_created, micro vs the other
+   origins. */
+function microTextFor(sid){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=micro";
+  return "One question, one Halloween costume pick. Answer it and see what you get: " + link;
+}
+/* 2026-09-26 micro-quiz: the single question is the quiz's own q2 vibe
+   question (Funny/Scary/Cute/Chill) -- the most fun one-tap answer and the
+   most differentiating single answer in the bank. The guess applies the
+   quiz's own vibe promise logic (Billy 2026-09-25): funny needs funny>=2
+   with scary not dominant, scary needs scary>=1, cute needs cute>=1; chill
+   passes everything and ranks on the simple tag. Relax to the full bank
+   ranked by tag weight when the filter would leave fewer than 3, the same
+   pattern scoreIdeas uses. Ranked by the picked vibe tag weight, demand-sim
+   rank as tie-break, so the guess is what the full quiz would genuinely
+   produce from this answer alone. */
+var MICRO_Q = {title: "What vibe are you going for?", hint: "One tap. No wrong answers.", options: [
+  {label: "Funny", tag: "funny"},
+  {label: "Scary", tag: "scary"},
+  {label: "Cute", tag: "cute"},
+  {label: "Chill", tag: "simple"}
+]};
+function microVibeOk(idea, vibeTag){
+  var t = idea.tags || {};
+  if (vibeTag === "funny") return (t.funny||0) >= 2 && (t.scary||0) <= (t.funny||0);
+  if (vibeTag === "scary") return (t.scary||0) >= 1;
+  if (vibeTag === "cute") return (t.cute||0) >= 1;
+  return true;
+}
+function microGuess(vibeTag){
+  var pool = IDEAS.filter(function(i){ return microVibeOk(i, vibeTag); });
+  /* Same relaxation pattern as scoreIdeas: if the hard filter would leave
+     fewer than 3, rank the whole bank instead -- but non-matching ideas
+     stay demoted below matching ones, so a scary-dominant idea can never
+     win a "funny" guess when a genuine funny idea exists. */
+  if (pool.length < 3) pool = IDEAS.slice();
+  pool.sort(function(a, b){
+    var aok = microVibeOk(a, vibeTag) ? 0 : 1, bok = microVibeOk(b, vibeTag) ? 0 : 1;
+    if (aok !== bok) return aok - bok;
+    var ta = (a.tags||{})[vibeTag] || 0, tb = (b.tags||{})[vibeTag] || 0;
+    return (tb - ta) || ((a.rank||999) - (b.rank||999));
+  });
+  return pool[0] || null;
+}
+/* Renders the micro panel in place: the one question first, then the
+   honest one-question guess with a full-quiz door and a share-back. */
+function renderMicroPanel(box){
+  box.innerHTML = "";
+  var h = document.createElement("p");
+  h.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
+  h.textContent = "Your friend sent you ONE question.";
+  var sub = document.createElement("p");
+  sub.style.cssText = "margin:0 0 6px;font-size:14px;color:#666;line-height:1.4";
+  sub.textContent = MICRO_Q.title + " " + MICRO_Q.hint;
+  box.appendChild(h); box.appendChild(sub);
+  MICRO_Q.options.forEach(function(opt){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "opt";
+    b.style.width = "100%";
+    b.style.marginTop = "8px";
+    b.textContent = opt.label;
+    b.onclick = function(){
+      var guess = microGuess(opt.tag);
+      Analytics.track("micro_answer_chosen", Object.assign({vibe: opt.label, idea_id: guess ? guess.id : null}, viaShareProps()));
+      renderMicroResult(box, opt, guess);
+    };
+    box.appendChild(b);
+  });
+}
+function renderMicroResult(box, opt, guess){
+  box.innerHTML = "";
+  if (guess){
+    box.appendChild(ideaMedia(guess, true));
+    var h = document.createElement("p");
+    h.style.cssText = "margin:10px 0 4px;font-weight:700;color:#333;line-height:1.4;font-size:18px";
+    h.textContent = "The quiz's first guess: " + guess.title;
+    var tri = document.createElement("p");
+    tri.style.cssText = "margin:0 0 6px;font-size:14px;color:#666";
+    tri.textContent = spinTriple(guess);
+    var bl = document.createElement("p");
+    bl.className = "blurb";
+    bl.textContent = guess.blurb;
+    var honest = document.createElement("p");
+    honest.style.cssText = "margin:8px 0 0;font-size:13px;color:#888;line-height:1.4";
+    honest.textContent = "That was one question, not five. Take the 2-minute quiz to get your real match.";
+    box.appendChild(h); box.appendChild(tri); box.appendChild(bl); box.appendChild(honest);
+  } else {
+    var e = document.createElement("p");
+    e.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
+    e.textContent = "Hmm, no costume matched that one. Take the full quiz instead.";
+    box.appendChild(e);
+  }
+  var quiz = document.createElement("button");
+  quiz.type = "button"; quiz.className = "cta";
+  quiz.style.width = "100%";
+  quiz.style.marginTop = "12px";
+  quiz.textContent = "Take the 2-minute quiz";
+  quiz.onclick = function(){
+    /* Mirror the hero "Find my costume" start exactly: clean state, no
+       pinpoint residue, old picks cleared, recipient-attributed event. */
+    state = {qi: 0, answers: {}};
+    state.pinpoint = null;
+    pinpointNote(""); pinpointClearNomatch();
+    clearK("pmc_pick_v1");
+    Analytics.track("quiz_started", viaShareProps());
+    renderQ();
+  };
+  box.appendChild(quiz);
+  if (guess){
+    /* The guide link is plain (no ?s=): the guess is the recipient's own
+       discovery, not a share arrival, so no share headline applies. */
+    var guide = document.createElement("a");
+    guide.href = "/c/" + guess.id;
+    guide.className = "ghost";
+    guide.style.cssText = "display:block;width:100%;margin-top:8px;text-align:center;text-decoration:none;box-sizing:border-box;";
+    guide.textContent = "See the full " + guess.title + " guide";
+    box.appendChild(guide);
+    /* The return leg: mint a fresh micro link back into the same chat,
+       exactly like the duel share-back. */
+    var back = document.createElement("button");
+    back.type = "button"; back.className = "ghost";
+    back.style.width = "100%";
+    back.style.marginTop = "8px";
+    back.textContent = "Send them your pick";
+    back.onclick = function(){
+      var rearm = armShareOnce(back);
+      if (!rearm) return; /* double-tap: a share is already in flight */
+      var sid = newShareId();
+      var text = "I answered your one question and got " + guess.title + ". Your turn: https://pickmycostume.com/?s=" + sid + "&o=micro";
+      function done(ok){
+        rearm();
+        if (ok){
+          Analytics.track("share_created", Object.assign({share_id: sid, idea_id: guess.id, share_origin: "micro", share_msg_variant: "shareback"}, viaShareProps()));
+          back.textContent = "Sent.";
+        }
+      }
+      if (navigator.share){
+        try {
+          navigator.share({title: "Pick My Costume", text: text}).then(function(){ done(true); }, function(){ done(false); });
+          return;
+        } catch(e){}
+      }
+      doCopy(text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: guess.id, share_id: sid, share_origin: "micro", via: "micro-shareback"}, viaShareProps()));
+        done(ok);
+      });
+    };
+    box.appendChild(back);
+  }
+}
 /* 2026-09-26 pair-share experiment ("Find my +1's costume"): the cooperative
    counterpart to the duel. The sender goes as this pick; the recipient takes
    the full quiz to find THEIR costume, and the results page renders a
@@ -5839,6 +5996,57 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     cur = makeShare(); ta.value = cur.text;
   };
   trow.appendChild(bteaser);
+  /* 2026-09-26 micro-quiz share experiment: "Send one question" -- a third
+     share action that sends a single question instead of the pick or the
+     full quiz (see microTextFor). Full-width ghost row under the teaser so
+     the existing button layout is untouched. Mirrors the teaser machinery
+     exactly: native sheet when available, clipboard fallback on desktop,
+     share_created only on a resolved share, a dismissed sheet counts as a
+     cancel. */
+  var mrow = document.createElement("div"); mrow.className = "row"; mrow.style.marginTop = "8px";
+  var bmicro = document.createElement("button");
+  bmicro.type = "button"; bmicro.className = "ghost";
+  bmicro.style.width = "100%";
+  bmicro.textContent = "Send one question";
+  bmicro.onclick = function(){
+    var rearmShare = armShareOnce(bmicro);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var sh = {sid: sid, text: microTextFor(sid), challenge: false};
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        /* E8: the first share landed -- invite a second one. */
+        label.textContent = "Shared. Who else needs a costume?";
+        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "micro", share_msg_variant: shareVariant()}, xp()));
+        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "micro"}, xp()));
+        /* The share landed: the AI plan is the immediate now-what. */
+        if (typeof onShared === "function") onShared();
+      }
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "micro"}, xp()));
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    /* Phone: native share sheet. Fires share_created only when the share resolves;
+       a dismissed sheet is a cancel, not a share, so it fires nothing. */
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+    cur = makeShare(); ta.value = cur.text;
+  };
+  mrow.appendChild(bmicro);
   /* 2026-09-26 plan share ("Share the plan, not the picture"): a second share
      action that leads with practical facts (time, cost, difficulty) instead
      of the illustration, so the share reads as a recommendation, not a meme.
@@ -5970,6 +6178,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   container.appendChild(ta);
   container.appendChild(row);
   container.appendChild(trow);
+  container.appendChild(mrow); /* 2026-09-26 micro-quiz: "Send one question" sits under the teaser row */
   /* 2026-09-26 gift experiment: "Pick for a friend." Full-width ghost row
      under the teaser row; opens the gift mini-flow (openGiftFlow, below). */
   var grow = document.createElement("div"); grow.className = "row"; grow.style.marginTop = "8px";
@@ -7471,7 +7680,9 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro)/.exec(location.search || "");
+    /* 2026-09-26 micro-quiz share experiment: ?o=micro marks "Send one
+       question" shares; same survival rule as the other origins. */
     /* 2026-09-26 red-team: gift added -- openGiftFlow mints ?o=gift&gift=1 and
        its comment promises share_origin=gift on the recipient side, but the
        origin regex never recognized gift, so gift recipients arrived with no
@@ -7723,6 +7934,22 @@ function shareLandingHeadline(idea, search){
         if (panel && panel.scrollIntoView) panel.scrollIntoView({block: "start"});
       };
       hero.insertBefore(spb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 micro-quiz share: genuine ?o=micro arrivals get the question
+       itself rendered in place, not a banner leading to the quiz. One tap
+       answers; the panel shows the quiz's honest one-question guess, with
+       the full quiz one tap away and a share-back that re-mints a micro
+       link into the same chat (the duel-style return leg). Fires
+       recipient_landing_viewed here because the ?idea= block never runs on
+       a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "micro"){
+      var mb = document.createElement("div");
+      mb.id = "pmc-friend-banner";
+      mb.style.cssText = "display:block;width:100%;text-align:left;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
+      renderMicroPanel(mb);
+      hero.insertBefore(mb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
