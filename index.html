@@ -270,6 +270,11 @@ button.ghost{
 .trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
 .castbox h3{margin:0 0 4px;font-size:20px}
+/* Experiment 1 (2026-09-26, staged): the quick-share card that leads the cast
+   panel when EXPERIMENT1_ONE_TAP_SHARE is on. */
+.exp1-quick{margin:0 0 18px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+.exp1-quick h3{margin:0 0 4px;font-size:20px}
+.exp1-quick .promptbox{margin:8px 0 10px}
 .castq{margin:12px 0 4px;font-weight:700;font-size:15px}
 .castbtns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
 .castbtns button{min-height:44px;min-width:52px;padding:8px 14px;font-size:15px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:10px;cursor:pointer;font-family:inherit}
@@ -385,6 +390,8 @@ footer a{color:var(--accent)}
 .returnhero-actions{display:flex;flex-direction:column;gap:10px}
 .returnhero-actions .cta{width:100%}
 .returnhero-share{background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;cursor:pointer;padding:8px;min-height:44px}
+/* 2026-09-26 P4: stranded-results resume. Quiet text-link under the hero CTA. */
+.resume-link{background:none;border:0;color:var(--accent);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px;min-height:32px}
 .hero.returning .firstonly{display:none}
 @keyframes returnIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 /* Billy 2026-09-26: detail-view celestial. Small, ambient, pinned to the top
@@ -554,6 +561,11 @@ footer a{color:var(--accent)}
            proof rule, so the proof line is removed. The hero keeps the
            honest "5 questions, 2 minutes, free forever" line. -->
       <p class="fine firstonly" style="margin:8px 0 0;text-align:center">5 questions · 2 minutes · free forever</p>
+      <!-- 2026-09-26 P4: stranded-results resume. Quiet text-link, shown iff
+           pmc_last_v1 has results but no fresh pick (returnbox hidden). Reuses
+           the btn-return handler verbatim; visibility managed by
+           refreshReturnBox(). -->
+      <p class="fine" id="resume-wrap" style="margin:6px 0 0;text-align:center" hidden><button type="button" class="resume-link" id="btn-resume">See my ideas again</button></p>
       <p class="tminus" id="tminus" style="display:none"></p>
       <!-- Billy 2026-09-26: personalized returning hero. Shown only when a
            fresh pmc_pick_v1 plus usable pmc_last_v1 exist; the generic
@@ -2782,7 +2794,7 @@ function offBrandName(idea){
    119-idea requirement map: {staples:[6 pantry ids], mats:{ideaId:[materials]}}.
    Each material is an AND-item; each material holds OR-groups of pantry ids;
    null inside a group means honestly still-need (never satisfied by ticking). */
-var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","foil","cardboard","socks"],"mats":{"astronaut":[[[null]],[["paper-bag"]],[["tape-silver"]],[["stickers"]],[["scissors"]]],"baby-dino":[[[null]],[["felt","paper-green"]],[["stuffing","socks"]],[["safety-pins"]],[["tape"]],[["scissors"]]],"backyard-hero":[[["pillowcase","tshirt"]],[["tshirt"]],[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["safety-pins"]],[["scissors"]]],"bacon-eggs":[[[null]],[["white-tshirt"]],[["paper-red"]],[["felt","paper-white"],["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"bamboo-demon":[[[null]],[[null]],[["cardboard"]],[["yarn"]],[["paint-red"]],[["scissors"]],[["tape"]]],"basketball-star":[[[null]],[[null]],[["paint-black"]],[[null]]],"black-cat":[[["black-clothes","sweatsuit"]],[["headband"]],[["felt","paper-black"]],[[null]],[["paint-black"]],[[null,"pillowcase"]],[["scissors"]],[["tape"]]],"block-game-crew":[[["cardboard"]],[[null]],[[null]],[["markers"]],[["scissors"]]],"block-monster":[[["sweatsuit"]],[["cardboard"]],[["tape"]],[["scissors"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"blue-alien-ohana":[[[null]],[["felt","paper-blue"]],[["headband"]],[[null]],[["felt","paper-white"]],[["safety-pins"]],[["scissors"]],[["tape"]]],"blue-dog-family":[[[null]],[["headband"]],[["felt","paper-blue"],["felt","paper-orange"],["felt","paper-white"]],[["safety-pins"]],[["scissors"]]],"board-game-pieces":[[["black-clothes"]],[["cardboard"]],[[null]],[[null]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"bowling-pins":[[[null]],[["tape-red"]],[["black-clothes"]],[[null]],[["scissors"]]],"boxer":[[[null]],[[null]],[["paint-purple"],["paint-yellow"]],[[null]],[[null]]],"breakfast-buffet":[[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]]],"bumble-bee":[[[null]],[["tape-yellow"]],[[null]],[["pipe-cleaners"]],[[null,"stuffing"]],[["glue"]]],"burger-joint-couple":[[[null]],[[null]],[[null]],[[null]],[["paper-pen"]]],"caped-duo":[[["bedsheet"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["glue"]],[["paper-pen"]],[["scissors"]]],"cardboard-knight":[[["cardboard"]],[[null]],[[null]],[[null]],[["tape-gray"]],[["markers"]],[["scissors"]]],"cat-mouse":[[["headband"]],[["felt","paper-black"]],[["felt","paper-gray"]],[["paint-black"]],[["scissors"]],[["tape"]]],"cereal-crew":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"cheerleader":[[[null]],[[null]],[[null]],[["tape"]],[["scissors"]]],"classic-ghost":[[["bedsheet"]],[["markers"]],[["scissors"]],[[null]]],"crowd-camouflage":[[[null]],[["black-clothes"]],[[null]],[[null]],[["paper-pen"]]],"deadpan-diva":[[[null]],[["paint-white"]],[["paint-black","paint-brown"],["paint-red"]],[[null]]],"decades-crew":[[[null]],[["paper-pen"]],[["scissors"]],[["tape","safety-pins"]],[[null]]],"deviled-egg":[[["white-tshirt"]],[["felt","paper-yellow"]],[["felt"]],[["red-headband"]],[["pipe-cleaners","paper-red"]],[["scissors"],["tape","glue"]],[["paint-red"]]],"dino-herd":[[[null]],[["felt","paper-green"]],[["socks"]],[[null,"stuffing"]],[["glue","safety-pins"]],[["scissors"]]],"dino-rangers":[[[null]],[[null]],[["paper-white"]],[[null]],[["yarn"]],[["tape"],["scissors"]]],"dinosaur-family":[[[null]],[["felt","paper-green"]],[["scissors"]],[["glue","safety-pins"]],[["paint-green"]]],"doctor-bride":[[[null]],[["paint-green"]],[[null]],[[null,"bedsheet"]],[[null]],[["tape","glue"]],[["scissors"]],[["paint-black","paint-brown"]]],"emerald-witch":[[[null]],[[null]],[["paint-green"]],[["paint-black"],["paint-green"]],[[null],["scissors"]],[[null]]],"emoji-crew":[[[null]],[["paper-plates","cardboard"]],[["markers"]],[["scissors"],["tape"]]],"enchanted-castle-crew":[[[null]],[[null]],[["paint-gold"],[null]],[["cardboard"]],[[null,"cardboard"]],[[null],["scissors"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"error-404":[[["black-clothes"]],[["black-clothes"]],[[null,"paper-white"]],[[null]],[["scissors"]],[["tape"]]],"fairy-tale-princesses":[[[null]],[["cardboard"]],[[null,"markers"]],[["scissors"],["tape"]],[["yarn"]]],"fuzzy-monster":[[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["felt","paper-white"]],[["scissors"]],[["glue","safety-pins"]]],"garden-gnome":[[[null]],[["cardboard"]],[[null]],[["paint-white"]],[[null]],[["scissors"]],[["tape"]]],"ghost-hunters":[[[null]],[["cardboard"]],[["paper-white"],["markers"]],[[null]],[["tape","glue"],["scissors"]]],"gloom-bloom":[[["black-clothes"]],[[null]],[["paint-black"],["paint-white"]],[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]],"glow-skeleton":[[[null]],[[null]],[[null]],[["scissors"]],[["paint-black"]]],"goggle-crew":[[[null]],[[null]],[[null]],[[null]]],"good-witch-bad-witch":[[[null,"black-clothes"]],[[null]],[["paint-green"]],[["cardboard"]],[[null]],[[null],["scissors"],["markers"],["tape"]]],"haunted-animatronics":[[["cardboard"]],[[null]],[[null]],[[null]],[[null],["scissors"]]],"haunted-portraits":[[[null]],[["paint-gray"],["paint-white"]],[[null,"cardboard"]],[[null]]],"headless-horsemen":[[[null]],[[null]],[[null]],[["tape"]],[[null]]],"hero-squad":[[[null]],[[null]],[[null]],[[null]],[["safety-pins"]]],"ice-cream-cone":[[[null]],[["white-tshirt"]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["markers"]],[["tape"]]],"ketchup-mustard":[[[null]],[["felt","paper-red"]],[["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"little-lion":[[[null]],[[null]],[["scissors"]],[["safety-pins","glue"]],[["paint-brown"]]],"little-pig-family":[[[null]],[[null]],[[null]],[[null,"paper-pink"]],[[null,"yarn"]],[["scissors"],["tape"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"little-shark":[[[null]],[["felt","paper-gray"]],[["felt","paper-white"]],[["glue"]],[["scissors"]]],"little-witch":[[[null,"black-clothes"]],[[null]],[[null]],[["paint-green"]],[["safety-pins","yarn"]]],"lost-tourist":[[[null]],[["sunglasses"],[null]],[["paper-pen"]],[[null]],[["tape"]]],"mermaid-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null,"cardboard"]],[[null]],[["scissors"],["tape"]]],"moth-porch-light":[[[null]],[["cardboard"]],[["markers"]],[["pipe-cleaners","yarn"]],[["headband"]],[[null]],[[null]],[["tape"],["scissors"]]],"mystery-crew":[[[null]],[[null]],[[null]],[[null]],[["paint-brown"]]],"neon-demon-hunter":[[[null]],[[null]],[[null]],[[null]],[[null]],[[null]]],"ninja":[[["black-clothes"]],[[null]],[[null,"black-clothes"]],[["scissors"],["tape"]],[["paint-black"]]],"office-couple":[[[null]],[[null]],[[null]],[["black-clothes"]],[["markers"]]],"pbj":[[[null]],[[null]],[["paper-white"]],[["markers"]],[["scissors"],["tape","yarn"]]],"peas-pod":[[[null]],[["felt"]],[[null]],[[null,"glue"]],[["paint-green"]],[["scissors"]]],"penguin-huddle":[[["black-clothes"]],[["felt","paper-white"]],[["felt","paper-orange"]],[["headband"]],[["glue"]],[["scissors"]]],"pickle":[[[null]],[[null]],[["glue"]],[["paint-green"]]],"pixel-ghost":[[["bedsheet"]],[["felt","paper-black"]],[["glue"]],[["scissors"]],[["markers"],[null]]],"pizza-slice":[[["cardboard"]],[[null]],[["felt","paper-red"]],[[null,"paper-bag"]],[[null],["scissors"],["tape"]],[["glue"]]],"plague-doctor":[[[null]],[[null]],[[null,"sunglasses"]],[["cardboard"]],[[null]],[[null]],[["markers"]]],"player-one-two":[[["tshirt"]],[[null,"markers"]],[[null]],[[null]]],"plug-socket":[[["cardboard"]],[[null]],[["markers"]],[[null,"cardboard"]],[["tape"],["yarn"]],[["scissors"]]],"plumber-duo":[[[null]],[[null]],[[null]],[["paint-brown"]],[["stickers","paper-white"]],[["markers"]]],"pocket-plush":[[[null,"sweatsuit"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["glue"]],[["felt","paper-black"],["felt","paper-white"]],[[null,"paper-pen"]],[["markers"]]],"popcorn-bucket":[[["cardboard"]],[[null]],[["balloons"]],[["tape"],["yarn"],["scissors"]],[["markers"]]],"prince-princess":[[["paper-yellow"]],[[null]],[[null]],[[null]],[[null]]],"rain-cloud-rainbow":[[[null]],[["stuffing"]],[["paper-blue"]],[["yarn"],["tape"]],[["glue"]],[[null]],[["paint-blue"]]],"ramen-bowl":[[["cardboard"]],[[null]],[["yarn"]],[[null,"paper-white"]],[[null]],[["tape"],["yarn"]],[["scissors"]]],"raptor-ranger":[[[null],["hat"]],[[null]],[["felt","paper-green"]],[[null]],[["paint-green"],["paint-black"]],[["scissors"],["tape"]]],"referee":[[["black-clothes"]],[["black-clothes"]],[["tape-white"]],[[null]],[[null]]],"robot-crew":[[["cardboard"]],[["cardboard"]],[["foil"]],[[null]],[["tape"]],[["markers"]],[["yarn"]],[[null]]],"robot-ranger":[[["cardboard"]],[["foil"]],[[null]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["tape"]],[[null]],[["markers"]],[["scissors"]]],"safari-photographer":[[[null]],[[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"],["tape"],["markers"]]],"safari-zoo-crew":[[[null]],[["headband"]],[["paper-brown"],["paper-black"],["paper-pink"]],[["paint-brown"],["paint-black"]],[["scissors"],["tape"]]],"salt-pepper":[[["white-tshirt"],[null],["hat"]],[["black-clothes"],["hat"]],[["cardboard"]],[[null,"markers"]],[["markers"]],[["tape","glue"]]],"snow-sisters":[[[null]],[[null]],[["white-tshirt"],[null],["felt"]],[[null],["pipe-cleaners"],[null]],[[null]],[["tape"],["scissors"]]],"soccer-squad":[[[null]],[["black-clothes"]],[[null]],[[null]],[["markers"]],[["tape-white"]],[["scissors"]]],"space-crewmate":[[["sweatsuit"]],[["cardboard"]],[["foil"]],[["yarn"]],[["markers"]],[["tape"]],[["scissors"]]],"spider":[[[null]],[[null]],[["newspaper"]],[[null]],[["glue"]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["paint-white"]]],"sun-moon":[[[null]],[[null,"black-clothes"]],[[null,"paper-yellow"]],[["paper-gray"]],[["paper-white"],["paper-yellow"]],[["tape"],["scissors"]]],"superhero-family":[[[null]],[["felt","paper-black"]],[["felt"]],[["headband"]],[["safety-pins","tape"]],[["scissors"]]],"sushi-roll":[[["bedsheet","white-tshirt"]],[["paper-green"]],[["felt"]],[[null,"stuffing"]],[[null]],[["glue"]],[["scissors"]]],"tennis-duo":[[["white-tshirt"],[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"]]],"tin-hero":[[[null]],[["tape"]],[[null]],[["cardboard"]],[["tape"]],[["safety-pins"]]],"tiny-firefighter":[[[null]],[[null]],[[null]],[[null]],[["markers"]]],"tiny-snail":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["headband"]],[[null,"stuffing"]],[["tape"]],[["scissors"]]],"tooth-fairy":[[[null]],[[null]],[["paper-white"]],[["felt"]],[[null]],[[null]],[[null],["foil"]],[["tape"],["scissors"]]],"under-the-sea":[[[null]],[[null]],[[null]],[[null],["cardboard"]],[[null]],[[null]],[["tape"],["scissors"]]],"vampire":[[[null,"black-clothes"]],[["black-clothes"]],[[null]],[[null]],[["paint-red"]],[["paint-white"]]],"walking-taco":[[[null]],[["felt","paper-brown"],["felt","paper-red"],["felt","paper-green"],["felt","paper-yellow"]],[["glue"]],[["headband"]],[["scissors"]]],"web-hero-duo":[[[null]],[["black-clothes"]],[["paint-black"]],[["stickers","paint-white"]],[[null]],[["tape"]]],"web-slinger-crew":[[[null]],[["paint-black"]],[["stickers","tape-white"]],[["sunglasses"]],[["tape"]]],"zombie-coworker":[[[null]],[[null]],[["paint-white"]],[["paint-black"]],[[null]],[["scissors"]]],"the-olympians":[[["bedsheet"]],[[null]],[[null]],[["paint-gold"]],[["cardboard"]],[[null,"markers"]],[["safety-pins"],["scissors"],["tape"]]],"spaghetti-meatball":[[["white-tshirt",null]],[["yarn"]],[[null]],[[null,"glue"]],[["scissors"]]],"cupcake":[[[null]],[["pillowcase"]],[[null]],[["glue"]]],"banana":[[[null]],[["felt"]],[["headband"]],[["glue"]]],"hot-dog":[[[null]],[[null]],[[null]],[["safety-pins","glue"]]],"donut":[[["cardboard"]],[[null]],[["felt","stickers"]],[["yarn"]],[["scissors"],["glue"]]],"coffee-cup":[[[null,"bedsheet"]],[["cardboard"]],[["paper-brown","felt"]],[["markers"]]],"fruit-salad":[[[null]],[["felt","paper-green"]],[["headband"]],[["glue"]]],"wizard":[[[null]],[[null]],[[null]],[[null,"paint-gray"]],[[null]]],"toy-box-crew":[[[null]],[["white-tshirt"],[null],["felt"]],[["cardboard"],[null]],[[null]],[[null]],[["paper-pen"]],[["markers"],["scissors"],["glue"],["tape"]]],"demon-boy-band":[[["white-tshirt","black-clothes"]],[[null]],[[null]],[[null]],[[null]],[[null]],[["sunglasses"]]],"dragon-rider-duo":[[[null]],[[null]],[["cardboard"]],[[null,"cardboard"]],[[null]],[["headband"]],[["tape"],["yarn"],["scissors"]]],"numbered-players":[[[null]],[["white-tshirt"]],[[null],["paper-white","markers"]],[[null]],[[null]],[[null]]],"emotion-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["paper-white"]],[["markers"]],[[null]]],"kart-racers":[[["cardboard"]],[[null]],[["paper-plates"]],[[null]],[["scissors"],["tape"],["yarn"]],[["yarn"]]],"tall-hat-crew":[[[null]],[[null]],[["black-clothes"]],[[null]],[[null]],[[null,"markers"]],[[null],["scissors"]]],"chipmunk-trio":[[[null]],[[null,"markers"]],[["felt"]],[["headband"]],[["paint-brown"]],[["glue"]]],"galaxy-knights":[[[null]],[[null]],[[null]],[[null]],[["paint-brown"]]],"plastic-dream-crew":[[[null]],[[null]],[[null]],[[null]],[[null]]],"extinct-party-animal":[[[null]],[["felt","paper-green"]],[[null]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"dino-tourist":[[[null]],[[null]],[[null]],[[null]],[["sunglasses"]]],"raptor-barista":[[[null]],[[null]],[[null]],[["paint-brown"]]],"emotional-support-dinosaur":[[[null]],[["felt","paper-green"]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"garden-fairy":[[[null]],[["cardboard"]],[[null]],[["headband"]],[[null]],[["cardboard"]],[[null]],[[null]],[["tape"]],[["glue"]],[["scissors"]]],"ballerina":[[[null]],[[null]],[[null]],[[null]],[[null]],[["scissors"]]],"butterfly":[[["cardboard"]],[[null]],[[null]],[[null]],[["headband"]],[["pipe-cleaners"]],[["tape"]],[["scissors"]]],"pop-star":[[[null]],[[null]],[[null]],[["sunglasses"]],[[null]]],"ice-skater":[[[null]],[[null]],[[null]],[["paint-pink"]],[[null]]],"ladybug":[[[null]],[["black-clothes"]],[["felt","paper-black"]],[["headband"]],[["pipe-cleaners"]],[[null]],[["scissors"]],[["glue"]]],"daisy":[[[null]],[[null]],[[null]],[["headband"]],[["glue"]],[["scissors"]]],"little-baker":[[["paper-white"]],[[null]],[[null]],[[null]],[["tape"]],[["scissors"]]],"little-artist":[[["hat"]],[["cardboard"]],[[null]],[["tshirt"]],[[null]],[["scissors"]]],"beekeeper-bee":[[[null]],[[null]],[["hat"]],[[null]],[["tape-black"]],[["pipe-cleaners"]],[["headband"]],[["paint-yellow"],["paint-black"]],[["scissors"]]],"tetris-duo":[[["cardboard"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["yarn"]],[["tape"]],[["scissors"]],[[null]]],"little-lifeguard":[[[null]],[[null]],[[null]],[["tape-white"]],[[null]],[["paint-white"]],[["scissors"]]],"little-prince":[[["paper-yellow"]],[[null]],[["yarn"]],[[null]],[[null]],[["safety-pins"]],[["scissors"]],[["glue"]]],"fossil-hunter":[[[null]],[[null]],[[null]],[["cardboard"]],[[null]],[["paper-bag"]],[["scissors"]],[["paper-pen"]]]}};
+var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","foil","cardboard","socks"],"mats":{"astronaut":[[[null]],[["paper-bag"]],[["tape-silver"]],[["stickers"]],[["scissors"]]],"baby-dino":[[[null]],[["felt","paper-green"]],[["stuffing","socks"]],[["safety-pins"]],[["tape"]],[["scissors"]]],"backyard-hero":[[["pillowcase","tshirt"]],[["tshirt"]],[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["safety-pins"]],[["scissors"]]],"bacon-eggs":[[[null]],[["white-tshirt"]],[["paper-red"]],[["felt","paper-white"],["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"bamboo-demon":[[[null]],[[null]],[["cardboard"]],[["yarn"]],[["paint-red"]],[["scissors"]],[["tape"]]],"basketball-star":[[[null]],[[null]],[["paint-black"]],[[null]]],"black-cat":[[["black-clothes","sweatsuit"]],[["headband"]],[["felt","paper-black"]],[[null]],[["paint-black"]],[[null,"pillowcase"]],[["scissors"]],[["tape"]]],"block-game-crew":[[["cardboard"]],[[null]],[[null]],[["markers"]],[["scissors"]]],"block-monster":[[["sweatsuit"]],[["cardboard"]],[["tape"]],[["scissors"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"blue-alien-ohana":[[[null]],[["felt","paper-blue"]],[["headband"]],[[null]],[["felt","paper-white"]],[["safety-pins"]],[["scissors"]],[["tape"]]],"blue-dog-family":[[[null]],[["headband"]],[["felt","paper-blue"],["felt","paper-orange"],["felt","paper-white"]],[["safety-pins"]],[["scissors"]]],"board-game-pieces":[[["black-clothes"]],[["cardboard"]],[[null]],[[null]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"bowling-pins":[[[null]],[["tape-red"]],[["black-clothes"]],[[null]],[["scissors"]]],"boxer":[[[null]],[[null]],[["paint-purple"],["paint-yellow"]],[[null]],[[null]]],"breakfast-buffet":[[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]]],"bumble-bee":[[[null]],[["tape-yellow"]],[[null]],[["pipe-cleaners"]],[[null,"stuffing"]],[["glue"]]],"burger-joint-couple":[[[null]],[[null]],[[null]],[[null]],[["paper-pen"]]],"caped-duo":[[["bedsheet"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["glue"]],[["paper-pen"]],[["scissors"]]],"cardboard-knight":[[["cardboard"]],[[null]],[[null]],[[null]],[["tape-gray"]],[["markers"]],[["scissors"]]],"cat-mouse":[[["headband"]],[["felt","paper-black"]],[["felt","paper-gray"]],[["paint-black"]],[["scissors"]],[["tape"]]],"cereal-crew":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"cheerleader":[[[null]],[[null]],[[null]],[["tape"]],[["scissors"]]],"classic-ghost":[[["bedsheet"]],[["markers"]],[["scissors"]]],"crowd-camouflage":[[[null]],[["black-clothes"]],[[null]],[[null]],[["paper-pen"]]],"deadpan-diva":[[[null]],[["paint-white"]],[["paint-black","paint-brown"],["paint-red"]],[[null]]],"decades-crew":[[[null]],[["paper-pen"]],[["scissors"]],[["tape","safety-pins"]],[[null]]],"deviled-egg":[[["white-tshirt"]],[["felt","paper-yellow"]],[["felt"]],[["red-headband"]],[["pipe-cleaners","paper-red"]],[["scissors"],["tape","glue"]],[["paint-red"]]],"dino-herd":[[[null]],[["felt","paper-green"]],[["socks"]],[[null,"stuffing"]],[["glue","safety-pins"]],[["scissors"]]],"dino-rangers":[[[null]],[[null]],[["paper-white"]],[[null]],[["yarn"]],[["tape"],["scissors"]]],"dinosaur-family":[[[null]],[["felt","paper-green"]],[["scissors"]],[["glue","safety-pins"]],[["paint-green"]]],"doctor-bride":[[[null]],[["paint-green"]],[[null]],[[null,"bedsheet"]],[[null]],[["tape","glue"]],[["scissors"]],[["paint-black","paint-brown"]]],"emerald-witch":[[[null]],[[null]],[["paint-green"]],[["paint-black"],["paint-green"]],[[null],["scissors"]],[[null]]],"emoji-crew":[[[null]],[["paper-plates","cardboard"]],[["markers"]],[["scissors"],["tape"]]],"enchanted-castle-crew":[[[null]],[[null]],[["paint-gold"],[null]],[["cardboard"]],[[null,"cardboard"]],[[null],["scissors"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"error-404":[[["black-clothes"]],[["black-clothes"]],[[null,"paper-white"]],[[null]],[["scissors"]],[["tape"]]],"fairy-tale-princesses":[[[null]],[["cardboard"]],[[null,"markers"]],[["scissors"],["tape"]],[["yarn"]]],"fuzzy-monster":[[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["felt","paper-white"]],[["scissors"]],[["glue","safety-pins"]]],"garden-gnome":[[[null]],[["cardboard"]],[[null]],[["paint-white"]],[[null]],[["scissors"]],[["tape"]]],"ghost-hunters":[[[null]],[["cardboard"]],[["paper-white"],["markers"]],[[null]],[["tape","glue"],["scissors"]]],"gloom-bloom":[[["black-clothes"]],[[null]],[["paint-black"],["paint-white"]],[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]],"glow-skeleton":[[[null]],[[null]],[[null]],[["scissors"]],[["paint-black"]]],"goggle-crew":[[[null]],[[null]],[[null]],[[null]]],"good-witch-bad-witch":[[[null,"black-clothes"]],[[null]],[["paint-green"]],[["cardboard"]],[[null]],[[null],["scissors"],["markers"],["tape"]]],"haunted-animatronics":[[["cardboard"]],[[null]],[[null]],[[null]],[[null],["scissors"]]],"haunted-portraits":[[[null]],[["paint-gray"],["paint-white"]],[[null,"cardboard"]],[[null]]],"headless-horsemen":[[[null]],[[null]],[[null]],[["tape"]],[[null]]],"hero-squad":[[[null]],[[null]],[[null]],[[null]],[["safety-pins"]]],"ice-cream-cone":[[[null]],[["white-tshirt"]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["markers"]],[["tape"]]],"ketchup-mustard":[[[null]],[["felt","paper-red"]],[["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"little-lion":[[[null]],[[null]],[["scissors"]],[["safety-pins","glue"]],[["paint-brown"]]],"little-pig-family":[[[null]],[[null]],[[null]],[[null,"paper-pink"]],[[null,"yarn"]],[["scissors"],["tape"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"little-shark":[[[null]],[["felt","paper-gray"]],[["felt","paper-white"]],[["glue"]],[["scissors"]]],"little-witch":[[[null,"black-clothes"]],[[null]],[[null]],[["paint-green"]],[["safety-pins","yarn"]]],"lost-tourist":[[[null]],[["sunglasses"],[null]],[["paper-pen"]],[[null]],[["tape"]]],"mermaid-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null,"cardboard"]],[[null]],[["scissors"],["tape"]]],"moth-porch-light":[[[null]],[["cardboard"]],[["markers"]],[["pipe-cleaners","yarn"]],[["headband"]],[[null]],[[null]],[["tape"],["scissors"]]],"mystery-crew":[[[null]],[[null]],[[null]],[[null]],[["paint-brown"]]],"neon-demon-hunter":[[[null]],[[null]],[[null]],[[null]],[[null]]],"ninja":[[["black-clothes"]],[[null]],[[null,"black-clothes"]],[["scissors"],["tape"]]],"office-couple":[[[null]],[[null]],[[null]],[["black-clothes"]],[["markers"]]],"pbj":[[[null]],[[null]],[["paper-white"]],[["markers"]],[["scissors"],["tape","yarn"]]],"peas-pod":[[[null]],[["felt"]],[[null]],[[null,"glue"]],[["paint-green"]],[["scissors"]]],"penguin-huddle":[[["black-clothes"]],[["felt","paper-white"]],[["felt","paper-orange"]],[["headband"]],[["glue"]],[["scissors"]]],"pickle":[[[null]],[[null]],[["glue"]],[["paint-green"]]],"pixel-ghost":[[["bedsheet"]],[["felt","paper-black"]],[["glue"]],[["scissors"]],[["markers"],[null]]],"pizza-slice":[[["cardboard"]],[[null]],[["felt","paper-red"]],[[null,"paper-bag"]],[[null],["scissors"],["tape"]],[["glue"]]],"plague-doctor":[[[null]],[[null]],[[null,"sunglasses"]],[["cardboard"]],[[null]],[[null]],[["markers"]]],"player-one-two":[[["tshirt"]],[[null,"markers"]],[[null]],[[null]]],"plug-socket":[[["cardboard"]],[[null]],[["markers"]],[[null,"cardboard"]],[["tape"],["yarn"]],[["scissors"]]],"plumber-duo":[[[null]],[[null]],[[null]],[["paint-brown"]],[["stickers","paper-white"]],[["markers"]]],"pocket-plush":[[[null,"sweatsuit"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["glue"]],[["felt","paper-black"],["felt","paper-white"]],[[null,"paper-pen"]],[["markers"]]],"popcorn-bucket":[[["cardboard"]],[[null]],[["balloons"]],[["tape"],["yarn"],["scissors"]],[["markers"]]],"prince-princess":[[["paper-yellow"]],[[null]],[[null]],[[null]],[[null]]],"rain-cloud-rainbow":[[[null]],[["stuffing"]],[["paper-blue"]],[["yarn"],["tape"]],[["glue"]],[[null]]],"ramen-bowl":[[["cardboard"]],[[null]],[["yarn"]],[[null,"paper-white"]],[[null]],[["tape"],["yarn"]],[["scissors"]]],"raptor-ranger":[[[null],["hat"]],[[null]],[["felt","paper-green"]],[[null]],[["paint-green"],["paint-black"]],[["scissors"],["tape"]]],"referee":[[["black-clothes"]],[["black-clothes"]],[["tape-white"]],[[null]],[[null]]],"robot-crew":[[["cardboard"]],[["cardboard"]],[["foil"]],[[null]],[["tape"]],[["markers"]],[["yarn"]],[[null]]],"robot-ranger":[[["cardboard"]],[["foil"]],[[null]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["tape"]],[[null]],[["markers"]],[["scissors"]]],"safari-photographer":[[[null]],[[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"],["tape"],["markers"]]],"safari-zoo-crew":[[[null]],[["headband"]],[["paper-brown"],["paper-black"],["paper-pink"]],[["paint-brown"],["paint-black"]],[["scissors"],["tape"]]],"salt-pepper":[[["white-tshirt"],[null],["hat"]],[["black-clothes"],["hat"]],[["cardboard"]],[[null,"markers"]],[["markers"]],[["tape","glue"]]],"snow-sisters":[[[null]],[[null]],[["white-tshirt"],[null],["felt"]],[[null],["pipe-cleaners"],[null]],[[null]],[["tape"],["scissors"]]],"soccer-squad":[[[null]],[["black-clothes"]],[[null]],[[null]],[["markers"]],[["tape-white"]],[["scissors"]]],"space-crewmate":[[["sweatsuit"]],[["cardboard"]],[["foil"]],[["yarn"]],[["markers"]],[["tape"]],[["scissors"]]],"spider":[[[null]],[[null]],[["newspaper"]],[[null]],[["glue"]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["paint-white"]]],"sun-moon":[[[null]],[[null,"black-clothes"]],[[null,"paper-yellow"]],[["paper-gray"]],[["paper-white"],["paper-yellow"]],[["tape"],["scissors"]]],"superhero-family":[[[null]],[["felt","paper-black"]],[["felt"]],[["headband"]],[["safety-pins","tape"]],[["scissors"]]],"sushi-roll":[[["bedsheet","white-tshirt"]],[["paper-green"]],[["felt"]],[[null,"stuffing"]],[[null]],[["glue"]],[["scissors"]]],"tennis-duo":[[["white-tshirt"],[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"]]],"tin-hero":[[[null]],[["tape"]],[[null]],[["cardboard"]],[["tape"]],[["safety-pins"]]],"tiny-firefighter":[[[null]],[[null]],[[null]],[[null]],[["markers"]]],"tiny-snail":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["headband"]],[[null,"stuffing"]],[["tape"]],[["scissors"]]],"tooth-fairy":[[[null]],[[null]],[["paper-white"]],[["felt"]],[[null]],[[null]],[[null],["foil"]],[["tape"],["scissors"]]],"under-the-sea":[[[null]],[[null]],[[null]],[[null],["cardboard"]],[[null]],[[null]],[["tape"],["scissors"]]],"vampire":[[[null,"black-clothes"]],[["black-clothes"]],[[null]],[[null]],[["paint-red"]],[["paint-white"]]],"walking-taco":[[[null]],[["felt","paper-brown"],["felt","paper-red"],["felt","paper-green"],["felt","paper-yellow"]],[["glue"]],[["headband"]],[["scissors"]]],"web-hero-duo":[[[null]],[["black-clothes"]],[["paint-black"]],[["stickers","paint-white"]],[[null]],[["tape"]]],"web-slinger-crew":[[[null]],[["paint-black"]],[["stickers","tape-white"]],[["sunglasses"]],[["tape"]]],"zombie-coworker":[[[null]],[[null]],[["paint-white"]],[["paint-black"]],[[null]],[["scissors"]]],"the-olympians":[[["bedsheet"]],[[null]],[[null]],[["paint-gold"]],[["cardboard"]],[[null,"markers"]],[["safety-pins"],["scissors"],["tape"]]],"spaghetti-meatball":[[["white-tshirt",null]],[["yarn"]],[[null]],[[null,"glue"]],[["scissors"]]],"cupcake":[[[null]],[["pillowcase"]],[[null]],[["glue"]]],"banana":[[[null]],[["felt"]],[["headband"]],[["glue"]]],"hot-dog":[[[null]],[[null]],[[null]],[["safety-pins","glue"]]],"donut":[[["cardboard"]],[[null]],[["felt","stickers"]],[["yarn"]],[["scissors"],["glue"]]],"coffee-cup":[[[null,"bedsheet"]],[["cardboard"]],[["paper-brown","felt"]],[["markers"]]],"fruit-salad":[[[null]],[["felt","paper-green"]],[["headband"]],[["glue"]]],"wizard":[[[null]],[[null]],[[null]],[[null]]],"toy-box-crew":[[[null]],[["white-tshirt"],[null],["felt"]],[["cardboard"],[null]],[[null]],[[null]],[["paper-pen"]],[["markers"],["scissors"],["glue"],["tape"]]],"demon-boy-band":[[["white-tshirt","black-clothes"]],[[null]],[[null]],[[null]],[[null]],[[null]],[["sunglasses"]]],"dragon-rider-duo":[[[null]],[[null]],[["cardboard"]],[[null,"cardboard"]],[[null]],[["headband"]],[["tape"],["yarn"],["scissors"]]],"numbered-players":[[[null]],[["white-tshirt"]],[[null],["paper-white","markers"]],[[null]],[[null]]],"emotion-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["paper-white"]],[["markers"]],[[null]]],"kart-racers":[[["cardboard"]],[[null]],[["paper-plates"]],[[null]],[["scissors"],["tape"],["yarn"]],[["yarn"]]],"tall-hat-crew":[[[null]],[[null]],[["black-clothes"]],[[null]],[[null]],[[null,"markers"]],[[null],["scissors"]]],"chipmunk-trio":[[[null]],[[null,"markers"]],[["felt"]],[["headband"]],[["paint-brown"]],[["glue"]]],"galaxy-knights":[[[null]],[[null]],[[null]],[[null]],[["paint-brown"]]],"plastic-dream-crew":[[[null]],[[null]],[[null]]],"extinct-party-animal":[[[null]],[["felt","paper-green"]],[[null]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"dino-tourist":[[[null]],[[null]],[[null]],[[null]],[["sunglasses"]]],"raptor-barista":[[[null]],[[null]],[[null]]],"emotional-support-dinosaur":[[[null]],[["felt","paper-green"]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"garden-fairy":[[[null]],[["cardboard"]],[[null]],[["headband"]],[[null]],[["cardboard"]],[[null]],[[null]],[["tape"]],[["glue"]],[["scissors"]]],"ballerina":[[[null]],[[null]],[[null]],[[null]],[[null]],[["scissors"]]],"butterfly":[[["cardboard"]],[[null]],[[null]],[[null]],[["headband"]],[["pipe-cleaners"]],[["tape"]],[["scissors"]]],"pop-star":[[[null]],[[null]],[[null]],[["sunglasses"]],[[null]]],"ice-skater":[[[null]],[[null]],[[null]],[["paint-pink"]],[[null]]],"ladybug":[[[null]],[["black-clothes"]],[["felt","paper-black"]],[["headband"]],[["pipe-cleaners"]],[[null]],[["scissors"]],[["glue"]]],"daisy":[[[null]],[[null]],[[null]],[["headband"]],[["glue"]],[["scissors"]]],"little-baker":[[["paper-white"]],[[null]],[[null]],[["tape"]],[["scissors"]]],"little-artist":[[["hat"]],[["cardboard"]],[[null]],[["tshirt"]],[[null]],[["scissors"]]],"beekeeper-bee":[[[null]],[[null]],[["hat"]],[[null]],[["tape-black"]],[["pipe-cleaners"]],[["headband"]],[["paint-yellow"],["paint-black"]],[["scissors"]]],"tetris-duo":[[["cardboard"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["yarn"]],[["tape"]],[["scissors"]],[[null]]],"little-lifeguard":[[[null]],[[null]],[[null]],[["tape-white"]],[[null]],[["paint-white"]],[["scissors"]]],"little-prince":[[["paper-yellow"]],[[null]],[["yarn"]],[[null]],[["safety-pins"]],[["scissors"]],[["glue"]]],"fossil-hunter":[[[null]],[[null]],[[null]],[["cardboard"]],[[null]],[["paper-bag"]],[["scissors"]],[["paper-pen"]]]}};
 function pantryTicked(){
   try {
     /* pantry.html saves under 'pantry2' (LS_KEY); 'pantry3' is a legacy key
@@ -2825,35 +2837,67 @@ function pantrySaved(){
     return Array.isArray(v) && v.length > 0;
   } catch(_){ return false; }
 }
+/* pantryMaterialTexts: the instruction material texts for an idea, minus
+   (optional...) entries. "optional" may sit anywhere inside the paren. PANTRY_MATS drops optional materials (2026-09-26
+   P5-5), so indices here align 1:1 with PANTRY_MATS.mats[ideaId]. Used to
+   name buy-only gaps that have no pantry id to label. */
+function pantryMaterialTexts(ideaId){
+  if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[ideaId]) return [];
+  return (INSTRUCTIONS[ideaId].m || []).filter(function(t){ return !/\([^)]*optional/i.test(t); });
+}
+/* shortMaterialName: derive a short display name for a buy-only material
+   from its instruction text. Strips parentheticals and quantity fragments.
+   Returns null when nothing usable remains; the badge then falls back to
+   count-only. Preserves the instruction's own casing; no em dashes. */
+function shortMaterialName(t){
+  if (!t) return null;
+  var s = String(t);
+  s = s.replace(/\s*\([^)]*\)/g, ""); /* strip (buy:...), (own...), (optional...) */
+  s = s.replace(/,\s*\d+\s*(pairs?|sets?|packs?|rolls?|sheets?|bottles?|tubes?)?\s*$/i, ""); /* ", 1 pair", ", 1" */
+  s = s.replace(/,\s*\d+\s+(per\s+person|to\s+share)\s*$/i, ""); /* ", 1 per person" */
+  s = s.replace(/\s+per\s+person\s*$/i, ""); /* trailing "per person" */
+  s = s.replace(/^\s*(a|an|the)\s+/i, "");
+  s = s.replace(/^\d+\s+(pair\s+|set\s+)?/i, ""); /* "1 pair " -> "" */
+  s = s.replace(/\s+/g, " ").trim();
+  if (!s || s.length > 42) return null; /* shortening failed: count-only */
+  return s;
+}
 /* pantryScore: the pantryMissing walk returning {have,total,missing,
    missingNames}. ticked may be passed explicitly; the badge passes the raw
    saved set (empty when nothing is saved) so the empty-state analytics never
    inherits the staples fallback. missingNames holds representative labels
    for the missing materials, capped at 2, and only when every missing
    material resolved to a label; otherwise null and the badge shows the count
-   only. Returns null when the idea has no mats entry or zero materials carry
-   any non-null pantry id (no data, no badge). */
+   only. Buy-only materials (no pantry id) resolve via shortMaterialName on
+   the instruction text. Returns null when the idea has no mats entry or no
+   materials. All-buy-only ideas (goggle-crew, neon-demon-hunter,
+   plastic-dream-crew) return a zero-have score so the detail badge renders
+   ("None of this one is in your pantry yet.") instead of vanishing. */
 function pantryScore(ideaId, ticked){
   var list = PANTRY_MATS.mats[ideaId];
-  if (!list) return null;
+  if (!list || !list.length) return null;
   var tk = (ticked instanceof Set) ? ticked : pantryTicked();
-  var total = list.length, missing = 0, matchable = 0, names = [];
+  var texts = pantryMaterialTexts(ideaId);
+  var total = list.length, missing = 0, names = [];
   for (var i = 0; i < list.length; i++){
-    var mat = list[i], ok = false, hasId = false, rep = null;
+    var mat = list[i], ok = false, rep = null;
     for (var g = 0; g < mat.length && !ok; g++){
       var grp = mat[g];
       for (var k = 0; k < grp.length; k++){
         var id = grp[k];
         if (!id) continue;
-        hasId = true;
         if (!rep && PANTRY_LABELS[id]) rep = PANTRY_LABELS[id];
         if (tk.has(id)){ ok = true; break; }
       }
     }
-    if (hasId) matchable++;
-    if (!ok){ missing++; if (names.length < 2 && rep) names.push(rep); }
+    if (!ok){
+      missing++;
+      if (names.length < 2){
+        var nm = rep || shortMaterialName(texts[i]);
+        if (nm) names.push(nm);
+      }
+    }
   }
-  if (matchable === 0) return null;
   return {have: total - missing, total: total, missing: missing,
     missingNames: (missing >= 1 && missing <= 2 && names.length === missing) ? names : null};
 }
@@ -2917,6 +2961,24 @@ function buildClosetBadge(idea){
    Spirit-style generic rename as a guess-the-costume riddle.
    H (2026-09-26 experiment 7): honest Halloween countdown, computed live
    by daysToHalloween(). New sessions randomize 50/50 C/H. */
+/* Experiment 1 (share-lift, 2026-09-26): one-tap share before the names form.
+   Billy has not picked yet; this ships STAGED and OFF. Deploy = flip to true.
+   OFF (false): current flow. On cast-enabled result cards the "Who's who?"
+   names form comes first and the share row sits below the personal cards.
+   ON (true): a quick-share card renders FIRST with a pre-filled generic
+   prompt and one Share button; the names form drops below as an optional
+   "make it personal" upgrade. No half-states: the flag gates the whole
+   reorder, and the flag-off DOM is byte-identical to today. */
+var EXPERIMENT1_ONE_TAP_SHARE = false;
+/* Roulette entry experiment (2026-09-26, staged): the costume roulette lives
+   4-5 phone viewports down on the homepage under "More ways to explore" with
+   nothing hinting it exists, while the results page is where indecision peaks.
+   When ON (true): a subordinate "Feeling lucky? Spin the roulette" entry
+   appears under the results-page vote box (one tap returns home and spins),
+   and the "Can't decide?" wordings are disambiguated (vote box heading:
+   "Can't decide? Ask the group"; home roulette button: "Feeling lucky? Spin
+   the roulette"). Flag off: DOM is byte-identical to today. */
+var EXPERIMENT_ROULETTE_ENTRY = false;
 function shareVariant(){
   try {
     var v = localStorage.getItem("pmc_share_variant");
@@ -3012,7 +3074,8 @@ function shareTextFor(idea, sid, origin){
    starts per share_created, teaser vs generic. */
 function teaserTextFor(idea, sid){
   var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
-  return "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is. Take the quiz and send me what you get: " + link;
+  var picked = "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is.";
+  return picked + " Take the quiz and send me what you get: " + link;
 }
 /* 2026-09-26 pair-share experiment ("Find my +1's costume"): the cooperative
    counterpart to the duel. The sender goes as this pick; the recipient takes
@@ -3081,13 +3144,25 @@ function renderSpinResult(idea){
   $("spin-announce").textContent = "The roulette picked " + idea.title + ".";
   Analytics.track("spin_result_shown", Object.assign({idea_id: idea.id}, viaShareProps()));
 }
+/* 2026-09-26 roulette race fix: a second tap during the 3.7s spin started a
+   second ticker chain and the panel visibly swapped results after landing.
+   spinBusy ignores re-entrant calls (the first spin stands); spinChain is the
+   hard backstop so a stale chain can never land. */
+var spinChain = 0, spinBusy = false;
 function startSpin(source){
+  if (spinBusy) return; /* re-entrant tap mid-spin: ignore, first spin stands */
+  spinBusy = true;
+  var myChain = ++spinChain;
   Analytics.track("spin_started", Object.assign({source: source || "explore"}, viaShareProps()));
   var panel = $("spin-panel");
   panel.style.display = "";
   var titleEl = $("spin-title");
+  var mainBtn = $("btn-spin");
+  if (mainBtn) mainBtn.disabled = true; /* was never disabled: the double-tap vector */
   var again = $("btn-spin-again"), shareBtn = $("btn-spin-share");
   again.disabled = true; shareBtn.disabled = true;
+  var guideLink = $("spin-guide-link");
+  if (guideLink) guideLink.style.visibility = "hidden"; /* hide the stale link until landing */
   /* Slot-machine ticker: flash random titles, then settle. The pick is
      drawn once, up front, uniformly over all 137 ideas -- the ticker is
      theater, not selection. */
@@ -3098,22 +3173,28 @@ function startSpin(source){
   $("spin-announce").textContent = "Spinning.";
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   titleEl.classList.add("spinning");
-  if (reduceMotion){
+  function finishSpin(){
+    if (myChain !== spinChain) return; /* superseded: a newer chain owns the panel */
+    spinBusy = false;
+    if (mainBtn) mainBtn.disabled = false;
+    if (guideLink) guideLink.style.visibility = "";
     titleEl.classList.remove("spinning");
     renderSpinResult(target);
     again.disabled = false; shareBtn.disabled = false;
+  }
+  if (reduceMotion){
+    finishSpin();
   } else {
     /* Billy 2026-09-26: slow it down and make it feel like a real wheel --
        fast first, then winding down. Ease-out quad on the interval:
        ~70ms -> ~350ms over 14 ticks, about 3.7s total. */
     var ticks = 0, maxTicks = 14, t0 = 70, t1 = 350;
     (function tick(){
+      if (myChain !== spinChain) return; /* superseded mid-ticker: stop silently */
       var r = IDEAS[Math.floor(Math.random() * IDEAS.length)];
       titleEl.textContent = r.title;
       if (++ticks >= maxTicks){
-        titleEl.classList.remove("spinning");
-        renderSpinResult(target);
-        again.disabled = false; shareBtn.disabled = false;
+        finishSpin();
         return;
       }
       var p = ticks / maxTicks;
@@ -3127,6 +3208,13 @@ $("btn-spin").onclick = function(){
   var panel = $("spin-panel");
   if (panel && panel.scrollIntoView) panel.scrollIntoView({block: "nearest"});
 };
+/* Roulette entry experiment (2026-09-26, staged): the home roulette button
+   shares its "Can't decide?" lead-in with the results vote-box heading. When
+   the flag is on, give the button distinct wording. Flag off: untouched. */
+if (EXPERIMENT_ROULETTE_ENTRY){
+  var _rsb = $("btn-spin");
+  if (_rsb) _rsb.textContent = "Feeling lucky? Spin the roulette";
+}
 $("btn-spin-again").onclick = function(){ startSpin("spin-again"); };
 $("btn-spin-quiz").onclick = function(e){
   if (e && e.preventDefault) e.preventDefault();
@@ -3216,12 +3304,14 @@ function buildVoteText(results, sid){
     : (d === 1 ? "Halloween is tomorrow. Decide fast." : "Halloween is today. Decide fast."));
   return lines.join("\n");
 }
-/* The results-page vote box. Rendered by renderResults after the
-   runners-up; the panel composes the text once per open. */
 function buildVoteBox(results){
   var vbox = document.createElement("div");
   vbox.className = "stuck"; vbox.id = "vote-box";
-  var vh = document.createElement("h3"); vh.textContent = "Can't decide?";
+  var vh = document.createElement("h3");
+  /* Roulette entry experiment (2026-09-26, staged): disambiguate from the
+     home roulette's "Can't decide? Spin the roulette" when the flag is on.
+     Flag off: the original heading. */
+  vh.textContent = EXPERIMENT_ROULETTE_ENTRY ? "Can't decide? Ask the group" : "Can't decide?";
   var vp = document.createElement("p");
   vp.textContent = "Send all three finalists to the family group chat in one text. Everyone replies 1, 2, or 3 and the costume picks itself.";
   var vrow = document.createElement("div"); vrow.className = "row";
@@ -3299,6 +3389,30 @@ function buildVoteBox(results){
   };
   vrow.appendChild(vbtn);
   vbox.appendChild(vh); vbox.appendChild(vp); vbox.appendChild(vrow); vbox.appendChild(vpanel);
+  /* Roulette entry experiment (2026-09-26, staged): a subordinate entry point
+     to the homepage roulette for the indecisive moment the vote box serves.
+     One tap returns to the home screen and spins, mirroring the recipient
+     spin-banner pattern (startSpin + scrollIntoView). A real <button>, so
+     keyboard and screen-reader users can activate it too. */
+  if (EXPERIMENT_ROULETTE_ENTRY){
+    var rrow = document.createElement("p");
+    rrow.style.margin = "10px 0 0";
+    var ror = document.createElement("span");
+    ror.className = "fine";
+    ror.textContent = "Or ";
+    var rbtn = document.createElement("button");
+    rbtn.type = "button"; rbtn.className = "textlink"; rbtn.id = "btn-roulette-entry";
+    rbtn.textContent = "Feeling lucky? Spin the roulette";
+    rbtn.onclick = function(){
+      Analytics.track("roulette_entry_tapped", {from: "results-vote-box"});
+      show("s-hero");
+      startSpin("results-entry");
+      var _rp = $("spin-panel");
+      if (_rp && _rp.scrollIntoView) _rp.scrollIntoView({block: "start"});
+    };
+    rrow.appendChild(ror); rrow.appendChild(rbtn);
+    vbox.appendChild(rrow);
+  }
   return vbox;
 }
 /* 2026-09-26 duel distribution experiment: the quiz had no return leg.
@@ -3366,7 +3480,8 @@ function buildDuelBox(ownIdea){
   var matched = mine.id === theirs.id;
   var dbox = document.createElement("div");
   dbox.className = "stuck"; dbox.id = "duel-box";
-  var dh = document.createElement("h3"); dh.textContent = "You vs your friend";
+  var dh = document.createElement("h3");
+  dh.textContent = "You vs your friend";
   var dp = document.createElement("p");
   dp.textContent = matched
     ? "Great minds: you both got " + mine.title + "."
@@ -6348,6 +6463,67 @@ function headwearWord(ideaId){
   }
   return null;
 }
+/* ================= EXPERIMENT 1: ONE-TAP SHARE (2026-09-26, staged) =================
+   Design: hour-session/share-lift-experiments.md, "Experiment 1". Gated by
+   EXPERIMENT1_ONE_TAP_SHARE (default false). When on, buildCastPanel renders
+   this quick-share card FIRST and demotes the names form to an optional
+   "make it personal" upgrade. The personalized card flow is untouched. */
+function exp1QuickShareText(idea, sid){
+  /* Audience-grounded: shareCaptionFor already carries the audience-aware
+     line for kid/family ("The quiz picked X for my kid this Halloween"), so
+     the prompt never reads as the sharer in costume (mermaid fix 2026-09-26).
+     The invite itself is the doc's pre-filled generic prompt. */
+  return shareCaptionFor(idea) + " Want to do " + idea.title + " for Halloween? " +
+    shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic_quick";
+}
+function buildExp1QuickShare(idea){
+  var card = document.createElement("div"); card.className = "exp1-quick"; card.id = "exp1-quick";
+  var h = document.createElement("h3"); h.textContent = "Share this pick";
+  var p = document.createElement("p"); p.className = "status";
+  p.textContent = "One tap, no names needed. Send it as-is, or add names below for personal cards.";
+  var ta = document.createElement("textarea"); ta.className = "promptbox"; ta.setAttribute("readonly", "");
+  function mint(){ var sid = newShareId(); return {sid: sid, text: exp1QuickShareText(idea, sid)}; }
+  var cur = mint(); ta.value = cur.text;
+  var b = document.createElement("button"); b.type = "button"; b.className = "cta"; b.id = "exp1-share-btn";
+  b.style.width = "100%"; b.textContent = "Share";
+  var st = document.createElement("p"); st.className = "status";
+  b.onclick = function(){
+    var rearmShare = armShareOnce(b);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sh = cur; /* what the preview shows is exactly what gets shared */
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        Analytics.track("share_created", {share_id: sh.sid, idea_id: idea.id, share_origin: "generic_quick", share_msg_variant: shareVariant()});
+        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic_quick"});
+      }
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok){
+        if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sh.sid, share_origin: "generic_quick"});
+        doneShare(ok, ok ? "Copied. Paste it into any message." : "Copy did not work. Long-press the text above to copy it.");
+      });
+    }
+    /* Phone: native share sheet. Fires share_created only when the share
+       resolves; a dismissed sheet is a cancel, not a share, so it fires
+       nothing. */
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+    cur = mint(); ta.value = cur.text;
+  };
+  card.appendChild(h); card.appendChild(p); card.appendChild(ta); card.appendChild(b); card.appendChild(st);
+  return card;
+}
 function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var box = document.createElement("div"); box.className = "castbox";
   /* Billy's bug, round 2 (2026-09-23): the result card has a click-to-pick
@@ -6362,6 +6538,14 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var sub = document.createElement("p"); sub.className = "status";
   sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and never stored anywhere. I never see them.";
   box.appendChild(h); box.appendChild(sub);
+  if (EXPERIMENT1_ONE_TAP_SHARE){
+    /* Experiment 1: the quick-share card leads; the names form becomes an
+       optional upgrade instead of a gate. The personalized card flow below
+       is untouched. */
+    box.insertBefore(buildExp1QuickShare(idea), h);
+    h.textContent = "Make it personal (optional)";
+    sub.textContent = "Add names and roles for personal cards. Optional: the share above is ready to send as-is. Names are never stored anywhere. I never see them.";
+  }
   /* Billy 2026-09-26: the quick-share duplicate was removed. One "Share this
      idea" per card (the shareBox below, with cast-aware text) -- the duplicate
      broke the single-share-path design and confused the order tests. */
@@ -6883,6 +7067,14 @@ $("btn-return").onclick = function(){
     .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
   if (results.length) renderResults(results);
   else $("btn-start").onclick(); /* saved ideas left the bank: fresh quiz, no dead tap */
+};
+/* 2026-09-26 P4: stranded-results resume link. Reuses the btn-return handler
+   verbatim; visibility is managed by refreshReturnBox(). Analytics carries
+   counts only. */
+$("btn-resume").onclick = function(){
+  var last = load("pmc_last_v1");
+  Analytics.track("results_resumed", {result_count: (last && last.results) ? last.results.length : 0});
+  $("btn-return").onclick();
 };
 /* Billy 2026-09-26: returning-hero secondary + one quiet share entry point.
    Retake runs the same clean quiz start as the hero CTA. */
@@ -7785,6 +7977,14 @@ function refreshReturnBox(){
       box.hidden = false;
       if (heroEl) heroEl.classList.add("returning");
     }
+  }
+  /* 2026-09-26 P4: stranded quiz results. pmc_last_v1 exists but no fresh
+     pick (returnbox hidden) = results with no path back. Show the quiet
+     resume link; it reuses the btn-return handler verbatim. */
+  var resumeWrap = $("resume-wrap");
+  if (resumeWrap){
+    var hasLast = !!(last && last.results && last.results.length);
+    resumeWrap.hidden = !(hasLast && box.hidden);
   }
 }
 </script>
