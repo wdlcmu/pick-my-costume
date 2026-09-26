@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Party games - Pick My Costume</title>
+<meta name="description" content="Three quick Halloween games for your group chat: Costume Duel, Halloween Trivia, and guess 2025's top costumes. Play, share, dare your friends to beat you.">
+<meta property="og:title" content="Party games - Pick My Costume">
+<meta property="og:description" content="Costume Duel, Halloween Trivia, and guess 2025's top costumes. Play it in your group chat and dare your friends to beat you.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/game.html">
+<meta property="og:image" content="https://pickmycostume.com/photos/snow-sisters.webp">
+<meta property="og:image:alt" content="Snow Sisters costume">
+<style>
+:root{
+  --bg:#160d28; --bg2:#211540; --card:#2a1c52; --ink:#fdf3e3; --muted:#cdbcf0;
+  --line:#4b3486; --accent:#ff8c1a; --accent-ink:#2a1500; --radius:14px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5;padding:20px 16px 64px}
+.wrap{max-width:520px;margin:0 auto}
+h1{font-size:28px;margin:8px 0 4px}
+h2{font-size:22px;margin:8px 0 4px}
+.sub{color:var(--muted);margin:0 0 20px}
+.fine{color:var(--muted);font-size:13px}
+.screen{display:none}
+.screen.on{display:block}
+.gcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:12px 0;color:var(--ink);text-decoration:none;cursor:pointer;width:100%;text-align:left;font-family:inherit}
+.gcard:active{border-color:var(--accent)}
+.gcard .gt{font-size:20px;font-weight:800;margin-bottom:4px}
+.gcard .gd{color:var(--muted);font-size:14px}
+button.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:14px 16px;font-size:16px;margin:10px 0;cursor:pointer;font-family:inherit;min-height:52px}
+button.opt:active{border-color:var(--accent)}
+.cta{display:block;width:100%;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:18px;padding:16px;border-radius:var(--radius);border:none;margin:20px 0 8px;cursor:pointer;font-family:inherit;min-height:56px}
+button.ghost{display:inline-block;background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:12px 20px;font-size:15px;margin:6px 6px 6px 0;cursor:pointer;font-family:inherit;min-height:48px;text-decoration:none}
+.navrow{margin-top:12px}
+.qcount{font-size:13px;color:var(--muted);margin:0 0 4px}
+.duel-vs{display:flex;gap:10px;align-items:stretch;margin:16px 0}
+.duel-fighter{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center;min-width:0}
+.duel-fighter img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;display:block;background:var(--bg2)}
+.duel-fighter .who{font-size:12px;color:var(--muted);margin:8px 0 2px}
+.duel-fighter .what{font-weight:800;font-size:15px;line-height:1.3}
+.duel-vs-badge{align-self:center;font-size:22px;font-weight:900;color:var(--accent);flex:0 0 auto}
+.duel-verdict{background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:16px;margin:16px 0;font-size:16px}
+.duel-verdict .vlabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800;margin-bottom:6px}
+.duel-triple{font-size:14px;color:var(--muted);margin:8px 0 0}
+.duel-hero-photo{width:100%;max-width:280px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;display:block;margin:12px auto;background:var(--bg2)}
+.verdict{background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:16px;margin:16px 0;font-size:16px}
+.verdict .vlabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800;margin-bottom:6px}
+.answer-note{font-size:14px;color:var(--muted);margin:10px 0 0}
+.src{font-size:12px;color:var(--muted);margin:16px 0 0}
+.score-big{font-size:44px;font-weight:900;text-align:center;margin:20px 0 4px}
+.share-status{text-align:center;min-height:20px}
+.top-link{display:inline-block;color:var(--muted);font-size:14px;margin-bottom:12px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- PICKER -->
+<section class="screen on" id="g-pick">
+  <a class="top-link" href="/">&larr; Pick My Costume</a>
+  <h1>Party games</h1>
+  <p class="sub">Three quick games for your group chat. Play one, share your result, dare your friends to beat you.</p>
+  <button class="gcard" type="button" data-game="duel">
+    <div class="gt">Costume Duel</div>
+    <div class="gd">Two questions, one costume. See how you match up against your friend, then send your pick back.</div>
+  </button>
+  <button class="gcard" type="button" data-game="trivia">
+    <div class="gt">Halloween Trivia</div>
+    <div class="gd">Five questions. How well do you actually know Halloween?</div>
+  </button>
+  <button class="gcard" type="button" data-game="trend">
+    <div class="gt">Guess the 2025 ranking</div>
+    <div class="gd">Five questions on Google's 2025 most-searched costumes. Published October 2025.</div>
+  </button>
+  <p class="fine" style="text-align:center;margin-top:20px">Free, no signup. Built with Muse. Made by Billy Litner.</p>
+</section>
+
+<!-- DUEL -->
+<section class="screen" id="g-duel">
+  <p><button class="ghost" type="button" data-back>&larr; All games</button></p>
+  <div id="duel-friend-wrap" style="display:none">
+    <p class="qcount">Costume duel</p>
+    <h2>Your friend picked <span id="duel-friend-name"></span></h2>
+    <img class="duel-hero-photo" id="duel-friend-photo" src="" alt="">
+  </div>
+  <div id="duel-q1-wrap">
+    <p class="qcount">Costume duel</p>
+    <h2 id="duel-q1-title">Two quick questions</h2>
+    <p style="font-weight:700;margin:16px 0 4px">Who is the costume for?</p>
+    <div id="duel-q1"></div>
+  </div>
+  <div id="duel-q2-wrap" style="display:none">
+    <p class="qcount">Costume duel</p>
+    <h2>How much effort?</h2>
+    <p class="sub">Be honest. Your couch will know.</p>
+    <div id="duel-q2"></div>
+    <div class="navrow"><button class="ghost" type="button" id="duel-back1">&larr; Back</button></div>
+  </div>
+  <div id="duel-result-wrap" style="display:none">
+    <p class="qcount">Costume duel</p>
+    <h2 id="duel-result-title">You vs your friend</h2>
+    <div class="duel-vs" id="duel-vs" style="display:none">
+      <div class="duel-fighter">
+        <img id="duel-v-friend-img" src="" alt="">
+        <div class="who">Your friend</div>
+        <div class="what" id="duel-v-friend-name"></div>
+      </div>
+      <div class="duel-vs-badge">VS</div>
+      <div class="duel-fighter">
+        <img id="duel-v-my-img" src="" alt="">
+        <div class="who">You</div>
+        <div class="what" id="duel-v-my-name"></div>
+      </div>
+    </div>
+    <div class="duel-fighter" id="duel-solo" style="display:none;max-width:280px;margin:16px auto">
+      <img id="duel-solo-img" src="" alt="">
+      <div class="who">Your costume</div>
+      <div class="what" id="duel-solo-name"></div>
+    </div>
+    <div class="duel-verdict">
+      <div class="vlabel">The verdict</div>
+      <div id="duel-verdict-text"></div>
+      <p class="duel-triple" id="duel-triple"></p>
+    </div>
+    <button class="cta" type="button" id="duel-share">Challenge your group chat</button>
+    <p class="fine share-status" id="duel-share-status"></p>
+    <div class="navrow">
+      <button class="ghost" type="button" id="duel-retry">Try different answers</button>
+      <a class="ghost" href="/" style="display:inline-block">Take the full quiz</a>
+    </div>
+  </div>
+</section>
+
+<!-- TRIVIA -->
+<section class="screen" id="g-trivia">
+  <p><button class="ghost" type="button" data-back>&larr; All games</button></p>
+  <p class="qcount" id="trivia-count">Halloween trivia</p>
+  <h2 id="trivia-q"></h2>
+  <div id="trivia-opts"></div>
+  <p class="answer-note" id="trivia-note"></p>
+  <div id="trivia-result" style="display:none">
+    <div class="score-big" id="trivia-score"></div>
+    <p class="sub" style="text-align:center" id="trivia-line"></p>
+    <button class="cta" type="button" id="trivia-share">Dare your friends to beat it</button>
+    <p class="fine share-status" id="trivia-share-status"></p>
+    <div class="navrow" style="text-align:center">
+      <button class="ghost" type="button" id="trivia-retry">Play again</button>
+    </div>
+  </div>
+</section>
+
+<!-- TREND -->
+<section class="screen" id="g-trend">
+  <p><button class="ghost" type="button" data-back>&larr; All games</button></p>
+  <p class="qcount" id="trend-count">Guess the 2025 ranking</p>
+  <h2 id="trend-q"></h2>
+  <div id="trend-opts"></div>
+  <p class="answer-note" id="trend-note"></p>
+  <p class="src">Rankings: Google's Frightgeist, published October 2025.</p>
+  <div id="trend-result" style="display:none">
+    <div class="score-big" id="trend-score"></div>
+    <p class="sub" style="text-align:center" id="trend-line"></p>
+    <button class="cta" type="button" id="trend-share">Dare your friends to beat it</button>
+    <p class="fine share-status" id="trend-share-status"></p>
+    <div class="navrow" style="text-align:center">
+      <button class="ghost" type="button" id="trend-retry">Play again</button>
+    </div>
+  </div>
+</section>
+
+</div>
+<script>
+var GBANK={"neon-demon-hunter":{"t":"Neon Demon Hunter","a":"solo","e":"Easy","r":1},"classic-ghost":{"t":"Classic Ghost","a":"kid,solo,family","e":"Easy","r":2},"blue-dog-family":{"t":"Aussie Dog Family","a":"family,kid","e":"Easy","r":3},"superhero-family":{"t":"Superhero Family","a":"family","e":"Easy","r":4},"blue-alien-ohana":{"t":"Blue Alien Ohana","a":"family,kid","e":"Easy","r":5},"emerald-witch":{"t":"Emerald Witch","a":"solo","e":"Medium","r":6},"gloom-bloom":{"t":"Gloom & Bloom","a":"group","e":"Easy","r":7},"deadpan-diva":{"t":"Deadpan Diva","a":"solo","e":"Easy","r":8},"safari-zoo-crew":{"t":"Safari / Zoo Crew","a":"group,family","e":"Easy","r":9},"fairy-tale-princesses":{"t":"Fairy Tale Princesses","a":"kid,family,group","e":"Easy","r":10},"tin-hero":{"t":"The Tin Hero","a":"solo,kid","e":"Easy","r":11},"good-witch-bad-witch":{"t":"Good Witch, Bad Witch","a":"group","e":"Easy","r":12},"fuzzy-monster":{"t":"Fuzzy Monster","a":"kid","e":"Easy","r":13},"pocket-plush":{"t":"Pocket Plush Monster","a":"kid","e":"Easy","r":14},"soccer-squad":{"t":"Soccer Squad","a":"family,group","e":"Easy","r":15},"glow-skeleton":{"t":"Glow Skeleton","a":"kid","e":"Easy","r":16},"block-game-crew":{"t":"Block Game Crew","a":"kid,family,group","e":"Medium","r":17},"web-slinger-crew":{"t":"Web-Slinger Crew","a":"group","e":"Easy","r":18},"mermaid-crew":{"t":"Mermaid Crew","a":"family,group","e":"Easy","r":19},"little-pig-family":{"t":"Little Pig Family","a":"family,kid","e":"Easy","r":20},"enchanted-castle-crew":{"t":"Enchanted Castle Crew","a":"family,group","e":"Medium","r":21},"bumble-bee":{"t":"Bumble Bee","a":"kid","e":"Easy","r":22},"baby-dino":{"t":"Baby Dinosaur","a":"kid","e":"Easy","r":23},"little-lion":{"t":"Little Lion","a":"kid","e":"Easy","r":24},"tiny-firefighter":{"t":"Tiny Firefighter","a":"kid","e":"Easy","r":25},"little-shark":{"t":"Little Shark","a":"kid","e":"Easy","r":26},"walking-taco":{"t":"Walking Taco","a":"kid","e":"Easy","r":27},"ramen-bowl":{"t":"Ramen Bowl","a":"kid,solo","e":"Easy","r":28},"tiny-snail":{"t":"Tiny Snail","a":"kid","e":"Easy","r":29},"little-witch":{"t":"Little Witch","a":"kid","e":"Easy","r":30},"spider":{"t":"Eight-Legged Spider","a":"kid","e":"Medium","r":31},"backyard-hero":{"t":"Backyard Superhero","a":"kid","e":"Easy","r":32},"pickle":{"t":"Pickle","a":"solo","e":"Easy","r":33},"vampire":{"t":"Classic Vampire","a":"solo","e":"Easy","r":34},"bamboo-demon":{"t":"Bamboo-Muzzle Demon","a":"solo","e":"Easy","r":35},"emoji-crew":{"t":"Emoji Crew","a":"group,family","e":"Easy","r":36},"robot-crew":{"t":"Cardboard Robot Crew","a":"group,family","e":"Medium","r":37},"cereal-crew":{"t":"Cereal Crew","a":"group,family","e":"Easy","r":38},"decades-crew":{"t":"Decades Crew","a":"group,family","e":"Easy","r":39},"under-the-sea":{"t":"Under the Sea","a":"family","e":"Easy","r":40},"dino-rangers":{"t":"Dino Rangers","a":"family","e":"Easy","r":41},"board-game-pieces":{"t":"Board Game Pieces","a":"group","e":"Medium","r":42},"rain-cloud-rainbow":{"t":"Rain Cloud and Rainbow","a":"couple","e":"Easy","r":43},"doctor-bride":{"t":"The Doctor & the Bride","a":"couple","e":"Easy","r":44},"breakfast-buffet":{"t":"Breakfast Buffet","a":"group,family","e":"Easy","r":45},"ghost-hunters":{"t":"Ghost Hunters","a":"group,family","e":"Easy","r":46},"haunted-animatronics":{"t":"Haunted Animatronics","a":"group","e":"Medium","r":47},"mystery-crew":{"t":"Mystery Crew","a":"group,family","e":"Easy","r":48},"headless-horsemen":{"t":"Headless Horsemen","a":"group","e":"Easy","r":49},"haunted-portraits":{"t":"Haunted Portraits","a":"couple,group,family","e":"Easy","r":50},"goggle-crew":{"t":"Goggle Crew","a":"group,family","e":"Easy","r":51},"garden-gnome":{"t":"Garden Gnome","a":"solo","e":"Easy","r":52},"black-cat":{"t":"Black Cat Burglar","a":"solo","e":"Easy","r":53},"block-monster":{"t":"Block Monster","a":"solo","e":"Easy","r":54},"space-crewmate":{"t":"Space Crewmate","a":"solo","e":"Easy","r":55},"sun-moon":{"t":"Sun and Moon","a":"couple","e":"Easy","r":56},"moth-porch-light":{"t":"Moth and Porch Light","a":"couple","e":"Medium","r":57},"raptor-ranger":{"t":"Raptor & Ranger","a":"couple","e":"Easy","r":58},"cat-mouse":{"t":"Cat & Mouse","a":"couple","e":"Easy","r":59},"ketchup-mustard":{"t":"Ketchup & Mustard","a":"couple","e":"Easy","r":60},"plumber-duo":{"t":"Plumber Brothers","a":"couple,family","e":"Easy","r":61},"office-couple":{"t":"Office Couple","a":"couple","e":"Easy","r":62},"burger-joint-couple":{"t":"Burger Joint Couple","a":"couple","e":"Easy","r":63},"plug-socket":{"t":"Plug and Socket","a":"couple","e":"Easy","r":64},"lost-tourist":{"t":"Lost Tourist","a":"solo","e":"Easy","r":66},"tooth-fairy":{"t":"Tooth and Tooth Fairy","a":"couple","e":"Medium","r":67},"web-hero-duo":{"t":"Web Hero Duo","a":"couple","e":"Easy","r":68},"plague-doctor":{"t":"Plague Doctor","a":"solo","e":"Medium","r":69},"crowd-camouflage":{"t":"Crowd Camouflage","a":"solo","e":"Easy","r":70},"error-404":{"t":"Error 404","a":"solo","e":"Easy","r":71},"zombie-coworker":{"t":"Zombie Coworker","a":"solo","e":"Easy","r":72},"the-olympians":{"t":"The Olympians","a":"group,couple,family","e":"Medium","r":65},"safari-photographer":{"t":"Safari Photographer","a":"solo","e":"Easy","r":73},"player-one-two":{"t":"Player One & Two","a":"couple","e":"Easy","r":74},"dinosaur-family":{"t":"Dinosaur Family","a":"family","e":"Easy","r":75},"snow-sisters":{"t":"Snow Sisters","a":"family,group,kid","e":"Easy","r":76},"sushi-roll":{"t":"Sushi Roll","a":"solo","e":"Easy","r":77},"deviled-egg":{"t":"Deviled Egg","a":"solo","e":"Easy","r":78},"pizza-slice":{"t":"Pizza Slice","a":"solo,kid","e":"Medium","r":79},"popcorn-bucket":{"t":"Popcorn Bucket","a":"kid","e":"Easy","r":80},"ice-cream-cone":{"t":"Ice Cream Cone","a":"kid,solo","e":"Easy","r":81},"pbj":{"t":"Peanut Butter & Jelly","a":"couple","e":"Easy","r":82},"bacon-eggs":{"t":"Bacon & Eggs","a":"couple","e":"Easy","r":83},"peas-pod":{"t":"Peas in a Pod","a":"group,family","e":"Medium","r":84},"basketball-star":{"t":"Basketball Star","a":"solo,kid","e":"Easy","r":85},"referee":{"t":"Referee","a":"solo,group","e":"Easy","r":86},"boxer":{"t":"Boxer","a":"solo","e":"Easy","r":87},"cheerleader":{"t":"Cheerleader","a":"kid","e":"Easy","r":88},"tennis-duo":{"t":"Tennis Duo","a":"couple","e":"Easy","r":89},"bowling-pins":{"t":"Bowling Pins","a":"group,family","e":"Easy","r":90},"cardboard-knight":{"t":"Cardboard Knight","a":"solo,kid","e":"Medium","r":91},"ninja":{"t":"Ninja","a":"kid,solo","e":"Easy","r":92},"caped-duo":{"t":"Caped Duo","a":"couple","e":"Easy","r":93},"hero-squad":{"t":"Hero Squad","a":"group","e":"Easy","r":94},"astronaut":{"t":"Astronaut","a":"solo","e":"Easy","r":95},"robot-ranger":{"t":"Robot Ranger","a":"kid,family","e":"Medium","r":96},"penguin-huddle":{"t":"Penguin Huddle","a":"group","e":"Easy","r":97},"prince-princess":{"t":"Prince & Princess","a":"couple","e":"Easy","r":98},"dino-herd":{"t":"Dino Herd","a":"group","e":"Easy","r":99},"pixel-ghost":{"t":"Pixel Ghost","a":"kid","e":"Easy","r":100},"spaghetti-meatball":{"t":"Spaghetti & Meatball","a":"kid","e":"Easy","r":101},"cupcake":{"t":"Cupcake","a":"kid","e":"Easy","r":102},"banana":{"t":"Banana","a":"kid,solo","e":"Easy","r":103},"hot-dog":{"t":"Hot Dog","a":"solo","e":"Easy","r":104},"donut":{"t":"Donut","a":"solo,kid","e":"Easy","r":105},"coffee-cup":{"t":"Coffee Cup","a":"solo","e":"Easy","r":106},"salt-pepper":{"t":"Salt & Pepper","a":"couple","e":"Easy","r":107},"fruit-salad":{"t":"Fruit Salad Crew","a":"group,family","e":"Easy","r":108},"wizard":{"t":"Classic Wizard","a":"solo,group","e":"Easy","r":109},"toy-box-crew":{"t":"Toy Box Crew","a":"family,group","e":"Easy","r":110},"demon-boy-band":{"t":"Demon Boy Band","a":"group","e":"Easy","r":111},"dragon-rider-duo":{"t":"Dragon Rider Duo","a":"couple,family","e":"Medium","r":112},"numbered-players":{"t":"Numbered Players","a":"group","e":"Easy","r":113},"emotion-crew":{"t":"Emotion Crew","a":"group,family","e":"Easy","r":114},"kart-racers":{"t":"Kart Racers","a":"group","e":"Medium","r":115},"tall-hat-crew":{"t":"Tall Hat Crew","a":"family,group","e":"Easy","r":116},"chipmunk-trio":{"t":"Chipmunk Trio","a":"group,family","e":"Easy","r":117},"galaxy-knights":{"t":"Galaxy Knights","a":"group,solo,couple","e":"Easy","r":118},"plastic-dream-crew":{"t":"Plastic Dream Crew","a":"group,couple","e":"Easy","r":119},"extinct-party-animal":{"t":"Extinct Party Animal","a":"solo","e":"Easy","r":120},"dino-tourist":{"t":"Dino Tourist","a":"solo","e":"Easy","r":121},"raptor-barista":{"t":"Raptor Barista","a":"solo","e":"Easy","r":122},"emotional-support-dinosaur":{"t":"Emotional Support Dinosaur","a":"solo","e":"Easy","r":123},"garden-fairy":{"t":"Garden Fairy","a":"kid","e":"Easy","r":124},"ballerina":{"t":"Ballerina","a":"kid","e":"Easy","r":125},"butterfly":{"t":"Butterfly","a":"kid","e":"Medium","r":126},"pop-star":{"t":"Pop Star","a":"kid","e":"Easy","r":127},"ice-skater":{"t":"Ice Skater","a":"kid","e":"Easy","r":128},"ladybug":{"t":"Ladybug","a":"kid","e":"Easy","r":129},"daisy":{"t":"Daisy","a":"kid","e":"Easy","r":130},"little-baker":{"t":"Little Baker","a":"kid","e":"Easy","r":131},"little-artist":{"t":"Little Artist","a":"kid","e":"Easy","r":132},"beekeeper-bee":{"t":"Beekeeper & Bee","a":"couple","e":"Easy","r":133},"tetris-duo":{"t":"Tetris Duo","a":"couple","e":"Easy","r":134},"little-lifeguard":{"t":"Little Lifeguard","a":"kid","e":"Easy","r":135},"little-prince":{"t":"Little Prince","a":"kid","e":"Easy","r":136},"fossil-hunter":{"t":"Fossil Hunter","a":"solo","e":"Easy","r":137}};
+
+/* ===== shared helpers ===== */
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("on"); });
+  $(id).classList.add("on");
+  try { window.scrollTo(0, 0); } catch(_){}
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function optButton(label, onPick){
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "opt"; b.textContent = label;
+  b.addEventListener("click", onPick);
+  return b;
+}
+/* Share: native sheet, clipboard fallback, fires once per tap. */
+function armShareOnce(btn, statusEl, text){
+  var armed = true;
+  btn.addEventListener("click", function(){
+    if (!armed) return;
+    armed = false;
+    function reset(msg){ statusEl.textContent = msg || ""; armed = true; }
+    if (navigator.share){
+      navigator.share({title: "Pick My Costume games", text: text}).then(
+        function(){ reset("Shared. The gauntlet is thrown."); },
+        function(){ reset(""); }
+      );
+    } else if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(
+        function(){ reset("Copied. Paste it into your group chat."); },
+        function(){ reset("Copy failed, sorry."); }
+      );
+    } else { reset(""); }
+  });
+}
+
+/* ===== duel (real 137-idea bank) ===== */
+var GBANK_ARR = Object.keys(GBANK).map(function(id){
+  var g = GBANK[id];
+  return {id:id, title:g.t, audience:g.a, effort:g.e, rank:g.r};
+});
+function gIdeaById(id){
+  for (var i = 0; i < GBANK_ARR.length; i++) if (GBANK_ARR[i].id === id) return GBANK_ARR[i];
+  return null;
+}
+function gDuelPick(audKey, effKey){
+  /* Mirrors index.html duelPick: low favors quick Easy builds, mid takes
+     Easy or Medium, high takes Medium. */
+  var auds = audKey === "couple" ? ["couple"] : audKey === "family" ? ["family", "group"] : ["solo"];
+  var effs = effKey === "high" ? ["Medium"] : effKey === "low" ? ["Easy"] : ["Easy", "Medium"];
+  var cands = GBANK_ARR.filter(function(x){
+    var aok = false;
+    for (var i = 0; i < auds.length; i++){ if (x.audience.indexOf(auds[i]) >= 0){ aok = true; break; } }
+    return aok && effs.indexOf(x.effort) >= 0;
+  });
+  cands.sort(function(a, b){ return a.rank - b.rank; });
+  return cands[0] || null;
+}
+function gDuelVerdict(mine, theirs){
+  if (mine.id === theirs.id) return "Great minds: you both got " + mine.title + ".";
+  var gA = mine.audience.indexOf("couple") >= 0 || mine.audience.indexOf("family") >= 0;
+  var gB = theirs.audience.indexOf("couple") >= 0 || theirs.audience.indexOf("family") >= 0;
+  if (gA && gB) return "Both going big-group energy. The Halloween party just got a theme.";
+  var eA = mine.effort === "Easy";
+  var eB = theirs.effort === "Easy";
+  if (eA && eB) return "Both low-effort, both brilliant. Efficiency is a costume too.";
+  return "Totally different lanes, and honestly both strong. May the best costume win.";
+}
+var DUEL_FRIEND = null, DUEL_ANS = {q1:null, q2:null};
+function duelStep(n){
+  $("duel-q1-wrap").style.display = n === 1 ? "block" : "none";
+  $("duel-q2-wrap").style.display = n === 2 ? "block" : "none";
+  $("duel-result-wrap").style.display = n === 3 ? "block" : "none";
+  if (n === 3 && DUEL_FRIEND){
+    $("duel-friend-wrap").style.display = "none";
+  }
+}
+function startDuel(){
+  DUEL_ANS = {q1:null, q2:null};
+  $("duel-friend-wrap").style.display = DUEL_FRIEND ? "block" : "none";
+  if (DUEL_FRIEND){
+    $("duel-friend-name").textContent = DUEL_FRIEND.title;
+    var fi = $("duel-friend-photo");
+    fi.src = "photos/" + DUEL_FRIEND.id + ".webp";
+    fi.alt = DUEL_FRIEND.title + " costume";
+    fi.onerror = function(){ fi.style.display = "none"; };
+    $("duel-q1-title").textContent = "Your turn. Two questions:";
+  } else {
+    $("duel-q1-title").textContent = "Two quick questions";
+  }
+  var q1 = $("duel-q1"); q1.innerHTML = "";
+  [["Just me","solo"],["Me + partner","couple"],["The whole family","family"]].forEach(function(p){
+    q1.appendChild(optButton(p[0], function(){
+      DUEL_ANS.q1 = p[1];
+      var q2 = $("duel-q2"); q2.innerHTML = "";
+      [["As little as possible","low"],["A fun weekend project","mid"],["Go all out","high"]].forEach(function(e){
+        q2.appendChild(optButton(e[0], function(){
+          DUEL_ANS.q2 = e[1];
+          finishDuel();
+        }));
+      });
+      duelStep(2);
+      showScreen("g-duel");
+    }));
+  });
+  duelStep(1);
+  showScreen("g-duel");
+}
+function finishDuel(){
+  var mine = gDuelPick(DUEL_ANS.q1, DUEL_ANS.q2);
+  if (!mine) mine = GBANK_ARR[0];
+  var hasFriend = !!DUEL_FRIEND;
+  if (hasFriend){
+    $("duel-vs").style.display = "flex";
+    $("duel-solo").style.display = "none";
+    $("duel-result-title").textContent = "You vs your friend";
+    var f = $("duel-v-friend-img");
+    f.src = "photos/" + DUEL_FRIEND.id + ".webp";
+    f.alt = DUEL_FRIEND.title + " costume";
+    f.onerror = function(){ f.style.display = "none"; };
+    $("duel-v-friend-name").textContent = DUEL_FRIEND.title;
+    var m = $("duel-v-my-img");
+    m.src = "photos/" + mine.id + ".webp";
+    m.alt = mine.title + " costume";
+    m.onerror = function(){ m.style.display = "none"; };
+    $("duel-v-my-name").textContent = mine.title;
+    $("duel-verdict-text").textContent = gDuelVerdict(mine, DUEL_FRIEND);
+  } else {
+    $("duel-vs").style.display = "none";
+    $("duel-solo").style.display = "block";
+    $("duel-result-title").textContent = "Your costume";
+    var s = $("duel-solo-img");
+    s.src = "photos/" + mine.id + ".webp";
+    s.alt = mine.title + " costume";
+    s.onerror = function(){ s.style.display = "none"; };
+    $("duel-solo-name").textContent = mine.title;
+    $("duel-verdict-text").textContent = "The quiz has spoken. Send it to your friend and make it a duel.";
+  }
+  duelStep(3);
+  showScreen("g-duel");
+  var shareText = hasFriend
+    ? "Costume duel: I got " + mine.title + ". Your turn: https://pickmycostume.com/game.html?duel=" + mine.id
+    : "I got " + mine.title + " on the Costume Duel. Think you can top it? https://pickmycostume.com/game.html";
+  var btn = $("duel-share");
+  var fresh = btn.cloneNode(true);
+  btn.parentNode.replaceChild(fresh, btn);
+  fresh.id = "duel-share";
+  armShareOnce(fresh, $("duel-share-status"), shareText);
+}
+$("duel-back1").addEventListener("click", function(){ duelStep(1); });
+$("duel-retry").addEventListener("click", startDuel);
+
+/* ===== trivia (truthful, sourced) ===== */
+var TRIVIA = [
+  {q:"US Halloween spending in 2026 is expected to reach what?", opts:["$8 billion","$13.5 billion","$21 billion","$30 billion"], a:1, note:"National Retail Federation, September 2026. Halloween is big business."},
+  {q:"The first jack-o'-lanterns were carved from what?", opts:["Pumpkins","Turnips","Apples","Melons"], a:1, note:"Irish tradition. Turnips back home, pumpkins once they reached America."},
+  {q:"The word Halloween is short for...", opts:["Hallowed evening","All Hallows' Eve","Holy evening","Hollow's Eve"], a:1, note:"The night before All Saints' Day, when the veil was said to be thinnest."},
+  {q:"Candy corn was invented in the...", opts:["1850s","1880s","1920s","1960s"], a:1, note:"Over 140 years old and still going. Respect."},
+  {q:"Halloween grew out of the ancient Celtic festival...", opts:["Beltane","Imbolc","Samhain","Yule"], a:2, note:"Samhain marked the end of harvest season and the start of winter."}
+];
+/* ===== trend game: 2025 Frightgeist, clearly labeled ===== */
+var TREND = [
+  {q:"What was the #1 most-searched costume of 2025?", opts:["Elphaba","Rumi (KPop Demon Hunters)","Chicken Jockey","Labubu"], a:1, note:"KPop Demon Hunters swept 2025's rankings."},
+  {q:"Which ranked higher in 2025: Chicken Jockey or Elphaba?", opts:["Chicken Jockey (#6)","Elphaba (#9)"], a:0, note:"Chicken Jockey rode the Minecraft movie wave to #6."},
+  {q:"How many of 2025's top 10 are from KPop Demon Hunters?", opts:["3","4","6","8"], a:2, note:"Rumi, Zoey, Mira, Jinu, Baby Saja and Derpy the Tiger."},
+  {q:"2024's #1 costume was Shrunken Head Bob, from...", opts:["Beetlejuice Beetlejuice","Inside Out 2","Deadpool and Wolverine","The Amazing Digital Circus"], a:0, note:"Beetlejuice Beetlejuice put Bob at the top in 2024."},
+  {q:"Which ranked higher in 2025: Labubu or The Lorax?", opts:["Labubu (#7)","The Lorax (#10)"], a:0, note:"The plush-toy craze beat the Truffula trees."}
+];
+function scoreLine(s, n){
+  if (s === n) return "Perfect score. The group chat bows to you.";
+  if (s === n - 1) return "So close. One more round?";
+  if (s >= Math.ceil(n / 2)) return "Solid. Respectable Halloween brain.";
+  return "The spirit is willing. Rematch?";
+}
+function runQuiz(bank, prefix){
+  var idx = 0, score = 0;
+  var qEl = $(prefix + "-q"), optsEl = $(prefix + "-opts"),
+      noteEl = $(prefix + "-note"), countEl = $(prefix + "-count"),
+      resultEl = $(prefix + "-result");
+  resultEl.style.display = "none";
+  qEl.style.display = "block"; optsEl.style.display = "block";
+  function ask(){
+    noteEl.textContent = "";
+    var item = bank[idx];
+    countEl.textContent = (prefix === "trivia" ? "Halloween trivia" : "Guess the 2025 ranking") + " - " + (idx + 1) + " of " + bank.length;
+    qEl.textContent = item.q;
+    optsEl.innerHTML = "";
+    item.opts.forEach(function(o, i){
+      optsEl.appendChild(optButton(o, function(){ answer(i); }));
+    });
+    showScreen("g-" + prefix);
+  }
+  function answer(i){
+    var item = bank[idx];
+    var right = i === item.a;
+    if (right) score++;
+    optsEl.innerHTML = "";
+    var r = document.createElement("p");
+    r.style.fontWeight = "800";
+    r.style.fontSize = "18px";
+    r.textContent = right ? "Correct." : "Not quite. The answer was " + item.opts[item.a] + ".";
+    optsEl.appendChild(r);
+    noteEl.textContent = item.note;
+    var next = document.createElement("button");
+    next.type = "button"; next.className = "cta";
+    next.textContent = idx + 1 < bank.length ? "Next question" : "See my score";
+    next.addEventListener("click", function(){ idx++; if (idx < bank.length) ask(); else finish(); });
+    optsEl.appendChild(next);
+  }
+  function finish(){
+    qEl.style.display = "none"; optsEl.style.display = "none"; noteEl.textContent = "";
+    countEl.textContent = prefix === "trivia" ? "Halloween trivia" : "Guess the 2025 ranking";
+    resultEl.style.display = "block";
+    $(prefix + "-score").textContent = score + "/" + bank.length;
+    $(prefix + "-line").textContent = scoreLine(score, bank.length);
+    var link = "https://pickmycostume.com/game.html?g=" + prefix;
+    var text = prefix === "trivia"
+      ? "I scored " + score + "/" + bank.length + " on Halloween Trivia. Beat me: " + link
+      : "I scored " + score + "/" + bank.length + " guessing 2025's top costumes. Beat me: " + link;
+    var btn = $(prefix + "-share");
+    var fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+    fresh.id = prefix + "-share";
+    armShareOnce(fresh, $(prefix + "-share-status"), text);
+    showScreen("g-" + prefix);
+  }
+  ask();
+}
+$("trivia-retry").addEventListener("click", function(){ runQuiz(TRIVIA, "trivia"); });
+$("trend-retry").addEventListener("click", function(){ runQuiz(TREND, "trend"); });
+
+/* ===== picker + router ===== */
+document.querySelectorAll("[data-game]").forEach(function(card){
+  card.addEventListener("click", function(){
+    var g = card.getAttribute("data-game");
+    if (g === "duel") startDuel();
+    else if (g === "trivia") runQuiz(TRIVIA, "trivia");
+    else if (g === "trend") runQuiz(TREND, "trend");
+  });
+});
+document.querySelectorAll("[data-back]").forEach(function(b){
+  b.addEventListener("click", function(){ showScreen("g-pick"); });
+});
+(function route(){
+  var m = /[?&]duel=([a-z0-9-]+)/.exec(location.search || "");
+  if (m){
+    var friend = gIdeaById(m[1]);
+    if (friend){ DUEL_FRIEND = friend; }
+  }
+  var gm = /[?&]g=(trivia|trend)/.exec(location.search || "");
+  if (m && DUEL_FRIEND){ startDuel(); return; }
+  if (gm){ runQuiz(gm[1] === "trivia" ? TRIVIA : TREND, gm[1]); return; }
+  showScreen("g-pick");
+})();
+/* end game */
+</script>
+</body>
+</html>
