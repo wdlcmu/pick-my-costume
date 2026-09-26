@@ -1,11 +1,11 @@
 # Pick My Costume
 
-> A free Halloween costume idea finder. Answer a short quiz (who the costume is for, the vibe, and the effort level) and get 3 costume ideas picked from a bank of 132. Every idea comes with a materials list and numbered step-by-step build instructions. No account, no signup, no ads.
+> A free Halloween costume idea finder. Answer a short quiz (who the costume is for, the vibe, and the effort level) and get 3 costume ideas picked from a bank of 137. Every idea comes with a materials list and numbered step-by-step build instructions. No account, no signup, no ads.
 
 ## What the site does
 
 - Quiz: a 2-minute picker that returns 3 costume ideas matched to your answers.
-- Browse: the full bank of 132 ideas, searchable by keyword.
+- Browse: the full bank of 137 ideas, searchable by keyword.
 - What do you have: tick the craft supplies you own and the site ranks the costumes by what you can make with them.
 - Build guides: every costume idea page shows a materials list and numbered steps.
 
@@ -13,12 +13,12 @@
 
 - https://pickmycostume.com/ - homepage and quiz
 - https://pickmycostume.com/pantry.html - the "what do you have" supplies page
-- https://pickmycostume.com/c/<slug> - one page per costume idea (132 total); each page carries the idea's metadata and redirects visitors to the main page with that idea selected
+- https://pickmycostume.com/c/<slug> - one page per costume idea (137 total); each page carries the idea's metadata, a decision triple (build time, cost, effort), and two FAQs
 - https://pickmycostume.com/sitemap.xml - full list of costume pages
 
 ## Facts about the content
 
-- 132 original costume ideas; licensed characters are deliberately excluded.
+- 137 original costume ideas; licensed characters are deliberately excluded.
 - Every idea has a materials list and step-by-step build instructions, written for parents building with or for kids, with adult, couple, and group variants where relevant.
 - Ideas are organized by audience (kids, adults, couples, groups, families), vibe (funny, scary, cute, clever), and effort level.
 - The site is static. There is no user data collection beyond anonymous analytics.
