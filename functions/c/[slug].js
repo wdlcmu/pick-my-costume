@@ -10,6 +10,11 @@ var IDEAS = {"neon-demon-hunter": {"t": "Neon Demon Hunter", "b": "Streetwear wi
 // minted working by resolving them to the current canonical slug.
 var ALIASES = {"bluey-family": "blue-dog-family", "incredibles-family": "superhero-family", "stitch-ohana": "blue-alien-ohana", "wednesday-enid": "gloom-bloom", "iron-man": "tin-hero", "elphaba-glinda": "good-witch-bad-witch", "minecraft-crew": "block-game-crew", "spider-verse": "web-slinger-crew", "spider-man-mj": "web-hero-duo", "peppa-pig": "little-pig-family", "jurassic-rangers": "dino-rangers", "creeper": "block-monster", "among-us": "space-crewmate", "little-mermaid-crew": "mermaid-crew", "bumblebee": "bumble-bee", "jim-pam": "office-couple", "bob-linda": "burger-joint-couple", "be-our-guest": "enchanted-castle-crew", "disney-princesses": "fairy-tale-princesses", "wheres-waldo": "crowd-camouflage"};
 
+// Split-the-build (2026-09-26): slugs whose audience includes group/family
+// get the materials divider on their /c/ guide. Emitted from the live bank
+// by gen_share_function.py; assert-covered at generation time.
+var SPLITABLE = ["block-game-crew", "blue-alien-ohana", "blue-dog-family", "board-game-pieces", "bowling-pins", "breakfast-buffet", "cereal-crew", "chipmunk-trio", "classic-ghost", "decades-crew", "demon-boy-band", "dino-herd", "dino-rangers", "dinosaur-family", "dragon-rider-duo", "emoji-crew", "emotion-crew", "enchanted-castle-crew", "fairy-tale-princesses", "fruit-salad", "galaxy-knights", "ghost-hunters", "gloom-bloom", "goggle-crew", "good-witch-bad-witch", "haunted-animatronics", "haunted-portraits", "headless-horsemen", "hero-squad", "kart-racers", "little-pig-family", "mermaid-crew", "mystery-crew", "numbered-players", "peas-pod", "penguin-huddle", "plastic-dream-crew", "plumber-duo", "referee", "robot-crew", "robot-ranger", "safari-zoo-crew", "snow-sisters", "soccer-squad", "superhero-family", "tall-hat-crew", "the-olympians", "toy-box-crew", "under-the-sea", "web-slinger-crew", "wizard"];
+
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
 // each page's costume genuinely is a materials list plus steps); the
@@ -120,6 +125,10 @@ export function onRequest(context) {
      see byte-identical static HTML either way: this is not cloaking. */
   var RECIPIENT_BANNER = true;
   var _s = _qp.get("s") || "";
+  /* Split-the-build (2026-09-26): group/family guides get the materials
+     divider (sender panel + recipient self-ID banner). Per-slug, same for
+     every visitor: not cloaking. */
+  var _canSplit = SPLITABLE.indexOf(slug) >= 0;
   /* Supporting fix (2026-09-26): ?s= must survive EVERY quiz-bound tap.
      The page's bottom quiz link previously pointed at a bare
      pickmycostume.com/ and dropped recipient attribution. It is now built
@@ -206,10 +215,10 @@ export function onRequest(context) {
     "if (!main) return;" +
     "var b = document.createElement(\"div\");" +
     "b.className = \"rbanner\";" +
-    /* 2026-09-26 gift-loop red-team: the gift branch must require ?s= (a genuine
-       share arrival) exactly like the friend branch below. Without it, a bare
-       /c/<slug>?gift=1 direct visit renders "Someone picked X for you", a
-       false friend-context headline leaking into a non-share arrival. */
+    "/* 2026-09-26 red-team: the gift branch must require ?s= like every other" +
+    " recipient context. A bare ?gift=1 (no share id) would otherwise render" +
+    " a fake gift banner with an attacker-typed ?gfrom=. App-minted gift" +
+    " links always carry ?s=<sid>, so this is behavior-safe. */" +
     "if (q.get(\"gift\") === \"1\" && q.get(\"s\")) {" +
     "var who = GIFT_FROM ? GIFT_FROM + \" picked\" : \"Someone picked\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\\u{1F381} \" + who + \" <strong>" + title + "</strong> for you.</p>\" +" +
@@ -231,6 +240,100 @@ export function onRequest(context) {
     "main.insertBefore(b, main.firstChild);" +
     "})();" +
     "<" + "/script>";
+  /* Split-the-build (2026-09-26): sender panel markup (static, group/family
+     guides only) and the client script. The recipient self-ID banner is
+     injected client-side so fetchers see byte-identical static HTML. */
+  var _splitHtml = "";
+  var _splitScript = "";
+  if (_canSplit) {
+    _splitHtml = "<div class='splitwrap' id='splitwrap'>" +
+      "<button type='button' class='ghost splitopen'>Splitting the shopping? Divide this list.</button>" +
+      "<div class='splitpanel' style='display:none'>" +
+      "<p class='splitq'>How many builders?</p>" +
+      "<p class='splitstepper'><button type='button' class='ghost splitminus' aria-label='Fewer builders'>&minus;</button>" +
+      "<span class='splitcount'>3</span>" +
+      "<button type='button' class='ghost splitplus' aria-label='More builders'>+</button></p>" +
+      "<div class='splitnameset'></div>" +
+      "<p><button type='button' class='cta splitmake'>Make the split</button></p>" +
+      "<div class='splitresult'></div>" +
+      "</div></div>";
+    _splitScript = "<script>" +
+      "var SPLIT_MATS = " + JSON.stringify(_hw.m) + ";" +
+      "var SPLIT_TITLE = " + JSON.stringify(idea.t) + ";" +
+      "var SPLIT_SLUG = " + JSON.stringify(slug) + ";" +
+      "(function(){" +
+      "var q = new URLSearchParams(location.search || '');" +
+      "function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\x22/g,'&quot;');}" +
+      "function cleanName(s){return String(s || '').replace(/[~|&=<>\"']/g,'').trim().slice(0,24);}" +
+      "function newSid(){var abc='abcdefghijklmnopqrstuvwxyz0123456789';var s='';for(var i=0;i<8;i++)s+=abc[Math.floor(Math.random()*abc.length)];return s;}" +
+      "function assignMats(n){var a=[];for(var i=0;i<n;i++)a.push([]);for(var m=0;m<SPLIT_MATS.length;m++)a[m % n].push(m);return a;}" +
+      "function encAssign(a){return a.map(function(l){return l.map(function(i){return i.toString(36);}).join('.');}).join('|');}" +
+      "function parseSplit(){" +
+      "var n=parseInt(q.get('sp')||'',10);" +
+      "if(!(n>=2&&n<=8))return null;" +
+      "if(!q.get('nm'))return null;" +
+      "var names=(q.get('nm')||'').split('~').map(cleanName);" +
+      "while(names.length<n)names.push('Person '+(names.length+1));" +
+      "names=names.slice(0,n);" +
+      "var parts=(q.get('as')||'').split('|');" +
+      "if(parts.length!==n)return null;" +
+      "var assign=parts.map(function(p){" +
+      "var idx=p.split('.').map(function(t){return parseInt(t,36);}).filter(function(i){return i>=0&&i<SPLIT_MATS.length;});" +
+      "return idx.filter(function(v,i){return idx.indexOf(v)===i;});});" +
+      "return {n:n,names:names,assign:assign};}" +
+      "function splitUrl(names,a,sid){var p=new URLSearchParams();p.set('sp',String(names.length));p.set('nm',names.join('~'));p.set('as',encAssign(a));p.set('s',sid);return 'https://pickmycostume.com/c/'+SPLIT_SLUG+'?'+p.toString();}" +
+      "function groupText(names,a,url){var lines=['We are splitting the '+SPLIT_TITLE+' build!',''];" +
+      "names.forEach(function(nm,i){var items=a[i].map(function(mi){return SPLIT_MATS[mi];});lines.push((i+1)+'. '+nm+': '+(items.join(', ')||'nothing yet'));});" +
+      "lines.push('','Tap to see your list:',url);return lines.join('\\n');}" +
+      "function copyText(t,done){" +
+      "function fb(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(done)done(true);}" +
+      "if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){if(done)done(true);},fb);}else{fb();}}" +
+      "if(typeof window!=='undefined'){window.__splitTest={parseSplit:parseSplit,assignMats:assignMats,encAssign:encAssign,splitUrl:splitUrl,groupText:groupText,cleanName:cleanName};}" +
+      "var sp=parseSplit();" +
+      "if(sp){" +
+      "var main=document.querySelector('main.guide');" +
+      "if(main){" +
+      "var olds=main.querySelectorAll('.rbanner');" +
+      "for(var oi=0;oi<olds.length;oi++)olds[oi].parentNode.removeChild(olds[oi]);" +
+      "var b=document.createElement('div');b.className='rbanner splitbanner';" +
+      "var h='<p class=\"rbanner-line\">Your crew build list: '+escH(SPLIT_TITLE)+'</p><p class=\"rbanner-sub\">Tap your name to see what you are getting.</p><p class=\"splitnames\">';" +
+      "sp.names.forEach(function(nm,i){h+='<button type=\"button\" class=\"splitname\" data-i=\"'+i+'\">'+escH(nm)+'</button>';});" +
+      "h+='</p><div class=\"splitmine\"></div>';" +
+      "b.innerHTML=h;" +
+      "main.insertBefore(b,main.firstChild);" +
+      "var mine=b.querySelector('.splitmine');" +
+      "var btns=b.querySelectorAll('.splitname');" +
+      "for(var bi=0;bi<btns.length;bi++)(function(btn,i){" +
+      "btn.onclick=function(){" +
+      "var items=sp.assign[i].map(function(mi){return SPLIT_MATS[mi];});" +
+      "mine.innerHTML='<p class=\"splitmine-head\">'+escH(sp.names[i])+', you are getting:</p>'+(items.length?'<ul class=\"splititems\">'+items.map(function(x){return '<li>'+escH(x)+'</li>';}).join('')+'</ul>':'<p class=\"splititems-empty\">Nothing assigned to you. Everything is covered.</p>')+'<button type=\"button\" class=\"ghost splitcopy\">Copy my items</button>';" +
+      "mine.querySelector('.splitcopy').onclick=function(){copyText(sp.names[i]+', you are getting for '+SPLIT_TITLE+':\\n'+items.join('\\n'));};};" +
+      "})(btns[bi],bi);}}" +
+      "var wrap=document.getElementById('splitwrap');" +
+      "if(!wrap)return;" +
+      "var N=3;" +
+      "function renderNames(){var box=wrap.querySelector('.splitnameset');var html='';for(var i=0;i<N;i++)html+='<input class=\"splitnamein\" maxlength=\"24\" placeholder=\"Person '+(i+1)+'\" aria-label=\"Builder '+(i+1)+' name\">';box.innerHTML=html;}" +
+      "wrap.querySelector('.splitopen').onclick=function(){wrap.querySelector('.splitpanel').style.display='block';this.style.display='none';renderNames();};" +
+      "var stepEl=wrap.querySelector('.splitcount');" +
+      "wrap.querySelector('.splitminus').onclick=function(){if(N>2){N--;stepEl.textContent=N;renderNames();}};" +
+      "wrap.querySelector('.splitplus').onclick=function(){if(N<8){N++;stepEl.textContent=N;renderNames();}};" +
+      "function getNames(){var ins=wrap.querySelectorAll('.splitnamein');var out=[];for(var i=0;i<ins.length;i++)out.push(cleanName(ins[i].value)||('Person '+(i+1)));return out;}" +
+      "wrap.querySelector('.splitmake').onclick=function(){" +
+      "var names=getNames();" +
+      "var a=assignMats(names.length);" +
+      "var sid=newSid();" +
+      "var url=splitUrl(names,a,sid);" +
+      "var res=wrap.querySelector('.splitresult');" +
+      "var html='<p class=\"splitres-head\">The split is ready. Send it to the group chat:</p><ol class=\"splitres-list\">';" +
+      "names.forEach(function(nm,i){var items=a[i].map(function(mi){return SPLIT_MATS[mi];});html+='<li><strong>'+escH(nm)+':</strong> '+escH(items.join(', ')||'nothing yet')+'</li>';});" +
+      "html+='</ol><p><button type=\"button\" class=\"cta splitcopygroup\">Copy group text</button> <button type=\"button\" class=\"ghost splitcopylink\">Copy link only</button></p><p class=\"splitnote\">Everyone taps the link, taps their name, and sees exactly what to get.</p>';" +
+      "res.innerHTML=html;" +
+      "res.querySelector('.splitcopygroup').onclick=function(){var btn=this;copyText(groupText(names,a,url),function(){btn.textContent='Copied. Send it to the group chat.';});};" +
+      "res.querySelector('.splitcopylink').onclick=function(){var btn2=this;copyText(url,function(){btn2.textContent='Link copied.';});};" +
+      "};" +
+      "})();" +
+      "<" + "/script>";
+  }
   var html = "<!DOCTYPE html>" +
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<title>" + title + " - Pick My Costume</title>" +
@@ -280,6 +383,23 @@ export function onRequest(context) {
     ".rbanner-line{font-size:17px;font-weight:700;color:#333;margin:0 0 6px;line-height:1.4;}" +
     ".rbanner-sub{font-size:15px;color:#666;margin:0 0 14px;line-height:1.45;}" +
     ".rbanner .cta{margin:0;}" +
+    /* Split-the-build styles (2026-09-26). Static for every visitor. */
+    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #e0a33e;border-radius:14px;background:#fffdf6;}" +
+    ".splitwrap .splitopen{width:100%;}" +
+    ".splitq{font-size:16px;font-weight:700;margin:0 0 8px;}" +
+    ".splitstepper{display:flex;align-items:center;gap:14px;margin:0 0 12px;}" +
+    ".splitstepper .ghost{margin:0;}" +
+    ".splitcount{font-size:20px;font-weight:700;min-width:24px;text-align:center;}" +
+    ".splitnamein{display:block;width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #ddd;border-radius:10px;}" +
+    ".splitresult{margin-top:12px;}" +
+    ".splitres-head{font-size:16px;font-weight:700;margin:0 0 8px;}" +
+    ".splitres-list{font-size:15px;}" +
+    ".splitnote{font-size:14px;color:#777;}" +
+    ".splitnames{margin:10px 0;}" +
+    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#fff;color:#ff8c1a;cursor:pointer;}" +
+    ".splitmine-head{font-size:16px;font-weight:700;margin:12px 0 6px;}" +
+    ".splititems{font-size:16px;}" +
+    ".splititems-empty{font-size:15px;color:#777;}" +
     "</style>" +
     "</head><body><main class=\"guide\">" +
     "<h1>" + title + "</h1>" +
@@ -291,11 +411,13 @@ export function onRequest(context) {
     "<img src=\"" + img + "\" alt=\"" + title + " costume idea\">" +
     _quick +
     "<h2>You need</h2><ul>" + _mats + "</ul>" +
+    _splitHtml +
     "<h2>Steps</h2><ol>" + _steps + "</ol>" +
     _faqs +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">Open this costume in Pick My Costume</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     _bannerScript +
+    _splitScript +
     "</main></body></html>";
   return new Response(html, {
     headers: {

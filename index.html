@@ -103,14 +103,22 @@ body{
   line-height:1.5; min-height:100vh;
 }
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
-.hero{text-align:center;padding:56px 8px 32px}
-.hero .moonwrap{margin:0 auto 10px;width:76px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hero{text-align:center;padding:30px 8px 32px;position:relative}
+/* Billy 2026-09-26: the celestial is now ambient and top-right, never a big
+   centered block pushing the headline down. */
+.hero .moonwrap{position:absolute;top:8px;right:10px;width:54px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;z-index:20}
 .hero .moonwrap:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
-.hero .moon{width:76px;height:76px;display:block;filter:drop-shadow(0 0 16px rgba(245,238,210,.35))}
-.hero .mooncap{margin:6px 0 0;font-size:11px;color:var(--muted);letter-spacing:.06em}
+.hero .moon,.hero .sun{width:52px;height:52px;display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(245,238,210,.35))}
+.hero .sun{filter:drop-shadow(0 0 12px rgba(255,200,90,.5))}
+.hero .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+/* Billy 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
+   it stays cheap on phones; off entirely under prefers-reduced-motion. */
+.hero .halo{position:absolute;top:-18px;left:50%;width:88px;height:88px;margin-left:-44px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite;pointer-events:none}
+.hero .halo.day{background:radial-gradient(circle,rgba(255,200,90,.38) 0%,transparent 70%)}
+@keyframes haloPulse{0%,100%{opacity:.55}50%{opacity:1}}
 /* Billy 2026-09-26: tappable moon panel. Phase name + illumination tonight,
    Halloween night's moon, days to go. */
-.moonpanel{margin:8px auto 0;max-width:300px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55}
+.moonpanel{position:absolute;top:78px;right:8px;z-index:30;width:min(300px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55;box-shadow:0 8px 28px rgba(0,0,0,.4)}
 .moonpanel p{margin:4px 0}
 .moonpanel .mp-fun{color:var(--accent);font-weight:600}
 /* Billy 2026-09-26: hero rewrite (BuzzFeed confident-challenge headline). */
@@ -163,6 +171,12 @@ body{
 .proofrow a{flex:0 0 128px;scroll-snap-align:start;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
 .proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
 .proofrow span{display:block;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;color:var(--text);text-align:center;padding:6px 6px;line-height:1.3;font-weight:600;min-height:31px}
+/* 2026-09-26 "Most wanted by kids" rail: button cards reuse the proofrow
+   swipe pattern. The row is JS-rendered from KIDS_RAIL_IDS; every card opens
+   the full pick flow (browse parity, no dead ends). */
+.kidsrail{margin-top:14px}
+.kidsrail .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
+.proofrow button.kidscard{flex:0 0 128px;scroll-snap-align:start;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative;padding:0;cursor:pointer;font:inherit;color:inherit}
 /* Billy 2026-09-26: social proof badge on proof-strip cards */
 .proofbadge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600}
 /* "More ways to explore": the quiet secondary surfaces live here, below the strip. */
@@ -173,7 +187,7 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
 .screen{display:none}
 .screen.on{display:block;animation:fadein .22s ease-out}
-#s-hero.on{display:flex;flex-direction:column;justify-content:center;min-height:85svh}
+#s-hero.on{display:flex;flex-direction:column;justify-content:flex-start;min-height:85svh}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
 .q-title{font-size:28px;margin:0 0 6px}
@@ -337,7 +351,29 @@ footer a{color:var(--accent)}
 .homehow ol{margin:0;padding:0 0 0 22px}
 .homehow li{margin:0 0 10px;color:var(--muted);font-size:15px;line-height:1.55}
 .homehow li b{color:var(--ink)}
-.returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
+.returnhero{max-width:440px;margin:4px auto 0;padding:18px 16px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);animation:returnIn .55s cubic-bezier(.2,.7,.3,1)}
+.returnhero[hidden]{display:none}
+.returnhero-photo{width:108px;height:108px;object-fit:cover;border-radius:22px;display:block;margin:0 auto 10px;box-shadow:0 6px 22px rgba(0,0,0,.4)}
+.returnhero-kicker{margin:0 0 4px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.returnhero h1{margin:0 0 14px;font-size:25px;line-height:1.2}
+.returnhero-actions{display:flex;flex-direction:column;gap:10px}
+.returnhero-actions .cta{width:100%}
+.returnhero-share{background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;cursor:pointer;padding:8px;min-height:44px}
+.hero.returning .firstonly{display:none}
+@keyframes returnIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* Billy 2026-09-26: detail-view celestial. Small, ambient, pinned to the top
+   of the detail screen so it can never sit half-clipped against the browser
+   chrome. Time-aware (sun by day, real moon phase by night), animated unless
+   the visitor prefers reduced motion. */
+#s-detail{position:relative}
+.detail-sky{position:absolute;top:10px;right:12px;width:38px;height:38px;pointer-events:none;z-index:5}
+.detail-sky svg{width:38px;height:38px;display:block}
+.detail-sky .halo{position:absolute;top:-9px;left:50%;width:56px;height:56px;margin-left:-28px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite}
+.detail-sky .halo.day{background:radial-gradient(circle,rgba(255,200,90,.38) 0%,transparent 70%)}
+@media (prefers-reduced-motion: reduce){
+  .returnhero{animation:none}
+  .hero .halo,.detail-sky .halo{animation:none;opacity:.75}
+}
 .fine{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 /* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
    tagline, never a ticking widget. Hides itself after Oct 31. */
@@ -446,7 +482,8 @@ footer a{color:var(--accent)}
   <section class="screen on" id="s-hero">
     <div class="hero">
       <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
-        <svg class="moon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <div class="halo" id="moon-halo" aria-hidden="true"></div>
+        <span id="sky-icon"><svg class="moon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
           <defs>
             <radialGradient id="moonlit" cx="38%" cy="35%" r="75%">
               <stop offset="0%" stop-color="#fdfbf3"/>
@@ -456,8 +493,8 @@ footer a{color:var(--accent)}
           </defs>
           <circle cx="50" cy="50" r="46" fill="#232338" stroke="#3d3d5c" stroke-width="1.5"/>
           <path id="moon-lit" fill="url(#moonlit)" d=""/>
-        </svg>
-        <p class="mooncap">tonight's moon</p>
+        </svg></span>
+        <p class="mooncap" id="mooncap">tonight's moon</p>
       </div>
       <!-- Billy 2026-09-26: moon detail panel, populated on tap. -->
       <div class="moonpanel" id="moon-panel" hidden>
@@ -465,25 +502,37 @@ footer a{color:var(--accent)}
         <p id="moon-halloween"></p>
         <p class="mp-fun" id="moon-fun"></p>
       </div>
-      <h1>We know your Halloween costume.</h1>
-      <p class="tagline">5 questions to see if we're right.</p>
-      <p class="billyline">Still don't have a costume? Same. Let's fix that in 2 minutes.</p>
-      <p class="tminus" id="tminus" style="display:none"></p>
-      <div class="returnbox" id="returnbox" style="display:none">
-        <p style="margin:0 0 10px">Your pick last time: <b id="return-pick"></b></p>
-        <button class="ghost" id="btn-return" type="button">See my ideas again</button>
-      </div>
-      <button class="cta" id="btn-start" type="button">Find my costume</button>
+      <h1 class="firstonly">We know your Halloween costume.</h1>
+      <p class="tagline firstonly">5 questions to see if we're right.</p>
+      <p class="billyline firstonly">Still don't have a costume? Same. Let's fix that in 2 minutes.</p>
+      <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <!-- Experiment 8 (stream B, 2026-09-26): quiz start social proof.
            2026-09-26 honesty fix: the "165 people found their costume this
            week" claim was unverifiable (no derivation script, Monday cron
            never wrote its source/window) and violated the no-fabricated-
            proof rule, so the proof line is removed. The hero keeps the
            honest "5 questions, 2 minutes, free forever" line. -->
-      <p class="fine" style="margin:8px 0 0;text-align:center">5 questions · 2 minutes · free forever</p>
+      <p class="fine firstonly" style="margin:8px 0 0;text-align:center">5 questions · 2 minutes · free forever</p>
+      <p class="tminus" id="tminus" style="display:none"></p>
+      <!-- Billy 2026-09-26: personalized returning hero. Shown only when a
+           fresh pmc_pick_v1 plus usable pmc_last_v1 exist; the generic
+           first-timer elements (.firstonly) hide for these visitors. One calm
+           share entry point, no nudges. -->
+      <div class="returnhero" id="returnbox" hidden>
+        <img class="returnhero-photo" id="returnhero-photo" alt="">
+        <p class="returnhero-kicker">Welcome back</p>
+        <h1 id="returnhero-title">Still going as Pickle?</h1>
+        <div class="returnhero-actions">
+          <button class="cta" id="btn-return" type="button">See my ideas again</button>
+          <button class="ghost" id="btn-retake" type="button">Retake the quiz</button>
+          <button class="returnhero-share" id="btn-returnshare" type="button">Share my pick</button>
+        </div>
+        <p class="fine" id="returnhero-share-status" role="status" style="margin:8px 0 0"></p>
+      </div>
+      </div>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">137</span> costumes directly</p>
-        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
+        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. vampire" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <div class="pinpoint-chips" id="pinpoint-chips"></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
@@ -491,7 +540,7 @@ footer a{color:var(--accent)}
            collections (Trending / Make tonight / New) instead of stacked
            rails, so discovery never competes with the quiz CTA. -->
       <div class="discover" id="discover">
-        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/trending" style="color:var(--accent)">Top 10 nationally →</a> · <a href="/compare" style="color:var(--accent)">Easy classics, compared →</a></p>
+        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/compare" style="color:var(--accent)">Easy classics, compared →</a></p>
         <div class="chiprow" role="tablist" aria-label="Costume collections">
           <button class="chip on" role="tab" aria-selected="true" aria-controls="row-trending" data-tab="row-trending" type="button">Trending</button>
           <button class="chip" role="tab" aria-selected="false" aria-controls="row-tonight" data-tab="row-tonight" type="button">Make tonight</button>
@@ -527,6 +576,15 @@ footer a{color:var(--accent)}
             <a href="/c/fossil-hunter" role="listitem"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
           </div>
         </div>
+      </div>
+      <!-- 2026-09-26 "Most wanted by kids" merchandising rail: perennial kid
+           favorites with generic names only (never licensed character names).
+           Cards are JS-rendered from KIDS_RAIL_IDS; each opens the full pick
+           flow via openIdeaDetail (browse parity). -->
+      <div class="kidsrail" id="kidsrail">
+        <p class="fine" style="margin:14px 0 0">Kid favorites</p>
+        <p class="fine" style="margin:2px 0 0">The classics kids ask for every Halloween. Tap one to see the plan.</p>
+        <div class="proofrow" id="row-kids" role="list" aria-label="Kid favorites"></div>
       </div>
       <div class="explore">
         <p class="fine explore-head">More ways to explore</p>
@@ -700,6 +758,10 @@ footer a{color:var(--accent)}
   <!-- BROWSE DETAIL: tapping a browse card opens the full pick flow here,
        reusing the quiz result card components. -->
   <section class="screen" id="s-detail">
+    <!-- Billy 2026-09-26: ambient time-aware celestial for the detail view.
+         Pinned to the top of the screen, fully visible, never against the
+         browser chrome. Painted by paintDetailSky(). -->
+    <div class="detail-sky" id="detail-sky" aria-hidden="true"></div>
     <!-- Billy 2026-09-26: back/home were buried at the bottom of the detail
          screen. They now sit above the fold too. -->
     <div class="navrow" style="margin:0 0 10px">
@@ -773,6 +835,34 @@ footer a{color:var(--accent)}
 
 </div>
 <script>
+/* Billy 2026-09-26: global image fallback. Any <img> that fails to load
+   (missing deployed asset, CDN hiccup) swaps to a quiet branded placeholder
+   instead of the broken-image icon. The dataset guard makes recursion
+   impossible: the placeholder is a data URI and can never 404. */
+(function(){
+  var SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='300' height='400'><rect width='300' height='400' fill='#241f3d'/><path d='M205 105a85 85 0 1 0 58 146A100 100 0 0 1 205 105z' fill='#f5eeda' opacity='0.92'/></svg>";
+  var PLACEHOLDER = "data:image/svg+xml;utf8," + encodeURIComponent(SVG);
+  window._pmcImgFallback = function(img){
+    if (!img || img.tagName !== "IMG" || img.dataset.pmcFbk) return false;
+    img.dataset.pmcFbk = "1";
+    img.src = PLACEHOLDER;
+    return true;
+  };
+  document.addEventListener("error", function(e){
+    if (e.target && e.target.tagName === "IMG") window._pmcImgFallback(e.target);
+  }, true);
+  function sweep(){
+    var imgs = document.getElementsByTagName("img");
+    for (var i = 0; i < imgs.length; i++){
+      var im = imgs[i];
+      try {
+        if (im.complete && im.naturalWidth === 0 && !im.dataset.pmcFbk) window._pmcImgFallback(im);
+      } catch(e){}
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", sweep);
+  else sweep();
+})();
 /* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
 /* Internal-traffic marking (analytics only, no UX change). Visiting any page
    with ?internal=1 once sets localStorage pmc_internal=1 on that device
@@ -914,7 +1004,7 @@ var QUESTIONS = [
    in the bank, every PINPOINT_CHIPS label must resolve, and spot resolution
    cases must land on the right idea. Add keys here AND re-run the test.
    (hour-session/pinpoint-paths.js still verifies the legacy pin mechanism.) */
-var PINPOINT_MAP = {"spiderman":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidermen":{"idea":"web-slinger-crew","label":"Spider-Man"},"milesmorales":{"idea":"web-slinger-crew","label":"Spider-Man"},"gwenstacy":{"idea":"web-slinger-crew","label":"Spider-Man"},"ghostspider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidergwen":{"idea":"web-slinger-crew","label":"Spider-Man"},"ariel":{"idea":"mermaid-crew","label":"Ariel"},"littlemermaid":{"idea":"mermaid-crew","label":"Ariel"},"wednesday":{"idea":"deadpan-diva","label":"Wednesday"},"wednesdayaddams":{"idea":"deadpan-diva","label":"Wednesday"},"nezuko":{"idea":"bamboo-demon","label":"Nezuko"},"kpopdemonhunters":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"huntrix":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"rumi":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"bluey":{"idea":"blue-dog-family","label":"Bluey"},"bingo":{"idea":"blue-dog-family","label":"Bluey"},"mario":{"idea":"plumber-duo","label":"Mario"},"luigi":{"idea":"plumber-duo","label":"Mario"},"elsa":{"idea":"snow-sisters","label":"Frozen"},"anna":{"idea":"snow-sisters","label":"Frozen"},"frozen":{"idea":"snow-sisters","label":"Frozen"},"olaf":{"idea":"snow-sisters","label":"Frozen"},"elphaba":{"idea":"good-witch-bad-witch","label":"Wicked"},"glinda":{"idea":"good-witch-bad-witch","label":"Wicked"},"wicked":{"idea":"good-witch-bad-witch","label":"Wicked"},"pokemon":{"idea":"pocket-plush","label":"Pokémon"},"pikachu":{"idea":"pocket-plush","label":"Pokémon"},"minecraft":{"idea":"block-game-crew","label":"Minecraft"},"steve":{"idea":"block-game-crew","label":"Minecraft"},"creeper":{"idea":"block-game-crew","label":"Minecraft"},"amongus":{"idea":"space-crewmate","label":"Among Us"},"stitch":{"idea":"blue-alien-ohana","label":"Stitch"},"fnaf":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"freddyfazbear":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"fivenightsatfreddys":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"minion":{"idea":"goggle-crew","label":"Minions"},"minions":{"idea":"goggle-crew","label":"Minions"},"ghostbusters":{"idea":"ghost-hunters","label":"Ghostbusters"},"peppa":{"idea":"little-pig-family","label":"Peppa Pig"},"peppapig":{"idea":"little-pig-family","label":"Peppa Pig"},"dracula":{"idea":"vampire","label":"Dracula"},"vampire":{"idea":"vampire","label":"Vampire"},"greekgods":{"idea":"the-olympians","label":"Greek gods"},"olympians":{"idea":"the-olympians","label":"Greek gods"},"zeus":{"idea":"the-olympians","label":"Zeus"},"athena":{"idea":"the-olympians","label":"Athena"},"odyssey":{"idea":"the-olympians","label":"The Odyssey"},"toystory":{"idea":"toy-box-crew","label":"Toy Story"},"woody":{"idea":"toy-box-crew","label":"Toy Story"},"buzzlightyear":{"idea":"toy-box-crew","label":"Toy Story"},"sajaboys":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"jinu":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"babysaja":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"howtotrainyourdragon":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"hiccup":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"astrid":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"toothless":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"squidgame":{"idea":"numbered-players","label":"Squid Game"},"insideout":{"idea":"emotion-crew","label":"Inside Out"},"insideout2":{"idea":"emotion-crew","label":"Inside Out"},"anxiety":{"idea":"emotion-crew","label":"Inside Out"},"mariokart":{"idea":"kart-racers","label":"Mario Kart"},"catinthehat":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing1":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing2":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"alvinandthechipmunks":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"alvin":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"starwars":{"idea":"galaxy-knights","label":"Star Wars"},"jedi":{"idea":"galaxy-knights","label":"Star Wars"},"lightsaber":{"idea":"galaxy-knights","label":"Star Wars"},"barbie":{"idea":"plastic-dream-crew","label":"Barbie"},"ken":{"idea":"plastic-dream-crew","label":"Barbie"},"wizard":{"idea":"wizard","label":"Wizard"},"wizards":{"idea":"wizard","label":"Wizard"},"belle":{"idea":"enchanted-castle-crew","label":"Belle"},"beautyandthebeast":{"idea":"enchanted-castle-crew","label":"Belle"},"beast":{"idea":"enchanted-castle-crew","label":"Belle"},"princess":{"idea":"fairy-tale-princesses","label":"Princess"},"princesses":{"idea":"fairy-tale-princesses","label":"Princess"},"superhero":{"idea":"superhero-family","label":"Superhero"},"superheroes":{"idea":"superhero-family","label":"Superhero"},"superheros":{"idea":"superhero-family","label":"Superhero"},"disney":{"idea":"enchanted-castle-crew","label":"Disney princess"},"disneyprincess":{"idea":"enchanted-castle-crew","label":"Disney princess"},"disneyprincesses":{"idea":"enchanted-castle-crew","label":"Disney princess"},"mermaid":{"idea":"mermaid-crew","label":"Mermaid"},"mermaids":{"idea":"mermaid-crew","label":"Mermaid"},"spider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spiders":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidey":{"idea":"web-slinger-crew","label":"Spider-Man"},};
+var PINPOINT_MAP = {"spiderman":{"idea":"web-slinger-crew","label":"Spider hero"},"spidermen":{"idea":"web-slinger-crew","label":"Spider hero"},"milesmorales":{"idea":"web-slinger-crew","label":"Spider hero"},"gwenstacy":{"idea":"web-slinger-crew","label":"Spider hero"},"ghostspider":{"idea":"web-slinger-crew","label":"Spider hero"},"spidergwen":{"idea":"web-slinger-crew","label":"Spider hero"},"ariel":{"idea":"mermaid-crew","label":"Mermaid princess"},"littlemermaid":{"idea":"mermaid-crew","label":"Mermaid princess"},"wednesday":{"idea":"deadpan-diva","label":"Goth girl"},"wednesdayaddams":{"idea":"deadpan-diva","label":"Goth girl"},"nezuko":{"idea":"bamboo-demon","label":"Bamboo demon"},"kpopdemonhunters":{"idea":"neon-demon-hunter","label":"Demon hunters"},"huntrix":{"idea":"neon-demon-hunter","label":"Demon hunters"},"rumi":{"idea":"neon-demon-hunter","label":"Demon hunters"},"bluey":{"idea":"blue-dog-family","label":"Blue dog"},"bingo":{"idea":"blue-dog-family","label":"Blue dog"},"mario":{"idea":"plumber-duo","label":"Plumber hero"},"luigi":{"idea":"plumber-duo","label":"Plumber hero"},"elsa":{"idea":"snow-sisters","label":"Ice princess"},"anna":{"idea":"snow-sisters","label":"Ice princess"},"frozen":{"idea":"snow-sisters","label":"Ice princess"},"olaf":{"idea":"snow-sisters","label":"Ice princess"},"elphaba":{"idea":"good-witch-bad-witch","label":"Green witch"},"glinda":{"idea":"good-witch-bad-witch","label":"Green witch"},"wicked":{"idea":"good-witch-bad-witch","label":"Green witch"},"pokemon":{"idea":"pocket-plush","label":"Plush monster"},"pikachu":{"idea":"pocket-plush","label":"Plush monster"},"minecraft":{"idea":"block-game-crew","label":"Block game"},"steve":{"idea":"block-game-crew","label":"Block game"},"creeper":{"idea":"block-game-crew","label":"Block game"},"amongus":{"idea":"space-crewmate","label":"Space crewmate"},"stitch":{"idea":"blue-alien-ohana","label":"Blue alien"},"fnaf":{"idea":"haunted-animatronics","label":"Haunted pizzeria"},"freddyfazbear":{"idea":"haunted-animatronics","label":"Haunted pizzeria"},"fivenightsatfreddys":{"idea":"haunted-animatronics","label":"Haunted pizzeria"},"minion":{"idea":"goggle-crew","label":"Yellow helpers"},"minions":{"idea":"goggle-crew","label":"Yellow helpers"},"ghostbusters":{"idea":"ghost-hunters","label":"Ghost hunters"},"peppa":{"idea":"little-pig-family","label":"Pig family"},"peppapig":{"idea":"little-pig-family","label":"Pig family"},"dracula":{"idea":"vampire","label":"Vampire"},"vampire":{"idea":"vampire","label":"Vampire"},"greekgods":{"idea":"the-olympians","label":"Greek gods"},"olympians":{"idea":"the-olympians","label":"Greek gods"},"zeus":{"idea":"the-olympians","label":"Zeus"},"athena":{"idea":"the-olympians","label":"Athena"},"odyssey":{"idea":"the-olympians","label":"The Odyssey"},"toystory":{"idea":"toy-box-crew","label":"Toy box crew"},"woody":{"idea":"toy-box-crew","label":"Toy box crew"},"buzzlightyear":{"idea":"toy-box-crew","label":"Toy box crew"},"sajaboys":{"idea":"demon-boy-band","label":"Demon hunters"},"jinu":{"idea":"demon-boy-band","label":"Demon hunters"},"babysaja":{"idea":"demon-boy-band","label":"Demon hunters"},"howtotrainyourdragon":{"idea":"dragon-rider-duo","label":"Dragon rider"},"hiccup":{"idea":"dragon-rider-duo","label":"Dragon rider"},"astrid":{"idea":"dragon-rider-duo","label":"Dragon rider"},"toothless":{"idea":"dragon-rider-duo","label":"Dragon rider"},"squidgame":{"idea":"numbered-players","label":"Numbered players"},"insideout":{"idea":"emotion-crew","label":"Emotion crew"},"insideout2":{"idea":"emotion-crew","label":"Emotion crew"},"anxiety":{"idea":"emotion-crew","label":"Emotion crew"},"mariokart":{"idea":"kart-racers","label":"Kart racers"},"catinthehat":{"idea":"tall-hat-crew","label":"Tall-hat cat"},"thing1":{"idea":"tall-hat-crew","label":"Tall-hat cat"},"thing2":{"idea":"tall-hat-crew","label":"Tall-hat cat"},"alvinandthechipmunks":{"idea":"chipmunk-trio","label":"Chipmunk trio"},"alvin":{"idea":"chipmunk-trio","label":"Chipmunk trio"},"starwars":{"idea":"galaxy-knights","label":"Galaxy knights"},"jedi":{"idea":"galaxy-knights","label":"Galaxy knights"},"lightsaber":{"idea":"galaxy-knights","label":"Galaxy knights"},"barbie":{"idea":"plastic-dream-crew","label":"Dream dolls"},"ken":{"idea":"plastic-dream-crew","label":"Dream dolls"},"wizard":{"idea":"wizard","label":"Wizard"},"wizards":{"idea":"wizard","label":"Wizard"},"belle":{"idea":"enchanted-castle-crew","label":"Enchanted princess"},"beautyandthebeast":{"idea":"enchanted-castle-crew","label":"Enchanted princess"},"beast":{"idea":"enchanted-castle-crew","label":"Enchanted princess"},"princess":{"idea":"fairy-tale-princesses","label":"Princess"},"princesses":{"idea":"fairy-tale-princesses","label":"Princess"},"superhero":{"idea":"superhero-family","label":"Superhero"},"superheroes":{"idea":"superhero-family","label":"Superhero"},"superheros":{"idea":"superhero-family","label":"Superhero"},"disney":{"idea":"enchanted-castle-crew","label":"Fairy-tale princess"},"disneyprincess":{"idea":"enchanted-castle-crew","label":"Fairy-tale princess"},"disneyprincesses":{"idea":"enchanted-castle-crew","label":"Fairy-tale princess"},"mermaid":{"idea":"mermaid-crew","label":"Mermaid"},"mermaids":{"idea":"mermaid-crew","label":"Mermaid"},"spider":{"idea":"web-slinger-crew","label":"Spider hero"},"spiders":{"idea":"web-slinger-crew","label":"Spider hero"},"spidey":{"idea":"web-slinger-crew","label":"Spider hero"},};
 var PINPOINT_CHIPS = ["Spider-Man","Ariel","Wednesday","Bluey","Mario","Nezuko","Pok\u00e9mon","Frozen","Belle"];
 /* Homepage search chips (Variant C, Billy 2026-09-25): popular searches
    wired to the full search intelligence (aliases + attribute filters) via
@@ -982,23 +1072,23 @@ function pinpointResolve(raw){
    (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
 var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:1},
-  {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"top 5 for kids and adults", fit:"U", venue:{bar:1}, rank:2},
+  {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"a perennial favorite", fit:"U", venue:{bar:1}, rank:2},
   {id:"blue-dog-family", title:"Aussie Dog Family", blurb:"Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.", why:"Blue and orange shirts, paper ears, and your kid completely loses it.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:3},
   {id:"superhero-family", title:"Superhero Family", blurb:"Red sweatsuits, black eye masks, felt logo. The whole family goes super.", why:"Scales from two to six people, and every age knows the movie.", audience:["family"], budget:["low","mid"], tags:{cute:2,funny:1,couch:1,simple:2,heroes:3,tv:2,occparty:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:4},
   {id:"blue-alien-ohana", title:"Blue Alien Ohana", blurb:"Blue hoodie, big ears: the alien, the girl, or the whole ohana.", why:"Everyone knows the alien without you saying a word, and the ears carry the whole costume.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:5},
-  {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1,tv:3,occbar:2,occparty:2}, trending:true, trendLane:"Witch", trendStat:"4.8M adults planned it", fit:"F", venue:{bar:2}, rank:6},
+  {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1,tv:3,occbar:2,occparty:2}, trending:true, trendLane:"Witch", trendStat:"a top pick for adults this year", fit:"F", venue:{bar:2}, rank:6},
   {id:"gloom-bloom", title:"Gloom & Bloom", blurb:"Braids and black for Gloom, color-pop and smiles for Bloom.", why:"The deadpan duo: one broods, one sparkles, both nail it.", audience:["group"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3,occbar:1,occparty:2}, fit:"F", venue:{bar:2}, rank:7},
   {id:"deadpan-diva", title:"Deadpan Diva", blurb:"Black dress, two braids, pale makeup, and a stare that ends conversations.", why:"The goth icon: closet-easy, instantly readable, and the braids do half the work.", audience:["solo"], budget:["diy","low"], tags:{tv:3,scary:3,simple:2,couch:2,occbar:2,occparty:1}, fit:"F", venue:{bar:2}, rank:8},
   {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1,animals:3,occparty:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:9},
-  {id:"fairy-tale-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet. Every princess works.", why:"Most kids already have a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3,occparty:1,occtreat:2}, trending:true, trendLane:"Princess", trendStat:"2.2M kids planned it", fit:"F", venue:{bar:2}, rank:10},
+  {id:"fairy-tale-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet. Every princess works.", why:"Most kids already have a favorite; the dress does the work.", audience:["kid","family","group"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3,occparty:1,occtreat:2}, trending:true, trendLane:"Princess", trendStat:"a top pick for kids this year", fit:"F", venue:{bar:2}, rank:10},
   {id:"tin-hero", title:"The Tin Hero", blurb:"Red and gold plus a glowing chest circle: the suit does the talking.", why:"Kids lose their minds over the chest light, and it costs less than the candy.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2,occbar:1,occparty:1,occtreat:2}, fit:"M", venue:{bar:2}, rank:11},
-  {id:"good-witch-bad-witch", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year: one goes dark, one goes dazzling.", audience:["group"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3,occbar:1,occparty:2}, trending:true, trendLane:"Witch", trendStat:"4.8M adults planned it", fit:"F", venue:{bar:2}, rank:12},
+  {id:"good-witch-bad-witch", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year: one goes dark, one goes dazzling.", audience:["group"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3,occbar:1,occparty:2}, trending:true, trendLane:"Witch", trendStat:"a top pick for adults this year", fit:"F", venue:{bar:2}, rank:12},
   {id:"fuzzy-monster", title:"Fuzzy Monster", blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", why:"Ugly-cute is the whole point, and it is basically pajamas.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:3,funny:1,kidunder3:1,kid36:2,kid7plus:1,dinos:2,occlowkey:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:13},
   {id:"pocket-plush", title:"Pocket Plush Monster", blurb:"A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.", why:"You become the toy-aisle icon: ugly-cute, comfy, and built for hugs.", audience:["kid"], budget:["diy","low"], tags:{cute:3,dinos:2,funny:2,simple:2,couch:1,kid36:2,kid7plus:2,kidunder3:1,occlowkey:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:14},
   {id:"soccer-squad", title:"Soccer Squad", blurb:"Jerseys for the players, black for the ref, one red card.", why:"World Cup year: everyone already owns half of this.", audience:["family","group"], budget:["low","diy"], tags:{couch:2,cute:2,funny:2,simple:2,sports:2,occparty:2,occtreat:1}, fit:"U", venue:{bar:2}, rank:15},
   {id:"glow-skeleton", title:"Glow Skeleton", blurb:"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.", why:"Spooky after dark and visible to cars, which parents love.", audience:["kid"], budget:["low","diy"], tags:{couch:2,scary:2,cute:1,kid36:2,kid7plus:1,occcandy:1,occtreat:3}, fit:"U", venue:{bar:2}, rank:16},
   {id:"block-game-crew", title:"Block Game Crew", blurb:"Cardboard-box heads: pick your blocky hero.", why:"A box, some paint, and instant blockhead status.", audience:["kid","family","group"], budget:["diy","low"], tags:{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,games:3,occparty:2,occtreat:2}, fit:"U", venue:{bar:0}, rank:17},
-  {id:"web-slinger-crew", title:"Web-Slinger Crew", blurb:"Red, black, and pink hoodies plus masks. Pick your spider.", why:"Everyone gets their own color and nobody fights over it.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1,couch:2,simple:2,heroes:3,tv:2,occbar:1,occparty:2}, trending:true, trendLane:"Spider-Man", trendStat:"4.6M kids planned it", fit:"U", venue:{bar:2}, rank:18},
+  {id:"web-slinger-crew", title:"Web-Slinger Crew", blurb:"Red, black, and pink hoodies plus masks. Pick your spider.", why:"Everyone gets their own color and nobody fights over it.", audience:["group"], budget:["low","mid"], tags:{cute:2,funny:1,couch:2,simple:2,heroes:3,tv:2,occbar:1,occparty:2}, trending:true, trendLane:"Spider hero", trendStat:"a top pick for kids this year", fit:"U", venue:{bar:2}, rank:18},
   {id:"mermaid-crew", title:"Mermaid Crew", blurb:"The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.", why:"No filler roles in this crew: even the crab gets to be the star.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"simple":1,"couch":1,"crafty":1,"kid36":2,"kid7plus":1,princess:3,tv:2,occparty:2,occtreat:1}, fit:"F", venue:{bar:1}, rank:19},
   {id:"little-pig-family", title:"Little Pig Family", blurb:"Pink clothes and a snout headband; little brother brings the dinosaur.", why:"Four matching snouts in one photo never miss, and little brother's dinosaur is the plot twist.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"dinos":1,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:20},
   {id:"enchanted-castle-crew", title:"Enchanted Castle Crew", blurb:"The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role.", why:"The enchanted objects steal the show, and they're all DIY.", audience:["family","group"], budget:["diy","low"], tags:{"cute":2,"funny":1,"crafty":2,"kid36":1,"kid7plus":1,princess:2,tv:2,occparty:2,occtreat:1}, fit:"F", venue:{bar:1}, rank:21},
@@ -1014,7 +1104,7 @@ var IDEAS = [
   {id:"spider", title:"Eight-Legged Spider", blurb:"Black sweats with stuffed sock legs attached at the sides.", why:"Spooky from across the street, snuggly up close.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,kid7plus:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:31},
   {id:"backyard-hero", title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", why:"Skip the mask, add a face-paint lightning bolt, still a hero.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:1,couch:1,kid36:2,kid7plus:1,heroes:3,occtreat:2}, fit:"U", venue:{bar:2}, rank:32},
   {id:"pickle", title:"Pickle", blurb:"Green tunic, bumpy texture, smug grin.", why:"A pickle costume has no business working this well. And yet.", audience:["solo"], budget:["diy","low"], tags:{funny:3,couch:2,food:2,occbar:2,occcandy:1,occparty:2}, fit:"U", venue:{bar:2}, rank:33},
-  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with 25 minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1,occbar:3,occparty:2}, trending:true, trendLane:"Vampire", trendStat:"4.2M adults planned it", fit:"M", venue:{bar:2}, rank:34},
+  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with 25 minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1,occbar:3,occparty:2}, trending:true, trendLane:"Vampire", trendStat:"a top pick for adults this year", fit:"M", venue:{bar:2}, rank:34},
   {id:"bamboo-demon", title:"Bamboo-Muzzle Demon", blurb:"Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.", why:"Cute demon energy: anime fans clock it instantly, everyone else just sees adorable.", audience:["solo"], budget:["diy","low"], tags:{tv:3,cute:3,scary:1,simple:2,couch:1,occbar:2,occparty:2}, fit:"F", venue:{bar:0}, rank:35},
   {id:"emoji-crew", title:"Emoji Crew", blurb:"Everyone picks an emoji: a yellow tee plus a big printed face.", why:"Everyone picks their own emoji, and the group photo reads instantly.", audience:["group","family"], budget:["diy","low"], tags:{cute:3, funny:1, simple:2, couch:2,occparty:2,occtreat:1}, fit:"U", venue:{bar:2}, rank:36},
   {id:"robot-crew", title:"Cardboard Robot Crew", blurb:"Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.", why:"Cardboard boxes scale to any headcount, and every robot looks intentionally janky.", audience:["group","family"], budget:["diy","low"], tags:{allout:2,funny:3,crafty:3,occparty:2}, fit:"U", venue:{bar:1}, rank:37},
@@ -1315,9 +1405,7 @@ var NRF_URL = "https://nrf.com/media-center/press-releases/nrf-halloween-survey-
 function trendStatEl(idea){
   if(!idea.trending || !idea.trendLane || !idea.trendStat) return null;
   var p = document.createElement("p"); p.className = "trendstat";
-  p.appendChild(document.createTextNode("Trending \u00b7 " + idea.trendLane + ": " + idea.trendStat + " ("));
-  var a = document.createElement("a"); a.href = NRF_URL; a.rel = "noopener"; a.textContent = "NRF, Sept 2026";
-  p.appendChild(a); p.appendChild(document.createTextNode(")"));
+  p.textContent = "Trending \u00b7 " + idea.trendLane + ": " + idea.trendStat;
   return p;
 }
 
@@ -4162,28 +4250,28 @@ var POPULAR_SEARCHES = [
 var SEARCH_SUGGESTIONS = [
   {label:"Princess", q:"princess", w:100},
   {label:"Vampire", q:"vampire", w:92},
-  {label:"Spider-Man", q:"spiderman", w:90},
-  {label:"KPop Demon Hunters", q:"kpop demon hunters", w:88},
-  {label:"Wednesday Addams", q:"wednesday", w:85},
-  {label:"Bluey", q:"bluey", w:82},
-  {label:"Labubu", q:"labubu", w:80},
+  {label:"Spider hero", q:"spiderman", w:90},
+  {label:"Demon hunters", q:"kpop demon hunters", w:88},
+  {label:"Goth girl", q:"wednesday", w:85},
+  {label:"Blue dog", q:"bluey", w:82},
+  {label:"Fuzzy monster", q:"labubu", w:80},
   {label:"Dinosaur", q:"dinosaur", w:78},
   {label:"Witch", q:"witch", w:75},
   {label:"Ghost", q:"ghost", w:72},
-  {label:"Paw Patrol", q:"paw patrol", w:70},
+  {label:"Puppy patrol", q:"paw patrol", w:70},
   {label:"Superhero", q:"superhero", w:68},
-  {label:"Frozen", q:"frozen", w:65},
-  {label:"Mario", q:"mario", w:62},
-  {label:"Minions", q:"minions", w:60},
-  {label:"Elphaba (Wicked)", q:"elphaba", w:58},
-  {label:"Toy Story", q:"toy story", w:56},
-  {label:"Pikachu", q:"pikachu", w:54},
-  {label:"Scooby-Doo", q:"scooby doo", w:52},
-  {label:"Jurassic World", q:"jurassic world", w:50},
-  {label:"Peppa Pig", q:"peppa pig", w:48},
-  {label:"Cocomelon", q:"cocomelon", w:46},
-  {label:"Transformers", q:"transformers", w:44},
-  {label:"Inside Out", q:"inside out", w:42},
+  {label:"Ice princess", q:"frozen", w:65},
+  {label:"Plumber hero", q:"mario", w:62},
+  {label:"Yellow helpers", q:"minions", w:60},
+  {label:"Green witch", q:"elphaba", w:58},
+  {label:"Toy cowboy", q:"toy story", w:56},
+  {label:"Electric mouse", q:"pikachu", w:54},
+  {label:"Mystery dog", q:"scooby doo", w:52},
+  {label:"Dino adventure", q:"jurassic world", w:50},
+  {label:"Pig family", q:"peppa pig", w:48},
+  {label:"Nursery rhymes", q:"cocomelon", w:46},
+  {label:"Robot cars", q:"transformers", w:44},
+  {label:"Emotion crew", q:"inside out", w:42},
   {label:"Snow Sisters", q:"snow sisters", w:118},
   {label:"Mermaid", q:"mermaid", w:112},
   {label:"Ghost Hunters", q:"ghost hunters", w:110},
@@ -4192,7 +4280,7 @@ var SEARCH_SUGGESTIONS = [
   {label:"Pickle", q:"pickle", w:89},
   {label:"Couples", q:"couples", w:86},
   {label:"Peanut Butter and Jelly", q:"peanut butter jelly", w:84},
-  {label:"Barbie and Ken", q:"barbie ken", w:70},
+  {label:"Doll couple", q:"barbie ken", w:70},
   {label:"Ghostbusters", q:"ghostbusters", w:68},
   {label:"Among Us", q:"among us", w:66},
   {label:"Decades", q:"decades", w:64}
@@ -4200,25 +4288,25 @@ var SEARCH_SUGGESTIONS = [
 
 function prettyAliasKey(k){
   var labels = {
-    "kpopdemonhunters":"KPop Demon Hunters","demonhunters":"Demon Hunters",
-    "sajaboys":"Saja Boys","babysaja":"Baby Saja","chickenjockey":"Chicken Jockey",
-    "howtotrainyourdragon":"How to Train Your Dragon","catinthehat":"Cat in the Hat",
-    "scoobydoo":"Scooby-Doo","supermario":"Super Mario","gabbysdollhouse":"Gabby's Dollhouse",
-    "pawpatrol":"Paw Patrol","powerrangers":"Power Rangers","peppapig":"Peppa Pig",
-    "toystory":"Toy Story","buzzlightyear":"Buzz Lightyear","lionking":"Lion King",
-    "littlemermaid":"Little Mermaid","beautyandthebeast":"Beauty and the Beast",
-    "jurassicworld":"Jurassic World","insideout":"Inside Out","mariokart":"Mario Kart",
-    "spiderman":"Spider-Man","wonderwoman":"Wonder Woman","snowwhite":"Snow White",
+    "kpopdemonhunters":"Demon hunters","demonhunters":"Demon Hunters",
+    "sajaboys":"Demon boy band","babysaja":"Baby demon","chickenjockey":"Chicken rider",
+    "howtotrainyourdragon":"Dragon trainer","catinthehat":"Tall-hat cat",
+    "scoobydoo":"Mystery dog","supermario":"Plumber hero","gabbysdollhouse":"Dollhouse kid",
+    "pawpatrol":"Puppy patrol","powerrangers":"Ranger team","peppapig":"Pig family",
+    "toystory":"Toy cowboy","buzzlightyear":"Space ranger","lionking":"Lion prince",
+    "littlemermaid":"Mermaid princess","beautyandthebeast":"Beauty and the Beast",
+    "jurassicworld":"Dino adventure","insideout":"Emotion crew","mariokart":"Kart racers",
+    "spiderman":"Spider hero","wonderwoman":"Warrior hero","snowwhite":"Snow White",
     "peanutbutterjelly":"Peanut Butter & Jelly","saltandpepper":"Salt & Pepper",
     "plugsocket":"Plug & Socket","plugandsocket":"Plug & Socket",
     "ketchupmustard":"Ketchup & Mustard","baconandeggs":"Bacon & Eggs",
     "sunandmoon":"Sun & Moon","catandmouse":"Cat & Mouse",
-    "tomandjerry":"Tom & Jerry","spaghettimeatball":"Spaghetti & Meatball",
+    "tomandjerry":"Cat & Mouse","spaghettimeatball":"Spaghetti & Meatball",
     "snowsisters":"Snow Sisters","ghosthunters":"Ghost Hunters",
     "breakfastbuffet":"Breakfast Buffet","losttourist":"Lost Tourist",
-    "barbieken":"Barbie & Ken","barbieandken":"Barbie & Ken","scoobygang":"Scooby Gang",
-    "whereswaldo":"Where's Waldo","fivenightsatfreddys":"Five Nights at Freddy's",
-    "amongus":"Among Us","brideoffrankenstein":"Bride of Frankenstein"
+    "barbieken":"Doll couple","barbieandken":"Doll couple","scoobygang":"Mystery gang",
+    "whereswaldo":"Crowd camouflage","fivenightsatfreddys":"Haunted pizzeria",
+    "amongus":"Space crewmate","brideoffrankenstein":"Monster bride"
   };
   if (labels[k]) return labels[k];
   return k.charAt(0).toUpperCase() + k.slice(1);
@@ -6373,7 +6461,7 @@ function fallbackCopy(text, done){
    pre-filtered to that term through the full search intelligence
    (parseSearch: aliases + attribute filters), with the term editable in the
    shelf search box. The typed hero input keeps pinpoint name resolution. */
-var HERO_SEARCH_CHIPS = ["Bluey","cheap","couples","bar","tonight"];
+var HERO_SEARCH_CHIPS = ["Dinosaur","cheap","couples","bar","tonight"];
 function renderPinpointChips(){
   var box = $("pinpoint-chips");
   if (!box || box.children.length) return;
@@ -6526,6 +6614,17 @@ $("btn-return").onclick = function(){
     .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
   if (results.length) renderResults(results);
 };
+/* Billy 2026-09-26: returning-hero secondary + one quiet share entry point.
+   Retake runs the same clean quiz start as the hero CTA. */
+$("btn-retake").onclick = function(){ $("btn-start").onclick(); };
+$("btn-returnshare").onclick = function(){
+  var pick = load("pmc_pick_v1");
+  if (!pick || !pick.ideaId) return;
+  var idea = null;
+  for (var k = 0; k < IDEAS.length; k++) if (IDEAS[k].id === pick.ideaId){ idea = IDEAS[k]; break; }
+  if (!idea) return;
+  shareText(idea, $("returnhero-share-status"), $("btn-returnshare"));
+};
 $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
 /* Proof-strip tap tracking: which homepage proof cards get tapped.
@@ -6554,6 +6653,41 @@ $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 /* Variant C hero: the search-block label carries the live bank count. */
 (function(){ var hsc = $("hero-search-count"); if (hsc) hsc.textContent = IDEAS.length; })();
+/* 2026-09-26 "Most wanted by kids" rail: perennial kid favorites, generic
+   names only (never licensed character names). Rendered into #row-kids;
+   every card opens the full pick flow via openIdeaDetail, exactly like a
+   browse card (browse parity: no dead ends). */
+var KIDS_RAIL_IDS = ["snow-sisters","fairy-tale-princesses","backyard-hero","baby-dino","little-witch","garden-fairy","classic-ghost","glow-skeleton","ninja","mermaid-crew"];
+(function renderKidsRail(){
+  var row = document.getElementById("row-kids");
+  if (!row) return;
+  row.innerHTML = "";
+  KIDS_RAIL_IDS.forEach(function(id){
+    var idea = null;
+    for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === id){ idea = IDEAS[i]; break; }
+    if (!idea) return;
+    var card = document.createElement("button");
+    card.type = "button";
+    card.className = "kidscard";
+    card.setAttribute("role", "listitem");
+    card.setAttribute("aria-label", idea.title + ", see the costume plan");
+    var img = document.createElement("img");
+    img.src = "photos/" + idea.id + ".webp";
+    img.alt = idea.title + " costume";
+    img.loading = "lazy";
+    var label = document.createElement("span");
+    label.textContent = idea.title;
+    card.appendChild(img);
+    card.appendChild(label);
+    card.addEventListener("click", (function(iid){
+      return function(){
+        try { Analytics.track("kids_rail_tap", {idea_id: iid}); } catch(e){}
+        openIdeaDetail(iid, "Why it's great", "s-hero", "Most wanted by kids");
+      };
+    })(idea.id));
+    row.appendChild(card);
+  });
+})();
 /* E20 parity: back from a browse detail returns to the browse grid with the
    current search/filter state intact (renderBrowse reads the live inputs). */
 /* Billy 2026-09-26: the detail screen's home button had no handler (dead tap),
@@ -6758,6 +6892,13 @@ function shareLandingHeadline(idea, search){
        (proof rail, direct, browse) must never count as a recipient landing;
        the old code fired on every ?idea= pageview and polluted the series. */
     if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", _rlv);
+    /* 2026-09-26 split-the-build: ?sp=<builders> marks arrivals from a /c/
+       guide's "Split the build" link. The /c/ page has no analytics loader,
+       so this is the measurable recipient leg of the split loop. Gated on a
+       genuine share id exactly like recipient_landing_viewed. */
+    var _spm = /[?&]sp=([2-8])(?:&|$)/.exec(location.search || "");
+    if (_spm && isGenuineShareArrival(location.search || "")) Analytics.track("build_split_link_opened",
+      {idea_id: idea.id, builders: parseInt(_spm[1], 10), via_share_id: VIA_SHARE, share_origin: VIA_SHARE_ORIGIN});
   })();
   /* 2026-09-26 red-team: a recipient who taps the /c/ page banner's
      "Find your costume" lands at /?s=<sid>&o=<origin> with NO friend
@@ -6961,11 +7102,31 @@ function shareLandingHeadline(idea, search){
     return {elong: elong, phase: elong / 360,
       illum: (1 - Math.cos(elong * rad)) / 2, name: moonPhaseName(elong)};
   }
-  (function(){
-    var path = document.getElementById("moon-lit");
+  /* Billy 2026-09-26: time-aware sky. The visitor's local hour decides, no
+     geolocation: sun from 6:00 to 17:59, the real computed moon phase at
+     night. The hero celestial, the detail celestial, and the tap panel all
+     follow the same rule. */
+  var SUN_SVG = '<svg class="sun" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
+    + '<defs><radialGradient id="sunglow" cx="50%" cy="50%" r="50%">'
+    + '<stop offset="0%" stop-color="#fff7d6"/><stop offset="60%" stop-color="#ffd76e"/><stop offset="100%" stop-color="#ff9d3c"/>'
+    + '</radialGradient></defs>'
+    + '<g stroke="#ffd76e" stroke-width="5" stroke-linecap="round">'
+    + '<line x1="84" y1="50" x2="94" y2="50"/><line x1="74" y1="74" x2="81" y2="81"/>'
+    + '<line x1="50" y1="84" x2="50" y2="94"/><line x1="26" y1="74" x2="19" y2="81"/>'
+    + '<line x1="16" y1="50" x2="6" y2="50"/><line x1="26" y1="26" x2="19" y2="19"/>'
+    + '<line x1="50" y1="16" x2="50" y2="6"/><line x1="74" y1="26" x2="81" y2="19"/>'
+    + '</g><circle cx="50" cy="50" r="26" fill="url(#sunglow)"/></svg>';
+  function moonSVG(pathId){
+    return '<svg class="moon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
+      + '<defs><radialGradient id="moonlit-' + pathId + '" cx="38%" cy="35%" r="75%">'
+      + '<stop offset="0%" stop-color="#fdfbf3"/><stop offset="60%" stop-color="#f2edda"/><stop offset="100%" stop-color="#d9d2b4"/>'
+      + '</radialGradient></defs>'
+      + '<circle cx="50" cy="50" r="46" fill="#232338" stroke="#3d3d5c" stroke-width="1.5"/>'
+      + '<path id="' + pathId + '" fill="url(#moonlit-' + pathId + ')" d=""/></svg>';
+  }
+  function setMoonPath(pathId, phase){
+    var path = document.getElementById(pathId);
     if (!path) return;
-    var info = moonPhaseInfo(Date.now());
-    var phase = info.phase; /* 0 = new, 0.25 = first quarter, 0.5 = full */
     var r = 46, cx = 50, cy = 50;
     var c = Math.cos(2 * Math.PI * phase);
     var rx = Math.max(0.001, Math.abs(c) * r);
@@ -6975,6 +7136,31 @@ function shareLandingHeadline(idea, search){
       "M " + cx + " " + (cy - r) +
       " A " + r + " " + r + " 0 0 " + litSweep + " " + cx + " " + (cy + r) +
       " A " + rx.toFixed(2) + " " + r + " 0 0 " + termSweep + " " + cx + " " + (cy - r) + " Z");
+  }
+  window._pmcIsDay = (function(){ var h = new Date().getHours(); return h >= 6 && h < 18; })();
+  (function paintHeroSky(){
+    if (!window._pmcIsDay) return; /* night: the static hero moon stays */
+    var icon = document.getElementById("sky-icon");
+    var cap = document.getElementById("mooncap");
+    var halo = document.getElementById("moon-halo");
+    var btn = document.getElementById("moon-btn");
+    if (icon) icon.innerHTML = SUN_SVG;
+    if (cap) cap.textContent = "today's sun";
+    if (halo) halo.classList.add("day");
+    if (btn) btn.setAttribute("title", "Today's sun: tap for details");
+  })();
+  function paintDetailSky(){
+    var el = document.getElementById("detail-sky");
+    if (!el || el.getAttribute("data-done")) return;
+    el.setAttribute("data-done", "1");
+    var isDay = !!window._pmcIsDay;
+    el.innerHTML = '<div class="halo' + (isDay ? " day" : "") + '" aria-hidden="true"></div>'
+      + (isDay ? SUN_SVG : moonSVG("d-moon-lit"));
+    if (!isDay) setMoonPath("d-moon-lit", moonPhaseInfo(Date.now()).phase);
+  }
+  (function(){
+    if (!window._pmcIsDay) setMoonPath("moon-lit", moonPhaseInfo(Date.now()).phase); /* 0 = new, 0.25 = first quarter, 0.5 = full */
+    paintDetailSky();
     /* Billy 2026-09-26: tappable moon. The panel shows tonight's phase,
        Halloween night's moon (computed, never hardcoded), and days to go. */
     var mbtn = document.getElementById("moon-btn");
@@ -6989,7 +7175,8 @@ function shareLandingHeadline(idea, search){
         var days = Math.ceil((new Date(2026, 9, 31).getTime() - Date.now()) / 86400000);
         var tpct = Math.round(tn.illum * 100), hpct = Math.round(hw.illum * 100);
         var daybit = days > 1 ? " (" + days + " days away)" : days === 1 ? " (tomorrow night)" : days === 0 ? " (tonight!)" : "";
-        $("moon-tonight").textContent = "Tonight: " + tn.name + ", " + tpct + "% lit.";
+        if (window._pmcIsDay) $("moon-tonight").textContent = "Today: the sun is up. Tonight's moon: " + tn.name + ", " + tpct + "% lit.";
+        else $("moon-tonight").textContent = "Tonight: " + tn.name + ", " + tpct + "% lit.";
         $("moon-halloween").textContent = "Halloween night: " + hw.name + ", " + hpct + "% lit" + daybit + ".";
         var fun;
         if (hw.illum >= 0.85) fun = "Full moon on Halloween. Spooky season is cooperating.";
@@ -7112,18 +7299,29 @@ function shareLandingHeadline(idea, search){
   renderPinpointChips();
   var _ic = document.getElementById("idea-count"); if (_ic) _ic.textContent = IDEAS.length;
 })();
+/* Billy 2026-09-26: personalized returning hero. A fresh pmc_pick_v1 plus
+   usable pmc_last_v1 leads with the saved pick (photo, "Still going as X?").
+   The generic first-timer block hides via .returning on .hero. */
 function refreshReturnBox(){
   var box = $("returnbox");
   if (!box) return;
-  box.style.display = "none";
+  box.hidden = true;
+  var heroEl = document.querySelector(".hero");
+  if (heroEl) heroEl.classList.remove("returning");
   var pick = load("pmc_pick_v1");
   var last = load("pmc_last_v1");
   var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
   if (fresh && last && last.results && last.results.length) {
-    var idea = IDEAS.filter(function(i){ return i.id === pick.ideaId; })[0];
+    var idea = null;
+    for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === pick.ideaId){ idea = IDEAS[i]; break; }
     if (idea) {
-      $("return-pick").textContent = idea.title;
-      box.style.display = "block";
+      var photo = $("returnhero-photo");
+      if (photo){ photo.src = "photos/" + idea.id + ".webp"; photo.alt = idea.title + " costume"; }
+      $("returnhero-title").textContent = "Still going as " + idea.title + "?";
+      var st = $("returnhero-share-status");
+      if (st) st.textContent = "";
+      box.hidden = false;
+      if (heroEl) heroEl.classList.add("returning");
     }
   }
 }
