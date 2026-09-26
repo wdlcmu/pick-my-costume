@@ -451,7 +451,7 @@ footer a{color:var(--accent)}
            count moved directly under the CTA with first-person microcopy.
            Measure: quiz_started rate. -->
       <p class="fine" style="margin:8px 0 0;text-align:center">5 questions · 2 minutes · free forever</p>
-      <p class="fine" style="margin:6px 0 0;text-align:center"><strong>165 people found their costume this week. You're next.</strong></p>
+      <p class="fine" style="margin:6px 0 0;text-align:center"><strong id="hero-proof">165 people found their costume this week. You're next.</strong></p>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">137</span> costumes directly</p>
         <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
@@ -1220,7 +1220,7 @@ var SHARE = {
   textTemplate: function(idea, aud, sid, origin){
     var url = "pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
     /* 2026-09-25 social-handoff experiment: reciprocal ask, same as shareTextFor. */
-    return shareCaptionFor(idea) + " " + shareAsk() + url;
+    return shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + url;
   }
 };
 
@@ -2180,12 +2180,13 @@ function shareCaptionFor(idea){
   var line = "I am going as " + idea.title + " this Halloween.";
   var cap = SHARE_CAPTIONS[idea.id];
   if (!cap) return line;
-  /* Red-team 2026-09-26: 28 of the 49 captions never name the costume, so the
-     share text reads as a riddle ("A sheet. Two eye holes. Peak Halloween.")
-     and the recipient must parse the URL slug to know what it is. Keep the
-     caption's flavor, but always lead with the identity line unless the
-     caption already says what they are going as. */
-  if (/going as/i.test(cap)) return cap;
+  /* Red-team 2026-09-26 (round 2): the /going as/ heuristic misfired. 47 of
+     the 49 captions never name the costume ("We are going as mermaids",
+     "Going as a pocketful of plush"), so the share text reads as a riddle
+     and the recipient must parse the URL slug. The correct gate is whether
+     the caption contains the idea's title, not whether it says "going as".
+     Captions that already name the costume keep their flavor verbatim. */
+  if (cap.toLowerCase().indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
   return line + " " + cap;
 }
 /* 2026-09-25 pantry-aware experiment helpers. PANTRY_MATS is the regenerated
@@ -2245,15 +2246,26 @@ function thumbArm(){
     return v;
   } catch(_){ return "photo"; }
 }
+function proofCount(){
+  /* Red-team 2026-09-26: the E-arm share copy hardcoded "165 people" while
+     the Monday proof-strip cron rewrites the hero number. Read the live hero
+     count so the share text can never contradict the site; the hardcoded
+     value is only a fallback for contexts without the hero in the DOM. */
+  try {
+    var el = document.getElementById("hero-proof");
+    if (el){ var m = /(\d[\d,]*)/.exec(el.textContent || ""); if (m) return m[1]; }
+  } catch(e){}
+  return "165";
+}
 function shareAsk(person, ideaTitle){
   var v = shareVariant(), p = person || "me";
   if (v === "A") return "Take this 2-min Halloween costume quiz and see what you get: ";
   if (v === "B") return "What do you think? Take the quiz: ";
   /* Experiment 6 (stream B, 2026-09-26): new share message variants E/F.
-     E = social proof ("165 people found their costume this week").
+     E = social proof (live hero count, never a stale hardcode).
      F = curiosity gap naming the sharer's pick.
      Measure: recipient quiz starts by share_msg_variant. */
-  if (v === "E") return "165 people found their costume this week. Take the 2-min quiz: ";
+  if (v === "E") return proofCount() + " people found their costume this week. Take the 2-min quiz: ";
   if (v === "F" && ideaTitle) return "I got " + ideaTitle + " - what will you get? Take the quiz: ";
   /* Arm D falls back to the C (reciprocal) copy whenever it is not firing its
      challenge text; the challenge text itself lives in shareTextFor only. */
@@ -2274,7 +2286,7 @@ function shareTextFor(idea, sid, origin){
      broadcast. Metric: share_created + share_text_copied per pick_saved. */
   var text = challenge
     ? ("I can make " + idea.title + " tonight with stuff already in my house. What can you make with yours? Find out in 2 minutes. " + link)
-    : (shareCaptionFor(idea) + " " + shareAsk() + link);
+    : (shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + link);
   /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
      not just the costume name. Kid/family shares append the materials. */
   var aud = state.answers.q1 ? state.answers.q1.value : null;
@@ -4481,7 +4493,7 @@ function buildCastShareText(idea, list, sid){
   /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
-    ". " + shareAsk() + "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    ". " + shareAsk(null, idea.title) + "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
@@ -4913,8 +4925,8 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
         var text = fp.rawName
-          ? (fp.name + " is going as " + idea.title + " this Halloween! " + shareAsk("them") + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
-          : ("Want to do " + idea.title + " this Halloween? " + shareAsk() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
+          ? (fp.name + " is going as " + idea.title + " this Halloween! " + shareAsk("them", idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          : ("Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           rearmShare(); /* the share settled: sent or copied */
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
@@ -5262,8 +5274,10 @@ function shareLandingHeadline(idea, search){
        regex only accepted card|generic, so SMS arrivals silently lost their
        share_origin attribution in analytics.
        2026-09-26 family-vote experiment: ?o=vote marks links from the
-       results-page vote box; it must survive exactly the same way. */
-    var om = /[?&]o=(card|generic|sms|vote)/.exec(location.search || "");
+       results-page vote box; it must survive exactly the same way.
+       2026-09-26 pantry-vote experiment: ?o=pantryvote marks links from the
+       pantry house-vote box; same survival rule. */
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote)/.exec(location.search || "");
     if (om) VIA_SHARE_ORIGIN = om[1];
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
