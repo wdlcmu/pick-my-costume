@@ -726,7 +726,7 @@ footer a{color:var(--accent)}
   </section>
 
   <footer>
-    <p><a href="#" id="about-link">About this site</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/group-costumes">Group packs</a></p>
+    <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/group-costumes">Group packs</a></p>
   </footer>
 
 </div>
@@ -5723,7 +5723,7 @@ $("btn-bquiz").onclick = function(){
   Analytics.track("browse_quiz_started", {});
   $("btn-start").onclick();
 };
-$("about-link").onclick = function(e){ e.preventDefault(); show("s-about"); };
+/* about-link now navigates to the live /about page; the in-page s-about screen is retired. */
 $("btn-about-start").onclick = $("btn-start").onclick;
 $("btn-about-back").onclick = function(){ show("s-hero"); };
 
