@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="p:domain_verify" content="062f4d083666a1abd25ae0471080c9f7">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pick My Costume - A few quick questions. Three costume ideas.</title>
 <meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
@@ -123,6 +124,9 @@ body{
 .moonpanel .mp-fun{color:var(--accent);font-weight:600}
 /* Billy 2026-09-26: hero rewrite (BuzzFeed confident-challenge headline). */
 .billyline{margin:8px 0 0;font-size:15px;color:var(--text)}
+/* Billy 2026-09-26 (landing refresh): hero copy lines. */
+.makerline{margin:-18px 0 26px;font-style:italic}
+.honestline{margin:10px 0 0}
 /* Billy 2026-09-26: tabbed Discover feed. One section, three collections,
    kills the stacked-rails CTA overload. */
 .chiprow{display:flex;gap:8px;margin:8px -16px 0;padding:2px 16px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -168,6 +172,26 @@ body{
 .proofrow::-webkit-scrollbar{display:none}
 /* Billy 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
+/* Billy 2026-09-26 (landing refresh): proof-card entrance. A soft staggered
+   fade-up on first paint only; the .fresh gate below is retired by JS ~1.2s
+   after load, so Discover tab switches (un-hiding a row restarts its cards'
+   CSS animations) never replay the stagger. Scoped to .proofstrip so the kids
+   rail and the detail "more like this" rail keep their static look. Cards are
+   already 128px (tabbed-feed work), so no size change here. */
+@keyframes cardin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.proofstrip.fresh .proofrow a{animation:cardin .45s ease-out backwards}
+.proofstrip.fresh .proofrow a:nth-child(2){animation-delay:.06s}
+.proofstrip.fresh .proofrow a:nth-child(3){animation-delay:.12s}
+.proofstrip.fresh .proofrow a:nth-child(4){animation-delay:.18s}
+.proofstrip.fresh .proofrow a:nth-child(5){animation-delay:.24s}
+.proofstrip.fresh .proofrow a:nth-child(6){animation-delay:.30s}
+.proofstrip.fresh .proofrow a:nth-child(7){animation-delay:.36s}
+.proofstrip.fresh .proofrow a:nth-child(8){animation-delay:.42s}
+/* D1 hook (landing refresh): the "New this week" badge on browse-shelf cards.
+   Text uses --accent-ink (not white): white on the orange accent fails
+   contrast, and the codebase already pairs accent backgrounds with accent-ink
+   (see .chip.on). */
+.newbadge{position:absolute;top:18px;left:18px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 .proofrow a{flex:0 0 128px;scroll-snap-align:start;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
 .proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
 .proofrow span{display:block;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;color:var(--text);text-align:center;padding:6px 6px;line-height:1.3;font-weight:600;min-height:31px}
@@ -373,6 +397,13 @@ footer a{color:var(--accent)}
 @media (prefers-reduced-motion: reduce){
   .returnhero{animation:none}
   .hero .halo,.detail-sky .halo{animation:none;opacity:.75}
+  /* Billy 2026-09-26 (landing refresh): the card-entrance stagger stills too,
+     plus the pre-existing .screen fadein and any Discover tab-switch motion.
+     This block sits AFTER every rule it overrides: at equal specificity the
+     later rule wins, so placing it earlier would silently fail (QA 2026-09-26). */
+  .proofstrip.fresh .proofrow a{animation:none}
+  .screen.on{animation:none}
+  .proofrow{transition:none}
 }
 .fine{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 /* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
@@ -384,7 +415,7 @@ footer a{color:var(--accent)}
 .examplebox p:last-child{margin-bottom:0}
 .ex-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px}
+.bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px;position:relative}
 .bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
 .bcard h3{margin:0 0 4px;font-size:17px}
 .bcard p{margin:0;font-size:14px;color:var(--muted)}
@@ -504,8 +535,10 @@ footer a{color:var(--accent)}
       </div>
       <h1 class="firstonly">We know your Halloween costume.</h1>
       <p class="tagline firstonly">5 questions to see if we're right.</p>
+      <p class="fine makerline firstonly">I'm a dad who burned a whole evening scrolling costume ideas, so I had AI build this quiz instead.</p>
       <p class="billyline firstonly">Still don't have a costume? Same. Let's fix that in 2 minutes.</p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
+      <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
       <!-- Experiment 8 (stream B, 2026-09-26): quiz start social proof.
            2026-09-26 honesty fix: the "165 people found their costume this
            week" claim was unverifiable (no derivation script, Monday cron
@@ -576,6 +609,14 @@ footer a{color:var(--accent)}
             <a href="/c/fossil-hunter" role="listitem"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
           </div>
         </div>
+        <!-- Billy 2026-09-26 (landing refresh, proof-strip v2): the planned
+             "Most-saved this week: Snow Sisters" anchor line was dropped in QA
+             (2026-09-26): the tabbed feed's rank pills (already shipped) say
+             the same thing on the card itself, so the text line read as
+             repetition to a cold user. The living-feed honesty line stays: it
+             makes staleness visible instead of dishonest. Refresh the rank
+             pills + this line with the Monday cron. -->
+        <p class="fine" style="margin:12px 0 0">Live from this week, refreshed Mondays.</p>
       </div>
       <!-- 2026-09-26 "Most wanted by kids" merchandising rail: perennial kid
            favorites with generic names only (never licensed character names).
@@ -974,25 +1015,31 @@ function recoverShouldShow(rec, snoozedAt, nowMs){
    was gone. Every answered question now saves pmc_quiz_v1 {answers, at}.
    A return visit with answers but no completion gets one slim banner above
    the hero: "Pick up where you left off?" Continue restores the saved
-   answers and resumes at the first unanswered question; Not now dismisses
-   for this visit. Purely additive: finishers never see it (finishQuiz clears
+   answers and resumes at the first unanswered question; Not now snoozes
+   for 7 days (pmc_resume_snooze_v1), matching the recovery nudge and rally
+   banner. Purely additive: finishers never see it (finishQuiz clears
    the marker), one-session users are untouched, and any query string (?s=
    arrivals, ?pick= detail views) suppresses the banner so recipients keep
    the normal recipient experience. Answers never leave the device; the
    resume events carry counts only. Pure core (quizResumeShouldShow,
    quizResumeIndex) is unit-tested by hour-session/quiz-resume-gate.js. */
 var QUIZ_RESUME_MAX_AGE_MS = 30*24*60*60*1000;
-function quizResumeShouldShow(saved, nowMs){
+var QUIZ_RESUME_SNOOZE_MS = 7*24*60*60*1000;
+function quizResumeShouldShow(saved, snoozedAt, nowMs){
   if (!saved || !saved.answers || !saved.at) return false;
   if (Object.keys(saved.answers).length === 0) return false;
+  if (snoozedAt && (nowMs - snoozedAt) < QUIZ_RESUME_SNOOZE_MS) return false;
   if ((nowMs - saved.at) > QUIZ_RESUME_MAX_AGE_MS) return false;
   return true;
 }
 function quizResumeSave(){
   /* Called after each answered question, once the answer set is cleaned for
      the current flow. finishQuiz clears the marker, so its presence always
-     means "abandoned mid-quiz". */
+     means "abandoned mid-quiz". Active quiz engagement also re-arms the
+     banner: a fresh quiz abandoned later gets its own nag, not the old
+     "Not now" snooze. */
   store("pmc_quiz_v1", {answers: state.answers, at: Date.now()});
+  clearK("pmc_resume_snooze_v1");
 }
 function quizResumeIndex(){
   /* First question in the current flow with no answer. -1 when everything
@@ -1000,6 +1047,47 @@ function quizResumeIndex(){
   var order = flowOrder();
   for (var i = 0; i < order.length; i++) if (!state.answers[order[i]]) return i;
   return -1;
+}
+
+/* ================= Halloween-week sender rally (2026-09-26 evening) ======
+   Gap: every share nudge is event-driven (save, arrival) or
+   experiment-gated. During the Oct 25-31 decision crunch, past visitors
+   with a saved pick get one honest date-gated hero line reusing the real
+   daysToHalloween() count: "Halloween is N days away. Your pick is saved.
+   Send it to the group chat." Time-boxed by construction: rallyInWindow
+   checks the VISITOR's local calendar date, so it shows Oct 25-31 only and
+   vanishes Nov 1 on its own. No countdown fudging, no fake scarcity.
+   Targeting reuses the saved-pick marker (pmc_recover_v1), so the audience
+   is exactly "saved a pick"; an active recovery "Not now" snooze also
+   suppresses the rally (no double-nagging), and the rally has its own
+   7-day snooze (pmc_rally_snooze_v1). Any query string suppresses it:
+   ?s= share arrivals keep the friend banner, ?pick= views already have
+   the share row. Runs last among the hero banners and yields when the
+   recovery or resume banner is showing. Purely additive. The pure core
+   (rallyInWindow, rallyCopyFor, rallyShouldShow) is unit-tested by
+   hour-session/halloween-rally-gate.js. */
+var RALLY_SNOOZE_MS = 7*24*60*60*1000;
+function rallyInWindow(nowMs){
+  /* Exact calendar gate in the visitor's local time: Oct 25-31 only.
+     October has 31 days, so the lower bound is the whole test. */
+  var d = new Date(nowMs);
+  return d.getMonth() === 9 && d.getDate() >= 25;
+}
+function rallyCopyFor(nowMs){
+  /* Honest copy off the real date. Oct 31 is "today", never "1 day away". */
+  var d = new Date(nowMs);
+  if (d.getMonth() === 9 && d.getDate() === 31)
+    return "Halloween is today. Your pick is saved. Send it to the group chat.";
+  var n = daysToHalloween();
+  return "Halloween is " + n + (n === 1 ? " day" : " days") + " away. Your pick is saved. Send it to the group chat.";
+}
+function rallyShouldShow(rec, recoverSnoozedAt, rallySnoozedAt, search, nowMs){
+  if (search) return false;                    /* arrivals keep the recipient experience */
+  if (!rec || !rec.ideaId || !rec.at) return false;   /* no saved pick on record */
+  if (!rallyInWindow(nowMs)) return false;     /* Oct 25-31 local only */
+  if (rallySnoozedAt && (nowMs - rallySnoozedAt) < RALLY_SNOOZE_MS) return false;
+  if (recoverSnoozedAt && (nowMs - recoverSnoozedAt) < RECOVER_NUDGE_SNOOZE_MS) return false;
+  return true;
 }
 
 function $(id){ return document.getElementById(id); }
@@ -2475,13 +2563,27 @@ function shareCaptionFor(idea){
   else line = "I am going as " + idea.title + " this Halloween.";
   var cap = SHARE_CAPTIONS[idea.id];
   if (!cap) return line;
+  /* Audience grounding 2026-09-26: for kid/family audiences the sharer is
+     NOT the wearer, so a first-person caption ("We are going as mermaids")
+     or a subjectless "going as" ("Going as a bowl of ramen") reads as the
+     sharer in costume and kills credibility (the "do I share as a joke"
+     problem). In that case the audience-aware line stands alone. Explicit
+     third-person captions ("The whole family is going as cartoon dogs")
+     keep their flavor; couple/group/solo keep first-person voice because
+     the sharer IS going. */
+  var capLow = cap.toLowerCase();
+  if (aud === "kid" || aud === "family"){
+    var firstPerson = /\b(we|i|us|our|ours|me|my|mine|let's|i'm|we're|i've|we've)\b/i.test(cap);
+    var goingAs = capLow.indexOf("going as") !== -1;
+    var explicitThird = /^the\s/i.test(cap) && !firstPerson;
+    if ((firstPerson || goingAs) && !explicitThird) return line;
+  }
   /* Red-team 2026-09-26 (round 2): the /going as/ heuristic misfired. 47 of
      the 49 captions never name the costume ("We are going as mermaids",
      "Going as a pocketful of plush"), so the share text reads as a riddle
      and the recipient must parse the URL slug. The correct gate is whether
      the caption contains the idea's title, not whether it says "going as".
      Captions that already name the costume keep their flavor verbatim. */
-  var capLow = cap.toLowerCase();
   if (capLow.indexOf("going as") !== -1 || capLow.indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
   return line + " " + cap;
 }
@@ -4675,6 +4777,10 @@ function browseHits(idea){
   if (browseEff20){ active++; if (idea.tags && idea.tags[browseEff20] > 0) hits++; }
   return {hits: hits, active: active};
 }
+/* Billy 2026-09-26 (landing refresh): D1 hook. The 5 newest ideas wear a
+   "New this week" badge on the browse shelf so returners see something
+   changed. Retire the list when the next batch ships. */
+var NEW_THIS_WEEK = ["beekeeper-bee","tetris-duo","little-lifeguard","little-prince","fossil-hunter"];
 function browseCard(idea){
     var card = document.createElement("div");
     card.className = "bcard";
@@ -4706,6 +4812,11 @@ function browseCard(idea){
     b.style.flex = "1"; bShare.style.flex = "1";
     btnRow.appendChild(b); btnRow.appendChild(bShare);
     card.appendChild(img);
+    if (NEW_THIS_WEEK.indexOf(idea.id) >= 0){
+      var _nb = document.createElement("span");
+      _nb.className = "newbadge"; _nb.textContent = "New this week";
+      card.appendChild(_nb);
+    }
     var _tse2=trendStatEl(idea);if(_tse2)card.appendChild(_tse2);
     card.appendChild(h); card.appendChild(p);
     card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
@@ -7245,17 +7356,23 @@ function shareLandingHeadline(idea, search){
   /* Quiz-abandon resume banner (2026-09-26 evening): a return visit with an
      abandoned quiz gets one slim banner above the hero. Continue restores the
      saved answers and resumes at the first unanswered question; Not now
-     dismisses for this visit only. Any query string suppresses it: share
+     snoozes 7 days via pmc_resume_snooze_v1, matching the recovery nudge
+     and rally banner. Any query string suppresses it: share
      arrivals (?s=) keep the normal recipient experience, and ?pick= detail
-     views already have their own flow. Additive: no existing element, event,
-     or experiment is touched. Copy is plain English, no em dashes. */
+     views already have their own flow. Yields to the recovery nudge: one
+     banner at a time above the hero (a completed pick's share nudge
+     outranks resuming an abandoned quiz; resume re-offers on the next
+     visit once the snooze lapses). Additive: no existing
+     element, event, or experiment is touched. Copy is plain English, no
+     em dashes. */
   (function(){
     try {
       if (location.search) return;
       var hero = $("s-hero");
-      if (!hero || $("pmc-resume-banner") || $("pmc-friend-banner")) return;
+      if (!hero || $("pmc-resume-banner") || $("pmc-friend-banner") || $("pmc-recover-banner")) return;
       var saved = load("pmc_quiz_v1");
-      if (!quizResumeShouldShow(saved, Date.now())) return;
+      var rsnooze = load("pmc_resume_snooze_v1");
+      if (!quizResumeShouldShow(saved, rsnooze, Date.now())) return;
       /* Drop answers for questions no longer in the bank (bank edits between
          visits); an empty set means there is nothing to resume. */
       var valid = {};
@@ -7276,7 +7393,7 @@ function shareLandingHeadline(idea, search){
       go.style.cssText = "flex:1;text-align:center;font-weight:700;font-size:17px;color:#2a1500;background:#ff8c1a;border:0;border-radius:14px;padding:14px 0;display:block;cursor:pointer;";
       go.onclick = function(){
         var s2 = load("pmc_quiz_v1");
-        if (!quizResumeShouldShow(s2, Date.now())) { if (rb.parentNode) rb.parentNode.removeChild(rb); return; }
+        if (!quizResumeShouldShow(s2, load("pmc_resume_snooze_v1"), Date.now())) { if (rb.parentNode) rb.parentNode.removeChild(rb); return; }
         state = {qi: 0, answers: {}};
         state.pinpoint = null;
         Object.keys(s2.answers).forEach(function(k){ if (qById(k)) state.answers[k] = s2.answers[k]; });
@@ -7294,6 +7411,7 @@ function shareLandingHeadline(idea, search){
       no.textContent = "Not now";
       no.style.cssText = "padding:14px 20px;font-size:17px;background:rgba(0,0,0,.04);color:#333;border:2px solid #d8c9ae;border-radius:14px;cursor:pointer;";
       no.onclick = function(){
+        store("pmc_resume_snooze_v1", Date.now());
         Analytics.track("quiz_resume_dismissed", {answered_count: n});
         if (rb.parentNode) rb.parentNode.removeChild(rb);
       };
@@ -7301,6 +7419,58 @@ function shareLandingHeadline(idea, search){
       rb.appendChild(p1); rb.appendChild(row);
       hero.insertBefore(rb, hero.firstChild);
       Analytics.track("quiz_resume_shown", {answered_count: n});
+    } catch(e){}
+  })();
+  /* Halloween-week sender rally (2026-09-26 evening): during Oct 25-31
+     local, a return visit with a saved pick gets one slim banner above the
+     hero with an honest date-gated line ("Halloween is N days away. Your
+     pick is saved. Send it to the group chat." / "Halloween is today..."
+     on Oct 31). "Send it now" deep-links to ?pick=<slug>, which opens the
+     same full pick flow with the share buttons; "Not now" snoozes 7 days
+     via pmc_rally_snooze_v1. Suppressed by any query string (?s= arrivals
+     keep the friend banner), by an active recovery snooze (no
+     double-nagging), and whenever the friend, recovery, or resume banner
+     is already showing. Yields to every earlier banner; the whole thing
+     vanishes by calendar math on Nov 1. Additive: no existing element,
+     event, or experiment is touched. Copy is plain English, no em dashes. */
+  (function(){
+    try {
+      var rec0 = load("pmc_recover_v1");
+      var rsnooze = load("pmc_recover_snooze_v1");
+      var rallySnooze = load("pmc_rally_snooze_v1");
+      if (!rallyShouldShow(rec0, rsnooze, rallySnooze, location.search, Date.now())) return;
+      var hero = $("s-hero");
+      if (!hero || $("pmc-rally-banner") || $("pmc-friend-banner") || $("pmc-recover-banner") || $("pmc-resume-banner")) return;
+      var idea = null;
+      if (typeof IDEAS !== "undefined") IDEAS.forEach(function(it){ if (it.id === rec0.ideaId) idea = it; });
+      if (!idea || !idea.title) return;
+      var daysOut = daysToHalloween();
+      var rb = document.createElement("div");
+      rb.id = "pmc-rally-banner";
+      rb.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
+      var p1 = document.createElement("p");
+      p1.style.cssText = "margin:0 0 10px;font-weight:700;color:#333;line-height:1.4";
+      p1.textContent = rallyCopyFor(Date.now());
+      var row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:10px;align-items:stretch;";
+      var go = document.createElement("a");
+      go.href = "/?pick=" + encodeURIComponent(rec0.ideaId);
+      go.textContent = "Send it now";
+      go.style.cssText = "flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:17px;color:#2a1500;background:#ff8c1a;border-radius:14px;padding:14px 0;display:block;";
+      go.onclick = function(){ Analytics.track("rally_nudge_sent", {idea_id: rec0.ideaId, days_out: daysOut}); };
+      var no = document.createElement("button");
+      no.type = "button";
+      no.textContent = "Not now";
+      no.style.cssText = "padding:14px 20px;font-size:17px;background:rgba(0,0,0,.04);color:#333;border:2px solid #d8c9ae;border-radius:14px;cursor:pointer;";
+      no.onclick = function(){
+        store("pmc_rally_snooze_v1", Date.now());
+        Analytics.track("rally_nudge_dismissed", {idea_id: rec0.ideaId, days_out: daysOut});
+        if (rb.parentNode) rb.parentNode.removeChild(rb);
+      };
+      row.appendChild(go); row.appendChild(no);
+      rb.appendChild(p1); rb.appendChild(row);
+      hero.insertBefore(rb, hero.firstChild);
+      Analytics.track("rally_nudge_shown", {idea_id: rec0.ideaId, days_out: daysOut});
     } catch(e){}
   })();
   /* Pantry parity (2026-09-25): pantry.html cards deep-link here with
@@ -7407,13 +7577,19 @@ function shareLandingHeadline(idea, search){
   }
   window._pmcIsDay = (function(){ var h = new Date().getHours(); return h >= 6 && h < 18; })();
   (function paintHeroSky(){
-    if (!window._pmcIsDay) return; /* night: the static hero moon stays */
+    var cap0 = document.getElementById("mooncap");
+    /* Billy 2026-09-26 (landing refresh): the moon caption's tooltip says the
+       moon is real and changes nightly. Night-only: the day branch shows the
+       sun, so the tooltip must not leak onto it. */
+    if (!window._pmcIsDay){
+      if (cap0) cap0.setAttribute("title", "The real moon phase, new every night");
+      return; /* night: the static hero moon stays */
+    }
     var icon = document.getElementById("sky-icon");
-    var cap = document.getElementById("mooncap");
     var halo = document.getElementById("moon-halo");
     var btn = document.getElementById("moon-btn");
     if (icon) icon.innerHTML = SUN_SVG;
-    if (cap) cap.textContent = "today's sun";
+    if (cap0){ cap0.textContent = "today's sun"; cap0.removeAttribute("title"); }
     if (halo) halo.classList.add("day");
     if (btn) btn.setAttribute("title", "Today's sun: tap for details");
   })();
@@ -7509,6 +7685,16 @@ function shareLandingHeadline(idea, search){
         chip.addEventListener("click", function(){ activate(chip.getAttribute("data-tab"), chip); });
       })(chips[i]);
     }
+  })();
+  /* Billy 2026-09-26 (landing refresh): the proof-card entrance runs once on
+     first paint. The .fresh gate is retired ~1.2s after load so Discover tab
+     switches never replay the stagger (un-hiding a row restarts its cards'
+     CSS animations; QA 2026-09-26). */
+  (function(){
+    var strip = document.querySelector(".proofstrip");
+    if (!strip) return;
+    strip.classList.add("fresh");
+    setTimeout(function(){ strip.classList.remove("fresh"); }, 1200);
   })();
   /* Billy 2026-09-26: sticky mobile quiz CTA. Appears once the hero CTA
      scrolls out of view, and only on the landing screen. Stays hidden on
