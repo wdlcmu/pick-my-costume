@@ -1572,9 +1572,16 @@ var PAIR_IDEA_ID = null;
 /* 2026-09-26 costume roulette experiment: ?spin=<sender idea slug> rides
    the spin share link so the recipient banner can name the spin result. */
 var SPIN_IDEA_ID = null;
+/* 2026-09-26 collections experiment: ?src=collection-<key> marks arrivals
+   from the intent-matched collection pages (/collections/*). Carried into
+   quiz_started (and recipient_landing_viewed) as landing_src so
+   collection-driven quiz starts are measurable per collection. */
+var LANDING_SRC = null;
+(function(){ var m = /[?&]src=(collection-[a-z-]+)/.exec(location.search || ""); if (m) LANDING_SRC = m[1]; })();
 function viaShareProps(){
   var p = {};
   if (VIA_SHARE){ p.via_share_id = VIA_SHARE; if (VIA_SHARE_ORIGIN) p.share_origin = VIA_SHARE_ORIGIN; }
+  if (LANDING_SRC) p.landing_src = LANDING_SRC;
   return p;
 }
 /* Inline trending stat: the evidence for the flag, visible with no tap. */
@@ -2154,7 +2161,7 @@ function buildInstructions(idea, opts){
     if (!ins) return wrap;
     var head = document.createElement("p");
     head.className = "howto-triple";
-    head.textContent = "DIY this week \u2014 ~" + ins.cost + ", " + ins.time;
+    head.textContent = "DIY this week: ~" + ins.cost + ", " + ins.time;
     wrap.appendChild(head);
     /* Content layer 2026-09-25: sizing guidance, the fit note every parent
        asks about, right under the decision triple. */
@@ -6482,7 +6489,7 @@ function buildPersonPlans(idea, list){
     var card = document.createElement("div");
     card.className = "personplan";
     var who = document.createElement("h4");
-    var label = p.name ? (p.name + " \u2014 " + p.role) : ("Person " + (i + 1) + " \u2014 " + p.role);
+    var label = p.name ? (p.name + ": " + p.role) : ("Person " + (i + 1) + ": " + p.role);
     who.textContent = label;
     card.appendChild(who);
     /* Buy option */
@@ -6503,7 +6510,7 @@ function buildPersonPlans(idea, list){
     card.appendChild(buyP);
     /* DIY option: quick-guide steps, role in the header */
     var diyH = document.createElement("p"); diyH.className = "pp-opt";
-    diyH.textContent = "Option 2: DIY \u2014 about " + mp.cost + ", " + mp.time;
+    diyH.textContent = "Option 2: DIY, about " + mp.cost + ", " + mp.time;
     card.appendChild(diyH);
     var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
     /* Billy 2026-09-26 (copy audit fix): role-specific first DIY line for
@@ -7328,7 +7335,7 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal)/.exec(location.search || "");
     /* 2026-09-26 red-team: gift added -- openGiftFlow mints ?o=gift&gift=1 and
        its comment promises share_origin=gift on the recipient side, but the
        origin regex never recognized gift, so gift recipients arrived with no
