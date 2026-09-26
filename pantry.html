@@ -43,6 +43,13 @@
   .check .emo{font-size:17px;line-height:1}
   .chip .emo{font-size:13px}
   .actions{display:flex;gap:10px;margin:22px 0 6px}
+  .searchrow{margin:14px 0 2px}
+  .searchrow input{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--card);
+    color:var(--ink);font-size:15px;padding:13px 14px;min-height:52px;-webkit-appearance:none;appearance:none}
+  .searchrow input::placeholder{color:var(--muted)}
+  .searchrow input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .matchnote{font-size:12.5px;color:var(--muted);margin:6px 2px 0;display:none}
+  .copylist{flex:0 0 auto;min-height:0;padding:8px 14px;font-size:13px;font-weight:700}
   .btn{flex:1;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;min-height:52px}
   .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
   .stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:16px;margin:20px 0 6px}
@@ -90,6 +97,11 @@
 
   <p class="staple-note"><b>We assume every home has scissors, tape, and paper + pen.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p>
 
+  <div class="searchrow">
+    <input type="search" id="supply-search" placeholder="Type a supply, like tape or socks" aria-label="Search supplies" autocomplete="off">
+    <p class="matchnote" id="matchnote" role="status"></p>
+  </div>
+
   <div id="groups"></div>
 
   <div class="actions">
@@ -122,6 +134,7 @@ let ticked;
 try {
   ticked = new Set(JSON.parse(localStorage.getItem(LS_KEY) || 'null') || STAPLES);
 } catch (e) { ticked = new Set(STAPLES); }
+let lastUnlocks = [];
 
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -195,6 +208,62 @@ function repId(m){
 function groupOk(g){ return g.some(id => id && ticked.has(id)); }
 function reqOk(m){ return m.g.every(groupOk); }
 
+function supplyHit(labelText, q){
+  q = (q || '').toLowerCase().trim();
+  return !q || labelText.toLowerCase().indexOf(q) !== -1;
+}
+function applySearch(){
+  const input = document.getElementById('supply-search');
+  const note = document.getElementById('matchnote');
+  if (!input || !note) return;
+  const q = input.value;
+  let shown = 0, total = 0;
+  document.querySelectorAll('#groups fieldset').forEach(fs => {
+    let fsShown = 0;
+    fs.querySelectorAll('.check').forEach(lb => {
+      total++;
+      const hit = supplyHit(lb.textContent || '', q);
+      lb.style.display = hit ? '' : 'none';
+      if (hit) { shown++; fsShown++; }
+    });
+    fs.style.display = fsShown ? '' : 'none';
+  });
+  if ((q || '').trim()) {
+    note.style.display = 'block';
+    note.textContent = shown + ' of ' + total + ' supplies match';
+  } else {
+    note.style.display = 'none';
+    note.textContent = '';
+  }
+}
+function unlockLine(u){
+  const n = u.ideas.length;
+  return 'Buy ' + u.display.charAt(0).toLowerCase() + u.display.slice(1) +
+    ': unlocks ' + n + ' costume' + (n > 1 ? 's' : '') +
+    ' (' + u.ideas.slice(0, 6).join(', ') + (n > 6 ? ', +' + (n - 6) + ' more' : '') + ')';
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta); done();
+}
+function copyUnlocks(){
+  const btn = document.getElementById('copylist');
+  const text = 'Costume shopping list (Pick My Costume)\n' +
+    lastUnlocks.map(u => '- ' + unlockLine(u)).join('\n');
+  const done = function(){
+    if (!btn) return;
+    const old = btn.textContent; btn.textContent = 'Copied!';
+    setTimeout(function(){ btn.textContent = old; }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function(){ done(); }, function(){ fallbackCopy(text, done); });
+  } else { fallbackCopy(text, done); }
+}
+
 function renderGroups(){
   const host = document.getElementById('groups');
   host.innerHTML = DATA.groups.map(gr => {
@@ -216,6 +285,7 @@ function renderGroups(){
       render();
     });
   });
+  applySearch();
 }
 
 function score(it){
@@ -282,14 +352,17 @@ function render(){
   if (unlocks.length) {
     uh.hidden = false;
     uh.innerHTML = '<h2>One store trip away</h2>' +
-      '<p class="lede">Grab one of these and unlock a pile of costumes:</p>' +
+      '<p class="lede">Grab one of these and unlock a pile of costumes. ' +
+      '<button class="btn btn-ghost copylist" id="copylist" type="button">Copy shopping list</button></p>' +
       unlocks.map(u =>
         '<div class="unlock-row"><span class="n">Buy ' + esc(u.display.charAt(0).toLowerCase() + u.display.slice(1)) +
         '</span><span> &mdash; unlocks <b>' + u.ideas.length + '</b> costume' + (u.ideas.length > 1 ? 's' : '') +
         '<span class="w">' + esc(u.ideas.slice(0, 6).join(', ')) +
         (u.ideas.length > 6 ? ', +' + (u.ideas.length - 6) + ' more' : '') + '</span></span></div>'
       ).join('');
-  } else { uh.hidden = true; uh.innerHTML = ''; }
+    lastUnlocks = unlocks;
+    document.getElementById('copylist').addEventListener('click', copyUnlocks);
+  } else { uh.hidden = true; uh.innerHTML = ''; lastUnlocks = []; }
 
   const put = (id, list, emptyMsg) => {
     document.getElementById(id).innerHTML = list.length
@@ -311,6 +384,7 @@ document.getElementById('reset').addEventListener('click', () => {
 
 renderGroups();
 render();
+document.getElementById('supply-search').addEventListener('input', applySearch);
 </script>
 </body>
 </html>
