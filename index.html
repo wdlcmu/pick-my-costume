@@ -346,11 +346,11 @@ a.howto-copy{text-decoration:underline}
 /* Billy 2026-09-25: per-person cast plans (Buy + DIY per role). */
 .personplans{margin:16px 0}
 .personplans h3{font-size:17px;margin:0 0 10px}
-.personplan{background:#f8f6f0;border:1px solid #e2ddd2;border-radius:10px;padding:12px 14px;margin:0 0 12px}
+.personplan{background:#f8f6f0;border:1px solid #e2ddd2;border-radius:10px;padding:12px 14px;margin:0 0 12px;color:#2b2b2b}
 .personplan h4{font-size:15px;margin:0 0 8px}
 .pp-opt{font-weight:700;font-size:14px;margin:10px 0 4px}
 .pp-buy{font-size:14px;line-height:1.5;margin:0 0 6px}
-.pp-easy{font-size:14px;line-height:1.5;background:#eef6ee;border-radius:8px;padding:10px 12px;margin:12px 0 0}
+.pp-easy{font-size:14px;line-height:1.5;background:#eef6ee;border-radius:8px;padding:10px 12px;margin:12px 0 0;color:#2b2b2b}
 .howto-faq{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
 .howto-faq summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
 .howto-faq summary::-webkit-details-marker{display:none}
@@ -488,6 +488,10 @@ footer a{color:var(--accent)}
 .pcard-sub{color:var(--muted);font-size:14px;margin:0 0 4px}
 .pcard-send{width:100%;margin-top:10px}
 .pcard .status{margin:8px 0 0}
+/* Billy 2026-09-26: shared group photo + who's-who above individual cards. */
+.pcard-group-img{width:180px;height:180px;object-fit:cover;border-radius:12px;border:2px solid var(--line);display:block;margin:0 auto}
+.pcard-whoswho{font-size:14px;color:var(--muted);text-align:center;margin:10px 0 14px;line-height:1.5}
+.pcard-nophoto{margin-bottom:12px}
 /* Fit refinement: a quiet results-screen follow-up, not a sixth question. */
 .fitref{margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2)}
 .fitref p{margin:0 0 8px;font-size:14px}
@@ -2933,7 +2937,7 @@ function buildClosetBadge(idea){
     line.textContent = "We can check your closet for this one.";
     var sub = document.createElement("p"); sub.className = "closet-sub";
     sub.textContent = "Tell us what is already in your house. Takes about a minute, and then every costume shows what you have.";
-    var cta = document.createElement("a"); cta.className = "closet-link"; cta.href = "/pantry";
+    var cta = document.createElement("a"); cta.className = "closet-link"; cta.href = "/pantry?for=" + encodeURIComponent(idea.id);
     cta.textContent = "Check my pantry";
     cta.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: "empty"}); };
     strip.appendChild(line); strip.appendChild(sub); strip.appendChild(cta);
@@ -2950,7 +2954,7 @@ function buildClosetBadge(idea){
       need.textContent = "Still need: " + st.names.join(", ") + ".";
       strip.appendChild(need);
     }
-    var upd = document.createElement("a"); upd.className = "closet-link"; upd.href = "/pantry";
+    var upd = document.createElement("a"); upd.className = "closet-link"; upd.href = "/pantry?for=" + encodeURIComponent(idea.id);
     upd.textContent = "Update my pantry";
     upd.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: "partial"}); };
     strip.appendChild(upd);
@@ -6924,9 +6928,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       pcCards.forEach(function(c){
         var cp = fresh[c.idx];
         if (!cp) return;
-        c.head.textContent = cp.rawName ? (cp.name + " is going as " + idea.title) : ("Going as " + idea.title);
-        c.send.textContent = cp.rawName ? ("Send this card to " + cp.name) : "Send this card";
-        c.sub2.textContent = "As " + roleArt(cp.role) + ".";
+        c.head.textContent = cp.rawName ? (cp.name + " is " + roleArt(cp.role)) : ("You're " + roleArt(cp.role));
+        c.send.textContent = cp.rawName ? ("Send " + cp.name + "'s card") : "Send my card";
+        c.sub2.textContent = idea.title + " · group costume";
       });
     }
   }
@@ -6953,29 +6957,37 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     pcList.innerHTML = "";
     pcCards = [];
     Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length});
+    /* Billy 2026-09-26: one shared group photo at the top, then the who's-who
+       list, then individual cards WITHOUT the duplicate photo. */
+    var groupImg = document.createElement("img");
+    groupImg.className = "pcard-img pcard-group-img";
+    groupImg.src = "photos/" + idea.id + ".webp";
+    groupImg.alt = idea.title;
+    groupImg.setAttribute("onerror", "this.style.display='none'");
+    pcList.appendChild(groupImg);
+    var whoswho = document.createElement("div");
+    whoswho.className = "pcard-whoswho";
+    whoswho.innerHTML = "<strong>Who's who:</strong> " + list.map(function(p){
+      return p.rawName ? (p.name + " is " + roleArt(p.role)) : ("You are " + roleArt(p.role));
+    }).join(" · ");
+    pcList.appendChild(whoswho);
     list.forEach(function(p, idx){
       var card = document.createElement("div");
-      card.className = "pcard";
-      var img = document.createElement("img");
-      img.className = "pcard-img";
-      img.src = "photos/" + idea.id + ".webp";
-      img.alt = idea.title;
-      img.setAttribute("onerror", "this.style.display='none'");
-      var ailab = document.createElement("div");
-      ailab.textContent = "AI-generated concept photo";
-      ailab.style.cssText = "font-size:10px;color:#9a8fb8;margin-top:2px;";
+      card.className = "pcard pcard-nophoto";
       var head = document.createElement("div");
       head.className = "pcard-head";
-      /* Reddit 2026-09-25: a blank name must never render "Person 1" on a
+      /* Billy 2026-09-26: lead with the INDIVIDUAL role, not the group title.
+         The card is "your card" for your specific character; the group is context.
+         Reddit 2026-09-25: a blank name must never render "Person 1" on a
          card a friend will see. Unnamed cards use the recruit frame. */
-      head.textContent = p.rawName ? (p.name + " is going as " + idea.title)
-                                   : ("Going as " + idea.title);
+      head.textContent = p.rawName ? (p.name + " is " + roleArt(p.role))
+                                   : ("You're " + roleArt(p.role));
       var sub2 = document.createElement("p");
       sub2.className = "pcard-sub";
-      sub2.textContent = "As " + roleArt(p.role) + ".";
+      sub2.textContent = idea.title + " · group costume";
       var send = document.createElement("button");
       send.type = "button"; send.className = "cta pcard-send";
-      send.textContent = p.rawName ? ("Send this card to " + p.name) : "Send this card";
+      send.textContent = p.rawName ? ("Send " + p.name + "'s card") : "Send my card";
       var st2 = document.createElement("p");
       st2.className = "status";
       /* The CTA says "Send", so it sends: the native share sheet where the
@@ -6992,7 +7004,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
         var text = fp.rawName
-          ? (fp.name + " is going as " + idea.title + " this Halloween! " + shareAsk("them", idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          ? (fp.name + " is " + roleArt(fp.role) + " in our " + idea.title + " group this Halloween! " + shareAsk("them", idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
           : ("Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           rearmShare(); /* the share settled: sent or copied */
@@ -7572,7 +7584,7 @@ function shareLandingHeadline(idea, search){
       pb.style.width = "100%";
       pb.style.marginTop = "8px";
       pb.textContent = "What do I have at home?";
-      pb.onclick = function(){ location.href = "/pantry"; };
+      pb.onclick = function(){ location.href = "/pantry?for=" + encodeURIComponent(idea.id); };
       box.appendChild(pb);
     }
     var _howtoS = buildInstructions(idea, {via: "share_landing"});
