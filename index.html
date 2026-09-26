@@ -596,6 +596,7 @@ footer a{color:var(--accent)}
         <p class="fine" style="margin:0 0 8px">The roulette says:</p>
         <div id="spin-media" aria-hidden="true"></div>
         <h3 id="spin-title" style="margin:8px 0 4px"></h3>
+        <style>#spin-title.spinning::after{content:"";display:inline-block;width:14px;height:14px;margin-left:8px;vertical-align:-2px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spinrot 0.7s linear infinite}@keyframes spinrot{to{transform:rotate(360deg)}}</style>
         <p class="fine" id="spin-triple" style="margin:0 0 6px"></p>
         <p class="blurb" id="spin-blurb" style="margin:0 0 8px"></p>
         <p id="spin-announce" role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"></p>
@@ -2422,7 +2423,19 @@ var SHARE_CAPTIONS = {
   "pixel-ghost": "Retro ghost. Eight bits of spooky."
 };
 function shareCaptionFor(idea){
-  var line = "I am going as " + idea.title + " this Halloween.";
+  /* Billy 2026-09-26: the old default "I am going as X" made group/family
+     picks read as a joke (a grown man sharing "I am going as Mermaid Crew"
+     laughed instead of sharing). The caption now follows who the quiz was
+     for, and a custom caption that already carries its own going-as voice
+     stands alone: prepending the default line produced contradictions like
+     "I am going as Mermaid Crew. We are going as mermaids." */
+  var aud = (state.answers.q1 && state.answers.q1.value) || "solo";
+  var line;
+  if (aud === "kid") line = "The quiz picked " + idea.title + " for my kid this Halloween.";
+  else if (aud === "family") line = "The quiz picked " + idea.title + " for our family this Halloween.";
+  else if (aud === "couple") line = "We are going as " + idea.title + " this Halloween.";
+  else if (aud === "group") line = "We are going as " + idea.title + " this Halloween.";
+  else line = "I am going as " + idea.title + " this Halloween.";
   var cap = SHARE_CAPTIONS[idea.id];
   if (!cap) return line;
   /* Red-team 2026-09-26 (round 2): the /going as/ heuristic misfired. 47 of
@@ -2431,7 +2444,8 @@ function shareCaptionFor(idea){
      and the recipient must parse the URL slug. The correct gate is whether
      the caption contains the idea's title, not whether it says "going as".
      Captions that already name the costume keep their flavor verbatim. */
-  if (cap.toLowerCase().indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
+  var capLow = cap.toLowerCase();
+  if (capLow.indexOf("going as") !== -1 || capLow.indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
   return line + " " + cap;
 }
 /* Novel-find 2026-09-26 (BuzzFeed Spirit Halloween Costume Generator):
@@ -2928,16 +2942,31 @@ function startSpin(source){
   $("spin-triple").textContent = "";
   $("spin-blurb").textContent = "";
   $("spin-announce").textContent = "Spinning.";
-  var ticks = 0;
-  var timer = setInterval(function(){
-    var r = IDEAS[Math.floor(Math.random() * IDEAS.length)];
-    titleEl.textContent = r.title;
-    if (++ticks >= 8){
-      clearInterval(timer);
-      renderSpinResult(target);
-      again.disabled = false; shareBtn.disabled = false;
-    }
-  }, 70);
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  titleEl.classList.add("spinning");
+  if (reduceMotion){
+    titleEl.classList.remove("spinning");
+    renderSpinResult(target);
+    again.disabled = false; shareBtn.disabled = false;
+  } else {
+    /* Billy 2026-09-26: slow it down and make it feel like a real wheel --
+       fast first, then winding down. Ease-out quad on the interval:
+       ~70ms -> ~350ms over 14 ticks, about 3.7s total. */
+    var ticks = 0, maxTicks = 14, t0 = 70, t1 = 350;
+    (function tick(){
+      var r = IDEAS[Math.floor(Math.random() * IDEAS.length)];
+      titleEl.textContent = r.title;
+      if (++ticks >= maxTicks){
+        titleEl.classList.remove("spinning");
+        renderSpinResult(target);
+        again.disabled = false; shareBtn.disabled = false;
+        return;
+      }
+      var p = ticks / maxTicks;
+      var eased = 1 - Math.pow(1 - p, 2);
+      setTimeout(tick, t0 + (t1 - t0) * eased);
+    })();
+  }
 }
 $("btn-spin").onclick = function(){
   startSpin("explore");
@@ -3558,7 +3587,15 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
-    note.textContent = "\u2713 You\u2019re going as " + idea.title;
+    /* Billy 2026-09-26: "You're going as X" read as a joke for family/group
+       picks. The confirmation follows who the quiz was for. */
+    var _aud = (state.answers.q1 && state.answers.q1.value) || "solo";
+    note.textContent = "\u2713 " + (
+      _aud === "kid" ? "Your kid\u2019s going as " + idea.title :
+      _aud === "family" ? "Your family\u2019s going as " + idea.title :
+      _aud === "couple" ? "You two are going as " + idea.title :
+      _aud === "group" ? "You\u2019re all going as " + idea.title :
+      "You\u2019re going as " + idea.title);
     var planBox = document.createElement("div");
     if (pick && pick.ideaId === idea.id) note.style.display = "block";
     var status = document.createElement("p"); status.className = "status";
@@ -3806,6 +3843,9 @@ function renderResults(results){
      otherwise). Sits right under the duel box / #1 pick. */
   var pairBox = buildPairBox(results[0].idea);
   if (pairBox) box.appendChild(pairBox);
+  /* 2026-09-26 pair-share relocation: one calm next-step, tied to the #1
+     pick, rendered once under the hero card (never inside share blocks). */
+  box.appendChild(buildPairShareStep(results[0].idea));
   /* Runners-up: compact cards; one shared full-width detail below the grid. */
   var ru = document.createElement("div");
   ru.style.marginTop = "16px";
@@ -5348,59 +5388,11 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
     cur = makeShare(); ta.value = cur.text;
   };
   trow.appendChild(bteaser);
-  /* 2026-09-26 pair-share experiment: "Find my +1's costume". A second
-     full-width ghost row under the teaser button (above the gift row, which
-     landed later); the existing three-button layout is untouched. Mirrors
-     the teaser machinery exactly: native sheet
-     when available, clipboard fallback on desktop, share_created only on a
-     resolved share, a dismissed sheet counts as a cancel. The manual-copy
-     textarea listener already parses ?o= from the copied text, so "pair"
-     attributes correctly with no change there. */
-  var prow = document.createElement("div"); prow.className = "row"; prow.style.marginTop = "8px";
-  var bpair = document.createElement("button");
-  bpair.type = "button"; bpair.className = "ghost";
-  bpair.style.width = "100%";
-  bpair.textContent = "Find my +1's costume";
-  bpair.onclick = function(){
-    var rearmShare = armShareOnce(bpair);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sid = newShareId();
-    var sh = {sid: sid, text: pairTextFor(idea, sid), challenge: false};
-    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
-    function doneShare(ok, msg){
-      st.textContent = msg;
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
-      if (ok){
-        /* E8: the first share landed -- invite a second one. */
-        label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "pair", share_msg_variant: shareVariant()}, xp()));
-        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "pair"}, xp()));
-        /* The share landed: the AI plan is the immediate now-what. */
-        if (typeof onShared === "function") onShared();
-      }
-    }
-    function copyFallback(){
-      doCopy(sh.text, function(ok, msg){
-        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "pair"}, xp()));
-        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-      });
-    }
-    /* Phone: native share sheet. Fires share_created only when the share resolves;
-       a dismissed sheet is a cancel, not a share, so it fires nothing. */
-    var usedNative = false;
-    if (navigator.share){
-      try {
-        usedNative = true;
-        navigator.share({title: "Pick My Costume", text: sh.text, url: link}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){ usedNative = false; }
-    }
-    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
-    cur = makeShare(); ta.value = cur.text;
-  };
-  prow.appendChild(bpair);
+  /* 2026-09-26 pair-share relocation: the "Find my +1's costume" row used to
+     live here, repeated inside every share block (results cards, browse
+     detail, cast panels). It now lives once as a calm next-step on the quiz
+     results page (buildPairShareStep, called from renderResults). This block
+     keeps only the teaser row and the gift row. */
   var st = document.createElement("p"); st.className = "status";
   function makeShare(){
     var sid = newShareId();
@@ -5464,7 +5456,6 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   container.appendChild(ta);
   container.appendChild(row);
   container.appendChild(trow);
-  container.appendChild(prow);
   /* 2026-09-26 gift experiment: "Pick for a friend." Full-width ghost row
      under the teaser row; opens the gift mini-flow (openGiftFlow, below). */
   var grow = document.createElement("div"); grow.className = "row"; grow.style.marginTop = "8px";
@@ -5478,6 +5469,67 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
   /* E17: lets the cast panel refresh the preview text without rebuilding the row. */
   return { refresh: function(){ cur = makeShare(); ta.value = cur.text; } };
+}
+
+/* ================= PAIR-SHARE RELOCATION (2026-09-26) =================
+   One calm next-step on the quiz results page. The "Find my +1's costume"
+   button used to be a repeated full-width row inside every addCopyShareRow
+   share block (results cards, browse detail, cast panels); it now renders
+   exactly once, under the #1 pick, as a quiet next step. Mechanics are
+   unchanged: same pairTextFor share text, same ?s=&o=pair&pair= recipient
+   link, same native-sheet/clipboard behavior, same analytics (share_created
+   with share_origin "pair", share_text_copied, second_share_created). The
+   old in-card behavior also rewrote the share label and revealed the AI
+   plan on success; the calm step just confirms ("Shared.") and stops --
+   no repeated prompts. */
+function buildPairShareStep(idea){
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "pair-share-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Going with someone?";
+  var p = document.createElement("p");
+  p.textContent = "Share your pick. They take the quiz and get a costume that pairs with yours.";
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "ghost"; b.style.width = "100%";
+  b.textContent = "Find my +1's costume";
+  var st = document.createElement("p"); st.className = "status";
+  b.onclick = function(){
+    var rearmShare = armShareOnce(b);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var sh = {sid: sid, text: pairTextFor(idea, sid), challenge: false};
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "pair", share_msg_variant: shareVariant()});
+        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "pair"});
+      }
+    }
+    function copyFallback(){
+      doCopy(sh.text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sh.sid, share_origin: "pair"});
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    /* Phone: native share sheet. Fires share_created only when the share
+       resolves; a dismissed sheet is a cancel, not a share. */
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: sh.text, url: link}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+  };
+  wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(b); wrap.appendChild(st);
+  return wrap;
 }
 
 /* ================= GIFT EXPERIMENT (2026-09-26) =================
