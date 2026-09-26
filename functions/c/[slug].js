@@ -113,6 +113,10 @@ export function onRequest(context) {
      card-vs-generic and SMS experiments. Preserve o like the top CTA does. */
   var _o = _qp.get("o") || "";
   if (_o) _qz.set("o", _o);
+  /* 2026-09-26 duel experiment: on share arrivals, carry the sender's
+     canonical idea slug so the quiz results page can render the
+     "you vs your friend" compare panel and close the quiz return leg. */
+  if (_s) _qz.set("duel", slug);
   var quizTarget = "/?" + _qz.toString();
   var quizTargetAttr = quizTarget.replace(/&/g, "&amp;");
   /* Static guide body: the same HTML for every visitor (curl fetchers, AI
