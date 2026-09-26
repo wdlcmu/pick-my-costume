@@ -226,6 +226,7 @@ a.howto-copy{text-decoration:underline}
 .howto-quick-steps{margin:0 0 10px;padding-left:20px}
 .howto-quick-steps li{margin:0 0 8px;font-size:15px;line-height:1.45}
 .howto-tip{margin:4px 0 0;font-size:14px;color:var(--muted);font-style:italic}
+.howto-safety{margin:8px 0 0;font-size:13px;color:#b3261e;line-height:1.45}
 /* Billy 2026-09-25: per-person cast plans (Buy + DIY per role). */
 .personplans{margin:16px 0}
 .personplans h3{font-size:17px;margin:0 0 10px}
@@ -490,6 +491,7 @@ footer a{color:var(--accent)}
     <div id="d-card"></div>
     <div class="navrow" style="margin-top:16px">
       <button class="ghost" id="btn-dback" type="button">&larr; Back to browse</button>
+      <button class="ghost" id="btn-dhome" type="button">⌂ Home</button>
     </div>
   </section>
 
@@ -1334,6 +1336,10 @@ function whyLine(scored, idx){
     var a = state.answers[qid];
     return (a && a.tags) ? Object.keys(a.tags)[0] : null;
   }
+  function answerLabel(qid){
+    var a = state.answers[qid];
+    return (a && a.label) ? a.label : null;
+  }
   /* Effort honesty (critic 2026-09-25 P5): the effort fragment describes the
      COSTUME, not the user's answer. ideaEffortKey reads the idea's own
      couch/crafty/allout tags; using the q4 answer here once claimed
@@ -1342,6 +1348,15 @@ function whyLine(scored, idx){
   if (e) dyn.push(e[v]);
   if (o) dyn.push(o[v]);
   var tail = dyn.length ? " " + dyn.join(", ") + "." : "";
+  /* Billy 2026-09-26 red-team P1: the line never cited the two double-weighted
+     answers (vibe + interest), so it felt generic. Folded into tail so the
+     return stays `idea.why + tail` (why-lint check 5). */
+  var personal = [];
+  var vibe = answerLabel("q2");
+  if (vibe) personal.push("you picked " + vibe.toLowerCase());
+  var interest = answerLabel("qinterest");
+  if (interest && interest !== "Surprise me") personal.push("into " + interest.toLowerCase());
+  if (personal.length) tail += " Picked because " + personal.join(" and ") + ".";
   return "Why this fits you: " + idea.why + tail;
 }
 
@@ -1590,6 +1605,20 @@ function buildInstructions(idea, opts){
       tp.className = "howto-tip";
       tp.textContent = "Tip: " + firstSentence(tip);
       wrap.appendChild(tp);
+    }
+    /* Billy 2026-09-26 red-team P1: safety steps were stripped from the app
+       with no path to the full guide (87/137 have them). They render here as
+       a compact safety block, not counted in the 5 steps. */
+    var safeties = [];
+    ins.s.forEach(function(s){
+      var a = adaptStep(s);
+      if (a !== null && /^Safety:\s*/i.test(a)) safeties.push(a.replace(/^Safety:\s*/i, "").trim());
+    });
+    if (safeties.length){
+      var sp = document.createElement("p");
+      sp.className = "howto-safety";
+      sp.textContent = "Safety: " + safeties.join(" ");
+      wrap.appendChild(sp);
     }
     return wrap;
   }
