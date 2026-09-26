@@ -466,7 +466,7 @@ footer a{color:var(--accent)}
 .bsticky .bcount{margin:2px 0 6px}
 /* One-hero results: the #1 idea is the answer; runners-up stay compact. */
 .hero12{border:3px solid var(--accent);border-radius:16px;padding:14px;background:var(--bg2)}
-/* Shareable result card: "Your 2026 Halloween costume." The kicker names the
+/* Shareable result card: "Your <year> Halloween costume." The kicker names the
    year so screenshots feel current; the fact row answers the four questions
    every recipient asks (vibe, build time, budget, difficulty) at a glance. */
 .rkicker{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:0 0 8px}
@@ -492,6 +492,21 @@ footer a{color:var(--accent)}
 .pcard-group-img{width:180px;height:180px;object-fit:cover;border-radius:12px;border:2px solid var(--line);display:block;margin:0 auto}
 .pcard-whoswho{font-size:14px;color:var(--muted);text-align:center;margin:10px 0 14px;line-height:1.5}
 .pcard-nophoto{margin-bottom:12px}
+/* Billy 2026-09-26: "Try it on" face preview on personal cards.
+   Private by design: the photo never leaves the phone. */
+.pcard-tryon{width:100%;margin-top:8px}
+.tryon-ov{position:fixed;inset:0;z-index:1000;background:rgba(10,6,24,.94);display:flex;align-items:flex-start;justify-content:center;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tryon-card{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;width:100%;max-width:520px;text-align:center;margin:auto 0}
+.tryon-card h3{margin:0 0 4px;font-size:20px}
+.tryon-stage{position:relative;width:100%;border-radius:12px;overflow:hidden;border:2px solid var(--line);touch-action:none;margin:10px 0;background:var(--bg2)}
+.tryon-stage canvas{display:block;width:100%;height:auto}
+.tryon-privacy{font-size:13px;color:#7ddfa0;background:#1e3a2a;border:1px solid #2d5a3d;border-radius:8px;padding:8px 10px;margin:10px 0;text-align:left}
+.tryon-row{display:flex;gap:10px;margin-top:10px}
+.tryon-row .cta,.tryon-row .ghost{flex:1;min-height:52px;font-size:16px;padding:12px 16px}
+.tryon-slider{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin-top:10px}
+.tryon-slider input{flex:1;min-height:44px}
+.tryon-hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.tryon-status{min-height:20px;font-size:14px;margin:8px 0 0}
 /* Fit refinement: a quiet results-screen follow-up, not a sixth question. */
 .fitref{margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2)}
 .fitref p{margin:0 0 8px;font-size:14px}
@@ -1767,6 +1782,9 @@ function scoreIdeas(full){
     }
     pool = _barPool;
   }
+  /* Time/budget constraint refinement (2026-09-26): the results-screen chips
+     hard-filter the pool. Same <3 relaxation as the interest/vibe filters. */
+  pool = applyConstraints(pool);
   /* Vibe-vs-interest resolution (Billy 2026-09-25: "wasn't actually scary tho
      I picked scary"): when the pool holds an idea matching BOTH the picked
      vibe and the picked interest, the vibe promise is absolute -- a non-vibe
@@ -2364,7 +2382,7 @@ function buildInstructions(idea, opts){
   return root;
 }
 /* ================= SHAREABLE RESULT CARD =================
-   The hero result is "Your 2026 Halloween costume": kicker, big visual,
+   The hero result is "Your <year> Halloween costume": kicker, big visual,
    fit reasons grounded in the user's actual answers, and a fact row
    (vibe / build time / budget / difficulty). Share captions are punchy,
    group-chat-ready lines per idea; the fallback stays plain. The loop
@@ -2444,6 +2462,47 @@ function planIsTonightReady(idea){
   /* "Tonight-Ready": the make-plan builds in 30 minutes or less, end to end. */
   var mins = planMinutes(idea);
   return mins !== null && mins <= 30;
+}
+function planCostMax(idea){
+  /* Parses "~$8" / "~$10 total" / "~$10 each" / "~$0-10 total" to the max
+     dollar figure; null when unparseable. "each" is taken at face value
+     (per costume); group headcounts are unknown to the quiz. */
+  if (typeof MAKE_PLANS === "undefined") return null;
+  var p = MAKE_PLANS[idea.id];
+  if (!p || !p.cost) return null;
+  var m = String(p.cost).match(/~?\$(\d+(?:\.\d+)?)(?:-(\d+(?:\.\d+)?))?/);
+  if (!m) return null;
+  return m[2] ? parseFloat(m[2]) : parseFloat(m[1]);
+}
+/* 2026-09-26 constraint refinement (CHC Costume Wizard steal, adapted): the
+   Wizard asks time and money budget as first-class questions and then ignores
+   them in results; we ask as results-screen chips (Billy's 5-max keeps them
+   out of the quiz; the q3 budget question was cut 2026-09-23 after moving
+   outcomes on only 4.5% of kid paths) and hard-filter on them honestly.
+   Same <3 relaxation as the interest/vibe filters: a constraint that would
+   leave fewer than 3 ideas does not apply. */
+var CONSTRAINT_CHIPS = [
+  {key:"time", max:30, label:"30 min or less"},
+  {key:"time", max:60, label:"An hour or less"},
+  {key:"budget", max:10, label:"$10 or less"}
+];
+function constraintOk(idea, c){
+  if (!c) return true;
+  if (c.timeMax != null){
+    var mins = planMinutes(idea);
+    if (mins !== null && mins > c.timeMax) return false;
+  }
+  if (c.budgetMax != null){
+    var cost = planCostMax(idea);
+    if (cost !== null && cost > c.budgetMax) return false;
+  }
+  return true;
+}
+function applyConstraints(pool){
+  var c = (typeof state !== "undefined" && state) ? state.constraints : null;
+  if (!c || (c.timeMax == null && c.budgetMax == null)) return pool;
+  var f = pool.filter(function(i){ return constraintOk(i, c); });
+  return f.length >= 3 ? f : pool;
 }
 function planIsPlotTwist(idea){
   /* "Plot Twist": the pick's strongest interest tag differs from the user's
@@ -3174,7 +3233,15 @@ function planTextFor(idea, sid, origin){
    starts per share_created, teaser vs generic. */
 function teaserTextFor(idea, sid){
   var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
-  var picked = "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is.";
+  /* Audience grounding 2026-09-26 (red-team pm3-deep): the old line always
+     said "picked my Halloween costume", but for kid/family quizzes the pick
+     is the kid's / the family's, not the sender's -- same misattribution
+     class as the shareCaptionFor fix. Mirror its audience pattern. */
+  var aud = (typeof state !== "undefined" && state.answers.q1 && state.answers.q1.value) || "solo";
+  var picked;
+  if (aud === "kid") picked = "This 2-minute quiz picked my kid's Halloween costume, and I am not telling you what it is.";
+  else if (aud === "family") picked = "This 2-minute quiz picked our family's Halloween costume, and I am not telling you what it is.";
+  else picked = "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is.";
   return picked + " Take the quiz and send me what you get: " + link;
 }
 /* 2026-09-26 micro-quiz share experiment ("Send one question"): the
@@ -4070,7 +4137,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
       _pb.textContent = _pm === 0 ? "Make tonight" : ("Needs " + _pm + (_pm === 1 ? " thing" : " things"));
       _pb.title = "Based on your pantry";
     }
-    if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your 2026 Halloween costume";card.appendChild(kc);}
+    if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your "+new Date().getFullYear()+" Halloween costume";card.appendChild(kc);}
     if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent=role||"Top pick for you";card.appendChild(tp);}
     if(idx>0&&role){var rb=document.createElement("span");rb.className="rolebadge";rb.textContent=role;card.appendChild(rb);}
     /* Role explanatory line: once per role per results screen, rendered by
@@ -4268,6 +4335,71 @@ function buildAgeRefinement(){
   wrap.appendChild(row);
   return wrap;
 }
+function top3Ids(results){ return results.slice(0,3).map(function(s){ return s.idea.id; }).join(","); }
+function scoreWithConstraint(chip, on){
+  /* Scores with one chip hypothetically toggled, without disturbing live state. */
+  var saved = state.constraints;
+  var cur = saved || {};
+  var c = { timeMax: cur.timeMax != null ? cur.timeMax : null,
+            budgetMax: cur.budgetMax != null ? cur.budgetMax : null };
+  if (chip.key === "time") c.timeMax = on ? chip.max : null;
+  else c.budgetMax = on ? chip.max : null;
+  state.constraints = (c.timeMax == null && c.budgetMax == null) ? null : c;
+  var r = scoreIdeas();
+  state.constraints = saved;
+  return r;
+}
+/* Constraint refinement chips (2026-09-26): "Short on time or money?" on the
+   results screen, following the q5kid refinement pattern. Chips toggle
+   independently and combine; tapping an active chip clears it. The row
+   renders only when toggling at least one chip would change the current top
+   3, so the chips earn their place by construction (the 2026-09-23 q3 lesson:
+   budget moved outcomes on 4.5% of kid paths and was cut). A full quiz
+   restart (state = {qi:0, answers:{}}) clears constraints; the next-kid
+   rematch keeps them (same household, same budget). */
+function buildConstraintRefinement(){
+  if (typeof state === "undefined" || !state.answers || !state.answers.q1) return null;
+  var base = top3Ids(scoreIdeas());
+  var live = CONSTRAINT_CHIPS.filter(function(ch){
+    var on = !!(state.constraints && (
+      (ch.key === "time" && state.constraints.timeMax === ch.max) ||
+      (ch.key === "budget" && state.constraints.budgetMax === ch.max)));
+    return top3Ids(scoreWithConstraint(ch, !on)) !== base;
+  });
+  if (!live.length) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "fitref";
+  var p = document.createElement("p");
+  p.textContent = "Short on time or money? Filter the picks.";
+  wrap.appendChild(p);
+  var row = document.createElement("div");
+  row.className = "row";
+  live.forEach(function(ch){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = ch.label;
+    var on = !!(state.constraints && (
+      (ch.key === "time" && state.constraints.timeMax === ch.max) ||
+      (ch.key === "budget" && state.constraints.budgetMax === ch.max)));
+    if (on) b.className = "sel";
+    (function(chip){
+      b.onclick = function(){
+        var cur = state.constraints || {};
+        var c = { timeMax: cur.timeMax != null ? cur.timeMax : null,
+                  budgetMax: cur.budgetMax != null ? cur.budgetMax : null };
+        if (chip.key === "time") c.timeMax = (c.timeMax === chip.max) ? null : chip.max;
+        else c.budgetMax = (c.budgetMax === chip.max) ? null : chip.max;
+        state.constraints = (c.timeMax == null && c.budgetMax == null) ? null : c;
+        if (typeof Analytics !== "undefined" && Analytics.track)
+          Analytics.track("constraint_applied", {time_max: c.timeMax, budget_max: c.budgetMax});
+        renderResults(scoreIdeas());
+      };
+    })(ch);
+    row.appendChild(b);
+  });
+  wrap.appendChild(row);
+  return wrap;
+}
 /* One-hero results: the #1 idea is the answer ("Here is what you got"); the
    other two render as compact cards over a single shared full-width detail.
    Tapping a runner-up opens its full card inline below the pair; only one is
@@ -4385,6 +4517,11 @@ function renderResults(results){
   if (fr) box.appendChild(fr);
   var ar = buildAgeRefinement();
   if (ar) box.appendChild(ar);
+  /* 2026-09-26 constraint refinement: time/budget chips, shown only when a
+     chip can change the top 3 (buildConstraintRefinement returns null
+     otherwise). */
+  var cr = buildConstraintRefinement();
+  if (cr) box.appendChild(cr);
   /* Hero: the #1 idea, presented as the answer. */
   var hero = document.createElement("div");
   hero.className = "hero12";
@@ -4458,7 +4595,6 @@ function renderResults(results){
         if (e.target === overlay) { overlay.style.display = "none"; overlay.innerHTML = ""; document.body.style.overflow = ""; if (window.pmcStickyUpdate) window.pmcStickyUpdate(); }
       });
     }
-    var content = document.getElementById("ru-overlay-content");
     /* Rebuild close button since we cleared innerHTML */
     overlay.innerHTML = "";
     var closeBtn = document.createElement("button");
@@ -4470,6 +4606,7 @@ function renderResults(results){
     var detailCard = buildResultCard(scored, idx + 1, load("pmc_pick_v1"), false, roleLabel(idx + 1), roleNote(idx + 1));
     cards[scored.idea.id] = detailCard;
     var contentDiv = document.createElement("div");
+    contentDiv.id = "ru-overlay-content";
     contentDiv.appendChild(detailCard);
     overlay.appendChild(contentDiv);
     overlay.style.display = "";
@@ -7246,11 +7383,21 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
           copyFallback();
         }
       };
-      card.appendChild(img);
-      card.appendChild(ailab);
       card.appendChild(head);
       card.appendChild(sub2);
       card.appendChild(send);
+      /* Billy 2026-09-26: "Try it on" face preview. See yourself in the
+         costume. 100% on-device: the photo never leaves the phone. */
+      var tryon = document.createElement("button");
+      tryon.type = "button"; tryon.className = "ghost pcard-tryon";
+      tryon.textContent = "Try it on";
+      tryon.onclick = function(){
+        /* Names typed after "Make personal cards" still count: read the live
+           inputs at tap time, not the card-build snapshot. */
+        var fp = currentList()[idx] || p;
+        openTryOn(idea, idx, fp);
+      };
+      card.appendChild(tryon);
       card.appendChild(st2);
       pcCards.push({head: head, send: send, sub2: sub2, idx: idx});
       pcList.appendChild(card);
@@ -7264,6 +7411,390 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   box.insertBefore(pcWrap, aiPlanBox);
   box.insertBefore(shareBox, aiPlanBox);
   return box;
+}
+
+/* ============================================================
+   Billy 2026-09-26: "Try it on" face preview for personal cards.
+   "See yourself in the costume." The imagine-it moment.
+
+   PRIVACY CONTRACT (hard requirements, do not weaken):
+   1. The uploaded photo loads via URL.createObjectURL (browser memory only).
+   2. It is drawn to a <canvas> (browser memory only).
+   3. Face detection uses the NATIVE FaceDetector API (built into the
+      browser, zero download, zero network). If unavailable, manual
+      positioning is used. No face data ever leaves the device.
+   4. Sharing uses navigator.share({files}): the image goes to the SHARE
+      TARGET THE USER PICKS, never to our server.
+   5. No fetch, no XHR, no sendBeacon, no WebSocket ever touches image data.
+   6. No localStorage, no sessionStorage, no IndexedDB, no cookies store it.
+   7. URL.revokeObjectURL + nulling references on remove/close.
+   8. Analytics tracks only that the feature was used, never the image.
+
+   GROUP MAPPING: detected heads in the costume photo are sorted
+   left-to-right and mapped to cast order. Person at index N gets the Nth
+   head (falling back to the first head, then to a manual default).
+   ============================================================ */
+function openTryOn(idea, personIdx, person){
+  var roleLabel = person.rawName ? (person.name + " is " + roleArt(person.role))
+                                 : ("You're " + roleArt(person.role));
+  /* ---- Modal shell ---- */
+  var ov = document.createElement("div");
+  ov.className = "tryon-ov";
+  ov.setAttribute("role", "dialog");
+  ov.setAttribute("aria-label", "Try on this costume");
+  var card = document.createElement("div");
+  card.className = "tryon-card";
+  ov.appendChild(card);
+  document.body.appendChild(ov);
+  /* Prevent the page behind from scrolling while the modal is open. */
+  var prevOverflow = document.body.style.overflow;
+  document.body.style.overflow = "hidden";
+
+  var h = document.createElement("h3");
+  h.textContent = "See yourself in the costume";
+  card.appendChild(h);
+  var sub = document.createElement("p");
+  sub.className = "tryon-hint";
+  sub.style.margin = "0 0 4px";
+  sub.textContent = roleLabel + " in " + idea.title;
+  card.appendChild(sub);
+
+  var priv = document.createElement("div");
+  priv.className = "tryon-privacy";
+  priv.innerHTML = "<strong>Private:</strong> your photo never leaves your phone. Nothing is uploaded or stored. Closing this erases it.";
+  card.appendChild(priv);
+
+  var stage = document.createElement("div");
+  stage.className = "tryon-stage";
+  var cv = document.createElement("canvas");
+  stage.appendChild(cv);
+  card.appendChild(stage);
+  var ctx = cv.getContext("2d");
+
+  var hint = document.createElement("p");
+  hint.className = "tryon-hint";
+  hint.textContent = "Upload your photo to see yourself in this costume.";
+  card.appendChild(hint);
+
+  var sizeRow = document.createElement("div");
+  sizeRow.className = "tryon-slider";
+  sizeRow.hidden = true;
+  var sizeLabel = document.createElement("span");
+  sizeLabel.textContent = "Face size";
+  var sizeSlider = document.createElement("input");
+  sizeSlider.type = "range";
+  sizeSlider.min = "40"; sizeSlider.max = "300"; sizeSlider.value = "120";
+  sizeSlider.setAttribute("aria-label", "Face size");
+  sizeRow.appendChild(sizeLabel);
+  sizeRow.appendChild(sizeSlider);
+  card.appendChild(sizeRow);
+
+  var fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.style.display = "none";
+  card.appendChild(fileInput);
+
+  var row1 = document.createElement("div");
+  row1.className = "tryon-row";
+  var uploadBtn = document.createElement("button");
+  uploadBtn.type = "button"; uploadBtn.className = "cta";
+  uploadBtn.textContent = "Upload your photo";
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button"; closeBtn.className = "ghost";
+  closeBtn.textContent = "Done";
+  row1.appendChild(uploadBtn);
+  row1.appendChild(closeBtn);
+  card.appendChild(row1);
+
+  var row2 = document.createElement("div");
+  row2.className = "tryon-row";
+  row2.hidden = true;
+  var shareBtn = document.createElement("button");
+  shareBtn.type = "button"; shareBtn.className = "cta";
+  shareBtn.textContent = "Share this";
+  var removeBtn = document.createElement("button");
+  removeBtn.type = "button"; removeBtn.className = "ghost";
+  removeBtn.textContent = "Remove photo";
+  row2.appendChild(shareBtn);
+  row2.appendChild(removeBtn);
+  card.appendChild(row2);
+
+  var statusEl = document.createElement("p");
+  statusEl.className = "tryon-status";
+  statusEl.setAttribute("role", "status");
+  card.appendChild(statusEl);
+
+  /* ---- State: all in memory, never persisted. ---- */
+  var costumeImg = null;
+  var faceImg = null;
+  var faceURL = null;
+  var face = { x: 0.5, y: 0.30, r: 0.15 };
+  var faceCrop = null;
+  var costumeFaces = [];
+  var faceDetector = null;
+  var dragging = false;
+  var dragOff = { x: 0, y: 0 };
+  var closed = false;
+
+  function track(ev, props){
+    try { if (typeof Analytics !== "undefined") Analytics.track(ev, props || {}); } catch(e){}
+  }
+  function setStatus(msg){ statusEl.textContent = msg; }
+
+  /* Native face detection. Zero download, zero network. Absent in
+     Safari/Firefox, where manual positioning is the fallback. */
+  (function initFaceDetector(){
+    try {
+      if (typeof FaceDetector !== "undefined"){
+        faceDetector = new FaceDetector({ fastMode: true, maxDetectedFaces: 10 });
+      }
+    } catch(e){ faceDetector = null; }
+  })();
+
+  function detectFaces(img){
+    if (!faceDetector) return Promise.resolve([]);
+    return faceDetector.detect(img).then(function(faces){
+      var w = img.naturalWidth || img.width;
+      var h = img.naturalHeight || img.height;
+      return faces.map(function(f){
+        var b = f.boundingBox;
+        return { x: b.x / w, y: b.y / h, w: b.width / w, h: b.height / h };
+      });
+    }).catch(function(){ return []; });
+  }
+
+  function cleanupFace(){
+    if (faceURL){ try { URL.revokeObjectURL(faceURL); } catch(e){} faceURL = null; }
+    faceImg = null;
+    faceCrop = null;
+  }
+  function close(){
+    if (closed) return;
+    closed = true;
+    cleanupFace();
+    document.body.style.overflow = prevOverflow;
+    if (ov.parentNode) ov.parentNode.removeChild(ov);
+  }
+  closeBtn.onclick = close;
+  /* Tapping the dimmed backdrop closes too. */
+  ov.addEventListener("click", function(e){ if (e.target === ov) close(); });
+
+  /* ---- Canvas compositing with feathered blending.
+     A hard circle looks like a sticker. The radial feather mask melts the
+     face into the photo so it reads as "you in the costume." ---- */
+  function draw(){
+    if (!costumeImg || closed) return;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(costumeImg, 0, 0, cv.width, cv.height);
+    if (faceImg){
+      var s, sx, sy;
+      if (faceCrop){
+        s = faceCrop.s; sx = faceCrop.sx; sy = faceCrop.sy;
+      } else {
+        s = Math.min(faceImg.naturalWidth, faceImg.naturalHeight);
+        sx = (faceImg.naturalWidth - s) / 2;
+        sy = (faceImg.naturalHeight - s) / 2;
+      }
+      var cx = face.x * cv.width;
+      var cy = face.y * cv.height;
+      var r = face.r * cv.width;
+      var d = Math.ceil(r * 2);
+      if (d < 4) return;
+      var off = document.createElement("canvas");
+      off.width = d; off.height = d;
+      var octx = off.getContext("2d");
+      if (!octx) return;
+      octx.drawImage(faceImg, sx, sy, s, s, 0, 0, d, d);
+      octx.globalCompositeOperation = "destination-in";
+      var feather = r * 0.30;
+      var grad = octx.createRadialGradient(d/2, d/2, Math.max(0, d/2 - feather), d/2, d/2, d/2);
+      grad.addColorStop(0, "rgba(0,0,0,1)");
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+      octx.fillStyle = grad;
+      octx.fillRect(0, 0, d, d);
+      ctx.drawImage(off, cx - r, cy - r, d, d);
+    }
+  }
+
+  /* ---- Costume photo ---- */
+  function loadCostume(){
+    setStatus("Loading costume...");
+    var img = new Image();
+    img.onload = function(){
+      if (closed) return;
+      costumeImg = img;
+      var maxW = 1000;
+      var scale = Math.min(1, maxW / img.naturalWidth);
+      cv.width = Math.round(img.naturalWidth * scale);
+      cv.height = Math.round(img.naturalHeight * scale);
+      costumeFaces = [];
+      detectFaces(img).then(function(found){
+        if (closed) return;
+        found.sort(function(a, b){ return a.x - b.x; });
+        costumeFaces = found;
+        /* Map this person's cast position to the detected heads,
+           left to right. Fall back to the first head, then the default. */
+        var head = found[Math.min(personIdx, found.length - 1)] || found[0];
+        if (head){
+          face.x = head.x + head.w / 2;
+          face.y = head.y + head.h / 2;
+          face.r = head.w * 0.55;
+          sizeSlider.value = String(Math.round(face.r * cv.width));
+        }
+        draw();
+      });
+      draw();
+      setStatus("");
+    };
+    img.onerror = function(){ if (!closed) setStatus("Could not load that costume photo."); };
+    /* The costume photo loads from our own site. The USER's photo is never
+       fetched from anywhere: it comes from the file picker into memory. */
+    img.src = "photos/" + idea.id + ".webp";
+  }
+
+  /* ---- Face upload: file picker straight into memory ---- */
+  uploadBtn.onclick = function(){ fileInput.click(); };
+  fileInput.onchange = function(){
+    var f = fileInput.files && fileInput.files[0];
+    if (!f) return;
+    if (!f.type || f.type.indexOf("image/") !== 0){
+      setStatus("That does not look like an image. Try another file.");
+      return;
+    }
+    cleanupFace();
+    faceURL = URL.createObjectURL(f);
+    var img = new Image();
+    img.onload = function(){
+      if (closed){ cleanupFace(); return; }
+      faceImg = img;
+      faceCrop = null;
+      detectFaces(img).then(function(found){
+        if (closed) return;
+        if (found.length){
+          found.sort(function(a, b){ return (b.w * b.h) - (a.w * a.h); });
+          var fc = found[0];
+          var iw = img.naturalWidth, ih = img.naturalHeight;
+          var pad = 0.25;
+          var side = Math.max(fc.w * iw, fc.h * ih) * (1 + pad);
+          var cxp = (fc.x + fc.w / 2) * iw;
+          var cyp = (fc.y + fc.h / 2) * ih;
+          var sxp = Math.max(0, cxp - side / 2);
+          var syp = Math.max(0, cyp - side / 2);
+          if (sxp + side > iw) sxp = iw - side;
+          if (syp + side > ih) syp = ih - side;
+          faceCrop = { sx: Math.max(0, sxp), sy: Math.max(0, syp), s: Math.min(side, iw, ih) };
+        }
+        draw();
+      });
+      if (cv.width) face.r = parseInt(sizeSlider.value, 10) / cv.width;
+      sizeRow.hidden = false;
+      row2.hidden = false;
+      hint.textContent = "Drag your face to position it. Use the slider for size.";
+      draw();
+      setStatus("");
+      /* Analytics: event name + costume only. NEVER the image. */
+      track("tryon_face_added", {idea_id: idea.id});
+    };
+    img.onerror = function(){
+      setStatus("Could not read that photo. Try another.");
+      cleanupFace();
+    };
+    img.src = faceURL;
+    fileInput.value = "";
+  };
+
+  removeBtn.onclick = function(){
+    cleanupFace();
+    sizeRow.hidden = true;
+    row2.hidden = true;
+    hint.textContent = "Photo removed. Upload again to try another.";
+    draw();
+    setStatus("Removed. Nothing was stored anywhere.");
+  };
+
+  /* ---- Drag to position (pointer events: mouse + touch) ---- */
+  function canvasPos(e){
+    var rect = cv.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height
+    };
+  }
+  function faceHit(p){
+    if (!faceImg || !cv.width) return false;
+    var dx = (p.x - face.x) * cv.width;
+    var dy = (p.y - face.y) * cv.height;
+    var r = face.r * cv.width;
+    return (dx * dx + dy * dy) <= (r * r * 1.44);
+  }
+  cv.addEventListener("pointerdown", function(e){
+    var p = canvasPos(e);
+    if (faceHit(p)){
+      dragging = true;
+      dragOff.x = p.x - face.x;
+      dragOff.y = p.y - face.y;
+      try { cv.setPointerCapture(e.pointerId); } catch(err){}
+      e.preventDefault();
+    }
+  });
+  cv.addEventListener("pointermove", function(e){
+    if (!dragging) return;
+    var p = canvasPos(e);
+    face.x = Math.min(1, Math.max(0, p.x - dragOff.x));
+    face.y = Math.min(1, Math.max(0, p.y - dragOff.y));
+    draw();
+    e.preventDefault();
+  });
+  function endDrag(){ dragging = false; }
+  cv.addEventListener("pointerup", endDrag);
+  cv.addEventListener("pointercancel", endDrag);
+
+  sizeSlider.addEventListener("input", function(){
+    if (!cv.width) return;
+    face.r = parseInt(sizeSlider.value, 10) / cv.width;
+    draw();
+  });
+
+  /* ---- Share the composite. The image goes to the share target the user
+     picks. We never see where it goes. We never upload it anywhere. ---- */
+  shareBtn.onclick = function(){
+    var rearmShare = (typeof armShareOnce === "function") ? armShareOnce(shareBtn) : function(){};
+    if (!rearmShare) return;
+    setStatus("Preparing...");
+    cv.toBlob(function(blob){
+      if (closed) return;
+      if (!blob){ setStatus("Something went wrong. Try again."); rearmShare(); return; }
+      var file = new File([blob], "my-costume.png", {type: "image/png"});
+      function doneShared(via){
+        setStatus(via === "share_sheet" ? "Shared." : "Downloaded.");
+        rearmShare();
+        track("tryon_shared", {idea_id: idea.id, via: via});
+      }
+      if (typeof navigator !== "undefined" && navigator.share &&
+          navigator.canShare && navigator.canShare({files: [file]})){
+        navigator.share({files: [file], title: "My Halloween costume"})
+          .then(function(){ doneShared("share_sheet"); })
+          .catch(function(err){
+            if (err && err.name === "AbortError"){ rearmShare(); setStatus(""); }
+            else { setStatus("Share was dismissed."); rearmShare(); }
+          });
+      } else {
+        var a = document.createElement("a");
+        var url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = "my-costume.png";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){ try { URL.revokeObjectURL(url); } catch(e){} a.remove(); }, 4000);
+        doneShared("download");
+      }
+    }, "image/png");
+  };
+
+  /* ---- Go ---- */
+  loadCostume();
+  track("tryon_opened", {idea_id: idea.id, person_index: personIdx});
 }
 
 /* Billy 2026-09-25: one tap = one share. A rapid double-tap used to invoke
