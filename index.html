@@ -121,6 +121,14 @@ body{
 .chiprow::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;background:none;border:1px solid var(--line);border-radius:999px;min-height:44px;padding:10px 18px;font-size:14px;color:var(--muted);cursor:pointer;font-family:inherit;box-sizing:border-box;white-space:nowrap}
 .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+/* 2026-09-26 closet-coverage badge: slim strip under the why-line on the
+   detail page. Quiet on purpose, it is a decision input, not a CTA. */
+.closet-badge{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:12px 0;background:rgba(0,0,0,.18)}
+.closet-badge p{margin:0 0 6px}
+.closet-badge p:last-child{margin-bottom:0}
+.closet-line{font-weight:700;font-size:15px;color:var(--ink)}
+.closet-sub,.closet-need{color:var(--muted);font-size:13px;line-height:1.45}
+.closet-link{font-size:13px;color:var(--accent);text-decoration:underline;cursor:pointer}
 .proofrow{transition:opacity .18s ease}
 /* Billy 2026-09-26: .proofrow sets display:flex, which overrides the hidden
    attribute's UA display:none -- the Discover tabs changed highlight but all
@@ -483,7 +491,7 @@ footer a{color:var(--accent)}
            collections (Trending / Make tonight / New) instead of stacked
            rails, so discovery never competes with the quiz CTA. -->
       <div class="discover" id="discover">
-        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/trending.html" style="color:var(--accent)">Top 10 nationally →</a> · <a href="/compare.html" style="color:var(--accent)">Easy classics, compared →</a></p>
+        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/trending" style="color:var(--accent)">Top 10 nationally →</a> · <a href="/compare" style="color:var(--accent)">Easy classics, compared →</a></p>
         <div class="chiprow" role="tablist" aria-label="Costume collections">
           <button class="chip on" role="tab" aria-selected="true" aria-controls="row-trending" data-tab="row-trending" type="button">Trending</button>
           <button class="chip" role="tab" aria-selected="false" aria-controls="row-tonight" data-tab="row-tonight" type="button">Make tonight</button>
@@ -2495,6 +2503,104 @@ function pantryMissing(ideaId){
   }
   return n;
 }
+/* ================= 2026-09-26 closet-coverage badge =================
+   "You already have 5 of 7 things for this." Slim strip on the detail page
+   under the why-line, scored from the VIEWER's saved pantry (pantry2,
+   pantry3 legacy). pantryTicked() reads localStorage only; this file never
+   imports a challenger's ?kit=, so the badge always scores the viewer's own
+   pantry. The walk below mirrors pantryMissing / pantry.html's score(), so
+   the have/total numbers never disagree between the detail badge and the
+   pantry cards. Analytics carries counts and state only: never material ids,
+   labels, or ticked contents. */
+var PANTRY_LABELS = {"scissors":"Scissors","tape":"Tape (any kind)","paper-pen":"Paper and pen","tape-white":"White tape","tape-silver":"Silver tape","tape-gray":"Gray tape","tape-red":"Red tape","tape-yellow":"Yellow tape","tape-black":"Black tape","glue":"Glue (any kind)","safety-pins":"Safety pins","markers":"Markers","stickers":"Stickers","foil":"Aluminum foil","balloons":"Balloons","paper-red":"Red paper","paper-yellow":"Yellow paper","paper-green":"Green paper","paper-blue":"Blue paper","paper-black":"Black paper","paper-white":"White paper","paper-orange":"Orange paper","paper-pink":"Pink paper","paper-brown":"Brown paper","paper-gray":"Gray paper","cardboard":"Cardboard / boxes","paper-bag":"Brown paper bags","paper-plates":"Paper plates","newspaper":"Newspaper","white-tshirt":"White t-shirt","tshirt":"T-shirt (any color)","black-clothes":"Black clothes","sweatsuit":"Sweatsuit","bedsheet":"Old bedsheet","pillowcase":"Pillowcase","socks":"Socks","stuffing":"Stuffing / cotton balls","headband":"Headband (any color)","red-headband":"Red headband","sunglasses":"Sunglasses","yarn":"String / yarn / ribbon","hat":"Hat (any kind)","paint-red":"Red face paint / lipstick","paint-black":"Black face paint","paint-white":"White face paint","paint-green":"Green face paint","paint-brown":"Brown face paint","paint-blue":"Blue face paint","paint-pink":"Pink face paint / blush","paint-gold":"Gold face paint","paint-purple":"Purple face paint","paint-yellow":"Yellow face paint","paint-gray":"Gray face paint","felt":"Felt (multi-color stash)","pipe-cleaners":"Pipe cleaners (multi-color pack)"}; /* id -> label, ported from pantry.html DATA.pantry */
+function pantrySaved(){
+  /* Empty state must bypass the staples fallback: a new user with nothing
+     saved gets the nudge, never a fake partial count. */
+  try {
+    var v = JSON.parse(localStorage.getItem("pantry2") || localStorage.getItem("pantry3") || "null");
+    return Array.isArray(v) && v.length > 0;
+  } catch(_){ return false; }
+}
+/* pantryScore: the pantryMissing walk returning {have,total,missing,
+   missingNames}. ticked may be passed explicitly; the badge passes the raw
+   saved set (empty when nothing is saved) so the empty-state analytics never
+   inherits the staples fallback. missingNames holds representative labels
+   for the missing materials, capped at 2, and only when every missing
+   material resolved to a label; otherwise null and the badge shows the count
+   only. Returns null when the idea has no mats entry or zero materials carry
+   any non-null pantry id (no data, no badge). */
+function pantryScore(ideaId, ticked){
+  var list = PANTRY_MATS.mats[ideaId];
+  if (!list) return null;
+  var tk = (ticked instanceof Set) ? ticked : pantryTicked();
+  var total = list.length, missing = 0, matchable = 0, names = [];
+  for (var i = 0; i < list.length; i++){
+    var mat = list[i], ok = false, hasId = false, rep = null;
+    for (var g = 0; g < mat.length && !ok; g++){
+      var grp = mat[g];
+      for (var k = 0; k < grp.length; k++){
+        var id = grp[k];
+        if (!id) continue;
+        hasId = true;
+        if (!rep && PANTRY_LABELS[id]) rep = PANTRY_LABELS[id];
+        if (tk.has(id)){ ok = true; break; }
+      }
+    }
+    if (hasId) matchable++;
+    if (!ok){ missing++; if (names.length < 2 && rep) names.push(rep); }
+  }
+  if (matchable === 0) return null;
+  return {have: total - missing, total: total, missing: missing,
+    missingNames: (missing >= 1 && missing <= 2 && names.length === missing) ? names : null};
+}
+/* closetBadgeState: pure state decision for the badge. Keeps the render dumb
+   and the journey gate behavioral. saved = pantrySaved(). */
+function closetBadgeState(ideaId, saved, ticked){
+  var sc = pantryScore(ideaId, ticked);
+  if (!sc) return null;
+  if (!saved) return {state: "empty", have: sc.have, total: sc.total, names: null};
+  if (sc.have >= sc.total) return {state: "full", have: sc.have, total: sc.total, names: null};
+  return {state: "partial", have: sc.have, total: sc.total, names: sc.missingNames};
+}
+function buildClosetBadge(idea){
+  var saved = pantrySaved();
+  var ticked = saved ? pantryTicked() : new Set();
+  var st = closetBadgeState(idea.id, saved, ticked);
+  if (!st) return null;
+  var strip = document.createElement("div");
+  strip.className = "closet-badge";
+  var line = document.createElement("p"); line.className = "closet-line";
+  if (st.state === "empty"){
+    line.textContent = "We can check your closet for this one.";
+    var sub = document.createElement("p"); sub.className = "closet-sub";
+    sub.textContent = "Tell us what is already in your house. Takes about a minute, and then every costume shows what you have.";
+    var cta = document.createElement("a"); cta.className = "closet-link"; cta.href = "/pantry";
+    cta.textContent = "Check my pantry";
+    cta.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: "empty"}); };
+    strip.appendChild(line); strip.appendChild(sub); strip.appendChild(cta);
+  } else if (st.state === "full"){
+    line.textContent = "You have everything for this one. Nothing to buy.";
+    strip.appendChild(line);
+  } else {
+    line.textContent = (st.have === 0)
+      ? "None of this one is in your pantry yet."
+      : "You already have " + st.have + " of " + st.total + " things for this.";
+    strip.appendChild(line);
+    if (st.names){
+      var need = document.createElement("p"); need.className = "closet-need";
+      need.textContent = "Still need: " + st.names.join(", ") + ".";
+      strip.appendChild(need);
+    }
+    var upd = document.createElement("a"); upd.className = "closet-link"; upd.href = "/pantry";
+    upd.textContent = "Update my pantry";
+    upd.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: "partial"}); };
+    strip.appendChild(upd);
+  }
+  /* Counts and state only. idea_id is public catalog data. */
+  Analytics.track("closet_badge_viewed", {idea_id: idea.id, state: st.state, have_count: st.have, total_count: st.total});
+  return strip;
+}
+/* ---- end 2026-09-26 closet-coverage badge ---- */
 /* Billy 2026-09-25: share-message A/B/C/D test. Arm persists per session in
    localStorage so one user stays in one arm. Every share_created carries
    share_msg_variant so recipient opens/quiz starts cut by arm.
@@ -4369,6 +4475,11 @@ function buildBrowseDetailCard(idea, whyHead){
   if (pick && pick.ideaId === idea.id) mountPickSections();
   row.appendChild(bPick); /* pick stands alone full-width; the post-pick "Text this to a friend" section is the single share path */
   card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+  /* 2026-09-26 closet-coverage badge: decision input, so it sits with the
+     decision inputs under the why-line, above the build steps. Renders even
+     when buildInstructions returns null (no guide data). */
+  var _closetB = buildClosetBadge(idea);
+  if (_closetB) card.appendChild(_closetB);
   var _howtoB = buildInstructions(idea, {via: "browse_detail"});
   if (_howtoB) card.appendChild(_howtoB);
   card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
