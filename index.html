@@ -911,7 +911,7 @@ var IDEAS = [
   {id:"spider", title:"Eight-Legged Spider", blurb:"Black sweats with stuffed sock legs attached at the sides.", why:"Spooky from across the street, snuggly up close.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,kid7plus:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:31},
   {id:"backyard-hero", title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", why:"Skip the mask, add a face-paint lightning bolt, still a hero.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:1,couch:1,kid36:2,kid7plus:1,heroes:3,occtreat:2}, fit:"U", venue:{bar:2}, rank:32},
   {id:"pickle", title:"Pickle", blurb:"Green tunic, bumpy texture, smug grin.", why:"A pickle costume has no business working this well. And yet.", audience:["solo"], budget:["diy","low"], tags:{funny:3,couch:2,food:2,occbar:2,occcandy:1,occparty:2}, fit:"U", venue:{bar:2}, rank:33},
-  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with ten minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1,occbar:3,occparty:2}, trending:true, trendLane:"Vampire", trendStat:"4.2M adults planned it", fit:"M", venue:{bar:2}, rank:34},
+  {id:"vampire", title:"Classic Vampire", blurb:"Black cape, fangs, slicked hair.", why:"Scary with 25 minutes of effort and it photographs great.", audience:["solo"], budget:["low","mid"], tags:{scary:3,couch:1,occbar:3,occparty:2}, trending:true, trendLane:"Vampire", trendStat:"4.2M adults planned it", fit:"M", venue:{bar:2}, rank:34},
   {id:"bamboo-demon", title:"Bamboo-Muzzle Demon", blurb:"Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.", why:"Cute demon energy: anime fans clock it instantly, everyone else just sees adorable.", audience:["solo"], budget:["diy","low"], tags:{tv:3,cute:3,scary:1,simple:2,couch:1,occbar:2,occparty:2}, fit:"F", venue:{bar:0}, rank:35},
   {id:"emoji-crew", title:"Emoji Crew", blurb:"Everyone picks an emoji: a yellow tee plus a big printed face.", why:"Everyone picks their own emoji, and the group photo reads instantly.", audience:["group","family"], budget:["diy","low"], tags:{cute:3, funny:1, simple:2, couch:2,occparty:2,occtreat:1}, fit:"U", venue:{bar:2}, rank:36},
   {id:"robot-crew", title:"Cardboard Robot Crew", blurb:"Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.", why:"Cardboard boxes scale to any headcount, and every robot looks intentionally janky.", audience:["group","family"], budget:["diy","low"], tags:{allout:2,funny:3,crafty:3,occparty:2}, fit:"U", venue:{bar:1}, rank:37},
@@ -1192,6 +1192,9 @@ var VIA_SHARE = null;
    Read at landing time and carried into recipient_landing_viewed +
    quiz_started so friend-quiz-starts are measurable per share origin. */
 var VIA_SHARE_ORIGIN = null;
+/* 2026-09-26 duel experiment: ?duel=<sender idea slug> rides the /c/ quiz
+   links on share arrivals so results can render the compare panel. */
+var DUEL_IDEA_ID = null;
 function viaShareProps(){
   var p = {};
   if (VIA_SHARE){ p.via_share_id = VIA_SHARE; if (VIA_SHARE_ORIGIN) p.share_origin = VIA_SHARE_ORIGIN; }
@@ -2189,6 +2192,189 @@ function shareCaptionFor(idea){
   if (cap.toLowerCase().indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
   return line + " " + cap;
 }
+/* Novel-find 2026-09-26 (BuzzFeed Spirit Halloween Costume Generator):
+   an AI engine renames any character into a delightfully generic Spirit-style
+   costume name ("Fuzzy Crimson Number Yeller With Groovy Math Moves"), and the
+   gag doubles as a social loop - readers guess the real costume, creators
+   chase hearts for a homepage feature. The steal: a deterministic off-brand
+   renamer for our own bank, wired as share-variant arm G. The pick hides
+   behind the gag name, turning the share into a guess-the-costume riddle.
+   No LLM call, stable per idea id, coverage-tested against all 137 bank
+   titles (hour-session/offbrand-test-2026-09-26.js). */
+/* Prototype + coverage test for the off-brand-name gag (novel-find 2026-09-26).
+   Run: node offbrand-test-2026-09-26.js  (from ~/workspace/builds/pick-my-costume) */
+var OFFBRAND_NOUNS = [
+  ["demon hunter","Glowing Horned-Menace Chaser"],
+  ["pixel ghost","8-Bit Sheet Spooker"],
+  ["plague doctor","Beaked Mask Creep"],
+  ["hot dog","Bun-Hugged Wiener"],
+  ["ice cream","Melty Scoop Tower"],
+  ["peanut butter","Sticky Sandwich Stack"],
+  ["board game","Roll-and-Move Pawn"],
+  ["tall hat","Top-Hat Tower Wearer"],
+  ["sun and moon","Celestial Body Duo"],
+  ["ice skater","Twirl-Happy Blade Glider"],
+  ["pop star","Mic-Gripping Chart Topper"],
+  ["burglar","Masked Midnight Looter"],
+  ["coworker","Shambling Cubicle Dweller"],
+  ["barista","Apron-Wearing Latte Artist"],
+  ["beekeeper","Veiled Hive Tender"],
+  ["fossil","Ancient-Bone Digger"],
+  ["cardboard","Corrugated Budget Hero"],
+  ["galaxy","Nebula-Cape Star Sailor"],
+  ["vampire","Cape-Wearing Neck Nibbler"],
+  ["ghost","Sheet-Covered Spooker"],
+  ["witch","Pointy-Hat Spellcaster"],
+  ["skeleton","Rattling Bone Buddy"],
+  ["zombie","Shambling Brain Fan"],
+  ["demon","Horned Troublemaker"],
+  ["hunter","Spook-Chasing Gadget Carrier"],
+  ["alien","Big-Eyed Sky Visitor"],
+  ["robot","Beeping Tin Pal"],
+  ["astronaut","Fishbowl-Helmet Space Floater"],
+  ["crewmate","Suspicious Task-Doer"],
+  ["wizard","Bearded Spell Yeller"],
+  ["knight","Shiny Tin Defender"],
+  ["ninja","Silent Black-Clad Sneaker"],
+  ["dragon","Fire-Breathing Scale Beast"],
+  ["dinosaur","Tiny-Armed Roar Machine"],
+  ["dino","Tiny-Armed Roar Machine"],
+  ["raptor","Tiny-Armed Roar Machine"],
+  ["extinct","Tiny-Armed Roar Machine"],
+  ["mermaid","Half-Fish Songbird"],
+  ["princess","Tiara-Topped Royal"],
+  ["prince","Crown-Topped Royal"],
+  ["fairy","Tiny Winged Helper"],
+  ["gnome","Pointy-Hat Garden Squatter"],
+  ["castle","Moat-Adjacent Royal"],
+  ["snow","Ice-Powered Sister Act"],
+  ["monster","Fuzzy Menace"],
+  ["plush","Squeezable Cuddle Clone"],
+  ["spider","Eight-Legged Web Spinner"],
+  ["moth","Porch-Light Obsessive"],
+  ["bee","Striped Honey Buzzer"],
+  ["snail","Slime-Trail Slowpoke"],
+  ["ladybug","Polka-Dotted Leaf Crawler"],
+  ["butterfly","Fluttering Color Flapper"],
+  ["cat","Whisker-Twitching Meow Machine"],
+  ["dog","Tail-Wagging Bark Box"],
+  ["lion","Loud-Maned Roar Machine"],
+  ["shark","Fin-Up Chomp Machine"],
+  ["penguin","Waddling Tuxedo Wearer"],
+  ["pig","Mud-Loving Oink Machine"],
+  ["chipmunk","Cheek-Stuffing Chatterbox"],
+  ["tin","Dented Tin-Heart Pal"],
+  ["superhero","Cape-Flapping Do-Gooder"],
+  ["hero","Cape-Flapping Do-Gooder"],
+  ["cape","Cape-Flapping Do-Gooder"],
+  ["moon","Crater-Faced Night Orb"],
+  ["firefighter","Hose-Holding Hero"],
+  ["lifeguard","Whistle-Blowing Wave Watcher"],
+  ["referee","Striped-Shirt Whistle Blower"],
+  ["boxer","Glove-Swinging Ring Dancer"],
+  ["cheerleader","Pom-Pom Shaker"],
+  ["basketball","Orange-Ball Dribbler"],
+  ["tennis","Racket-Swinging Court Runner"],
+  ["bowling","Pin-Toppling Ball Roller"],
+  ["soccer","Shin-Guard Sprinter"],
+  ["ballerina","Twirl-Obsessed Tutu Spinner"],
+  ["artist","Paint-Splattered Doodler"],
+  ["baker","Flour-Dusted Treat Maker"],
+  ["bride","Tin-Can-Dragging Newlywed"],
+  ["olympians","Gold-Medal Podium Poser"],
+  ["photographer","Flash-Happy Shutterbug"],
+  ["safari","Khaki-Clad Animal Spotter"],
+  ["zoo","Khaki-Clad Animal Spotter"],
+  ["tourist","Fanny-Pack Sightseer"],
+  ["lost","Map-Reading Wanderer"],
+  ["office","Stapler-Juggling Desk Drone"],
+  ["burger","Grease-Splattered Patty Flipper"],
+  ["plumber","Pipe-Wrenching Mustache Bros"],
+  ["ketchup","Squeezy Condiment Duo"],
+  ["mustard","Squeezy Condiment Duo"],
+  ["plug","Wall-Prong Power Pair"],
+  ["socket","Wall-Prong Power Pair"],
+  ["player","Respawning Button Masher"],
+  ["kart","Banana-Peel-Dodging Racer"],
+  ["tetris","Falling-Block Stacker"],
+  ["404","Page-Not-Found Phantom"],
+  ["web","Sticky-String Swinger"],
+  ["rain","Drippy Gray Puffer"],
+  ["sea","Salty Deep-Sea Drifter"],
+  ["buffet","All-You-Can-Wear Brunch"],
+  ["haunted","Creepy Attraction Figure"],
+  ["headless","Neck-less Horse Rider"],
+  ["mystery","Masked Mystery Solver"],
+  ["goggle","Big-Lens Stare Squad"],
+  ["block","Square-Headed Stacker"],
+  ["plastic","Molded Shine Squad"],
+  ["toy","Shelf-Dwelling Plaything Posse"],
+  ["emotion","Big-Feeling Face Squad"],
+  ["emoji","Yellow-Faced Feeling Squad"],
+  ["cereal","Breakfast Box Mascot"],
+  ["decades","Time-Traveling Outfit Hoarder"],
+  ["taco","Crunchy Shell Walker"],
+  ["ramen","Slurpable Noodle Bowl"],
+  ["sushi","Raw-Fish Roll-Up"],
+  ["pizza","Triangular Cheese Slab"],
+  ["popcorn","Buttery Kernel Explosion"],
+  ["bacon","Sizzling Breakfast Slab"],
+  ["spaghetti","Tangled Noodle Pile"],
+  ["salt","Seasoning Shaker Pair"],
+  ["pepper","Seasoning Shaker Pair"],
+  ["egg","Spicy Yolk Half"],
+  ["cupcake","Frosted Cake Cup"],
+  ["banana","Curved Yellow Fruit"],
+  ["donut","Glazed Ring Snack"],
+  ["coffee","Jittery Bean Juice Cup"],
+  ["pickle","Briny Green Spear"],
+  ["peas","Pod-Dwelling Green Orbs"],
+  ["fruit","Chunked Fruit Medley"],
+  ["daisy","Petal-Wearing Bloom Buddy"],
+  ["bloom","Petal-Wearing Bloom Buddy"],
+  ["diva","Unimpressed Spotlight Hogger"],
+  ["camouflage","Stripe-Shirted Crowd Hider"],
+  ["doctor","Clipboard-Carrying Curer"]
+];
+var OFFBRAND_TEXTURES = ["Fuzzy","Wobbly","Sparkly","Squeaky","Lumpy","Fluffy","Jiggly","Crinkly"];
+var OFFBRAND_COLORS = [["neon","Electric"],["emerald","Sea-Green"],["crimson","Crimson"],["black","Midnight"],["blue","Ocean"],["pink","Bubblegum"],["purple","Grape"],["red","Cherry"],["green","Lime"],["gold","Golden"],["silver","Silver"],["white","Frosty"],["orange","Pumpkin"],["yellow","Lemon"],["rainbow","Rainbow"]];
+var OFFBRAND_COLOR_FALLBACK = ["Crimson","Midnight","Electric","Golden","Frosty","Bubblegum"];
+var OFFBRAND_QUIRKS = ["Questionable Dance Moves","Zero Coordination","Main-Character Energy","Suspicious Stamina","Loud Opinions","Secret Snacks","Dramatic Entrances","Mystery Stains","Bold Choices","Nocturnal Habits","Excessive Confidence","Unpaid Overtime"];
+
+function offBrandHash(s){
+  var h = 5381;
+  for (var i = 0; i < s.length; i++){ h = ((h << 5) + h + s.charCodeAt(i)) | 0; }
+  return h >>> 0;
+}
+function offBrandNoun(title){
+  var t = " " + String(title).toLowerCase() + " ";
+  for (var i = 0; i < OFFBRAND_NOUNS.length; i++){
+    if (t.indexOf(OFFBRAND_NOUNS[i][0]) !== -1) return {noun: OFFBRAND_NOUNS[i][1], keyword: OFFBRAND_NOUNS[i][0]};
+  }
+  var words = String(title).replace(/[^a-zA-Z ]/g, " ").split(/\s+/).filter(Boolean);
+  var last = words.length ? words[words.length - 1] : "Costume";
+  last = last.charAt(0).toUpperCase() + last.slice(1);
+  return {noun: "Unlicensed " + last + " Enthusiast", keyword: null};
+}
+function offBrandName(idea){
+  var id = idea.id || "", title = idea.title || "";
+  var r = offBrandNoun(title), noun = r.noun;
+  var h = offBrandHash(id + "|" + title);
+  var tex = OFFBRAND_TEXTURES[h % OFFBRAND_TEXTURES.length];
+  var tl = title.toLowerCase();
+  var color = null;
+  for (var i = 0; i < OFFBRAND_COLORS.length; i++){
+    if (tl.indexOf(OFFBRAND_COLORS[i][0]) !== -1){ color = OFFBRAND_COLORS[i][1]; break; }
+  }
+  if (!color) color = OFFBRAND_COLOR_FALLBACK[Math.floor(h / 8) % OFFBRAND_COLOR_FALLBACK.length];
+  var quirk = OFFBRAND_QUIRKS[Math.floor(h / 64) % OFFBRAND_QUIRKS.length];
+  var parts = [];
+  if (tl.indexOf(tex.toLowerCase()) === -1 && noun.toLowerCase().indexOf(tex.toLowerCase()) === -1) parts.push(tex);
+  if (noun.toLowerCase().indexOf(color.toLowerCase()) === -1) parts.push(color);
+  parts.push(noun);
+  return parts.join(" ") + " With " + quirk;
+}
+
 /* 2026-09-25 pantry-aware experiment helpers. PANTRY_MATS is the regenerated
    119-idea requirement map: {staples:[6 pantry ids], mats:{ideaId:[materials]}}.
    Each material is an AND-item; each material holds OR-groups of pantry ids;
@@ -2223,13 +2409,15 @@ function pantryMissing(ideaId){
    2026-09-25 social-handoff copy). D = pantry challenge: fires only when the
    pantry covers the pick (computed at share time); otherwise falls back to the
    C copy. Metric: link open rate -> recipient quiz starts -> recipient
-   completions. A message wins only if recipients act. */
+   completions. A message wins only if recipients act.
+   G (2026-09-26 novel-find): off-brand-name gag, the pick hides behind a
+   Spirit-style generic rename as a guess-the-costume riddle. */
 function shareVariant(){
   try {
     var v = localStorage.getItem("pmc_share_variant");
-    if (v === "A" || v === "B" || v === "C" || v === "D" || v === "E" || v === "F") return v; /* one user stays in one arm */
+    if (v === "A" || v === "B" || v === "C" || v === "D" || v === "E" || v === "F" || v === "G") return v; /* one user stays in one arm */
     var r = Math.random();
-    v = r < 0.166 ? "A" : (r < 0.333 ? "B" : (r < 0.5 ? "C" : (r < 0.666 ? "D" : (r < 0.833 ? "E" : "F"))));
+    v = r < 0.1429 ? "A" : (r < 0.2857 ? "B" : (r < 0.4286 ? "C" : (r < 0.5714 ? "D" : (r < 0.7143 ? "E" : (r < 0.8571 ? "F" : "G")))));
     localStorage.setItem("pmc_share_variant", v);
     return v;
   } catch(_){ return "C"; }
@@ -2280,6 +2468,12 @@ function shareTextFor(idea, sid, origin){
   var challenge = (shareVariant() === "D" && pantryMissing(idea.id) === 0);
   window.__pmcChallenge = challenge;
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin + (challenge ? "&ch=1" : "");
+  /* Arm G (novel-find 2026-09-26: BuzzFeed Spirit Halloween Costume
+     Generator). The pick hides behind its off-brand name, so the share
+     reads as a guess-the-costume riddle. Early return keeps the kid/family
+     materials list off - it would leak the answer. Measured by
+     share_msg_variant like every other arm. */
+  if (shareVariant() === "G") return "My off-brand Halloween costume name is '" + offBrandName(idea) + "'. Guess what I am really going as? Take the 2-min quiz and send me yours: " + link;
   /* 2026-09-25 social-handoff experiment: the old copy asked an open question
      ("What are you going as?"). The reciprocal ask ("send me what you get")
      tests whether the share reads as an invitation to participate, not a
@@ -2418,6 +2612,109 @@ function buildVoteBox(results){
   vrow.appendChild(vbtn);
   vbox.appendChild(vh); vbox.appendChild(vp); vbox.appendChild(vrow); vbox.appendChild(vpanel);
   return vbox;
+}
+/* 2026-09-26 duel distribution experiment: the quiz had no return leg.
+   Every quiz share was send-and-hope; the pantry closed its loop with the
+   rematch rally, but a recipient who finishes the quiz never bounced back
+   to the sender. The /c/ guide's quiz links now carry ?duel=<sender slug>
+   on share arrivals; when the recipient lands on results through a share,
+   this panel compares their #1 against the sender's pick and offers a
+   share-back that closes the loop. New share origin "duel", measured
+   separately from card/generic/sms/vote/pantryvote. Fixed copy (no
+   share-message variant arms); the pinned shareVariant rides events for
+   comparability only. */
+function duelIdeaById(id){
+  var found = null;
+  IDEAS.forEach(function(it){ if (it.id === id) found = it; });
+  return found;
+}
+function duelTriple(idea){
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var ins = INSTRUCTIONS[idea.id];
+    return [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+  }
+  return "";
+}
+/* Data-grounded pairing verdict. Only claims what the bank supports:
+   audience tags for duo potential, the effort field for the easy match. */
+function duelVerdict(mine, theirs){
+  var groupish = function(a){ return (a || []).indexOf("family") >= 0 || (a || []).indexOf("group") >= 0; };
+  if (groupish(mine.audience) && groupish(theirs.audience)) return "Duo potential: we are both looking at group-friendly builds.";
+  var easyish = function(idea){
+    if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[idea.id]) return false;
+    return /^easy/i.test(INSTRUCTIONS[idea.id].effort || "");
+  };
+  if (easyish(mine) && easyish(theirs)) return "Matched on easy: both builds are easy.";
+  return "Two different lanes. The group chat will have opinions.";
+}
+function buildDuelShareText(mine, theirs, sid){
+  var url = "pickmycostume.com/c/" + mine.id + "?s=" + sid + "&o=duel";
+  var tri = duelTriple(mine);
+  if (mine.id === theirs.id){
+    return "Great minds: we both got " + mine.title + (tri ? " (" + tri + ")" : "") + " on the costume quiz. " + url;
+  }
+  return "I took the costume quiz and got " + mine.title + (tri ? " (" + tri + ")" : "") + ". You got " + theirs.title + ". " + duelVerdict(mine, theirs) + " " + url;
+}
+/* The results-page duel panel. Rendered by renderResults right after the
+   hero card, only for genuine share arrivals carrying ?duel=. */
+function buildDuelBox(ownIdea){
+  if (typeof VIA_SHARE === "undefined" || !VIA_SHARE) return null;
+  if (typeof DUEL_IDEA_ID === "undefined" || !DUEL_IDEA_ID) return null;
+  var theirs = duelIdeaById(DUEL_IDEA_ID);
+  if (!theirs) return null;
+  var mine = ownIdea;
+  var matched = mine.id === theirs.id;
+  var dbox = document.createElement("div");
+  dbox.className = "stuck"; dbox.id = "duel-box";
+  var dh = document.createElement("h3"); dh.textContent = "You vs your friend";
+  var dp = document.createElement("p");
+  dp.textContent = matched
+    ? "Great minds: you both got " + mine.title + "."
+    : "Your friend picked " + theirs.title + ". The quiz gave you " + mine.title + ". " + duelVerdict(mine, theirs);
+  var drow = document.createElement("div"); drow.className = "row";
+  var dbtn = document.createElement("button");
+  dbtn.type = "button"; dbtn.className = "ghost";
+  dbtn.textContent = "Send them your pick";
+  var dst = document.createElement("div"); dst.className = "status"; dst.style.marginTop = "6px";
+  dbtn.onclick = function(){
+    var rearmShare = armShareOnce(dbtn);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var text = buildDuelShareText(mine, theirs, sid);
+    function trackShareback(via){
+      Analytics.track("duel_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "duel", duel_idea_id: theirs.id, own_idea_id: mine.id, share_msg_variant: shareVariant(), via: via});
+      Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "duel"});
+    }
+    function doneShare(ok, msg){
+      dst.textContent = msg;
+      rearmShare();
+      if (ok) trackShareback("share_sheet");
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){
+        doCopy(text, function(ok, msg){
+          dst.textContent = msg; rearmShare();
+          if (ok) trackShareback("clipboard");
+        });
+      }
+    } else {
+      doCopy(text, function(ok, msg){
+        dst.textContent = msg; rearmShare();
+        if (ok) trackShareback("clipboard");
+      });
+    }
+  };
+  drow.appendChild(dbtn);
+  dbox.appendChild(dh); dbox.appendChild(dp); dbox.appendChild(drow); dbox.appendChild(dst);
+  var cprops = viaShareProps();
+  cprops.duel_idea_id = theirs.id; cprops.own_idea_id = mine.id; cprops.matched = matched;
+  Analytics.track("duel_compare_shown", cprops);
+  return dbox;
 }
 /* Billy 2026-09-25: the vibe check lives on the hero card itself, not just
    inside the post-pick panel, so we hear from people who did NOT pick it
@@ -2723,6 +3020,12 @@ function renderResults(results){
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
+  /* 2026-09-26 duel experiment: the quiz return leg. Renders only for
+     genuine share arrivals carrying ?duel= (buildDuelBox returns null
+     otherwise). Sits right under the #1 pick: the social payoff is
+     immediate, before the runners-up. */
+  var duelBox = buildDuelBox(results[0].idea);
+  if (duelBox) box.appendChild(duelBox);
   /* Runners-up: compact cards; one shared full-width detail below the grid. */
   var ru = document.createElement("div");
   ru.style.marginTop = "16px";
@@ -5277,8 +5580,13 @@ function shareLandingHeadline(idea, search){
        results-page vote box; it must survive exactly the same way.
        2026-09-26 pantry-vote experiment: ?o=pantryvote marks links from the
        pantry house-vote box; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel)/.exec(location.search || "");
     if (om) VIA_SHARE_ORIGIN = om[1];
+    /* 2026-09-26 duel experiment: ?duel=<sender idea slug> rides the /c/
+       quiz links on share arrivals so results can render the compare panel
+       and close the quiz return leg. */
+    var dm = /[?&]duel=([a-z0-9-]+)/.exec(location.search || "");
+    if (dm) DUEL_IDEA_ID = dm[1];
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
     var idea = null;
