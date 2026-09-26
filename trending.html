@@ -42,6 +42,9 @@ ol.trend li{background:var(--card);border:1px solid var(--line);border-radius:va
 .cta{display:block;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:18px;padding:16px;border-radius:var(--radius);text-decoration:none;margin:36px 0 8px}
 .fine{color:var(--muted);font-size:13px}
 .method{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:32px}
+.yeartoggle{display:flex;gap:8px;margin:0 0 16px}
+.yeartoggle .chip{background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer}
+.yeartoggle .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .method h3{margin:0 0 8px;font-size:16px}
 .method p{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .method a{color:var(--accent)}
@@ -59,8 +62,12 @@ footer{margin-top:40px;text-align:center}
   <p class="sub">What America is searching for, and what people are actually picking on this site.</p>
 
   <h2>🔍 What America is searching for</h2>
-  <p class="section-note">Google's Frightgeist rankings, from Google Search data. Latest published: October 2025.</p>
-  <ol class="trend">
+  <p class="section-note">Google's Frightgeist rankings, from Google Search data. <span id="frightyear-note">Latest published: October 2025. The 2026 ranking drops in early October.</span></p>
+  <div class="yeartoggle" role="tablist" aria-label="Frightgeist year">
+    <button class="chip on" role="tab" aria-selected="true" data-fy="2025" type="button">2025</button>
+    <button class="chip" role="tab" aria-selected="false" data-fy="2024" type="button">2024</button>
+  </div>
+  <ol class="trend" id="trend-2025">
     <!-- 2026-09-26 red-team: "Find your version" used to dump every national trend onto
          the generic homepage. Where we have a real costume in that trend lane, link it;
          where we don't, the copy honestly says "Take the quiz". -->
@@ -74,6 +81,18 @@ footer{margin-top:40px;text-align:center}
     <li><span class="rank">8</span><span><span class="trend-name">Derpy the Tiger</span><br><span class="trend-src">KPop Demon Hunters</span></span><a class="trend-link" href="/c/demon-boy-band">Find your version →</a></li>
     <li><span class="rank">9</span><span><span class="trend-name">Elphaba</span><br><span class="trend-src">Wicked</span></span><a class="trend-link" href="/c/good-witch-bad-witch">DIY guide →</a></li>
     <li><span class="rank">10</span><span><span class="trend-name">The Lorax</span><br><span class="trend-src">Dr. Seuss</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+  </ol>
+  <ol class="trend" id="trend-2024" hidden>
+    <li><span class="rank">1</span><span><span class="trend-name">Shrunken Head Bob</span><br><span class="trend-src">Beetlejuice Beetlejuice</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">2</span><span><span class="trend-name">Raygun</span><br><span class="trend-src">Olympics breakdancer</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">3</span><span><span class="trend-name">Catnap</span><br><span class="trend-src">Poppy Playtime</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">4</span><span><span class="trend-name">Delores</span><br><span class="trend-src">Beetlejuice Beetlejuice</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">5</span><span><span class="trend-name">Pomni</span><br><span class="trend-src">The Amazing Digital Circus</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">6</span><span><span class="trend-name">Envy</span><br><span class="trend-src">Inside Out 2</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">7</span><span><span class="trend-name">Red</span><br><span class="trend-src">Descendants</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">8</span><span><span class="trend-name">Dr Doom</span><br><span class="trend-src">Marvel</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
+    <li><span class="rank">9</span><span><span class="trend-name">Sabrina Carpenter</span><br><span class="trend-src">Pop star</span></span><a class="trend-link" href="/c/pop-star">Find your version →</a></li>
+    <li><span class="rank">10</span><span><span class="trend-name">Lady Deadpool</span><br><span class="trend-src">Deadpool & Wolverine</span></span><a class="trend-link" href="/">Take the quiz →</a></li>
   </ol>
 
   <h2>🔥 Trending on Pick My Costume</h2>
@@ -103,5 +122,29 @@ footer{margin-top:40px;text-align:center}
     <p class="fine">Built with Muse. Made by Billy Litner.</p>
   </footer>
 </div>
+<script>
+(function(){
+  var btns = document.querySelectorAll("[data-fy]");
+  var lists = {"2025": document.getElementById("trend-2025"), "2024": document.getElementById("trend-2024")};
+  var note = document.getElementById("frightyear-note");
+  var notes = {"2025": "Latest published: October 2025. The 2026 ranking drops in early October.",
+               "2024": "Published October 2024. Compare: 2024 was Beetlejuice and Deadpool; 2025 went all-in on KPop Demon Hunters."};
+  for (var i = 0; i < btns.length; i++){
+    (function(btn){
+      btn.addEventListener("click", function(){
+        var y = btn.getAttribute("data-fy");
+        for (var j = 0; j < btns.length; j++){
+          btns[j].classList.remove("on");
+          btns[j].setAttribute("aria-selected", "false");
+        }
+        btn.classList.add("on");
+        btn.setAttribute("aria-selected", "true");
+        for (var k in lists){ if (lists[k]) lists[k].hidden = (k !== y); }
+        if (note && notes[y]) note.textContent = notes[y];
+      });
+    })(btns[i]);
+  }
+})();
+</script>
 </body>
 </html>
