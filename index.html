@@ -321,16 +321,16 @@ footer a{color:var(--accent)}
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
       <div class="proofstrip">
-        <p class="fine" style="margin:0 0 6px">Real ideas you might get:</p>
+        <p class="fine" style="margin:0 0 6px">Trending now:</p>
         <div class="proofrow">
           <a href="/c/snow-sisters"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
+          <a href="/c/neon-demon-hunter"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
+          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
           <a href="/c/lost-tourist"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
           <a href="/c/mermaid-crew"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
-          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
           <a href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses.webp" alt="Fairy Tale Princesses costume" loading="lazy"><span>Fairy Tale Princesses</span></a>
           <a href="/c/deadpan-diva"><img src="photos/deadpan-diva.webp" alt="Deadpan Diva costume" loading="lazy"><span>Deadpan Diva</span></a>
           <a href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew.webp" alt="Enchanted Castle Crew costume" loading="lazy"><span>Enchanted Castle Crew</span></a>
-          <a href="/c/neon-demon-hunter"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
         </div>
       </div>
       <!-- Billy 2026-09-25: social proof uses the real Sep 25 7-day snapshot (30 completions). Refresh weekly. -->
@@ -340,12 +340,12 @@ footer a{color:var(--accent)}
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
-        <p class="fine" style="margin:0 0 6px">Already have someone in mind? <span style="color:var(--muted)">(optional)</span></p>
+        <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">123</span> costumes directly</p>
         <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <div class="pinpoint-chips" id="pinpoint-chips"></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
-      <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 100 ideas</button></p>
+      <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 123 ideas</button></p>
       </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
     </div>
@@ -371,7 +371,7 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
-      <button class="ghost" id="btn-browse-results" type="button">Browse all 100 ideas</button>
+      <button class="ghost" id="btn-browse-results" type="button">Browse all 123 ideas</button>
     </div>
   </section>
 
@@ -599,6 +599,10 @@ var QUESTIONS = [
    (hour-session/pinpoint-paths.js still verifies the legacy pin mechanism.) */
 var PINPOINT_MAP = {"spiderman":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidermen":{"idea":"web-slinger-crew","label":"Spider-Man"},"milesmorales":{"idea":"web-slinger-crew","label":"Spider-Man"},"gwenstacy":{"idea":"web-slinger-crew","label":"Spider-Man"},"ghostspider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidergwen":{"idea":"web-slinger-crew","label":"Spider-Man"},"ariel":{"idea":"mermaid-crew","label":"Ariel"},"littlemermaid":{"idea":"mermaid-crew","label":"Ariel"},"wednesday":{"idea":"deadpan-diva","label":"Wednesday"},"wednesdayaddams":{"idea":"deadpan-diva","label":"Wednesday"},"nezuko":{"idea":"bamboo-demon","label":"Nezuko"},"kpopdemonhunters":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"huntrix":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"rumi":{"idea":"neon-demon-hunter","label":"K-pop Demon Hunters"},"bluey":{"idea":"blue-dog-family","label":"Bluey"},"bingo":{"idea":"blue-dog-family","label":"Bluey"},"mario":{"idea":"plumber-duo","label":"Mario"},"luigi":{"idea":"plumber-duo","label":"Mario"},"elsa":{"idea":"snow-sisters","label":"Frozen"},"anna":{"idea":"snow-sisters","label":"Frozen"},"frozen":{"idea":"snow-sisters","label":"Frozen"},"olaf":{"idea":"snow-sisters","label":"Frozen"},"elphaba":{"idea":"good-witch-bad-witch","label":"Wicked"},"glinda":{"idea":"good-witch-bad-witch","label":"Wicked"},"wicked":{"idea":"good-witch-bad-witch","label":"Wicked"},"pokemon":{"idea":"pocket-plush","label":"Pokémon"},"pikachu":{"idea":"pocket-plush","label":"Pokémon"},"minecraft":{"idea":"block-game-crew","label":"Minecraft"},"steve":{"idea":"block-game-crew","label":"Minecraft"},"creeper":{"idea":"block-game-crew","label":"Minecraft"},"amongus":{"idea":"space-crewmate","label":"Among Us"},"stitch":{"idea":"blue-alien-ohana","label":"Stitch"},"fnaf":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"freddyfazbear":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"fivenightsatfreddys":{"idea":"haunted-animatronics","label":"Five Nights at Freddy's"},"minion":{"idea":"goggle-crew","label":"Minions"},"minions":{"idea":"goggle-crew","label":"Minions"},"ghostbusters":{"idea":"ghost-hunters","label":"Ghostbusters"},"peppa":{"idea":"little-pig-family","label":"Peppa Pig"},"peppapig":{"idea":"little-pig-family","label":"Peppa Pig"},"dracula":{"idea":"vampire","label":"Dracula"},"vampire":{"idea":"vampire","label":"Vampire"},"greekgods":{"idea":"the-olympians","label":"Greek gods"},"olympians":{"idea":"the-olympians","label":"Greek gods"},"zeus":{"idea":"the-olympians","label":"Zeus"},"athena":{"idea":"the-olympians","label":"Athena"},"odyssey":{"idea":"the-olympians","label":"The Odyssey"},"toystory":{"idea":"toy-box-crew","label":"Toy Story"},"woody":{"idea":"toy-box-crew","label":"Toy Story"},"buzzlightyear":{"idea":"toy-box-crew","label":"Toy Story"},"sajaboys":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"jinu":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"babysaja":{"idea":"demon-boy-band","label":"K-pop Demon Hunters"},"howtotrainyourdragon":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"hiccup":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"astrid":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"toothless":{"idea":"dragon-rider-duo","label":"How to Train Your Dragon"},"squidgame":{"idea":"numbered-players","label":"Squid Game"},"insideout":{"idea":"emotion-crew","label":"Inside Out"},"insideout2":{"idea":"emotion-crew","label":"Inside Out"},"anxiety":{"idea":"emotion-crew","label":"Inside Out"},"mariokart":{"idea":"kart-racers","label":"Mario Kart"},"catinthehat":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing1":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"thing2":{"idea":"tall-hat-crew","label":"Cat in the Hat"},"alvinandthechipmunks":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"alvin":{"idea":"chipmunk-trio","label":"Alvin and the Chipmunks"},"starwars":{"idea":"galaxy-knights","label":"Star Wars"},"jedi":{"idea":"galaxy-knights","label":"Star Wars"},"lightsaber":{"idea":"galaxy-knights","label":"Star Wars"},"barbie":{"idea":"plastic-dream-crew","label":"Barbie"},"ken":{"idea":"plastic-dream-crew","label":"Barbie"},"wizard":{"idea":"wizard","label":"Wizard"},"wizards":{"idea":"wizard","label":"Wizard"},"belle":{"idea":"enchanted-castle-crew","label":"Belle"},"beautyandthebeast":{"idea":"enchanted-castle-crew","label":"Belle"},"beast":{"idea":"enchanted-castle-crew","label":"Belle"},"princess":{"idea":"fairy-tale-princesses","label":"Princess"},"princesses":{"idea":"fairy-tale-princesses","label":"Princess"},"superhero":{"idea":"superhero-family","label":"Superhero"},"superheroes":{"idea":"superhero-family","label":"Superhero"},"superheros":{"idea":"superhero-family","label":"Superhero"},"disney":{"idea":"enchanted-castle-crew","label":"Disney princess"},"disneyprincess":{"idea":"enchanted-castle-crew","label":"Disney princess"},"disneyprincesses":{"idea":"enchanted-castle-crew","label":"Disney princess"},"mermaid":{"idea":"mermaid-crew","label":"Mermaid"},"mermaids":{"idea":"mermaid-crew","label":"Mermaid"},"spider":{"idea":"web-slinger-crew","label":"Spider-Man"},"spiders":{"idea":"web-slinger-crew","label":"Spider-Man"},"spidey":{"idea":"web-slinger-crew","label":"Spider-Man"},};
 var PINPOINT_CHIPS = ["Spider-Man","Ariel","Wednesday","Bluey","Mario","Nezuko","Pok\u00e9mon","Frozen","Belle"];
+/* Homepage search chips (Variant C, Billy 2026-09-25): popular searches
+   wired to the full search intelligence (aliases + attribute filters) via
+   the browse shelf. "tonight" uses the same <=30-min plan criterion as the
+   Tonight-Ready result role. */
 function pinpointNormalize(s){
   /* Fold diacritics first so "Pok\u00e9mon" -> "pokemon", not "pokmon". */
   var t = (s || "").toLowerCase();
@@ -2723,7 +2727,7 @@ var SEARCH_ATTRS = [
   {keys:["funny"], test:function(i){ return vibeOkFor("funny", i.tags); }},
   {keys:["cute"], test:function(i){ return vibeOkFor("cute", i.tags); }},
   {keys:["easy","simple"], test:function(i){ return buildDifficulty(i) <= 2; }},
-  {keys:["last minute","quick","fast"], test:function(i){ var m = planMinutes(i); return m !== null && m <= 30; }},
+  {keys:["last minute","quick","fast","tonight"], test:function(i){ var m = planMinutes(i); return m !== null && m <= 30; }},
   {keys:["cardboard"], test:function(i){ return planBuyText(i).indexOf("cardboard") >= 0; }},
   {keys:["closet"], test:function(i){ return (i.budget || []).indexOf("diy") >= 0; }},
   {keys:["face paint","makeup"], test:function(i){ var t = planBuyText(i); return t.indexOf("paint") >= 0 || t.indexOf("makeup") >= 0; }},
@@ -4216,21 +4220,28 @@ function fallbackCopy(text, done){
 }
 
 /* ================= WIRING ================= */
-/* Pinpoint capture (Billy 2026-09-25): the optional "who exactly?" surface.
-   Any specific name or typed query resolves to that costume's detail view:
-   chips jump straight to their idea; typed text resolves via pinpointResolve.
-   A query with no real match shows the 3 closest ideas with honest copy.
-   This surface NEVER silently runs a generic quiz. */
+/* Pinpoint capture (Billy 2026-09-25): the optional "who exactly?" typed
+   input. Typed text resolves via pinpointResolve to that costume's detail
+   view. A query with no real match shows the 3 closest ideas with honest
+   copy. This surface NEVER silently runs a generic quiz. The hero chip row
+   is a separate search surface (see below). */
+/* Homepage search chips (Variant C, Billy 2026-09-25): the hero chip row is
+   a search surface, not pinpoint. Tapping a chip opens the browse shelf
+   pre-filtered to that term through the full search intelligence
+   (parseSearch: aliases + attribute filters), with the term editable in the
+   shelf search box. The typed hero input keeps pinpoint name resolution. */
+var HERO_SEARCH_CHIPS = ["Bluey","cheap","couples","bar","tonight"];
 function renderPinpointChips(){
   var box = $("pinpoint-chips");
   if (!box || box.children.length) return;
-  PINPOINT_CHIPS.forEach(function(label){
+  HERO_SEARCH_CHIPS.forEach(function(label){
     var b = document.createElement("button");
     b.type = "button"; b.textContent = label;
     b.onclick = function(){
-      var hit = pinpointMatch(label);
-      if (hit) pinpointOpenIdea(hit, "chip");
-      else { $("pinpoint-input").value = label; pinpointTypedGo(); }
+      var inp = $("pinpoint-input");
+      if (inp) inp.value = label;
+      try { Analytics.track("hero_chip_tapped", {term: label}); } catch(e){}
+      openBrowse();
     };
     box.appendChild(b);
   });
@@ -4358,6 +4369,8 @@ $("btn-browse-results").onclick = openBrowse;
 $("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
 $("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
+/* Variant C hero: the search-block label carries the live bank count. */
+(function(){ var hsc = $("hero-search-count"); if (hsc) hsc.textContent = IDEAS.length; })();
 /* E20 parity: back from a browse detail returns to the browse grid with the
    current search/filter state intact (renderBrowse reads the live inputs). */
 $("btn-dback").onclick = function(){
