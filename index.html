@@ -89,6 +89,8 @@ body{
 /* Billy 2026-09-25: the strip is a horizontal swipe rail, not a fixed row. */
 .proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
 .proofrow::-webkit-scrollbar{display:none}
+/* Billy 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
+.proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
 .proofrow a{flex:0 0 78px;scroll-snap-align:start;text-decoration:none;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
 .proofrow img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
 .proofrow span{display:block;font-size:11px;color:var(--muted);text-align:center;padding:4px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
@@ -305,6 +307,7 @@ footer a{color:var(--accent)}
 .pinpoint-chips button{min-height:44px;min-width:44px;padding:10px 18px;box-sizing:border-box}
 .pinpoint-note{font-size:13px;color:var(--muted);margin:6px 0 0;min-height:18px}
 </style>
+<meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
 <body>
 <div class="wrap">
@@ -329,19 +332,20 @@ footer a{color:var(--accent)}
       </div>
       <div class="proofstrip">
         <p class="fine" style="margin:0 0 6px">Popular this week:</p>
-        <div class="proofrow">
-          <a href="/c/snow-sisters"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
-          <a href="/c/neon-demon-hunter"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
-          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
-          <a href="/c/lost-tourist"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-          <a href="/c/mermaid-crew"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
-          <a href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses.webp" alt="Fairy Tale Princesses costume" loading="lazy"><span>Fairy Tale Princesses</span></a>
-          <a href="/c/deadpan-diva"><img src="photos/deadpan-diva.webp" alt="Deadpan Diva costume" loading="lazy"><span>Deadpan Diva</span></a>
-          <a href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew.webp" alt="Enchanted Castle Crew costume" loading="lazy"><span>Enchanted Castle Crew</span></a>
+        <!-- Proof-strip photo-quality blocklist (never promote): neon-demon-hunter (taste + never top-saved, permanent), wizard (adult-presenting photo). tin-hero re-verified 2026-09-26 (regenerated: kid now, cleared). -->
+        <div class="proofrow" role="list" aria-label="Popular costumes this week">
+          <a href="/c/snow-sisters" role="listitem"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
+          <a href="/c/lost-tourist" role="listitem"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
+          <a href="/c/blue-dog-family" role="listitem"><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+          <a href="/c/mermaid-crew" role="listitem"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
+          <a href="/c/ghost-hunters" role="listitem"><img src="photos/ghost-hunters.webp" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
+          <a href="/c/little-pig-family" role="listitem"><img src="photos/little-pig-family.webp" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
+          <a href="/c/breakfast-buffet" role="listitem"><img src="photos/breakfast-buffet.webp" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
+          <a href="/c/tin-hero" role="listitem"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
         </div>
       </div>
-      <!-- Billy 2026-09-25: social proof uses the real Sep 25 7-day snapshot (30 completions). Refresh weekly. -->
-      <p class="fine" style="margin:10px 0 0">30 people found their costume this week.</p>
+      <!-- Billy 2026-09-26: social proof uses the real Sep 26 7-day snapshot (165 completions; step-6 grade fix: data-true top saves, neon-demon-hunter blocklisted). Refresh weekly. -->
+      <p class="fine" style="margin:10px 0 0">165 people found their costume this week.</p>
       <div class="explore">
         <p class="fine explore-head">More ways to explore</p>
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
@@ -526,6 +530,27 @@ var Analytics = {
     } catch(e2){}
   }
 };
+/* Billy 2026-09-26 (proof-strip step-6 grade): tap->quiz-start within-session
+   attribution. When a quiz_started fires and the same tab session recorded a
+   proof-strip tap, also fire proofstrip_to_quiz with that idea_id — this is
+   the decision metric the next grade needs (quiz starts attributable to the
+   strip). sessionStorage survives the strip->/c/->quiz page loads. */
+(function(){
+  var _track = Analytics.track;
+  Analytics.track = function(name, props){
+    try {
+      if (name === "quiz_started") {
+        var raw = null;
+        try { raw = sessionStorage.getItem("pmc_proofstrip_tap"); } catch(e){}
+        if (raw) {
+          var t = JSON.parse(raw);
+          if (t && t.idea_id) _track.call(Analytics, "proofstrip_to_quiz", {idea_id: t.idea_id});
+        }
+      }
+    } catch(e){}
+    return _track.call(Analytics, name, props);
+  };
+})();
 
 function $(id){ return document.getElementById(id); }
 function store(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
@@ -4428,14 +4453,22 @@ $("btn-return").onclick = function(){
 };
 $("btn-browse-hero").onclick = openBrowse;
 $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
-/* Proof-strip tap tracking: which homepage proof cards get tapped. */
+/* Proof-strip tap tracking: which homepage proof cards get tapped.
+   Billy 2026-09-26 (step-6 grade): scoped to the homepage strip only (the
+   .proofrow class is also reused by the detail-page "more like this" rail,
+   whose taps were polluting this metric). Each tap also records a session
+   flag so a quiz start later in the same session is attributed via
+   proofstrip_to_quiz (see the Analytics.track wrapper below the Analytics
+   object). */
 (function(){
-  var links = document.querySelectorAll(".proofrow a");
+  var links = document.querySelectorAll(".proofstrip .proofrow a");
   for (var i = 0; i < links.length; i++){
     (function(a){
       a.addEventListener("click", function(){
         var m = (a.getAttribute("href") || "").match(/\/c\/([a-z0-9-]+)/);
-        Analytics.track("proofstrip_tapped", {idea_id: m ? m[1] : ""});
+        var slug = m ? m[1] : "";
+        Analytics.track("proofstrip_tapped", {idea_id: slug});
+        try { sessionStorage.setItem("pmc_proofstrip_tap", JSON.stringify({idea_id: slug, ts: Date.now()})); } catch(e){}
       });
     })(links[i]);
   }
