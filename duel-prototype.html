@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Costume Duel — prototype</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1a1033;color:#f5efff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5;padding:20px 16px 64px}
+.wrap{max-width:520px;margin:0 auto}
+h1{font-size:28px;margin:8px 0 4px}
+.sub{color:#b8a8d8;margin:0 0 24px}
+.vs{display:flex;gap:12px;align-items:stretch;margin:20px 0}
+.fighter{flex:1;background:#2a1b4d;border:1px solid #4a3578;border-radius:16px;padding:16px;text-align:center}
+.fighter img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;display:block}
+.fighter .who{font-size:13px;color:#b8a8d8;margin:8px 0 2px}
+.fighter .what{font-weight:800;font-size:17px}
+.vs-badge{align-self:center;font-size:28px;font-weight:900;color:#ff9f43}
+.verdict{background:#2a1b4d;border:2px solid #ff9f43;border-radius:16px;padding:18px;margin:20px 0;font-size:17px}
+.verdict .vlabel{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#ff9f43;font-weight:800;margin-bottom:6px}
+button.pick{background:#2a1b4d;border:1px solid #4a3578;color:#f5efff;border-radius:12px;padding:12px;font-size:16px;width:100%;margin:6px 0;cursor:pointer;text-align:left}
+button.pick:active{background:#3a2666}
+.cta{display:block;text-align:center;background:#ff9f43;color:#1a1033;font-weight:800;font-size:18px;padding:16px;border-radius:14px;text-decoration:none;margin:24px 0 8px}
+.ghost{display:block;text-align:center;color:#b8a8d8;margin-top:12px;text-decoration:none}
+.fine{color:#b8a8d8;font-size:13px;text-align:center}
+.step{display:none}
+.step.on{display:block}
+.pill{display:inline-block;background:#3a2666;border-radius:999px;padding:4px 14px;font-size:13px;color:#b8a8d8;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="step on" id="s1">
+  <span class="pill">PROTOTYPE — not live</span>
+  <h1>⚔️ Costume Duel</h1>
+  <p class="sub">Your friend took the quiz and got a costume. Take it yourself and see how you match up.</p>
+  <div class="vs">
+    <div class="fighter">
+      <img src="/photos/neon-demon-hunter.webp" alt="Neon Demon Hunter">
+      <div class="who">Your friend got</div>
+      <div class="what">Neon Demon Hunter</div>
+    </div>
+  </div>
+  <p class="sub">Quick — answer 2 questions and we'll pick yours:</p>
+  <p style="font-weight:700">Who's the costume for?</p>
+  <button class="pick" data-q1="me">Just me</button>
+  <button class="pick" data-q1="couple">Me + partner</button>
+  <button class="pick" data-q1="family">The whole family</button>
+</div>
+
+<div class="step" id="s2">
+  <span class="pill">PROTOTYPE — not live</span>
+  <h1>⚔️ Costume Duel</h1>
+  <p style="font-weight:700">How much effort?</p>
+  <button class="pick" data-q2="low">As little as possible</button>
+  <button class="pick" data-q2="mid">A fun weekend project</button>
+  <button class="pick" data-q2="high">Go all out</button>
+</div>
+
+<div class="step" id="s3">
+  <span class="pill">PROTOTYPE — not live</span>
+  <h1>⚔️ The verdict</h1>
+  <div class="vs">
+    <div class="fighter">
+      <img src="/photos/neon-demon-hunter.webp" alt="Neon Demon Hunter">
+      <div class="who">Your friend</div>
+      <div class="what">Neon Demon Hunter</div>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div class="fighter">
+      <img id="my-img" src="/photos/classic-ghost.webp" alt="Your costume">
+      <div class="who">You</div>
+      <div class="what" id="my-what">Classic Ghost</div>
+    </div>
+  </div>
+  <div class="verdict">
+    <div class="vlabel">The verdict</div>
+    <div id="verdict-text">Two different lanes. The group chat will have opinions.</div>
+  </div>
+  <a class="cta" href="#" onclick="return false">Send my result back →</a>
+  <p class="fine">This closes the loop — your friend gets your pick, and the duel continues.</p>
+  <a class="ghost" href="#" onclick="show(1);return false">↺ Try different answers</a>
+</div>
+
+</div>
+<script>
+var picks = {
+  "me-low":    {img:"/photos/classic-ghost.webp", name:"Classic Ghost", verdict:"Two different lanes. Your friend went full cyber-slayer, you went bedsheet. The group chat will have opinions."},
+  "me-mid":    {img:"/photos/lost-tourist.webp", name:"Lost Tourist", verdict:"Chaos vs chaos. Neon Demon Hunter brings the drama, Lost Tourist brings the comedy. Honestly a great duo."},
+  "me-high":   {img:"/photos/neon-demon-hunter.webp", name:"Neon Demon Hunter", verdict:"Great minds. You both got Neon Demon Hunter. Matching costumes, zero discussion needed."},
+  "couple-low":{img:"/photos/just-married.webp", name:"Just Married", verdict:"Your friend is hunting demons solo while you're doing couples costumes. Different parties, probably."},
+  "couple-mid":{img:"/photos/blue-dog-family.webp", name:"Aussie Dog Family", verdict:"Wholesome vs edgy. One of you is getting candy, the other is getting compliments. Both win."},
+  "couple-high":{img:"/photos/good-witch-bad-witch.webp", name:"Good Witch / Bad Witch", verdict:"Duo potential. Both picks are high-drama group-friendly builds. The Halloween party just got interesting."},
+  "family-low":{img:"/photos/crowd-camouflage.webp", name:"Crowd Camouflage", verdict:"Your friend went solo hunter, you went full family incognito. The blank name tag is doing heavy lifting."},
+  "family-mid":{img:"/photos/snow-sisters.webp", name:"Snow Sisters", verdict:"Family energy vs solo energy. Both are strong picks — but only one of you has to coordinate four people."},
+  "family-high":{img:"/photos/mermaid-crew.webp", name:"Mermaid Crew", verdict:"Duo potential. Both builds are all-in group efforts. Someone's living room is about to become a craft store."}
+};
+var q1 = null;
+function show(n){
+  document.querySelectorAll(".step").forEach(function(s){ s.classList.remove("on"); });
+  document.getElementById("s"+n).classList.add("on");
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-q1]").forEach(function(b){
+  b.addEventListener("click", function(){ q1 = b.getAttribute("data-q1"); show(2); });
+});
+document.querySelectorAll("[data-q2]").forEach(function(b){
+  b.addEventListener("click", function(){
+    var q2 = b.getAttribute("data-q2");
+    var p = picks[q1+"-"+q2] || picks["me-low"];
+    document.getElementById("my-img").src = p.img;
+    document.getElementById("my-what").textContent = p.name;
+    document.getElementById("verdict-text").textContent = p.verdict;
+    show(3);
+  });
+});
+</script>
+</body>
+</html>
