@@ -905,7 +905,7 @@ var IDEAS = [
   {id:"little-shark", title:"Little Shark", blurb:"Gray hoodie with a felt fin glued on the back.", why:"Sharks are timeless even when the song is not, and it is just a hoodie with a fin.", audience:["kid"], budget:["low","mid"], tags:{cute:2,couch:1,kidunder3:2,kid36:2,animals:2,occtreat:2}, fit:"U", venue:{bar:2}, rank:26},
   {id:"walking-taco", title:"Walking Taco", blurb:"Tan vest painted like a taco shell with felt toppings.", why:"Maximum laughs per dollar at the preschool parade.", audience:["kid"], budget:["diy","mid"], tags:{funny:3,crafty:2,kid36:2,kid7plus:1,food:2,occparty:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:27},
   {id:"ramen-bowl", title:"Ramen Bowl", blurb:"Cardboard bowl rim, noodle-yarn hair, a foam egg on top.", why:"Cozy, funny, and the chopsticks make every photo.", audience:["kid","solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,kid36:2,food:2,occparty:2,occtreat:1}, fit:"U", venue:{bar:1}, rank:28},
-  {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{couch:2,cute:3,simple:1,kid36:2,kidunder3:1,animals:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:29},
+  {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{couch:2,cute:3,simple:2,kid36:2,kidunder3:2,animals:2,occtreat:2}, fit:"U", venue:{bar:1}, rank:29},
   {id:"little-witch", title:"Little Witch", blurb:"Black cape, pointy hat, striped tights, green face paint.", why:"Classic, comfortable, and the green face paint keeps it from being just-a-witch.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:2,scary:1,kid36:2,kid7plus:1,occtreat:2}, fit:"F", venue:{bar:2}, rank:30},
   {id:"spider", title:"Eight-Legged Spider", blurb:"Black sweats with stuffed sock legs attached at the sides.", why:"Spooky from across the street, snuggly up close.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,kid7plus:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:31},
   {id:"backyard-hero", title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", why:"Skip the mask, add a face-paint lightning bolt, still a hero.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:1,couch:1,kid36:2,kid7plus:1,heroes:3,occtreat:2}, fit:"U", venue:{bar:2}, rank:32},
@@ -5131,7 +5131,7 @@ function shareLandingHeadline(idea, search){
        check their own pantry. The /c/ function preserves all query params
        across the redirect, so ch=1 survives. Non-challenge landings below are
        untouched. */
-    var chm = /[?&]ch=1/.exec(location.search || "");
+    var chm = /[?&]ch=1(?:&|$)/.exec(location.search || "");
     var box = document.createElement("div");
     box.className = "card";
     box.style.marginBottom = "16px";
