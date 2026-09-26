@@ -6834,14 +6834,27 @@ function buildCastShareText(idea, list, sid){
      the short generic invitation instead -- it reads like a recruit, which is
      the right frame when you have not named the cast yet. */
   var anyBlank = list.some(function(a){ return !a.rawName; });
+  var text;
   if (anyBlank){
     /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-    return "Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    text = "Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+  } else {
+    /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
+    var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
+    text = lead + idea.title + " this Halloween: " + castLine(list) +
+      ". " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
   }
-  /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
-  var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
-  return lead + idea.title + " this Halloween: " + castLine(list) +
-    ". " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+  /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
+     not just the costume name. Kid/family cast shares append the materials,
+     mirroring shareTextFor (the generic share path already does this). */
+  var aud = (typeof state !== "undefined" && state.answers && state.answers.q1) ? state.answers.q1.value : null;
+  if ((aud === "kid" || aud === "family") && typeof INSTRUCTIONS !== "undefined"){
+    var ins = INSTRUCTIONS[idea.id];
+    if (ins && ins.m && ins.m.length){
+      text += " You need: " + ins.m.slice(0, 8).join(", ") + ".";
+    }
+  }
+  return text;
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
