@@ -839,6 +839,10 @@ function renderGroups(){
       if (cb.checked) ticked.add(cb.dataset.id); else ticked.delete(cb.dataset.id);
       cb.closest('.check').classList.toggle('on', cb.checked);
       try { localStorage.setItem(LS_KEY, JSON.stringify([...ticked])); } catch (e) {}
+      /* Billy 2026-09-26: engagement instrumentation. Counts only -- never
+         which materials (that's what's in their house). Debounced. */
+      if (window._phT) clearTimeout(window._phT);
+      window._phT = setTimeout(function(){ track('pantry_materials_changed', { ticked_count: ticked.size }); }, 1500);
       render();
     });
   });
@@ -978,6 +982,9 @@ function render(){
   put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.');
   put('tier1', t1, 'Nothing is just 1 or 2 things away right now.');
   put('tier2', t2, '');
+  /* Billy 2026-09-26: engagement instrumentation. Counts only, once per
+     page load: did the ranked list actually render for them. */
+  if (!window._phRv) { window._phRv = 1; track('pantry_results_viewed', { ready_count: t0.length, almost_count: t1.length, ticked_count: ticked.size }); }
   /* Billy 2026-09-26: the whole result card opens the full detail screen,
      not just the "How to make it" link. Taps on links/buttons/inputs keep
      their own behavior. */
