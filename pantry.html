@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What do you have? - Pick My Costume</title>
+<title>What materials or clothes are already in your house? - Pick My Costume</title>
 <meta name="description" content="Tick what is already in your house and we will rank all 137 costume ideas by how little you still need.">
 <style>
   :root{
@@ -73,7 +73,7 @@
   .reshead h2{font-size:20px;margin:0}
   .reshead span{font-size:13px;color:var(--muted)}
   .tier-sub{font-size:13.5px;color:var(--muted);margin:-6px 0 10px;line-height:1.45}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 10px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 10px;cursor:pointer}
   .card.zero{border-color:var(--green)}
   .card.almost{border-color:var(--yellow)}
   .card .rank{font-size:12px;color:var(--muted);font-weight:700}
@@ -108,7 +108,7 @@
     <a class="brand" href="/">Pick My <span>Costume</span></a>
   </div>
 
-  <h1>What do you have?</h1>
+  <h1>What materials or clothes are already in your house?</h1>
   <p class="sub">Tick everything already in your house. We rank all 137 costumes by what you can make tonight, no guessing.</p>
 
   <p class="staple-note"><b>We assume every home has scissors, tape, and paper + pen.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p>
@@ -978,6 +978,22 @@ function render(){
   put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.');
   put('tier1', t1, 'Nothing is just 1 or 2 things away right now.');
   put('tier2', t2, '');
+  /* Billy 2026-09-26: the whole result card opens the full detail screen,
+     not just the "How to make it" link. Taps on links/buttons/inputs keep
+     their own behavior. */
+  ['tier0','tier1','tier2'].forEach(function(tid){
+    var t = document.getElementById(tid);
+    if (t && !t.dataset.cardtap){
+      t.dataset.cardtap = '1';
+      t.addEventListener('click', function(ev){
+        if (ev.target.closest('a,button,input,select,textarea')) return;
+        var card = ev.target.closest('.card');
+        if (!card) return;
+        var link = card.querySelector('a.go');
+        if (link) location.href = link.getAttribute('href');
+      });
+    }
+  });
   renderPantryVote(t0, t1);
 }
 
