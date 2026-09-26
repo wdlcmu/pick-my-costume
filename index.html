@@ -320,6 +320,12 @@ footer a{color:var(--accent)}
         <button class="ghost" id="btn-return" type="button">See my ideas again</button>
       </div>
       <button class="cta" id="btn-start" type="button">Find my costume</button>
+      <div class="pinpoint" id="pinpoint" style="margin-top:16px">
+        <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">123</span> costumes directly</p>
+        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
+        <div class="pinpoint-chips" id="pinpoint-chips"></div>
+        <p class="pinpoint-note" id="pinpoint-note"></p>
+      </div>
       <div class="proofstrip">
         <p class="fine" style="margin:0 0 6px">Trending now:</p>
         <div class="proofrow">
@@ -339,12 +345,6 @@ footer a{color:var(--accent)}
         <p class="fine explore-head">More ways to explore</p>
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
-      <div class="pinpoint" id="pinpoint" style="margin-top:16px">
-        <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">123</span> costumes directly</p>
-        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. Spider-Man" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
-        <div class="pinpoint-chips" id="pinpoint-chips"></div>
-        <p class="pinpoint-note" id="pinpoint-note"></p>
-      </div>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 123 ideas</button></p>
       </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
