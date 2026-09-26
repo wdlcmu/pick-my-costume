@@ -111,7 +111,9 @@ body{
 .hero .moonwrap:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
 .hero .moon,.hero .sun{width:52px;height:52px;display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(245,238,210,.35))}
 .hero .sun{filter:drop-shadow(0 0 12px rgba(255,200,90,.5))}
-.hero .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;white-space:nowrap}
+.hero .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;line-height:1.35}
+/* Billy 2026-09-26 (returning-hero QA): the caption wraps to two lines inside
+   the 54px wrap so it never slides left under the countdown at phone width. */
 /* Billy 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
    it stays cheap on phones; off entirely under prefers-reduced-motion. */
 .hero .halo{position:absolute;top:-18px;left:50%;width:88px;height:88px;margin-left:-44px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite;pointer-events:none}
@@ -119,7 +121,7 @@ body{
 @keyframes haloPulse{0%,100%{opacity:.55}50%{opacity:1}}
 /* Billy 2026-09-26: tappable moon panel. Phase name + illumination tonight,
    Halloween night's moon, days to go. */
-.moonpanel{position:absolute;top:78px;right:8px;z-index:30;width:min(300px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55;box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.moonpanel{position:absolute;top:100px;right:8px;z-index:30;width:min(300px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55;box-shadow:0 8px 28px rgba(0,0,0,.4)}
 .moonpanel p{margin:4px 0}
 .moonpanel .mp-fun{color:var(--accent);font-weight:600}
 /* Billy 2026-09-26: hero rewrite (BuzzFeed confident-challenge headline). */
@@ -409,6 +411,12 @@ footer a{color:var(--accent)}
 /* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
    tagline, never a ticking widget. Hides itself after Oct 31. */
 .tminus{margin:10px 0 0;font-size:15px;font-weight:700;color:var(--accent)}
+/* Billy 2026-09-26 (returning-hero QA): at phone width the centered countdown
+   ran under the moon's halo; give it right clearance on narrow screens.
+   The moon's caption hides there too: at 390px it collided with the countdown
+   (returning) and the giant H1 (first-timer). The moon stays tappable via its
+   title/aria label. */
+@media (max-width:520px){.tminus{padding-right:64px}.hero .mooncap{display:none}}
 .about-body p{margin:0 0 14px;line-height:1.55}
 .examplebox{margin:0 0 14px;padding:14px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
 .examplebox p{margin:0 0 8px}
