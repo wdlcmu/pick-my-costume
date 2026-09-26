@@ -932,6 +932,39 @@ var Analytics = {
   };
 })();
 
+/* ================= Saved-not-shared recovery (2026-09-26 afternoon) =========
+   PostHog 7-day funnel: 118 pick_saved vs 45 share_created. The cheapest new
+   shares come from people who picked but never sent. Every save records
+   pmc_recover_v1 (both doPick paths above); every completed share clears it.
+   One choke point here: every share_created / second_share_created in this
+   file goes through Analytics.track, so the marker clears without touching
+   the 8+ share paths. Only clears when the shared idea matches the pending
+   one: a re-pick updates the marker, so a share of the old pick must not
+   cancel the nudge for the new one. The pure core (recoverShouldShow) is
+   unit-tested by hour-session/recover-nudge-gate.js. */
+function recoverMarkShared(ideaId){
+  if (!ideaId) return;
+  var rec = load("pmc_recover_v1");
+  if (rec && rec.ideaId === ideaId) clearK("pmc_recover_v1");
+}
+(function(){
+  var _track2 = Analytics.track;
+  Analytics.track = function(name, props){
+    try {
+      if ((name === "share_created" || name === "second_share_created") && props && props.idea_id) recoverMarkShared(props.idea_id);
+    } catch(e){}
+    return _track2.call(Analytics, name, props);
+  };
+})();
+var RECOVER_NUDGE_MIN_AGE_MS = 6*60*60*1000;
+var RECOVER_NUDGE_SNOOZE_MS = 7*24*60*60*1000;
+function recoverShouldShow(rec, snoozedAt, nowMs){
+  if (!rec || !rec.ideaId || !rec.at) return false;
+  if (snoozedAt && (nowMs - snoozedAt) < RECOVER_NUDGE_SNOOZE_MS) return false;
+  if ((nowMs - rec.at) < RECOVER_NUDGE_MIN_AGE_MS) return false;
+  return true;
+}
+
 function $(id){ return document.getElementById(id); }
 function store(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 function clearK(k){ try { localStorage.removeItem(k); } catch(e){} }
@@ -3562,6 +3595,10 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          user left it, so cast names, cast size, and role picks survive. */
       if (already && already.ideaId === idea.id && card.getAttribute("data-panel")) return;
       store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+      /* 2026-09-26 afternoon (saved-not-shared recovery): every save arms the
+         recovery nudge; any completed share for this idea clears it via the
+         Analytics.track wrapper below. */
+      store("pmc_recover_v1", {ideaId: idea.id, at: Date.now()});
       note.style.display = "block";
       hint.style.display = "none";
       status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
@@ -4835,6 +4872,8 @@ function buildBrowseDetailCard(idea, whyHead){
   }
   function doPick(){
     store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
+    /* 2026-09-26 afternoon (saved-not-shared recovery): browse saves arm it too. */
+    store("pmc_recover_v1", {ideaId: idea.id, at: Date.now()});
     note.style.display = "block";
     hint.style.display = "none";
     status.textContent = "";
@@ -6682,7 +6721,7 @@ var KIDS_RAIL_IDS = ["snow-sisters","fairy-tale-princesses","backyard-hero","bab
     card.addEventListener("click", (function(iid){
       return function(){
         try { Analytics.track("kids_rail_tap", {idea_id: iid}); } catch(e){}
-        openIdeaDetail(iid, "Why it's great", "s-hero", "Most wanted by kids");
+        openIdeaDetail(iid, "Why it's great", "s-hero", "Kid favorites");
       };
     })(idea.id));
     row.appendChild(card);
@@ -7034,6 +7073,54 @@ function shareLandingHeadline(idea, search){
        recipient_landing_viewed (only the teaser branch and the ?idea= block
        did), so bare-share arrivals undercounted recipient opens. */
     if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+  })();
+  /* Saved-not-shared recovery nudge (2026-09-26 afternoon): a return visit
+     with an unshared pick gets one slim banner above the hero. The save must
+     be at least 6h old (someone sharing right away never sees it), the idea
+     must still exist in the bank, and any query string suppresses the banner:
+     share arrivals get the friend banner instead, and ?pick= detail views
+     already have the share row. "Send it now" deep-links to ?pick=<slug>,
+     which opens the same full pick flow with the share buttons; "Not now"
+     snoozes 7 days. Additive: no existing element, event, or experiment is
+     touched. Copy is plain English, no em dashes. */
+  (function(){
+    try {
+      if (location.search) return;
+      var hero = $("s-hero");
+      if (!hero || $("pmc-recover-banner") || $("pmc-friend-banner")) return;
+      var rec = load("pmc_recover_v1");
+      var snoozedAt = load("pmc_recover_snooze_v1");
+      if (!recoverShouldShow(rec, snoozedAt, Date.now())) return;
+      var idea = null;
+      if (typeof IDEAS !== "undefined") IDEAS.forEach(function(it){ if (it.id === rec.ideaId) idea = it; });
+      if (!idea || !idea.title) return;
+      var rb = document.createElement("div");
+      rb.id = "pmc-recover-banner";
+      rb.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
+      var p1 = document.createElement("p");
+      p1.style.cssText = "margin:0 0 10px;font-weight:700;color:#333;line-height:1.4";
+      p1.textContent = "You saved " + idea.title + " but never sent it.";
+      var row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:10px;align-items:stretch;";
+      var go = document.createElement("a");
+      go.href = "/?pick=" + encodeURIComponent(rec.ideaId);
+      go.textContent = "Send it now";
+      go.style.cssText = "flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:17px;color:#2a1500;background:#ff8c1a;border-radius:14px;padding:14px 0;display:block;";
+      go.onclick = function(){ Analytics.track("recovery_nudge_sent", {idea_id: rec.ideaId}); };
+      var no = document.createElement("button");
+      no.type = "button";
+      no.textContent = "Not now";
+      no.style.cssText = "padding:14px 20px;font-size:17px;background:rgba(0,0,0,.04);color:#333;border:2px solid #d8c9ae;border-radius:14px;cursor:pointer;";
+      no.onclick = function(){
+        store("pmc_recover_snooze_v1", Date.now());
+        Analytics.track("recovery_nudge_dismissed", {idea_id: rec.ideaId});
+        if (rb.parentNode) rb.parentNode.removeChild(rb);
+      };
+      row.appendChild(go); row.appendChild(no);
+      rb.appendChild(p1); rb.appendChild(row);
+      hero.insertBefore(rb, hero.firstChild);
+      Analytics.track("recovery_nudge_shown", {idea_id: rec.ideaId});
+    } catch(e){}
   })();
   /* Pantry parity (2026-09-25): pantry.html cards deep-link here with
      ?pick=<slug> so a pantry tap opens the SAME full pick flow
