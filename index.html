@@ -331,7 +331,7 @@ footer a{color:var(--accent)}
         <div class="proofrow">
           <a href="/c/snow-sisters"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
           <a href="/c/neon-demon-hunter"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
-          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Blue Dog Family costume" loading="lazy"><span>Blue Dog Family</span></a>
+          <a href="/c/blue-dog-family"><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
           <a href="/c/lost-tourist"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
           <a href="/c/mermaid-crew"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
           <a href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses.webp" alt="Fairy Tale Princesses costume" loading="lazy"><span>Fairy Tale Princesses</span></a>
@@ -441,7 +441,7 @@ footer a{color:var(--accent)}
   <!-- BROWSE DETAIL: tapping a browse card opens the full pick flow here,
        reusing the quiz result card components. -->
   <section class="screen" id="s-detail">
-    <p class="progress">From browsing</p>
+    <p class="progress" id="detail-progress">From browsing</p>
     <h2 class="q-title">Costume detail</h2>
     <div id="d-card"></div>
     <div class="navrow" style="margin-top:16px">
@@ -3217,13 +3217,15 @@ function buildBrowseDetailCard(idea, whyHead){
 /* detailReturnTo: where the detail screen's back button goes. Browse taps
    return to the shelf; pinpoint (hero) taps return to the hero. */
 var detailReturnTo = "s-browse";
-function openIdeaDetail(ideaId, whyHead, returnTo){
+function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   var idea = null;
   for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
   if (!idea) return;
   detailReturnTo = (returnTo === "s-hero") ? "s-hero" : "s-browse";
   var db = $("btn-dback");
   if (db) db.innerHTML = (detailReturnTo === "s-hero") ? "&larr; Back" : "&larr; Back to browse";
+  var dp = $("detail-progress");
+  if (dp) dp.textContent = progressText || "From browsing";
   var box = $("d-card");
   box.innerHTML = "";
   box.appendChild(buildBrowseDetailCard(idea, whyHead));
@@ -4285,7 +4287,7 @@ function renderPinpointChips(){
   sb.onclick = function(){
     var idea = IDEAS[Math.floor(Math.random() * IDEAS.length)];
     try { Analytics.track("surprise_me", {idea_id: idea.id, source: "hero_chip"}); } catch(e){}
-    openIdeaDetail(idea.id);
+    openIdeaDetail(idea.id, null, "s-hero", "A surprise pick for you");
   };
   box.appendChild(sb);
 }
