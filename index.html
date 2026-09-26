@@ -146,6 +146,7 @@ button.ghost{
 .card h3{margin:0 0 6px;font-size:24px}
 .toppick{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:8px}
 .rolebadge{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;margin-bottom:8px;background:var(--bg2);color:var(--ink);border:1px solid var(--line)}
+.rolenote{font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.4}
 .makeplan{margin:16px 0 0;padding:14px;background:var(--bg2);border-radius:var(--radius);border:1px solid var(--line)}
 .makeplan h3{margin:0 0 6px;font-size:18px}
 .makeplan .mp-meta{font-size:13px;color:#5b6467;margin:0 0 8px;font-weight:600}
@@ -246,7 +247,16 @@ footer a{color:var(--accent)}
 .bsearch input{width:100%;box-sizing:border-box;padding:12px 14px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
 .bsearch input:focus{outline:none;border-color:var(--accent)}
 .bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
-.bempty{color:var(--muted);padding:24px 0;text-align:center}
+.bempty{color:var(--muted);padding:24px 0 8px;text-align:center}
+/* Type-ahead suggestions: tappable rows under the search box, 44px+ targets. */
+.bsuggest{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.bsuggest .sug{padding:10px 14px;min-height:44px;font-size:15px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);color:var(--ink);font-family:inherit;cursor:pointer}
+.bsuggest .sug:active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Empty-state popular searches: a dead end becomes a way forward. */
+.bpop{margin:6px 0 4px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.bpop span{font-size:13px;color:var(--muted);width:100%;text-align:center}
+.bchip{padding:10px 16px;min-height:44px;font-size:15px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);color:var(--ink);font-family:inherit;cursor:pointer}
+.bchip:active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .bclose{margin:18px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 /* Sticky browse filters: the filter bar stays pinned while the grid
    scrolls, so the 76 ideas never strand you without a way to narrow them.
@@ -1507,12 +1517,17 @@ function ideaBudgetLabel(idea){
   if (b.indexOf("low") >= 0) return BUDGET_FACTS.low;
   return BUDGET_FACTS.mid;
 }
-/* Result roles (Billy 2026-09-25): the top 3 earn their labels; labels are
-   computed, never hardcoded. #1 is always "Best Match". "Easiest" goes to
-   the unique lowest build-difficulty idea only when it is clearly easier
-   (margin >= 2 on the 0-7 scale below) and it is not #1. "Wildcard" goes to
-   the runner-up with clearly the largest tag distance from #1 (margin >= 3).
-   When a distinction is not clear, the card keeps neutral numbering --
+/* Result roles (Billy 2026-09-25; expanded 2026-09-25 per his "be creative"
+   brief): the top 3 earn their labels; labels are computed, never hardcoded.
+   #1 is always "Best Match". Runner-up candidates, most defensible first:
+   "Easiest" (unique lowest build difficulty, margin >= 2, never #1),
+   "Zero-Dollar Build" (the make-plan cost is genuinely $0 -- a range like
+   $0-10 is not zero), "Tonight-Ready" (make-plan time of 30 min or less),
+   "Plot Twist" (its top interest differs from the user's picked interest
+   while its vibe matches the user's picked vibe), "Wildcard" (clearly the
+   largest tag distance from #1, margin >= 3). One role per result: the most
+   defensible candidate wins, the rest are dropped, never stacked. When no
+   candidate's evidence gate passes, the card keeps neutral numbering --
    never a forced label. */
 function buildDifficulty(idea){
   var er = {couch:0, crafty:1, allout:2}[ideaEffortKey(idea)];
@@ -1531,6 +1546,56 @@ function tagDistance(a, b){
   for (k in keys) d += Math.abs((ta[k] || 0) - (tb[k] || 0));
   return d;
 }
+/* Evidence gates for the newer roles. Each returns a hard yes/no from real
+   data; a role renders only when its gate passes. */
+function planCostIsZero(idea){
+  /* "Zero-Dollar Build": the MAKE_PLANS cost is genuinely $0. A range like
+     "~$0-10 total" is NOT zero -- it can cost money. Only an exact $0 parses. */
+  if (typeof MAKE_PLANS === "undefined") return false;
+  var p = MAKE_PLANS[idea.id];
+  if (!p || !p.cost) return false;
+  return /^\~?\$0(\.00)?$/.test(p.cost.trim());
+}
+function planMinutes(idea){
+  /* Parses "~20 min" / "~1.5 hrs" to minutes; null when unparseable. */
+  if (typeof MAKE_PLANS === "undefined") return null;
+  var p = MAKE_PLANS[idea.id];
+  if (!p || !p.time) return null;
+  var m = p.time.match(/~?([\d.]+)\s*(min|hr)/i);
+  if (!m) return null;
+  var n = parseFloat(m[1]);
+  return /hr/i.test(m[2]) ? Math.round(n * 60) : n;
+}
+function planIsTonightReady(idea){
+  /* "Tonight-Ready": the make-plan builds in 30 minutes or less, end to end. */
+  var mins = planMinutes(idea);
+  return mins !== null && mins <= 30;
+}
+function planIsPlotTwist(idea){
+  /* "Plot Twist": the pick's strongest interest tag differs from the user's
+     picked interest, but its vibe matches the user's picked vibe (ranking
+     thresholds, same as the quiz). No quiz interest or vibe answered, or an
+     idea with no interest tag, means no evidence -- no role. */
+  var qi = (typeof state !== "undefined" && state.answers) ? state.answers.qinterest : null;
+  var qv = (typeof quizVibeTag === "function") ? quizVibeTag() : null;
+  if (!qi || !qi.tags || !qv) return false;
+  var userInt = null, k;
+  for (k in qi.tags){ if (INTEREST_TAGS.indexOf(k) >= 0){ userInt = k; break; } }
+  if (!userInt) return false;
+  var t = (typeof moreLikeThisTag === "function") ? moreLikeThisTag(idea) : null;
+  if (!t || t.kind !== "interest" || t.tag === userInt) return false;
+  return vibeOkFor(qv, idea.tags || {});
+}
+/* One plain-English line per role, shown on first appearance per results
+   screen. No em dashes. */
+var ROLE_NOTES = {
+  "Best Match": "The highest-scoring pick for your answers.",
+  "Easiest": "The simplest build of your top 3, by a clear margin.",
+  "Zero-Dollar Build": "Made entirely from things you already own. It costs $0.",
+  "Tonight-Ready": "Builds in 30 minutes or less.",
+  "Plot Twist": "A different interest than the one you picked, but the same vibe. Worth a look.",
+  "Wildcard": "The most different pick from your best match. A curveball."
+};
 function resultRoles(results){
   var roles = ["Best Match", null, null];
   if (!results || results.length < 3) return roles;
@@ -1539,13 +1604,18 @@ function resultRoles(results){
   var minCount = diff.filter(function(d){ return d === minD; }).length;
   var nextD = Math.min.apply(null, diff.filter(function(d){ return d > minD; }));
   var minIdx = diff.indexOf(minD);
-  if (minCount === 1 && minIdx > 0 && (nextD - minD) >= 2) roles[minIdx] = "Easiest";
   var d2 = tagDistance(results[0].idea, results[1].idea);
   var d3 = tagDistance(results[0].idea, results[2].idea);
-  if (Math.abs(d2 - d3) >= 3){
-    var wi = d2 > d3 ? 1 : 2;
-    roles[wi] = roles[wi] ? roles[wi] + " \u00B7 Wildcard" : "Wildcard";
-  }
+  var wildIdx = (Math.abs(d2 - d3) >= 3) ? (d2 > d3 ? 1 : 2) : -1;
+  [1, 2].forEach(function(i){
+    var idea = results[i].idea, c = [];
+    if (minCount === 1 && minIdx === i && (nextD - minD) >= 2) c.push("Easiest");
+    if (planCostIsZero(idea)) c.push("Zero-Dollar Build");
+    if (planIsTonightReady(idea)) c.push("Tonight-Ready");
+    if (planIsPlotTwist(idea)) c.push("Plot Twist");
+    if (wildIdx === i) c.push("Wildcard");
+    roles[i] = c.length ? c[0] : null;
+  });
   return roles;
 }
 var AUDIENCE_PHRASE = {
@@ -1816,7 +1886,7 @@ function buildMakePlan(idea){
   box.addEventListener("click", function(e){ e.stopPropagation(); });
   return box;
 }
-function buildResultCard(scored, idx, pick, noArt, role){
+function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     var idea = scored.idea;
     var card = document.createElement("div");
     card.className = "card";
@@ -1838,6 +1908,9 @@ function buildResultCard(scored, idx, pick, noArt, role){
     if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your 2026 Halloween costume";card.appendChild(kc);}
     if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent=role||"Top pick for you";card.appendChild(tp);}
     if(idx>0&&role){var rb=document.createElement("span");rb.className="rolebadge";rb.textContent=role;card.appendChild(rb);}
+    /* Role explanatory line: once per role per results screen, rendered by
+       the caller via roleNote; badge-only on repeats. */
+    if(roleNote){var rnn=document.createElement("p");rnn.className="rolenote";rnn.textContent=roleNote;card.appendChild(rnn);}
     var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
     var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
     /* Fact row: the four questions every recipient asks, answered at a glance. */
@@ -2039,7 +2112,16 @@ function renderResults(results){
      runner-up with no earned role keeps neutral numbering. */
   var roles = resultRoles(results);
   var roleLabel = function(i){ return roles[i] || ("No. " + (i + 1)); };
-  var heroCard = buildResultCard(results[0], 0, pick, false, roles[0]);
+  /* Explanatory line, once per role per results screen: the first card that
+     earns a role carries the plain-English note; repeats show the badge only. */
+  var seenRoles = {};
+  var roleNote = function(i){
+    var r = roles[i];
+    if (!r || seenRoles[r]) return null;
+    seenRoles[r] = true;
+    return ROLE_NOTES[r] || null;
+  };
+  var heroCard = buildResultCard(results[0], 0, pick, false, roles[0], roleNote(0));
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
@@ -2089,7 +2171,7 @@ function renderResults(results){
         hint.textContent = "Tap for the full plan";
         openIdx = -1;
       } else {
-        var detailCard = buildResultCard(scored, i + 1, load("pmc_pick_v1"), true, roleLabel(i + 1));
+        var detailCard = buildResultCard(scored, i + 1, load("pmc_pick_v1"), true, roleLabel(i + 1), roleNote(i + 1));
         cards[idea.id] = detailCard;
         ruDetail.innerHTML = "";
         ruDetail.appendChild(detailCard);
@@ -2140,6 +2222,432 @@ function renderResults(results){
     cards[pick.ideaId]._mountPanel();
   }
   show("s-results");
+}
+
+/* ================= SEARCH INTELLIGENCE ================= */
+/* Billy 2026-09-25: "best search engine we can build." Layers:
+   1. Trending 2026 aliases (KPop Demon Hunters, Labubu, Wednesday...)
+   2. Evergreen character aliases (princesses, superheroes, nostalgia...)
+   3. Full kids universe (Bluey, Paw Patrol, Cocomelon, Toy Story, Frozen...)
+   4. Intent attributes as STRUCTURED filters (price, gender, age, party
+      size, vibe, effort, materials, occasion) that compose by intersection
+      ("cheap funny couples" = price + vibe + party size together).
+   5. Query normalization: leading articles stripped, plurals folded,
+      hyphens and spaces collapsed, edit-distance-1 typo tolerance.
+   An alias is only mapped when genuinely relevant. Terms with no good bank
+   match stay unmapped and are logged as BANK_GAPS in the deploy report
+   (pirates, horror clowns, angels, Lorax, Carmy, Encanto, Aladdin, Ninja
+   Turtles...). A dead query fires a search_zero_results PostHog event so
+   the gap list feeds itself. */
+
+var SEARCH_STOPWORDS = ["costume","costumes","halloween","idea","ideas","diy","outfit","outfits","2026","show","me","my","for","and","with","please","the","a","an"];
+
+function normalizeSearch(q){
+  var s = (q || "").toLowerCase();
+  s = s.replace(/-/g, " ");
+  s = s.replace(/&/g, " and ");
+  s = s.replace(/[^a-z0-9\s]/g, " ");
+  s = s.replace(/\s+/g, " ").trim();
+  s = s.replace(/^(a|an|the)\s+/, "");
+  return s.replace(/\s+/g, " ").trim();
+}
+function searchKey(q){ return normalizeSearch(q).replace(/\s+/g, ""); }
+
+/* Character/trend aliases: spaceless lowercase key -> curated idea ids in
+   best-first order. Curated, not a tag dump: every key maps to the
+   genuinely closest bank ideas. */
+var SEARCH_ALIASES = {
+  /* --- Trending 2026 --- */
+  "kpopdemonhunters": ["neon-demon-hunter","demon-boy-band"],
+  "kpop": ["neon-demon-hunter","demon-boy-band"],
+  "demonhunters": ["neon-demon-hunter","demon-boy-band"],
+  "huntrix": ["neon-demon-hunter","demon-boy-band"],
+  "rumi": ["neon-demon-hunter","demon-boy-band"],
+  "zoey": ["neon-demon-hunter","demon-boy-band"],
+  "mira": ["neon-demon-hunter","demon-boy-band"],
+  "jinu": ["demon-boy-band","neon-demon-hunter"],
+  "babysaja": ["demon-boy-band","neon-demon-hunter"],
+  "sajaboys": ["demon-boy-band","neon-demon-hunter"],
+  "labubu": ["fuzzy-monster","pocket-plush"],
+  "chickenjockey": ["block-game-crew"],
+  "elphaba": ["emerald-witch","good-witch-bad-witch","little-witch"],
+  "wicked": ["emerald-witch","good-witch-bad-witch","little-witch"],
+  "wednesday": ["deadpan-diva","gloom-bloom"],
+  "morticia": ["deadpan-diva","gloom-bloom"],
+  "addams": ["deadpan-diva","gloom-bloom"],
+  "vampire": ["vampire"],
+  "vampires": ["vampire"],
+  "vamp": ["vampire"],
+  "mariokart": ["kart-racers"],
+  "minion": ["goggle-crew"],
+  "minions": ["goggle-crew"],
+  "insideout": ["emotion-crew"],
+  "envy": ["emotion-crew"],
+  "joy": ["emotion-crew"],
+  "sadness": ["emotion-crew"],
+  "anger": ["emotion-crew"],
+  "anxiety": ["emotion-crew"],
+  "howtotrainyourdragon": ["dragon-rider-duo"],
+  "hiccup": ["dragon-rider-duo"],
+  "astrid": ["dragon-rider-duo"],
+  "toothless": ["dragon-rider-duo"],
+  /* --- Princesses --- */
+  "princess": ["fairy-tale-princesses","enchanted-castle-crew","snow-sisters","prince-princess","mermaid-crew"],
+  "belle": ["enchanted-castle-crew","fairy-tale-princesses","prince-princess"],
+  "jasmine": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "cinderella": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "ariel": ["mermaid-crew","fairy-tale-princesses","enchanted-castle-crew"],
+  "littlemermaid": ["mermaid-crew","under-the-sea"],
+  "elsa": ["snow-sisters","fairy-tale-princesses","enchanted-castle-crew"],
+  "anna": ["snow-sisters","fairy-tale-princesses","enchanted-castle-crew"],
+  "frozen": ["snow-sisters","fairy-tale-princesses","enchanted-castle-crew"],
+  "olaf": ["snow-sisters"],
+  "moana": ["mermaid-crew","under-the-sea","fairy-tale-princesses"],
+  "maui": ["mermaid-crew","under-the-sea"],
+  "rapunzel": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "tangled": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "flynn": ["prince-princess","fairy-tale-princesses"],
+  "mulan": ["fairy-tale-princesses","enchanted-castle-crew"],
+  "tiana": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "aurora": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "merida": ["fairy-tale-princesses","enchanted-castle-crew"],
+  "snowwhite": ["fairy-tale-princesses","enchanted-castle-crew","prince-princess"],
+  "beautyandthebeast": ["enchanted-castle-crew","fairy-tale-princesses"],
+  "beast": ["enchanted-castle-crew"],
+  /* --- Superheroes --- */
+  "superhero": ["superhero-family","backyard-hero","tin-hero","web-slinger-crew","caped-duo","hero-squad"],
+  "superheroes": ["superhero-family","backyard-hero","tin-hero","web-slinger-crew","caped-duo","hero-squad"],
+  "spiderman": ["web-slinger-crew","web-hero-duo","superhero-family","backyard-hero"],
+  "spidey": ["web-slinger-crew","web-hero-duo"],
+  "batman": ["caped-duo","superhero-family","backyard-hero","tin-hero"],
+  "superman": ["superhero-family","backyard-hero","tin-hero","caped-duo"],
+  "wonderwoman": ["superhero-family","tin-hero","backyard-hero"],
+  "deadpool": ["superhero-family","web-slinger-crew","backyard-hero"],
+  "wolverine": ["superhero-family","web-slinger-crew","backyard-hero"],
+  "powerrangers": ["robot-ranger","robot-crew","superhero-family"],
+  "powerranger": ["robot-ranger","robot-crew","superhero-family"],
+  /* --- Nostalgia --- */
+  "catinthehat": ["tall-hat-crew"],
+  "chipmunk": ["chipmunk-trio"],
+  "chipmunks": ["chipmunk-trio"],
+  "alvin": ["chipmunk-trio"],
+  "scooby": ["mystery-crew"],
+  "scoobydoo": ["mystery-crew"],
+  "pokemon": ["pocket-plush","fuzzy-monster"],
+  "pikachu": ["pocket-plush","fuzzy-monster"],
+  "eevee": ["pocket-plush","fuzzy-monster"],
+  "mario": ["plumber-duo","kart-racers"],
+  "luigi": ["plumber-duo","kart-racers"],
+  "supermario": ["plumber-duo","kart-racers"],
+  "cowboy": ["toy-box-crew"],
+  "cowboys": ["toy-box-crew"],
+  /* --- Witches, fairies, devils, ghosts --- */
+  "witch": ["emerald-witch","good-witch-bad-witch","little-witch"],
+  "witches": ["emerald-witch","good-witch-bad-witch","little-witch"],
+  "fairy": ["tooth-fairy","fairy-tale-princesses"],
+  "fairies": ["tooth-fairy","fairy-tale-princesses"],
+  "devil": ["deviled-egg","neon-demon-hunter"],
+  "devils": ["deviled-egg","neon-demon-hunter"],
+  "ghost": ["classic-ghost","ghost-hunters","pixel-ghost"],
+  "ghosts": ["classic-ghost","ghost-hunters","pixel-ghost"],
+  "skeleton": ["glow-skeleton"],
+  "skeletons": ["glow-skeleton"],
+  /* --- Kids universe --- */
+  "bluey": ["blue-dog-family"],
+  "bingo": ["blue-dog-family"],
+  "bandit": ["blue-dog-family"],
+  "chilli": ["blue-dog-family"],
+  "pawpatrol": ["blue-dog-family","mystery-crew"],
+  "chase": ["blue-dog-family","mystery-crew"],
+  "marshall": ["blue-dog-family","mystery-crew"],
+  "skye": ["blue-dog-family","mystery-crew"],
+  "rubble": ["blue-dog-family","mystery-crew"],
+  "zuma": ["blue-dog-family","mystery-crew"],
+  "everest": ["blue-dog-family","mystery-crew"],
+  "cocomelon": ["blue-dog-family","blue-alien-ohana","little-pig-family","baby-dino","little-lion"],
+  "peppapig": ["little-pig-family"],
+  "peppa": ["little-pig-family"],
+  "gabby": ["black-cat","cat-mouse"],
+  "gabbysdollhouse": ["black-cat","cat-mouse"],
+  "octonauts": ["under-the-sea","mermaid-crew"],
+  "blaze": ["kart-racers"],
+  "transformers": ["robot-crew","robot-ranger"],
+  "jurassicworld": ["dino-rangers","raptor-ranger","baby-dino","dinosaur-family"],
+  "jurassic": ["dino-rangers","raptor-ranger","baby-dino","dinosaur-family"],
+  "dinosaur": ["dino-rangers","baby-dino","raptor-ranger","dinosaur-family"],
+  "toystory": ["toy-box-crew"],
+  "woody": ["toy-box-crew"],
+  "buzz": ["toy-box-crew"],
+  "buzzlightyear": ["toy-box-crew"],
+  "lionking": ["little-lion"],
+  "simba": ["little-lion"],
+  "nala": ["little-lion"],
+  "barbie": ["plastic-dream-crew"],
+  "minecraft": ["block-game-crew"],
+  "hotdog": ["hot-dog"]
+};
+
+/* Popular right now: every term is verified non-empty through the full
+   pipeline (gate section 6). Tapping one clears the dropdown filters. */
+var POPULAR_SEARCHES = [
+  {term:"princess", w:100},
+  {term:"vampire", w:92},
+  {term:"spiderman", w:90},
+  {term:"kpop demon hunters", w:88},
+  {term:"wednesday", w:85},
+  {term:"bluey", w:82},
+  {term:"labubu", w:80},
+  {term:"dinosaur", w:78},
+  {term:"witch", w:75},
+  {term:"ghost", w:72},
+  {term:"paw patrol", w:70},
+  {term:"superhero", w:68},
+  {term:"frozen", w:65},
+  {term:"mario", w:62},
+  {term:"minions", w:60}
+];
+
+/* Type-ahead suggestions: human labels over alias terms + popular searches. */
+var SEARCH_SUGGESTIONS = [
+  {label:"Princess", q:"princess", w:100},
+  {label:"Vampire", q:"vampire", w:92},
+  {label:"Spider-Man", q:"spiderman", w:90},
+  {label:"KPop Demon Hunters", q:"kpop demon hunters", w:88},
+  {label:"Wednesday Addams", q:"wednesday", w:85},
+  {label:"Bluey", q:"bluey", w:82},
+  {label:"Labubu", q:"labubu", w:80},
+  {label:"Dinosaur", q:"dinosaur", w:78},
+  {label:"Witch", q:"witch", w:75},
+  {label:"Ghost", q:"ghost", w:72},
+  {label:"Paw Patrol", q:"paw patrol", w:70},
+  {label:"Superhero", q:"superhero", w:68},
+  {label:"Frozen", q:"frozen", w:65},
+  {label:"Mario", q:"mario", w:62},
+  {label:"Minions", q:"minions", w:60},
+  {label:"Elphaba (Wicked)", q:"elphaba", w:58},
+  {label:"Toy Story", q:"toy story", w:56},
+  {label:"Pikachu", q:"pikachu", w:54},
+  {label:"Scooby-Doo", q:"scooby doo", w:52},
+  {label:"Jurassic World", q:"jurassic world", w:50},
+  {label:"Peppa Pig", q:"peppa pig", w:48},
+  {label:"Cocomelon", q:"cocomelon", w:46},
+  {label:"Transformers", q:"transformers", w:44},
+  {label:"Inside Out", q:"inside out", w:42}
+];
+
+function prettyAliasKey(k){
+  var labels = {
+    "kpopdemonhunters":"KPop Demon Hunters","demonhunters":"Demon Hunters",
+    "sajaboys":"Saja Boys","babysaja":"Baby Saja","chickenjockey":"Chicken Jockey",
+    "howtotrainyourdragon":"How to Train Your Dragon","catinthehat":"Cat in the Hat",
+    "scoobydoo":"Scooby-Doo","supermario":"Super Mario","gabbysdollhouse":"Gabby's Dollhouse",
+    "pawpatrol":"Paw Patrol","powerrangers":"Power Rangers","peppapig":"Peppa Pig",
+    "toystory":"Toy Story","buzzlightyear":"Buzz Lightyear","lionking":"Lion King",
+    "littlemermaid":"Little Mermaid","beautyandthebeast":"Beauty and the Beast",
+    "jurassicworld":"Jurassic World","insideout":"Inside Out","mariokart":"Mario Kart",
+    "spiderman":"Spider-Man","wonderwoman":"Wonder Woman","snowwhite":"Snow White"
+  };
+  if (labels[k]) return labels[k];
+  return k.charAt(0).toUpperCase() + k.slice(1);
+}
+
+function singularize(key){
+  if (SEARCH_ALIASES[key]) return key;
+  if (key.length > 4 && key.slice(-3) === "ies"){
+    var y = key.slice(0, -3) + "y";
+    if (SEARCH_ALIASES[y]) return y;
+  }
+  if (key.length > 3 && key.slice(-3) === "ses"){
+    var s1 = key.slice(0, -2);
+    if (SEARCH_ALIASES[s1]) return s1;
+  }
+  if (key.length > 3 && key.slice(-1) === "s" && SEARCH_ALIASES[key.slice(0, -1)]) return key.slice(0, -1);
+  return key;
+}
+
+function edits1(a, b){
+  if (a === b) return true;
+  var la = a.length, lb = b.length, d = la - lb;
+  if (d < -1 || d > 1) return false;
+  var i = 0, j = 0, e = 0;
+  while (i < la && j < lb){
+    if (a.charCodeAt(i) === b.charCodeAt(j)){ i++; j++; continue; }
+    if (++e > 1) return false;
+    if (d === 0){ i++; j++; }
+    else if (d > 0){ i++; }
+    else { j++; }
+  }
+  if (i < la || j < lb) e++;
+  return e <= 1;
+}
+
+/* Alias lookup: exact -> singular -> prefix (3+ chars) -> edit-distance-1
+   typo (4+ chars). No "query starts with alias key" rule: that misfires on
+   e.g. "mirabel" (Encanto, a real gap) matching "mira" (KPop). */
+function aliasHit(key){
+  if (!key || key.length < 2) return null;
+  if (SEARCH_ALIASES[key]) return {key:key, ids:SEARCH_ALIASES[key], how:"exact"};
+  var sing = singularize(key);
+  if (sing !== key) return {key:sing, ids:SEARCH_ALIASES[sing], how:"singular"};
+  if (key.length >= 3){
+    var bk = null;
+    for (var k in SEARCH_ALIASES){
+      if (k.indexOf(key) === 0 && k !== key && (!bk || k.length < bk.length)) bk = k;
+    }
+    if (bk) return {key:bk, ids:SEARCH_ALIASES[bk], how:"prefix"};
+  }
+  if (key.length >= 4){
+    for (var k2 in SEARCH_ALIASES){
+      if (Math.abs(k2.length - key.length) <= 1 && edits1(key, k2)) return {key:k2, ids:SEARCH_ALIASES[k2], how:"typo"};
+    }
+  }
+  return null;
+}
+
+/* Structured attribute filters: parsed from the query, mapped to the bank's
+   real tags (budget/audience/venue/fit/plan data), never to title text. */
+function planCostNum(idea){
+  if (typeof MAKE_PLANS === "undefined" || !MAKE_PLANS[idea.id]) return null;
+  var m = (MAKE_PLANS[idea.id].cost || "").match(/\$([\d.]+)/);
+  return m ? parseFloat(m[1]) : null;
+}
+function planBuyText(idea){
+  if (typeof MAKE_PLANS === "undefined" || !MAKE_PLANS[idea.id]) return "";
+  return (MAKE_PLANS[idea.id].buy || []).join(" ").toLowerCase();
+}
+
+var SEARCH_ATTRS = [
+  {keys:["cheap","inexpensive","affordable","budget"], test:function(i){ var c = planCostNum(i); return c !== null && c <= 10; }},
+  {keys:["free","0 dollar","zero dollar"], test:function(i){ return planCostNum(i) === 0; }},
+  {keys:["under 10"], test:function(i){ var c = planCostNum(i); return c !== null && c < 10; }},
+  {keys:["male","men","mens","boys","boy","guys","gents"], test:function(i){ return i.fit === "M"; }},
+  {keys:["female","women","womens","ladies","lady","girls","girl"], test:function(i){ return i.fit === "F"; }},
+  {keys:["kid","kids"], test:function(i){ return (i.audience || []).indexOf("kid") >= 0; }},
+  {keys:["toddler","toddlers","baby","babies"], test:function(i){ return ((i.tags || {}).kidunder3 || 0) > 0; }},
+  {keys:["teen","teens","teenager","teenagers"], test:function(i){ return ((i.tags || {}).kid7plus || 0) > 0; }},
+  {keys:["adult","adults","grown up"], test:function(i){ return (i.audience || []).indexOf("solo") >= 0; }},
+  {keys:["solo","alone","by myself"], test:function(i){ return (i.audience || []).indexOf("solo") >= 0; }},
+  {keys:["couple","couples","duo","two people"], test:function(i){ return (i.audience || []).indexOf("couple") >= 0; }},
+  {keys:["group","team","trio","squad"], test:function(i){ return (i.audience || []).indexOf("group") >= 0; }},
+  {keys:["family"], test:function(i){ return (i.audience || []).indexOf("family") >= 0; }},
+  {keys:["scary","spooky"], test:function(i){ return vibeOkFor("scary", i.tags); }},
+  {keys:["funny"], test:function(i){ return vibeOkFor("funny", i.tags); }},
+  {keys:["cute"], test:function(i){ return vibeOkFor("cute", i.tags); }},
+  {keys:["easy","simple"], test:function(i){ return buildDifficulty(i) <= 2; }},
+  {keys:["last minute","quick","fast"], test:function(i){ var m = planMinutes(i); return m !== null && m <= 30; }},
+  {keys:["cardboard"], test:function(i){ return planBuyText(i).indexOf("cardboard") >= 0; }},
+  {keys:["closet"], test:function(i){ return (i.budget || []).indexOf("diy") >= 0; }},
+  {keys:["face paint","makeup"], test:function(i){ var t = planBuyText(i); return t.indexOf("paint") >= 0 || t.indexOf("makeup") >= 0; }},
+  {keys:["no sew"], test:function(i){ return buildDifficulty(i) <= 2; }},
+  {keys:["bar","club"], test:function(i){ return (i.venue && i.venue.bar === 2) || ((i.tags || {}).occbar || 0) > 0; }},
+  {keys:["work party","office"], test:function(i){ return ((i.tags || {}).occparty || 0) > 0; }},
+  {keys:["trick or treat"], test:function(i){ return ((i.tags || {}).occtreat || 0) > 0; }},
+  {keys:["dog","dogs","pet","pets","puppy"], test:function(i){ return ((i.tags || {}).animals || 0) > 0; }}
+];
+
+function parseSearchAttrs(norm){
+  var pad = " " + norm + " ";
+  var filters = [], matched = [];
+  SEARCH_ATTRS.forEach(function(a){
+    for (var i = 0; i < a.keys.length; i++){
+      if (pad.indexOf(" " + a.keys[i] + " ") >= 0){ filters.push(a.test); matched.push(a.keys[i]); break; }
+    }
+  });
+  return {filters: filters, matched: matched};
+}
+
+/* Full query parse: aliases (whole query, then per token) + attribute
+   filters + leftover title-text tokens. */
+function parseSearch(q){
+  var norm = normalizeSearch(q);
+  if (!norm) return null;
+  var key = norm.replace(/\s+/g, "");
+  var attrs = parseSearchAttrs(norm);
+  /* Strip attribute phrases and stopwords; what remains is character text. */
+  var rest = " " + norm + " ";
+  attrs.matched.forEach(function(k){ rest = rest.split(" " + k + " ").join(" "); });
+  var restTokens = rest.replace(/\s+/g, " ").trim().split(" ")
+    .filter(function(t){ return t && SEARCH_STOPWORDS.indexOf(t) < 0; });
+  /* A query that is exactly attribute keywords ("bar") is a filter, never
+     an alias prefix ("bar" must not resolve to Barbie). */
+  var isPureAttr = attrs.filters.length > 0 && restTokens.length === 0;
+  var aliasIds = [], aliasKey = null, aliasHow = null;
+  function takeAlias(h){
+    if (!h) return;
+    if (!aliasKey){ aliasKey = h.key; aliasHow = h.how; }
+    h.ids.forEach(function(id){ if (aliasIds.indexOf(id) < 0) aliasIds.push(id); });
+  }
+  if (!isPureAttr) takeAlias(aliasHit(key));
+  var textTokens = [];
+  if (!isPureAttr){
+    restTokens.forEach(function(t){
+      var h = aliasHit(t);
+      if (h) takeAlias(h);
+      else textTokens.push(t);
+    });
+  }
+  var hint = (aliasKey && aliasHow && aliasHow !== "exact") ? ("showing results for \"" + prettyAliasKey(aliasKey) + "\"") : "";
+  return {aliasIds: aliasIds, aliasKey: aliasKey, aliasHow: aliasHow,
+          filters: attrs.filters, textTokens: textTokens, hint: hint,
+          norm: norm, key: key};
+}
+
+/* Type-ahead suggestions: 2+ chars, up to 6, prefix match then popularity. */
+var _suggestBox = null;
+function hideSearchSuggest(){
+  if (_suggestBox){ _suggestBox.style.display = "none"; _suggestBox.innerHTML = ""; }
+}
+function renderSearchSuggest(q){
+  if (!_suggestBox) return;
+  _suggestBox.innerHTML = "";
+  var norm = normalizeSearch(q);
+  if (norm.length < 2){ _suggestBox.style.display = "none"; return; }
+  var key = norm.replace(/\s+/g, "");
+  var out = [], seen = {};
+  SEARCH_SUGGESTIONS.forEach(function(s){
+    var sk = s.q.replace(/\s+/g, "");
+    if (sk.indexOf(key) === 0 && sk !== key && !seen[s.q]){ seen[s.q] = 1; out.push(s); }
+  });
+  if (out.length < 6){
+    for (var k in SEARCH_ALIASES){
+      if (out.length >= 6) break;
+      if (k.indexOf(key) === 0 && k !== key && !seen[k]){
+        seen[k] = 1;
+        out.push({label: prettyAliasKey(k), q: k, w: 10});
+      }
+    }
+  }
+  out.sort(function(a,b){ return b.w - a.w; });
+  out = out.slice(0, 6);
+  if (!out.length){ _suggestBox.style.display = "none"; return; }
+  out.forEach(function(s){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "sug"; b.textContent = s.label;
+    b.onclick = function(){
+      var bs = $("browse-search");
+      if (bs) bs.value = s.q;
+      browseSearchQ = s.q;
+      hideSearchSuggest();
+      try { if (bs) bs.blur(); } catch(e){}
+      renderBrowse();
+    };
+    _suggestBox.appendChild(b);
+  });
+  _suggestBox.style.display = "flex";
+}
+
+/* Empty-state popular-search chips: clear the dropdown filters so the
+   popular term always lands on a non-empty result. */
+function runPopularSearch(term){
+  browseAud20 = ""; browseVibe20 = ""; browseInt20 = ""; browseEff20 = "";
+  var ai = $("bf-aud"), vi = $("bf-vibe"), ii = $("bf-int"), ei = $("bf-eff");
+  if (ai) ai.value = ""; if (vi) vi.value = ""; if (ii) ii.value = ""; if (ei) ei.value = "";
+  var bs = $("browse-search");
+  if (bs) bs.value = term;
+  browseSearchQ = term;
+  hideSearchSuggest();
+  renderBrowse();
+  try { Analytics.track("popular_search_tapped", {term: term}); } catch(e){}
 }
 
 /* ================= BROWSE ================= */
@@ -2210,7 +2718,13 @@ function renderBrowse(){
      from the hero pinpoint box when browse opens) narrows the shelf by
      case-insensitive title substring, in AND with the dropdown filters.
      Empty query = exactly today's behavior. */
-  var _bsq = (typeof browseSearchQ !== "undefined" && browseSearchQ) ? browseSearchQ.trim().toLowerCase() : "";
+  var _bsq = (typeof browseSearchQ !== "undefined" && browseSearchQ) ? browseSearchQ : "";
+  /* Search intelligence: character aliases, attribute filters, and title
+     text compose. Alias ids lead in curated order; everything else by rank. */
+  var _spec = _bsq ? parseSearch(_bsq) : null;
+  var _aliasOrd = {};
+  if (_spec && _spec.aliasIds) _spec.aliasIds.forEach(function(id, ix){ _aliasOrd[id] = ix; });
+  var _bsHint = (_spec && _spec.hint) ? _spec.hint : "";
   /* Browse-all follows the editorial rank, not build order. Exact matches
      first; when fewer than 6 ideas match, backfill with close matches so a
      filter combo always shows a real shelf, never a lonely card or two.
@@ -2218,13 +2732,32 @@ function renderBrowse(){
      are active) misses two and fills whatever tier 1 could not. */
   var exact = [], near1 = [], near2 = [];
   IDEAS.forEach(function(idea){
-    if (_bsq && idea.title.toLowerCase().indexOf(_bsq) < 0) return;
+    if (_spec){
+      var _inA = _spec.aliasIds.indexOf(idea.id) >= 0;
+      if (!_inA){
+        var _tt = _spec.textTokens, _ti;
+        for (_ti = 0; _ti < _tt.length; _ti++){
+          if (idea.title.toLowerCase().indexOf(_tt[_ti]) < 0) return;
+        }
+        if (!_tt.length && !_spec.aliasIds.length && !_spec.filters.length) return;
+      }
+      for (var _fi = 0; _fi < _spec.filters.length; _fi++){
+        if (!_spec.filters[_fi](idea)) return;
+      }
+    }
     var m = browseHits(idea);
     if (m.hits === m.active) exact.push(idea);
     else if (m.active >= 2 && m.hits === m.active - 1) near1.push(idea);
     else if (m.active >= 3 && m.hits === m.active - 2) near2.push(idea);
   });
-  var byRank = function(a,b){ return a.rank - b.rank; };
+  var byRank = function(a,b){
+    var _ao = Object.prototype.hasOwnProperty.call(_aliasOrd, a.id);
+    var _bo = Object.prototype.hasOwnProperty.call(_aliasOrd, b.id);
+    if (_ao && _bo) return _aliasOrd[a.id] - _aliasOrd[b.id];
+    if (_ao) return -1;
+    if (_bo) return 1;
+    return a.rank - b.rank;
+  };
   exact.sort(byRank); near1.sort(byRank); near2.sort(byRank);
   /* Guarantee at least 6 visible whenever filters leave fewer than 6
      exact matches; cap the close section at 12 so the filters still
@@ -2240,13 +2773,34 @@ function renderBrowse(){
   }
   if (!exact.length && !near.length){
     var _be = document.createElement("p"); _be.className = "bempty";
-    _be.textContent = "No ideas match. Try clearing a filter.";
+    _be.textContent = _bsq.trim() ? "No ideas match your search." : "No ideas match. Try clearing a filter.";
     grid.appendChild(_be);
+    /* Self-improving loop: a dead query fires once per distinct normalized
+       query (type-ahead re-renders per keystroke). PostHog collects these
+       into the bank-gap list: the search tells us what to build next. */
+    if (_bsq.trim() && typeof Analytics !== "undefined"){
+      var _zq = searchKey(_bsq);
+      if (_zq && _zq !== _lastZeroQuery){
+        _lastZeroQuery = _zq;
+        try { Analytics.track("search_zero_results", {query: _zq}); } catch(e){}
+      }
+    }
+    /* A dead end becomes a way forward: every chip runs a verified
+       non-empty search (gate section 6). */
+    var _pop = document.createElement("div"); _pop.className = "bpop";
+    var _pl = document.createElement("span"); _pl.textContent = "Popular right now:"; _pop.appendChild(_pl);
+    POPULAR_SEARCHES.forEach(function(p){
+      var _c = document.createElement("button");
+      _c.type = "button"; _c.className = "bchip"; _c.textContent = p.term;
+      _c.onclick = (function(t){ return function(){ runPopularSearch(t); }; })(p.term);
+      _pop.appendChild(_c);
+    });
+    grid.appendChild(_pop);
   }
   $("b-count").textContent = exact.length
-    ? "Showing " + exact.length + " of " + IDEAS.length + " ideas"
+    ? "Showing " + exact.length + " of " + IDEAS.length + " ideas" + (_bsHint ? " (" + _bsHint + ")" : "")
     : (near.length ? "No exact matches. Closest ideas below. Try clearing a filter."
-                   : "No ideas match. Try clearing a filter.");
+                   : "No ideas match. Try a popular search below.");
 }
 /* Billy 2026-09-25: browse back button returns to the screen browse was opened from (hero or results). */
 var browseReturnTo = "s-hero";
@@ -2445,16 +2999,28 @@ var browseAud20 = "", browseVibe20 = "", browseInt20 = "", browseEff20 = "";
    re-renders the filtered shelf; clearing the box restores it. Enter must
    not navigate or start the quiz. */
 var browseSearchQ = "";
+var _lastZeroQuery = ""; /* last dead query already logged */
 (function initBrowseSearch(){
   var bs = $("browse-search");
   if (!bs) return;
+  /* Type-ahead suggestion box: sits above the cards, never inside one, so
+     the whole-card click wrapper is unaffected. */
+  _suggestBox = document.createElement("div");
+  _suggestBox.id = "browse-suggest";
+  _suggestBox.className = "bsuggest";
+  _suggestBox.style.display = "none";
+  bs.parentNode.insertBefore(_suggestBox, bs.nextSibling);
   bs.addEventListener("input", function(){
     browseSearchQ = bs.value;
     renderBrowse();
+    renderSearchSuggest(bs.value);
   });
   bs.addEventListener("keydown", function(ev){
-    if (ev.key === "Enter"){ ev.preventDefault(); }
+    if (ev.key === "Enter"){ ev.preventDefault(); hideSearchSuggest(); try{ bs.blur(); }catch(x){} }
+    if (ev.key === "Escape"){ hideSearchSuggest(); }
   });
+  /* Delay hiding so a suggestion tap registers before the box unmounts. */
+  bs.addEventListener("blur", function(){ setTimeout(hideSearchSuggest, 180); });
 })();
 (function initE20(){
   var ai = $("bf-aud"), vi = $("bf-vibe"), ii = $("bf-int"), ei = $("bf-eff");
