@@ -1479,16 +1479,30 @@ function buildInstructions(idea, opts){
       });
     };
     copyRow.appendChild(cb);
-    /* Email-me-the-list: mailto fallback, no backend, no capture. Graded step-6 option B. */
+    /* Email-me-the-list: mailto fallback, no backend, no capture. Graded step-6 option B.
+       Poke-holes fixes 2026-09-25: honest event name, neutral status copy, in-app
+       browser guidance, 1800-char href cap with truncation note, CRLF line breaks. */
     var eb = document.createElement("a");
     eb.className = "howto-copy"; eb.textContent = "Email me the build list"; eb.href = "#";
+    eb.setAttribute("role", "button");
     eb.onclick = function(e){
       if (e && e.preventDefault) e.preventDefault();
       if (e && e.stopPropagation) e.stopPropagation();
+      var inApp = /Instagram|FBAN|FBAV|TikTok/i.test(navigator.userAgent || "");
+      var body = buildListText().replace(/\n/g, "\r\n");
+      if (encodeURIComponent(body).length > 1500){
+        var lines = body.split("\r\n");
+        while (lines.length > 1 && encodeURIComponent(lines.join("\r\n")).length > 1400) lines.pop();
+        body = lines.join("\r\n") + "\r\n...full list at pickmycostume.com";
+      }
       var subj = "Build list: " + idea.title;
-      var href = "mailto:?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(buildListText());
-      Analytics.track("build_list_emailed", {idea_id: idea.id, via: via});
-      cst.textContent = "Opening your email app.";
+      var href = "mailto:?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+      Analytics.track("build_list_email_opened", {idea_id: idea.id, via: via});
+      if (inApp){
+        cst.textContent = "In-app browsers can't open email - tap Copy build list, then paste it into your email app.";
+      } else {
+        cst.textContent = "Opening your email app - if nothing happens, use Copy build list.";
+      }
       window.location.href = href;
       return false;
     };
