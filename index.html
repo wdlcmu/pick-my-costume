@@ -145,9 +145,9 @@ body{
 .proofrow::-webkit-scrollbar{display:none}
 /* Billy 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
-.proofrow a{flex:0 0 110px;scroll-snap-align:start;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
+.proofrow a{flex:0 0 128px;scroll-snap-align:start;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
 .proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.proofrow span{display:block;font-size:12px;color:var(--text);text-align:center;padding:6px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;font-weight:600}
+.proofrow span{display:block;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;color:var(--text);text-align:center;padding:6px 6px;line-height:1.3;font-weight:600;min-height:31px}
 /* Billy 2026-09-26: social proof badge on proof-strip cards */
 .proofbadge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600}
 /* "More ways to explore": the quiet secondary surfaces live here, below the strip. */
@@ -515,8 +515,8 @@ footer a{color:var(--accent)}
       </div>
       <div class="explore">
         <p class="fine explore-head">More ways to explore</p>
-        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick what you own, we rank costumes by it">What do you have?</a></p>
-      <p class="fine" style="margin:6px 0 0">Tick what you own, we rank costumes by it.</p>
+        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">What materials or clothes are already in your house?</a></p>
+      <p class="fine" style="margin:6px 0 0">Tick the clothes and materials already in your house, we rank costumes by what you own.</p>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 137 ideas</button></p>
       </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
@@ -539,6 +539,11 @@ footer a{color:var(--accent)}
   <!-- RESULTS -->
   <section class="screen" id="s-results">
     <p class="progress">Your costume</p>
+    <!-- Billy 2026-09-26: back-to-questions was buried below the results.
+         It now sits above the fold too. -->
+    <div class="navrow" style="margin:0 0 10px">
+      <button class="ghost" id="btn-rtop" type="button">&larr; Back to questions</button>
+    </div>
     <h2 class="q-title">&#127875; Here is what you got</h2>
     <p class="q-hint">This is our top pick for you. Tap &ldquo;Claim this costume&rdquo; to save it and plan your costume, or see the other ideas below.</p>
     <div id="r-cards"></div>
@@ -664,6 +669,12 @@ footer a{color:var(--accent)}
   <!-- BROWSE DETAIL: tapping a browse card opens the full pick flow here,
        reusing the quiz result card components. -->
   <section class="screen" id="s-detail">
+    <!-- Billy 2026-09-26: back/home were buried at the bottom of the detail
+         screen. They now sit above the fold too. -->
+    <div class="navrow" style="margin:0 0 10px">
+      <button class="ghost" id="btn-dtopback" type="button">&larr; Back</button>
+      <button class="ghost" id="btn-dtophome" type="button">&#8962; Home</button>
+    </div>
     <p class="progress" id="detail-progress">From browsing</p>
     <h2 class="q-title">Costume detail</h2>
     <div id="d-card"></div>
@@ -3167,9 +3178,45 @@ function buildAgeRefinement(){
    other two render as compact cards over a single shared full-width detail.
    Tapping a runner-up opens its full card inline below the pair; only one is
    open at a time. A browse-all button (not a 100-card tail) closes the page. */
+/* Billy 2026-09-26: answer remix. The results screen shows the answers as
+   tappable chips; tapping one jumps back to that question with answers
+   preserved, so trying different interests shows new picks live instead of
+   forcing a full restart. */
+function buildAnswerChips(){
+  var order = flowOrder();
+  var answered = order.filter(function(qid){ return state.answers[qid] && state.answers[qid].label; });
+  if (!answered.length) return null;
+  var wrap = document.createElement("div");
+  wrap.style.margin = "0 0 12px";
+  var cap = document.createElement("p");
+  cap.className = "fine"; cap.style.margin = "0 0 6px";
+  cap.textContent = "Your answers \u2014 tap one to change it and see new picks:";
+  wrap.appendChild(cap);
+  var row = document.createElement("div");
+  row.style.display = "flex"; row.style.flexWrap = "wrap"; row.style.gap = "6px";
+  answered.forEach(function(qid){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ghost";
+    b.style.padding = "8px 12px"; b.style.fontSize = "13px";
+    b.textContent = state.answers[qid].label;
+    (function(q){
+      b.onclick = function(){
+        state.qi = order.indexOf(q);
+        renderQ();
+        window.scrollTo(0,0);
+      };
+    })(qid);
+    row.appendChild(b);
+  });
+  wrap.appendChild(row);
+  return wrap;
+}
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
+  var ac = buildAnswerChips();
+  if (ac) box.appendChild(ac);
   var pick = load("pmc_pick_v1");
   var cards = {}; /* idea id -> card element, for picked-panel restore */
   /* Pinpoint: name the match so the #1 never feels arbitrary. */
@@ -4443,6 +4490,7 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
     ta.style.display = open ? "none" : "block";
     toggle.textContent = open ? "Preview text" : "Hide text";
   };
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
   var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
   var status = document.createElement("p"); status.className = "status";
   b.onclick = function(){
@@ -5659,6 +5707,8 @@ $("btn-rback").onclick = function(){
   state.qi = flowOrder().length - 1;
   renderQ();
 };
+/* Billy 2026-09-26: the above-the-fold twin of back-to-questions. */
+$("btn-rtop").onclick = $("btn-rback").onclick;
 $("btn-restart").onclick = function(){
   state = {qi: 0, answers: {}};
   clearK("pmc_pick_v1");
@@ -5712,11 +5762,19 @@ $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 (function(){ var hsc = $("hero-search-count"); if (hsc) hsc.textContent = IDEAS.length; })();
 /* E20 parity: back from a browse detail returns to the browse grid with the
    current search/filter state intact (renderBrowse reads the live inputs). */
-$("btn-dback").onclick = function(){
-  if (detailReturnTo === "s-hero"){ show("s-hero"); refreshReturnBox(); }
-  else if (detailReturnTo === "s-pantry"){ location.href = "/pantry.html"; }
+/* Billy 2026-09-26: the detail screen's home button had no handler (dead tap),
+   and back-to-pantry went through a /pantry.html -> /pantry redirect hop.
+   Both buttons now work from the top and bottom of the detail screen. */
+function detailGoBack(){
+  if (detailReturnTo === "s-hero"){ show("s-hero"); refreshReturnBox(); window.scrollTo(0,0); }
+  else if (detailReturnTo === "s-pantry"){ location.href = "/pantry"; }
   else { renderBrowse(); show("s-browse"); }
-};
+}
+function detailGoHome(){ show("s-hero"); refreshReturnBox(); window.scrollTo(0,0); }
+$("btn-dback").onclick = detailGoBack;
+$("btn-dhome").onclick = detailGoHome;
+$("btn-dtopback").onclick = detailGoBack;
+$("btn-dtophome").onclick = detailGoHome;
 /* E16: browse -> quiz door. Same start behavior as the hero CTA, plus a
    browse_quiz_started event so the morning brief can measure the door. */
 $("btn-bquiz").onclick = function(){
