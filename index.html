@@ -1187,9 +1187,9 @@ var MAKE_PLANS = {
 function newShareId(){var c="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
 /* VIA_SHARE: anonymous id of the share link this visitor arrived through (?s=). Never an identity. */
 var VIA_SHARE = null;
-/* E29: origin label of the arriving share link (?o=card|generic). Read at
-   landing time and carried into recipient_landing_viewed + quiz_started so
-   friend-quiz-starts are measurable per share origin. */
+/* E29: origin label of the arriving share link (?o=card|generic|sms|vote).
+   Read at landing time and carried into recipient_landing_viewed +
+   quiz_started so friend-quiz-starts are measurable per share origin. */
 var VIA_SHARE_ORIGIN = null;
 function viaShareProps(){
   var p = {};
@@ -2285,6 +2285,127 @@ function shareTextFor(idea, sid, origin){
   }
   return text;
 }
+/* 2026-09-26 family-vote distribution experiment: the quiz returns 3
+   finalists because the user cannot decide. This turns indecision into a
+   share: one text with all three finalists, numbered for a group-chat
+   vote. One share_id covers the whole vote; each finalist link carries
+   ?s=<sid>&o=vote so recipient opens and quiz starts attribute to the
+   vote. No new randomization: the pinned shareVariant() arm rides along
+   on events for comparability only. Metric: vote_share_created per
+   results view, then recipient opens and quiz starts per vote share. */
+/* Days until the next October 31, from the real date. After Halloween it
+   counts to next year's, so the line never reads stale. */
+function daysToHalloween(){
+  var now = new Date();
+  var h = new Date(now.getFullYear(), 9, 31, 23, 59, 59);
+  if (h.getTime() < now.getTime()) h = new Date(now.getFullYear() + 1, 9, 31, 23, 59, 59);
+  return Math.max(0, Math.round((h.getTime() - now.getTime()) / 86400000));
+}
+/* The vote text: three numbered finalists, each with its decision triple
+   and its own ?s=&o=vote link, plus a Halloween countdown for urgency.
+   Plain hyphens only, no em/en dashes (Billy's voice rule). */
+function buildVoteText(results, sid){
+  var lines = ["Help us pick a Halloween costume! Reply with 1, 2, or 3."];
+  results.slice(0, 3).forEach(function(sc, i){
+    var idea = sc.idea;
+    var tri = "";
+    if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+      var ins = INSTRUCTIONS[idea.id];
+      tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+    }
+    var url = "pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=vote";
+    lines.push((i + 1) + ". " + idea.title + (tri ? " (" + tri + ")" : "") + " - " + url);
+  });
+  var d = daysToHalloween();
+  lines.push(d > 1 ? "Halloween is " + d + " days out. Decide fast."
+    : (d === 1 ? "Halloween is tomorrow. Decide fast." : "Halloween is today. Decide fast."));
+  return lines.join("\n");
+}
+/* The results-page vote box. Rendered by renderResults after the
+   runners-up; the panel composes the text once per open. */
+function buildVoteBox(results){
+  var vbox = document.createElement("div");
+  vbox.className = "stuck"; vbox.id = "vote-box";
+  var vh = document.createElement("h3"); vh.textContent = "Can't decide?";
+  var vp = document.createElement("p");
+  vp.textContent = "Send all three finalists to the family group chat in one text. Everyone replies 1, 2, or 3 and the costume picks itself.";
+  var vrow = document.createElement("div"); vrow.className = "row";
+  var vbtn = document.createElement("button");
+  vbtn.type = "button"; vbtn.className = "ghost";
+  vbtn.textContent = "Let the group chat vote";
+  var vpanel = document.createElement("div");
+  vpanel.style.display = "none"; vpanel.style.marginTop = "10px";
+  vbtn.onclick = function(){
+    if (vpanel.style.display !== "none"){
+      vpanel.style.display = "none";
+      vbtn.textContent = "Let the group chat vote";
+      return;
+    }
+    var sid = newShareId();
+    var text = buildVoteText(results, sid);
+    var ids = results.slice(0, 3).map(function(sc){ return sc.idea.id; });
+    vpanel.innerHTML = "";
+    var ta = document.createElement("textarea");
+    ta.readOnly = true; ta.rows = 9;
+    ta.style.cssText = "width:100%;box-sizing:border-box;font-size:14px";
+    ta.value = text;
+    var brow = document.createElement("div"); brow.className = "row"; brow.style.marginTop = "8px";
+    var bCopy = document.createElement("button");
+    bCopy.type = "button"; bCopy.className = "ghost"; bCopy.textContent = "Copy vote text";
+    var bShare = document.createElement("button");
+    bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
+    var vst = document.createElement("div"); vst.className = "status"; vst.style.marginTop = "6px";
+    bCopy.onclick = function(){
+      doCopy(text, function(ok, msg){
+        vst.textContent = msg;
+        if (ok){
+          bCopy.textContent = "Copied \u2713";
+          setTimeout(function(){ bCopy.textContent = "Copy vote text"; }, 2000);
+          Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "clipboard"});
+        }
+      });
+    };
+    bShare.onclick = function(){
+      var rearmShare = armShareOnce(bShare);
+      if (!rearmShare) return; /* double-tap: a share is already in flight */
+      function doneShare(ok, msg){
+        vst.textContent = msg;
+        rearmShare();
+        if (ok){
+          Analytics.track("vote_share_created", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "share_sheet"});
+          if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: ids[0], share_origin: "vote"});
+        }
+      }
+      if (navigator.share){
+        try {
+          navigator.share({title: "Pick My Costume", text: text}).then(
+            function(){ doneShare(true, "Shared."); },
+            function(){ doneShare(false, ""); }
+          );
+        } catch(e){
+          doCopy(text, function(ok, msg){
+            vst.textContent = msg; rearmShare();
+            if (ok) Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "clipboard"});
+          });
+        }
+      } else {
+        doCopy(text, function(ok, msg){
+          vst.textContent = msg; rearmShare();
+          if (ok) Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "clipboard"});
+        });
+      }
+    };
+    vpanel.appendChild(ta);
+    brow.appendChild(bCopy); brow.appendChild(bShare);
+    vpanel.appendChild(brow); vpanel.appendChild(vst);
+    vpanel.style.display = "";
+    vbtn.textContent = "Hide the vote text";
+    Analytics.track("vote_opened", {share_id: sid, idea_ids: ids});
+  };
+  vrow.appendChild(vbtn);
+  vbox.appendChild(vh); vbox.appendChild(vp); vbox.appendChild(vrow); vbox.appendChild(vpanel);
+  return vbox;
+}
 /* Billy 2026-09-25: the vibe check lives on the hero card itself, not just
    inside the post-pick panel, so we hear from people who did NOT pick it
    too. Answered state persists per idea; answering never triggers a pick. */
@@ -2693,6 +2814,9 @@ function renderResults(results){
     if (rIdx >= 0) ruToggles[rIdx]();
   }
   box.appendChild(ru);
+  /* 2026-09-26 family-vote experiment: the vote box sits between the
+     runners-up and the "Still stuck?" escape hatch. */
+  box.appendChild(buildVoteBox(results));
   /* Results-level AI entry lives in the "Still stuck?" box below: one AI
      button per results page, not two. */
   /* Still stuck? escape hatch: none of the three results landed. One AI prompt
@@ -5117,8 +5241,10 @@ function shareLandingHeadline(idea, search){
     /* E29: origin label (?o=card|generic|sms) survives the same redirect.
        2026-09-26 red-team D6: the SMS "Text it" share writes ?o=sms, but this
        regex only accepted card|generic, so SMS arrivals silently lost their
-       share_origin attribution in analytics. */
-    var om = /[?&]o=(card|generic|sms)/.exec(location.search || "");
+       share_origin attribution in analytics.
+       2026-09-26 family-vote experiment: ?o=vote marks links from the
+       results-page vote box; it must survive exactly the same way. */
+    var om = /[?&]o=(card|generic|sms|vote)/.exec(location.search || "");
     if (om) VIA_SHARE_ORIGIN = om[1];
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
