@@ -79,6 +79,7 @@ export function onRequest(context) {
   var html = "<!DOCTYPE html>" +
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<title>" + title + " - Pick My Costume</title>" +
+    "<link rel=\"canonical\" href=\"https://pickmycostume.com/c/" + slug + "\">" +
     "<meta name=\"description\" content=\"" + blurb + "\">" +
     "<meta property=\"og:type\" content=\"website\">" +
     "<meta property=\"og:url\" content=\"https://pickmycostume.com/c/" + slug + "\">" +
