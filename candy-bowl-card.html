@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candy-Bowl Cards - Pick My Costume</title>
+<meta name="description" content="Print quarter-page cards for your Halloween candy bowl. Each card's QR code opens the free 2-minute Pick My Costume quiz.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://pickmycostume.com/candy-bowl-card">
+<script src="vendor/qrcode-generator/qrcode.js"></script>
+<script>
+/* PostHog: anonymous usage stats only. No answers or names are sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+function candyTrack(name, props){
+  try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); } catch(e){}
+}
+</script>
+<style>
+:root{
+  --bg:#160d28; --bg2:#211540; --card:#2a1c52; --ink:#fdf3e3;
+  --muted:#cdbcf0; --line:#4b3486; --accent:#ff8c1a; --accent-ink:#2a1500;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:24px 20px 64px}
+.back{margin:0 0 8px}
+.back a{color:var(--muted);text-decoration:none}
+h1{font-size:30px;margin:8px 0 10px}
+.lede{color:var(--muted);max-width:640px;margin:0 0 18px}
+.printbtn{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;
+  border:0;border-radius:12px;padding:14px 26px;font-size:17px;cursor:pointer;margin:6px 0 26px}
+.printbtn:active{transform:scale(.97)}
+.sheet{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+/* One printed card. White, high-contrast, scannable. */
+.card{background:#fff;color:#1c1230;border-radius:10px;padding:26px 24px 20px;
+  display:flex;flex-direction:column;align-items:center;text-align:center}
+.card .brand{font-size:12px;letter-spacing:.22em;font-weight:700;color:#6b5a9e;margin:0 0 10px}
+.card h2{font-size:26px;line-height:1.25;margin:0 0 14px;color:#1c1230}
+.card .qr{width:210px;height:210px;margin:2px 0 14px}
+.card .qr svg{width:100%;height:100%;display:block}
+.card .qr-fallback{font-size:15px;font-weight:700;color:#1c1230;word-break:break-all;margin:2px 0 14px}
+.card .pitch{font-size:15px;color:#3d3358;margin:0 0 10px;max-width:300px}
+.card .url{font-size:19px;font-weight:800;color:#1c1230;margin:0 0 8px}
+.card .foot{font-size:12px;color:#8a7bb5;margin:10px 0 0}
+.note{color:var(--muted);font-size:14px;margin-top:26px;max-width:640px}
+.note code{color:var(--ink)}
+@media print{
+  .screen-only{display:none !important}
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  @page{size:letter;margin:.45in}
+  .sheet{display:grid;grid-template-columns:3.7in 3.7in;grid-auto-rows:4.9in;
+    gap:.2in;justify-content:center;align-content:start}
+  .card{border:2px dashed #b9aee0;border-radius:0;padding:.35in .3in;
+    break-inside:avoid;page-break-inside:avoid}
+  .card h2{font-size:24px}
+  .card .qr{width:2.05in;height:2.05in}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back screen-only"><a href="/">&larr; Pick My Costume</a></p>
+  <h1 class="screen-only">Candy-bowl cards</h1>
+  <p class="lede screen-only">Print this page, cut along the dashed lines, and drop a card in the
+  candy bowl on Halloween night. Four cards per US Letter sheet. Each card's QR code opens the
+  free 2-minute costume quiz, measured as <code>?src=print-candybowl</code>.</p>
+  <button type="button" class="printbtn screen-only" id="printbtn">Print the cards</button>
+
+  <div class="sheet" id="sheet" aria-label="Four printable candy-bowl cards"></div>
+
+  <p class="note screen-only">No QR reader? The card still works: the address is printed in big
+  type under the code. Nothing on this page is indexed by search engines; it is a print utility,
+  not a landing page.</p>
+</div>
+<script>
+/* The one URL every card encodes. The verify harness reads this same line,
+   so the QR payload and the printed address can never drift apart. */
+var CANDY_QR_URL = "https://pickmycostume.com/?src=print-candybowl";
+var CANDY_QR_ALT = "QR code for pickmycostume.com";
+
+function buildCard(){
+  var card = document.createElement("div");
+  card.className = "card";
+  var brand = document.createElement("p"); brand.className = "brand"; brand.textContent = "PICK MY COSTUME";
+  var h = document.createElement("h2"); h.textContent = "Took candy? Take next year's costume too.";
+  var qr = document.createElement("div"); qr.className = "qr"; qr.setAttribute("role","img");
+  qr.setAttribute("aria-label", CANDY_QR_ALT);
+  try {
+    var q = qrcode(0, "M");
+    q.addData(CANDY_QR_URL);
+    q.make();
+    qr.innerHTML = q.createSvgTag({cellSize: 6, margin: 0, scalable: true, title: {text: CANDY_QR_ALT}});
+  } catch(e) {
+    var fb = document.createElement("p"); fb.className = "qr-fallback";
+    fb.textContent = "pickmycostume.com";
+    qr.appendChild(fb);
+  }
+  var pitch = document.createElement("p"); pitch.className = "pitch";
+  pitch.textContent = "Free 2-minute quiz. 138 DIY costume ideas with honest build times and costs. No signup, no ads.";
+  var url = document.createElement("p"); url.className = "url"; url.textContent = "pickmycostume.com";
+  var foot = document.createElement("p"); foot.className = "foot";
+  foot.textContent = "Built it? Come show us after Halloween. Same address.";
+  card.appendChild(brand); card.appendChild(h); card.appendChild(qr);
+  card.appendChild(pitch); card.appendChild(url); card.appendChild(foot);
+  return card;
+}
+
+(function(){
+  var sheet = document.getElementById("sheet");
+  for (var i = 0; i < 4; i++) sheet.appendChild(buildCard());
+  candyTrack("candy_card_viewed", {});
+  document.getElementById("printbtn").addEventListener("click", function(){ window.print(); });
+  window.addEventListener("beforeprint", function(){ candyTrack("candy_card_printed", {}); });
+})();
+</script>
+</body>
+</html>

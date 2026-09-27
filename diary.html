@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My costume build diary - Pick My Costume</title>
+<meta name="description" content="Track your Halloween costume build step by step, snap progress photos, and share each step with friends. Photos stay on your phone. Free, no account.">
+<link rel="canonical" href="https://pickmycostume.com/diary">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/diary">
+<meta property="og:title" content="My costume build diary - Pick My Costume">
+<meta property="og:description" content="Track your Halloween costume build step by step and share your progress. Photos stay on your phone.">
+<style>
+  :root { --accent: #7c3aed; --ink: #222; --muted: #666; --line: #e5e0f5; --bg: #faf8ff; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: var(--bg); color: var(--ink); }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 20px 16px 64px; }
+  h1 { font-size: 26px; margin: 8px 0 4px; }
+  .sub { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0 0 20px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin: 0 0 14px; }
+  .card h2 { font-size: 17px; margin: 0 0 8px; }
+  label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin: 0 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+  select, input[type=text] { width: 100%; font-size: 16px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+  .step-head { display: flex; align-items: center; gap: 10px; }
+  .step-num { flex: 0 0 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step.done .step-num { background: #16a34a; }
+  .step-title { flex: 1; font-size: 16px; font-weight: 700; border: 0; padding: 8px 4px; }
+  .step.done .step-title { text-decoration: line-through; color: var(--muted); }
+  .photo-row { display: flex; gap: 10px; align-items: center; margin: 10px 0; }
+  .photo-row img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); display: none; }
+  .photo-row.has-photo img { display: block; }
+  .btn { display: inline-block; border: 0; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 44px; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost { background: #f1ecfd; color: var(--accent); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .hint { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 8px 0 0; }
+  .done-toggle { display: flex; align-items: center; gap: 8px; font-size: 15px; margin-top: 10px; }
+  .done-toggle input { width: 22px; height: 22px; }
+  .finish { border: 2px solid #16a34a; }
+  .fine { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 24px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>My build diary</h1>
+  <p class="sub">Making a costume? Keep the build in one place. Snap a photo at each step and text your progress to the group chat. Photos stay on this phone. Nothing uploads, no account.</p>
+
+  <div class="card">
+    <label class="lbl" for="diary-pick">What are you making?</label>
+    <select id="diary-pick">
+      <option value="astronaut">Astronaut</option>
+      <option value="blue-dog-family">Aussie Dog Family</option>
+      <option value="baby-dino">Baby Dinosaur</option>
+      <option value="backyard-hero">Backyard Superhero</option>
+      <option value="bacon-eggs">Bacon &amp; Eggs</option>
+      <option value="ballerina">Ballerina</option>
+      <option value="bamboo-demon">Bamboo-Muzzle Demon</option>
+      <option value="banana">Banana</option>
+      <option value="basketball-star">Basketball Star</option>
+      <option value="beekeeper-bee">Beekeeper &amp; Bee</option>
+      <option value="black-cat">Black Cat Burglar</option>
+      <option value="block-game-crew">Block Game Crew</option>
+      <option value="block-monster">Block Monster</option>
+      <option value="blue-alien-ohana">Blue Alien Ohana</option>
+      <option value="board-game-pieces">Board Game Pieces</option>
+      <option value="bowling-pins">Bowling Pins</option>
+      <option value="boxer">Boxer</option>
+      <option value="breakfast-buffet">Breakfast Buffet</option>
+      <option value="bumble-bee">Bumble Bee</option>
+      <option value="burger-joint-couple">Burger Joint Couple</option>
+      <option value="butterfly">Butterfly</option>
+      <option value="caped-duo">Caped Duo</option>
+      <option value="cardboard-knight">Cardboard Knight</option>
+      <option value="robot-crew">Cardboard Robot Crew</option>
+      <option value="cat-mouse">Cat &amp; Mouse</option>
+      <option value="cereal-crew">Cereal Crew</option>
+      <option value="cheerleader">Cheerleader</option>
+      <option value="chipmunk-trio">Chipmunk Trio</option>
+      <option value="classic-ghost">Classic Ghost</option>
+      <option value="vampire">Classic Vampire</option>
+      <option value="wizard">Classic Wizard</option>
+      <option value="coffee-cup">Coffee Cup</option>
+      <option value="crowd-camouflage">Crowd Camouflage</option>
+      <option value="cupcake">Cupcake</option>
+      <option value="daisy">Daisy</option>
+      <option value="deadpan-diva">Deadpan Diva</option>
+      <option value="decades-crew">Decades Crew</option>
+      <option value="demon-boy-band">Demon Boy Band</option>
+      <option value="deviled-egg">Deviled Egg</option>
+      <option value="dino-herd">Dino Herd</option>
+      <option value="dino-rangers">Dino Rangers</option>
+      <option value="dino-tourist">Dino Tourist</option>
+      <option value="dinosaur-family">Dinosaur Family</option>
+      <option value="donut">Donut</option>
+      <option value="dragon-rider-duo">Dragon Rider Duo</option>
+      <option value="spider">Eight-Legged Spider</option>
+      <option value="emerald-witch">Emerald Witch</option>
+      <option value="emoji-crew">Emoji Crew</option>
+      <option value="emotion-crew">Emotion Crew</option>
+      <option value="emotional-support-dinosaur">Emotional Support Dinosaur</option>
+      <option value="enchanted-castle-crew">Enchanted Castle Crew</option>
+      <option value="error-404">Error 404</option>
+      <option value="extinct-party-animal">Extinct Party Animal</option>
+      <option value="fairy-tale-princesses">Fairy Tale Princesses</option>
+      <option value="fossil-hunter">Fossil Hunter</option>
+      <option value="fruit-salad">Fruit Salad Crew</option>
+      <option value="fuzzy-monster">Fuzzy Monster</option>
+      <option value="galaxy-knights">Galaxy Knights</option>
+      <option value="garden-fairy">Garden Fairy</option>
+      <option value="garden-gnome">Garden Gnome</option>
+      <option value="ghost-hunters">Ghost Hunters</option>
+      <option value="gloom-bloom">Gloom &amp; Bloom</option>
+      <option value="glow-skeleton">Glow Skeleton</option>
+      <option value="goggle-crew">Goggle Crew</option>
+      <option value="good-witch-bad-witch">Good Witch, Bad Witch</option>
+      <option value="haunted-animatronics">Haunted Animatronics</option>
+      <option value="haunted-portraits">Haunted Portraits</option>
+      <option value="headless-horsemen">Headless Horsemen</option>
+      <option value="hero-squad">Hero Squad</option>
+      <option value="hot-dog">Hot Dog</option>
+      <option value="ice-cream-cone">Ice Cream Cone</option>
+      <option value="ice-skater">Ice Skater</option>
+      <option value="kart-racers">Kart Racers</option>
+      <option value="ketchup-mustard">Ketchup &amp; Mustard</option>
+      <option value="ladybug">Ladybug</option>
+      <option value="little-artist">Little Artist</option>
+      <option value="little-baker">Little Baker</option>
+      <option value="little-lifeguard">Little Lifeguard</option>
+      <option value="little-lion">Little Lion</option>
+      <option value="little-pig-family">Little Pig Family</option>
+      <option value="little-prince">Little Prince</option>
+      <option value="little-shark">Little Shark</option>
+      <option value="little-witch">Little Witch</option>
+      <option value="lost-tourist">Lost Tourist</option>
+      <option value="mermaid-crew">Mermaid Crew</option>
+      <option value="moth-porch-light">Moth and Porch Light</option>
+      <option value="mystery-crew">Mystery Crew</option>
+      <option value="neon-demon-hunter">Neon Demon Hunter</option>
+      <option value="ninja">Ninja</option>
+      <option value="numbered-players">Numbered Players</option>
+      <option value="office-couple">Office Couple</option>
+      <option value="pbj">Peanut Butter &amp; Jelly</option>
+      <option value="peas-pod">Peas in a Pod</option>
+      <option value="penguin-huddle">Penguin Huddle</option>
+      <option value="pickle">Pickle</option>
+      <option value="pixel-ghost">Pixel Ghost</option>
+      <option value="pizza-slice">Pizza Slice</option>
+      <option value="plague-doctor">Plague Doctor</option>
+      <option value="plastic-dream-crew">Plastic Dream Crew</option>
+      <option value="player-one-two">Player One &amp; Two</option>
+      <option value="plug-socket">Plug and Socket</option>
+      <option value="plumber-duo">Plumber Brothers</option>
+      <option value="pocket-plush">Pocket Plush Monster</option>
+      <option value="pop-star">Pop Star</option>
+      <option value="popcorn-bucket">Popcorn Bucket</option>
+      <option value="prince-princess">Prince &amp; Princess</option>
+      <option value="rain-cloud-rainbow">Rain Cloud and Rainbow</option>
+      <option value="ramen-bowl">Ramen Bowl</option>
+      <option value="raptor-ranger">Raptor &amp; Ranger</option>
+      <option value="raptor-barista">Raptor Barista</option>
+      <option value="referee">Referee</option>
+      <option value="robot-ranger">Robot Ranger</option>
+      <option value="safari-zoo-crew">Safari / Zoo Crew</option>
+      <option value="safari-photographer">Safari Photographer</option>
+      <option value="salt-pepper">Salt &amp; Pepper</option>
+      <option value="snow-sisters">Snow Sisters</option>
+      <option value="soccer-squad">Soccer Squad</option>
+      <option value="space-crewmate">Space Crewmate</option>
+      <option value="spaghetti-meatball">Spaghetti &amp; Meatball</option>
+      <option value="sun-moon">Sun and Moon</option>
+      <option value="superhero-family">Superhero Family</option>
+      <option value="sushi-roll">Sushi Roll</option>
+      <option value="tall-hat-crew">Tall Hat Crew</option>
+      <option value="tennis-duo">Tennis Duo</option>
+      <option value="tetris-duo">Tetris Duo</option>
+      <option value="doctor-bride">The Doctor &amp; the Bride</option>
+      <option value="the-olympians">The Olympians</option>
+      <option value="tin-hero">The Tin Hero</option>
+      <option value="tiny-firefighter">Tiny Firefighter</option>
+      <option value="tiny-snail">Tiny Snail</option>
+      <option value="tooth-fairy">Tooth and Tooth Fairy</option>
+      <option value="toy-box-crew">Toy Box Crew</option>
+      <option value="under-the-sea">Under the Sea</option>
+      <option value="walking-taco">Walking Taco</option>
+      <option value="web-hero-duo">Web Hero Duo</option>
+      <option value="web-slinger-kid">Web Slinger</option>
+      <option value="web-slinger-crew">Web-Slinger Crew</option>
+      <option value="zombie-coworker">Zombie Coworker</option>
+    </select>
+    <p class="hint">Switching costumes starts a fresh diary. Your current build stays until you switch.</p>
+  </div>
+
+  <div id="diary-steps"></div>
+
+  <div class="card finish hidden" id="diary-finish">
+    <h2>Build complete. Nice work.</h2>
+    <p class="sub" style="margin-bottom:10px">Post your finished photo with #pickmycostume. The best builds land in the Nov 1 gallery on the site.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="diary-finish-share">Share the finished build</button>
+    </div>
+    <p class="hint">Attach your latest build photo above this text in your message app. The photo is yours; the link is ours.</p>
+  </div>
+
+  <p class="fine">Pick My Costume is a free 2-minute Halloween costume quiz. This diary lives on your device only: clearing site data clears it. Anonymous usage stats only, no photos or names leave your phone.</p>
+</div>
+
+<script>
+/* Build diary (staged 2026-09-27, NOT live-linked). Pure functions up top are
+   unit-tested by hour-session/verify-diary.cjs; all DOM work is inside
+   initDiary(), which never runs in the harness (no document there). */
+var DIARY_IDEAS = [{"id": "astronaut", "title": "Astronaut"}, {"id": "blue-dog-family", "title": "Aussie Dog Family"}, {"id": "baby-dino", "title": "Baby Dinosaur"}, {"id": "backyard-hero", "title": "Backyard Superhero"}, {"id": "bacon-eggs", "title": "Bacon & Eggs"}, {"id": "ballerina", "title": "Ballerina"}, {"id": "bamboo-demon", "title": "Bamboo-Muzzle Demon"}, {"id": "banana", "title": "Banana"}, {"id": "basketball-star", "title": "Basketball Star"}, {"id": "beekeeper-bee", "title": "Beekeeper & Bee"}, {"id": "black-cat", "title": "Black Cat Burglar"}, {"id": "block-game-crew", "title": "Block Game Crew"}, {"id": "block-monster", "title": "Block Monster"}, {"id": "blue-alien-ohana", "title": "Blue Alien Ohana"}, {"id": "board-game-pieces", "title": "Board Game Pieces"}, {"id": "bowling-pins", "title": "Bowling Pins"}, {"id": "boxer", "title": "Boxer"}, {"id": "breakfast-buffet", "title": "Breakfast Buffet"}, {"id": "bumble-bee", "title": "Bumble Bee"}, {"id": "burger-joint-couple", "title": "Burger Joint Couple"}, {"id": "butterfly", "title": "Butterfly"}, {"id": "caped-duo", "title": "Caped Duo"}, {"id": "cardboard-knight", "title": "Cardboard Knight"}, {"id": "robot-crew", "title": "Cardboard Robot Crew"}, {"id": "cat-mouse", "title": "Cat & Mouse"}, {"id": "cereal-crew", "title": "Cereal Crew"}, {"id": "cheerleader", "title": "Cheerleader"}, {"id": "chipmunk-trio", "title": "Chipmunk Trio"}, {"id": "classic-ghost", "title": "Classic Ghost"}, {"id": "vampire", "title": "Classic Vampire"}, {"id": "wizard", "title": "Classic Wizard"}, {"id": "coffee-cup", "title": "Coffee Cup"}, {"id": "crowd-camouflage", "title": "Crowd Camouflage"}, {"id": "cupcake", "title": "Cupcake"}, {"id": "daisy", "title": "Daisy"}, {"id": "deadpan-diva", "title": "Deadpan Diva"}, {"id": "decades-crew", "title": "Decades Crew"}, {"id": "demon-boy-band", "title": "Demon Boy Band"}, {"id": "deviled-egg", "title": "Deviled Egg"}, {"id": "dino-herd", "title": "Dino Herd"}, {"id": "dino-rangers", "title": "Dino Rangers"}, {"id": "dino-tourist", "title": "Dino Tourist"}, {"id": "dinosaur-family", "title": "Dinosaur Family"}, {"id": "donut", "title": "Donut"}, {"id": "dragon-rider-duo", "title": "Dragon Rider Duo"}, {"id": "spider", "title": "Eight-Legged Spider"}, {"id": "emerald-witch", "title": "Emerald Witch"}, {"id": "emoji-crew", "title": "Emoji Crew"}, {"id": "emotion-crew", "title": "Emotion Crew"}, {"id": "emotional-support-dinosaur", "title": "Emotional Support Dinosaur"}, {"id": "enchanted-castle-crew", "title": "Enchanted Castle Crew"}, {"id": "error-404", "title": "Error 404"}, {"id": "extinct-party-animal", "title": "Extinct Party Animal"}, {"id": "fairy-tale-princesses", "title": "Fairy Tale Princesses"}, {"id": "fossil-hunter", "title": "Fossil Hunter"}, {"id": "fruit-salad", "title": "Fruit Salad Crew"}, {"id": "fuzzy-monster", "title": "Fuzzy Monster"}, {"id": "galaxy-knights", "title": "Galaxy Knights"}, {"id": "garden-fairy", "title": "Garden Fairy"}, {"id": "garden-gnome", "title": "Garden Gnome"}, {"id": "ghost-hunters", "title": "Ghost Hunters"}, {"id": "gloom-bloom", "title": "Gloom & Bloom"}, {"id": "glow-skeleton", "title": "Glow Skeleton"}, {"id": "goggle-crew", "title": "Goggle Crew"}, {"id": "good-witch-bad-witch", "title": "Good Witch, Bad Witch"}, {"id": "haunted-animatronics", "title": "Haunted Animatronics"}, {"id": "haunted-portraits", "title": "Haunted Portraits"}, {"id": "headless-horsemen", "title": "Headless Horsemen"}, {"id": "hero-squad", "title": "Hero Squad"}, {"id": "hot-dog", "title": "Hot Dog"}, {"id": "ice-cream-cone", "title": "Ice Cream Cone"}, {"id": "ice-skater", "title": "Ice Skater"}, {"id": "kart-racers", "title": "Kart Racers"}, {"id": "ketchup-mustard", "title": "Ketchup & Mustard"}, {"id": "ladybug", "title": "Ladybug"}, {"id": "little-artist", "title": "Little Artist"}, {"id": "little-baker", "title": "Little Baker"}, {"id": "little-lifeguard", "title": "Little Lifeguard"}, {"id": "little-lion", "title": "Little Lion"}, {"id": "little-pig-family", "title": "Little Pig Family"}, {"id": "little-prince", "title": "Little Prince"}, {"id": "little-shark", "title": "Little Shark"}, {"id": "little-witch", "title": "Little Witch"}, {"id": "lost-tourist", "title": "Lost Tourist"}, {"id": "mermaid-crew", "title": "Mermaid Crew"}, {"id": "moth-porch-light", "title": "Moth and Porch Light"}, {"id": "mystery-crew", "title": "Mystery Crew"}, {"id": "neon-demon-hunter", "title": "Neon Demon Hunter"}, {"id": "ninja", "title": "Ninja"}, {"id": "numbered-players", "title": "Numbered Players"}, {"id": "office-couple", "title": "Office Couple"}, {"id": "pbj", "title": "Peanut Butter & Jelly"}, {"id": "peas-pod", "title": "Peas in a Pod"}, {"id": "penguin-huddle", "title": "Penguin Huddle"}, {"id": "pickle", "title": "Pickle"}, {"id": "pixel-ghost", "title": "Pixel Ghost"}, {"id": "pizza-slice", "title": "Pizza Slice"}, {"id": "plague-doctor", "title": "Plague Doctor"}, {"id": "plastic-dream-crew", "title": "Plastic Dream Crew"}, {"id": "player-one-two", "title": "Player One & Two"}, {"id": "plug-socket", "title": "Plug and Socket"}, {"id": "plumber-duo", "title": "Plumber Brothers"}, {"id": "pocket-plush", "title": "Pocket Plush Monster"}, {"id": "pop-star", "title": "Pop Star"}, {"id": "popcorn-bucket", "title": "Popcorn Bucket"}, {"id": "prince-princess", "title": "Prince & Princess"}, {"id": "rain-cloud-rainbow", "title": "Rain Cloud and Rainbow"}, {"id": "ramen-bowl", "title": "Ramen Bowl"}, {"id": "raptor-ranger", "title": "Raptor & Ranger"}, {"id": "raptor-barista", "title": "Raptor Barista"}, {"id": "referee", "title": "Referee"}, {"id": "robot-ranger", "title": "Robot Ranger"}, {"id": "safari-zoo-crew", "title": "Safari / Zoo Crew"}, {"id": "safari-photographer", "title": "Safari Photographer"}, {"id": "salt-pepper", "title": "Salt & Pepper"}, {"id": "snow-sisters", "title": "Snow Sisters"}, {"id": "soccer-squad", "title": "Soccer Squad"}, {"id": "space-crewmate", "title": "Space Crewmate"}, {"id": "spaghetti-meatball", "title": "Spaghetti & Meatball"}, {"id": "sun-moon", "title": "Sun and Moon"}, {"id": "superhero-family", "title": "Superhero Family"}, {"id": "sushi-roll", "title": "Sushi Roll"}, {"id": "tall-hat-crew", "title": "Tall Hat Crew"}, {"id": "tennis-duo", "title": "Tennis Duo"}, {"id": "tetris-duo", "title": "Tetris Duo"}, {"id": "doctor-bride", "title": "The Doctor & the Bride"}, {"id": "the-olympians", "title": "The Olympians"}, {"id": "tin-hero", "title": "The Tin Hero"}, {"id": "tiny-firefighter", "title": "Tiny Firefighter"}, {"id": "tiny-snail", "title": "Tiny Snail"}, {"id": "tooth-fairy", "title": "Tooth and Tooth Fairy"}, {"id": "toy-box-crew", "title": "Toy Box Crew"}, {"id": "under-the-sea", "title": "Under the Sea"}, {"id": "walking-taco", "title": "Walking Taco"}, {"id": "web-hero-duo", "title": "Web Hero Duo"}, {"id": "web-slinger-kid", "title": "Web Slinger"}, {"id": "web-slinger-crew", "title": "Web-Slinger Crew"}, {"id": "zombie-coworker", "title": "Zombie Coworker"}];
+var DIARY_DEFAULT_STEPS = ["Lay out the materials", "Build the main piece", "Details and fit check", "Wear it"];
+var DIARY_SHARE_TEMPLATES = ["Getting ready to make {title} for Halloween. A 2-min quiz picked it for me: {link}", "Mid-build on my {title} costume. The plan came from a 2-min quiz: {link}", "Almost done with my {title}. One last fit check, then it is Halloween: {link}", "Finished my {title} for Halloween, made from stuff at home. Your turn, 2-min quiz: {link}"];
+var DIARY_KEY = "pmc_diary_v1";
+var DIARY_SID_KEY = "pmc_diary_sid";
+var DIARY_MAX_PHOTO = 900; /* px, longest edge */
+
+/* Pure: the share link for a diary build. o=diary keeps attribution with the
+   existing share-origin model (?s=<share id>&o=<origin>). */
+function diaryLink(slug, sid) {
+  return "https://pickmycostume.com/c/" + slug + "?s=" + sid + "&o=diary";
+}
+/* Pure: share text for a build step. No em/en dashes by construction
+   (templates are linted at generation time). */
+function diaryShareText(stepIdx, title, link) {
+  var t = DIARY_SHARE_TEMPLATES[stepIdx] || DIARY_SHARE_TEMPLATES[0];
+  return t.replace("{title}", title).replace("{link}", link);
+}
+/* Pure: downscaled dimensions preserving aspect ratio. */
+function downscaleDims(w, h, max) {
+  if (w <= max && h <= max) return { w: w, h: h };
+  var s = max / Math.max(w, h);
+  return { w: Math.round(w * s), h: Math.round(h * s) };
+}
+/* Pure: is this query string asking for a real costume? */
+function diaryPickFromQuery(qs, ids) {
+  var m = /[?&]pick=([a-z0-9-]+)/.exec(qs || "");
+  if (!m) return null;
+  return ids.indexOf(m[1]) >= 0 ? m[1] : null;
+}
+/* Pure: blank diary state for a costume. */
+function blankDiary(slug) {
+  return {
+    pick: slug,
+    steps: DIARY_DEFAULT_STEPS.map(function (label) {
+      return { label: label, done: false, photo: null };
+    })
+  };
+}
+
+function diaryStore() {
+  var mem = {};
+  try {
+    return {
+      get: function (k) { return window.localStorage.getItem(k); },
+      set: function (k, v) { window.localStorage.setItem(k, v); },
+      del: function (k) { window.localStorage.removeItem(k); }
+    };
+  } catch (e) {
+    return {
+      get: function (k) { return mem[k] || null; },
+      set: function (k, v) { mem[k] = String(v); },
+      del: function (k) { delete mem[k]; }
+    };
+  }
+}
+
+function trackDiary(name, props) {
+  try {
+    var p = props || {};
+    p.via = "diary";
+    var q = (typeof location !== "undefined" && location.search) || "";
+    if (/[?&](probe|sim)=/.test(q) || /[?&]internal=1/.test(q)) p.internal = true;
+    if (window.posthog && posthog.capture) posthog.capture(name, p);
+  } catch (e) {}
+}
+
+function initDiary() {
+  var store = diaryStore();
+  var ids = DIARY_IDEAS.map(function (i) { return i.id; });
+  var byId = {};
+  DIARY_IDEAS.forEach(function (i) { byId[i.id] = i.title; });
+
+  function getSid() {
+    var sid = store.get(DIARY_SID_KEY);
+    if (!sid) {
+      sid = "d" + Math.random().toString(36).slice(2, 10);
+      store.set(DIARY_SID_KEY, sid);
+    }
+    return sid;
+  }
+  function load() {
+    try {
+      var raw = store.get(DIARY_KEY);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (!d || ids.indexOf(d.pick) < 0 || !d.steps || d.steps.length !== DIARY_DEFAULT_STEPS.length) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+  function save(d) {
+    try { store.set(DIARY_KEY, JSON.stringify(d)); }
+    catch (e) { note("Could not save: this phone is out of site storage. Photos are the usual cause."); }
+  }
+
+  var pick = diaryPickFromQuery(location.search, ids);
+  var diary = load();
+  if (pick && (!diary || diary.pick !== pick)) {
+    diary = blankDiary(pick);
+    save(diary);
+  }
+  if (!diary) diary = blankDiary(ids[0]);
+
+  var sel = document.getElementById("diary-pick");
+  sel.value = diary.pick;
+  sel.addEventListener("change", function () {
+    if (!confirm("Switch to " + byId[sel.value] + "? This starts a fresh diary.")) {
+      sel.value = diary.pick;
+      return;
+    }
+    diary = blankDiary(sel.value);
+    save(diary);
+    renderSteps();
+    trackDiary("diary_build_started", { pick: diary.pick });
+  });
+
+  var noteEl = null;
+  function note(msg) {
+    if (!noteEl) {
+      noteEl = document.createElement("p");
+      noteEl.className = "hint";
+      noteEl.style.color = "#b91c1c";
+      sel.parentNode.appendChild(noteEl);
+    }
+    noteEl.textContent = msg;
+  }
+
+  function share(text, stepIdx) {
+    var done = function (ok) {
+      trackDiary("diary_share_created", { step: stepIdx, share_id: getSid(), ok: !!ok });
+    };
+    if (navigator.share) {
+      navigator.share({ title: "Pick My Costume", text: text }).then(function () { done(true); }, function () { done(false); });
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { note("Copied. Paste it under your photo in your message app."); done(true); }, function () { done(false); });
+    } else {
+      prompt("Copy your build update:", text);
+      done(false);
+    }
+  }
+
+  function renderSteps() {
+    var host = document.getElementById("diary-steps");
+    host.innerHTML = "";
+    var sid = getSid();
+    var allDone = true;
+    diary.steps.forEach(function (st, i) {
+      if (!st.done) allDone = false;
+      var card = document.createElement("div");
+      card.className = "card step" + (st.done ? " done" : "");
+      var head = document.createElement("div");
+      head.className = "step-head";
+      var num = document.createElement("div");
+      num.className = "step-num";
+      num.textContent = String(i + 1);
+      var titleInput = document.createElement("input");
+      titleInput.className = "step-title";
+      titleInput.type = "text";
+      titleInput.value = st.label;
+      titleInput.setAttribute("aria-label", "Step " + (i + 1) + " name");
+      titleInput.addEventListener("change", function () {
+        st.label = titleInput.value.trim() || DIARY_DEFAULT_STEPS[i];
+        titleInput.value = st.label;
+        save(diary);
+      });
+      head.appendChild(num);
+      head.appendChild(titleInput);
+      card.appendChild(head);
+
+      var row = document.createElement("div");
+      row.className = "photo-row" + (st.photo ? " has-photo" : "");
+      var img = document.createElement("img");
+      img.alt = "Build photo, step " + (i + 1);
+      if (st.photo) img.src = st.photo;
+      var fileBtn = document.createElement("label");
+      fileBtn.className = "btn btn-ghost";
+      fileBtn.textContent = st.photo ? "Retake photo" : "Add photo";
+      var file = document.createElement("input");
+      file.type = "file";
+      file.accept = "image/*";
+      file.style.display = "none";
+      file.addEventListener("change", function () {
+        var f = file.files && file.files[0];
+        if (!f) return;
+        var rd = new FileReader();
+        rd.onload = function () {
+          var im = new Image();
+          im.onload = function () {
+            try {
+              var d = downscaleDims(im.width, im.height, DIARY_MAX_PHOTO);
+              var cv = document.createElement("canvas");
+              cv.width = d.w; cv.height = d.h;
+              cv.getContext("2d").drawImage(im, 0, 0, d.w, d.h);
+              st.photo = cv.toDataURL("image/jpeg", 0.72);
+              save(diary);
+              trackDiary("diary_photo_added", { step: i, pick: diary.pick });
+              renderSteps();
+            } catch (e) {
+              note("That photo is too big to keep on this phone. Try a smaller one.");
+            }
+          };
+          im.src = rd.result;
+        };
+        rd.readAsDataURL(f);
+      });
+      fileBtn.appendChild(file);
+      row.appendChild(img);
+      row.appendChild(fileBtn);
+      card.appendChild(row);
+
+      var toggle = document.createElement("label");
+      toggle.className = "done-toggle";
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!st.done;
+      cb.addEventListener("change", function () {
+        st.done = cb.checked;
+        save(diary);
+        trackDiary(cb.checked ? "diary_step_done" : "diary_step_undone", { step: i, pick: diary.pick });
+        renderSteps();
+      });
+      var tspan = document.createElement("span");
+      tspan.textContent = "Done";
+      toggle.appendChild(cb);
+      toggle.appendChild(tspan);
+      card.appendChild(toggle);
+
+      var brow = document.createElement("div");
+      brow.className = "btn-row";
+      var sb = document.createElement("button");
+      sb.className = "btn btn-primary";
+      sb.textContent = "Share this step";
+      sb.addEventListener("click", function () {
+        var link = diaryLink(diary.pick, sid);
+        share(diaryShareText(i, byId[diary.pick], link), i);
+      });
+      brow.appendChild(sb);
+      card.appendChild(brow);
+      var hint = document.createElement("p");
+      hint.className = "hint";
+      hint.textContent = "Attach your latest build photo above this text in your message app. The photo is yours; the link is ours.";
+      card.appendChild(hint);
+
+      host.appendChild(card);
+    });
+    var fin = document.getElementById("diary-finish");
+    fin.classList.toggle("hidden", !allDone);
+  }
+
+  document.getElementById("diary-finish-share").addEventListener("click", function () {
+    var link = diaryLink(diary.pick, getSid());
+    share(diaryShareText(3, byId[diary.pick], link), 3);
+  });
+
+  renderSteps();
+  trackDiary("diary_opened", { pick: diary.pick });
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initDiary);
+  else initDiary();
+}
+
+/* PostHog: anonymous usage stats only. No photos, names, or answers are sent. Session replay is off. */
+(function () {
+  try {
+    var s = document.createElement("script");
+    s.src = "https://us.i.posthog.com/static/array.js";
+    s.async = true;
+    s.onload = function () {
+      try { if (window.posthog && posthog.init) posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", { api_host: "https://us.i.posthog.com", autocapture: false }); } catch (e) {}
+    };
+    document.head.appendChild(s);
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
