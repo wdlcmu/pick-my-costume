@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Office Costume Contest Kit: run a Halloween contest at work - Pick My Costume</title>
+<meta name="description" content="A free office-manager tool: pick contest categories, print ballots, tally votes, announce winners, and send coworkers to a 2-minute costume quiz. No account, prints clean.">
+<link rel="canonical" href="https://pickmycostume.com/office-contest-kit">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/office-contest-kit">
+<meta property="og:title" content="Office Costume Contest Kit - Pick My Costume">
+<meta property="og:description" content="Categories, printable ballots, vote tally, and winner announcements for your office Halloween contest. Free, no account.">
+<meta property="og:image" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Office Costume Contest Kit - Pick My Costume">
+<meta name="twitter:description" content="Categories, printable ballots, vote tally, and winner announcements for your office Halloween contest. Free, no account.">
+<meta name="twitter:image" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<script>
+/* PostHog: anonymous usage stats only. No answers or names are sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwS7VeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --btn-bg: #ff8c1a;
+  --btn-ink: #2a1500;
+  --radius: 14px;
+  --green:#7ee2a8;
+}
+*{box-sizing:border-box}
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 64px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.brand{color:var(--ink);text-decoration:none;font-weight:800;font-size:17px}
+.brand span{color:var(--accent)}
+.proto{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 10px}
+h1{font-size:34px;margin:14px 0 8px;letter-spacing:-0.5px}
+.sub{font-size:17px;color:var(--muted);margin:0 0 24px;line-height:1.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:0 0 16px}
+.card h2{font-size:20px;margin:0 0 4px}
+.card .hint{font-size:14px;color:var(--muted);margin:0 0 14px}
+.stepnum{display:inline-block;font-size:12px;font-weight:800;color:var(--accent-ink);background:var(--accent);border-radius:20px;padding:2px 10px;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:2px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:24px;padding:12px 18px;font-size:15px;font-weight:600;cursor:pointer;min-height:48px;font-family:inherit}
+.chip .emo{margin-right:6px}
+.chip.sel{border-color:var(--accent);background:var(--sel-bg)}
+.chip.sel::before{content:"✓ ";color:var(--accent)}
+.btn{display:inline-block;border:0;border-radius:12px;padding:14px 22px;font-size:16px;font-weight:800;cursor:pointer;min-height:52px;background:var(--btn-bg);color:var(--btn-ink);font-family:inherit}
+.btn:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:600;font-size:14px;padding:10px 16px;min-height:44px;border-radius:12px;cursor:pointer;font-family:inherit}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;align-items:center}
+input[type=text],textarea,select{background:var(--bg2);border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:15px;font-family:inherit;width:100%}
+input[type=text]:focus,textarea:focus{border-color:var(--accent);outline:none}
+label.field{display:block;font-size:14px;font-weight:700;color:var(--muted);margin:0 0 6px}
+.fieldrow{margin:0 0 14px}
+/* timeline */
+.timeline{list-style:none;margin:6px 0 0;padding:0}
+.timeline li{display:flex;gap:12px;margin:0 0 12px;font-size:15px}
+.timeline .when{flex:0 0 110px;font-weight:800;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:0.4px;padding-top:2px}
+/* names list */
+.names{list-style:none;margin:0;padding:0}
+.names li{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+.names .nm{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:15px}
+.names .rm{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;font-size:18px;cursor:pointer;width:40px;height:40px;flex:0 0 auto}
+/* ballot preview */
+.ballot{border:2px dashed var(--line);border-radius:var(--radius);padding:18px;margin:14px 0;background:var(--bg2)}
+.ballot .btitle{font-size:19px;font-weight:800;margin:0 0 2px}
+.ballot .bsub{font-size:13px;color:var(--muted);margin:0 0 12px}
+.btable{width:100%;border-collapse:collapse;font-size:14px}
+.btable th{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:2px solid var(--line)}
+.btable td{padding:9px 8px;border-bottom:1px solid var(--line)}
+.btable .cname{font-weight:700}
+.btable .box{display:inline-block;width:22px;height:22px;border:2px solid var(--line);border-radius:6px;vertical-align:middle}
+.bnote{font-size:12px;color:var(--muted);margin:10px 0 0}
+/* tally */
+.trow{display:flex;align-items:center;gap:10px;margin:0 0 8px;flex-wrap:wrap}
+.trow .nm{flex:1 1 140px;font-weight:700;font-size:15px}
+.tcat{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+.tcat .cl{font-size:12px;color:var(--muted);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tcat button{width:32px;height:32px;border-radius:8px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;font-weight:800;cursor:pointer}
+.tcat .v{min-width:24px;text-align:center;font-weight:800}
+.winner{display:block;margin-top:8px;font-size:15px}
+/* announce */
+.copy{position:relative}
+.copy textarea{min-height:150px;font-size:14.5px;line-height:1.6}
+.copied{font-size:13px;color:var(--green);margin:6px 0 0;display:none}
+.quizcard{border:2px solid var(--accent);border-radius:var(--radius);padding:18px;margin:0 0 16px;background:linear-gradient(180deg,#3a2566,#2a1c52)}
+.quizcard h2{font-size:20px;margin:0 0 6px}
+.quizcard p{font-size:15px;color:var(--ink);margin:0 0 14px}
+footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-height:1.7}
+.notice{background:#3a2566;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--ink);margin:0 0 16px}
+/* print: ballots + winner sheet print clean, everything else hides */
+#printarea{display:none}
+@media print{
+  body{background:#fff;color:#111}
+  .wrap{display:none !important}
+  #printarea{display:block !important;color:#111}
+  #printarea .psheet{border:2px solid #111;border-radius:10px;padding:18px;margin:0 0 18px;break-inside:avoid}
+  #printarea h2{font-size:20px;margin:0 0 4px;color:#111}
+  #printarea .psub{font-size:13px;color:#333;margin:0 0 12px}
+  #printarea table{width:100%;border-collapse:collapse;font-size:14px}
+  #printarea th{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;text-align:left;padding:6px 8px;border-bottom:2px solid #111}
+  #printarea td{padding:10px 8px;border-bottom:1px solid #999}
+  #printarea .box{display:inline-block;width:22px;height:22px;border:2px solid #111;border-radius:5px}
+  #printarea .pline{border-bottom:1px solid #999;padding:14px 4px 10px;font-size:14px}
+  #printarea a{color:#111;text-decoration:none}
+  #printarea .plink{font-size:12px;color:#333}
+  #printarea .winrow{font-size:17px;margin:0 0 8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="/">Pick My <span>Costume</span></a>
+    <span class="proto">office tool</span>
+  </div>
+
+  <h1>Run your office costume contest</h1>
+  <p class="sub">Four steps: pick categories, print ballots, tally votes, announce winners. Free, no account. The whole thing fits on one printout.</p>
+
+  <section class="card" aria-label="Step 1">
+    <span class="stepnum">Step 1</span>
+    <h2>Contest basics</h2>
+    <p class="hint">Name it, date it, pick the categories people will vote on.</p>
+    <div class="fieldrow">
+      <label class="field" for="contestname">Contest name</label>
+      <input type="text" id="contestname" value="Office Halloween Costume Contest" maxlength="60">
+    </div>
+    <div class="fieldrow">
+      <label class="field" for="contestdate">Contest date</label>
+      <input type="text" id="contestdate" value="Friday, October 31" maxlength="40">
+    </div>
+    <div class="fieldrow">
+      <label class="field">Categories (tap to toggle, pick 2 or more)</label>
+      <div class="chips" id="cats" role="group" aria-label="Contest categories">
+        <button type="button" class="chip sel" data-cat="Funniest"><span class="emo">😂</span>Funniest</button>
+        <button type="button" class="chip sel" data-cat="Scariest"><span class="emo">👻</span>Scariest</button>
+        <button type="button" class="chip sel" data-cat="Most Creative"><span class="emo">🎨</span>Most Creative</button>
+        <button type="button" class="chip" data-cat="Best Duo or Team"><span class="emo">🤝</span>Best Duo or Team</button>
+        <button type="button" class="chip" data-cat="Best Homemade"><span class="emo">✂️</span>Best Homemade</button>
+        <button type="button" class="chip" data-cat="Crowd Favorite"><span class="emo">🏆</span>Crowd Favorite</button>
+      </div>
+    </div>
+    <div class="notice">
+      <strong>One week out:</strong> post the contest in the team channel.
+      <strong>Day before:</strong> pin the ballot sign-up. <strong>Contest day:</strong>
+      hand out ballots, vote by 3pm, announce winners before everyone leaves.
+    </div>
+  </section>
+
+  <section class="card" aria-label="Step 2">
+    <span class="stepnum">Step 2</span>
+    <h2>Who is in? Print the ballots</h2>
+    <p class="hint">Add each contestant's name and what they are going as. Then print one ballot per voter.</p>
+    <div class="fieldrow">
+      <div style="display:flex;gap:10px">
+        <input type="text" id="newname" placeholder="Name (e.g. Priya)" maxlength="40" style="flex:1">
+        <input type="text" id="newas" placeholder="Going as (e.g. Sushi Roll)" maxlength="40" style="flex:1">
+        <button type="button" class="btn-ghost" id="addname" style="flex:0 0 auto">Add</button>
+      </div>
+    </div>
+    <ul class="names" id="names"></ul>
+    <div class="fieldrow">
+      <label class="field" for="nballots">Number of ballots to print</label>
+      <input type="text" id="nballots" value="20" inputmode="numeric" maxlength="4" style="max-width:120px">
+    </div>
+    <div class="btnrow">
+      <button type="button" class="btn" id="printballots">Print ballots</button>
+    </div>
+    <p class="hint" style="margin-bottom:0">The printed ballot lists every contestant with a checkbox per category, so a voter just checks one name in each category and drops it in a box.</p>
+  </section>
+
+  <section class="card" aria-label="Step 3">
+    <span class="stepnum">Step 3</span>
+    <h2>Tally the votes</h2>
+    <p class="hint">Sort the ballots, then tap + for every vote each costume got. Winners are computed automatically.</p>
+    <div id="tally"></div>
+    <div class="btnrow">
+      <button type="button" class="btn-ghost" id="resettally">Reset tally</button>
+      <button type="button" class="btn" id="printwinners">Print winner sheet</button>
+    </div>
+    <div id="winnerline"></div>
+  </section>
+
+  <section class="quizcard" aria-label="Costume ideas hook">
+    <h2>Someone still needs a costume?</h2>
+    <p>Send them to the 2-minute Pick My Costume quiz: answer a few questions, get three costume ideas built from stuff you already own. Free, no signup.</p>
+    <div class="btnrow">
+      <a class="btn" href="/">Take the quiz</a>
+      <button type="button" class="btn-ghost" id="copyshack" style="color:var(--ink);border-color:var(--accent)">Copy the Slack message</button>
+    </div>
+    <p class="copied" id="shackok">Copied. Paste it in #general and watch the sign-ups roll in.</p>
+    <p class="hint" style="font-size:13px;color:var(--muted);margin:12px 0 0">The printed ballot footer includes the quiz link, so every voter sees it.</p>
+  </section>
+
+  <section class="card" aria-label="Step 4">
+    <span class="stepnum">Step 4</span>
+    <h2>Announce the winners</h2>
+    <p class="hint">Steal this message. Winners are filled in from your tally.</p>
+    <div class="copy">
+      <textarea id="announce" readonly></textarea>
+    </div>
+    <div class="btnrow">
+      <button type="button" class="btn" id="refreshannounce">Refresh from tally</button>
+      <button type="button" class="btn-ghost" id="copyannounce">Copy announcement</button>
+    </div>
+    <p class="copied" id="announceok">Copied.</p>
+  </section>
+
+  <footer>
+    <p>Built with Muse. Made by Billy Litner.<br>Free for offices, teams, and clubs. Print as many ballots as you like.</p>
+  </footer>
+</div>
+
+<div id="printarea" aria-hidden="true"></div>
+
+<script>
+(function(){
+  "use strict";
+  var QUIZ_URL = "https://pickmycostume.com";
+
+  function $(id){ return document.getElementById(id); }
+
+  /* ---------- categories ---------- */
+  function selectedCats(){
+    var out = [];
+    document.querySelectorAll("#cats .chip.sel").forEach(function(c){ out.push(c.getAttribute("data-cat")); });
+    return out;
+  }
+  document.querySelectorAll("#cats .chip").forEach(function(c){
+    c.addEventListener("click", function(){
+      c.classList.toggle("sel");
+      renderTally();
+      refreshAnnounce();
+    });
+  });
+
+  /* ---------- contestants ---------- */
+  var contestants = [];
+  function renderNames(){
+    var ul = $("names");
+    ul.innerHTML = "";
+    contestants.forEach(function(p, i){
+      var li = document.createElement("li");
+      var d = document.createElement("div");
+      d.className = "nm";
+      d.textContent = p.name + (p.as ? "  -  going as " + p.as : "");
+      var rm = document.createElement("button");
+      rm.type = "button"; rm.className = "rm"; rm.setAttribute("aria-label","Remove " + p.name);
+      rm.textContent = "×";
+      rm.addEventListener("click", function(){ contestants.splice(i,1); renderNames(); renderTally(); });
+      li.appendChild(d); li.appendChild(rm);
+      ul.appendChild(li);
+    });
+  }
+  function addName(){
+    var n = $("newname").value.trim(), a = $("newas").value.trim();
+    if(!n) return;
+    contestants.push({name:n, as:a});
+    $("newname").value = ""; $("newas").value = "";
+    $("newname").focus();
+    renderNames(); renderTally();
+  }
+  $("addname").addEventListener("click", addName);
+  [$("newname"), $("newas")].forEach(function(el){
+    el.addEventListener("keydown", function(e){ if(e.key === "Enter") addName(); });
+  });
+
+  /* ---------- tally ---------- */
+  var votes = {}; // idx -> {cat: n}
+  function renderTally(){
+    var box = $("tally");
+    var cats = selectedCats();
+    box.innerHTML = "";
+    if(contestants.length === 0){
+      box.innerHTML = '<p class="hint">Add contestants in Step 2 first.</p>';
+      return;
+    }
+    contestants.forEach(function(p, i){
+      votes[i] = votes[i] || {};
+      var row = document.createElement("div");
+      row.className = "trow";
+      var nm = document.createElement("div");
+      nm.className = "nm";
+      nm.textContent = p.name;
+      row.appendChild(nm);
+      cats.forEach(function(c){
+        votes[i][c] = votes[i][c] || 0;
+        var tc = document.createElement("div");
+        tc.className = "tcat";
+        var cl = document.createElement("span");
+        cl.className = "cl"; cl.textContent = c;
+        var minus = document.createElement("button");
+        minus.type = "button"; minus.textContent = "–";
+        minus.setAttribute("aria-label","Fewer votes for " + p.name + " in " + c);
+        var v = document.createElement("span");
+        v.className = "v"; v.textContent = votes[i][c];
+        var plus = document.createElement("button");
+        plus.type = "button"; plus.textContent = "+";
+        plus.setAttribute("aria-label","One more vote for " + p.name + " in " + c);
+        minus.addEventListener("click", function(){
+          votes[i][c] = Math.max(0, votes[i][c] - 1);
+          v.textContent = votes[i][c]; refreshAnnounce();
+        });
+        plus.addEventListener("click", function(){
+          votes[i][c] = votes[i][c] + 1;
+          v.textContent = votes[i][c]; refreshAnnounce();
+        });
+        tc.appendChild(cl); tc.appendChild(minus); tc.appendChild(v); tc.appendChild(plus);
+        row.appendChild(tc);
+      });
+      box.appendChild(row);
+    });
+  }
+  $("resettally").addEventListener("click", function(){
+    votes = {}; renderTally(); refreshAnnounce();
+  });
+
+  /* ---------- winners ---------- */
+  function winners(){
+    var cats = selectedCats();
+    return cats.map(function(c){
+      var best = -1, tops = [];
+      contestants.forEach(function(p, i){
+        var n = (votes[i] && votes[i][c]) || 0;
+        if(n > best){ best = n; tops = [p]; }
+        else if(n === best){ tops.push(p); }
+      });
+      return {cat:c, tops:tops, best:best};
+    });
+  }
+  function winnerText(){
+    var w = winners();
+    return w.map(function(r){
+      if(r.best <= 0) return r.cat + ": no votes yet";
+      var names = r.tops.map(function(p){ return p.name + (p.as ? " (" + p.as + ")" : ""); }).join(" and ");
+      return r.cat + ": " + names + (r.tops.length > 1 ? " (tie)" : "");
+    });
+  }
+
+  /* ---------- announce ---------- */
+  function refreshAnnounce(){
+    var cname = $("contestname").value.trim() || "Our Halloween Costume Contest";
+    var lines = [
+      "The results are in for " + cname + "!",
+      ""
+    ];
+    winnerText().forEach(function(t){ lines.push("- " + t); });
+    lines.push("");
+    lines.push("Huge thanks to everyone who dressed up and voted. See you next Halloween.");
+    $("announce").value = lines.join("\n");
+    var wl = $("winnerline");
+    wl.innerHTML = "";
+    winnerText().forEach(function(t){
+      var d = document.createElement("span");
+      d.className = "winner";
+      d.textContent = "🏅 " + t;
+      wl.appendChild(d);
+    });
+  }
+  $("refreshannounce").addEventListener("click", refreshAnnounce);
+  function copyText(el, okEl){
+    var t = el.value !== undefined ? el.value : el.textContent;
+    function done(){ okEl.style.display = "block"; setTimeout(function(){ okEl.style.display = "none"; }, 2500); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(done, function(){ el.select(); document.execCommand("copy"); done(); });
+    } else { el.select(); document.execCommand("copy"); done(); }
+  }
+  $("copyannounce").addEventListener("click", function(){ copyText($("announce"), $("announceok")); });
+
+  var shackMsg = "Hey team — we are running a Halloween costume contest! Categories: Funniest, Scariest, and Most Creative. Dress up on the contest day, grab a ballot at the front desk, and vote for your favorites. Still need a costume idea? Take this 2-minute quiz and get three ideas from stuff you already own: " + QUIZ_URL + " — no signup, free.";
+  var shackBtn = $("copyshack");
+  shackBtn.addEventListener("click", function(){
+    var ta = document.createElement("textarea");
+    ta.value = shackMsg; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    copyText(ta, $("shackok"));
+    setTimeout(function(){ document.body.removeChild(ta); }, 3000);
+  });
+
+  /* ---------- print: ballots ---------- */
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  $("printballots").addEventListener("click", function(){
+    var cats = selectedCats();
+    if(cats.length < 2){ alert("Pick at least 2 categories first."); return; }
+    if(contestants.length === 0){ alert("Add at least one contestant first."); return; }
+    var n = parseInt(($("nballots").value || "0").replace(/\D/g,""), 10);
+    if(!(n > 0)){ alert("Enter how many ballots to print."); return; }
+    var cname = esc($("contestname").value.trim() || "Office Halloween Costume Contest");
+    var cdate = esc($("contestdate").value.trim());
+    var head = "<tr><th>Contestant</th>" + cats.map(function(c){ return "<th>" + esc(c) + "</th>"; }).join("") + "</tr>";
+    var rows = contestants.map(function(p){
+      return "<tr><td><strong>" + esc(p.name) + "</strong>" +
+        (p.as ? "<br><span class='plink'>" + esc(p.as) + "</span>" : "") +
+        "</td>" + cats.map(function(){ return "<td><span class='box'></span></td>"; }).join("") + "</tr>";
+    }).join("");
+    var foot = "<p class='plink'>One vote per category. Need a costume idea? " + esc(QUIZ_URL) + " — a free 2-minute quiz, no signup.</p>";
+    var one = "<div class='psheet'><h2>" + cname + "</h2>" +
+      "<p class='psub'>Official ballot" + (cdate ? " - " + cdate : "") + ". Check one box per category, then drop this in the ballot box.</p>" +
+      "<table>" + head + rows + "</table>" + foot + "</div>";
+    var html = "";
+    for(var i = 0; i < n; i++) html += one;
+    $("printarea").innerHTML = html;
+    window.print();
+  });
+
+  /* ---------- print: winner sheet ---------- */
+  $("printwinners").addEventListener("click", function(){
+    var cats = selectedCats();
+    if(cats.length === 0){ alert("Pick at least one category first."); return; }
+    var cname = esc($("contestname").value.trim() || "Our Halloween Costume Contest");
+    var cdate = esc($("contestdate").value.trim());
+    var w = winners();
+    var rows = w.map(function(r){
+      var names = r.best > 0
+        ? r.tops.map(function(p){ return esc(p.name) + (p.as ? " (" + esc(p.as) + ")" : ""); }).join(" and ") + (r.tops.length > 1 ? " - tie" : "")
+        : "No votes recorded";
+      return "<p class='winrow'>🏅 <strong>" + esc(r.cat) + ":</strong> " + names + "</p>";
+    }).join("");
+    $("printarea").innerHTML =
+      "<div class='psheet'><h2>" + cname + " - Winners</h2>" +
+      "<p class='psub'>" + (cdate ? cdate + ". " : "") + "Congratulations to our winners, as voted by the office.</p>" +
+      rows +
+      "<p class='plink'>Ran with the free Office Costume Contest Kit at " + esc(QUIZ_URL) + "/office-contest-kit</p></div>";
+    window.print();
+  });
+
+  renderNames();
+  renderTally();
+  refreshAnnounce();
+})();
+</script>
+</body>
+</html>
