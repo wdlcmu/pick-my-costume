@@ -162,6 +162,36 @@ body{
 .stickycta button{width:100%;min-height:48px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;pointer-events:auto}
 @media (max-width:640px){ .stickycta.show{display:block} }
 .textlink{background:none;border:0;padding:8px;color:var(--muted);text-decoration:underline;font-size:14px;cursor:pointer;font-family:inherit;min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
+/* ================= COUNTDOWN PLANNER + WHO'S-WHO SHUFFLER (2026-09-26) =================
+   Two group-planning tools, integrated from the love-it prototypes.
+   Planner: works backwards from Oct 31 using real INSTRUCTIONS data (materials,
+   steps, build time) and offers Add-to-calendar links. Shuffler: one-tap role
+   dealer using the existing CASTS data. Names live in JS memory only. */
+.plabel{display:block;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:16px 0 8px}
+select.pselect{width:100%;font-size:16px;padding:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--ink);margin:0;min-height:56px}
+.ptl{position:relative;margin:16px 0 0;padding-left:26px}
+.ptl::before{content:"";position:absolute;left:8px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.pms{position:relative;background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:16px;margin:0 0 16px}
+.pms::before{content:"";position:absolute;left:-24px;top:22px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.pms .pdate{font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;font-weight:700}
+.pms h3{margin:0 0 6px;font-size:20px}
+.pms .pcount{color:var(--muted);font-size:14px;margin:0 0 10px}
+.pms ul,.pms ol{margin:8px 0;padding-left:20px}
+.pms li{margin:5px 0;font-size:15px}
+.psec{color:var(--muted);font-size:13px;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(--btn-ink);font-weight:700;text-decoration:none;border-radius:10px;padding:12px 18px;font-size:15px;min-height:48px}
+.pnote{background:rgba(255,140,26,.08);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 10px 10px 0;color:var(--muted);font-size:14px;margin:12px 0 0}
+.sperson{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.sperson input{flex:1;font-size:16px;padding:12px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-height:52px}
+.sseg{display:flex;border:2px solid var(--line);border-radius:10px;overflow:hidden;flex:none}
+.sseg button{border:0;background:transparent;color:var(--muted);font-size:14px;padding:12px;cursor:pointer;min-height:52px}
+.sseg button.on{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.slineup{list-style:none;margin:6px 0 0;padding:0}
+.slineup li{display:flex;align-items:baseline;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);font-size:17px}
+.slineup li:last-child{border-bottom:0}
+.swho{font-weight:700;flex:none;max-width:45%;overflow:hidden;text-overflow:ellipsis}
+.sarrow{color:var(--muted);flex:none}
+.srole{color:var(--accent);font-weight:700;text-transform:capitalize}
 /*Billy 2026-09-25: visual proof strip. Real top-save costumes with photos
   above the fold so visitors see the taste before starting the quiz. Names
   sit on the photo with a scrim (the streaming-rail pattern) so they never
@@ -672,6 +702,8 @@ footer a{color:var(--accent)}
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">What materials or clothes are already in your house?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick the clothes and materials already in your house, we rank costumes by what you own.</p>
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 137 ideas</button></p>
+      <p style="margin:8px 0 0"><button type="button" id="btn-planner-hero" class="textlink">Plan your Halloween: buy day, build day, dress-up day</button></p>
+      <p style="margin:8px 0 0"><button type="button" id="btn-shuffler-hero" class="textlink">Dealing out group roles? Shuffle who's who</button></p>
       <p style="margin:16px 0 0"><button type="button" id="btn-spin" class="ghost">Can&#39;t decide? Let me pick for you</button></p>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
         <p class="fine" style="margin:0 0 8px">Here&#39;s a pick for you:</p>
@@ -879,6 +911,56 @@ footer a{color:var(--accent)}
     <div class="navrow" style="margin-top:16px">
       <button class="cta" id="btn-about-start" type="button">Find my costume</button>
       <button class="ghost" id="btn-about-back" type="button">&larr; Back</button>
+    </div>
+  </section>
+
+  <!-- COUNTDOWN PLANNER -->
+  <section class="screen" id="s-planner">
+    <div class="wrap">
+      <div class="navrow" style="margin:0 0 10px">
+        <button class="ghost" id="btn-planner-back" type="button">&larr; Back</button>
+        <button class="ghost" id="btn-planner-home" type="button">&#8962; Home</button>
+      </div>
+      <p class="progress">Halloween countdown</p>
+      <h2 class="q-title">Your Halloween countdown</h2>
+      <p class="blurb">Pick a costume. We work backwards from October 31 and tell you when to buy, when to build, and what goes on each day.</p>
+      <label class="plabel" for="planner-costume">Costume</label>
+      <select id="planner-costume" class="pselect" aria-label="Pick a costume for the countdown plan"></select>
+      <div id="planner-plan"></div>
+    </div>
+  </section>
+
+  <!-- WHO'S-WHO SHUFFLER -->
+  <section class="screen" id="s-shuffler">
+    <div class="wrap">
+      <div class="navrow" style="margin:0 0 10px">
+        <button class="ghost" id="btn-shuffler-back" type="button">&larr; Back</button>
+        <button class="ghost" id="btn-shuffler-home" type="button">&#8962; Home</button>
+      </div>
+      <p class="progress">Group tool</p>
+      <h2 class="q-title">Who's-who shuffler</h2>
+      <p class="blurb">One tap deals out the roles for your group costume. No more arguing about who gets to be the cool one.</p>
+      <label class="plabel" for="shuffler-costume">Costume</label>
+      <select id="shuffler-costume" class="pselect" aria-label="Pick a group costume"></select>
+      <p class="blurb" id="shuffler-blurb" style="font-size:14px;color:var(--muted)"></p>
+      <p class="plabel">Who is playing</p>
+      <div id="shuffler-people"></div>
+      <div class="row" style="display:flex;gap:8px">
+        <button class="ghost" id="shuffler-add" type="button" style="flex:1">+ Add a person</button>
+        <button class="ghost" id="shuffler-remove" type="button" style="flex:1">Remove last</button>
+      </div>
+      <p class="fine" style="margin-top:10px">Kid / grown-up matters: some roles only fit one or the other, and the dealer respects that. Names never leave this page.</p>
+      <button class="cta" id="shuffler-deal" type="button" style="width:100%;margin-top:12px">Deal the roles</button>
+      <p class="fine" id="shuffler-hint" style="text-align:center" role="status"></p>
+      <div id="shuffler-result" class="card" style="display:none;margin-top:16px">
+        <h3 style="margin:0 0 8px">The lineup</h3>
+        <ul id="shuffler-lineup" class="slineup"></ul>
+        <p class="fine" id="shuffler-fillernote"></p>
+        <div class="row" style="display:flex;gap:8px;margin-top:12px">
+          <button class="cta" id="shuffler-again" type="button" style="flex:1">Shuffle again</button>
+          <button class="ghost" id="shuffler-share" type="button" style="flex:1">Share this lineup</button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2001,6 +2083,338 @@ function show(id){
   if (f) f.style.display = (id === "s-about") ? "none" : "";
   window.scrollTo(0, 0);
 }
+
+/* ================= COUNTDOWN PLANNER + WHO'S-WHO SHUFFLER (2026-09-26) =================
+   Integrated from the love-it prototypes (red-teamed 2026-09-26).
+   Planner: works backwards from Oct 31 using real INSTRUCTIONS data.
+   Shuffler: one-tap role dealer using the existing CASTS data.
+   Privacy: typed names live in JS memory only, never in analytics. Only counts. */
+(function(){
+  "use strict";
+  /* ---------- shared helpers ---------- */
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function ideaById(id){
+    for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === id) return IDEAS[i];
+    return null;
+  }
+  function halloween(){
+    var now = new Date();
+    var hw = new Date(now.getFullYear(), 9, 31);
+    if (now > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
+    return hw;
+  }
+  var toolReturnTo = "s-hero";
+
+  /* ================= PLANNER ================= */
+  var plannerPopulated = false;
+  function plannerIdeas(){
+    var out = [];
+    for (var i = 0; i < IDEAS.length; i++){
+      if (INSTRUCTIONS && INSTRUCTIONS[IDEAS[i].id]) out.push(IDEAS[i]);
+    }
+    out.sort(function(a,b){ return a.title.localeCompare(b.title); });
+    return out;
+  }
+  function plannerParseMinutes(t){
+    var m = String(t).match(/(\d+)\s*min/);
+    var h = String(t).match(/(\d+)\s*hour/);
+    var mins = 0;
+    if (m) mins += parseInt(m[1], 10);
+    if (h) mins += parseInt(h[1], 10) * 60;
+    return mins || 30;
+  }
+  function plannerAddDays(d, n){ var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function plannerFmt(d){ return d.toLocaleDateString("en-US", {weekday:"short", month:"short", day:"numeric"}); }
+  function plannerYmd(d){
+    var p = function(n){ return (n < 10 ? "0" : "") + n; };
+    return d.getFullYear() + p(d.getMonth()+1) + p(d.getDate());
+  }
+  function plannerDaysUntil(d){
+    var now = new Date(); now.setHours(0,0,0,0);
+    return Math.round((d - now) / 86400000);
+  }
+  function plannerCalUrl(title, date, details){
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent(title) +
+      "&dates=" + plannerYmd(date) + "/" + plannerYmd(plannerAddDays(date, 1)) +
+      "&details=" + encodeURIComponent(details);
+  }
+  function plannerIsBuy(m){ return /\(buy:/i.test(m); }
+  function plannerPlanFor(ideaId){
+    var ins = INSTRUCTIONS[ideaId];
+    var mins = plannerParseMinutes(ins.time);
+    var hasDrying = /dry/i.test(ins.time) || ins.s.some(function(s){ return /dry/i.test(s); });
+    var buildOffset = mins <= 60 ? 1 : (mins <= 180 ? 2 : 3);
+    if (hasDrying) buildOffset += 1;
+    var hw = halloween();
+    var buildDay = plannerAddDays(hw, -buildOffset);
+    var buyDay = plannerAddDays(buildDay, -4);
+    var buyList = ins.m.filter(plannerIsBuy);
+    var ownList = ins.m.filter(function(m){ return !plannerIsBuy(m); });
+    var buildSteps = ins.s.filter(function(s){ return !/^optional pro finish/i.test(s); });
+    return {ins: ins, mins: mins, hasDrying: hasDrying, buildDay: buildDay,
+            buyDay: buyDay, buyList: buyList, ownList: ownList, buildSteps: buildSteps, hw: hw};
+  }
+  function plannerCountText(d){
+    var n = plannerDaysUntil(d);
+    if (n < 0) return "That day has passed. Do it today instead.";
+    if (n === 0) return "Today. No pressure.";
+    if (n === 1) return "Tomorrow. You have got this.";
+    return n + " days left.";
+  }
+  function renderPlanner(ideaId){
+    var idea = ideaById(ideaId);
+    var box = $("planner-plan");
+    if (!idea || !INSTRUCTIONS[ideaId]){ box.innerHTML = ""; return; }
+    var p = plannerPlanFor(ideaId);
+    var ins = p.ins;
+    var lastStep = p.buildSteps.length ? p.buildSteps[p.buildSteps.length-1] : "Gather everything in one spot the night before.";
+    var buyDetails = "Buy these for your " + idea.title + " costume (about " + ins.cost + "):\n" +
+      p.buyList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") +
+      (p.ownList.length ? "\n\nCheck at home first:\n" + p.ownList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") : "");
+    var buildDetails = "Build your " + idea.title + " costume (about " + ins.time + "):\n" +
+      p.buildSteps.map(function(s,i){ return (i+1) + ". " + s; }).join("\n");
+    var h = '<div class="ptl">';
+    /* Buy */
+    h += '<div class="pms"><p class="pdate">Buy by ' + plannerFmt(p.buyDay) + '</p>';
+    h += '<h3>Get the materials</h3>';
+    h += '<p class="pcount">' + esc(plannerCountText(p.buyDay)) + ' Budget: ' + esc(ins.cost) + '.</p>';
+    if (p.buyList.length){
+      h += '<p class="psec">Shopping list</p><ul>' +
+        p.buyList.map(function(m){ return "<li>" + esc(m) + "</li>"; }).join("") + '</ul>';
+    } else {
+      h += '<p>Nothing to buy for this one. Everything comes from your closet.</p>';
+    }
+    if (p.ownList.length){
+      h += '<p class="psec">Check at home first</p><ul>' +
+        p.ownList.map(function(m){ return "<li>" + esc(m) + "</li>"; }).join("") + '</ul>';
+    }
+    h += '<a class="pcal" data-cal="buy" href="' + plannerCalUrl("Buy materials: " + idea.title, p.buyDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buyDay, buyDetails) + '" target="_blank" rel="noopener">Add buy day to calendar</a></div>';
+    /* Build */
+    h += '<div class="pms"><p class="pdate">Build on ' + plannerFmt(p.buildDay) + '</p>';
+    h += '<h3>Build the costume</h3>';
+    h += '<p class="pcount">' + esc(plannerCountText(p.buildDay)) + ' Takes about ' + esc(ins.time) + '.</p>';
+    h += '<ol>' + p.buildSteps.map(function(s){ return "<li>" + esc(s) + "</li>"; }).join("") + '</ol>';
+    if (p.hasDrying) h += '<p class="pnote">Something needs drying time, so build day is pushed one day earlier. Paint before dinner, not after.</p>';
+    h += '<a class="pcal" data-cal="build" href="' + plannerCalUrl("Build costume: " + idea.title, p.buildDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buildDay, buildDetails) + '" target="_blank" rel="noopener">Add build day to calendar</a></div>';
+    /* Dress up */
+    h += '<div class="pms"><p class="pdate">Dress up ' + plannerFmt(p.hw) + '</p>';
+    h += '<h3>Wear it</h3>';
+    h += '<p class="pcount">' + esc(plannerCountText(p.hw)) + '</p>';
+    h += '<p>Last check: ' + esc(lastStep) + '</p>';
+    h += '<a class="pcal" data-cal="dress" href="' + plannerCalUrl("Dress up: " + idea.title, p.hw, "Dress-up day. Final check: " + lastStep) + '" target="_blank" rel="noopener">Add dress-up day to calendar</a></div>';
+    h += '</div>';
+    box.innerHTML = h;
+    /* Calendar taps: track which milestone, counts only. */
+    var cals = box.querySelectorAll("a.pcal");
+    for (var i = 0; i < cals.length; i++){
+      cals[i].addEventListener("click", function(){
+        Analytics.track("planner_cal_added", {milestone: this.getAttribute("data-cal"), idea_id: ideaId});
+      });
+    }
+  }
+  window.openPlanner = function(ideaId, returnTo){
+    var sel = $("planner-costume");
+    if (!plannerPopulated){
+      plannerIdeas().forEach(function(idea){
+        var o = document.createElement("option");
+        o.value = idea.id; o.textContent = idea.title;
+        sel.appendChild(o);
+      });
+      plannerPopulated = true;
+      sel.addEventListener("change", function(){ renderPlanner(sel.value); });
+    }
+    toolReturnTo = returnTo || "s-hero";
+    var pick = (ideaId && INSTRUCTIONS[ideaId]) ? ideaId : (sel.options.length ? sel.options[0].value : null);
+    if (pick) sel.value = pick;
+    renderPlanner(sel.value);
+    Analytics.track("planner_opened", {idea_id: sel.value, from: toolReturnTo});
+    show("s-planner");
+  };
+
+  /* ================= SHUFFLER ================= */
+  var shufflerPopulated = false;
+  var shufflerLastDeal = null;
+  function shufflerIds(){
+    var ids = [];
+    for (var k in CASTS){ if (CASTS.hasOwnProperty(k)) ids.push(k); }
+    ids.sort(function(a,b){
+      var ta = (ideaById(a) || {title: a}).title;
+      var tb = (ideaById(b) || {title: b}).title;
+      return ta.localeCompare(tb);
+    });
+    return ids;
+  }
+  function shufflerCap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+  function shufflerAddPerson(name, kid){
+    var wrap = $("shuffler-people");
+    var row = document.createElement("div");
+    row.className = "sperson";
+    var inp = document.createElement("input");
+    inp.type = "text"; inp.maxLength = 24; inp.placeholder = "Name";
+    if (name) inp.value = name;
+    inp.setAttribute("aria-label", "Person name");
+    var seg = document.createElement("div");
+    seg.className = "sseg";
+    var bKid = document.createElement("button"); bKid.type = "button"; bKid.textContent = "Kid";
+    var bGrown = document.createElement("button"); bGrown.type = "button"; bGrown.textContent = "Grown-up";
+    function setKid(v){
+      bKid.classList.toggle("on", v);
+      bGrown.classList.toggle("on", !v);
+      row.setAttribute("data-kid", v ? "1" : "0");
+    }
+    bKid.addEventListener("click", function(){ setKid(true); });
+    bGrown.addEventListener("click", function(){ setKid(false); });
+    setKid(!!kid);
+    seg.appendChild(bKid); seg.appendChild(bGrown);
+    row.appendChild(inp); row.appendChild(seg);
+    wrap.appendChild(row);
+  }
+  function shufflerReadPeople(){
+    var out = [];
+    var rows = $("shuffler-people").querySelectorAll(".sperson");
+    for (var i = 0; i < rows.length; i++){
+      var inp = rows[i].querySelector("input");
+      var name = inp.value.trim() || ("Person " + (i+1));
+      out.push({name: name, kid: rows[i].getAttribute("data-kid") === "1"});
+    }
+    return out;
+  }
+  function shufflerShuffle(a){
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i+1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function shufflerDeal(){
+    var id = $("shuffler-costume").value;
+    var cast = CASTS[id];
+    var idea = ideaById(id);
+    if (!cast) return null;
+    var people = shufflerShuffle(shufflerReadPeople().slice());
+    var out = [], fillers = 0;
+    if (cast.mode === "assign"){
+      var roles = shufflerShuffle((cast.roles || []).slice());
+      people.forEach(function(p){
+        var idx = -1;
+        for (var i = 0; i < roles.length; i++){
+          var r = roles[i];
+          if ((p.kid && r.kid) || (!p.kid && r.adult)){ idx = i; break; }
+        }
+        if (idx >= 0){ out.push({name: p.name, role: roles[idx].r}); roles.splice(idx, 1); }
+        else { fillers++; out.push({name: p.name, role: cast.filler + " " + fillers}); }
+      });
+    } else {
+      var pool = shufflerShuffle((cast.pool || []).slice());
+      people.forEach(function(p){
+        if (pool.length){ out.push({name: p.name, role: pool.pop()}); }
+        else { fillers++; out.push({name: p.name, role: cast.filler + " " + fillers}); }
+      });
+    }
+    var ul = $("shuffler-lineup");
+    ul.innerHTML = "";
+    out.forEach(function(a){
+      var li = document.createElement("li");
+      var w = document.createElement("span"); w.className = "swho"; w.textContent = a.name;
+      var ar = document.createElement("span"); ar.className = "sarrow"; ar.textContent = "is";
+      var r = document.createElement("span"); r.className = "srole"; r.textContent = shufflerCap(a.role);
+      li.appendChild(w); li.appendChild(ar); li.appendChild(r);
+      ul.appendChild(li);
+    });
+    $("shuffler-fillernote").textContent = fillers
+      ? "More players than roles, so " + fillers + " got a bonus " + cast.filler + ". Pick a bigger-crew costume or drop a player."
+      : "";
+    $("shuffler-hint").textContent = "Dealt " + out.length + " roles for " + (idea ? idea.title : id) + ".";
+    var res = $("shuffler-result");
+    res.style.display = "block";
+    if (res.scrollIntoView) res.scrollIntoView({behavior: "smooth", block: "nearest"});
+    var deal = {costume: idea ? idea.title : id, idea_id: id, lineup: out};
+    Analytics.track("shuffler_dealt", {idea_id: id, group_size: out.length,
+      kid_count: people.filter(function(p){ return p.kid; }).length, fillers: fillers});
+    return deal;
+  }
+  window.openShuffler = function(ideaId, returnTo){
+    var sel = $("shuffler-costume");
+    if (!shufflerPopulated){
+      shufflerIds().forEach(function(id){
+        var idea = ideaById(id);
+        var o = document.createElement("option");
+        o.value = id; o.textContent = idea ? idea.title : id;
+        sel.appendChild(o);
+      });
+      shufflerPopulated = true;
+      sel.addEventListener("change", function(){
+        var idea = ideaById(sel.value);
+        $("shuffler-blurb").textContent = idea ? idea.blurb : "";
+        $("shuffler-result").style.display = "none";
+        shufflerLastDeal = null;
+      });
+      $("shuffler-add").addEventListener("click", function(){ shufflerAddPerson("", false); });
+      $("shuffler-remove").addEventListener("click", function(){
+        var rows = $("shuffler-people").querySelectorAll(".sperson");
+        if (rows.length > 1) rows[rows.length-1].parentNode.removeChild(rows[rows.length-1]);
+      });
+      $("shuffler-deal").addEventListener("click", function(){ shufflerLastDeal = shufflerDeal(); });
+      $("shuffler-again").addEventListener("click", function(){ shufflerLastDeal = shufflerDeal(); });
+      $("shuffler-share").addEventListener("click", function(){
+        if (!shufflerLastDeal){
+          $("shuffler-hint").textContent = "Deal the roles first.";
+          return;
+        }
+        var lines = shufflerLastDeal.lineup.map(function(a){ return a.name + " is " + a.role; });
+        var text = "Our " + shufflerLastDeal.costume + " lineup:\n" + lines.join("\n") +
+          "\n\nDealt with the Pick My Costume who's-who shuffler: https://pickmycostume.com";
+        Analytics.track("shuffler_shared", {idea_id: shufflerLastDeal.idea_id, group_size: shufflerLastDeal.lineup.length});
+        if (navigator.share){
+          navigator.share({title: "Our costume lineup", text: text}).catch(function(){});
+        } else if (navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(
+            function(){ $("shuffler-hint").textContent = "Lineup copied. Paste it in the group chat."; },
+            function(){ $("shuffler-hint").textContent = "Could not copy. Screenshot it instead."; });
+        } else {
+          $("shuffler-hint").textContent = "Screenshot the lineup to share it.";
+        }
+      });
+    }
+    toolReturnTo = returnTo || "s-hero";
+    /* Red-team fix: the prototype shipped with Billy's family names as the
+       default people. Never again. Start with blank rows. */
+    $("shuffler-people").innerHTML = "";
+    shufflerAddPerson("", false); shufflerAddPerson("", false); shufflerAddPerson("", false);
+    $("shuffler-result").style.display = "none";
+    $("shuffler-hint").textContent = "";
+    shufflerLastDeal = null;
+    var pick = (ideaId && CASTS[ideaId]) ? ideaId : (sel.options.length ? sel.options[0].value : null);
+    if (pick) sel.value = pick;
+    var idea = ideaById(sel.value);
+    $("shuffler-blurb").textContent = idea ? idea.blurb : "";
+    Analytics.track("shuffler_opened", {idea_id: sel.value, from: toolReturnTo});
+    show("s-shuffler");
+  };
+
+  /* ---------- wire entry points ---------- */
+  function wire(){
+    var ph = $("btn-planner-hero");
+    if (ph) ph.addEventListener("click", function(){ openPlanner(null, "s-hero"); });
+    var sh = $("btn-shuffler-hero");
+    if (sh) sh.addEventListener("click", function(){ openShuffler(null, "s-hero"); });
+    var pb = $("btn-planner-back");
+    if (pb) pb.addEventListener("click", function(){ show(toolReturnTo); });
+    var phm = $("btn-planner-home");
+    if (phm) phm.addEventListener("click", function(){ show("s-hero"); });
+    var sb = $("btn-shuffler-back");
+    if (sb) sb.addEventListener("click", function(){ show(toolReturnTo); });
+    var shm = $("btn-shuffler-home");
+    if (shm) shm.addEventListener("click", function(){ show("s-hero"); });
+  }
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", wire);
+  } else {
+    wire();
+  }
+})();
+
 
 function renderQ(){
   var order = flowOrder();
@@ -6825,6 +7239,17 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   var box = $("d-card");
   box.innerHTML = "";
   box.appendChild(buildBrowseDetailCard(idea, whyHead));
+  /* Countdown planner deep link (2026-09-26): turn this pick into a
+     buy-day / build-day / dress-up-day plan. A button, so the card-level
+     click handler (if any) leaves it alone. */
+  if (typeof openPlanner === "function" && typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var _plb = document.createElement("button");
+    _plb.type = "button"; _plb.className = "ghost";
+    _plb.textContent = "Plan your Halloween around this";
+    _plb.style.marginTop = "12px";
+    _plb.onclick = function(){ openPlanner(idea.id, "s-detail"); };
+    box.appendChild(_plb);
+  }
   var _bde = {idea_id: idea.id, thumb_arm: thumbArm()};
   if (detailReturnTo === "s-pantry") _bde.via = "pantry";
   Analytics.track("browse_detail_opened", _bde);
@@ -8981,6 +9406,19 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      cards so there is a single share path instead of two competing ones. */
   box.insertBefore(pcWrap, aiPlanBox);
   box.insertBefore(shareBox, aiPlanBox);
+  /* Who's-who shuffler deep link (2026-09-26): one-tap role dealer for the
+     group. A button, so the card-level click handler leaves it alone; the
+     panel's own stopPropagation keeps the tap local anyway. */
+  if (typeof openShuffler === "function"){
+    var _shufp = document.createElement("p");
+    _shufp.style.margin = "12px 0 0";
+    var _shufa = document.createElement("button");
+    _shufa.type = "button"; _shufa.className = "textlink";
+    _shufa.textContent = "Dealing out roles? Shuffle who's who \u2192";
+    _shufa.onclick = function(){ openShuffler(idea.id, "s-results"); };
+    _shufp.appendChild(_shufa);
+    box.appendChild(_shufp);
+  }
   return box;
 }
 
@@ -10763,13 +11201,18 @@ function shareLandingHeadline(idea, search){
     el.style.display = "";
   })();
   /* Billy 2026-09-26: Halloween night weather. On homepage load, check the
-     cache; otherwise request geolocation (permission prompt) and fetch the
-     Oct 31 forecast from Open-Meteo (free, no key). Renders a small line
+     cache; otherwise fetch the Oct 31 forecast from Open-Meteo (free, no
+     key) once the visitor has interacted with the page. Renders a small line
      under the countdown, e.g. "Halloween night: 48°F, 20% chance of rain.
      Plan for a jacket." Denied geolocation, out-of-range forecast (Oct 31 is
      past Open-Meteo's 16-day window until mid-October), or fetch failure:
      stays silent, no nag. Async, never blocks load. Cached in
-     pmc_hw_weather_v1 keyed by Halloween date. */
+     pmc_hw_weather_v1 keyed by Halloween date.
+     2026-09-26 pm7 red-team D1: NEVER request geolocation on page load. A
+     cold visitor must not meet a location permission prompt before their
+     first tap. Two gates: (1) outside Open-Meteo's ~16-day window the
+     forecast cannot render, so skip entirely -- no prompt, no fetch;
+     (2) inside the window, wait for the first pointerdown/keydown. */
   (function(){
     var el = $("hw-weather");
     if (!el) return;
@@ -10796,6 +11239,14 @@ function shareLandingHeadline(idea, search){
       return;
     }
     if (!("geolocation" in navigator) || typeof fetch !== "function") return;
+    /* D1 gate 1: Open-Meteo forecasts ~16 days out. Before ~Oct 15 the Oct 31
+       forecast cannot exist, so skip the whole attempt: no prompt, no fetch. */
+    if (new Date(yr, 9, 31).getTime() - Date.now() > 16*86400000) return;
+    /* D1 gate 2: wait for the visitor's first interaction before asking for
+       location. A cold user never sees a permission prompt before a tap. */
+    var _wxAsked = false;
+    function _wxAsk(){
+      if (_wxAsked) return; _wxAsked = true;
     try {
       navigator.geolocation.getCurrentPosition(function(pos){
         var lat = pos.coords.latitude.toFixed(4);
@@ -10818,6 +11269,9 @@ function shareLandingHeadline(idea, search){
         }).catch(function(){ /* silent */ });
       }, function(){ /* denied/unavailable: silent */ }, {timeout: 9000, maximumAge: 86400000});
     } catch(e){ /* silent */ }
+    }
+    document.addEventListener("pointerdown", _wxAsk);
+    document.addEventListener("keydown", _wxAsk);
   })();
   refreshReturnBox();
   renderPinpointChips();
