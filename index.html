@@ -510,6 +510,7 @@ footer a{color:var(--accent)}
 .tryon-slider{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin-top:10px}
 .tryon-slider input{flex:1;min-height:44px}
 .tryon-hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.tryon-nudge{font-size:14px;color:#ffd9a3;margin:10px 0 0;font-weight:700}
 .tryon-status{min-height:20px;font-size:14px;margin:8px 0 0}
 /* Fit refinement: a quiet results-screen follow-up, not a sixth question. */
 .fitref{margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2)}
@@ -745,7 +746,7 @@ footer a{color:var(--accent)}
     </div>
     <div class="duel-step" id="duel-s3">
       <p class="progress">Costume duel</p>
-      <h2 class="q-title">You vs your friend</h2>
+      <h2 class="q-title" id="duel-s3-title">You vs your friend</h2>
       <div class="duel-vs">
         <div class="duel-fighter">
           <img id="duel-v-friend-img" src="" alt="">
@@ -1595,6 +1596,33 @@ var PAIR_IDEA_ID = null;
 /* 2026-09-26 costume roulette experiment: ?spin=<sender idea slug> rides
    the spin share link so the recipient banner can name the spin result. */
 var SPIN_IDEA_ID = null;
+/* 2026-09-26 party link experiment: the group broadcast share. Flag-gated;
+   PARTY_PARAMS is parsed in init. */
+var PARTY_LINK_ENABLED = false;
+var PARTY_PARAMS = null;
+/* 2026-09-26 guess-game distribution experiment: decoded ?g= payload (sender answers + pick); null with the flag off or on garbage. */
+var GUESS_GAME = null;
+/* 2026-09-26 friend-challenge share experiment (BuddyMeter novel-find
+   2026-09-26): close the share loop back at the sharer. "Would you pick
+   the same costume as me?" The sender's results screen gets a challenge
+   row; the recipient link carries ONLY the sender's pick slug:
+     https://pickmycostume.com/?s=<sid>&o=challenge&chl=<pick slug>
+   No names, no sender answers, no PII -- the slug is a public costume id.
+   The recipient takes the normal quiz; the results screen shows a match
+   score (100 for the identical pick, otherwise a shared-tag overlap
+   percentage capped at 95) plus a "Send my score back" row whose link
+   encodes only the score and the friend's pick slug:
+     https://pickmycostume.com/?s=<sid>&o=challengeresult&r=<0-100>&rp=<pick slug>
+   Opening that link records {score, pick slug, at} into the localStorage
+   inbox pmc_challenge_inbox, keyed by the original challenge sid. Inbox
+   entries are labelled "Answer 1/2/3..." by arrival order -- never names,
+   never claims about who answered. Flag-gated OFF: the flag below is
+   false, every builder returns null, both origins are unrecognized in
+   init, and the rendered DOM is byte-identical to the pre-experiment tree.
+   Staged for Billy's eyes: whether this loop runs at all is his call. */
+var CHALLENGE_SHARE_ENABLED = false;
+var CHALLENGE_PICK_ID = null; /* recipient side: decoded ?chl= (flag-gated) */
+var CHALLENGE_RESULT = null;  /* sharer side: decoded ?o=challengeresult payload (flag-gated) */
 /* 2026-09-26 collections experiment: ?src=collection-<key> marks arrivals
    from the intent-matched collection pages (/collections/*). Carried into
    quiz_started (and recipient_landing_viewed) as landing_src so
@@ -1641,6 +1669,19 @@ var TAG_WORDS = {
 
 /* ================= ENGINE ================= */
 var state = { qi: 0, answers: {} }; // answers: {qid: option}
+
+/* 2026-09-26 pm3 red-team: clumsy-thumbs double-tap guard. A second tap within
+   the window is a finger bounce, not intent: options answer/advance one
+   question per tap, so a 400ms window can never swallow a deliberate answer
+   (humans cannot read options and tap twice in 400ms). Per-key timestamps so
+   the quiz-option cooldown never blocks the Back button and vice versa. */
+var _tapGuards = {};
+function tapGuard(key, ms){
+  var n = Date.now();
+  if (n - (_tapGuards[key] || 0) < ms) return false;
+  _tapGuards[key] = n;
+  return true;
+}
 
 function qById(id){ return QUESTIONS.filter(function(q){ return q.id === id; })[0]; }
 function qTitle(qid){
@@ -1869,6 +1910,18 @@ function scoreIdeas(full){
       for (var si = 0; si < scored.length; si++) if (scored[si].idea.id === pinId){ at = si; break; }
       var pinned = (at === -1) ? scoreOne(pinIdea) : scored.splice(at, 1)[0];
       scored.unshift(pinned);
+      /* 2026-09-26 party link experiment: theme + no-twins reordering for
+         party guests. Stable demotion (ES2019 sort is stable): theme
+         mismatches rank below theme matches, already-claimed ideas rank
+         last. No-op unless a party arrival armed state.partyTheme /
+         state.partyTaken. */
+      if (typeof state !== "undefined" && state && (state.partyTheme || (state.partyTaken && state.partyTaken.length))){
+        var _pt = state.partyTheme, _ptaken = {};
+        (state.partyTaken || []).forEach(function(id){ _ptaken[id] = 1; });
+        scored.sort(function(a, b){
+          return partyDemoteKey(a.idea, _pt, _ptaken) - partyDemoteKey(b.idea, _pt, _ptaken);
+        });
+      }
       if (scored.length > 3 && !full) scored = scored.slice(0, 3);
     }
   }
@@ -1997,6 +2050,10 @@ function renderQ(){
     lab.textContent = opt.label;
     b.appendChild(tick); b.appendChild(lab);
     b.onclick = function(){
+      /* 2026-09-26 pm3 red-team: ignore finger-bounce double-taps. Without
+         this, tap 2 lands on the synchronously re-rendered next question and
+         answers a question the user never saw (or double-fires finishQuiz). */
+      if (!tapGuard("qopt", 400)) return;
       state.answers[qid] = opt;
       /* "Surprise me" on the interest question: no interest filter, just intent. */
       if (qid === "qinterest" && opt.label === "Surprise me") {
@@ -2012,7 +2069,14 @@ function renderQ(){
           question_count: flowOrder().length
         });
       } catch(_){}
-      if (qid === "q1") delete state.answers.qinterest; // interest options depend on audience
+      if (qid === "q1") {
+        delete state.answers.qinterest; // interest options depend on audience
+        /* 2026-09-26 pm3 red-team: switching to kid/family after picking
+           "Bar / club night" left the now-unoffered answer in state, so a
+           kid quiz could be scored with occbar tags. Drop it like qinterest. */
+        var _na = opt.value;
+        if ((_na === "kid" || _na === "family") && state.answers.qocc && state.answers.qocc.value === "bar") delete state.answers.qocc;
+      }
       // Q1 answer can change which Q5 shows; drop a stale Q5 answer.
       var order2 = flowOrder();
       Object.keys(state.answers).forEach(function(k){
@@ -2641,6 +2705,19 @@ var SHARE_CAPTIONS = {
   "robot-ranger": "Beep boop. Made from boxes and dryer vents.",
   "pixel-ghost": "Retro ghost. Eight bits of spooky."
 };
+/* 2026-09-26 red-team D5: saved-pick shares (returning user, fresh session)
+   lost the quiz answers, so share voice always fell back to "solo" -- a dad
+   re-sharing a saved Little Lifeguard pick got "I am going as Little
+   Lifeguard", the same misattribution class as the mermaid/teaser fixes.
+   When the quiz audience is unknown, the idea's own audience is a better
+   default (it is unambiguous for single-audience ideas; multi-audience
+   ideas keep the old "solo" default so nothing changes for them). */
+function voiceAudience(idea){
+  if (typeof state !== "undefined" && state.answers.q1 && state.answers.q1.value) return state.answers.q1.value;
+  var aud = (idea && idea.audience) || [];
+  if (aud.length === 1 && /^(kid|family|couple|group|solo)$/.test(aud[0])) return aud[0];
+  return "solo";
+}
 function shareCaptionFor(idea){
   /* Billy 2026-09-26: the old default "I am going as X" made group/family
      picks read as a joke (a grown man sharing "I am going as Mermaid Crew"
@@ -2648,7 +2725,7 @@ function shareCaptionFor(idea){
      for, and a custom caption that already carries its own going-as voice
      stands alone: prepending the default line produced contradictions like
      "I am going as Mermaid Crew. We are going as mermaids." */
-  var aud = (state.answers.q1 && state.answers.q1.value) || "solo";
+  var aud = voiceAudience(idea);
   var line;
   if (aud === "kid") line = "The quiz picked " + idea.title + " for my kid this Halloween.";
   else if (aud === "family") line = "The quiz picked " + idea.title + " for our family this Halloween.";
@@ -3043,7 +3120,7 @@ function buildClosetBadge(idea){
    prompt and one Share button; the names form drops below as an optional
    "make it personal" upgrade. No half-states: the flag gates the whole
    reorder, and the flag-off DOM is byte-identical to today. */
-var EXPERIMENT1_ONE_TAP_SHARE = false;
+var EXPERIMENT1_ONE_TAP_SHARE = true;
 /* Roulette entry experiment (2026-09-26, staged): the costume shuffle lives
    4-5 phone viewports down on the homepage under "More ways to explore" with
    nothing hinting it exists, while the results page is where indecision peaks.
@@ -3052,7 +3129,7 @@ var EXPERIMENT1_ONE_TAP_SHARE = false;
    and the "Can't decide?" wordings are disambiguated (vote box heading:
    "Can't decide? Ask the group"; home shuffle button: "Can't decide? Let me
    pick for you"). Flag off: DOM is byte-identical to today. */
-var EXPERIMENT_ROULETTE_ENTRY = false;
+var EXPERIMENT_ROULETTE_ENTRY = true;
 /* Share arm D store-run tier (2026-09-26 design call, staged): the pantry
    dare today fires only at strict pantry zero, so it can never fire for the
    ~125 buy-only ideas and D sessions fall back to the C copy for them.
@@ -3146,7 +3223,15 @@ function shareAsk(person, ideaTitle){
      F = curiosity gap naming the sharer's pick.
      Measure: recipient quiz starts by share_msg_variant. */
   if (v === "E") return "137 costume ideas. Take the 2-min quiz: ";
-  if (v === "F" && ideaTitle) return "I got " + ideaTitle + " - what will you get? Take the quiz: ";
+  if (v === "F" && ideaTitle){
+    /* Red-team 2026-09-26 (share flow): "I got X" misattributes kid/family
+       picks to the sharer (same bug class as the shareCaptionFor fix).
+       Mirror the audience-aware pattern: the pick belongs to the kid/family. */
+    var fa = (typeof voiceAudience === "function") ? voiceAudience(null) : "solo";
+    if (fa === "kid") return "The quiz picked " + ideaTitle + " for my kid - what will yours get? Take the quiz: ";
+    if (fa === "family") return "The quiz picked " + ideaTitle + " for our family - what will yours get? Take the quiz: ";
+    return "I got " + ideaTitle + " - what will you get? Take the quiz: ";
+  }
   /* Experiment 7 (2026-09-26): H = honest countdown. The day count is
      computed live from the real date, so it is always true and sharpens
      every day through October, when sharing peaks. */
@@ -3200,7 +3285,9 @@ function shareTextFor(idea, sid, origin){
   if ((aud === "kid" || aud === "family") && typeof INSTRUCTIONS !== "undefined"){
     var ins = INSTRUCTIONS[idea.id];
     if (ins && ins.m && ins.m.length){
-      text += " You need: " + ins.m.slice(0, 8).join(", ") + ".";
+      text += " You need: " + ins.m.slice(0, 8).join(", ") + (ins.m.length > 8 ? ", plus " + (ins.m.length - 8) + " more." : ".");
+      /* 2026-09-26 pm3 red-team: the 8-item slice silently dropped the 9th
+         material (beekeeper-bee) while presenting the list as complete. */
     }
   }
   return text;
@@ -3233,13 +3320,13 @@ function planTextFor(idea, sid, origin){
    starts per share_created, teaser vs generic. */
 function teaserTextFor(idea, sid){
   var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
-  /* Audience grounding 2026-09-26 (red-team pm3-deep): the old line always
-     said "picked my Halloween costume", but for kid/family quizzes the pick
-     is the kid's / the family's, not the sender's -- same misattribution
-     class as the shareCaptionFor fix. Mirror its audience pattern. */
-  var aud = (typeof state !== "undefined" && state.answers.q1 && state.answers.q1.value) || "solo";
+  /* Audience grounding (duel kid-frame reframe, Billy-approved 2026-09-26):
+     the old line always said "picked my Halloween costume", but for
+     kid/family quizzes the pick is the kid's / the family's, not the
+     sender's -- same misattribution class as the shareCaptionFor fix. */
+  var aud = voiceAudience(idea);
   var picked;
-  if (aud === "kid") picked = "This 2-minute quiz picked my kid's Halloween costume, and I am not telling you what it is.";
+  if (aud === "kid") picked = "This 2-minute quiz picked a Halloween costume for my kid, and I am not telling you what it is.";
   else if (aud === "family") picked = "This 2-minute quiz picked our family's Halloween costume, and I am not telling you what it is.";
   else picked = "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is.";
   return picked + " Take the quiz and send me what you get: " + link;
@@ -3409,8 +3496,569 @@ function renderMicroResult(box, opt, guess){
    along for the results panel. New share origin "pair", measured against
    generic/card/teaser. Metric: friend quiz starts per share_created, pair
    vs the other origins. */
+/* ================= Party link experiment (2026-09-26 evening) ============
+   The group broadcast share. Every share mechanic built so far is 1:1 (one
+   sender, one friend). A Halloween party host sends ONE link to the group
+   chat; every guest takes the theme-synced quiz, no two guests match, and
+   each guest can invite more guests. Flag-gated: PARTY_LINK_ENABLED.
+   URL shape: ?s=<sid>&o=party&party=<code>&theme=<tag>&pname=<name>
+   plus &taken=<id,id> (host-maintained no-twins list) and &claim=<idea-id>
+   on guests' share-backs. New origin "party", measured exactly like the
+   others: share_created (share_origin=party) -> recipient_landing_viewed ->
+   quiz_started -> second_share_created. No backend: the host's board lives
+   in localStorage on the host's device; guest claims arrive through
+   share-back claim links the host opens. */
+var PARTY_LINK_ENABLED = false;
+var PARTY_PARAMS = null; /* {code, theme, pname, taken[], claim} or null */
+function partyIdeaById(id){
+  var f = null;
+  IDEAS.forEach(function(i){ if (i.id === id) f = i; });
+  return f;
+}
+function partyThemeLabel(tag){
+  var o = null;
+  (MICRO_Q.options || []).forEach(function(x){ if (x.tag === tag) o = x; });
+  return o ? o.label : "Mixed";
+}
+function partyNewCode(){
+  var c = "abcdefghjkmnpqrstuvwxyz23456789", s = "";
+  for (var i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
+}
+function partyBoardKey(code){ return "pmc_party_" + code; }
+function partyLoad(code){ return code ? load(partyBoardKey(code)) : null; }
+function partySave(board){ if (board && board.code) store(partyBoardKey(board.code), board); }
+function partyInviteUrl(sid, code, name, theme, taken){
+  var u = "https://pickmycostume.com/?s=" + sid + "&o=party&party=" + code +
+    "&theme=" + theme + "&pname=" + encodeURIComponent(name);
+  if (taken && taken.length) u += "&taken=" + taken.join(",");
+  return u;
+}
+function partyClaimUrl(sid, code, name, theme, ideaId){
+  return partyInviteUrl(sid, code, name, theme, null) + "&claim=" + ideaId;
+}
+function partyShareText(name, url){
+  return "Take the 2-minute costume quiz for " + name + "'s Halloween party so nobody shows up in the same costume: " + url;
+}
+function partyClaimText(ideaTitle, name, url){
+  return "I'm going as " + ideaTitle + " to " + name + "'s Halloween party. Claim your costume here so we don't match: " + url;
+}
+function partyParseParams(){
+  var q = location.search || "";
+  var cm = /[?&]party=([a-z0-9]{6})/.exec(q);
+  if (!cm) return null;
+  var tm = /[?&]theme=(funny|scary|cute|simple)/.exec(q);
+  var nm = /[?&]pname=([^&]*)/.exec(q);
+  var tk = /[?&]taken=([a-z0-9-,]+)/.exec(q);
+  var cl = /[?&]claim=([a-z0-9-]+)/.exec(q);
+  var name = "";
+  if (nm){ try { name = decodeURIComponent(nm[1]).slice(0, 40); } catch(e){ name = ""; } }
+  if (!name) name = "Halloween";
+  var taken = [];
+  if (tk) taken = tk[1].split(",").filter(function(id){ return !!partyIdeaById(id); });
+  var claim = (cl && partyIdeaById(cl[1])) ? cl[1] : null;
+  return {code: cm[1], theme: tm ? tm[1] : null, pname: name, taken: taken, claim: claim};
+}
+/* Pure demotion key for the scoreIdeas hook: theme mismatches rank below
+   theme matches, already-claimed ideas rank last. Extracted pure so the
+   gate can assert it without a DOM. */
+function partyDemoteKey(idea, theme, takenSet){
+  var k = 0;
+  if (theme && !microVibeOk(idea, theme)) k += 1;
+  if (takenSet && takenSet[idea.id]) k += 2;
+  return k;
+}
+/* One-tap copy/share used by the party panels. Mirrors the pair-share
+   doneShare/copyFallback pattern. */
+function partySend(btn, statusEl, text, url, onOk){
+  var rearm = armShareOnce(btn);
+  if (!rearm) return;
+  function done(ok, msg){
+    statusEl.textContent = msg;
+    rearm();
+    if (ok && onOk) onOk();
+  }
+  if (navigator.share){
+    try {
+      navigator.share({title: "Pick My Costume", text: text, url: url}).then(
+        function(){ done(true, "Shared."); },
+        function(){ done(false, ""); }
+      );
+      return;
+    } catch(e){}
+  }
+  doCopy(text, function(ok, msg){ done(ok, ok ? "Copied. Paste it into the group chat." : msg); });
+}
+/* Guest refinement chip: the party theme is pre-applied; one tap clears it.
+   Renders only for party guests with an active theme. */
+function buildPartyThemeChip(){
+  if (!PARTY_LINK_ENABLED) return null;
+  if (typeof state === "undefined" || !state || !state.partyTheme) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "fitref";
+  var p = document.createElement("p");
+  p.textContent = "Party theme: " + partyThemeLabel(state.partyTheme) + ". Tap to see all costumes.";
+  wrap.appendChild(p);
+  var row = document.createElement("div");
+  row.className = "row";
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "sel";
+  b.textContent = partyThemeLabel(state.partyTheme);
+  b.onclick = function(){
+    state.partyTheme = null;
+    if (typeof Analytics !== "undefined" && Analytics.track)
+      Analytics.track("party_theme_cleared", {party_code: state.partyCode || null});
+    renderResults(scoreIdeas());
+  };
+  row.appendChild(b);
+  wrap.appendChild(row);
+  return wrap;
+}
+/* Renders the host board panel: claimed picks, copy-invite buttons, board. */
+function renderPartyOut(out, board, makeUrl){
+  out.innerHTML = "";
+  var h = document.createElement("h3");
+  h.textContent = "Your party link is ready";
+  out.appendChild(h);
+  var url = makeUrl(board.claims);
+  var linkBox = document.createElement("input");
+  linkBox.type = "text"; linkBox.readOnly = true; linkBox.value = url;
+  linkBox.style.cssText = "width:100%;padding:10px 12px;border:1px solid #e3d5c0;border-radius:10px;font:inherit;margin:0 0 8px";
+  linkBox.onclick = function(){ linkBox.select(); };
+  out.appendChild(linkBox);
+  var st = document.createElement("p"); st.className = "status";
+  var b1 = document.createElement("button");
+  b1.type = "button"; b1.className = "ghost"; b1.style.width = "100%";
+  b1.textContent = "Copy invite for the group chat";
+  b1.onclick = function(){
+    var sid = newShareId();
+    var u = makeUrl(board.claims);
+    partySend(b1, st, partyShareText(board.name, u), u, function(){
+      Analytics.track("share_created", {share_id: sid, share_origin: "party", share_msg_variant: "party-v1", party_code: board.code, theme: board.theme});
+      Analytics.track("party_invite_recopied", {party_code: board.code, taken: board.claims.length});
+    });
+  };
+  out.appendChild(b1);
+  out.appendChild(st);
+  var bh = document.createElement("h3");
+  bh.style.marginTop = "14px";
+  bh.textContent = "Claimed so far (" + board.claims.length + ")";
+  out.appendChild(bh);
+  var bl = document.createElement("p");
+  bl.style.cssText = "font-size:14px;color:#666;line-height:1.5;margin:0 0 8px";
+  if (!board.claims.length){
+    bl.textContent = "Nobody yet. When a guest sends their pick back, open the link on this phone and the board updates.";
+  } else {
+    var names = board.claims.map(function(id){ var i = partyIdeaById(id); return i ? i.title : id; });
+    bl.textContent = names.join(", ");
+  }
+  out.appendChild(bl);
+  var b2 = document.createElement("button");
+  b2.type = "button"; b2.className = "ghost"; b2.style.width = "100%";
+  b2.textContent = "Copy updated invite link";
+  var st2 = document.createElement("p"); st2.className = "status";
+  b2.onclick = function(){
+    var sid = newShareId();
+    var u = makeUrl(board.claims);
+    partySend(b2, st2, partyShareText(board.name, u), u, function(){
+      Analytics.track("share_created", {share_id: sid, share_origin: "party", share_msg_variant: "party-v1", party_code: board.code, theme: board.theme});
+      Analytics.track("party_invite_recopied", {party_code: board.code, taken: board.claims.length});
+    });
+  };
+  out.appendChild(b2);
+  out.appendChild(st2);
+}
+/* Host entry on the results screen: "Hosting a Halloween party?" opens the
+   party panel (name + theme). Renders nothing when the flag is off. */
+function buildPartyStep(){
+  if (!PARTY_LINK_ENABLED) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "party-link-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Hosting a Halloween party?";
+  wrap.appendChild(h);
+  var p = document.createElement("p");
+  p.textContent = "Make one link for the group chat. Guests get costumes that fit your theme, and no two guests match.";
+  wrap.appendChild(p);
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "ghost"; b.style.width = "100%";
+  b.textContent = "Make a party link";
+  var panel = document.createElement("div");
+  panel.style.display = "none";
+  panel.style.marginTop = "10px";
+  b.onclick = function(){ panel.style.display = (panel.style.display === "none") ? "" : "none"; };
+  wrap.appendChild(b);
+  var lab = document.createElement("label");
+  lab.textContent = "Party name (shows on the invite)";
+  lab.style.cssText = "display:block;font-size:14px;color:#666;margin:10px 0 4px";
+  panel.appendChild(lab);
+  var inp = document.createElement("input");
+  inp.type = "text"; inp.maxLength = 40; inp.placeholder = "Maple Street block";
+  inp.style.cssText = "width:100%;padding:10px 12px;border:1px solid #e3d5c0;border-radius:10px;font:inherit;margin:0 0 6px";
+  panel.appendChild(inp);
+  var twrap = document.createElement("div");
+  twrap.className = "fitref";
+  var tp = document.createElement("p");
+  tp.textContent = "Party theme";
+  twrap.appendChild(tp);
+  var trow = document.createElement("div");
+  trow.className = "row";
+  twrap.appendChild(trow);
+  var theme = "funny";
+  MICRO_Q.options.forEach(function(opt){
+    var tb = document.createElement("button");
+    tb.type = "button";
+    tb.textContent = opt.label;
+    if (opt.tag === theme) tb.className = "sel";
+    tb.onclick = function(){
+      theme = opt.tag;
+      Array.prototype.forEach.call(trow.children, function(c){ c.className = ""; });
+      tb.className = "sel";
+    };
+    trow.appendChild(tb);
+  });
+  panel.appendChild(twrap);
+  var mk = document.createElement("button");
+  mk.type = "button"; mk.className = "ghost"; mk.style.width = "100%";
+  mk.textContent = "Make my party link";
+  var out = document.createElement("div");
+  out.style.display = "none"; out.style.marginTop = "10px";
+  mk.onclick = function(){
+    var name = (inp.value || "").trim().slice(0, 40) || "Halloween";
+    var code = partyNewCode();
+    var sid = newShareId();
+    var board = {code: code, name: name, theme: theme, created: Date.now(), claims: []};
+    partySave(board);
+    renderPartyOut(out, board, function(taken){ return partyInviteUrl(newShareId(), code, name, theme, taken); });
+    out.style.display = "";
+    Analytics.track("share_created", {share_id: sid, share_origin: "party", share_msg_variant: "party-v1", party_code: code, theme: theme});
+    Analytics.track("party_link_created", {share_id: sid, party_code: code, theme: theme});
+  };
+  panel.appendChild(mk);
+  panel.appendChild(out);
+  wrap.appendChild(panel);
+  return wrap;
+}
+/* Guest share-back: after a party guest gets their pick, one tap sends the
+   pick to the host (claim link) and another shares the invite onward. */
+function buildPartyClaimBack(idea){
+  if (!PARTY_LINK_ENABLED) return null;
+  if (!PARTY_PARAMS || !PARTY_PARAMS.code) return null;
+  if (typeof state === "undefined" || !state || state.partyCode !== PARTY_PARAMS.code) return null;
+  var P = PARTY_PARAMS;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Going to the party?";
+  wrap.appendChild(h);
+  var p = document.createElement("p");
+  p.textContent = "Send your pick to the host so nobody else claims it, then invite more guests.";
+  wrap.appendChild(p);
+  var st = document.createElement("p"); st.className = "status";
+  var b1 = document.createElement("button");
+  b1.type = "button"; b1.className = "ghost"; b1.style.width = "100%";
+  b1.textContent = "Send my pick to the host";
+  b1.onclick = function(){
+    var sid = newShareId();
+    var u = partyClaimUrl(sid, P.code, P.pname, P.theme, idea.id);
+    partySend(b1, st, partyClaimText(idea.title, P.pname, u), u, function(){
+      Analytics.track("party_claim_created", {share_id: sid, via_share_id: VIA_SHARE, party_code: P.code, idea_id: idea.id});
+      Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "party", share_msg_variant: "party-claim"});
+    });
+  };
+  wrap.appendChild(b1);
+  var b2 = document.createElement("button");
+  b2.type = "button"; b2.className = "ghost"; b2.style.width = "100%";
+  b2.style.marginTop = "8px";
+  b2.textContent = "Invite more guests";
+  b2.onclick = function(){
+    var sid = newShareId();
+    var taken = P.taken.slice();
+    if (taken.indexOf(idea.id) === -1) taken.push(idea.id);
+    var u = partyInviteUrl(sid, P.code, P.pname, P.theme, taken);
+    partySend(b2, st, partyShareText(P.pname, u), u, function(){
+      Analytics.track("share_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "party", share_msg_variant: "party-v1", party_code: P.code, theme: P.theme});
+      Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "party", share_msg_variant: "party-invite"});
+    });
+  };
+  wrap.appendChild(b2);
+  wrap.appendChild(st);
+  return wrap;
+}
+/* Shared banner-quiz start for party guests: arms the theme + no-twins
+   state, then starts the quiz exactly like the other banners. */
+function partyStartQuiz(theme, taken, code){
+  state = {qi: 0, answers: {}};
+  state.pinpoint = null;
+  pinpointNote(""); pinpointClearNomatch();
+  clearK("pmc_pick_v1");
+  state.partyTheme = theme || null;
+  state.partyTaken = taken || [];
+  state.partyCode = code || null;
+  Analytics.track("quiz_started", Object.assign({party_code: code || null}, viaShareProps()));
+  renderQ();
+}
+/* The ?o=party friend-banner branch. Three views: (1) host intake, when a
+   guest's claim link opens on the host's phone; (2) returning host, when the
+   host taps their own invite link; (3) guest invite. Fires its own
+   analytics so each leg of the party loop is measurable. */
+function renderPartyBanner(hero){
+  var P = PARTY_PARAMS;
+  var board = partyLoad(P.code);
+  if (P.claim && board){
+    var idea = partyIdeaById(P.claim);
+    if (idea && board.claims.indexOf(idea.id) === -1){
+      board.claims.push(idea.id);
+      partySave(board);
+    }
+    Analytics.track("party_claim_received", {party_code: P.code, idea_id: P.claim});
+    var cb = document.createElement("div");
+    cb.id = "pmc-friend-banner";
+    cb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px";
+    var ch = document.createElement("p");
+    ch.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
+    ch.textContent = "New costume claimed: " + (idea ? idea.title : "a guest pick") + ".";
+    cb.appendChild(ch);
+    var cs = document.createElement("p");
+    cs.style.cssText = "margin:0 0 8px;font-size:14px;color:#666;line-height:1.4";
+    cs.textContent = "The board is updated. Copy the updated invite link for the group chat.";
+    cb.appendChild(cs);
+    var cst = document.createElement("p"); cst.className = "status";
+    var cbtn = document.createElement("button");
+    cbtn.type = "button"; cbtn.className = "ghost"; cbtn.style.width = "100%";
+    cbtn.textContent = "Copy updated invite link";
+    cbtn.onclick = function(){
+      var u = partyInviteUrl(newShareId(), board.code, board.name, board.theme, board.claims);
+      partySend(cbtn, cst, partyShareText(board.name, u), u, function(){
+        Analytics.track("party_invite_recopied", {party_code: board.code, taken: board.claims.length});
+      });
+    };
+    cb.appendChild(cbtn);
+    cb.appendChild(cst);
+    hero.insertBefore(cb, hero.firstChild);
+    return;
+  }
+  if (board){
+    var hb = document.createElement("div");
+    hb.id = "pmc-friend-banner";
+    hb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px";
+    var hh = document.createElement("p");
+    hh.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
+    hh.textContent = "Your party: " + board.name;
+    hb.appendChild(hh);
+    var hs = document.createElement("p");
+    hs.style.cssText = "margin:0 0 8px;font-size:14px;color:#666;line-height:1.4";
+    hs.textContent = board.claims.length + (board.claims.length === 1 ? " costume" : " costumes") + " claimed so far. Copy the updated invite link to steer guests away from taken ones.";
+    hb.appendChild(hs);
+    var hst = document.createElement("p"); hst.className = "status";
+    var hbtn = document.createElement("button");
+    hbtn.type = "button"; hbtn.className = "ghost"; hbtn.style.width = "100%";
+    hbtn.textContent = "Copy updated invite link";
+    hbtn.onclick = function(){
+      var u = partyInviteUrl(newShareId(), board.code, board.name, board.theme, board.claims);
+      partySend(hbtn, hst, partyShareText(board.name, u), u, function(){
+        Analytics.track("party_invite_recopied", {party_code: board.code, taken: board.claims.length});
+      });
+    };
+    hb.appendChild(hbtn);
+    hb.appendChild(hst);
+    hero.insertBefore(hb, hero.firstChild);
+    return;
+  }
+  var gb = document.createElement("button");
+  gb.type = "button";
+  gb.id = "pmc-friend-banner";
+  gb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+  var gh = document.createElement("p");
+  gh.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
+  gh.textContent = "You're invited to " + P.pname + "'s Halloween party!";
+  gb.appendChild(gh);
+  var gs = document.createElement("p");
+  gs.style.cssText = "margin:0;font-size:14px;color:#666;line-height:1.4";
+  var gt = P.theme ? " Party theme: " + partyThemeLabel(P.theme) + "." : "";
+  var gn = P.taken.length ? " " + P.taken.length + (P.taken.length === 1 ? " costume" : " costumes") + " already claimed." : "";
+  gs.textContent = "Take the 2-minute quiz to claim yours." + gt + gn + " No two guests match.";
+  gb.appendChild(gs);
+  gb.onclick = function(){ partyStartQuiz(P.theme, P.taken, P.code); };
+  hero.insertBefore(gb, hero.firstChild);
+  if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel(), party_code: P.code}, viaShareProps()));
+}
+/* ============ END Party link experiment ============ */
+
+/* ============ Match-pair experiment (2026-09-26 evening) =================
+   "Match this costume": the household pair chain. Every share mechanic so
+   far asks someone to send a link to a friend. This one needs no friend:
+   after your pick, one tap finds a matching costume for your +1 in the
+   same household (kid pick -> the grown-up's costume, solo pick -> the
+   kiddo's), scored by shared tag lanes so the pair genuinely goes
+   together. Each tap is one more quiz-result screen, and the share text
+   ("We're going as X and Y") is the most sendable format the site has.
+   Pair-share covers the friend-takes-the-quiz version; this covers the
+   instant same-household version. Flag-gated: MATCH_FIND_ENABLED.
+   URL shape: ?s=<sid>&o=match&match=<anchor-id>,<match-id>.
+   New origin "match", measured like the others: match_generated ->
+   share_created (share_origin=match) -> recipient_landing_viewed ->
+   quiz_started. Kill criterion: at 50 opened match links, match needs
+   clearly more friend quiz starts per share than generic to earn its
+   place; if "Match this costume" taps are near zero, cut it. */
+var MATCH_FIND_ENABLED = false;
+var MATCH_PAIR = null; /* {a: idea, b: idea} or null, parsed at load */
+function matchIdeaById(id){
+  var f = null;
+  IDEAS.forEach(function(i){ if (i.id === id) f = i; });
+  return f;
+}
+/* The +1 is one person: a kid pick matches a grown-up (solo), a solo pick
+   matches a kiddo, everything else matches a solo +1. */
+function matchTargetAud(aud){
+  if (aud === "kid") return "solo";
+  if (aud === "solo") return "kid";
+  return "solo";
+}
+/* Pure: top 3 matches for the anchor, ranked by shared tag weight with the
+   demand-sim rank as tie-break (same tie-break as microGuess). The anchor
+   itself never appears. Extracted pure so the verifier can assert it. */
+function matchTop3(anchor, aud){
+  var taud = matchTargetAud(aud);
+  var at = anchor.tags || {};
+  var pool = IDEAS.filter(function(i){ return i.id !== anchor.id && i.audience.indexOf(taud) !== -1; });
+  pool.forEach(function(i){
+    var s = 0, it = i.tags || {};
+    Object.keys(at).forEach(function(t){ if (it[t]) s += at[t] * it[t]; });
+    i._mScore = s;
+  });
+  pool.sort(function(a, b){ return (b._mScore - a._mScore) || ((a.rank || 999) - (b.rank || 999)); });
+  return pool.slice(0, 3);
+}
+/* Honest "why it pairs" line: names the shared vibe lane when there is
+   one, never invents a story. */
+function matchReason(anchor, m){
+  var at = anchor.tags || {}, mt = m.tags || {};
+  if (at.funny && mt.funny) return "Same funny lane as " + anchor.title + ".";
+  if (at.scary && mt.scary) return "Same spooky lane as " + anchor.title + ".";
+  if (at.cute && mt.cute) return "Same cute lane as " + anchor.title + ".";
+  return "Picked to pair with " + anchor.title + ".";
+}
+/* 2026-09-26 share-credibility: kid picks get the audience-aware line (same
+   pattern as pairTextFor), never "I'm going as X" for a parent sharing a
+   kid's costume. */
+function matchTextFor(a, b, sid){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=match&match=" + a.id + "," + b.id;
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(a) : "solo";
+  if (aud === "kid")
+    return "The quiz picked " + a.title + " for my kid and " + b.title + " for me this Halloween. Find your pair with the 2-minute quiz: " + link;
+  return "We're going as " + a.title + " and " + b.title + " this Halloween. Find your pair with the 2-minute quiz: " + link;
+}
+/* Arrival payload: ?match=<anchor>,<match>, both real bank ids, flag on. */
+function matchPairFromQuery(){
+  if (typeof MATCH_FIND_ENABLED === "undefined" || !MATCH_FIND_ENABLED) return null;
+  var m = /[?&]match=([a-z0-9-]+),([a-z0-9-]+)/.exec(location.search || "");
+  if (!m) return null;
+  var a = matchIdeaById(m[1]), b = matchIdeaById(m[2]);
+  if (!a || !b || a.id === b.id) return null;
+  return {a: a, b: b};
+}
+/* Renders the "Match this costume" step under the #1 pick. Returns null
+   with the flag off (DOM byte-identical). */
+function buildMatchStep(idea){
+  if (!MATCH_FIND_ENABLED) return null;
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  var who = aud === "kid" ? "the grown-up" : (aud === "solo" ? "the kiddo" : "your +1");
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "match-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Going as a pair?";
+  var p = document.createElement("p");
+  p.textContent = "One tap finds a costume for " + who + " that goes with " + idea.title + ". No extra questions.";
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "ghost"; b.style.width = "100%";
+  b.textContent = "Match this costume";
+  var st = document.createElement("p"); st.className = "status";
+  var res = document.createElement("div");
+  wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(b); wrap.appendChild(st); wrap.appendChild(res);
+  var picks = null, idx = 0;
+  function showPick(){
+    res.innerHTML = "";
+    var m = picks[idx];
+    if (typeof Analytics !== "undefined" && Analytics.track)
+      Analytics.track("match_generated", {anchor_id: idea.id, match_id: m.id, target_aud: matchTargetAud(aud)});
+    res.appendChild(ideaMedia(m, true));
+    var mh = document.createElement("p");
+    mh.style.cssText = "margin:10px 0 4px;font-weight:700;color:#333;line-height:1.4;font-size:18px";
+    mh.textContent = "Your pair: " + m.title;
+    var tri = document.createElement("p");
+    tri.style.cssText = "margin:0 0 6px;font-size:14px;color:#666";
+    tri.textContent = spinTriple(m);
+    var bl = document.createElement("p");
+    bl.style.cssText = "margin:0 0 6px;font-size:14px;color:#666;line-height:1.4";
+    bl.textContent = m.blurb + " " + matchReason(idea, m);
+    res.appendChild(mh); res.appendChild(tri); res.appendChild(bl);
+    var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+    var sb = document.createElement("button");
+    sb.type = "button"; sb.className = "cta"; sb.textContent = "Share our pair";
+    var again = document.createElement("button");
+    again.type = "button"; again.className = "ghost"; again.textContent = "Try another";
+    row.appendChild(sb); row.appendChild(again);
+    res.appendChild(row);
+    var sst = document.createElement("p"); sst.className = "status";
+    res.appendChild(sst);
+    again.onclick = function(){
+      idx = (idx + 1) % picks.length;
+      showPick();
+    };
+    sb.onclick = function(){
+      var rearm = armShareOnce(sb);
+      if (!rearm) return;
+      var sid = newShareId();
+      var text = matchTextFor(idea, m, sid);
+      var link = "https://pickmycostume.com/?s=" + sid + "&o=match&match=" + idea.id + "," + m.id;
+      function done(ok, msg){
+        sst.textContent = msg;
+        rearm();
+        if (ok && typeof Analytics !== "undefined" && Analytics.track){
+          Analytics.track("share_created", {share_id: sid, idea_id: m.id, share_origin: "match", share_msg_variant: shareVariant()});
+          if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: m.id, share_origin: "match"});
+        }
+      }
+      if (navigator.share){
+        try {
+          navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+            function(){ done(true, "Shared."); },
+            function(){ done(false, ""); }
+          );
+          return;
+        } catch(e){}
+      }
+      doCopy(text, function(ok, msg){
+        if (ok && typeof Analytics !== "undefined" && Analytics.track)
+          Analytics.track("share_text_copied", {idea_id: m.id, share_id: sid, share_origin: "match"});
+        done(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    };
+  }
+  b.onclick = function(){
+    picks = matchTop3(idea, aud);
+    idx = 0;
+    showPick();
+    b.style.display = "none";
+    p.textContent = "The quiz's pick for " + who + ":";
+  };
+  return wrap;
+}
+/* ============ END Match-pair experiment ============ */
+
 function pairTextFor(idea, sid){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
+  /* 2026-09-26 pm3 red-team: the unconditional "I am going as X" made a dad
+     sharing his daughter's pick tell the world HE was going as Little Witch --
+     the Mermaid-class misattribution. Kid/family pair shares get the
+     audience-aware line (same pattern as shareCaptionFor). */
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  if (aud === "kid" || aud === "family")
+    return "The quiz picked " + idea.title + (aud === "kid" ? " for my kid" : " for our family") + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match: " + link;
   return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match mine: " + link;
 }
 /* 2026-09-26 costume roulette experiment ("Can't decide? Let me pick for you"): a zero-question entry point for the undecided. Uniform
@@ -3545,6 +4193,262 @@ function buildBlockMapBox(idea){
   return b;
 }
 /* END BLOCK MAP */
+/* ================= GUESS GAME (2026-09-26 distribution experiment) =================
+   "Can you guess my 5 answers?" A new share loop, not a new share frame.
+   The sender's results screen gets one more row. The link encodes the
+   sender's 5 quiz answers plus their pick:
+     https://pickmycostume.com/?s=<sid>&o=guess&g=<5 base36 digits>.<idea slug>
+   The recipient plays a game instead of taking a quiz: guess the sender's
+   answers one by one, see the score with a per-question reveal, and get
+   their OWN pick computed from their guesses for free (the guesses ARE 5
+   real quiz answers, scored by the quiz's own scoreIdeas). A share-back
+   mints the friend's game into the same chat. New share origin "guess",
+   measured per origin in PostHog exactly like teaser/pair/duel/spin/gift.
+   Flag-gated OFF: with GUESS_GAME_ENABLED false the origin is unrecognized,
+   guessDecode always returns null, and no row or banner renders, so the
+   rendered DOM is byte-identical to the pre-experiment tree. */
+var GUESS_GAME_ENABLED = false;
+var GUESS_QIDS = ["q1","q2","q4","qocc","qinterest"];
+function guessOptIndex(qid, opt){
+  var q = qById(qid);
+  if (!q || !opt) return -1;
+  for (var j = 0; j < q.options.length; j++){
+    if (q.options[j] === opt || q.options[j].label === opt.label) return j;
+  }
+  return -1;
+}
+function guessEncode(answers, ideaId){
+  if (!answers || !ideaId) return null;
+  var digits = "";
+  for (var k = 0; k < GUESS_QIDS.length; k++){
+    var idx = guessOptIndex(GUESS_QIDS[k], answers[GUESS_QIDS[k]]);
+    if (idx < 0 || idx > 35) return null;
+    digits += idx.toString(36);
+  }
+  return digits + "." + ideaId;
+}
+function guessDecode(param){
+  if (!GUESS_GAME_ENABLED) return null;
+  if (!param) return null;
+  var m = /^([0-9a-z]{5})\.([a-z0-9-]+)$/.exec(param);
+  if (!m) return null;
+  var idea = guessIdeaById(m[2]);
+  if (!idea) return null;
+  var answers = {};
+  for (var k = 0; k < GUESS_QIDS.length; k++){
+    var q = qById(GUESS_QIDS[k]);
+    if (!q) return null;
+    var idx = parseInt(m[1].charAt(k), 36);
+    if (isNaN(idx) || idx < 0 || idx >= q.options.length) return null;
+    answers[GUESS_QIDS[k]] = q.options[idx];
+  }
+  return {answers: answers, idea: idea};
+}
+function guessIdeaById(id){
+  var found = null;
+  IDEAS.forEach(function(it){ if (it.id === id) found = it; });
+  return found;
+}
+function guessTextFor(idea, sid, enc){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=guess&g=" + enc;
+  /* Audience grounding (teaser-share pattern, 2026-09-26): for kid/family
+     quizzes the pick is the kid's / the family's, not the sender's. */
+  var aud = voiceAudience(idea);
+  var whose = aud === "kid" ? "my kid's" : aud === "family" ? "our family's" : "my";
+  return "This 2-minute quiz picked " + whose + " Halloween costume (" + idea.title + "). I bet you cannot guess my 5 answers: " + link;
+}
+/* The row renders only when the just-finished quiz's answers are on file for
+   this exact pick, so the game can never name answers that do not produce
+   the named pick. */
+function guessSenderEnc(idea){
+  var last = null;
+  try { last = load("pmc_last_v1"); } catch(e){}
+  if (!last || !last.answers || !last.results || last.results[0] !== idea.id) return null;
+  return guessEncode(last.answers, idea.id);
+}
+/* The friend's guesses are 5 real quiz answers: score them with the quiz's
+   own scorer. The kid-age check swaps state.answers the same way. */
+function guessFriendPick(friendAnswers){
+  var saved = state.answers;
+  try {
+    state.answers = friendAnswers;
+    var res = scoreIdeas();
+    return (res && res[0]) ? res[0].idea : null;
+  } finally {
+    state.answers = saved;
+  }
+}
+function guessQTitle(qid, senderAud){
+  if (qid === "qinterest") return (senderAud === "kid" || senderAud === "family") ? "What is your kid into?" : "What are you into?";
+  var q = qById(qid);
+  return q ? q.title : qid;
+}
+function openGuessGame(gg){
+  if (!GUESS_GAME_ENABLED || !gg) return;
+  try { Analytics.track("guess_game_opened", Object.assign({idea_id: gg.idea.id}, viaShareProps())); } catch(_){}
+  var senderAud = (gg.answers.q1 && gg.answers.q1.value) || "solo";
+  var qids = GUESS_QIDS.slice();
+  var gi = 0;
+  var guesses = {};
+  var ov = document.createElement("div");
+  ov.setAttribute("data-guess-ov", "1");
+  ov.style.cssText = "position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;";
+  var card = document.createElement("div");
+  card.style.cssText = "background:#fff;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:20px 20px 28px;";
+  ov.appendChild(card);
+  document.body.appendChild(ov);
+  function closeGame(){ if (ov.parentNode) ov.parentNode.removeChild(ov); }
+  function renderGQ(){
+    card.innerHTML = "";
+    var q = qById(qids[gi]);
+    var prog = document.createElement("p");
+    prog.style.cssText = "margin:0 0 2px;font-size:13px;color:#666;";
+    prog.textContent = "Question " + (gi + 1) + " of " + qids.length + ": guess their answer";
+    card.appendChild(prog);
+    var t = document.createElement("h3");
+    t.style.cssText = "margin:0 0 4px;font-size:20px;line-height:1.3;";
+    t.textContent = guessQTitle(qids[gi], senderAud);
+    card.appendChild(t);
+    if (q.hint){
+      var hint = document.createElement("p");
+      hint.style.cssText = "margin:0 0 12px;font-size:14px;color:#666;";
+      hint.textContent = q.hint;
+      card.appendChild(hint);
+    }
+    q.options.forEach(function(opt){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.style.marginBottom = "8px";
+      var tick = document.createElement("span");
+      tick.className = "tick";
+      tick.setAttribute("aria-hidden", "true");
+      tick.textContent = "\u2713";
+      var lab = document.createElement("span");
+      lab.textContent = opt.label;
+      b.appendChild(tick); b.appendChild(lab);
+      b.onclick = function(){
+        guesses[qids[gi]] = opt;
+        gi++;
+        if (gi < qids.length) renderGQ(); else renderGResult();
+      };
+      card.appendChild(b);
+    });
+    var cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "ghost";
+    cancel.style.cssText = "width:100%;margin-top:4px;";
+    cancel.textContent = "Not now";
+    cancel.onclick = closeGame;
+    card.appendChild(cancel);
+  }
+  function renderGResult(){
+    var score = 0;
+    qids.forEach(function(qid){
+      if (guesses[qid] && gg.answers[qid] && guesses[qid].label === gg.answers[qid].label) score++;
+    });
+    var friendPick = guessFriendPick(guesses);
+    try { Analytics.track("guess_game_completed", Object.assign({idea_id: gg.idea.id, score: score, friend_idea_id: friendPick ? friendPick.id : null}, viaShareProps())); } catch(_){}
+    card.innerHTML = "";
+    var h = document.createElement("h3");
+    h.style.cssText = "margin:0 0 4px;font-size:22px;line-height:1.3;";
+    h.textContent = "You got " + score + " of " + qids.length + ".";
+    card.appendChild(h);
+    var sub = document.createElement("p");
+    sub.style.cssText = "margin:0 0 12px;font-size:14px;color:#666;";
+    sub.textContent = "They got " + gg.idea.title + ". Here is how your guesses landed.";
+    card.appendChild(sub);
+    qids.forEach(function(qid){
+      var row = document.createElement("p");
+      row.style.cssText = "margin:0 0 8px;font-size:14px;line-height:1.45;";
+      var hit = guesses[qid] && gg.answers[qid] && guesses[qid].label === gg.answers[qid].label;
+      var mark = document.createElement("span");
+      mark.textContent = hit ? "\u2713 " : "\u2717 ";
+      mark.style.color = hit ? "#1a7f37" : "#b42318";
+      mark.setAttribute("aria-hidden", "true");
+      row.appendChild(mark);
+      var txt = document.createElement("span");
+      txt.textContent = guessQTitle(qid, senderAud) + ": you said " + guesses[qid].label + ", they said " + gg.answers[qid].label + ".";
+      row.appendChild(txt);
+      card.appendChild(row);
+    });
+    if (friendPick){
+      var pk = document.createElement("div");
+      pk.style.cssText = "margin:14px 0;border:1px solid #ffd9a3;background:#fff7ec;border-radius:14px;padding:12px 14px;";
+      var pt = document.createElement("p");
+      pt.style.cssText = "margin:0 0 8px;font-weight:700;color:#333;line-height:1.4;";
+      pt.textContent = "Your answers picked " + friendPick.title + " for YOU.";
+      pk.appendChild(pt);
+      pk.appendChild(ideaMedia(friendPick, true));
+      var gl = document.createElement("a");
+      gl.href = "/c/" + friendPick.id;
+      gl.style.cssText = "display:inline-block;margin-top:8px;";
+      gl.textContent = "See the full " + friendPick.title + " guide";
+      pk.appendChild(gl);
+      card.appendChild(pk);
+    }
+    var ctaRow = document.createElement("div");
+    ctaRow.style.cssText = "display:flex;gap:8px;margin-top:12px;";
+    var bquiz = document.createElement("button");
+    bquiz.type = "button";
+    bquiz.className = "cta";
+    bquiz.style.flex = "1";
+    bquiz.textContent = "Take the 2-minute quiz";
+    bquiz.onclick = function(){
+      closeGame();
+      /* Mirror the friend-banner quiz start exactly: clean state, no
+         pinpoint residue, old picks cleared, recipient-attributed event. */
+      state = {qi: 0, answers: {}};
+      state.pinpoint = null;
+      pinpointNote(""); pinpointClearNomatch();
+      clearK("pmc_pick_v1");
+      Analytics.track("quiz_started", viaShareProps());
+      renderQ();
+    };
+    ctaRow.appendChild(bquiz);
+    if (friendPick){
+      var bshare = document.createElement("button");
+      bshare.type = "button";
+      bshare.className = "ghost";
+      bshare.style.flex = "1";
+      bshare.textContent = "Quiz your friends";
+      bshare.onclick = function(){
+        var rearmShare = armShareOnce(bshare);
+        if (!rearmShare) return; /* double-tap: a share is already in flight */
+        var enc = guessEncode(guesses, friendPick.id);
+        if (!enc){ rearmShare(); return; }
+        var sid = newShareId();
+        var text = guessTextFor(friendPick, sid, enc);
+        function doneShare(ok){
+          rearmShare(); /* the share settled: sent, dismissed, or copied */
+          if (ok){
+            Analytics.track("guess_game_created", Object.assign({share_id: sid, idea_id: friendPick.id, share_msg_variant: shareVariant()}, viaShareProps()));
+            Analytics.track("share_created", Object.assign({share_id: sid, idea_id: friendPick.id, share_origin: "guess", share_msg_variant: shareVariant()}, viaShareProps()));
+            if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: friendPick.id, share_origin: "guess"}, viaShareProps()));
+            closeGame();
+          }
+        }
+        /* Phone: native share sheet. A dismissed sheet is a cancel. */
+        var usedNative = false;
+        if (navigator.share){
+          try {
+            usedNative = true;
+            navigator.share({title: "Pick My Costume", text: text}).then(
+              function(){ doneShare(true); },
+              function(){ doneShare(false); }
+            );
+          } catch(e){ usedNative = false; }
+        }
+        if (!usedNative) doCopy(text, function(ok){ doneShare(ok); }); /* desktop: copy instead */
+      };
+      ctaRow.appendChild(bshare);
+    }
+    card.appendChild(ctaRow);
+  }
+  renderGQ();
+}
+/* END GUESS GAME */
+
 function spinTextFor(idea, sid){
   var link = "https://pickmycostume.com/?s=" + sid + "&o=spin&spin=" + idea.id;
   var tri = "";
@@ -3772,6 +4676,8 @@ function buildVoteBox(results){
     bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
     var vst = document.createElement("div"); vst.className = "status"; vst.style.marginTop = "6px";
     bCopy.onclick = function(){
+      /* 2026-09-26 pm3 red-team D6: double-tap fired vote_text_copied twice. */
+      if (!tapGuard("votecopy", 2000)) return;
       doCopy(text, function(ok, msg){
         vst.textContent = msg;
         if (ok){
@@ -3835,6 +4741,10 @@ function buildVoteBox(results){
     rbtn.type = "button"; rbtn.className = "textlink"; rbtn.id = "btn-roulette-entry";
     rbtn.textContent = "Can't decide? Let me pick for you";
     rbtn.onclick = function(){
+      /* 2026-09-26 pm3 red-team D9: the entry event fired before startSpin's
+         debounce, so a double-tap double-counted roulette_entry_tapped while
+         spinning once. One deliberate tap = one entry, one spin. */
+      if (!tapGuard("roulette-entry", 1500)) return;
       Analytics.track("roulette_entry_tapped", {from: "results-vote-box"});
       show("s-hero");
       startSpin("results-entry");
@@ -3861,6 +4771,15 @@ function duelIdeaById(id){
   IDEAS.forEach(function(it){ if (it.id === id) found = it; });
   return found;
 }
+/* Duel kid-frame reframe (Billy-approved 2026-09-26): true when the
+   sender's pick carries kid/family audience tags. Falls back to
+   DUEL_IDEA_ID when no idea is passed. */
+function duelKidFrame(idea){
+  var it = idea || (typeof DUEL_IDEA_ID !== "undefined" && DUEL_IDEA_ID ? duelIdeaById(DUEL_IDEA_ID) : null);
+  if (!it) return false;
+  var aud = it.audience || [];
+  return aud.indexOf("kid") >= 0 || aud.indexOf("family") >= 0;
+}
 function duelTriple(idea){
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
@@ -3879,6 +4798,7 @@ function duelVerdict(mine, theirs){
     return /^easy/i.test(INSTRUCTIONS[idea.id].effort || "");
   };
   if (easyish(mine) && easyish(theirs)) return "Both low-effort, both brilliant. Efficiency is a costume too.";
+  if (duelKidFrame(theirs)) return "Two great picks. Halloween is big enough for both.";
   return "Totally different lanes, and honestly both strong. May the best costume win.";
 }
 function buildDuelShareText(mine, theirs, sid){
@@ -3889,6 +4809,12 @@ function buildDuelShareText(mine, theirs, sid){
   var tri = duelTriple(mine);
   if (mine.id === theirs.id){
     return "Great minds: we both got " + mine.title + (tri ? " (" + tri + ")" : "") + " on the costume quiz. " + url;
+  }
+  /* Duel kid-frame reframe (Billy-approved 2026-09-26): when the sender's
+     pick is kid/family-tagged, drop the combat framing for one cooperative
+     line -- a dad sharing his kid's pick should never "challenge" anyone. */
+  if (duelKidFrame(theirs)){
+    return "The quiz gave me " + mine.title + " and my friend got " + theirs.title + ". Two costumes, one Halloween: " + url;
   }
   /* Billy 2026-09-26: fun competition, never a put-down. The challenge is
      playful — both outcomes are good, the fun is in the matchup. */
@@ -3912,7 +4838,7 @@ function buildDuelBox(ownIdea){
   var dbox = document.createElement("div");
   dbox.className = "stuck"; dbox.id = "duel-box";
   var dh = document.createElement("h3");
-  dh.textContent = "You vs your friend";
+  dh.textContent = duelKidFrame(theirs) ? "Side by side" : "You vs your friend";
   var dp = document.createElement("p");
   dp.textContent = matched
     ? "Great minds: you both got " + mine.title + "."
@@ -3927,6 +4853,7 @@ function buildDuelBox(ownIdea){
   dbox.appendChild(dh); dbox.appendChild(dp); dbox.appendChild(drow); dbox.appendChild(dst);
   var cprops = viaShareProps();
   cprops.duel_idea_id = theirs.id; cprops.own_idea_id = mine.id; cprops.matched = matched;
+  cprops.kid_frame = duelKidFrame(theirs);
   Analytics.track("duel_compare_shown", cprops);
   return dbox;
 }
@@ -4080,7 +5007,7 @@ function pairShareback(mine, theirs, btn, statusEl){
    answer content. */
 var DUEL_ANS = {q1: null, q2: null};
 function duelPick(audKey, effKey){
-  var auds = audKey === "couple" ? ["couple"] : audKey === "family" ? ["family", "group"] : ["solo"];
+  var auds = audKey === "kid" ? ["kid", "family"] : audKey === "couple" ? ["couple"] : audKey === "family" ? ["family", "group"] : ["solo"];
   var effs = effKey === "high" ? ["Medium"] : effKey === "low" ? ["Easy"] : ["Easy", "Medium"];
   var cands = [];
   IDEAS.forEach(function(it){
@@ -4118,14 +5045,23 @@ function startDuelFlow(){
   var theirs = duelIdeaById(DUEL_IDEA_ID);
   if (!theirs) return; /* unknown slug: stay on the landing */
   DUEL_ANS = {q1: null, q2: null};
-  try { Analytics.track("duel_started", viaShareProps()); } catch(_){}
+  /* Duel kid-frame reframe (Billy-approved 2026-09-26): kid/family sender
+     picks get cooperative copy ("Compare costumes", "Side by side") instead
+     of combat framing. */
+  var _kf = duelKidFrame(theirs);
+  try { Analytics.track("duel_started", Object.assign(viaShareProps(), {kid_frame: _kf})); } catch(_){}
   $("duel-friend-name").textContent = theirs.title;
+  var _s3t = $("duel-s3-title");
+  _s3t.textContent = _kf ? "Side by side" : "You vs your friend";
+  Array.prototype.forEach.call(document.querySelectorAll("#s-duel .progress"), function(p){
+    p.textContent = _kf ? "Costume compare" : "Costume duel";
+  });
   var fimg = $("duel-friend-photo");
   fimg.src = "photos/" + theirs.id + ".webp";
   fimg.alt = theirs.title + " costume";
   var q1box = $("duel-q1");
   q1box.innerHTML = "";
-  [["Just me", "solo"], ["Me + partner", "couple"], ["The whole family", "family"]].forEach(function(pair){
+  [["Just me", "solo"], ["Me + partner", "couple"], ["My kid", "kid"], ["The whole family", "family"]].forEach(function(pair){
     q1box.appendChild(duelOptButton(pair[0], pair[1], function(v){
       DUEL_ANS.q1 = v;
       var q2box = $("duel-q2");
@@ -4173,6 +5109,7 @@ function finishDuelFlow(theirs){
   show("s-duel");
   var cprops = viaShareProps();
   cprops.duel_idea_id = theirs.id; cprops.own_idea_id = mine.id; cprops.matched = matched;
+  cprops.kid_frame = duelKidFrame(theirs);
   cprops.duel_flow = "two_question";
   try { Analytics.track("duel_compare_shown", cprops); } catch(_){}
 }
@@ -4325,12 +5262,31 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          "Make it this week" block was merged into it above. */
       card.setAttribute("data-panel", "1");
       panelOpenByIdea[idea.id] = true;
+      /* 2026-09-26 pm3 red-team D3: register the card so a re-pick can find
+         and retire it. */
+      var _reg = panelCards[idea.id] || (panelCards[idea.id] = []);
+      if (_reg.indexOf(card) < 0) _reg.push(card);
+    }
+    /* 2026-09-26 pm3 red-team D3: symmetric unmount -- clears the share/AI
+       sections, the picked note, and the restore flag so the card reads
+       unpicked again. Cast field values survive separately in
+       castStateByIdea; re-picking rebuilds the panel from them. */
+    function unmountPanel(){
+      planBox.innerHTML = "";
+      card.removeAttribute("data-panel");
+      delete panelOpenByIdea[idea.id];
+      note.style.display = "none";
+      hint.style.display = "";
     }
     function doPick(){
       var already = load("pmc_pick_v1");
       /* Re-tapping the picked card is a no-op: the panel stays exactly as the
          user left it, so cast names, cast size, and role picks survive. */
       if (already && already.ideaId === idea.id && card.getAttribute("data-panel")) return;
+      /* 2026-09-26 pm3 red-team D3: retire the old pick's panel(s) before
+         mounting the new one, so the share the user sees always matches the
+         saved pick. */
+      unmountPanelsExcept(idea.id);
       store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
       /* 2026-09-26 afternoon (saved-not-shared recovery): every save arms the
          recovery nudge; any completed share for this idea clears it via the
@@ -4343,6 +5299,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
       mountPanel();
     }
     card._mountPanel = mountPanel;
+    card._unmountPanel = unmountPanel;
     bPick.onclick = doPick;
     /* The results header says "Tap one to save your pick": make the card body
        tappable too. Taps on buttons/links inside the card keep their own
@@ -4351,6 +5308,12 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     card.style.cursor = "pointer";
     card.addEventListener("click", function(e){
       var t = e.target;
+      /* 2026-09-26 pm3 red-team: the thumb's 2nd tap of a last-question
+         double-tap can land here once results render, saving a pick the user
+         never chose. Ignore card-body taps inside 600ms of a quiz answer;
+         deliberate taps minutes later are unaffected. Reads the guard stamp
+         without writing, so it never extends the window. */
+      try { if (Date.now() - (_tapGuards.qopt || 0) < 600) return; } catch(_){}
       /* E17 lesson + 2026-09-26 red-team: the card-level tap must never
          swallow control taps. Match the runner-up handler's guard: buttons,
          links, AND form controls are excluded, so a future input added to a
@@ -4374,6 +5337,22 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
    results re-render (fit refinement) can restore panels instead of wiping
    them. Cast field values survive separately via castStateByIdea. */
 var panelOpenByIdea = {};
+/* 2026-09-26 pm3 red-team D3: idea id -> [result card elements with a mounted
+   pick panel]. When the pick moves to a different idea, unmountPanelsExcept
+   retires the old cards' panels (share/AI sections, picked note) so two live
+   picked panels can never disagree with the saved pick. */
+var panelCards = {};
+function unmountPanelsExcept(ideaId){
+  for (var id in panelCards){
+    if (id === ideaId) continue;
+    var list = panelCards[id] || [];
+    for (var i = 0; i < list.length; i++){
+      var c = list[i];
+      if (c && c._unmountPanel) c._unmountPanel();
+    }
+    delete panelCards[id];
+  }
+}
 /* Fit refinement: the retired conditional 6th quiz question, reborn as an
    optional results-screen chip row. Shown only for solo/kid flows and only
    when the fit answer can change the ordered top 3. Tapping a chip re-scores. */
@@ -4640,6 +5619,11 @@ function renderResults(results){
      otherwise). */
   var cr = buildConstraintRefinement();
   if (cr) box.appendChild(cr);
+  /* 2026-09-26 party link experiment: the pre-applied party theme renders
+     as a clearable refinement chip (buildPartyThemeChip returns null for
+     non-party guests or with the flag off). */
+  var pth = buildPartyThemeChip();
+  if (pth) box.appendChild(pth);
   /* Hero: the #1 idea, presented as the answer. */
   var hero = document.createElement("div");
   hero.className = "hero12";
@@ -4678,9 +5662,28 @@ function renderResults(results){
      otherwise). Sits right under the duel box / #1 pick. */
   var pairBox = buildPairBox(results[0].idea);
   if (pairBox) box.appendChild(pairBox);
+  /* 2026-09-26 friend-challenge experiment: the recipient's match-score box
+     (renders only for genuine ?o=challenge&chl= arrivals; the builder
+     returns null otherwise or with the flag off) and the sender's
+     "Challenge a friend" step (flag-gated; null with the flag off). */
+  var chlBox = buildChallengeMatchBox(results[0].idea);
+  if (chlBox) box.appendChild(chlBox);
+  var chlStep = buildChallengeShareStep(results[0].idea);
+  if (chlStep) box.appendChild(chlStep);
   /* 2026-09-26 pair-share relocation: one calm next-step, tied to the #1
      pick, rendered once under the hero card (never inside share blocks). */
   box.appendChild(buildPairShareStep(results[0].idea));
+  /* 2026-09-26 match-pair experiment: the instant household pair step.
+     buildMatchStep returns null with the flag off. */
+  var matchStep = buildMatchStep(results[0].idea);
+  if (matchStep) box.appendChild(matchStep);
+  /* 2026-09-26 party link experiment: host entry ("Make a party link") and
+     the guest share-back ("Send my pick to the host"). Both return null
+     when they do not apply or with the flag off. */
+  var partyStep = buildPartyStep();
+  if (partyStep) box.appendChild(partyStep);
+  var partyBack = buildPartyClaimBack(results[0].idea);
+  if (partyBack) box.appendChild(partyBack);
   /* Runners-up: compact cards; one shared full-width detail below the grid. */
   var ru = document.createElement("div");
   ru.style.marginTop = "16px";
@@ -4727,6 +5730,11 @@ function renderResults(results){
     overlay.appendChild(closeBtn);
     var detailCard = buildResultCard(scored, idx + 1, load("pmc_pick_v1"), false, roleLabel(idx + 1), roleNote(idx + 1));
     cards[scored.idea.id] = detailCard;
+    /* 2026-09-26 pm3 red-team D4: a reopened saved runner-up must look picked
+       -- mount its share/AI panel so the claim button's re-tap guard applies
+       and a second pick_saved never fires. */
+    var _rupick = load("pmc_pick_v1");
+    if (_rupick && _rupick.ideaId === scored.idea.id && detailCard._mountPanel) detailCard._mountPanel();
     var contentDiv = document.createElement("div");
     contentDiv.id = "ru-overlay-content";
     contentDiv.appendChild(detailCard);
@@ -5767,6 +6775,14 @@ function buildBrowseDetailCard(idea, whyHead){
     /* Billy 2026-09-26: one build section; the separate block was merged. */
   }
   function doPick(){
+    var _already = load("pmc_pick_v1");
+    /* 2026-09-26 pm3 red-team D5: double-tap fired pick_saved twice. The UI
+       is idempotent (mountPickSections clears before re-render); make the
+       save match by treating a re-tap on the already-picked card as a no-op. */
+    if (_already && _already.ideaId === idea.id && note.style.display === "block") return;
+    /* 2026-09-26 pm3 red-team D3: a browse pick moves the saved pick too, so
+       retire any result-card panels the same way. */
+    unmountPanelsExcept(idea.id);
     store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
     /* 2026-09-26 afternoon (saved-not-shared recovery): browse saves arm it too. */
     store("pmc_recover_v1", {ideaId: idea.id, at: Date.now()});
@@ -5947,6 +6963,8 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
   var status = document.createElement("p"); status.className = "status";
   b.onclick = function(){
+    /* 2026-09-26 pm3 red-team D8: double-tap fired the prompt-copied event twice. */
+    if (!tapGuard("aiprompt", 2000)) return;
     doCopy(curText, function(ok, msg){
       status.textContent = msg;
       if (ok) Analytics.track(eventName, Object.assign({}, xp()));
@@ -6180,7 +7198,13 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   bsms.style.textDecoration = "none"; bsms.style.alignSelf = "center";
   bsms.style.padding = "10px 0"; bsms.style.display = "block";
   bsms.onclick = function(){
-    var sh = makeShare();
+    /* 2026-09-26 pm3 red-team: two quick taps minted two share_ids + two
+       share_sms_tapped events (anchors ignore disabled). Reuse the preview's
+       share so the SMS body is exactly what the preview shows, and swallow
+       finger bounces: tapping "Text it" opens Messages, a 2nd tap inside 2s
+       is never deliberate. */
+    if (!tapGuard("sms", 2000)) return;
+    var sh = (typeof cur !== "undefined" && cur && cur.sid) ? cur : makeShare();
     /* 2026-09-26 red-team: sh.text already embeds the ?s= link (o=generic),
        so appending a second link doubled the URL in the SMS body -- and the
        first (o=generic) link won the tap, defeating the o=sms attribution.
@@ -6438,6 +7462,64 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   container.appendChild(row);
   container.appendChild(trow);
   container.appendChild(mrow); /* 2026-09-26 micro-quiz: "Send one question" sits under the teaser row */
+  /* 2026-09-26 guess-game distribution experiment: "Quiz your friends: guess
+     my answers". Full-width ghost row under the micro row. Renders only with
+     the flag on and only when the just-finished quiz's answers are on file
+     for this exact pick (guessSenderEnc is null otherwise), so the game can
+     never name answers that do not produce the named pick. Mirrors the
+     micro/teaser machinery: native sheet when available, clipboard fallback
+     on desktop, share_created only on a resolved share, a dismissed sheet
+     counts as a cancel. */
+  if (GUESS_GAME_ENABLED && guessSenderEnc(idea)){
+    var ggrow = document.createElement("div"); ggrow.className = "row"; ggrow.style.marginTop = "8px";
+    var bguess = document.createElement("button");
+    bguess.type = "button"; bguess.className = "ghost";
+    bguess.style.width = "100%";
+    bguess.textContent = "Quiz your friends: guess my answers";
+    bguess.onclick = function(){
+      var rearmShare = armShareOnce(bguess);
+      if (!rearmShare) return; /* double-tap: a share is already in flight */
+      var genc = guessSenderEnc(idea);
+      if (!genc){ st.textContent = "Take the quiz first, then quiz your friends."; rearmShare(); return; }
+      var sid = newShareId();
+      var gtext = guessTextFor(idea, sid, genc);
+      function doneShare(ok, msg){
+        st.textContent = msg;
+        rearmShare(); /* the share settled: sent, dismissed, or copied */
+        if (ok){
+          /* E8: the first share landed -- invite a second one. */
+          label.textContent = "Shared. Who else needs a costume?";
+          Analytics.track("guess_game_created", Object.assign({share_id: sid, idea_id: idea.id, share_msg_variant: shareVariant()}, xp()));
+          Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "guess", share_msg_variant: shareVariant()}, xp()));
+          if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "guess"}, xp()));
+          /* The share landed: the AI plan is the immediate now-what. */
+          if (typeof onShared === "function") onShared();
+        }
+      }
+      function copyFallback(){
+        doCopy(gtext, function(ok, msg){
+          if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sid, share_origin: "guess"}, xp()));
+          doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+        });
+      }
+      /* Phone: native share sheet. Fires share_created only when the share
+         resolves; a dismissed sheet is a cancel, not a share. */
+      var usedNative = false;
+      if (navigator.share){
+        try {
+          usedNative = true;
+          navigator.share({title: "Pick My Costume", text: gtext}).then(
+            function(){ doneShare(true, "Shared."); },
+            function(){ doneShare(false, ""); }
+          );
+        } catch(e){ usedNative = false; }
+      }
+      if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+      cur = makeShare(); ta.value = cur.text;
+    };
+    ggrow.appendChild(bguess);
+    container.appendChild(ggrow);
+  }
   /* 2026-09-26 gift experiment: "Pick for a friend." Full-width ghost row
      under the teaser row; opens the gift mini-flow (openGiftFlow, below). */
   var grow = document.createElement("div"); grow.className = "row"; grow.style.marginTop = "8px";
@@ -6512,6 +7594,336 @@ function buildPairShareStep(idea){
   };
   wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(b); wrap.appendChild(st);
   return wrap;
+}
+
+/* ================= FRIEND-CHALLENGE EXPERIMENT (2026-09-26) =================
+   BuddyMeter novel-find transfer: close the share loop back at the sharer.
+   Sender side: buildChallengeShareStep adds a "Challenge a friend" row to
+   the results screen (flag-gated). Recipient side: genuine
+   ?s=<sid>&o=challenge&chl=<slug> arrivals get the challenge banner on the
+   homepage, take the normal quiz, and buildChallengeMatchBox renders the
+   match score on their results screen with a "Send my score back" row.
+   Sharer side: opening a ?o=challengeresult link records the score into
+   the localStorage inbox pmc_challenge_inbox and buildChallengeInboxPanel
+   renders every answer received. Honesty rules, all enforced in code:
+   - The challenge link carries only the sender's pick slug and the
+     anonymous share id. No names, no sender answers, no PII -- ever.
+   - The score-back link carries only the numeric score and the friend's
+     pick slug. The friend's quiz answers never leave their phone.
+   - Inbox entries are labelled "Answer 1/2/3..." by arrival order. The
+     code never names a friend and never fabricates an entry: an entry
+     exists only because a real result-back link was opened on this phone.
+   - 100% is reserved for the identical pick. Non-identical scores are a
+     documented tag-overlap percentage, labelled as such, never presented
+     as "how well you know each other".
+   Everything below is inert with CHALLENGE_SHARE_ENABLED false: the pure
+   decoders return null, the builders return null, and init does not
+   recognize either origin. */
+
+/* ---- pure core (no DOM): marked for the harness ---- */
+/* CHALLENGE-PURE-BEGIN */
+function challengeIdeaById(id){
+  if (!id || typeof IDEAS === "undefined") return null;
+  var found = null;
+  IDEAS.forEach(function(it){ if (it.id === id) found = it; });
+  return found;
+}
+/* Recipient-side decode: ?s=<sid>&o=challenge&chl=<slug>. Null with the
+   flag off, on a missing/unknown slug, or when the origin is absent. */
+function challengeDecodePick(search){
+  if (!CHALLENGE_SHARE_ENABLED) return null;
+  var q = search || "";
+  if (!/[?&]o=challenge([&#]|$)/.test(q)) return null;
+  var m = /[?&]chl=([a-z0-9-]+)/.exec(q);
+  if (!m || !challengeIdeaById(m[1])) return null;
+  return m[1];
+}
+/* Sharer-side decode: ?s=<sid>&o=challengeresult&r=<0-100>&rp=<slug>.
+   Null with the flag off or on any garbage: non-numeric r, r outside
+   0-100, missing/unknown rp slug. */
+function challengeDecodeResult(search){
+  if (!CHALLENGE_SHARE_ENABLED) return null;
+  var q = search || "";
+  if (!/[?&]o=challengeresult([&#]|$)/.test(q)) return null;
+  var rm = /[?&]r=([0-9]{1,3})/.exec(q);
+  var pm = /[?&]rp=([a-z0-9-]+)/.exec(q);
+  if (!rm || !pm) return null;
+  var r = parseInt(rm[1], 10);
+  if (isNaN(r) || r < 0 || r > 100) return null;
+  if (!challengeIdeaById(pm[1])) return null;
+  return {r: r, rp: pm[1]};
+}
+/* The challenge link carries the sender's pick only (no sender answers, no
+   PII), so the match compares the two picks through the same tag
+   dimensions the quiz scores against -- answer-overlap by proxy, and
+   labelled as exactly that in the UI. */
+var CHALLENGE_TAG_WORDS = {
+  funny:"going for laughs", scary:"going spooky", cute:"going cute",
+  simple:"keeping it simple", couch:"couch-level", crafty:"getting crafty",
+  allout:"going all out", heroes:"heroic", princess:"fairy-tale",
+  dinos:"dino-sized", games:"game night", tv:"screen-famous",
+  food:"snack-themed", sports:"sporty", animals:"animal kingdom"
+};
+function challengeMatchScore(targetId, ownId){
+  var target = challengeIdeaById(targetId), mine = challengeIdeaById(ownId);
+  if (!target || !mine) return null;
+  if (target.id === mine.id) return {score: 100, words: [], exact: true, audienceMatch: null};
+  var tTags = target.tags || {}, mTags = mine.tags || {};
+  var weight = 0, words = [];
+  Object.keys(tTags).forEach(function(k){
+    if (mTags[k] && CHALLENGE_TAG_WORDS[k]){
+      weight += Math.min(tTags[k] || 0, mTags[k] || 0);
+      words.push(CHALLENGE_TAG_WORDS[k]);
+    }
+  });
+  var tAud = target.audience || [], mAud = mine.audience || [];
+  var audienceMatch = null;
+  for (var i = 0; i < tAud.length; i++){
+    if (mAud.indexOf(tAud[i]) >= 0){ audienceMatch = tAud[i]; break; }
+  }
+  var score = 25 + (audienceMatch ? 15 : 0) + Math.min(55, weight * 6);
+  if (score > 95) score = 95; /* 100 is reserved for the identical pick */
+  return {score: score, words: words.slice(0, 2), exact: false, audienceMatch: audienceMatch};
+}
+function challengeMatchHeadline(match){
+  if (!match) return "";
+  if (match.exact) return "Match score: 100%. Same pick -- great minds think alike.";
+  var verdict = match.words.length
+    ? "You both landed in the " + match.words.join(" and ") + " lane."
+    : "Different lanes entirely -- and both strong.";
+  return "Match score: " + match.score + "%. " + verdict;
+}
+function challengeLinkFor(sid, pickId){
+  return "https://pickmycostume.com/?s=" + sid + "&o=challenge&chl=" + pickId;
+}
+function challengeScorebackUrl(sid, score, pickId){
+  /* Reuses the original challenge sid so the sharer's inbox attributes the
+     answer to the challenge it came from. Payload is score + pick slug only. */
+  return "https://pickmycostume.com/?s=" + sid + "&o=challengeresult&r=" + score + "&rp=" + pickId;
+}
+function challengeShareTextFor(idea, sid){
+  var link = challengeLinkFor(sid, idea.id);
+  /* Audience grounding (teaser-share pattern, 2026-09-26): for kid/family
+     quizzes the pick is the kid's / the family's, not the sender's. */
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  var whose = aud === "kid" ? "my kid's" : aud === "family" ? "our family's" : "my";
+  return "The quiz picked " + whose + " Halloween costume (" + idea.title + "). Would you pick the same? Take the 2-minute quiz and send me your match score: " + link;
+}
+/* Inbox: {sid: [{score, rp, at}]}. Dedupes identical (sid, score, pick) so
+   re-opening a result-back link never double-counts an answer. */
+function challengeInboxRecord(inbox, sid, entry){
+  var next = inbox || {};
+  var list = (next[sid] || []).slice();
+  var dup = list.some(function(e){ return e.score === entry.score && e.rp === entry.rp; });
+  if (!dup) list.push(entry);
+  next[sid] = list;
+  return next;
+}
+/* CHALLENGE-PURE-END */
+
+/* ---- sender side: the "Challenge a friend" row on the results screen ---- */
+function buildChallengeShareStep(idea){
+  if (!CHALLENGE_SHARE_ENABLED) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "challenge-share-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Would they pick the same?";
+  var p = document.createElement("p");
+  p.textContent = "Challenge a friend: they take the quiz and you get a match score back. No names, no accounts -- the link only carries your pick.";
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "ghost"; b.style.width = "100%";
+  b.textContent = "Challenge a friend";
+  var st = document.createElement("p"); st.className = "status";
+  b.onclick = function(){
+    var rearmShare = armShareOnce(b);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var text = challengeShareTextFor(idea, sid);
+    var link = challengeLinkFor(sid, idea.id);
+    function doneShare(ok, msg){
+      st.textContent = msg;
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        /* Outbound log: lets the inbox render "your challenge" labels when
+           the sharer comes back. Slug + title + time only -- no names. */
+        var ob = load("pmc_challenge_outbound") || [];
+        ob.push({sid: sid, pickId: idea.id, pickTitle: idea.title, at: Date.now()});
+        store("pmc_challenge_outbound", ob.slice(-20)); /* latest 20 */
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "challenge"});
+        if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "challenge"});
+      }
+    }
+    function copyFallback(){
+      doCopy(text, function(ok, msg){
+        if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "challenge"});
+        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    }
+    var usedNative = false;
+    if (navigator.share){
+      try {
+        usedNative = true;
+        navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+          function(){ doneShare(true, "Shared. Check back here for their score."); },
+          function(){ doneShare(false, ""); }
+        );
+      } catch(e){ usedNative = false; }
+    }
+    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
+  };
+  wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(b); wrap.appendChild(st);
+  /* The inbox under the row: the sharer's reason to return. Renders every
+     outbound challenge with its received answers, latest first. */
+  var inboxView = buildChallengeInboxList();
+  if (inboxView) wrap.appendChild(inboxView);
+  return wrap;
+}
+/* The sharer-side inbox list (no names anywhere; "Answer N" by arrival
+   order). Returns null when nothing was ever challenged from this phone. */
+function buildChallengeInboxList(){
+  if (!CHALLENGE_SHARE_ENABLED) return null;
+  var ob = load("pmc_challenge_outbound") || [];
+  if (!ob.length) return null;
+  var inbox = load("pmc_challenge_inbox") || {};
+  var div = document.createElement("div");
+  div.id = "challenge-inbox-list";
+  div.style.marginTop = "12px";
+  var ih = document.createElement("h4");
+  ih.textContent = "Your challenge results";
+  div.appendChild(ih);
+  var note = document.createElement("p");
+  note.className = "fine";
+  note.textContent = "Answers land here when someone opens your challenge and sends their score back. Each line is a real answer -- nothing here is made up.";
+  div.appendChild(note);
+  ob.slice().reverse().slice(0, 5).forEach(function(ch){
+    var row = document.createElement("div");
+    row.style.margin = "8px 0";
+    var answers = inbox[ch.sid] || [];
+    var rl = document.createElement("p");
+    rl.style.margin = "0 0 4px"; rl.style.fontWeight = "700";
+    rl.textContent = ch.pickTitle + " -- " + answers.length + (answers.length === 1 ? " answer" : " answers") + " so far";
+    row.appendChild(rl);
+    answers.forEach(function(a, i){
+      var idea = challengeIdeaById(a.rp);
+      var ap = document.createElement("p");
+      ap.className = "fine"; ap.style.margin = "2px 0";
+      ap.textContent = "Answer " + (i + 1) + ": " + a.score + "% match" + (idea ? " (" + idea.title + ")" : "");
+      row.appendChild(ap);
+    });
+    div.appendChild(row);
+  });
+  return div;
+}
+/* ---- recipient side: match box on the friend's results screen ---- */
+function buildChallengeMatchBox(ownIdea){
+  if (!CHALLENGE_SHARE_ENABLED) return null;
+  if (typeof VIA_SHARE === "undefined" || !VIA_SHARE) return null;
+  if (!CHALLENGE_PICK_ID) return null;
+  var target = challengeIdeaById(CHALLENGE_PICK_ID);
+  if (!target) return null;
+  var match = challengeMatchScore(target.id, ownIdea.id);
+  if (!match) return null;
+  var box = document.createElement("div");
+  box.className = "stuck"; box.id = "challenge-match-box";
+  var mh = document.createElement("h3");
+  mh.textContent = "Your match score";
+  var mp = document.createElement("p");
+  mp.textContent = challengeMatchHeadline(match);
+  var fine = document.createElement("p");
+  fine.className = "fine";
+  fine.textContent = "The score compares how the two costume ideas line up against the same quiz dimensions. 100% is reserved for the identical pick.";
+  var row = document.createElement("div"); row.className = "row";
+  var btn = document.createElement("button");
+  btn.type = "button"; btn.className = "ghost";
+  btn.textContent = "Send my score back";
+  var st = document.createElement("div"); st.className = "status"; st.style.marginTop = "6px";
+  btn.onclick = function(){ challengeSendBack(ownIdea, match.score, btn, st); };
+  row.appendChild(btn);
+  box.appendChild(mh); box.appendChild(mp); box.appendChild(fine); box.appendChild(row); box.appendChild(st);
+  var cprops = viaShareProps();
+  cprops.challenge_target_id = target.id; cprops.challenge_own_id = ownIdea.id;
+  cprops.challenge_score = match.score; cprops.challenge_exact = match.exact;
+  Analytics.track("challenge_match_shown", cprops);
+  return box;
+}
+/* The recipient's score-back share: link carries the original challenge sid
+   (attribution), the numeric score, and the friend's pick slug -- nothing
+   else. Mirrors duelShareback's share-sheet/clipboard pattern. */
+function challengeSendBack(mine, score, btn, statusEl){
+  if (!CHALLENGE_SHARE_ENABLED) return;
+  var rearmShare = armShareOnce(btn);
+  if (!rearmShare) return; /* double-tap: a share is already in flight */
+  var sid = (typeof VIA_SHARE !== "undefined" && VIA_SHARE) ? VIA_SHARE : newShareId();
+  var url = challengeScorebackUrl(sid, score, mine.id);
+  var text = "My costume-quiz result (" + mine.title + ") is a " + score + "% match with your costume challenge. " + url;
+  function trackSendback(via){
+    Analytics.track("challenge_scoreback_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "challenge", challenge_score: score, via: via});
+    Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "challenge"});
+  }
+  function doneSend(ok, msg){
+    statusEl.textContent = msg;
+    rearmShare();
+    if (ok) trackSendback("share_sheet");
+  }
+  if (navigator.share){
+    try {
+      navigator.share({title: "Pick My Costume", text: text, url: url}).then(
+        function(){ doneSend(true, "Sent. They will see your score when they open it."); },
+        function(){ doneSend(false, ""); }
+      );
+      return;
+    } catch(e){ /* fall through to clipboard copy */ }
+  }
+  doCopy(text, function(ok, msg){
+    statusEl.textContent = ok ? "Copied. Send it back to whoever challenged you." : msg;
+    rearmShare();
+    if (ok) trackSendback("clipboard");
+  });
+}
+/* ---- sharer side: the inbox panel rendered on a ?o=challengeresult arrival.
+   Records the answer first (deduped), then renders the full inbox for the
+   challenge sid. Null with the flag off or on garbage. ---- */
+function buildChallengeInboxPanel(){
+  if (!CHALLENGE_SHARE_ENABLED) return null;
+  if (!CHALLENGE_RESULT) return null;
+  var sid = (typeof VIA_SHARE !== "undefined" && VIA_SHARE) ? VIA_SHARE : null;
+  if (!sid) return null;
+  var inbox = challengeInboxRecord(load("pmc_challenge_inbox"), sid,
+    {score: CHALLENGE_RESULT.r, rp: CHALLENGE_RESULT.rp, at: Date.now()});
+  store("pmc_challenge_inbox", inbox);
+  var answers = inbox[sid] || [];
+  var ob = load("pmc_challenge_outbound") || [];
+  var mine = null;
+  ob.forEach(function(ch){ if (ch.sid === sid) mine = ch; });
+  var idea = challengeIdeaById(CHALLENGE_RESULT.rp);
+  var panel = document.createElement("div");
+  panel.className = "stuck"; panel.id = "challenge-inbox-panel";
+  var h = document.createElement("h3");
+  h.textContent = "A challenge score came in";
+  var p = document.createElement("p");
+  p.textContent = "Someone answered your challenge" + (mine ? " (" + mine.pickTitle + ")" : "") +
+    " with a " + CHALLENGE_RESULT.r + "% match" + (idea ? " -- they got " + idea.title + "." : ".");
+  var fine = document.createElement("p");
+  fine.className = "fine";
+  fine.textContent = "Answers are recorded on this phone when someone sends you their score. Nothing here is made up.";
+  panel.appendChild(h); panel.appendChild(p); panel.appendChild(fine);
+  if (answers.length){
+    var ul = document.createElement("div");
+    ul.style.marginTop = "8px";
+    answers.forEach(function(a, i){
+      var aidea = challengeIdeaById(a.rp);
+      var ap = document.createElement("p");
+      ap.className = "fine"; ap.style.margin = "2px 0";
+      ap.textContent = "Answer " + (i + 1) + ": " + a.score + "% match" + (aidea ? " (" + aidea.title + ")" : "");
+      ul.appendChild(ap);
+    });
+    panel.appendChild(ul);
+  }
+  var cprops = viaShareProps();
+  cprops.challenge_score = CHALLENGE_RESULT.r; cprops.challenge_own_id = CHALLENGE_RESULT.rp;
+  Analytics.track("challenge_inbox_viewed", cprops);
+  return panel;
 }
 
 /* ================= GIFT EXPERIMENT (2026-09-26) =================
@@ -6956,8 +8368,22 @@ function buildCastShareText(idea, list, sid){
      the short generic invitation instead -- it reads like a recruit, which is
      the right frame when you have not named the cast yet. */
   var anyBlank = list.some(function(a){ return !a.rawName; });
+  /* Red-team 2026-09-26 PM (D1): the cast path bypassed the shareCaptionFor
+     audience rule. For kid quizzes the pick belongs to the kid, so "Want to
+     do X this Halloween?" (blank names) and "I'm going as X" (named solo)
+     misattribute the pick to the sharer -- the same misattribution class as
+     the generic-path fix. Mirror the audience-aware lead. */
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
   var text;
-  if (anyBlank){
+  if (aud === "kid"){
+    var kidLead = "The quiz picked " + idea.title + " for my kid this Halloween.";
+    if (anyBlank){
+      /* 2026-09-25 social-handoff experiment: reciprocal ask. */
+      text = kidLead + " " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    } else {
+      text = kidLead + " " + castLine(list) + ". " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
+    }
+  } else if (anyBlank){
     /* 2026-09-25 social-handoff experiment: reciprocal ask. */
     text = "Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
   } else {
@@ -6969,11 +8395,12 @@ function buildCastShareText(idea, list, sid){
   /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
      not just the costume name. Kid/family cast shares append the materials,
      mirroring shareTextFor (the generic share path already does this). */
-  var aud = (typeof state !== "undefined" && state.answers && state.answers.q1) ? state.answers.q1.value : null;
   if ((aud === "kid" || aud === "family") && typeof INSTRUCTIONS !== "undefined"){
     var ins = INSTRUCTIONS[idea.id];
     if (ins && ins.m && ins.m.length){
-      text += " You need: " + ins.m.slice(0, 8).join(", ") + ".";
+      text += " You need: " + ins.m.slice(0, 8).join(", ") + (ins.m.length > 8 ? ", plus " + (ins.m.length - 8) + " more." : ".");
+      /* 2026-09-26 pm3 red-team: the 8-item slice silently dropped the 9th
+         material (beekeeper-bee) while presenting the list as complete. */
     }
   }
   return text;
@@ -7579,6 +9006,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
    head (falling back to the first head, then to a manual default).
    ============================================================ */
 function openTryOn(idea, personIdx, person){
+  /* Red-team 2026-09-26: double-tapping "Try it on" stacked two modals.
+     One at a time. */
+  if (document.querySelector(".tryon-ov")) return;
   var roleLabel = person.rawName ? (person.name + " is " + roleArt(person.role))
                                  : ("You're " + roleArt(person.role));
   /* ---- Modal shell ---- */
@@ -7656,13 +9086,21 @@ function openTryOn(idea, personIdx, person){
   row2.hidden = true;
   var shareBtn = document.createElement("button");
   shareBtn.type = "button"; shareBtn.className = "cta";
-  shareBtn.textContent = "Share this";
+  shareBtn.textContent = "Share your look";
   var removeBtn = document.createElement("button");
   removeBtn.type = "button"; removeBtn.className = "ghost";
   removeBtn.textContent = "Remove photo";
   row2.appendChild(shareBtn);
   row2.appendChild(removeBtn);
   card.appendChild(row2);
+
+  /* One-time nudge: shown when the first composite is ready, never again
+     this session, and hidden once the user shares. A nudge, not a nag. */
+  var nudgeEl = document.createElement("p");
+  nudgeEl.className = "tryon-nudge";
+  nudgeEl.hidden = true;
+  nudgeEl.textContent = "Looking good? Share your look with the group.";
+  card.appendChild(nudgeEl);
 
   var statusEl = document.createElement("p");
   statusEl.className = "tryon-status";
@@ -7680,9 +9118,24 @@ function openTryOn(idea, personIdx, person){
   var dragging = false;
   var dragOff = { x: 0, y: 0 };
   var closed = false;
+  var nudged = false;
 
   function track(ev, props){
     try { if (typeof Analytics !== "undefined") Analytics.track(ev, props || {}); } catch(e){}
+  }
+  /* The shareable object: the face-swapped image carries the plan. Short,
+     role-grounded, first-person only when the sharer IS the wearer (the
+     shareCaptionFor kid/family rule). No em dashes. */
+  function tryonShareText(sid){
+    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=tryon";
+    var aud = (typeof state !== "undefined" && state.answers && state.answers.q1) ? state.answers.q1.value : null;
+    var role = roleArt(person.role || "");
+    var line;
+    if (aud === "kid") line = "The quiz picked " + idea.title + " for my kid this Halloween.";
+    else if (aud === "family") line = "The quiz picked " + idea.title + " for our family this Halloween.";
+    else if (person.rawName && person.name) line = person.name + " is " + role + " this Halloween.";
+    else line = "I'm " + role + " this Halloween.";
+    return line + " Try your own face in the costume: " + link;
   }
   function setStatus(msg){ statusEl.textContent = msg; }
 
@@ -7728,7 +9181,7 @@ function openTryOn(idea, personIdx, person){
      A hard circle looks like a sticker. The radial feather mask melts the
      face into the photo so it reads as "you in the costume." ---- */
   function draw(){
-    if (!costumeImg || closed) return;
+    if (!ctx || !costumeImg || closed) return;
     ctx.clearRect(0, 0, cv.width, cv.height);
     ctx.drawImage(costumeImg, 0, 0, cv.width, cv.height);
     if (faceImg){
@@ -7762,6 +9215,7 @@ function openTryOn(idea, personIdx, person){
   }
 
   /* ---- Costume photo ---- */
+  var costumeFailed = false;
   function loadCostume(){
     setStatus("Loading costume...");
     var img = new Image();
@@ -7783,15 +9237,19 @@ function openTryOn(idea, personIdx, person){
         if (head){
           face.x = head.x + head.w / 2;
           face.y = head.y + head.h / 2;
-          face.r = head.w * 0.55;
-          sizeSlider.value = String(Math.round(face.r * cv.width));
+          /* Red-team 2026-09-26: keep the detected size inside the slider's
+             range, or the first slider touch jumps the face. */
+          var px = Math.round(head.w * 0.55 * cv.width);
+          px = Math.min(300, Math.max(40, px));
+          face.r = px / cv.width;
+          sizeSlider.value = String(px);
         }
         draw();
       });
       draw();
       setStatus("");
     };
-    img.onerror = function(){ if (!closed) setStatus("Could not load that costume photo."); };
+    img.onerror = function(){ if (closed) return; costumeFailed = true; setStatus("Could not load that costume photo."); };
     /* The costume photo loads from our own site. The USER's photo is never
        fetched from anywhere: it comes from the file picker into memory. */
     img.src = "photos/" + idea.id + ".webp";
@@ -7802,14 +9260,24 @@ function openTryOn(idea, personIdx, person){
   fileInput.onchange = function(){
     var f = fileInput.files && fileInput.files[0];
     if (!f) return;
-    if (!f.type || f.type.indexOf("image/") !== 0){
+    /* Red-team 2026-09-26: uploading with no costume photo rendered nothing
+       and cleared the error. Block it with the real message instead. */
+    if (costumeFailed){ setStatus("Could not load that costume photo."); return; }
+    /* Red-team 2026-09-26: some Android pickers return an empty MIME type
+       for perfectly good photos. Only reject when the type is known and
+       not an image; img.onerror catches the truly invalid files. */
+    if (f.type && f.type.indexOf("image/") !== 0){
       setStatus("That does not look like an image. Try another file.");
       return;
     }
     cleanupFace();
     faceURL = URL.createObjectURL(f);
+    /* Red-team 2026-09-26: a second upload while the first is still loading
+       could let the stale onload win. The token drops superseded loads. */
+    var myURL = faceURL;
     var img = new Image();
     img.onload = function(){
+      if (faceURL !== myURL) return;
       if (closed){ cleanupFace(); return; }
       faceImg = img;
       faceCrop = null;
@@ -7839,6 +9307,10 @@ function openTryOn(idea, personIdx, person){
       setStatus("");
       /* Analytics: event name + costume only. NEVER the image. */
       track("tryon_face_added", {idea_id: idea.id});
+      if (!nudged){
+        nudged = true;
+        nudgeEl.hidden = false;
+      }
     };
     img.onerror = function(){
       setStatus("Could not read that photo. Try another.");
@@ -7852,6 +9324,7 @@ function openTryOn(idea, personIdx, person){
     cleanupFace();
     sizeRow.hidden = true;
     row2.hidden = true;
+    nudgeEl.hidden = true;
     hint.textContent = "Photo removed. Upload again to try another.";
     draw();
     setStatus("Removed. Nothing was stored anywhere.");
@@ -7900,28 +9373,40 @@ function openTryOn(idea, personIdx, person){
     draw();
   });
 
-  /* ---- Share the composite. The image goes to the share target the user
-     picks. We never see where it goes. We never upload it anywhere. ---- */
+  /* ---- Share your look. The face-swapped image is the shareable object;
+     it carries the costume plan as text: the role line plus a try-your-own
+     link (o=tryon) so the friend can put their own face in it. The image
+     goes to the share target the user picks. We never see where it goes.
+     We never upload it anywhere. ---- */
   shareBtn.onclick = function(){
     var rearmShare = (typeof armShareOnce === "function") ? armShareOnce(shareBtn) : function(){};
     if (!rearmShare) return;
     setStatus("Preparing...");
+    var sid = (typeof newShareId === "function") ? newShareId() : "tryon";
+    var shareText = tryonShareText(sid);
     cv.toBlob(function(blob){
       if (closed) return;
       if (!blob){ setStatus("Something went wrong. Try again."); rearmShare(); return; }
       var file = new File([blob], "my-costume.png", {type: "image/png"});
       function doneShared(via){
+        nudgeEl.hidden = true;
         setStatus(via === "share_sheet" ? "Shared." : "Downloaded.");
         rearmShare();
-        track("tryon_shared", {idea_id: idea.id, via: via});
+        /* tryon_shared keeps the existing dashboard; share_created feeds the
+           shared share-loop funnel with origin=tryon so opens count. */
+        track("tryon_shared", {idea_id: idea.id, via: via, share_id: sid});
+        try {
+          if (typeof Analytics !== "undefined") Analytics.track("share_created",
+            Object.assign({share_id: sid, idea_id: idea.id, share_origin: "tryon"}, viaShareProps()));
+        } catch(e){}
       }
       if (typeof navigator !== "undefined" && navigator.share &&
           navigator.canShare && navigator.canShare({files: [file]})){
-        navigator.share({files: [file], title: "My Halloween costume"})
+        navigator.share({files: [file], title: "My Halloween costume", text: shareText})
           .then(function(){ doneShared("share_sheet"); })
           .catch(function(err){
             if (err && err.name === "AbortError"){ rearmShare(); setStatus(""); }
-            else { setStatus("Share was dismissed."); rearmShare(); }
+            else { setStatus("Sharing failed. Try again."); rearmShare(); }
           });
       } else {
         var a = document.createElement("a");
@@ -7931,7 +9416,16 @@ function openTryOn(idea, personIdx, person){
         document.body.appendChild(a);
         a.click();
         setTimeout(function(){ try { URL.revokeObjectURL(url); } catch(e){} a.remove(); }, 4000);
+        /* Download cannot carry text, so copy the plan text for pasting. */
+        var copied = false;
+        try {
+          if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(shareText);
+            copied = true;
+          }
+        } catch(e){}
         doneShared("download");
+        if (copied) setStatus("Downloaded. The costume link was copied too.");
       }
     }, "image/png");
   };
@@ -7958,7 +9452,7 @@ function armShareOnce(btn){
 /* ================= SHARE ================= */function shareText(idea, statusEl, btn, audOverride){
   var rearmShare = armShareOnce(btn);
   if (!rearmShare) return; /* double-tap: a share is already in flight */
-  var aud = audOverride || ((state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo");
+  var aud = audOverride || voiceAudience(idea);
   var sid = newShareId();
   var text = SHARE.textTemplate(idea, aud, sid);
   var url = "https://pickmycostume.com/c/" + idea.id;
@@ -8114,6 +9608,9 @@ $("pinpoint-input").addEventListener("keydown", function(ev){ if (ev.key === "En
 /* Typing again clears the honest-note state so a stale closest-3 can't linger. */
 $("pinpoint-input").addEventListener("input", function(){ pinpointNote(""); pinpointClearNomatch(); });
 $("btn-start").onclick = function(){
+  /* 2026-09-26 pm3 red-team: double-tap fired quiz_started twice. State is
+     idempotent; the guard is analytics hygiene. */
+  if (!tapGuard("qstart", 1000)) return;
   state = {qi: 0, answers: {}};
   /* Pinpoint is its own surface now: chips and typed queries resolve to a
      costume's detail directly. Starting the quiz is an explicit choice and
@@ -8129,6 +9626,9 @@ $("btn-start").onclick = function(){
   renderQ();
 };
 $("q-back").onclick = function(){
+  /* 2026-09-26 pm3 red-team: double-tap Back on Q2 stranded the user on the
+     hero (2nd tap hit qi===0) with no in-session path back into the quiz. */
+  if (!tapGuard("qback", 400)) return;
   if (state.qi === 0) { show("s-hero"); refreshReturnBox(); return; }
   state.qi--;
   renderQ();
@@ -8334,14 +9834,22 @@ function shareLandingHeadline(idea, search){
   var isVote = /[?&]o=vote(?:&|$)/.test(q);
   if (isShare && isPair) return "Your friend is going as " + idea.title + ". Find YOUR costume to match.";
   if (isShare && isVote) return "Your friend wants your vote: is " + idea.title + " the one?";
+  /* Red-team 2026-09-26 (share flow): a tryon arrival means the friend
+     shared a photo of their own face in the costume. Name the hook: the
+     recipient is invited to try their own face, not just pick a costume. */
+  var isTryon = /[?&]o=tryon(?:&|$)/.test(q);
+  if (isShare && isTryon) return "Your friend tried on " + idea.title + ". Try your own face in it.";
   if (isShare) return "Your friend picked " + idea.title + ". What would you pick?";
   return idea.title;
 }
 (function init(){
   /* Shared-idea landing: /c/<slug>/ redirects here with ?idea=<slug>. */
   (function(){
-    /* Anonymous share id: ?s=<sid> survives the /c/<slug> redirect. Never an identity. */
-    var sm = /[?&]s=([a-z0-9]+)/.exec(location.search || "");
+    /* Anonymous share id: ?s=<sid> survives the /c/<slug> redirect. Never an identity.
+       2026-09-26 pm3 red-team: minted sids are exactly 8 chars, so require 8+
+       here. A 1-7 char ?s= is hand-crafted: it must not render the friend
+       banner or stamp via_share_id onto analytics. */
+    var sm = /[?&]s=([a-z0-9]{8,})/.exec(location.search || "");
     if (sm) VIA_SHARE = sm[1];
     /* E29: origin label (?o=card|generic|sms) survives the same redirect.
        2026-09-26 red-team D6: the SMS "Text it" share writes ?o=sms, but this
@@ -8355,7 +9863,10 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match)/.exec(location.search || "");
+    /* 2026-09-26 evening match-pair experiment: ?o=match is only recognized
+       when the flag is on, so arrivals with the flag off behave exactly as
+       before the experiment existed. */
     /* 2026-09-26 evening block-map experiment: ?o=block is only recognized
        when the flag is on, so arrivals with the flag off behave exactly as
        before the experiment existed. */
@@ -8365,7 +9876,15 @@ function shareLandingHeadline(idea, search){
        its comment promises share_origin=gift on the recipient side, but the
        origin regex never recognized gift, so gift recipients arrived with no
        share_origin on recipient_landing_viewed/quiz_started. */
-    if (om && (om[1] !== "block" || BLOCK_MAP_EXP)) VIA_SHARE_ORIGIN = om[1];
+    if (om && (om[1] !== "block" || BLOCK_MAP_EXP) && (om[1] !== "guess" || GUESS_GAME_ENABLED)
+        && (om[1] !== "challenge" || CHALLENGE_SHARE_ENABLED)
+        && (om[1] !== "challengeresult" || CHALLENGE_SHARE_ENABLED)
+        && (om[1] !== "match" || MATCH_FIND_ENABLED)) VIA_SHARE_ORIGIN = om[1];
+    /* 2026-09-26 guess-game experiment: ?o=guess is only recognized when the
+       flag is on, so arrivals with the flag off behave exactly as before
+       the experiment existed.
+       2026-09-26 friend-challenge experiment: ?o=challenge / ?o=challengeresult
+       follow the same rule, gated on CHALLENGE_SHARE_ENABLED. */
     /* 2026-09-26 duel experiment: ?duel=<sender idea slug> rides the /c/
        quiz links on share arrivals so results can render the compare panel
        and close the quiz return leg.
@@ -8378,10 +9897,30 @@ function shareLandingHeadline(idea, search){
        redirect the same way ?duel= does. */
     var pm = /[?&]pair=([a-z0-9-]+)/.exec(location.search || "");
     if (pm) PAIR_IDEA_ID = pm[1];
+    /* 2026-09-26 match-pair experiment: ?match=<anchor>,<match> rides the
+       share link so the recipient banner can name the pair. Parsed into
+       MATCH_PAIR only with the flag on and both ids real. */
+    MATCH_PAIR = matchPairFromQuery();
     /* 2026-09-26 costume roulette: ?spin=<sender idea slug> rides the spin
        share link so the recipient banner can name the spin result. */
     var spm = /[?&]spin=([a-z0-9-]+)/.exec(location.search || "");
     if (spm) SPIN_IDEA_ID = spm[1];
+    /* 2026-09-26 party link experiment: ?party=<6-char code> carries the
+       group broadcast share; ?theme=, ?pname=, ?taken=, ?claim= ride along. */
+    PARTY_PARAMS = partyParseParams();
+    /* 2026-09-26 guess-game experiment: ?g=<5 base36 digits>.<idea slug>
+       carries the sender's answers. Decoded only with the flag on; garbage
+       yields null and the arrival falls through to the generic banner. */
+    var ggm = /[?&]g=([0-9a-z]{5}\.[a-z0-9-]+)/.exec(location.search || "");
+    if (ggm) GUESS_GAME = guessDecode(ggm[1]);
+    /* 2026-09-26 friend-challenge experiment: ?o=challenge&chl=<sender pick
+       slug> decodes to the challenge pick (recipient side); a
+       ?o=challengeresult&r=<score>&rp=<pick slug> arrival decodes to the
+       score payload (sharer side). Both decode only with the flag on;
+       garbage yields null and the arrival falls through to the generic
+       friend banner, exactly as before the experiment existed. */
+    CHALLENGE_PICK_ID = challengeDecodePick(location.search || "");
+    CHALLENGE_RESULT = challengeDecodeResult(location.search || "");
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
     var idea = null;
@@ -8455,7 +9994,7 @@ function shareLandingHeadline(idea, search){
       dbtn.className = "cta";
       dbtn.style.width = "100%";
       dbtn.style.marginTop = "10px";
-      dbtn.textContent = "Duel " + _duelFor.title + ": answer 2 questions";
+      dbtn.textContent = duelKidFrame(_duelFor) ? "Compare costumes: answer 2 questions" : "Duel " + _duelFor.title + ": answer 2 questions";
       dbtn.onclick = function(){ startDuelFlow(); };
       box.appendChild(dbtn);
     }
@@ -8524,6 +10063,14 @@ function shareLandingHeadline(idea, search){
        their own pick. Fires recipient_landing_viewed here because the
        ?idea= block (the only other place that fires it) never runs on a
        bare /?s= arrival; without this the teaser funnel has no open rate. */
+    /* 2026-09-26 party link experiment: ?o=party arrivals get the party
+       banner (host intake, returning-host board, or guest invite, handled
+       inside renderPartyBanner). With the flag off this never matches, so
+       party links fall through to the generic banner exactly as before. */
+    if (VIA_SHARE_ORIGIN === "party" && PARTY_LINK_ENABLED && PARTY_PARAMS && PARTY_PARAMS.code){
+      renderPartyBanner(hero);
+      return;
+    }
     if (VIA_SHARE_ORIGIN === "teaser"){
       var tb = document.createElement("button");
       tb.type = "button";
@@ -8542,6 +10089,46 @@ function shareLandingHeadline(idea, search){
         renderQ();
       };
       hero.insertBefore(tb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 friend-challenge experiment: a ?o=challengeresult arrival is
+       the loop closing -- the sharer opened a friend's score-back link. The
+       score is recorded into the localStorage inbox and the inbox panel
+       renders in the hero. With the flag off CHALLENGE_RESULT is always
+       null, so the arrival falls through to the generic friend banner,
+       exactly as before. */
+    if (typeof CHALLENGE_RESULT !== "undefined" && CHALLENGE_RESULT){
+      var cip = buildChallengeInboxPanel();
+      if (cip){
+        hero.insertBefore(cip, hero.firstChild);
+        if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+        return;
+      }
+    }
+    /* 2026-09-26 friend-challenge experiment: genuine ?o=challenge&chl=
+       arrivals get the challenge banner naming the sender's pick. The
+       friend takes the normal quiz; the match score renders on the results
+       screen via CHALLENGE_PICK_ID. Unknown slugs fall through to the
+       generic friend banner. With the flag off the pick never decodes, so
+       nothing renders differently. */
+    var _chlTheirs = (typeof CHALLENGE_PICK_ID !== "undefined" && CHALLENGE_PICK_ID) ? challengeIdeaById(CHALLENGE_PICK_ID) : null;
+    if (_chlTheirs){
+      var cb = document.createElement("button");
+      cb.type = "button";
+      cb.id = "pmc-challenge-banner";
+      cb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      cb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Costume challenge: your friend was picked " + _chlTheirs.title + ".</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Would you pick the same? Take the 2-minute quiz and send them your match score.</p>";
+      cb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(cb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
@@ -8576,13 +10163,14 @@ function shareLandingHeadline(idea, search){
        fall through to the generic friend banner. */
     var _duelTheirs = (typeof DUEL_IDEA_ID !== "undefined" && DUEL_IDEA_ID) ? duelIdeaById(DUEL_IDEA_ID) : null;
     if (_duelTheirs){
-      /* 2026-09-26 red-team a11y: a button, not a div with onclick, so
+      var _dbKf = duelKidFrame(_duelTheirs);
+    /* 2026-09-26 red-team a11y: a button, not a div with onclick, so
          keyboard and screen-reader users can activate it too. */
       var db = document.createElement("button");
       db.type = "button";
       db.id = "pmc-friend-banner";
       db.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
-      db.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Costume duel: your friend picked " + _duelTheirs.title + ".</p>" +
+      db.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">" + (_dbKf ? "Costume compare: your friend picked " : "Costume duel: your friend picked ") + _duelTheirs.title + ".</p>" +
         "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Answer 2 quick questions, see how you match up, and send your pick back.</p>";
       db.onclick = function(){ startDuelFlow(); };
       hero.insertBefore(db, hero.firstChild);
@@ -8659,6 +10247,49 @@ function shareLandingHeadline(idea, search){
       mb.style.cssText = "display:block;width:100%;text-align:left;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
       renderMicroPanel(mb);
       hero.insertBefore(mb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 guess-game distribution experiment: genuine ?o=guess
+       arrivals with a valid ?g= payload get the game banner. GUESS_GAME is
+       null with the flag off or on garbage, so those arrivals fall through
+       to the generic banner exactly as before the experiment existed.
+       Fires recipient_landing_viewed here because the ?idea= block never
+       runs on a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "guess" && GUESS_GAME){
+      var ggb = document.createElement("button");
+      ggb.type = "button";
+      ggb.id = "pmc-friend-banner";
+      ggb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      ggb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend got " + GUESS_GAME.idea.title + ".</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Can you guess their 5 quiz answers? Play, then get your own pick.</p>";
+      ggb.onclick = function(){ openGuessGame(GUESS_GAME); };
+      hero.insertBefore(ggb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 match-pair experiment: genuine ?o=match arrivals with a
+       valid ?match= payload get the pair banner. MATCH_PAIR is null with
+       the flag off or on garbage, so those arrivals fall through to the
+       generic banner exactly as before the experiment existed. Fires
+       recipient_landing_viewed here because the ?idea= block never runs on
+       a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "match" && MATCH_PAIR){
+      var mpb = document.createElement("button");
+      mpb.type = "button";
+      mpb.id = "pmc-friend-banner";
+      mpb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      mpb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend found a costume pair.</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + MATCH_PAIR.a.title + " and " + MATCH_PAIR.b.title + ". Tap to take the 2-minute quiz and find your pair.</p>";
+      mpb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(mpb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
