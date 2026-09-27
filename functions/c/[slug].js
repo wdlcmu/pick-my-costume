@@ -15,6 +15,20 @@ var ALIASES = {"bluey-family": "blue-dog-family", "incredibles-family": "superhe
 // by gen_share_function.py; assert-covered at generation time.
 var SPLITABLE = ["block-game-crew", "blue-alien-ohana", "blue-dog-family", "board-game-pieces", "bowling-pins", "breakfast-buffet", "cereal-crew", "chipmunk-trio", "classic-ghost", "decades-crew", "demon-boy-band", "dino-herd", "dino-rangers", "dinosaur-family", "dragon-rider-duo", "emoji-crew", "emotion-crew", "enchanted-castle-crew", "fairy-tale-princesses", "fruit-salad", "galaxy-knights", "ghost-hunters", "gloom-bloom", "goggle-crew", "good-witch-bad-witch", "haunted-animatronics", "haunted-portraits", "headless-horsemen", "hero-squad", "kart-racers", "little-pig-family", "mermaid-crew", "mystery-crew", "numbered-players", "peas-pod", "penguin-huddle", "plastic-dream-crew", "plumber-duo", "referee", "robot-crew", "robot-ranger", "safari-zoo-crew", "snow-sisters", "soccer-squad", "superhero-family", "tall-hat-crew", "the-olympians", "toy-box-crew", "under-the-sea", "web-slinger-crew", "wizard"];
 
+// Role share cards (2026-09-27, MagicShot.ai novel-scout steal): idea slug
+// -> {role-slug: role display label}, parsed from CASTS by
+// gen_share_function.py. The family cast share mints one unfurl link per
+// family member role (?o=role&role=<role-slug>); onRequest allowlist-
+// validates the role against this map, so forged roles fall back to the
+// classic per-costume card and no name ever enters a URL or card pixels.
+var ROLE_CARDS = {"bacon-eggs": {"bacon": "Bacon", "eggs": "Eggs"}, "block-game-crew": {"blocky-hero": "Blocky Hero", "blocky-villager": "Blocky Villager", "blocky-knight": "Blocky Knight", "blocky-monster": "Blocky Monster"}, "blue-alien-ohana": {"blue-alien": "Blue Alien", "the-girl": "The Girl", "ohana-elder": "Ohana Elder"}, "blue-dog-family": {"mama-dog": "Mama Dog", "papa-dog": "Papa Dog", "big-pup": "Big Pup", "little-pup": "Little Pup"}, "board-game-pieces": {"die": "Die", "playing-card": "Playing Card", "pawn": "Pawn", "domino": "Domino", "chess-knight": "Chess Knight"}, "bowling-pins": {"bowler": "Bowler", "pin": "Pin"}, "breakfast-buffet": {"fried-egg": "Fried Egg", "bacon": "Bacon", "toast": "Toast", "pancake-stack": "Pancake Stack", "orange-juice": "Orange Juice", "coffee-cup": "Coffee Cup"}, "burger-joint-couple": {"burger-chef": "Burger Chef", "diner-owner": "Diner Owner"}, "caped-duo": {"hero": "Hero", "sidekick": "Sidekick"}, "cat-mouse": {"cat": "Cat", "mouse": "Mouse"}, "cereal-crew": {"cereal-box": "Cereal Box", "spoon": "Spoon", "milk-carton": "Milk Carton", "cereal-bowl": "Cereal Bowl", "orange-juice": "Orange Juice"}, "classic-ghost": {"sheet-ghost": "Sheet Ghost", "ghost-with-glasses": "Ghost With Glasses", "tall-ghost": "Tall Ghost", "tiny-ghost": "Tiny Ghost"}, "decades-crew": {"50s": "50s", "60s": "60s", "70s": "70s", "80s": "80s", "90s": "90s", "y2k": "Y2K"}, "dino-herd": {"t-rex": "T-Rex", "raptor": "Raptor", "triceratops": "Triceratops", "stegosaurus": "Stegosaurus"}, "dino-rangers": {"ranger": "Ranger", "little-dino": "Little Dino"}, "dinosaur-family": {"big-dino": "Big Dino", "little-dino": "Little Dino"}, "doctor-bride": {"the-monster": "The Monster", "the-bride": "The Bride"}, "emoji-crew": {"smiley": "Smiley", "heart-eyes": "Heart-Eyes", "laughing-crying": "Laughing-Crying", "cool-shades": "Cool Shades", "winking": "Winking", "mind-blown": "Mind-Blown", "party-popper": "Party Popper"}, "enchanted-castle-crew": {"candelabra": "Candelabra", "clock": "Clock", "bookish-princess": "Bookish Princess", "cursed-prince": "Cursed Prince", "teapot": "Teapot", "dancing-spoon": "Dancing Spoon"}, "fairy-tale-princesses": {"tiara-princess": "Tiara Princess", "gown-princess": "Gown Princess", "crown-princess": "Crown Princess", "cape-princess": "Cape Princess", "flower-princess": "Flower Princess"}, "ghost-hunters": {"team-leader": "Team Leader", "tech-expert": "Tech Expert", "rookie": "Rookie", "ghost": "Ghost"}, "gloom-bloom": {"gloom": "Gloom", "bloom": "Bloom"}, "goggle-crew": {"tall-goggle": "Tall Goggle", "short-goggle": "Short Goggle", "one-eyed-goggle": "One-Eyed Goggle", "two-eyed-goggle": "Two-Eyed Goggle"}, "good-witch-bad-witch": {"good-witch": "Good Witch", "bad-witch": "Bad Witch"}, "haunted-animatronics": {"glitchy-mascot": "Glitchy Mascot", "flickering-eyed-bot": "Flickering-Eyed Bot", "jerky-dancer": "Jerky Dancer", "static-singer": "Static Singer"}, "haunted-portraits": {"haunted-ancestor": "Haunted Ancestor", "gilded-portrait": "Gilded Portrait"}, "headless-horsemen": {"headless-rider": "Headless Rider", "pumpkin-bearer": "Pumpkin Bearer", "night-galloper": "Night Galloper"}, "hero-squad": {"red-hero": "Red Hero", "blue-hero": "Blue Hero", "green-hero": "Green Hero", "gold-hero": "Gold Hero"}, "ketchup-mustard": {"ketchup": "Ketchup", "mustard": "Mustard"}, "little-pig-family": {"mama-pig": "Mama Pig", "papa-pig": "Papa Pig", "little-pig": "Little Pig", "dinosaur": "Dinosaur"}, "mermaid-crew": {"sea-witch": "Sea Witch", "sea-king": "Sea King", "crab": "Crab", "mermaid": "Mermaid", "prince": "Prince", "seagull": "Seagull"}, "moth-porch-light": {"moth": "Moth", "porch-light": "Porch Light"}, "mystery-crew": {"team-leader": "Team Leader", "style-icon": "Style Icon", "brains": "Brains", "goofball": "Goofball", "dog": "Dog"}, "office-couple": {"the-boss": "The Boss", "the-assistant": "The Assistant"}, "pbj": {"peanut-butter": "Peanut Butter", "jelly": "Jelly"}, "peas-pod": {"pea": "Pea"}, "penguin-huddle": {"penguin": "Penguin"}, "player-one-two": {"player-one": "Player One", "player-two": "Player Two"}, "plug-socket": {"plug": "Plug", "socket": "Socket"}, "plumber-duo": {"plumber-in-red": "Plumber In Red", "plumber-in-green": "Plumber In Green"}, "prince-princess": {"prince": "Prince", "princess": "Princess"}, "rain-cloud-rainbow": {"rain-cloud": "Rain Cloud", "rainbow": "Rainbow"}, "raptor-ranger": {"ranger": "Ranger", "raptor": "Raptor"}, "referee": {"head-referee": "Head Referee", "player": "Player"}, "robot-crew": {"boxy-robot": "Boxy Robot", "foil-robot": "Foil Robot", "bottle-cap-robot": "Bottle-Cap Robot", "tall-robot": "Tall Robot", "round-robot": "Round Robot"}, "robot-ranger": {"ranger": "Ranger", "robot": "Robot"}, "safari-zoo-crew": {"lion": "Lion", "elephant": "Elephant", "giraffe": "Giraffe", "zebra": "Zebra", "monkey": "Monkey", "panda": "Panda", "tiger": "Tiger", "kangaroo": "Kangaroo"}, "salt-pepper": {"salt": "Salt", "pepper": "Pepper"}, "snow-sisters": {"ice-queen": "Ice Queen", "snow-princess": "Snow Princess", "talking-snowman": "Talking Snowman", "reindeer-friend": "Reindeer Friend", "mountain-guide": "Mountain Guide", "snowflake-sprite": "Snowflake Sprite", "ice-harvester": "Ice Harvester", "winter-villager": "Winter Villager"}, "soccer-squad": {"coach": "Coach", "ref": "Ref", "striker": "Striker", "goalie": "Goalie", "superfan": "Superfan"}, "sun-moon": {"sun": "Sun", "moon": "Moon"}, "superhero-family": {"team-captain": "Team Captain", "strong-one": "Strong One", "speedster": "Speedster", "shadow": "Shadow", "inventor": "Inventor", "spark": "Spark"}, "tennis-duo": {"server": "Server", "receiver": "Receiver"}, "tooth-fairy": {"tooth": "Tooth", "tooth-fairy": "Tooth Fairy"}, "under-the-sea": {"sea-witch": "Sea Witch", "sea-king": "Sea King", "clownfish": "Clownfish", "crab": "Crab", "mermaid": "Mermaid", "prince": "Prince", "seagull": "Seagull", "jellyfish": "Jellyfish"}, "web-hero-duo": {"web-hero": "Web Hero", "the-partner": "The Partner"}, "web-slinger-crew": {"red-spider-hero": "Red Spider-Hero", "black-spider-hero": "Black Spider-Hero", "pink-spider-hero": "Pink Spider-Hero"}};
+
+// Related-costume internal links (SEO 2026-09-27): idea slug -> 5 kindred
+// idea slugs, emitted from bank tags + audience by gen_share_function.py.
+// Rendered as plain static anchors in the guide body (same for every
+// visitor: not cloaking).
+var RELATED = {"neon-demon-hunter": ["emerald-witch", "demon-boy-band", "bamboo-demon", "galaxy-knights", "plague-doctor"], "classic-ghost": ["glow-skeleton", "pocket-plush", "snow-sisters", "chipmunk-trio", "toy-box-crew"], "blue-dog-family": ["blue-alien-ohana", "little-pig-family", "snow-sisters", "ghost-hunters", "goggle-crew"], "superhero-family": ["web-hero-duo", "web-slinger-crew", "the-olympians", "little-lifeguard", "tin-hero"], "blue-alien-ohana": ["blue-dog-family", "little-pig-family", "snow-sisters", "ghost-hunters", "goggle-crew"], "emerald-witch": ["neon-demon-hunter", "bamboo-demon", "demon-boy-band", "galaxy-knights", "plague-doctor"], "gloom-bloom": ["demon-boy-band", "galaxy-knights", "good-witch-bad-witch", "numbered-players", "mystery-crew"], "deadpan-diva": ["doctor-bride", "bamboo-demon", "vampire", "emerald-witch", "neon-demon-hunter"], "safari-zoo-crew": ["beekeeper-bee", "safari-photographer", "black-cat", "tiny-snail", "chipmunk-trio"], "fairy-tale-princesses": ["snow-sisters", "mermaid-crew", "little-prince", "enchanted-castle-crew", "garden-fairy"], "tin-hero": ["superhero-family", "cardboard-knight", "the-olympians", "web-hero-duo", "web-slinger-crew"], "good-witch-bad-witch": ["enchanted-castle-crew", "mermaid-crew", "snow-sisters", "emerald-witch", "demon-boy-band"], "fuzzy-monster": ["pocket-plush", "baby-dino", "little-lifeguard", "little-prince", "snow-sisters"], "pocket-plush": ["fuzzy-monster", "snow-sisters", "baby-dino", "classic-ghost", "little-lifeguard"], "soccer-squad": ["bowling-pins", "ice-skater", "referee", "chipmunk-trio", "emotion-crew"], "glow-skeleton": ["classic-ghost", "spider", "little-witch", "ninja", "pixel-ghost"], "block-game-crew": ["pixel-ghost", "kart-racers", "block-monster", "player-one-two", "space-crewmate"], "web-slinger-crew": ["web-hero-duo", "the-olympians", "superhero-family", "little-lifeguard", "tin-hero"], "mermaid-crew": ["snow-sisters", "enchanted-castle-crew", "fairy-tale-princesses", "good-witch-bad-witch", "little-prince"], "little-pig-family": ["blue-alien-ohana", "blue-dog-family", "snow-sisters", "ghost-hunters", "goggle-crew"], "enchanted-castle-crew": ["mermaid-crew", "snow-sisters", "good-witch-bad-witch", "fairy-tale-princesses", "chipmunk-trio"], "bumble-bee": ["butterfly", "ladybug", "little-lion", "little-shark", "tiny-snail"], "baby-dino": ["fuzzy-monster", "pocket-plush", "little-prince", "daisy", "little-lion"], "little-lion": ["tiny-snail", "ladybug", "little-shark", "butterfly", "bumble-bee"], "tiny-firefighter": ["little-lifeguard", "backyard-hero", "cardboard-knight", "pocket-plush", "snow-sisters"], "little-shark": ["little-lion", "tiny-snail", "ladybug", "bumble-bee", "butterfly"], "walking-taco": ["little-baker", "pizza-slice", "cupcake", "popcorn-bucket", "little-artist"], "ramen-bowl": ["donut", "ice-cream-cone", "banana", "pizza-slice", "little-baker"], "tiny-snail": ["little-lion", "ladybug", "little-shark", "daisy", "butterfly"], "little-witch": ["classic-ghost", "glow-skeleton", "fuzzy-monster", "ice-skater", "little-lifeguard"], "spider": ["pixel-ghost", "classic-ghost", "glow-skeleton", "garden-fairy", "little-artist"], "backyard-hero": ["little-lifeguard", "tiny-firefighter", "cardboard-knight", "superhero-family", "tin-hero"], "pickle": ["coffee-cup", "deviled-egg", "lost-tourist", "hot-dog", "burger-joint-couple"], "vampire": ["plague-doctor", "deadpan-diva", "doctor-bride", "wizard", "zombie-coworker"], "bamboo-demon": ["deadpan-diva", "emerald-witch", "neon-demon-hunter", "galaxy-knights", "doctor-bride"], "emoji-crew": ["chipmunk-trio", "emotion-crew", "toy-box-crew", "tall-hat-crew", "soccer-squad"], "robot-crew": ["haunted-portraits", "the-olympians", "peas-pod", "haunted-animatronics", "under-the-sea"], "cereal-crew": ["fruit-salad", "snow-sisters", "breakfast-buffet", "peas-pod", "cupcake"], "decades-crew": ["chipmunk-trio", "emotion-crew", "soccer-squad", "snow-sisters", "tall-hat-crew"], "under-the-sea": ["butterfly", "ladybug", "robot-ranger", "safari-zoo-crew", "bumble-bee"], "dino-rangers": ["dinosaur-family", "fossil-hunter", "baby-dino", "extinct-party-animal", "raptor-ranger"], "board-game-pieces": ["haunted-animatronics", "kart-racers", "block-monster", "tetris-duo", "player-one-two"], "rain-cloud-rainbow": ["plastic-dream-crew", "sun-moon", "beekeeper-bee", "cat-mouse", "web-hero-duo"], "doctor-bride": ["office-couple", "deadpan-diva", "burger-joint-couple", "web-hero-duo", "galaxy-knights"], "breakfast-buffet": ["cereal-crew", "burger-joint-couple", "fruit-salad", "peas-pod", "chipmunk-trio"], "ghost-hunters": ["goggle-crew", "toy-box-crew", "mystery-crew", "snow-sisters", "chipmunk-trio"], "haunted-animatronics": ["wizard", "haunted-portraits", "pixel-ghost", "kart-racers", "board-game-pieces"], "mystery-crew": ["toy-box-crew", "goggle-crew", "chipmunk-trio", "emotion-crew", "tall-hat-crew"], "headless-horsemen": ["haunted-animatronics", "wizard", "zombie-coworker", "doctor-bride", "deadpan-diva"], "haunted-portraits": ["haunted-animatronics", "wizard", "the-olympians", "robot-crew", "plague-doctor"], "goggle-crew": ["toy-box-crew", "mystery-crew", "chipmunk-trio", "emotion-crew", "tall-hat-crew"], "garden-gnome": ["classic-ghost", "black-cat", "crowd-camouflage", "error-404", "space-crewmate"], "black-cat": ["safari-photographer", "beekeeper-bee", "cat-mouse", "garden-gnome", "classic-ghost"], "block-monster": ["space-crewmate", "tetris-duo", "player-one-two", "kart-racers", "haunted-animatronics"], "space-crewmate": ["block-monster", "player-one-two", "tetris-duo", "kart-racers", "error-404"], "sun-moon": ["plastic-dream-crew", "rain-cloud-rainbow", "beekeeper-bee", "cat-mouse", "web-hero-duo"], "moth-porch-light": ["cat-mouse", "beekeeper-bee", "plug-socket", "tetris-duo", "burger-joint-couple"], "raptor-ranger": ["raptor-barista", "fossil-hunter", "dino-rangers", "dinosaur-family", "extinct-party-animal"], "cat-mouse": ["beekeeper-bee", "moth-porch-light", "safari-photographer", "black-cat", "burger-joint-couple"], "ketchup-mustard": ["burger-joint-couple", "salt-pepper", "office-couple", "player-one-two", "plug-socket"], "plumber-duo": ["player-one-two", "tetris-duo", "kart-racers", "dragon-rider-duo", "chipmunk-trio"], "office-couple": ["burger-joint-couple", "galaxy-knights", "doctor-bride", "numbered-players", "web-hero-duo"], "burger-joint-couple": ["office-couple", "galaxy-knights", "numbered-players", "web-hero-duo", "ketchup-mustard"], "plug-socket": ["tetris-duo", "moth-porch-light", "burger-joint-couple", "ketchup-mustard", "office-couple"], "lost-tourist": ["pickle", "black-cat", "dino-tourist", "raptor-barista", "safari-photographer"], "tooth-fairy": ["plumber-duo", "beekeeper-bee", "cat-mouse", "dragon-rider-duo", "rain-cloud-rainbow"], "web-hero-duo": ["web-slinger-crew", "the-olympians", "superhero-family", "burger-joint-couple", "plastic-dream-crew"], "plague-doctor": ["vampire", "emerald-witch", "neon-demon-hunter", "wizard", "deadpan-diva"], "crowd-camouflage": ["garden-gnome", "error-404", "space-crewmate", "black-cat", "tennis-duo"], "error-404": ["black-cat", "space-crewmate", "crowd-camouflage", "wizard", "garden-gnome"], "zombie-coworker": ["deadpan-diva", "vampire", "wizard", "plague-doctor", "headless-horsemen"], "the-olympians": ["web-hero-duo", "web-slinger-crew", "superhero-family", "caped-duo", "hero-squad"], "safari-photographer": ["black-cat", "beekeeper-bee", "cat-mouse", "safari-zoo-crew", "tiny-snail"], "player-one-two": ["tetris-duo", "space-crewmate", "kart-racers", "block-monster", "plumber-duo"], "dinosaur-family": ["dino-rangers", "fossil-hunter", "baby-dino", "pocket-plush", "raptor-ranger"], "snow-sisters": ["little-prince", "chipmunk-trio", "toy-box-crew", "emotion-crew", "garden-fairy"], "sushi-roll": ["cereal-crew", "fruit-salad", "cupcake", "pizza-slice", "little-baker"], "deviled-egg": ["coffee-cup", "pickle", "hot-dog", "banana", "ramen-bowl"], "pizza-slice": ["little-baker", "walking-taco", "banana", "cupcake", "popcorn-bucket"], "popcorn-bucket": ["cupcake", "little-baker", "pizza-slice", "walking-taco", "spaghetti-meatball"], "ice-cream-cone": ["donut", "ramen-bowl", "banana", "spaghetti-meatball", "cupcake"], "pbj": ["burger-joint-couple", "ketchup-mustard", "bacon-eggs", "salt-pepper", "breakfast-buffet"], "bacon-eggs": ["pickle", "burger-joint-couple", "ketchup-mustard", "pbj", "garden-gnome"], "peas-pod": ["cereal-crew", "fruit-salad", "haunted-portraits", "robot-crew", "demon-boy-band"], "basketball-star": ["ice-skater", "classic-ghost", "soccer-squad", "referee", "tennis-duo"], "referee": ["soccer-squad", "boxer", "bowling-pins", "basketball-star", "ice-skater"], "boxer": ["referee", "basketball-star", "soccer-squad", "bowling-pins", "ice-skater"], "cheerleader": ["ice-skater", "butterfly", "cupcake", "garden-fairy", "little-artist"], "tennis-duo": ["basketball-star", "ice-skater", "soccer-squad", "crowd-camouflage", "garden-gnome"], "bowling-pins": ["soccer-squad", "referee", "cheerleader", "robot-crew", "boxer"], "cardboard-knight": ["hero-squad", "little-lifeguard", "backyard-hero", "tiny-firefighter", "tin-hero"], "ninja": ["classic-ghost", "glow-skeleton", "pixel-ghost", "spider", "little-witch"], "caped-duo": ["the-olympians", "web-hero-duo", "hero-squad", "web-slinger-crew", "cardboard-knight"], "hero-squad": ["cardboard-knight", "the-olympians", "web-slinger-crew", "caped-duo", "web-hero-duo"], "astronaut": ["black-cat", "deadpan-diva", "error-404", "bamboo-demon", "dino-tourist"], "robot-ranger": ["under-the-sea", "snow-sisters", "cardboard-knight", "classic-ghost", "peas-pod"], "penguin-huddle": ["beekeeper-bee", "cat-mouse", "safari-photographer", "safari-zoo-crew", "black-cat"], "prince-princess": ["little-prince", "snow-sisters", "fairy-tale-princesses", "mermaid-crew", "garden-fairy"], "dino-herd": ["dino-rangers", "wizard", "haunted-animatronics", "haunted-portraits", "pixel-ghost"], "pixel-ghost": ["haunted-animatronics", "spider", "block-game-crew", "block-monster", "kart-racers"], "spaghetti-meatball": ["ramen-bowl", "cupcake", "little-baker", "popcorn-bucket", "banana"], "cupcake": ["little-baker", "popcorn-bucket", "walking-taco", "pizza-slice", "spaghetti-meatball"], "banana": ["ramen-bowl", "pizza-slice", "little-baker", "walking-taco", "donut"], "hot-dog": ["pickle", "coffee-cup", "deviled-egg", "ramen-bowl", "burger-joint-couple"], "donut": ["ice-cream-cone", "ramen-bowl", "banana", "spaghetti-meatball", "cupcake"], "coffee-cup": ["pickle", "deviled-egg", "hot-dog", "ramen-bowl", "banana"], "salt-pepper": ["burger-joint-couple", "ketchup-mustard", "beekeeper-bee", "cat-mouse", "plastic-dream-crew"], "fruit-salad": ["cereal-crew", "peas-pod", "sushi-roll", "cupcake", "breakfast-buffet"], "wizard": ["haunted-animatronics", "haunted-portraits", "plague-doctor", "classic-ghost", "emerald-witch"], "toy-box-crew": ["chipmunk-trio", "snow-sisters", "emotion-crew", "tall-hat-crew", "mystery-crew"], "demon-boy-band": ["galaxy-knights", "neon-demon-hunter", "numbered-players", "emerald-witch", "burger-joint-couple"], "dragon-rider-duo": ["chipmunk-trio", "emotion-crew", "plastic-dream-crew", "web-hero-duo", "snow-sisters"], "numbered-players": ["galaxy-knights", "plastic-dream-crew", "burger-joint-couple", "office-couple", "chipmunk-trio"], "emotion-crew": ["chipmunk-trio", "tall-hat-crew", "toy-box-crew", "snow-sisters", "dragon-rider-duo"], "kart-racers": ["tetris-duo", "player-one-two", "block-monster", "haunted-animatronics", "chipmunk-trio"], "tall-hat-crew": ["chipmunk-trio", "emotion-crew", "toy-box-crew", "snow-sisters", "pocket-plush"], "chipmunk-trio": ["emotion-crew", "toy-box-crew", "snow-sisters", "tall-hat-crew", "dragon-rider-duo"], "galaxy-knights": ["burger-joint-couple", "numbered-players", "demon-boy-band", "office-couple", "plastic-dream-crew"], "plastic-dream-crew": ["numbered-players", "chipmunk-trio", "emotion-crew", "galaxy-knights", "web-hero-duo"], "extinct-party-animal": ["fossil-hunter", "raptor-barista", "dino-tourist", "emotional-support-dinosaur", "dino-rangers"], "dino-tourist": ["raptor-barista", "emotional-support-dinosaur", "fossil-hunter", "extinct-party-animal", "raptor-ranger"], "raptor-barista": ["fossil-hunter", "extinct-party-animal", "dino-tourist", "emotional-support-dinosaur", "raptor-ranger"], "emotional-support-dinosaur": ["dino-tourist", "raptor-barista", "extinct-party-animal", "fossil-hunter", "raptor-ranger"], "garden-fairy": ["snow-sisters", "little-prince", "little-artist", "little-baker", "ballerina"], "ballerina": ["snow-sisters", "pop-star", "pocket-plush", "little-artist", "chipmunk-trio"], "butterfly": ["ladybug", "bumble-bee", "little-lion", "tiny-snail", "little-shark"], "pop-star": ["pocket-plush", "ballerina", "snow-sisters", "chipmunk-trio", "toy-box-crew"], "ice-skater": ["cheerleader", "basketball-star", "ballerina", "pocket-plush", "snow-sisters"], "ladybug": ["tiny-snail", "little-lion", "little-shark", "butterfly", "bumble-bee"], "daisy": ["tiny-snail", "ladybug", "snow-sisters", "little-prince", "little-lion"], "little-baker": ["walking-taco", "cupcake", "popcorn-bucket", "pizza-slice", "little-artist"], "little-artist": ["ballerina", "snow-sisters", "little-baker", "pocket-plush", "garden-fairy"], "beekeeper-bee": ["cat-mouse", "safari-photographer", "black-cat", "moth-porch-light", "safari-zoo-crew"], "tetris-duo": ["player-one-two", "kart-racers", "block-monster", "space-crewmate", "plumber-duo"], "little-lifeguard": ["tiny-firefighter", "backyard-hero", "superhero-family", "pocket-plush", "little-prince"], "little-prince": ["snow-sisters", "garden-fairy", "little-lifeguard", "pocket-plush", "tiny-snail"], "fossil-hunter": ["extinct-party-animal", "raptor-barista", "dino-rangers", "dinosaur-family", "dino-tourist"]};
+
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
 // each page's costume genuinely is a materials list plus steps); the
@@ -99,6 +113,17 @@ export function onRequest(context) {
       JSON.stringify({"@context": "https://schema.org", "@type": "FAQPage",
                       "publisher": {"@id": "https://pickmycostume.com/#organization"},
                       "mainEntity": _fq}) + '<' + '/script>';
+    /* BreadcrumbList (SEO 2026-09-27): mirrors the visible breadcrumb nav in
+       the body above the h1. Static, same for every visitor. */
+    _ld += '<script type="application/ld+json">' + JSON.stringify({
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home",
+         "item": "https://pickmycostume.com/"},
+        {"@type": "ListItem", "position": 2, "name": "All costumes",
+         "item": "https://pickmycostume.com/costumes"},
+        {"@type": "ListItem", "position": 3, "name": idea.t}]}) +
+      '<' + '/script>';
   }
   /* CTA target: the in-app idea page, with every query param preserved --
      notably ?s=, so genuine-share recipient attribution keeps working (see
@@ -107,14 +132,46 @@ export function onRequest(context) {
      humans alike read the guide first. */
   var _qp = new URLSearchParams(new URL(context.request.url).search);
   _qp.set("idea", slug);
+  /* 2026-09-26 evening red-team: QA-hygiene. The ?probe= param exists only so
+     QA-harness traffic can be excluded from analytics; it must never leak
+     into quiz-bound hrefs, or a harness click-through would mint share links
+     carrying probe= and recipient traffic would be mis-excluded. Real users
+     never have probe=, so deleting it changes nothing for them. */
+  _qp.delete("probe");
+  /* 2026-09-27 role share cards (MagicShot.ai novel-scout steal): the family
+     cast share mints one unfurl link per family member role
+     (?o=role&role=<role-slug>). The role is allowlist-validated against
+     ROLE_CARDS (emitted from CASTS at generation time); a forged or absent
+     role falls back to the classic per-costume card above, and no name ever
+     enters the URL or the card pixels -- the card identifies the ROLE. */
+  var _role = "";
+  var _rc = ROLE_CARDS[slug] || {};
+  var _rq = _qp.get("role") || "";
+  if (_rc[_rq]) _role = _rq;
+  if (_role) {
+    img = "https://pickmycostume.com/images/og/" + slug + "--" + _role + ".jpg";
+    title = esc(_rc[_role]) + ": " + title;
+  }
   /* 2026-09-26 red-team recipient audit: the friend's pick must survive the
      top CTA into the quiz too, not just the banner/quizline path. On share
      arrivals the idea landing otherwise drops ?duel=, so the landing's duel
      entry button never appears and the results page cannot render the
      you-vs-friend compare -- the friend context died on the most prominent
      tap target. Mirror the quiz-bound duel rule below (gift excluded: a
-     gift is not a duel). */
-  if ((_qp.get("s") || "") && _qp.get("gift") !== "1") _qp.set("duel", slug);
+     gift is not a duel).
+     2026-09-26 red-team recipient audit (pm2): the duel compare is the
+     intended payoff only for competitive origins. Pair shares render the
+     pair-up verdict INSTEAD of a duel score -- forcing duel= put a Duel-X
+     button first on the idea landing and stacked a you-vs-friend box above
+     the pair verdict. Vote shares ask the recipient to reply 1/2/3, not to
+     duel a finalist.
+     2026-09-27 red-team recipient audit (grandparent loop): a grandparent
+     arrival is a build-helper recruitment, not a competition -- ?duel= on
+     the quiz-bound links put a "Costume duel: your friend picked X" banner
+     and a "Duel X: answer 2 questions" entry button in front of the
+     grandkid plan. Grandparent shares skip the duel frame like pair/vote. */
+  var _oNoDuel = ["gift", "pair", "vote", "grandparent", "role"].indexOf(_qp.get("o") || "") >= 0;
+  if ((_qp.get("s") || "") && _qp.get("gift") !== "1" && !_oNoDuel) _qp.set("duel", slug);
   var target = "/?" + _qp.toString();
   var targetAttr = target.replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
@@ -124,6 +181,12 @@ export function onRequest(context) {
      client-side only, so fetchers, messenger crawlers, and AI assistants
      see byte-identical static HTML either way: this is not cloaking. */
   var RECIPIENT_BANNER = true;
+  /* "I made it" proof-photo section (novel-find 2026-09-26i, MakerWorld
+     steal): IMADEIT = false keeps the guide at today's control (no block).
+     Flip the one-line Python flag to true, regenerate, and guides render a
+     "Wore this? Show us" invite with a photo-share CTA carrying ?madeit=1
+     (a later stream wires the submission flow). Static either way. */
+  var IMADEIT = false;
   var _s = _qp.get("s") || "";
   /* Split-the-build (2026-09-26): group/family guides get the materials
      divider (sender panel + recipient self-ID banner). Per-slug, same for
@@ -141,12 +204,45 @@ export function onRequest(context) {
      card-vs-generic and SMS experiments. Preserve o like the top CTA does. */
   var _o = _qp.get("o") || "";
   if (_o) _qz.set("o", _o);
+  /* 2026-09-26 red-team PM: the quiz-bound links (bottom quizline + the
+     recipient banner's "Find your costume" CTA) preserved ?s= and ?o= but
+     dropped ?pair=, so pair-share recipients tapping the top banner lost the
+     pair context and the homepage never rendered the "How you two pair up"
+     match banner. Preserve pair like the top CTA does. */
+  var _pair = _qp.get("pair") || "";
+  if (_pair) _qz.set("pair", _pair);
+  /* 2026-09-26 red-team distro: the quiz-bound links (top CTA, recipient
+     banner CTA, bottom quizline) preserved s/o/pair/duel but dropped ?sp=,
+     so a split-the-build recipient tapping "Take the 2-minute quiz" arrived
+     at / without ?sp= and index.html's build_split_link_opened (the only
+     measurable recipient leg of the split loop) never fired. Carry the
+     builder count, range-validated exactly like parseSplit (2-8); nm/as
+     stay /c/-page-internal. */
+  var _spn = parseInt(_qp.get("sp") || "", 10);
+  if (_spn >= 2 && _spn <= 8) _qz.set("sp", String(_spn));
+  /* 2026-09-27 ?src= attribution audit: the quiz-bound links (bottom
+     quizline + recipient banner "Find your costume" CTAs) preserved
+     s/o/pair/sp/duel but dropped ?src=, so print and share arrivals
+     tapping "Take the 2-minute quiz" on a /c/ guide lost landing_src
+     at quiz_started. Carry it, namespace-validated exactly like the
+     homepage LANDING_SRC allowlist (collection/print/share). Junk and
+     forged values never reach the homepage query string. */
+  var _src = _qp.get("src") || "";
+  if (/^(?:collection|print|share)-[a-z-]+$/.test(_src)) _qz.set("src", _src);
+  /* 2026-09-27 role share cards: carry the validated role into the
+     quiz-bound links (top CTA, banner CTA, bottom quizline) so the
+     homepage arrival can render the role-aware friend headline. _role is
+     allowlist-validated above: only real role slugs reach the query string,
+     never names. */
+  if (_role) _qz.set("role", _role);
   /* 2026-09-26 duel experiment: on share arrivals, carry the sender's
      canonical idea slug so the quiz results page can render the
      "you vs your friend" compare panel and close the quiz return leg.
-     Gift links skip the duel panel: the gift IS the comparison context. */
+     Gift links skip the duel panel: the gift IS the comparison context.
+     2026-09-26 red-team recipient audit (pm2): pair and vote skip it too --
+     pair has its own verdict, vote is not a duel (see _oNoDuel above). */
   var _gift = _qp.get("gift") === "1";
-  if (_s && !_gift) _qz.set("duel", slug);
+  if (_s && !_gift && !_oNoDuel) _qz.set("duel", slug);
   /* 2026-09-26 gift experiment: ?gfrom= carries the sender's first name
      (sender-typed, length-capped). HTML-escaped here, JSON-encoded below so
      it lands safely inside the injected script's string literal. */
@@ -175,15 +271,33 @@ export function onRequest(context) {
       return "<li>" + _tx + "</li>";
     }).join("");
     /* Billy 2026-09-25: quick version leads. ChatGPT-style: punchy header,
-       5 short steps (first sentence), one closing tip. Full guide follows. */
+       5 short steps (first sentence), one closing tip. Full guide follows.
+       2026-09-27 red-team: quote-aware split; a naive indexOf(". ") lands
+       inside quoted phrases ('No. 001', 'Emotional Support Dinosaur. Do not
+       pet.') and renders a dangling mid-sentence fragment. */
     var _qs = [], _qtip = null, _qn = 0;
+    function _delimOutsideQuotes(_s, _d){
+      var _spans = [], _m, _re = /'[^'\s][^']*'|"[^"\s][^"]*"/g, _k = 0;
+      while ((_m = _re.exec(_s))) _spans.push([_m.index, _m.index + _m[0].length]);
+      for (;;){
+        _k = _s.indexOf(_d, _k);
+        if (_k < 0) return -1;
+        var _in = false;
+        for (var _j = 0; _j < _spans.length; _j++){
+          if (_k > _spans[_j][0] && _k < _spans[_j][1]){ _in = true; break; }
+        }
+        if (!_in) return _k;
+        _k += 1;
+      }
+    }
+    function _sentenceEnd(_s){ return _delimOutsideQuotes(_s, ". "); }
     _hw.s.forEach(function(x){
       if (/^Optional pro finish:\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\s*/i, ""); return; }
       if (/^Safety:\s*/i.test(x)) return;
       if (_qn >= 5) return; _qn++;
-      var _dot = x.indexOf(". ");
+      var _dot = _sentenceEnd(x);
       var _fs = _dot > 0 ? x.slice(0, _dot + 1) : x;
-      if (_fs.length > 110){ var _c = _fs.indexOf(", "); if (_c > 40) _fs = _fs.slice(0, _c) + "."; }
+      if (_fs.length > 110){ var _c = _delimOutsideQuotes(_fs, ", "); if (_c > 40) _fs = _fs.slice(0, _c) + "."; }
       _qs.push("<li>" + esc(_fs) + "</li>");
     });
     _quick = "<p class=\"qtriple\">DIY this week: ~" + esc(_hw.cost) + ", " + esc(_hw.time) + "</p>" +
@@ -200,6 +314,15 @@ export function onRequest(context) {
         return "<dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd>";
       }).join("") + "</dl>";
     }
+  }
+  /* Related guides (SEO 2026-09-27): plain static anchors to kindred
+     costumes. Same for every visitor and query string: not cloaking. */
+  var _relHtml = "";
+  var _rel = RELATED[slug] || [];
+  if (_rel.length) {
+    _relHtml = "<h2>More costumes like this</h2><ul class=\"rellist\">" +
+      _rel.map(function(s){ return "<li><a href=\"/c/" + s + "\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
+      "</ul>";
   }
   /* Recipient banner (Experiment 3 recipient ship). Client-side injection:
      genuine share arrivals (?s= present) get the warm friend banner with a
@@ -219,7 +342,9 @@ export function onRequest(context) {
     " recipient context. A bare ?gift=1 (no share id) would otherwise render" +
     " a fake gift banner with an attacker-typed ?gfrom=. App-minted gift" +
     " links always carry ?s=<sid>, so this is behavior-safe. */" +
-    "if (q.get(\"gift\") === \"1\" && q.get(\"s\")) {" +
+    "/* 2026-09-26 pm3 red-team: forged ?s=x rendered a fake gift banner with a typed name. Require 8+ chars like the generic branch. */" +
+    "if (!RECIPIENT_BANNER) return;" +
+    "if (q.get(\"gift\") === \"1\" && (q.get(\"s\") || \"\").length >= 8) {" +
     "var who = GIFT_FROM ? GIFT_FROM + \" picked\" : \"Someone picked\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\\u{1F381} \" + who + \" <strong>" + title + "</strong> for you.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">A starting idea, not a verdict. Take the 2-minute quiz to get your own costume.</p>\" +" +
@@ -227,11 +352,35 @@ export function onRequest(context) {
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
-    "if (!RECIPIENT_BANNER) return;" +
     "var s = q.get(\"s\") || \"\";" +
-    "if (!s) return;" +
+    "/* Red-team 2026-09-26 PM: align with the homepage isGenuineShareArrival" +
+    " rule (8+ chars). A forged ?s=x rendered a fake anonymous friend" +
+    " banner; the homepage already rejects short ids. */" +
+    "if (!s || s.length < 8) return;" +
     "var main = document.querySelector(\"main.guide\");" +
     "if (!main) return;" +
+    "/* 2026-09-26 red-team recipient audit (pm2): pair-share recipients saw" +
+    " the generic friend-picked banner with no match framing, and vote-share" +
+    " recipients saw it too -- wrong for a reply-1-2-3 ask. Origin-aware" +
+    " banner copy; both keep the quiz door open. */" +
+    "if (q.get(\"o\") === \"pair\") {" +
+    "var b = document.createElement(\"div\");" +
+    "b.className = \"rbanner\";" +
+    "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend is going as <strong>" + title + "</strong>.</p>\" +" +
+    " \"<p class=\\\"rbanner-sub\\\">Take the 2-minute quiz to find YOUR costume to match.</p>\" +" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    "main.insertBefore(b, main.firstChild);" +
+    "return;" +
+    "}" +
+    "if (q.get(\"o\") === \"vote\") {" +
+    "var b = document.createElement(\"div\");" +
+    "b.className = \"rbanner\";" +
+    "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend is taking votes on 3 Halloween finalists.</p>\" +" +
+    " \"<p class=\\\"rbanner-sub\\\"><strong>" + title + "</strong> is one of them. Reply 1, 2, or 3 in the chat with your vote.</p>\" +" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    "main.insertBefore(b, main.firstChild);" +
+    "return;" +
+    "}" +
     "var b = document.createElement(\"div\");" +
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend picked <strong>" + title + "</strong>. What would you pick?</p>\" +" +
@@ -336,7 +485,7 @@ export function onRequest(context) {
   }
   var html = "<!DOCTYPE html>" +
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
-    "<title>" + title + " - Pick My Costume</title>" +
+    "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
     "<link rel=\"canonical\" href=\"https://pickmycostume.com/c/" + slug + "\">" +
     "<meta name=\"description\" content=\"" + _tripleText + blurb + "\">" +
     "<meta name=\"author\" content=\"Billy Litner\">" +
@@ -400,8 +549,16 @@ export function onRequest(context) {
     ".splitmine-head{font-size:16px;font-weight:700;margin:12px 0 6px;}" +
     ".splititems{font-size:16px;}" +
     ".splititems-empty{font-size:15px;color:#777;}" +
+    /* "I made it" proof-photo block (novel-find 2026-09-26i, MakerWorld steal) */
+    ".madeit-line{font-size:16px;color:#444;margin:0 0 14px;line-height:1.55;}" +
+    ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
+    ".rellist li{margin:0;}" +
+    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
+    ".crumb{font-size:13px;color:#777;margin:0 0 8px;}" +
+    ".crumb a{color:#b3541e;text-decoration:none;}" +
     "</style>" +
     "</head><body><main class=\"guide\">" +
+    "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + title + "</h1>" +
     "<p class=\"byline\">By Billy Litner</p>" +
     _triple +
@@ -414,6 +571,13 @@ export function onRequest(context) {
     _splitHtml +
     "<h2>Steps</h2><ol>" + _steps + "</ol>" +
     _faqs +
+    _relHtml +
+    /* "I made it" proof-photo block (novel-find 2026-09-26i, MakerWorld steal):
+       gated on the IMADEIT one-line flag. The CTA deep-links into the app's
+       idea page with ?madeit=1 so a later stream can wire a submission flow. */
+    (IMADEIT ? "<h2>Wore this? Show us</h2>" +
+    "<p class=\"madeit-line\">Made this costume? Your photo helps the next person see the real thing.</p>" +
+    "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">Open this costume in Pick My Costume</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     _bannerScript +
