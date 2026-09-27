@@ -348,6 +348,10 @@ a.howto-copy{text-decoration:underline}
 .personplans h3{font-size:17px;margin:0 0 10px}
 .personplan{background:#f8f6f0;border:1px solid #e2ddd2;border-radius:10px;padding:12px 14px;margin:0 0 12px;color:#2b2b2b}
 .personplan h4{font-size:15px;margin:0 0 8px}
+.personplan-compact{padding:10px 14px;margin:0 0 8px}
+.personplan-compact h4{margin:0}
+.pp-roleline{font-size:14px;margin:6px 0 0;color:#2b2b2b}
+.personplan-guide{border-color:#d4cdbd}
 .pp-opt{font-weight:700;font-size:14px;margin:10px 0 4px}
 .pp-buy{font-size:14px;line-height:1.5;margin:0 0 6px}
 .pp-easy{font-size:14px;line-height:1.5;background:#eef6ee;border-radius:8px;padding:10px 12px;margin:12px 0 0;color:#2b2b2b}
@@ -570,16 +574,8 @@ footer a{color:var(--accent)}
       <h1 class="firstonly">We know your Halloween costume.</h1>
       <p class="tagline firstonly">5 questions to see if we're right.</p>
       <p class="fine makerline firstonly">I'm a dad who burned a whole evening scrolling costume ideas, so I had AI build this quiz instead.</p>
-      <p class="billyline firstonly">Still don't have a costume? Same. Let's fix that in 2 minutes.</p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
-      <!-- Experiment 8 (stream B, 2026-09-26): quiz start social proof.
-           2026-09-26 honesty fix: the "165 people found their costume this
-           week" claim was unverifiable (no derivation script, Monday cron
-           never wrote its source/window) and violated the no-fabricated-
-           proof rule, so the proof line is removed. The hero keeps the
-           honest "5 questions, 2 minutes, free forever" line. -->
-      <p class="fine firstonly" style="margin:8px 0 0;text-align:center">5 questions · 2 minutes · free forever</p>
       <!-- 2026-09-26 P4: stranded-results resume. Quiet text-link, shown iff
            pmc_last_v1 has results but no fresh pick (returnbox hidden). Reuses
            the btn-return handler verbatim; visibility managed by
@@ -892,9 +888,9 @@ footer a{color:var(--accent)}
   <section class="homehow" aria-label="How it works">
     <h2>How it works</h2>
     <ol>
-      <li><b>Answer 5 questions.</b> Five quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever.</li>
-      <li><b>Get 3 ideas picked for you.</b> Your answers are scored against 137 hand-picked costume ideas. Each idea comes with a one-line how-to.</li>
-      <li><b>Claim it and make it.</b> Tap "Claim this costume" to save it, text it to your group, and open the guide for materials, cost, and build steps.</li>
+      <li><b>Answer 5 questions.</b> About 2 minutes.</li>
+      <li><b>Get 3 ideas picked for you.</b> Each with cost, time, and a how-to.</li>
+      <li><b>Claim it and make it.</b> Save it, text it to your group, build it.</li>
     </ol>
   </section>
 
@@ -7088,56 +7084,65 @@ function buildPersonPlans(idea, list){
   var h = document.createElement("h3");
   h.textContent = "Your plan, per person";
   box.appendChild(h);
+  /* Billy 2026-09-26: the DIY steps are identical for every cast member, so
+     repeating the full guide per person was a wall of text. Now each person
+     gets just their role line, and the shared guide appears once below. */
   list.forEach(function(p, i){
     var card = document.createElement("div");
-    card.className = "personplan";
+    card.className = "personplan personplan-compact";
     var who = document.createElement("h4");
     var label = p.name ? (p.name + ": " + p.role) : ("Person " + (i + 1) + ": " + p.role);
     who.textContent = label;
     card.appendChild(who);
-    /* Buy option */
-    var buyH = document.createElement("p"); buyH.className = "pp-opt";
-    buyH.textContent = "Option 1: Buy";
-    card.appendChild(buyH);
-    var buyP = document.createElement("p"); buyP.className = "pp-buy";
-    var costLine = mp.cost;
-    var perPersonCost = /each/.test(costLine) ? costLine :
-      costLine.replace(" total", "") + " for the whole group";
-    /* Billy 2026-09-26 (copy audit fix): head-comfort advice only when the
-       costume actually uses headwear. Detected from the guide materials. */
-    var hwWord = headwearWord(idea.id);
-    var buyText = "Search for \u201C" + buySearchFor(p.role, idea) + "\u201D. " +
-      "Expect about " + perPersonCost + ". Check the size chart, not just your normal size.";
-    if (hwWord) buyText += " If the " + hwWord + " feels tight after five minutes, it will not survive Halloween night.";
-    buyP.textContent = buyText;
-    card.appendChild(buyP);
-    /* DIY option: quick-guide steps, role in the header */
-    var diyH = document.createElement("p"); diyH.className = "pp-opt";
-    diyH.textContent = "Option 2: DIY, about " + mp.cost + ", " + mp.time;
-    card.appendChild(diyH);
-    var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
-    /* Billy 2026-09-26 (copy audit fix): role-specific first DIY line for
-       the top group ideas, so each person sees their own part first. */
     var roleLine = roleDiyLine(idea.id, p.role);
     if (roleLine){
-      var rli = document.createElement("li"); rli.textContent = roleLine;
-      ul.appendChild(rli);
-    }
-    var tip = null, n = 0;
-    mp.steps.forEach(function(s){
-      if (/^optional/i.test(s)){ if (!tip) tip = s; return; }
-      if (n >= 5) return; n++;
-      var li = document.createElement("li"); li.textContent = short(s);
-      ul.appendChild(li);
-    });
-    card.appendChild(ul);
-    if (tip){
-      var tp = document.createElement("p"); tp.className = "howto-tip";
-      tp.textContent = "Tip: " + short(tip.replace(/^optional[^:]*:\s*/i, ""));
-      card.appendChild(tp);
+      var rl = document.createElement("p"); rl.className = "pp-roleline";
+      rl.textContent = roleLine;
+      card.appendChild(rl);
     }
     box.appendChild(card);
   });
+  /* Shared guide, shown once for the whole group. */
+  var guide = document.createElement("div");
+  guide.className = "personplan personplan-guide";
+  var gh = document.createElement("h4");
+  gh.textContent = "Everyone does this";
+  guide.appendChild(gh);
+  /* Buy option */
+  var buyH = document.createElement("p"); buyH.className = "pp-opt";
+  buyH.textContent = "Option 1: Buy";
+  guide.appendChild(buyH);
+  var buyP = document.createElement("p"); buyP.className = "pp-buy";
+  var costLine = mp.cost;
+  var perPersonCost = /each/.test(costLine) ? costLine :
+    costLine.replace(" total", "") + " for the whole group";
+  /* Billy 2026-09-26 (copy audit fix): head-comfort advice only when the
+     costume actually uses headwear. Detected from the guide materials. */
+  var hwWord = headwearWord(idea.id);
+  var buyText = "Search for \u201C" + buySearchFor(list[0].role, idea) + "\u201D. " +
+    "Expect about " + perPersonCost + ". Check the size chart, not just your normal size.";
+  if (hwWord) buyText += " If the " + hwWord + " feels tight after five minutes, it will not survive Halloween night.";
+  buyP.textContent = buyText;
+  guide.appendChild(buyP);
+  /* DIY option: quick-guide steps */
+  var diyH = document.createElement("p"); diyH.className = "pp-opt";
+  diyH.textContent = "Option 2: DIY, about " + mp.cost + ", " + mp.time;
+  guide.appendChild(diyH);
+  var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
+  var tip = null, n = 0;
+  mp.steps.forEach(function(s){
+    if (/^optional/i.test(s)){ if (!tip) tip = s; return; }
+    if (n >= 5) return; n++;
+    var li = document.createElement("li"); li.textContent = short(s);
+    ul.appendChild(li);
+  });
+  guide.appendChild(ul);
+  if (tip){
+    var tp = document.createElement("p"); tp.className = "howto-tip";
+    tp.textContent = "Tip: " + short(tip.replace(/^optional[^:]*:\s*/i, ""));
+    guide.appendChild(tp);
+  }
+  box.appendChild(guide);
   /* Easiest version: derived from the real guide, not boilerplate.
      Billy 2026-09-26 (copy audit fix). Easy guides (4 or fewer DIY steps)
      recommend doing the DIY with the real step count, cost, and time. Only
