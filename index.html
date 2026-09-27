@@ -5151,6 +5151,134 @@ function buildRemixStep(idea){
 }
 /* ============ END Remix experiment ============ */
 
+/* ============ Named-result share variant (2026-09-26 pm11 idea 1) ============
+   "Billy's Halloween pick": the 5lovelanguages.com novel find. The shared
+   artifact is the USER'S named result page, not the quiz -- the recipient
+   page reads as the sharer ("Billy's Halloween pick") with the built-in job
+   "take the quiz and compare." The sender names their pick (optional name)
+   and the link mints ?s=<sid>&o=named&named=<idea-id>&nm=<name>; the friend
+   gets the named banner ("Billy's Halloween pick. Take the 2-minute quiz
+   and compare.") and, when they finish the quiz, a side-by-side compare
+   panel (their pick vs the sharer's) with a remix-style named_attributed
+   attribution event. Maps onto the couple/group audiences who decide
+   together; kid/family share copy follows the share-credibility rule
+   ("for my kid"/"for our family"), never a first-person going-as line for
+   a parent sharing a kid's pick. No em/en dashes in user-facing strings,
+   no claims we cannot measure. New origin "named", measured like the
+   others: share_created (share_origin=named) -> recipient_landing_viewed
+   -> quiz_started -> named_attributed (original_idea_id). Kill criterion:
+   at 50 opened named links, named needs clearly more friend quiz starts
+   per share than generic to earn its place; if the share step's taps are
+   near zero, cut it. Flag-gated: NAMED_RESULT_ENABLED.
+   URL shape: ?s=<sid>&o=named&named=<idea-id>&nm=<name>. */
+var NAMED_RESULT_ENABLED = false;
+var NAMED_PICK = null; /* {name: string|null, idea: idea} or null, parsed at load */
+/* Pure: the sanitized sharer name, or null. Same shape as firstNameClean:
+   letters, spaces, apostrophes, hyphens; 1-24 chars, starts with a letter.
+   The name is optional: null is the honest nameless fallback (the banner
+   and share text fall back to "my"/"your friend", never an invented name).
+   Extracted pure so the verifier can assert it. */
+function namedNameClean(raw){
+  var t = String(raw == null ? "" : raw).replace(/\s+/g, " ").trim();
+  if (!/^[A-Za-z][A-Za-z' -]{0,23}$/.test(t)) return null;
+  return t;
+}
+/* Tiny HTML escaper for the name inside banner innerHTML. Local (not the
+   Wrapped/first escaper) so the verifier can stub nothing. */
+function namedEsc(t){
+  return String(t == null ? "" : t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+/* Pure: the named share text for an idea. Couple/group first: the shared
+   decision is the use case. Kid/family picks get the audience-aware line
+   (share-credibility rule), never a dad sounding like he is going as the
+   kid's costume. The name is optional; nameless stays honest. */
+function namedTextFor(name, idea, sid){
+  var clean = namedNameClean(name);
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=named&named=" + idea.id + (clean ? "&nm=" + encodeURIComponent(clean) : "");
+  var whose = clean ? clean + "'s Halloween pick" : "My Halloween pick";
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  var claim = (aud === "kid") ? "The quiz picked " + idea.title + " for my kid this Halloween"
+    : (aud === "family") ? "The quiz picked " + idea.title + " for our family this Halloween"
+    : (aud === "couple" || aud === "group") ? "We are going as " + idea.title + " this Halloween"
+    : "I am going as " + idea.title + " this Halloween";
+  return whose + ": " + claim + ". Take the 2-minute quiz and compare with me: " + link;
+}
+/* Arrival payload: ?named=<idea-id>&nm=<name>. The idea must be a real bank
+   id, flag on; a garbage name is not a lie about the pick (the name is
+   optional), so it drops to the nameless fallback instead of the generic
+   banner. */
+function namedPayloadFromQuery(){
+  if (typeof NAMED_RESULT_ENABLED === "undefined" || !NAMED_RESULT_ENABLED) return null;
+  var m = /[?&]named=([a-z0-9-]+)/.exec(location.search || "");
+  if (!m) return null;
+  var idea = (typeof matchIdeaById === "function") ? matchIdeaById(m[1]) : null;
+  if (!idea) return null;
+  var nm = /[?&]nm=([^&]*)/.exec(location.search || "");
+  var name = null;
+  if (nm){ try { name = namedNameClean(decodeURIComponent(nm[1])); } catch(e){ name = null; } }
+  return {name: name, idea: idea};
+}
+/* Renders the "Share your pick, by name" step under the #1 pick. Returns
+   null with the flag off (DOM byte-identical). The name input is optional;
+   the name never goes to analytics, only into the link. */
+function buildNamedShareStep(idea){
+  if (!NAMED_RESULT_ENABLED) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "named-share-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Share your pick, by name";
+  var p = document.createElement("p");
+  p.textContent = "Send your named pick. When a friend takes the quiz from your link, your two picks show side by side.";
+  wrap.appendChild(h); wrap.appendChild(p);
+  var nameInput = document.createElement("input");
+  nameInput.type = "text"; nameInput.maxLength = 24;
+  nameInput.placeholder = "Your first name (optional)";
+  nameInput.setAttribute("aria-label", "Your first name (optional)");
+  nameInput.autocomplete = "off";
+  nameInput.style.cssText = "display:block;width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin:0 0 10px";
+  wrap.appendChild(nameInput);
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var sb = document.createElement("button");
+  sb.type = "button"; sb.className = "cta"; sb.textContent = "Share my named pick";
+  row.appendChild(sb); wrap.appendChild(row);
+  var sst = document.createElement("p"); sst.className = "status";
+  wrap.appendChild(sst);
+  sb.onclick = function(){
+    var rearm = armShareOnce(sb);
+    if (!rearm) return;
+    var rawName = nameInput.value;
+    var clean = namedNameClean(rawName);
+    var sid = newShareId();
+    var text = namedTextFor(rawName, idea, sid);
+    var link = "https://pickmycostume.com/?s=" + sid + "&o=named&named=" + idea.id + (clean ? "&nm=" + encodeURIComponent(clean) : "");
+    function done(ok, msg){
+      sst.textContent = msg;
+      rearm();
+      if (ok && typeof Analytics !== "undefined" && Analytics.track){
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "named", share_msg_variant: shareVariant()});
+        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "named"});
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+          function(){ done(true, "Shared."); },
+          function(){ done(false, ""); }
+        );
+        return;
+      } catch(e){}
+    }
+    doCopy(text, function(ok, msg){
+      if (ok && typeof Analytics !== "undefined" && Analytics.track)
+        Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "named"});
+      done(ok, ok ? "Copied. Paste it into any message." : msg);
+    });
+  };
+  return wrap;
+}
+/* ============ END Named-result experiment ============ */
+
 function pairTextFor(idea, sid){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
   /* 2026-09-26 pm3 red-team: the unconditional "I am going as X" made a dad
@@ -7036,6 +7164,24 @@ function renderResults(results){
     if (typeof Analytics !== "undefined" && Analytics.track)
       Analytics.track("remix_attributed", {original_idea_id: REMIX_PAIR.idea.id});
   }
+  /* 2026-09-26 pm11 named-result experiment: the side-by-side compare
+     panel. Renders only for genuine named arrivals (NAMED_PICK null with
+     the flag off), at the top of the results: the friend's pick next to
+     the sharer's named pick. Fires named_attributed once here,
+     remix-style lineage (the name never goes to analytics, only the
+     original idea id). */
+  if (VIA_SHARE_ORIGIN === "named" && NAMED_PICK){
+    var ncp = document.createElement("div");
+    ncp.id = "named-compare";
+    ncp.style.cssText = "display:block;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:14px;color:#666;line-height:1.4";
+    var whoN = NAMED_PICK.name ? NAMED_PICK.name + "'s" : "Your friend's";
+    ncp.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">" + namedEsc(whoN) + " pick: " + namedEsc(NAMED_PICK.idea.title) + "</p>" +
+      "<p style=\"margin:0 0 4px\">Your pick: " + namedEsc(results[0].idea.title) + "</p>" +
+      "<p style=\"margin:0\">" + (NAMED_PICK.idea.id === results[0].idea.id ? "Same pick. Great minds pick alike." : "Two different picks. Compare notes.") + "</p>";
+    box.insertBefore(ncp, box.firstChild);
+    if (typeof Analytics !== "undefined" && Analytics.track)
+      Analytics.track("named_attributed", {original_idea_id: NAMED_PICK.idea.id});
+  }
   /* 2026-09-26 pair-share relocation: one calm next-step, tied to the #1
      pick, rendered once under the hero card (never inside share blocks). */
   box.appendChild(buildPairShareStep(results[0].idea));
@@ -7056,6 +7202,10 @@ function renderResults(results){
      buildRemixStep returns null with the flag off. */
   var remixStep = buildRemixStep(results[0].idea);
   if (remixStep) box.appendChild(remixStep);
+  /* 2026-09-26 pm11 named-result experiment: "Share your pick, by name"
+     step. buildNamedShareStep returns null with the flag off. */
+  var namedStep = buildNamedShareStep(results[0].idea);
+  if (namedStep) box.appendChild(namedStep);
   /* 2026-09-26 party link experiment: host entry ("Make a party link") and
      the guest share-back ("Send my pick to the host"). Both return null
      when they do not apply or with the flag off. */
@@ -11271,7 +11421,7 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first|named)/.exec(location.search || "");
     /* 2026-09-26 evening match-pair experiment: ?o=match is only recognized
        when the flag is on, so arrivals with the flag off behave exactly as
        before the experiment existed. */
@@ -11290,7 +11440,11 @@ function shareLandingHeadline(idea, search){
         && (om[1] !== "match" || MATCH_FIND_ENABLED)
         && (om[1] !== "glow" || GLOWUP_ENABLED)
         && (om[1] !== "remix" || REMIX_ENABLED)
-        && (om[1] !== "first" || FIRST_HALLOWEEN_ENABLED)) VIA_SHARE_ORIGIN = om[1];
+        && (om[1] !== "first" || FIRST_HALLOWEEN_ENABLED)
+        && (om[1] !== "named" || NAMED_RESULT_ENABLED)) VIA_SHARE_ORIGIN = om[1];
+    /* 2026-09-26 pm11 named-result experiment: ?o=named is only recognized
+       when the flag is on, so arrivals with the flag off behave exactly as
+       before the experiment existed. */
     /* 2026-09-26 guess-game experiment: ?o=guess is only recognized when the
        flag is on, so arrivals with the flag off behave exactly as before
        the experiment existed.
@@ -11333,6 +11487,19 @@ function shareLandingHeadline(idea, search){
        original pick. Parsed into REMIX_PAIR only with the flag on and the
        id real. */
     REMIX_PAIR = remixPairFromQuery();
+    /* 2026-09-26 pm11 named-result experiment: ?named=<idea-id>&nm=<name>
+       rides the share link so the recipient banner and the compare panel
+       can read the sharer's named pick. Parsed into NAMED_PICK only with
+       the flag on and the id real; a garbage name drops to the nameless
+       fallback. */
+    NAMED_PICK = namedPayloadFromQuery();
+    /* 2026-09-26 staged-copy lint: ?nm= is a first name; keep it out of the
+       PostHog pageview URL. NAMED_PICK is already parsed into memory above,
+       so the banner, compare panel, and share-back are unaffected. */
+    if (NAMED_PICK && window.history && history.replaceState){
+      var _nqs = location.search.replace(/([?&])nm=[^&]*&?/, function(m, s){ return s === "?" ? "?" : ""; }).replace(/[?&]$/, "");
+      history.replaceState(null, "", location.pathname + _nqs);
+    }
     /* 2026-09-26 costume roulette: ?spin=<sender idea slug> rides the spin
        share link so the recipient banner can name the spin result. */
     var spm = /[?&]spin=([a-z0-9-]+)/.exec(location.search || "");
@@ -11794,6 +11961,33 @@ function shareLandingHeadline(idea, search){
         firstStartQuiz(null, "recipient-banner");
       };
       hero.insertBefore(fpb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 pm11 named-result experiment: genuine ?o=named arrivals
+       with a valid ?named= payload get the named banner. NAMED_PICK is null
+       with the flag off or on garbage, so those arrivals fall through to
+       the generic banner exactly as before the experiment existed. The name
+       is optional and sanitized; the nameless fallback reads as the
+       sharer's pick without inventing a name. The CTA is the compare job:
+       take the quiz and compare. Fires recipient_landing_viewed here
+       because the ?idea= block never runs on a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "named" && NAMED_PICK){
+      var npb = document.createElement("button");
+      npb.type = "button";
+      npb.id = "pmc-friend-banner";
+      npb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      npb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">" + (NAMED_PICK.name ? namedEsc(NAMED_PICK.name) + "'s Halloween pick" : "Your friend's Halloween pick") + "</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + (NAMED_PICK.name ? namedEsc(NAMED_PICK.name) + " got " : "Your friend got ") + namedEsc(NAMED_PICK.idea.title) + ". Tap to take the 2-minute quiz and compare.</p>";
+      npb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(npb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
