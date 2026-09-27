@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classroom Costume Swap: Starter Kit | Pick My Costume</title>
+<meta name="description" content="A free printable starter kit for running a classroom Halloween costume swap: door sign, swap-day rules, size bin labels, rack-slot sign-up sheet, and tear-off swap slips. Built from the 138-idea Pick My Costume bank.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://pickmycostume.com/swap-rack-kit">
+<meta property="og:title" content="Classroom Costume Swap: Starter Kit">
+<meta property="og:description" content="Door sign, swap-day rules, size bin labels, sign-up sheet, and swap slips. Outgrown it? Swap it.">
+<meta property="og:url" content="https://pickmycostume.com/swap-rack-kit">
+<meta property="og:type" content="website">
+<script src="vendor/qrcode-generator/qrcode.js"></script>
+<script>
+/* PostHog: anonymous usage stats only. No names or costume details are sent. Session replay is off.
+   Standard QA exclusion: ?probe=, ?sim=, ?internal=1, or localStorage pmc_internal=1 suppress pageviews. */
+var _isQA=false;
+try{
+  var _q0=location.search||"";
+  if(/[?&](probe|sim)=/.test(_q0)||/[?&]internal=1(?:&|$)/.test(_q0))_isQA=true;
+  else{try{if(localStorage.getItem("pmc_internal")==="1")_isQA=true;}catch(e){}}
+}catch(e){}
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: !_isQA,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+function kitTrack(name, props){
+  props=props||{};
+  try{if(_isQA)props.internal=true;}catch(e){}
+  try { if (window.posthog && posthog.capture) posthog.capture(name, props); } catch(e){}
+}
+</script>
+<style>
+:root{
+  --bg:#160d28; --ink:#fdf3e3; --muted:#cdbcf0; --accent:#ff8c1a; --accent-ink:#2a1500;
+  --paper:#ffffff; --paper-ink:#1c1230; --paper-muted:#6b5a9e; --line:#d8cdf3;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:24px 20px 64px}
+.back{margin:0 0 8px}
+.back a{color:var(--muted);text-decoration:none;display:inline-block;min-height:44px;padding:10px 6px}
+h1{font-size:30px;margin:8px 0 10px}
+.lede{color:var(--muted);max-width:680px;margin:0 0 18px}
+.lede code{color:var(--ink)}
+.printbtn{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;
+  border:0;border-radius:12px;padding:14px 26px;font-size:17px;cursor:pointer;margin:6px 0 26px;min-height:44px}
+.printbtn:active{transform:scale(.97)}
+.taplink{display:inline-block;min-height:44px;padding:10px 14px;line-height:1.4;border-radius:8px}
+/* Print tap targets on slips/cards stay tappable on screen without wrecking print. */
+.slip .check .taplink, .browse .taplink{padding:10px 0}
+h2.section{font-size:22px;margin:34px 0 6px}
+p.section-sub{color:var(--muted);margin:0 0 14px;max-width:680px}
+/* White print surfaces. */
+.paper{background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:26px 24px;
+  break-inside:avoid;margin:0 0 18px}
+.paper .brand{font-size:11px;letter-spacing:.22em;font-weight:700;color:var(--paper-muted);margin:0 0 10px}
+/* Door sign */
+.doorsign{text-align:center;padding:48px 28px}
+.doorsign h2{font-size:52px;line-height:1.1;margin:0 0 12px;color:var(--paper-ink)}
+.doorsign .tag{font-size:19px;color:#3d3358;margin:0 0 18px}
+.doorsign .qr{width:170px;height:170px;margin:0 auto 10px}
+.doorsign .qr svg{width:100%;height:100%;display:block}
+.doorsign .url{font-size:14px;font-weight:700;color:var(--paper-ink);word-break:break-all;margin:0}
+/* Steps and rules */
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:step}
+ol.steps li{counter-increment:step;display:flex;gap:14px;margin:0 0 12px;align-items:flex-start}
+ol.steps li::before{content:counter(step);flex:0 0 34px;height:34px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;
+  align-items:center;justify-content:center;font-size:17px}
+ol.steps b{color:var(--paper-ink)}
+ol.steps p{margin:2px 0 0;color:#3d3358;font-size:14px}
+ul.rules{list-style:none;margin:0;padding:0}
+ul.rules li{margin:0 0 12px;padding-left:26px;position:relative}
+ul.rules li::before{content:"\2713";position:absolute;left:2px;color:#0f9d58;font-weight:800}
+ul.rules b{color:var(--paper-ink)}
+ul.rules p{margin:2px 0 0;color:#3d3358;font-size:14px}
+/* Size bin labels */
+.bins{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.bin{background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:22px 16px;text-align:center;break-inside:avoid}
+.bin .brand{font-size:10px;letter-spacing:.22em;font-weight:700;color:var(--paper-muted);margin:0 0 8px}
+.bin h3{font-size:30px;margin:0 0 6px;color:var(--paper-ink)}
+.bin p{font-size:13px;color:#3d3358;margin:0}
+/* Example swaps */
+.examples{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.example{background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:18px 16px;
+  text-align:center;break-inside:avoid}
+.example h3{font-size:17px;margin:0 0 8px;color:var(--paper-ink)}
+.example .triple{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 6px}
+.example .chip{font-size:11px;font-weight:700;color:#2a1c52;background:#efe9fb;border:1px solid var(--line);
+  border-radius:999px;padding:4px 10px;white-space:nowrap}
+.example .aud{font-size:11px;color:var(--paper-muted);margin:0}
+/* Sign-up sheet with rack slots */
+table.signup{width:100%;border-collapse:collapse;background:var(--paper);color:var(--paper-ink);
+  border-radius:10px;overflow:hidden;font-size:13px}
+table.signup th{background:#efe9fb;color:#2a1c52;text-align:left;padding:10px 8px;font-size:12px}
+table.signup td{border-top:1px solid var(--line);padding:22px 8px;vertical-align:top;color:#3d3358}
+table.signup td.n{width:34px;color:var(--paper-muted);font-weight:700}
+/* Tear-off slips */
+.slips{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.slip{background:var(--paper);color:var(--paper-ink);border:2px dashed #b9aee0;border-radius:8px;
+  padding:20px 18px;break-inside:avoid}
+.slip h3{font-size:15px;letter-spacing:.14em;margin:0 0 10px;color:var(--paper-ink)}
+.slip .field{margin:0 0 10px;font-size:14px;color:#3d3358}
+.slip .field .line{display:inline-block;min-width:140px;border-bottom:2px dotted #b9aee0;margin-left:6px}
+.slip .qr{width:110px;height:110px;margin:8px 0 6px}
+.slip .qr svg{width:100%;height:100%;display:block}
+.slip .url{font-size:12px;font-weight:700;color:var(--paper-ink);word-break:break-all;margin:0}
+.slip .check{font-size:12px;color:#3d3358;margin:10px 0 0;word-break:break-all}
+.slip .check b{color:var(--paper-ink)}
+/* Browse card */
+.browse{text-align:center}
+.browse .qr{width:170px;height:170px;margin:0 auto 10px}
+.browse .qr svg{width:100%;height:100%;display:block}
+.browse .url{font-size:14px;font-weight:700;color:var(--paper-ink);word-break:break-all;margin:0 0 6px}
+.quizbtn{display:inline-block;background:#1c1230;color:#fff;font-weight:700;text-decoration:none;
+  border-radius:12px;padding:14px 26px;font-size:17px;margin:0 0 18px;min-height:44px}
+.note{color:var(--muted);font-size:14px;margin-top:26px;max-width:680px}
+/* Rack cards: one per costume, clipped to the hanger */
+.rackcards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.rackcard{background:var(--paper);color:var(--paper-ink);border:2px dashed #b9aee0;border-radius:8px;
+  padding:20px 18px;break-inside:avoid}
+.rackcard .brand{font-size:11px;letter-spacing:.22em;font-weight:700;color:var(--paper-muted);margin:0 0 6px}
+.rackcard h3{font-size:15px;letter-spacing:.14em;margin:0 0 10px;color:var(--paper-ink)}
+.rackcard .field{margin:0 0 10px;font-size:14px;color:#3d3358}
+.rackcard .field .line{display:inline-block;min-width:140px;border-bottom:2px dotted #b9aee0;margin-left:6px}
+.rackcard .hint{font-size:12px;color:#6b5a9e}
+.rackcard .cbox{margin-right:10px;white-space:nowrap}
+.rackcard .ret{font-size:12px;color:#3d3358;margin:10px 0 0}
+.rackcard .qr{width:110px;height:110px;margin:8px 0 6px}
+.rackcard .qr svg{width:100%;height:100%;display:block}
+.rackcard .url{font-size:12px;font-weight:700;color:var(--paper-ink);word-break:break-all;margin:0}
+/* Tracker: interactive board, screen only */
+.tracker{margin:0 0 18px}
+.tadd{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tadd input{flex:1 1 140px;font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #3a2d5e;background:#241a3d;color:var(--ink);min-height:44px}
+.tadd input::placeholder{color:#8d7fb8}
+.tadd button,.tshare button{font-size:16px;font-weight:700;padding:12px 20px;border-radius:10px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;min-height:44px}
+#tlist{list-style:none;margin:0 0 14px;padding:0}
+#tlist li{display:flex;gap:10px;align-items:center;background:#241a3d;border:1px solid #3a2d5e;border-radius:10px;padding:10px 12px;margin:0 0 8px}
+#tlist li.empty{justify-content:center;color:var(--muted);font-style:italic;border-style:dashed}
+#tlist .nm{flex:1;min-width:0}
+#tlist .nm span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tlist .nm small{display:block;color:var(--muted);font-size:12px}
+#tlist .st{font-size:14px;font-weight:700;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;min-height:44px;flex-shrink:0}
+#tlist .st.on{background:#1d5c2e;color:#fff}
+#tlist .st.out{background:#5c2e1d;color:#fff}
+#tlist .rm{background:none;border:1px solid #3a2d5e;color:var(--muted);border-radius:8px;min-width:44px;min-height:44px;font-size:16px;cursor:pointer;flex-shrink:0}
+.tshare{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#tcopymsg{color:var(--muted);font-size:14px}
+.tnote{color:var(--muted);font-size:13px;margin:10px 0 0}
+@media print{
+  .screen-only{display:none !important}
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  @page{size:letter;margin:.5in}
+  .paper{border-radius:0;box-shadow:none}
+  .doorsign{page-break-after:always;padding:1.2in .6in}
+  .doorsign h2{font-size:64px}
+  .bins{grid-template-columns:3.55in 3.55in;gap:.25in;justify-content:center}
+  table.signup{font-size:12px}
+  table.signup td{padding:26px 8px}
+  .slips{grid-template-columns:3.55in 3.55in;gap:.25in;justify-content:center}
+  .slip{border-radius:0}
+  .rackcards{grid-template-columns:3.55in 3.55in;gap:.25in;justify-content:center}
+  .rackcard{border-radius:0}
+  h2.section{page-break-before:always}
+  h2.section.keep{page-break-before:auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back screen-only"><a data-src-link="1" href="/?src=share-swaprack">&larr; Pick My Costume</a></p>
+  <h1 class="screen-only">Classroom costume swap: starter kit</h1>
+  <p class="lede screen-only">A free starter kit for running a classroom Halloween costume
+  swap. Print the door sign, the steps, the rules, the size bin labels, the per-costume
+  rack cards, the rack-slot sign-up sheet, and the tear-off slips; every QR opens
+  the costume browse shelf, measured as <code>?src=share-swaprack</code>. The live
+  rack tracker at section 8 keeps its board in the page address. Nothing here is
+  indexed by search engines; it is a print utility, not a landing page.</p>
+  <button type="button" class="printbtn screen-only" id="printbtn">Print the kit</button>
+
+  <h2 class="section keep screen-only">1. Door sign</h2>
+  <p class="section-sub screen-only">Tape this to the classroom door or the lobby board.</p>
+  <div class="paper doorsign" id="doorsign">
+    <p class="brand">PICK MY COSTUME</p>
+    <h2>Outgrown it?<br>Swap it.</h2>
+    <p class="tag">Classroom costume swap: leave a costume, take a costume.<br>Washed and labeled only. Free, always.</p>
+    <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+    <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+  </div>
+
+  <h2 class="section screen-only">2. How it works</h2>
+  <p class="section-sub screen-only">Five steps, readable from across the room.</p>
+  <div class="paper">
+    <p class="brand">PICK MY COSTUME</p>
+    <ol class="steps">
+      <li><div><b>Wash and bag it</b><p>Only clean costumes go on the rack. Wash it, let it dry, and put it in a bag with the size written on the outside.</p></div></li>
+      <li><div><b>Pin a size label on it</b><p>Every item needs a size you can read from three feet away: a tag, a piece of tape, a safety pin note. No guessing.</p></div></li>
+      <li><div><b>Fill out a swap slip</b><p>Write what you are giving (size and costume) and what you are looking for. Clip it to the hanger or drop it in the box.</p></div></li>
+      <li><div><b>Take only what fits</b><p>One in, one out. Try it on your kid before you leave the rack if you can. Drop your slip in the box so the teacher can match sizes.</p></div></li>
+      <li><div><b>Return what does not work</b><p>Wrong size, wrong vibe, kid changed their mind: bring it back to the rack so the next family can grab it.</p></div></li>
+    </ol>
+  </div>
+
+  <h2 class="section screen-only">3. Swap-day rules</h2>
+  <p class="section-sub screen-only">Post these next to the rack.</p>
+  <div class="paper">
+    <p class="brand">PICK MY COSTUME</p>
+    <ul class="rules">
+      <li><b>Washed before drop-off</b><p>If you would not hand it to a friend&#x27;s kid as-is, wash it first.</p></li>
+      <li><b>No prop weapons, even toy ones</b><p>Leave the toy swords at home: the Neon Demon Hunter&#x27;s toy sword is a great build, but most schools ban anything weapon-shaped, even plastic.</p></li>
+      <li><b>No sharp bits, no broken zippers</b><p>If it snags, pokes, or will not close, it is not rack-ready. Fix it or skip it.</p></li>
+      <li><b>Size label on everything</b><p>No label, no rack. A strip of masking tape and a marker is enough.</p></li>
+      <li><b>One in, one out</b><p>The rack only works if it stays stocked. Take a costume, leave a costume.</p></li>
+      <li><b>No selling, no holds over text</b><p>Swaps are free and first-come. The sign-up sheet is for matching sizes, not for claiming dibs.</p></li>
+      <li><b>Hats, wigs, and masks get a lice check</b><p>Shared headwear is how lice travels. Check the seams for nits before it goes on the rack, or skip the headwear and swap the rest of the costume.</p></li>
+    </ul>
+  </div>
+
+  <h2 class="section screen-only">4. Size bin labels</h2>
+  <p class="section-sub screen-only">Cut these out and tape one to each bin, box, or table
+  zone so families sort by size on drop-off.</p>
+  <div class="bins" id="bins">
+    <div class="bin">
+      <p class="brand">PICK MY COSTUME</p>
+      <h3>SIZE 2-4</h3>
+      <p>Drop-off here. Size label on every piece.</p>
+    </div>
+    <div class="bin">
+      <p class="brand">PICK MY COSTUME</p>
+      <h3>SIZE 5-7</h3>
+      <p>Drop-off here. Size label on every piece.</p>
+    </div>
+    <div class="bin">
+      <p class="brand">PICK MY COSTUME</p>
+      <h3>SIZE 8-10</h3>
+      <p>Drop-off here. Size label on every piece.</p>
+    </div>
+    <div class="bin">
+      <p class="brand">PICK MY COSTUME</p>
+      <h3>SIZE 11-14</h3>
+      <p>Drop-off here. Size label on every piece.</p>
+    </div>
+    <div class="bin">
+      <p class="brand">PICK MY COSTUME</p>
+      <h3>EXTRAS</h3>
+      <p>Capes, wands, hats, and other pieces that fit anyone.</p>
+    </div>
+  </div>
+
+  <h2 class="section screen-only">5. What swaps well</h2>
+  <p class="section-sub screen-only">Real ideas from the costume bank, with their honest
+  build time, cost, and effort, so families know what a swappable costume looks like.</p>
+  <div class="examples" id="examples">
+    <div class="example" data-idea="tiny-firefighter">
+      <h3>Tiny Firefighter</h3>
+      <div class="triple">
+        <span class="chip">25 min</span><span class="chip">$8-15</span><span class="chip">Easy</span>
+      </div>
+      <p class="aud">Good for: kid</p>
+    </div>
+    <div class="example" data-idea="fairy-tale-princesses">
+      <h3>Fairy Tale Princesses</h3>
+      <div class="triple">
+        <span class="chip">15 min + drying</span><span class="chip">$2-5</span><span class="chip">Easy</span>
+      </div>
+      <p class="aud">Good for: kid, family, group</p>
+    </div>
+    <div class="example" data-idea="superhero-family">
+      <h3>Superhero Family</h3>
+      <div class="triple">
+        <span class="chip">30 min</span><span class="chip">$5-10</span><span class="chip">Easy</span>
+      </div>
+      <p class="aud">Good for: family</p>
+    </div>
+    <div class="example" data-idea="dinosaur-family">
+      <h3>Dinosaur Family</h3>
+      <div class="triple">
+        <span class="chip">25 min</span><span class="chip">$8-15</span><span class="chip">Easy</span>
+      </div>
+      <p class="aud">Good for: family</p>
+    </div>
+  </div>
+
+  <h2 class="section screen-only">6. Rack-slot sign-up sheet</h2>
+  <p class="section-sub screen-only">Print one sheet per 12 families. Families write what
+  they are giving and what they are looking for; the teacher assigns a rack slot or bin
+  to keep the table sorted.</p>
+  <div class="paper">
+    <p class="brand">PICK MY COSTUME &middot; COSTUME SWAP SIGN-UP</p>
+    <table class="signup" aria-label="Costume swap sign-up sheet">
+      <thead><tr>
+        <th>#</th><th>Family (first name OK)</th><th>Giving: size and costume</th><th>Looking for: size and costume</th><th>Rack slot / bin</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">2</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">3</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">4</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">5</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">6</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">7</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">8</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">9</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">10</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">11</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="n">12</td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="section screen-only">7. Per-costume rack cards</h2>
+  <p class="section-sub screen-only">Clip one card to each costume on the rack so
+  families can see the size, who to ask about it, and its condition at a glance.
+  Print, cut along the dashed lines, fill in with a marker.</p>
+  <div class="rackcards" id="rackcards">
+    <div class="rackcard">
+      <p class="brand">PICK MY COSTUME &middot; SWAP RACK</p>
+      <h3>RACK CARD</h3>
+      <p class="field"><b>Costume:</b><span class="line" style="min-width:220px"></span></p>
+      <p class="field"><b>Size:</b><span class="line"></span></p>
+      <p class="field"><b>Kid (first name):</b><span class="line"></span></p>
+      <p class="field"><b>Condition:</b> <span class="cbox">&#9744; Like new</span> <span class="cbox">&#9744; Good</span> <span class="cbox">&#9744; Well loved</span></p>
+      <p class="field"><b>Washed on:</b><span class="line" style="min-width:120px"></span></p>
+      <p class="ret">Wrong fit? Put it back on the rack for the next family.</p>
+      <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+      <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+    </div>
+    <div class="rackcard">
+      <p class="brand">PICK MY COSTUME &middot; SWAP RACK</p>
+      <h3>RACK CARD</h3>
+      <p class="field"><b>Costume:</b><span class="line" style="min-width:220px"></span></p>
+      <p class="field"><b>Size:</b><span class="line"></span></p>
+      <p class="field"><b>Kid (first name):</b><span class="line"></span></p>
+      <p class="field"><b>Condition:</b> <span class="cbox">&#9744; Like new</span> <span class="cbox">&#9744; Good</span> <span class="cbox">&#9744; Well loved</span></p>
+      <p class="field"><b>Washed on:</b><span class="line" style="min-width:120px"></span></p>
+      <p class="ret">Wrong fit? Put it back on the rack for the next family.</p>
+      <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+      <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+    </div>
+  </div>
+
+  <h2 class="section screen-only">8. Rack tracker (who has what)</h2>
+  <p class="section-sub screen-only">Keep this open on your phone during the swap.
+  Add each costume as it arrives and tap a row when it goes home with a family.
+  The whole board lives in the page address itself, so texting the link to a
+  co-teacher shows them the same board. No accounts. Names stay in the link;
+  our stats only see counts, never names.</p>
+  <div class="tracker screen-only" id="tracker">
+    <div class="tadd">
+      <input id="tname" type="text" placeholder="Costume, like Tiny Firefighter" maxlength="60" aria-label="Costume name" autocomplete="off">
+      <input id="tsize" type="text" placeholder="Size, like 5-7" maxlength="12" aria-label="Size" autocomplete="off">
+      <button type="button" id="taddbtn">Add to rack</button>
+    </div>
+    <ul id="tlist" aria-live="polite"></ul>
+    <div class="tshare">
+      <button type="button" id="tcopybtn">Copy share link for this board</button>
+      <span id="tcopymsg" role="status"></span>
+    </div>
+    <p class="tnote">Board state is encoded in the link after #t=. Remove all rows and reload to start a fresh board.</p>
+  </div>
+
+  <h2 class="section screen-only">9. Tear-off swap slips</h2>
+  <p class="section-sub screen-only">Cut along the dashed lines. One slip per costume:
+  clip it to the hanger or drop it in the swap box.</p>
+  <div class="slips" id="slips">
+    <div class="slip">
+      <h3>COSTUME SWAP SLIP</h3>
+      <p class="field"><b>Giving:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <p class="field"><b>Looking for:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+      <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+      <p class="check"><b>Not sure the school allows it? Check:</b><br>
+      <a class="taplink" href="https://pickmycostume.com/school-check?src=share-swaprack" style="color:#1c1230;font-weight:700">https://pickmycostume.com/school-check?src=share-swaprack</a></p>
+    </div>
+    <div class="slip">
+      <h3>COSTUME SWAP SLIP</h3>
+      <p class="field"><b>Giving:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <p class="field"><b>Looking for:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+      <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+      <p class="check"><b>Not sure the school allows it? Check:</b><br>
+      <a class="taplink" href="https://pickmycostume.com/school-check?src=share-swaprack" style="color:#1c1230;font-weight:700">https://pickmycostume.com/school-check?src=share-swaprack</a></p>
+    </div>
+    <div class="slip">
+      <h3>COSTUME SWAP SLIP</h3>
+      <p class="field"><b>Giving:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <p class="field"><b>Looking for:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+      <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+      <p class="check"><b>Not sure the school allows it? Check:</b><br>
+      <a class="taplink" href="https://pickmycostume.com/school-check?src=share-swaprack" style="color:#1c1230;font-weight:700">https://pickmycostume.com/school-check?src=share-swaprack</a></p>
+    </div>
+    <div class="slip">
+      <h3>COSTUME SWAP SLIP</h3>
+      <p class="field"><b>Giving:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <p class="field"><b>Looking for:</b> size <span class="line"></span></p>
+      <p class="field"><span class="line" style="min-width:230px"></span></p>
+      <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+      <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+      <p class="check"><b>Not sure the school allows it? Check:</b><br>
+      <a class="taplink" href="https://pickmycostume.com/school-check?src=share-swaprack" style="color:#1c1230;font-weight:700">https://pickmycostume.com/school-check?src=share-swaprack</a></p>
+    </div>
+  </div>
+
+  <h2 class="section screen-only">10. Still looking?</h2>
+  <p class="section-sub screen-only">For the family that did not find a match on the rack.</p>
+  <div class="paper browse">
+    <p class="brand">PICK MY COSTUME</p>
+    <h2 style="font-size:24px;margin:0 0 8px;color:#1c1230">Did not find your size?</h2>
+    <p style="color:#3d3358;margin:0 0 14px">Answer five quick questions and get three costumes that fit your kid, or browse all 138 costume ideas from the bank and build the missing piece in an evening.</p>
+    <a class="quizbtn" data-src-link="1" href="/?src=share-swaprack">Take the quiz</a>
+    <div class="qr" data-qr="browse" role="img" aria-label="QR code for the costume browse shelf"></div>
+    <p class="url">https://pickmycostume.com/costumes?src=share-swaprack</p>
+    <p style="color:#3d3358;margin:14px 0 4px">Not sure the school allows it? <a class="taplink" href="https://pickmycostume.com/school-check?src=share-swaprack" style="color:#1c1230;font-weight:700">Run the school-safety checker</a>.</p>
+    <p class="url">https://pickmycostume.com/school-check?src=share-swaprack</p>
+  </div>
+
+  <p class="note screen-only">Kit built 2026-09-27 from the 138-idea bank. Example
+  costumes, build triples, and the prop-weapon rule example are bank-verbatim, rendered
+  by hour-session/build_swap_rack_kit_root.py and checked by hour-session/verify_swap_rack_kit.py.</p>
+</div>
+<script>
+(function(){
+  var BROWSE = "https://pickmycostume.com/costumes?src=share-swaprack";
+  function makeQR(el, url, alt){
+    el.setAttribute("aria-label", alt);
+    try {
+      var q = qrcode(0, "M");
+      q.addData(url);
+      q.make();
+      el.innerHTML = q.createSvgTag({cellSize: 6, margin: 0, scalable: true, title: {text: alt}});
+      return true;
+    } catch(e) {
+      var fb = document.createElement("p");
+      fb.style.cssText = "font-size:13px;font-weight:700;color:#1c1230;word-break:break-all";
+      fb.textContent = url;
+      el.appendChild(fb);
+      return false;
+    }
+  }
+  var qrEls = document.querySelectorAll('[data-qr="browse"]');
+  var made = 0;
+  for (var i = 0; i < qrEls.length; i++) {
+    if (makeQR(qrEls[i], BROWSE, "QR code for the costume browse shelf")) made++;
+  }
+  var btn = document.getElementById("printbtn");
+  if (btn) btn.addEventListener("click", function(){ window.print(); });
+
+  /* Arrival attribution: propagate a valid ?src= onto the screen CTAs (back link,
+     quiz CTA) so a school-check leg is not lost. Print QRs and printed URLs keep
+     the fixed ?src=share-swaprack. The value is allowlist-checked against the same
+     LANDING_SRC regex index.html uses. */
+  var ARRIVAL_SRC=null;
+  try{
+    var _sm=/[?&]src=((?:collection|print|share)-[a-z-]+)/.exec(location.search||"");
+    if(_sm)ARRIVAL_SRC=_sm[1];
+  }catch(e){}
+  if(ARRIVAL_SRC&&ARRIVAL_SRC!=="share-swaprack"){
+    var _sl=document.querySelectorAll("[data-src-link]");
+    for(var _si=0;_si<_sl.length;_si++){
+      var _base=_sl[_si].getAttribute("href").replace(/[?&]src=[^&]*/,"").replace(/[?&]$/,"");
+      _sl[_si].setAttribute("href",_base+(_base.indexOf("?")>=0?"&":"?")+"src="+encodeURIComponent(ARRIVAL_SRC));
+    }
+  }
+
+  /* Rack tracker: the whole board is encoded in the URL fragment (#t=), so two
+     phones can share the board with one link. No backend, no accounts. Names are
+     never sent to stats: events carry counts only. */
+  var tState=[];
+  function tEnc(){
+    try{
+      return btoa(unescape(encodeURIComponent(JSON.stringify(tState))))
+        .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+    }catch(e){return "";}
+  }
+  function tSave(){
+    try{if(history.replaceState){history.replaceState(null,"","/swap-rack-kit#t="+tEnc());}}catch(e){}
+  }
+  function tLoad(){
+    var m=/#t=([A-Za-z0-9\-_]+)/.exec(location.hash||"");
+    if(!m)return;
+    try{
+      var s=JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
+      if(Array.isArray(s))tState=s.filter(function(x){return x&&typeof x.n==="string"&&x.n.length;}).slice(0,60);
+    }catch(e){}
+  }
+  function tRender(){
+    var ul=document.getElementById("tlist");
+    if(!ul)return;
+    ul.innerHTML="";
+    if(!tState.length){
+      var emp=document.createElement("li");
+      emp.className="empty";
+      emp.textContent="Nothing on the rack yet. Add the first costume above.";
+      ul.appendChild(emp);
+      return;
+    }
+    tState.forEach(function(row,i){
+      var li=document.createElement("li");
+      var nm=document.createElement("span");nm.className="nm";
+      var t=document.createElement("span");t.textContent=row.n;nm.appendChild(t);
+      var sz=document.createElement("small");sz.textContent="Size: "+(row.s||"any");nm.appendChild(sz);
+      var st=document.createElement("button");st.type="button";
+      st.className="st "+(row.st?"out":"on");
+      st.textContent=row.st?"Checked out":"On the rack";
+      st.setAttribute("aria-label",(row.st?"Mark returned to the rack: ":"Mark checked out: ")+row.n);
+      st.addEventListener("click",function(){
+        row.st=row.st?0:1;tSave();tRender();
+        kitTrack("swap_rack_status",{to:row.st?"out":"back",count:tState.length});
+      });
+      var rm=document.createElement("button");rm.type="button";rm.className="rm";rm.textContent="\u2715";
+      rm.setAttribute("aria-label","Remove "+row.n+" from the board");
+      rm.addEventListener("click",function(){tState.splice(i,1);tSave();tRender();});
+      li.appendChild(nm);li.appendChild(st);li.appendChild(rm);
+      ul.appendChild(li);
+    });
+  }
+  var _tname=document.getElementById("tname"),_tsize=document.getElementById("tsize"),_tadd=document.getElementById("taddbtn");
+  function tAdd(){
+    var name=(_tname&&_tname.value||"").trim(),size=(_tsize&&_tsize.value||"").trim();
+    if(!name){if(_tname)_tname.focus();return;}
+    tState.push({n:name.slice(0,60),s:size.slice(0,12),st:0});
+    if(_tname)_tname.value="";if(_tsize)_tsize.value="";if(_tname)_tname.focus();
+    tSave();tRender();
+    kitTrack("swap_rack_add",{count:tState.length});
+  }
+  if(_tadd)_tadd.addEventListener("click",tAdd);
+  [_tname,_tsize].forEach(function(el){
+    if(el)el.addEventListener("keydown",function(ev){
+      if(ev.key==="Enter"){ev.preventDefault();tAdd();}
+    });
+  });
+  var _tcopy=document.getElementById("tcopybtn"),_tmsg=document.getElementById("tcopymsg");
+  if(_tcopy)_tcopy.addEventListener("click",function(){
+    kitTrack("swap_rack_share",{count:tState.length});
+    function done(ok){if(_tmsg)_tmsg.textContent=ok?"Copied. Text it to your co-teacher.":"Copy did not work. Long-press the address bar and copy the link yourself.";}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(location.href).then(function(){done(true);},function(){done(false);});
+    }else{prompt("Copy this link:",location.href);done(true);}
+  });
+  tLoad();tRender();
+  kitTrack("swap_rack_viewed",{qr_count:qrEls.length,qr_made:made,arrival_src:ARRIVAL_SRC||"none",restored:tState.length});
+  window.addEventListener("beforeprint", function(){ kitTrack("swap_rack_printed", {}); });
+})();
+</script>
+</body>
+</html>
