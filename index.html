@@ -192,6 +192,29 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .swho{font-weight:700;flex:none;max-width:45%;overflow:hidden;text-overflow:ellipsis}
 .sarrow{color:var(--muted);flex:none}
 .srole{color:var(--accent);font-weight:700;text-transform:capitalize}
+/* ================= CLOSET-FIRST (2026-09-26) =================
+   Tick-what-you-own tool, integrated from the closet-first prototype
+   (red-teamed 2026-09-26). Scores the live PANTRY_MATS through pantryScore();
+   the three rails are 0 / 1 / 2 purchases away. Ticks are page-local; the
+   user's saved pantry (if any) pre-ticks the boxes. */
+.cftickgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cftick{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:10px 12px;font-size:14px;cursor:pointer;min-height:48px}
+.cftick input{width:20px;height:20px;accent-color:var(--accent);flex:none}
+.cfgroup{font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:18px 0 8px}
+.cfstaple{font-size:12px;color:var(--muted)}
+.cfrail{margin:26px 0 0}
+.cfrailhead{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+.cfrailhead h3{margin:0;font-size:20px}
+.cfcount{background:var(--accent);color:var(--accent-ink);border-radius:20px;padding:2px 12px;font-size:13px;font-weight:700;flex:none}
+.cfcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;margin:10px 0}
+.cfcard h4{margin:0 0 4px;font-size:16px}
+.cfcard p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+.cfneed{margin-top:8px;font-size:13px;color:var(--accent);font-weight:700}
+.cfallown{margin-top:8px;font-size:13px;color:#2f9e5f;font-weight:700}
+.cfempty{color:var(--muted);font-style:italic;padding:12px;text-align:center;font-size:14px}
+.cfsummary{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:18px;margin:16px 0;text-align:center}
+.cfsummary .big{font-size:36px;font-weight:800;color:var(--accent)}
+.cfsummary p{margin:6px 0 0;color:var(--muted);font-size:14px}
 /*Billy 2026-09-25: visual proof strip. Real top-save costumes with photos
   above the fold so visitors see the taste before starting the quiz. Names
   sit on the photo with a scrim (the streaming-rail pattern) so they never
@@ -742,6 +765,7 @@ footer a{color:var(--accent)}
       <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 137 ideas</button></p>
       <p style="margin:8px 0 0"><button type="button" id="btn-planner-hero" class="textlink">Plan your Halloween: buy day, build day, dress-up day</button></p>
       <p style="margin:8px 0 0"><button type="button" id="btn-shuffler-hero" class="textlink">Dealing out group roles? Shuffle who's who</button></p>
+      <p style="margin:8px 0 0"><button type="button" id="btn-closet-hero" class="textlink">Closet first: costumes from what you already own</button></p>
       <p style="margin:16px 0 0"><button type="button" id="btn-spin" class="ghost">Can&#39;t decide? Let me pick for you</button></p>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
         <p class="fine" style="margin:0 0 8px">Here&#39;s a pick for you:</p>
@@ -998,6 +1022,30 @@ footer a{color:var(--accent)}
           <button class="cta" id="shuffler-again" type="button" style="flex:1">Shuffle again</button>
           <button class="ghost" id="shuffler-share" type="button" style="flex:1">Share this lineup</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSET-FIRST -->
+  <section class="screen" id="s-closet">
+    <div class="wrap">
+      <div class="navrow" style="margin:0 0 10px">
+        <button class="ghost" id="btn-closet-back" type="button">&larr; Back</button>
+        <button class="ghost" id="btn-closet-home" type="button">&#8962; Home</button>
+      </div>
+      <div id="cf-tick">
+        <p class="progress">Closet first</p>
+        <h2 class="q-title">What is in your closet?</h2>
+        <p class="blurb">Tick everything you already own. We show you which costumes you can build tonight, which need one purchase, and which need two.</p>
+        <div id="cf-groups"></div>
+        <button class="cta" id="cf-show" type="button" style="width:100%;margin-top:20px">Show my costumes</button>
+      </div>
+      <div id="cf-results" hidden>
+        <p class="progress">Closet first</p>
+        <h2 class="q-title">Your closet, ranked</h2>
+        <div id="cf-summary"></div>
+        <div id="cf-rails"></div>
+        <button class="ghost" id="cf-retick" type="button" style="width:100%;margin:20px 0">&larr; Change what I ticked</button>
       </div>
     </div>
   </section>
@@ -2445,6 +2493,146 @@ function show(id){
     if (sb) sb.addEventListener("click", function(){ show(toolReturnTo); });
     var shm = $("btn-shuffler-home");
     if (shm) shm.addEventListener("click", function(){ show("s-hero"); });
+  }
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", wire);
+  } else {
+    wire();
+  }
+})();
+
+/* ================= CLOSET-FIRST (2026-09-26) =================
+   Integrated from the closet-first prototype (red-teamed 2026-09-26).
+   Scores every idea against ticked pantry items with the live pantryScore()
+   (the same walk the detail badge and pantry cards use). Rails are 0 / 1 /
+   2 purchases away: each missing material line is satisfiable by a single
+   purchase. No data duplication: labels and mats come from PANTRY_LABELS /
+   PANTRY_MATS. Ticks are page-local; the saved pantry (if any) pre-ticks
+   the boxes. Analytics carries counts only. */
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  /* Tick groups ported from the red-teamed prototype: 55 checkboxes, zero
+     dead, zero untickable against the live PANTRY_MATS. (hoodie is not here:
+     its mappings are not in the live PANTRY_MATS yet.) */
+  var CF_GROUPS = [
+    ["Household staples", ["scissors","tape","paper-pen"]],
+    ["Paper and boxes", ["cardboard","paper-bag","paper-plates","newspaper","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],
+    ["Clothes and linens", ["white-tshirt","tshirt","black-clothes","sweatsuit","bedsheet","pillowcase","socks","hat","sunglasses","headband","red-headband"]],
+    ["Craft drawer", ["glue","markers","yarn","felt","pipe-cleaners","safety-pins","stickers","balloons","foil","stuffing","tape-white","tape-silver","tape-gray","tape-red","tape-yellow","tape-black"]],
+    ["Face paint and makeup", ["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]
+  ];
+  var STAPLES = null;
+  function staples(){
+    if (!STAPLES){
+      STAPLES = {};
+      /* Lazy: PANTRY_MATS is declared later in this file than this IIFE. */
+      (PANTRY_MATS.staples || []).forEach(function(s){ STAPLES[s] = true; });
+    }
+    return STAPLES;
+  }
+  var cfReturnTo = "s-hero";
+  var cfBuilt = false;
+
+  function cfTicked(){
+    var s = new Set();
+    var boxes = document.querySelectorAll('#cf-groups input[type=checkbox]:checked');
+    for (var i = 0; i < boxes.length; i++) s.add(boxes[i].getAttribute("data-pid"));
+    return s;
+  }
+
+  function buildTick(){
+    var saved = null;
+    try { saved = pantryTicked(); } catch(_){ saved = null; }
+    var html = "";
+    CF_GROUPS.forEach(function(g){
+      html += '<p class="cfgroup">' + esc(g[0]) + "</p>" + '<div class="cftickgrid">';
+      g[1].forEach(function(pid){
+        var label = PANTRY_LABELS[pid] || pid;
+        var staple = !!staples()[pid];
+        var checked = (staple || (saved && saved.has(pid))) ? " checked" : "";
+        var dis = staple ? " disabled" : "";
+        var note = staple ? ' <span class="cfstaple">(assumed)</span>' : "";
+        html += '<label class="cftick"><input type="checkbox" data-pid="' + esc(pid) + '"' + checked + dis + ">" + esc(label) + note + "</label>";
+      });
+      html += "</div>";
+    });
+    $("cf-groups").innerHTML = html;
+    cfBuilt = true;
+  }
+
+  function openCloset(returnTo){
+    if (!cfBuilt) buildTick();
+    cfReturnTo = returnTo || "s-hero";
+    $("cf-tick").hidden = false;
+    $("cf-results").hidden = true;
+    Analytics.track("closet_opened", {from: cfReturnTo});
+    show("s-closet");
+  }
+
+  function showCloset(){
+    var ticked = cfTicked();
+    var rails = [[], [], []];
+    for (var i = 0; i < IDEAS.length; i++){
+      var idea = IDEAS[i];
+      var sc = pantryScore(idea.id, ticked);
+      if (!sc) continue;
+      if (sc.missing <= 2) rails[sc.missing].push({idea: idea, score: sc});
+    }
+    var total = IDEAS.length;
+    var shown = rails[0].length + rails[1].length + rails[2].length;
+    $("cf-summary").innerHTML = '<div class="cfsummary"><div class="big">' + rails[0].length + '</div><p>costumes you can build tonight with zero purchases</p></div>';
+    var defs = [
+      ["0 purchases away", "Build tonight with what you have"],
+      ["1 purchase away", "One store item and you are set"],
+      ["2 purchases away", "A quick store run covers it"]
+    ];
+    var html = "";
+    defs.forEach(function(d, n){
+      var items = rails[n];
+      html += '<div class="cfrail"><div class="cfrailhead"><h3>' + d[0] + '</h3><span class="cfcount">' + items.length + '</span></div>';
+      html += '<p class="blurb">' + d[1] + "</p>";
+      if (!items.length){
+        html += '<p class="cfempty">Nothing here yet. Tick more items you own.</p>';
+      } else {
+        items.slice(0, 20).forEach(function(it){
+          html += '<div class="cfcard"><h4>' + esc(it.idea.title) + "</h4><p>" + esc(it.idea.blurb) + "</p>";
+          if (n === 0){
+            html += '<p class="cfallown">You have everything.</p>';
+          } else if (it.score.missingNames){
+            html += '<p class="cfneed">Need: ' + it.score.missingNames.map(esc).join(" + ") + "</p>";
+          } else {
+            html += '<p class="cfneed">' + n + (n === 1 ? " purchase" : " purchases") + " needed</p>";
+          }
+          html += "</div>";
+        });
+        if (items.length > 20) html += '<p class="cfempty">+' + (items.length - 20) + " more</p>";
+      }
+      html += "</div>";
+    });
+    if (total - shown > 0){
+      html += '<p class="cfempty">+' + (total - shown) + " more costumes need 3 or more purchases.</p>";
+    }
+    $("cf-rails").innerHTML = html;
+    $("cf-tick").hidden = true;
+    $("cf-results").hidden = false;
+    window.scrollTo(0, 0);
+    Analytics.track("closet_shown", {zero: rails[0].length, one: rails[1].length, two: rails[2].length, ticked: ticked.size});
+  }
+
+  /* ---------- wire entry points ---------- */
+  function wire(){
+    var h = $("btn-closet-hero");
+    if (h) h.addEventListener("click", function(){ openCloset("s-hero"); });
+    var s = $("cf-show");
+    if (s) s.addEventListener("click", showCloset);
+    var r = $("cf-retick");
+    if (r) r.addEventListener("click", function(){ $("cf-results").hidden = true; $("cf-tick").hidden = false; window.scrollTo(0, 0); });
+    var b = $("btn-closet-back");
+    if (b) b.addEventListener("click", function(){ show(cfReturnTo); });
+    var hm = $("btn-closet-home");
+    if (hm) hm.addEventListener("click", function(){ show("s-hero"); });
   }
   if (document.readyState === "loading"){
     document.addEventListener("DOMContentLoaded", wire);
@@ -4501,6 +4689,467 @@ function buildMatchStep(idea){
   return wrap;
 }
 /* ============ END Match-pair experiment ============ */
+/* ------------------------------------------------------------------
+   2026-09-26 pm8 new-ideas stream: the "Glow Up" experiment.
+   Last year's costume is the one fact almost every Halloween shopper
+   already knows about themselves. The results screen asks "Went as
+   something else last year?" with one-tap chips (Witch, Vampire,
+   Ghost, ...); each maps to this year's trend take from the bank
+   (Witch -> Emerald Witch, Vampire -> Neon Demon Hunter, Ghost ->
+   Pixel Ghost). One tap = a second result screen, and the share text
+   ("Went as a witch last year. This year's glow-up: Emerald Witch.")
+   is the most sendable format after the pair share. New origin
+   "glow", measured like the others: glowup_generated ->
+   share_created (share_origin=glow) -> recipient_landing_viewed ->
+   quiz_started. Kill criterion: at 50 opened glow links, glow needs
+   clearly more friend quiz starts per share than generic to earn its
+   place; if glow-up taps are near zero, cut it. Flag-gated:
+   GLOWUP_ENABLED.
+   URL shape: ?s=<sid>&o=glow&glow=<classic>,<idea-id>. */
+var GLOWUP_ENABLED = false;
+var GLOW_PAIR = null; /* {classic: entry, idea: idea} or null, parsed at load */
+/* Classic -> this year's take, per audience. Every mapped id must exist
+   in IDEAS and carry the mapped audience (asserted by verify-glowup.js). */
+var GLOWUPS = [
+  {classic:"witch",     label:"Witch",     map:{kid:"little-witch", solo:"emerald-witch", group:"good-witch-bad-witch"}},
+  {classic:"vampire",   label:"Vampire",   map:{solo:"neon-demon-hunter", group:"demon-boy-band"}},
+  {classic:"ghost",     label:"Ghost",     map:{kid:"pixel-ghost", family:"ghost-hunters", group:"ghost-hunters"}},
+  {classic:"skeleton",  label:"Skeleton",  map:{kid:"glow-skeleton"}},
+  {classic:"cat",       label:"Cat",       map:{kid:"fuzzy-monster", solo:"black-cat", couple:"cat-mouse"}},
+  {classic:"dinosaur",  label:"Dinosaur",  map:{kid:"baby-dino", solo:"dino-tourist", family:"dino-rangers", group:"dino-herd"}},
+  {classic:"mermaid",   label:"Mermaid",   map:{family:"mermaid-crew", group:"mermaid-crew"}},
+  {classic:"devil",     label:"Devil",     map:{solo:"neon-demon-hunter", group:"demon-boy-band"}},
+  {classic:"princess",  label:"Princess",  map:{kid:"fairy-tale-princesses", couple:"prince-princess"}},
+  {classic:"superhero", label:"Superhero", map:{kid:"backyard-hero", couple:"caped-duo"}}
+];
+function glowupEntry(classic){
+  var f = null;
+  GLOWUPS.forEach(function(e){ if (e.classic === classic) f = e; });
+  return f;
+}
+/* Pure: the glow-up idea for a classic in an audience, or null. Extracted
+   pure so the verifier can assert it. */
+function glowupFor(classic, aud){
+  var e = glowupEntry(classic);
+  if (!e || !e.map[aud]) return null;
+  var idea = (typeof matchIdeaById === "function") ? matchIdeaById(e.map[aud]) : null;
+  if (!idea) return null;
+  return {classic: e, idea: idea};
+}
+/* Pure: the classics that have a glow-up for this audience. */
+function glowupClassicsFor(aud){
+  return GLOWUPS.filter(function(e){ return !!e.map[aud]; });
+}
+/* Honest "why it's the glow-up" line: one specific flip, otherwise the
+   plain this-year's-take line. Never invents a story. */
+function glowupReason(entry, idea){
+  if (entry.classic === "devil" && idea.id === "neon-demon-hunter") return "From devil to demon hunter.";
+  return "This year's take on the " + entry.label.toLowerCase() + ".";
+}
+/* 2026-09-26 share-credibility: kid/family picks get the audience-aware
+   line (same pattern as pairTextFor/matchTextFor), never "I went as X"
+   for a parent sharing a kid's costume. */
+function glowupTextFor(entry, idea, sid){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=glow&glow=" + entry.classic + "," + idea.id;
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  if (aud === "kid" || aud === "family")
+    return "The quiz picked " + idea.title + (aud === "kid" ? " for my kid" : " for our family") + " this Halloween, the glow-up from last year's " + entry.label.toLowerCase() + ". Find your glow-up with the 2-minute quiz: " + link;
+  return "Went as a " + entry.label.toLowerCase() + " last year. This year's glow-up: " + idea.title + ". Find your glow-up with the 2-minute quiz: " + link;
+}
+/* Arrival payload: ?glow=<classic>,<idea-id>. The idea must be one of
+   the classic's real mapped upgrades (no crafted mismatches), flag on. */
+function glowPairFromQuery(){
+  if (typeof GLOWUP_ENABLED === "undefined" || !GLOWUP_ENABLED) return null;
+  var m = /[?&]glow=([a-z]+),([a-z0-9-]+)/.exec(location.search || "");
+  if (!m) return null;
+  var e = glowupEntry(m[1]);
+  var idea = (typeof matchIdeaById === "function") ? matchIdeaById(m[2]) : null;
+  if (!e || !idea) return null;
+  var vals = Object.keys(e.map).map(function(k){ return e.map[k]; });
+  if (vals.indexOf(idea.id) === -1) return null;
+  return {classic: e, idea: idea};
+}
+/* Renders the "Went as something else last year?" step under the #1
+   pick. Returns null with the flag off (DOM byte-identical) or when no
+   classic maps to this audience. */
+function buildGlowupStep(idea){
+  if (!GLOWUP_ENABLED) return null;
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  var classics = glowupClassicsFor(aud);
+  if (!classics.length) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "glowup-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Went as something else last year?";
+  var p = document.createElement("p");
+  p.textContent = "Tap what you went as last year and the quiz shows this year's glow-up. No extra questions.";
+  var chips = document.createElement("div");
+  chips.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-top:8px";
+  var res = document.createElement("div");
+  wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(chips); wrap.appendChild(res);
+  function showChips(){
+    res.innerHTML = "";
+    p.textContent = "Tap what you went as last year and the quiz shows this year's glow-up. No extra questions.";
+    chips.style.display = "flex";
+  }
+  function showGlow(entry){
+    var g = glowupFor(entry.classic, aud);
+    if (!g) return;
+    res.innerHTML = "";
+    chips.style.display = "none";
+    p.textContent = "Last year: " + entry.label + ". This year:";
+    if (typeof Analytics !== "undefined" && Analytics.track)
+      Analytics.track("glowup_generated", {classic: entry.classic, idea_id: g.idea.id});
+    res.appendChild(ideaMedia(g.idea, true));
+    var gh = document.createElement("p");
+    gh.style.cssText = "margin:10px 0 4px;font-weight:700;color:#333;line-height:1.4;font-size:18px";
+    gh.textContent = "Your glow-up: " + g.idea.title;
+    var tri = document.createElement("p");
+    tri.style.cssText = "margin:0 0 6px;font-size:14px;color:#666";
+    tri.textContent = spinTriple(g.idea);
+    var bl = document.createElement("p");
+    bl.style.cssText = "margin:0 0 6px;font-size:14px;color:#666;line-height:1.4";
+    bl.textContent = g.idea.blurb + " " + glowupReason(entry, g.idea);
+    res.appendChild(gh); res.appendChild(tri); res.appendChild(bl);
+    var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+    var sb = document.createElement("button");
+    sb.type = "button"; sb.className = "cta"; sb.textContent = "Share my glow-up";
+    var back = document.createElement("button");
+    back.type = "button"; back.className = "ghost"; back.textContent = "Change";
+    row.appendChild(sb); row.appendChild(back);
+    res.appendChild(row);
+    var sst = document.createElement("p"); sst.className = "status";
+    res.appendChild(sst);
+    back.onclick = showChips;
+    sb.onclick = function(){
+      var rearm = armShareOnce(sb);
+      if (!rearm) return;
+      var sid = newShareId();
+      var text = glowupTextFor(entry, g.idea, sid);
+      var link = "https://pickmycostume.com/?s=" + sid + "&o=glow&glow=" + entry.classic + "," + g.idea.id;
+      function done(ok, msg){
+        sst.textContent = msg;
+        rearm();
+        if (ok && typeof Analytics !== "undefined" && Analytics.track){
+          Analytics.track("share_created", {share_id: sid, idea_id: g.idea.id, share_origin: "glow", share_msg_variant: shareVariant()});
+          if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: g.idea.id, share_origin: "glow"});
+        }
+      }
+      if (navigator.share){
+        try {
+          navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+            function(){ done(true, "Shared."); },
+            function(){ done(false, ""); }
+          );
+          return;
+        } catch(e){}
+      }
+      doCopy(text, function(ok, msg){
+        if (ok && typeof Analytics !== "undefined" && Analytics.track)
+          Analytics.track("share_text_copied", {idea_id: g.idea.id, share_id: sid, share_origin: "glow"});
+        done(ok, ok ? "Copied. Paste it into any message." : msg);
+      });
+    };
+  }
+  classics.forEach(function(e){
+    var c = document.createElement("button");
+    c.type = "button"; c.className = "ghost";
+    c.style.cssText = "width:auto;padding:8px 14px";
+    c.textContent = e.label;
+    c.onclick = function(){ showGlow(e); };
+    chips.appendChild(c);
+  });
+  return wrap;
+}
+/* ============ END Glow-up experiment ============ */
+
+/* ============ First-Halloween milestone entry (2026-09-26 pm8 idea 2) ============
+   "Baby's first Halloween": a kid-audience entry point framing the quiz as
+   the milestone pick. The homepage entry panel (flag-gated; buildFirstEntryPanel
+   returns null with the flag off) asks the baby's first name (optional) and
+   starts the quiz with q1=kid and the age refinement pre-set to "Under 3" --
+   the quiz's own kid-flow answers, so scoring, refinements, and the
+   audience-aware share line are untouched. The results screen gets a
+   first-share step (first mode only; buildFirstShareStep returns null
+   otherwise) minting ?s=<sid>&o=first&first=<name>: share text "<Name>'s
+   first Halloween: <Pick>. Find their first costume with the 2-minute quiz:
+   <link>". Recipient banner (genuine ?s= arrivals with a valid ?first=
+   payload): "It's <Name>'s first Halloween too? Find their first costume."
+   One tap starts the quiz in first mode. Crafted payloads cannot lie: the
+   name is sanitized (letters, spaces, apostrophes, hyphens, 1-24 chars) and
+   garbage falls through to the generic banner. Analytics:
+   first_entry_tapped -> quiz_started (first_mode) -> share_created
+   (share_origin=first) -> recipient_landing_viewed -> quiz_started. New
+   origin "first", measured like the others. Kill criterion: at 50 opened
+   first links, first needs clearly more friend quiz starts per share than
+   generic to earn its place; if entry taps are near zero, cut it.
+   Flag-gated: FIRST_HALLOWEEN_ENABLED.
+   URL shape: ?s=<sid>&o=first&first=<name>. */
+var FIRST_HALLOWEEN_ENABLED = false;
+var FIRST_NAME = null; /* current first-mode baby name: entry input, or the ?first= payload */
+/* Pure: the sanitized baby name, or null. Letters, spaces, apostrophes,
+   hyphens; 1-24 chars, must start with a letter. Capitalization is kept
+   for the share text. Extracted pure so the verifier can assert it. */
+function firstNameClean(raw){
+  var t = String(raw == null ? "" : raw).replace(/\s+/g, " ").trim();
+  if (!/^[A-Za-z][A-Za-z' -]{0,23}$/.test(t)) return null;
+  return t;
+}
+/* Tiny HTML escaper for the name inside banner innerHTML. Local (not the
+   Wrapped escaper) so the verifier can stub nothing. */
+function firstEsc(t){
+  return String(t == null ? "" : t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+/* Pure: first-share text. The name is optional; nameless stays honest. */
+function firstTextFor(name, idea, sid){
+  var clean = firstNameClean(name);
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=first" + (clean ? "&first=" + encodeURIComponent(clean) : "");
+  var who = clean ? clean + "'s first Halloween" : "A first Halloween";
+  return who + ": " + idea.title + ". Find their first costume with the 2-minute quiz: " + link;
+}
+/* Arrival payload: ?first=<name>. Null with the flag off or on garbage, so
+   those arrivals fall through to the generic banner exactly as before the
+   experiment existed. */
+function firstPayloadFromQuery(){
+  if (typeof FIRST_HALLOWEEN_ENABLED === "undefined" || !FIRST_HALLOWEEN_ENABLED) return null;
+  var m = /[?&]first=([^&]*)/.exec(location.search || "");
+  if (!m) return null;
+  var name;
+  try { name = firstNameClean(decodeURIComponent(m[1])); } catch(e){ return null; }
+  return name;
+}
+/* The quiz's own kid + Under-3 answer objects, or null if the bank shape
+   changed under us (defensive: the caller falls back to a normal quiz). */
+function firstPresetAnswers(){
+  if (typeof qById !== "function") return null;
+  var k = null, u = null;
+  var q1 = qById("q1"), q5 = qById("q5kid");
+  if (q1 && q1.options) q1.options.forEach(function(o){ if (o.value === "kid") k = o; });
+  if (q5 && q5.options) q5.options.forEach(function(o){ if (o.label === "Under 3") u = o; });
+  return (k && u) ? {q1: k, q5kid: u} : null;
+}
+/* Starts the quiz pre-set to kid + Under 3, first mode on. source is
+   "entry" (homepage panel) or "recipient-banner". No-op with the flag off
+   or when the preset cannot be built. */
+function firstStartQuiz(name, source){
+  if (typeof FIRST_HALLOWEEN_ENABLED === "undefined" || !FIRST_HALLOWEEN_ENABLED) return;
+  var pre = firstPresetAnswers();
+  if (!pre || typeof renderQ !== "function") return;
+  FIRST_NAME = firstNameClean(name);
+  state = {qi: 1, answers: {q1: pre.q1, q5kid: pre.q5kid}, firstMode: true};
+  state.pinpoint = null;
+  pinpointNote(""); pinpointClearNomatch();
+  clearK("pmc_pick_v1");
+  if (typeof Analytics !== "undefined" && Analytics.track){
+    if (source === "entry") Analytics.track("first_entry_tapped", {});
+    /* quiz answers never leave the device; first_mode is structural only,
+       like the existing question-count metadata on quiz_answered. */
+    Analytics.track("quiz_started", Object.assign({first_mode: true}, viaShareProps()));
+  }
+  renderQ();
+}
+/* Homepage entry panel: the "Baby's first Halloween" landing anchor.
+   Returns null with the flag off (DOM byte-identical). */
+function buildFirstEntryPanel(){
+  if (typeof FIRST_HALLOWEEN_ENABLED === "undefined" || !FIRST_HALLOWEEN_ENABLED) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "card"; wrap.id = "first-halloween-entry";
+  wrap.style.cssText = "margin:16px 0 0;padding:14px";
+  var kick = document.createElement("p");
+  kick.className = "fine"; kick.style.cssText = "margin:0 0 6px";
+  kick.textContent = "Milestone";
+  var h = document.createElement("h3");
+  h.style.cssText = "margin:0 0 6px";
+  h.textContent = "Baby's first Halloween";
+  var p = document.createElement("p");
+  p.style.cssText = "margin:0 0 10px;font-size:14px;color:#666;line-height:1.4";
+  p.textContent = "Picking their first Halloween costume. A short quiz, preset for under 3, and a share line made for the family chat.";
+  var inp = document.createElement("input");
+  inp.type = "text"; inp.id = "first-name-input"; inp.maxLength = 24;
+  inp.placeholder = "Baby's first name (optional)";
+  inp.setAttribute("aria-label", "Baby's first name (optional)");
+  inp.autocomplete = "off";
+  inp.style.cssText = "display:block;width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin:0 0 10px";
+  var btn = document.createElement("button");
+  btn.type = "button"; btn.className = "cta"; btn.id = "first-start-btn";
+  btn.textContent = "Start their quiz";
+  btn.onclick = function(){ firstStartQuiz(inp.value, "entry"); };
+  wrap.appendChild(kick); wrap.appendChild(h); wrap.appendChild(p);
+  wrap.appendChild(inp); wrap.appendChild(btn);
+  return wrap;
+}
+/* At load: mount the entry panel at the top of the explore section with the
+   flag on; nothing mounts with it off. */
+(function(){
+  if (typeof FIRST_HALLOWEEN_ENABLED === "undefined" || !FIRST_HALLOWEEN_ENABLED) return;
+  if (typeof document === "undefined") return;
+  var panel = buildFirstEntryPanel();
+  if (!panel) return;
+  var explore = document.querySelector("#s-hero .explore");
+  if (!explore) return;
+  var head = explore.querySelector(".explore-head");
+  if (head && head.nextSibling) explore.insertBefore(panel, head.nextSibling);
+  else explore.appendChild(panel);
+})();
+/* Results-screen first-share step: mints the ?o=first share link. Returns
+   null with the flag off or outside first mode. */
+function buildFirstShareStep(idea){
+  if (typeof FIRST_HALLOWEEN_ENABLED === "undefined" || !FIRST_HALLOWEEN_ENABLED) return null;
+  if (typeof state === "undefined" || !state || !state.firstMode) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "first-share-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = FIRST_NAME ? FIRST_NAME + "'s first Halloween" : "Baby's first Halloween";
+  var p = document.createElement("p");
+  p.textContent = "This is the milestone pick. Send it to the family chat.";
+  wrap.appendChild(h); wrap.appendChild(p);
+  var nameInput = null;
+  if (!FIRST_NAME){
+    nameInput = document.createElement("input");
+    nameInput.type = "text"; nameInput.maxLength = 24;
+    nameInput.placeholder = "Baby's first name (optional)";
+    nameInput.setAttribute("aria-label", "Baby's first name (optional)");
+    nameInput.autocomplete = "off";
+    nameInput.style.cssText = "display:block;width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:16px;margin:0 0 10px";
+    wrap.appendChild(nameInput);
+  }
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var sb = document.createElement("button");
+  sb.type = "button"; sb.className = "cta"; sb.textContent = "Share their first Halloween";
+  row.appendChild(sb); wrap.appendChild(row);
+  var sst = document.createElement("p"); sst.className = "status";
+  wrap.appendChild(sst);
+  sb.onclick = function(){
+    var rearm = armShareOnce(sb);
+    if (!rearm) return;
+    var name = FIRST_NAME || (nameInput ? nameInput.value : "");
+    var clean = firstNameClean(name);
+    var sid = newShareId();
+    var text = firstTextFor(name, idea, sid);
+    var link = "https://pickmycostume.com/?s=" + sid + "&o=first" + (clean ? "&first=" + encodeURIComponent(clean) : "");
+    function done(ok, msg){
+      sst.textContent = msg;
+      rearm();
+      if (ok && typeof Analytics !== "undefined" && Analytics.track){
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "first", share_msg_variant: shareVariant()});
+        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "first"});
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+          function(){ done(true, "Shared."); },
+          function(){ done(false, ""); }
+        );
+        return;
+      } catch(e){}
+    }
+    doCopy(text, function(ok, msg){
+      if (ok && typeof Analytics !== "undefined" && Analytics.track)
+        Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "first"});
+      done(ok, ok ? "Copied. Paste it into any message." : msg);
+    });
+  };
+  return wrap;
+}
+/* ============ END First-Halloween milestone entry ============ */
+
+/* ============ BEGIN Remix experiment (2026-09-26 pm9) ============
+   "Remix my pick": the Shuffles mechanic from the pm9 novel find. The
+   shared pick is remixable: the friend does not just view the card, they
+   take the quiz from it, and their result page carries a lineage strip
+   ("A remix of your friend's <pick>") while their own share text credits
+   the original. Every friend becomes a creator; every creation advertises
+   the sharer. Fully client-side, URL-carried lineage (no accounts), one
+   generation of credit (each remix credits its immediate source).
+   Sender: "Let a friend remix it" step under the #1 pick.
+   Share URL shape: ?s=<sid>&o=remix&remix=<idea-id>.
+   Recipient: friend banner "Your friend got <pick>. Remix it." plus the
+   attribution strip on the recipient's own results page.
+   New origin "remix", measured like the others: share_created
+   (share_origin=remix) -> recipient_landing_viewed -> quiz_started ->
+   remix_attributed (original_idea_id). Kill criterion: at 50 opened remix
+   links, remix needs clearly more friend quiz starts per share than
+   generic to earn its place; if remix taps are near zero, cut it.
+   Flag-gated: REMIX_ENABLED. */
+var REMIX_ENABLED = false;
+var REMIX_PAIR = null; /* {idea: idea} or null, parsed at load */
+/* Pure: the remix share text for an idea. Audience-aware (share-credibility
+   rule): kid/family picks say "for my kid"/"for our family", never "I am
+   going as X" for a parent's share. credit is the original pick's title
+   when the sender arrived via someone else's remix link, else null. */
+function remixTextFor(idea, sid, credit){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=remix&remix=" + idea.id;
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  var whose = (aud === "kid") ? " for my kid" : (aud === "family") ? " for our family" : " for me";
+  var text = "The quiz picked " + idea.title + whose + " this Halloween. Remix it: take the 2-minute quiz and your card credits my pick: " + link;
+  if (credit) text += " (A remix of my friend's " + credit + ".)";
+  return text;
+}
+/* Arrival payload: ?remix=<idea-id>. Must be a real bank id, flag on;
+   garbage falls through to the generic banner. */
+function remixPairFromQuery(){
+  if (typeof REMIX_ENABLED === "undefined" || !REMIX_ENABLED) return null;
+  var m = /[?&]remix=([a-z0-9-]+)/.exec(location.search || "");
+  if (!m) return null;
+  var idea = (typeof matchIdeaById === "function") ? matchIdeaById(m[1]) : null;
+  if (!idea) return null;
+  return {idea: idea};
+}
+/* Renders the "Let a friend remix it" step under the #1 pick. Returns null
+   with the flag off (DOM byte-identical). When the sender arrived via a
+   remix link, their share text carries the lineage credit. */
+function buildRemixStep(idea){
+  if (!REMIX_ENABLED) return null;
+  var credit = (REMIX_PAIR && REMIX_PAIR.idea && REMIX_PAIR.idea.id !== idea.id)
+    ? REMIX_PAIR.idea.title : null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "remix-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Let a friend remix it";
+  var p = document.createElement("p");
+  p.textContent = "Send your pick as a remix link. When a friend takes the quiz from it, their card credits your pick as the original.";
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var sb = document.createElement("button");
+  sb.type = "button"; sb.className = "cta"; sb.textContent = "Share remix link";
+  var sst = document.createElement("p"); sst.className = "status";
+  row.appendChild(sb);
+  wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(row); wrap.appendChild(sst);
+  sb.onclick = function(){
+    var rearm = armShareOnce(sb);
+    if (!rearm) return;
+    var sid = newShareId();
+    var text = remixTextFor(idea, sid, credit);
+    var link = "https://pickmycostume.com/?s=" + sid + "&o=remix&remix=" + idea.id;
+    function done(ok, msg){
+      sst.textContent = msg;
+      rearm();
+      if (ok && typeof Analytics !== "undefined" && Analytics.track){
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "remix", share_msg_variant: shareVariant()});
+        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "remix"});
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+          function(){ done(true, "Shared."); },
+          function(){ done(false, ""); }
+        );
+        return;
+      } catch(e){}
+    }
+    doCopy(text, function(ok, msg){
+      if (ok && typeof Analytics !== "undefined" && Analytics.track)
+        Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "remix"});
+      done(ok, ok ? "Copied. Paste it into any message." : msg);
+    });
+  };
+  return wrap;
+}
+/* ============ END Remix experiment ============ */
 
 function pairTextFor(idea, sid){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
@@ -6374,6 +7023,19 @@ function renderResults(results){
   if (chlBox) box.appendChild(chlBox);
   var chlStep = buildChallengeShareStep(results[0].idea);
   if (chlStep) box.appendChild(chlStep);
+  /* 2026-09-26 pm9 remix experiment: the attribution strip. Renders only
+     for genuine remix arrivals (REMIX_PAIR null with the flag off), at the
+     top of the results: the friend's pick is a remix of the sharer's
+     pick. Fires remix_attributed once here. */
+  if (VIA_SHARE_ORIGIN === "remix" && REMIX_PAIR){
+    var rst = document.createElement("div");
+    rst.id = "remix-strip";
+    rst.style.cssText = "display:block;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:14px;color:#666;line-height:1.4";
+    rst.textContent = "A remix of your friend's " + REMIX_PAIR.idea.title + ". Your pick credits theirs.";
+    box.insertBefore(rst, box.firstChild);
+    if (typeof Analytics !== "undefined" && Analytics.track)
+      Analytics.track("remix_attributed", {original_idea_id: REMIX_PAIR.idea.id});
+  }
   /* 2026-09-26 pair-share relocation: one calm next-step, tied to the #1
      pick, rendered once under the hero card (never inside share blocks). */
   box.appendChild(buildPairShareStep(results[0].idea));
@@ -6381,6 +7043,19 @@ function renderResults(results){
      buildMatchStep returns null with the flag off. */
   var matchStep = buildMatchStep(results[0].idea);
   if (matchStep) box.appendChild(matchStep);
+  /* 2026-09-26 pm8 glow-up experiment: "Went as something else last
+     year?" step. buildGlowupStep returns null with the flag off. */
+  var glowStep = buildGlowupStep(results[0].idea);
+  if (glowStep) box.appendChild(glowStep);
+  /* 2026-09-26 pm8 idea 2 first-Halloween milestone entry: the milestone
+     share step. buildFirstShareStep returns null with the flag off or
+     outside first mode. */
+  var firstStep = buildFirstShareStep(results[0].idea);
+  if (firstStep) box.appendChild(firstStep);
+  /* 2026-09-26 pm9 remix experiment: "Let a friend remix it" step.
+     buildRemixStep returns null with the flag off. */
+  var remixStep = buildRemixStep(results[0].idea);
+  if (remixStep) box.appendChild(remixStep);
   /* 2026-09-26 party link experiment: host entry ("Make a party link") and
      the guest share-back ("Send my pick to the host"). Both return null
      when they do not apply or with the flag off. */
@@ -10369,6 +11044,8 @@ $("btn-rback").onclick = function(){
 $("btn-rtop").onclick = $("btn-rback").onclick;
 $("btn-restart").onclick = function(){
   state = {qi: 0, answers: {}};
+  /* 2026-09-26 first-Halloween: a fresh run leaves first mode behind. */
+  FIRST_NAME = null;
   clearK("pmc_pick_v1");
   clearK("pmc_quiz_v1"); /* a fresh run replaces any abandoned attempt */
   /* Retakes are quiz starts too: without this the funnel undercounts starts
@@ -10387,6 +11064,9 @@ $("btn-restart").onclick = function(){
    retake_kind so next-kid sessions read separately from plain retakes. */
 function nextKid(){
   var keep = {};
+  /* 2026-09-26 first-Halloween: a next-kid run is a new kid, not the
+     milestone run -- the milestone share step must not carry the name. */
+  state.firstMode = false; FIRST_NAME = null;
   ["q1","qocc","q4"].forEach(function(k){ if (state.answers[k]) keep[k] = state.answers[k]; });
   state.answers = keep;
   clearK("pmc_pick_v1"); /* a new run starts unpicked; old picks must not bleed into new results */
@@ -10591,7 +11271,7 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first)/.exec(location.search || "");
     /* 2026-09-26 evening match-pair experiment: ?o=match is only recognized
        when the flag is on, so arrivals with the flag off behave exactly as
        before the experiment existed. */
@@ -10607,7 +11287,10 @@ function shareLandingHeadline(idea, search){
     if (om && (om[1] !== "block" || BLOCK_MAP_EXP) && (om[1] !== "guess" || GUESS_GAME_ENABLED)
         && (om[1] !== "challenge" || CHALLENGE_SHARE_ENABLED)
         && (om[1] !== "challengeresult" || CHALLENGE_SHARE_ENABLED)
-        && (om[1] !== "match" || MATCH_FIND_ENABLED)) VIA_SHARE_ORIGIN = om[1];
+        && (om[1] !== "match" || MATCH_FIND_ENABLED)
+        && (om[1] !== "glow" || GLOWUP_ENABLED)
+        && (om[1] !== "remix" || REMIX_ENABLED)
+        && (om[1] !== "first" || FIRST_HALLOWEEN_ENABLED)) VIA_SHARE_ORIGIN = om[1];
     /* 2026-09-26 guess-game experiment: ?o=guess is only recognized when the
        flag is on, so arrivals with the flag off behave exactly as before
        the experiment existed.
@@ -10629,6 +11312,27 @@ function shareLandingHeadline(idea, search){
        share link so the recipient banner can name the pair. Parsed into
        MATCH_PAIR only with the flag on and both ids real. */
     MATCH_PAIR = matchPairFromQuery();
+    /* 2026-09-26 pm8 glow-up experiment: ?glow=<classic>,<idea-id> rides
+       the share link so the recipient banner can name the glow-up. Parsed
+       into GLOW_PAIR only with the flag on and the pair real. */
+    GLOW_PAIR = glowPairFromQuery();
+    /* 2026-09-26 pm8 idea 2 first-Halloween milestone entry: ?first=<name>
+       rides the share link so the recipient banner can name the baby. Parsed
+       into FIRST_NAME only with the flag on and the name clean; garbage
+       yields null and the arrival falls through to the generic banner. */
+    FIRST_NAME = firstPayloadFromQuery();
+    /* 2026-09-26 staged-copy lint: ?first= is a baby name; keep it out of the
+       PostHog pageview URL. FIRST_NAME is already parsed into memory above,
+       so the banner and share-back are unaffected. */
+    if (FIRST_NAME && window.history && history.replaceState){
+      var _qs = location.search.replace(/([?&])first=[^&]*&?/, function(m, s){ return s === "?" ? "?" : ""; }).replace(/[?&]$/, "");
+      history.replaceState(null, "", location.pathname + _qs);
+    }
+    /* 2026-09-26 pm9 remix experiment: ?remix=<idea-id> rides the share
+       link so the recipient banner and the attribution strip can name the
+       original pick. Parsed into REMIX_PAIR only with the flag on and the
+       id real. */
+    REMIX_PAIR = remixPairFromQuery();
     /* 2026-09-26 costume roulette: ?spin=<sender idea slug> rides the spin
        share link so the recipient banner can name the spin result. */
     var spm = /[?&]spin=([a-z0-9-]+)/.exec(location.search || "");
@@ -11018,6 +11722,78 @@ function shareLandingHeadline(idea, search){
         renderQ();
       };
       hero.insertBefore(mpb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 pm8 glow-up experiment: genuine ?o=glow arrivals with a
+       valid ?glow= payload get the glow-up banner. GLOW_PAIR is null with
+       the flag off or on garbage, so those arrivals fall through to the
+       generic banner exactly as before the experiment existed. Fires
+       recipient_landing_viewed here because the ?idea= block never runs on
+       a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "glow" && GLOW_PAIR){
+      var gpb = document.createElement("button");
+      gpb.type = "button";
+      gpb.id = "pmc-friend-banner";
+      gpb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      gpb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend is glowing up this Halloween.</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + GLOW_PAIR.classic.label + " last year. " + GLOW_PAIR.idea.title + " this year. Tap to take the 2-minute quiz and find your glow-up.</p>";
+      gpb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(gpb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 pm9 remix experiment: genuine ?o=remix arrivals with a
+       valid ?remix= payload get the remix banner. REMIX_PAIR is null with
+       the flag off or on garbage, so those arrivals fall through to the
+       generic banner exactly as before the experiment existed. Fires
+       recipient_landing_viewed here because the ?idea= block never runs on
+       a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "remix" && REMIX_PAIR){
+      var rpb = document.createElement("button");
+      rpb.type = "button";
+      rpb.id = "pmc-friend-banner";
+      rpb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      rpb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend got " + REMIX_PAIR.idea.title + ".</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Remix it: take the 2-minute quiz and your card credits their pick.</p>";
+      rpb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(rpb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 pm8 idea 2 first-Halloween milestone entry: genuine
+       ?o=first arrivals with a valid ?first= payload get the milestone
+       banner. FIRST_NAME is null with the flag off or on garbage, so those
+       arrivals fall through to the generic banner exactly as before the
+       experiment existed. One tap starts the quiz in first mode (kid +
+       Under 3); the sender's name is cleared so the recipient's share-back
+       uses their own. Fires recipient_landing_viewed here because the
+       ?idea= block never runs on a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "first" && FIRST_NAME){
+      var fpb = document.createElement("button");
+      fpb.type = "button";
+      fpb.id = "pmc-friend-banner";
+      fpb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      fpb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">It's " + firstEsc(FIRST_NAME) + "'s first Halloween too?</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Find their first costume with the 2-minute quiz.</p>";
+      fpb.onclick = function(){
+        firstStartQuiz(null, "recipient-banner");
+      };
+      hero.insertBefore(fpb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
       return;
     }
