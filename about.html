@@ -4,16 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>About | Pick My Costume</title>
-<meta name="description" content="What Pick My Costume is: 5 quick questions, 3 Halloween costume ideas picked for you. No account, no email. Your answers stay on your phone.">
+<meta name="description" content="Pick My Costume is a free Halloween costume picker made by a dad who burned a whole evening scrolling costume ideas.">
 <link rel="canonical" href="https://pickmycostume.com/about">
 <meta property="og:type" content="website">
 <meta property="og:title" content="About | Pick My Costume">
-<meta property="og:description" content="5 quick questions, 3 Halloween costume ideas picked for you. No account, no email. Your answers stay on your phone.">
+<meta property="og:description" content="A free Halloween costume picker made by a dad who burned a whole evening scrolling costume ideas.">
 <meta property="og:url" content="https://pickmycostume.com/about">
 <meta property="og:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"AboutPage","name":"About | Pick My Costume","url":"https://pickmycostume.com/about","about":{"@type":"WebSite","name":"Pick My Costume","url":"https://pickmycostume.com/"}}
-</script>
 <style>
 :root{
   --bg:#160d28; --bg2:#211540; --card:#2a1c52; --ink:#fdf3e3;
@@ -22,22 +19,24 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6}
-.wrap{max-width:720px;margin:0 auto;padding:20px 16px 64px}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 64px}
 header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
 .brand{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none}
 .brand span{color:var(--accent)}
 .home-link{color:var(--muted);text-decoration:none;font-size:14px}
 h1{font-size:32px;margin:8px 0 4px;line-height:1.2}
 .sub{color:var(--muted);margin:0 0 24px}
-.examplebox{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:20px 0}
-.examplebox .ex-label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin:0 0 8px;font-weight:800}
-.examplebox p{margin:0 0 8px}
-.examplebox p:last-child{margin-bottom:0}
-a{color:var(--accent)}
+h2{font-size:22px;margin:32px 0 8px}
+p{margin:0 0 16px}
+a{color:var(--accent);text-decoration:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:24px 0}
+.card p{margin:0}
 .cta{display:block;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:18px;padding:16px;border-radius:var(--radius);text-decoration:none;margin:36px 0 8px}
-.fine{color:var(--muted);font-size:13px}
-footer{margin-top:40px;text-align:center}
+footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
 </style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"AboutPage","url":"https://pickmycostume.com/about","publisher":{"@id":"https://pickmycostume.com/#organization"}}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -46,29 +45,26 @@ footer{margin-top:40px;text-align:center}
     <a class="home-link" href="/">Take the quiz</a>
   </header>
 
-  <h1>What this is</h1>
-  <p class="sub">A free Halloween costume picker. A few quick questions, three ideas, no email, no account.</p>
+  <h1>About</h1>
+  <p class="sub">Why this site exists, in about a minute.</p>
 
-  <p>Answer 5 quick questions. Get 3 Halloween costume ideas picked for you, each with a one-line how-to. For yourself, your kid, your partner, your group, or the whole family.</p>
+  <p>I'm a dad who burned a whole evening scrolling costume ideas for my kid and ended up with nothing. Every list was the same: store links, sponsored picks, and "easy DIY" projects that needed a sewing machine and three weekends.</p>
 
-  <div class="examplebox">
-    <p class="ex-label">Example</p>
-    <p>You answer: <b>couple, funny, low effort</b>.</p>
-    <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
-    <p>Tap &ldquo;Claim this costume&rdquo; to save it, text it to your partner, and get an AI plan for putting it together.</p>
+  <p>So I had AI build this quiz instead. You answer a few questions about who the costume is for, the vibe, and how much effort you'll spend. It picks 3 ideas from a bank of 137 original costumes, each with a materials list and numbered build steps. Every idea says what it costs and how long it takes before you click.</p>
+
+  <div class="card">
+    <p><strong>The rules I built it on:</strong> no licensed characters (you won't find Elsa here, but you'll find the Snow Sisters), no store links pretending to be ideas, no account, no ads, no signup. The guides are written for parents building with or for kids, because that's who I was when I needed this.</p>
   </div>
 
-  <p>Your answers are scored against 137 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
+  <h2>How it's made</h2>
+  <p>The site is a static page with a hand-built bank of 137 costume ideas. The quiz matches your answers to the bank; nothing leaves your browser. I keep adding ideas and improving the guides, and I dogfood every change with my own family before it ships.</p>
 
-  <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
-
-  <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
+  <h2>Say hello</h2>
+  <p>Found a broken step, a bad materials list, or a costume your kid loved? I'd genuinely like to hear it: <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
 
   <a class="cta" href="/">Find my costume</a>
 
-  <footer>
-    <p class="fine">Built with Muse. Made by Billy Litner.</p>
-  </footer>
+  <footer>Built with Muse. Made by Billy Litner.</footer>
 </div>
 </body>
 </html>
