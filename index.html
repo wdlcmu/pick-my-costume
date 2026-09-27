@@ -572,6 +572,44 @@ footer a{color:var(--accent)}
 .duel-triple{font-size:14px;color:var(--muted);margin:8px 0 0}
 .duel-step{display:none}
 .duel-step.on{display:block}
+/* ================= Halloween Wrapped (2026-09-26) =================
+   Full-screen recap overlay: 4 slides (pick, answers, numbers, share).
+   All classes prefixed wr- to avoid collisions with quiz styles. */
+#wr-overlay{position:fixed;inset:0;z-index:1001;background:#0d0716;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#wr-overlay.open{display:block}
+.wr-app{width:100%;max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;overflow:hidden;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}
+.wr-dots{position:absolute;top:calc(14px + env(safe-area-inset-top));left:0;right:0;display:flex;gap:6px;padding:0 24px;z-index:5}
+.wr-dots i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.25)}
+.wr-dots i.done{background:#ffb020}
+.wr-close{position:absolute;top:calc(28px + env(safe-area-inset-top));right:16px;z-index:6;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;width:44px;height:44px;font-size:20px;line-height:1;cursor:pointer}
+.wr-slide{padding:80px 24px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;min-height:100vh;min-height:100dvh;animation:wr-fadein .35s ease}
+@keyframes wr-fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.wr-kicker{text-transform:uppercase;letter-spacing:2px;font-size:12px;opacity:.75;margin:0 0 10px;color:#fff}
+.wr-h1{font-size:40px;line-height:1.05;margin:0 0 12px;letter-spacing:-1px;color:#fff;font-weight:800}
+.wr-h1 .wr-accent{color:#ffb020}
+.wr-sub{font-size:17px;line-height:1.45;opacity:.85;margin:0 0 24px;color:#fff}
+.wr-btn{display:block;width:100%;border:0;border-radius:14px;background:#ffb020;color:#231303;font-size:18px;font-weight:700;padding:16px;margin-top:12px;cursor:pointer;font-family:inherit}
+.wr-btn.wr-ghost{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.wr-btn:disabled{opacity:.5}
+.wr-stat{margin:0 0 18px}
+.wr-stat .wr-num{font-size:44px;font-weight:800;color:#ffb020;letter-spacing:-1px;line-height:1}
+.wr-stat .wr-lbl{font-size:15px;opacity:.85;margin-top:4px;line-height:1.4;color:#fff}
+.wr-ansrow{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.14);font-size:16px;color:#fff}
+.wr-ansrow .wr-q{opacity:.65}
+.wr-ansrow .wr-a{font-weight:700;text-align:right}
+.wr-badge{display:inline-block;background:rgba(255,176,32,.18);color:#ffb020;border:1px solid rgba(255,176,32,.5);border-radius:999px;font-size:13px;font-weight:700;padding:6px 12px;margin:0 0 14px}
+.wr-pickblurb{font-size:16px;line-height:1.5;opacity:.9;margin:0 0 10px;color:#fff}
+.wr-pickwhy{font-size:15px;line-height:1.5;opacity:.75;font-style:italic;margin:0 0 8px;color:#fff}
+.wr-tapnext{text-align:center;font-size:13px;opacity:.55;margin-top:20px;color:#fff}
+.wr-copied{text-align:center;font-size:14px;color:#ffb020;margin-top:12px}
+.wr-navrow{display:flex;gap:10px;margin-top:8px}
+.wr-navrow .wr-btn{margin-top:0}
+.wr-bg1{background:linear-gradient(160deg,#2b0f4d 0%,#0d0716 70%)}
+.wr-bg2{background:linear-gradient(160deg,#4d1500 0%,#1c0a02 70%)}
+.wr-bg3{background:linear-gradient(160deg,#0b3d2e 0%,#07120e 70%)}
+.wr-bg4{background:linear-gradient(160deg,#3d0b2a 0%,#14060f 70%)}
+.wr-bg5{background:linear-gradient(160deg,#1a2a6c 0%,#0a0d20 70%)}
+.wr-bg6{background:linear-gradient(160deg,#4d2b00 0%,#170e02 70%)}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
@@ -6007,6 +6045,254 @@ function buildRevealSharePrompt(idea){
   };
   return btn;
 }
+/* ================= Halloween Wrapped (2026-09-26) =================
+   Billy-approved 2026-09-26 ("ship ideas too after a red team check").
+   Red-teamed 2026-09-26 PM: 43/43, 4 defects fixed (audience-aware share
+   text and slide headings, age-stat honesty, copy honesty).
+   Full-screen recap of the just-completed quiz: 4 slides (pick, answers,
+   numbers, share) rendered from the LIVE bank and the actual state.answers.
+   No duplicated bank, no second quiz. Analytics: counts only, no answer
+   content (quiz answers never leave the device). */
+var _wr = {pick: null, stats: null, slide: 0, ov: null, stage: null, dots: null};
+function wrEsc(t){ return String(t == null ? "" : t).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function wrTagKeyOf(opt){
+  if (!opt || !opt.tags) return null;
+  var keys = Object.keys(opt.tags);
+  return keys.length ? keys[0] : null;
+}
+function wrStats(pick){
+  var total = IDEAS.length;
+  var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
+  var vibeTag = wrTagKeyOf(state.answers.q2), effortTag = wrTagKeyOf(state.answers.q4),
+      occTag = wrTagKeyOf(state.answers.qocc), intTag = wrTagKeyOf(state.answers.qinterest),
+      ageTag = wrTagKeyOf(state.answers.q5kid);
+  function hasTag(idea, t){ return t && idea.tags && idea.tags[t] > 0; }
+  function countTag(t){ return t ? IDEAS.filter(function(i){ return hasTag(i, t); }).length : 0; }
+  return {
+    total: total,
+    rank: pick.rank,
+    topPct: Math.max(1, Math.ceil(pick.rank / total * 100)),
+    trending: !!pick.trending,
+    trendLane: pick.trendLane || null,
+    trendStat: pick.trendStat || null,
+    trendingCount: IDEAS.filter(function(i){ return i.trending; }).length,
+    audCount: IDEAS.filter(function(i){ return (i.audience || []).indexOf(aud) !== -1; }).length,
+    aud: aud,
+    vibeCount: countTag(vibeTag),
+    vibeLabel: state.answers.q2 ? state.answers.q2.label : "",
+    comboCount: (vibeTag && effortTag) ? IDEAS.filter(function(i){ return hasTag(i, vibeTag) && hasTag(i, effortTag); }).length : 0,
+    effortLabel: state.answers.q4 ? state.answers.q4.label : "",
+    occCount: countTag(occTag),
+    occLabel: state.answers.qocc ? state.answers.qocc.label : "",
+    intCount: countTag(intTag),
+    intLabel: (intTag && state.answers.qinterest) ? state.answers.qinterest.label : null,
+    ageCount: countTag(ageTag),
+    ageLabel: (ageTag && state.answers.q5kid) ? state.answers.q5kid.label : null
+  };
+}
+function wrShareText(pick, stats, sid){
+  /* Audience-aware, mirroring the main site's shareCaptionFor defaults
+     (red-team fix: a dad sharing his kid's Wrapped must not read as the
+     wearer). Tracked link feeds the share funnel like every other share. */
+  var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "solo";
+  var who = aud === "kid" ? "The quiz picked " + pick.title + " for my kid this Halloween."
+    : aud === "family" ? "The quiz picked " + pick.title + " for our family this Halloween."
+    : (aud === "couple" || aud === "group") ? "We are going as " + pick.title + " this Halloween."
+    : "I am going as " + pick.title + " this Halloween.";
+  return "My 2026 Halloween Wrapped: " + who +
+    " (ranked #" + stats.rank + " of " + stats.total + "). " +
+    "Find your pick: https://pickmycostume.com/?s=" + sid + "&o=wrapped";
+}
+function wrShowSlide(n){
+  var SLIDES = ["pick", "answers", "numbers", "share"];
+  if (n < 0) n = 0;
+  if (n > SLIDES.length - 1) n = SLIDES.length - 1;
+  _wr.slide = n;
+  var kind = SLIDES[n];
+  _wr.dots.innerHTML = "";
+  for (var i = 0; i < SLIDES.length; i++){
+    var d = document.createElement("i");
+    if (i <= n) d.className = "done";
+    _wr.dots.appendChild(d);
+  }
+  var html = "", bg = "wr-bg3";
+  if (kind === "pick") { var r = wrPickHtml(); html = r.html; bg = r.bg; }
+  else if (kind === "answers") { var r2 = wrAnswersHtml(); html = r2.html; bg = r2.bg; }
+  else if (kind === "numbers") { var r3 = wrNumbersHtml(); html = r3.html; bg = r3.bg; }
+  else { var r4 = wrShareHtml(); html = r4.html; bg = r4.bg; }
+  _wr.stage.innerHTML = "";
+  var s = document.createElement("div");
+  s.className = "wr-slide " + bg;
+  s.innerHTML = html;
+  _wr.stage.appendChild(s);
+  /* Wire nav buttons */
+  var nx = s.querySelector("[data-wr-nav='next']"), pv = s.querySelector("[data-wr-nav='prev']");
+  if (nx) nx.onclick = function(){ wrShowSlide(_wr.slide + 1); };
+  if (pv) pv.onclick = function(){ wrShowSlide(_wr.slide - 1); };
+  /* Tap-anywhere advances slides 1-3 (red-team note: keep the visible hint). */
+  if (kind !== "share"){
+    s.onclick = function(e){
+      if (e.target.closest("button")) return;
+      wrShowSlide(_wr.slide + 1);
+    };
+  }
+  /* Wire share + close on the share slide */
+  if (kind === "share") wrWireShare(s);
+  Analytics.track("wrapped_slide_viewed", {slide: kind});
+  if (_wr.ov) _wr.ov.scrollTop = 0;
+}
+function wrPickHtml(){
+  var pick = _wr.pick, stats = _wr.stats;
+  var aud = stats.aud;
+  var headline = aud === "kid" ? "Your kid is going as"
+    : aud === "family" ? "Your family is going as"
+    : "You are going as";
+  var html = '<p class="wr-kicker">Your pick</p>' +
+    (stats.trending && stats.trendLane ? '<span class="wr-badge">Trending: ' + wrEsc(stats.trendLane) + "</span>" : "") +
+    '<p class="wr-h1">' + headline + '<br><span class="wr-accent">' + wrEsc(pick.title) + "</span></p>" +
+    '<p class="wr-pickblurb">' + wrEsc(pick.blurb) + "</p>" +
+    '<p class="wr-pickwhy">&ldquo;' + wrEsc(pick.why) + "&rdquo;</p>" +
+    '<div class="wr-navrow"><button class="wr-btn" data-wr-nav="next" type="button">Next</button></div>' +
+    '<p class="wr-tapnext">Tap anywhere to continue</p>';
+  return {html: html, bg: "wr-bg3"};
+}
+function wrAnswersHtml(){
+  var order = flowOrder().slice();
+  if (state.answers.q5kid && order.indexOf("q5kid") === -1) order.push("q5kid");
+  var rows = "";
+  order.forEach(function(qid){
+    var a = state.answers[qid];
+    if (!a || !a.label) return;
+    rows += '<div class="wr-ansrow"><span class="wr-q">' + wrEsc(qTitle(qid)) + '</span><span class="wr-a">' +
+      wrEsc(a.label) + "</span></div>";
+  });
+  var html = '<p class="wr-kicker">Your answers</p>' +
+    '<p class="wr-h1">What you<br>picked</p>' + rows +
+    '<div class="wr-navrow"><button class="wr-btn wr-ghost" data-wr-nav="prev" type="button">Back</button>' +
+    '<button class="wr-btn" data-wr-nav="next" type="button">Next</button></div>' +
+    '<p class="wr-tapnext">Tap anywhere to continue</p>';
+  return {html: html, bg: "wr-bg4"};
+}
+function wrNumbersHtml(){
+  var stats = _wr.stats;
+  var audNoun = {solo:"solo",kid:"kid",family:"family",couple:"couple",group:"group"}[stats.aud] || stats.aud;
+  var html = '<p class="wr-kicker">By the numbers</p><p class="wr-h1">Your stats</p>';
+  html += '<div class="wr-stat"><div class="wr-num">#' + stats.rank + "</div>" +
+    '<div class="wr-lbl">Your pick ranks #' + stats.rank + " of " + stats.total +
+    " ideas. Top " + stats.topPct + "% of the bank.</div></div>";
+  if (stats.trending && stats.trendStat){
+    html += '<div class="wr-stat"><div class="wr-num">' + stats.trendingCount + "</div>" +
+      '<div class="wr-lbl">trending ideas this year. Yours is one: ' + wrEsc(stats.trendStat) + ".</div></div>";
+  }
+  html += '<div class="wr-stat"><div class="wr-num">' + stats.audCount + "</div>" +
+    '<div class="wr-lbl">' + wrEsc(audNoun) + " costumes in the bank. Yours is one of them.</div></div>";
+  if (stats.ageLabel){
+    var ageNoun = {"Under 3":"under-3s","3 to 6":"ages 3 to 6","7+":"ages 7 and up","Mixed ages":"mixed ages"}[stats.ageLabel] || stats.ageLabel.toLowerCase();
+    html += '<div class="wr-stat"><div class="wr-num">' + stats.ageCount + "</div>" +
+      '<div class="wr-lbl">ideas are made for ' + wrEsc(ageNoun) + ".</div></div>";
+  }
+  html += '<div class="wr-stat"><div class="wr-num">' + stats.comboCount + "</div>" +
+    '<div class="wr-lbl">of ' + stats.total + ' ideas match your "' +
+    wrEsc(stats.vibeLabel.toLowerCase()) + " + " + wrEsc(stats.effortLabel.toLowerCase()) +
+    '" combo.</div></div>';
+  if (stats.intLabel){
+    html += '<div class="wr-stat"><div class="wr-num">' + stats.intCount + "</div>" +
+      '<div class="wr-lbl">ideas match "' + wrEsc(stats.intLabel) + '".</div></div>';
+  }
+  html += '<div class="wr-navrow"><button class="wr-btn wr-ghost" data-wr-nav="prev" type="button">Back</button>' +
+    '<button class="wr-btn" data-wr-nav="next" type="button">Next</button></div>' +
+    '<p class="wr-tapnext">Tap anywhere to continue</p>';
+  return {html: html, bg: "wr-bg5"};
+}
+function wrShareHtml(){
+  var pick = _wr.pick, stats = _wr.stats;
+  var html = '<p class="wr-kicker">Share it</p>' +
+    '<p class="wr-h1">Your<br><span class="wr-accent">Wrapped</span></p>' +
+    '<p class="wr-sub">&ldquo;' + wrEsc(pick.title) + "&rdquo; &middot; #" + stats.rank + " of " + stats.total +
+    " &middot; " + wrEsc(stats.vibeLabel) + " + " + wrEsc(stats.effortLabel) + "</p>" +
+    '<button class="wr-btn" id="wr-share" type="button">Share my Wrapped</button>' +
+    '<p class="wr-copied" id="wr-copied" hidden>Link copied. Paste it anywhere.</p>' +
+    '<button class="wr-btn wr-ghost" data-wr-nav="prev" type="button">Back</button>';
+  return {html: html, bg: "wr-bg6"};
+}
+function wrWireShare(s){
+  var btn = s.querySelector("#wr-share");
+  if (!btn) return;
+  btn.onclick = function(){
+    var rearmShare = armShareOnce(btn);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    var sid = newShareId();
+    var text = wrShareText(_wr.pick, _wr.stats, sid);
+    function doneShare(ok, via){
+      rearmShare(); /* the share settled: sent, dismissed, or copied */
+      if (ok){
+        var rscp = {share_id: sid, idea_id: _wr.pick.id, share_origin: "wrapped", via: via};
+        Analytics.track("share_created", rscp);
+        if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: _wr.pick.id, share_origin: "wrapped"});
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "My 2026 Halloween Wrapped", text: text}).then(
+          function(){ doneShare(true, "native"); },
+          function(){ doneShare(false, ""); } /* dismissed sheet: a cancel, not a share */
+        );
+        return;
+      } catch(e){ /* fall through to clipboard copy */ }
+    }
+    doCopy(text, function(ok){
+      if (ok){
+        var cp = s.querySelector("#wr-copied");
+        if (cp) cp.hidden = false;
+      }
+      doneShare(ok, "clipboard");
+    });
+  };
+}
+function openWrapped(results){
+  var pick = results && results[0] ? results[0].idea : null;
+  if (!pick) return;
+  if (!state.answers.q1) return; /* no completed quiz: nothing to recap */
+  _wr.pick = pick;
+  _wr.stats = wrStats(pick);
+  var ov = document.getElementById("wr-overlay");
+  if (!ov){
+    ov = document.createElement("div");
+    ov.id = "wr-overlay";
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML = "";
+  var app = document.createElement("div");
+  app.className = "wr-app";
+  var dots = document.createElement("div");
+  dots.className = "wr-dots";
+  var close = document.createElement("button");
+  close.className = "wr-close";
+  close.type = "button";
+  close.textContent = "\u2715";
+  close.setAttribute("aria-label", "Close Wrapped");
+  close.onclick = function(){ ov.classList.remove("open"); document.body.style.overflow = ""; };
+  var stage = document.createElement("div");
+  app.appendChild(dots);
+  app.appendChild(close);
+  app.appendChild(stage);
+  ov.appendChild(app);
+  _wr.ov = ov; _wr.stage = stage; _wr.dots = dots;
+  ov.classList.add("open");
+  document.body.style.overflow = "hidden";
+  ov.scrollTop = 0;
+  Analytics.track("wrapped_opened", {idea_id: pick.id});
+  wrShowSlide(0);
+}
+function buildWrappedButton(results){
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "ghost";
+  btn.style.cssText = "display:block;width:100%;margin:14px 0 0;";
+  btn.textContent = "See your 2026 Halloween Wrapped";
+  btn.onclick = function(){ openWrapped(results); };
+  return btn;
+}
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
@@ -6061,6 +6347,10 @@ function renderResults(results){
   /* 2026-09-26 reveal-moment share prompt: one calm line at the
      peak-delight second, one tap to share, never buried in the pick panel. */
   box.appendChild(buildRevealSharePrompt(results[0].idea));
+  /* 2026-09-26 Halloween Wrapped: one calm entry to the 4-slide recap
+     (pick, answers, numbers, share) rendered from the live bank and the
+     actual answers. Billy-approved after the 43/43 red-team pass. */
+  box.appendChild(buildWrappedButton(results));
   /* 2026-09-26 evening block-map experiment: additive, flag-gated; the
      builder returns null with the flag off so nothing renders. */
   var bmBox = buildBlockMapBox(results[0].idea);
