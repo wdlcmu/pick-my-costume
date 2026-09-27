@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Classroom Costumes: Costume Ideas for the Whole Class - Pick My Costume</title>
+<meta name="description" content="A free teacher tool for Halloween: pick one theme for the whole class or give every kid their own costume, then get one shopping list for the class. No account, prints clean.">
+<link rel="canonical" href="https://pickmycostume.com/classroom">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/classroom">
+<meta property="og:title" content="Classroom Costumes - Pick My Costume">
+<meta property="og:description" content="One theme for the whole class or one costume per kid, plus a single class shopping list. Free, no account.">
+<meta property="og:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Classroom Costumes - Pick My Costume">
+<meta name="twitter:description" content="One theme for the whole class or one costume per kid, plus a single class shopping list. Free, no account.">
+<meta name="twitter:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ItemList","name":"Classroom costume themes","itemListElement":[
+{"@type":"ListItem","position":1,"name":"Emoji Crew","url":"https://pickmycostume.com/c/emoji-crew"},
+{"@type":"ListItem","position":2,"name":"Emotion Crew","url":"https://pickmycostume.com/c/emotion-crew"},
+{"@type":"ListItem","position":3,"name":"Numbered Players","url":"https://pickmycostume.com/c/numbered-players"},
+{"@type":"ListItem","position":4,"name":"Kart Racers","url":"https://pickmycostume.com/c/kart-racers"},
+{"@type":"ListItem","position":5,"name":"Bowling Pins","url":"https://pickmycostume.com/c/bowling-pins"},
+{"@type":"ListItem","position":6,"name":"Block Game Crew","url":"https://pickmycostume.com/c/block-game-crew"}]}
+</script>
+<script>
+/* PostHog: anonymous usage stats only. No answers or names are sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --btn-bg: #ff8c1a;
+  --btn-ink: #2a1500;
+  --radius: 14px;
+  --green:#7ee2a8;
+}
+*{box-sizing:border-box}
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 64px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.brand{color:var(--ink);text-decoration:none;font-weight:800;font-size:17px}
+.brand span{color:var(--accent)}
+.proto{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 10px}
+h1{font-size:36px;margin:14px 0 8px;letter-spacing:-0.5px}
+.sub{font-size:17px;color:var(--muted);margin:0 0 24px;line-height:1.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:0 0 16px}
+.card h2{font-size:20px;margin:0 0 4px}
+.card .hint{font-size:14px;color:var(--muted);margin:0 0 14px}
+.stepnum{display:inline-block;font-size:12px;font-weight:800;color:var(--accent-ink);background:var(--accent);border-radius:20px;padding:2px 10px;margin-bottom:8px}
+/* stepper */
+.stepper{display:flex;align-items:center;gap:14px;margin:6px 0 4px}
+.stepper button{width:52px;height:52px;border-radius:12px;border:2px solid var(--line);background:var(--bg2);color:var(--ink);font-size:24px;font-weight:800;cursor:pointer}
+.stepper button:active{border-color:var(--accent)}
+.stepval{font-size:30px;font-weight:800;min-width:64px;text-align:center}
+.steplabel{font-size:14px;color:var(--muted)}
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:2px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:24px;padding:12px 18px;font-size:15px;font-weight:600;cursor:pointer;min-height:48px;font-family:inherit}
+.chip .emo{margin-right:6px}
+.chip.sel{border-color:var(--accent);background:var(--sel-bg)}
+.chip.sel::before{content:"✓ ";color:var(--accent)}
+/* mode buttons */
+.modes{display:grid;gap:12px}
+@media(min-width:560px){.modes{grid-template-columns:1fr 1fr}}
+.mode{border:2px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:var(--radius);padding:18px;text-align:left;cursor:pointer;font-family:inherit}
+.mode .mname{display:block;margin:0 0 6px;font-size:18px;font-weight:700}
+.mode .mdesc{display:block;margin:0;font-size:14px;color:var(--muted)}
+.mode.sel{border-color:var(--accent);background:var(--sel-bg)}
+/* theme grid */
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(min-width:560px){.themes{grid-template-columns:1fr 1fr 1fr}}
+.theme{border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg2);cursor:pointer;padding:0;font-family:inherit;color:var(--ink);text-align:left}
+.theme img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.theme .tbody{display:block;padding:10px 12px 12px}
+.theme .tname{display:block;margin:0 0 2px;font-size:15px;font-weight:700}
+.theme .ttriple{display:block;margin:0 0 4px;font-size:12px;font-weight:700;color:var(--accent)}
+.theme .tblurb{display:block;margin:0;font-size:12.5px;color:var(--muted);line-height:1.4}
+.theme.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+/* buttons */
+.btn{display:inline-block;border:0;border-radius:12px;padding:14px 22px;font-size:16px;font-weight:800;cursor:pointer;min-height:52px;background:var(--btn-bg);color:var(--btn-ink);font-family:inherit}
+.btn:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:600;font-size:14px;padding:10px 16px;min-height:44px}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;align-items:center}
+.togglerow{display:flex;align-items:center;gap:10px;margin:14px 0 0;font-size:15px;cursor:pointer;min-height:48px}
+.togglerow input{width:24px;height:24px;accent-color:var(--accent);cursor:pointer}
+/* results */
+#results{display:none}
+#results.on{display:block}
+.reshead{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 10px;flex-wrap:wrap;gap:8px}
+.reshead h2{font-size:22px;margin:0}
+.reshead span{font-size:13px;color:var(--muted)}
+.kid{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:0 0 10px}
+.kidhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.kidname{font-size:16px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px dashed var(--line);padding:2px 4px;min-width:80px}
+/* 16px, not 13px: the name field is a text input in practice, and iOS Safari
+   auto-zooms on focus below 16px. A teacher typing 28 names should not fight
+   the zoom on every tap. (2026-09-26 QA) */
+.kidname:focus{outline:2px solid var(--accent);outline-offset:2px;color:var(--ink)}
+.kid h3{margin:2px 0 4px;font-size:19px}
+.kid .triple{margin:0 0 4px;font-size:13px;font-weight:700;color:var(--accent)}
+.kid .pickline{margin:0 0 8px;font-size:14px;color:var(--muted)}
+.kid .swap{background:none;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer;min-height:44px;font-family:inherit}
+.kid .swap:hover{border-color:var(--accent);color:var(--ink)}
+.kid .go{display:inline-block;margin-top:2px;font-size:15px;padding:11px 0}
+/* 11px vertical padding: the link's tap target was one text line (~22px).
+   A teacher opens these one by one; give the thumb a full 44px row. (2026-09-26 QA) */
+/* supply list */
+.supply{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:0 0 12px}
+.supply h3{margin:0 0 2px;font-size:17px}
+.supply .ssub{font-size:13px;color:var(--muted);margin:0 0 10px}
+.supply ul{margin:0;padding:0;list-style:none}
+.supply li{padding:9px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.4}
+.supply li:first-child{border-top:0}
+.supply li .qty{color:var(--accent);font-weight:800}
+.basics{font-size:13.5px;color:var(--muted);line-height:1.55;background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin:0 0 16px}
+.howto{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);line-height:1.6}
+.howto b{color:var(--ink)}
+footer{margin-top:32px;text-align:center;color:var(--muted);font-size:13px}
+footer a{color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:14px 0}
+.notice{background:#2a1a08;border:1px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5;margin:0 0 14px}
+button:focus-visible,.chip:focus-visible,.theme:focus-visible,.mode:focus-visible,.kidname:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* print: roster + shopping list only */
+@media print{
+  body{background:#fff;color:#111}
+  .topbar,.card.step,.howto,footer,.btnrow,.kid .swap,#results .btnrow,.notice{display:none !important}
+  .wrap{max-width:100%;padding:0}
+  .kid,.supply{background:#fff;border:1px solid #ccc;color:#111;break-inside:avoid}
+  .kid .triple,.supply li .qty{color:#b35c00}
+  .kidname{color:#111;border-color:#ccc}
+  a{color:#111;text-decoration:none}
+  /* 2026-09-26 QA: the roster's "Build guide" links printed as dead text, so
+     the teacher could not actually "send the link home with each kid" from
+     the printout. Print the full URL after each link. */
+  .kid .go::after{content:" (https://pickmycostume.com" attr(href) ")";font-size:12px}
+  #results{display:block !important}
+  .sub,.reshead span,.kid .pickline,.supply .ssub,.basics{color:#444}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="/">Pick My <span>Costume</span></a>
+    <span class="proto">teacher tool</span>
+  </div>
+
+  <h1>Costumes for the whole class</h1>
+  <p class="sub">Halloween with 24 kids does not have to mean 24 store-bought costumes. Pick one theme for everyone or give each kid their own idea, then get a single shopping list for the class. Free, no account, prints clean.</p>
+
+  <section class="card step" aria-label="Step 1">
+    <span class="stepnum">Step 1</span>
+    <h2>How many kids, and how old?</h2>
+    <p class="hint">We use this to size the shopping list and to keep ideas age-appropriate.</p>
+    <div class="stepper">
+      <button type="button" id="minus" aria-label="Fewer kids">&minus;</button>
+      <div><div class="stepval" id="nval">24</div><div class="steplabel">kids</div></div>
+      <button type="button" id="plus" aria-label="More kids">+</button>
+    </div>
+    <div class="chips" style="margin-top:14px" role="radiogroup" aria-label="Age group">
+      <button type="button" class="chip sel" id="age-little" role="radio" aria-checked="true"><span class="emo">🧸</span>Little kids (3-6)</button>
+      <button type="button" class="chip" id="age-big" role="radio" aria-checked="false"><span class="emo">🎒</span>Big kids (7-12)</button>
+    </div>
+  </section>
+
+  <section class="card step" aria-label="Step 2">
+    <span class="stepnum">Step 2</span>
+    <h2>One theme, or every kid their own?</h2>
+    <p class="hint">A single theme photographs beautifully and shares supplies. Individual picks let every kid be the thing they love.</p>
+    <div class="modes">
+      <button type="button" class="mode sel" id="mode-theme">
+        <span class="mname">🎭 One theme for the class</span>
+        <span class="mdesc">Everyone builds a version of the same idea. Cheapest per kid, one shared shopping list.</span>
+      </button>
+      <button type="button" class="mode" id="mode-own">
+        <span class="mname">🧒 Every kid picks their own</span>
+        <span class="mdesc">Tell us what the class is into. Each kid gets their own costume matched to an interest.</span>
+      </button>
+    </div>
+
+    <div id="pane-theme">
+      <div class="themes" id="theme-grid"></div>
+    </div>
+
+    <div id="pane-own" hidden>
+      <p class="hint" style="margin-top:14px">What is the class into? Pick the interests you hear about at recess. No picks means a surprise mix.</p>
+      <div class="chips" id="interest-chips"></div>
+      <label class="togglerow"><input type="checkbox" id="norepeat" checked> No two kids get the same costume</label>
+      <div class="btnrow">
+        <button type="button" class="btn" id="assign">Assign costumes</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="results">
+    <div class="reshead"><h2>The roster</h2><span>Tap a name to type the real one</span></div>
+    <div class="notice" id="roster-note" hidden></div>
+    <div id="roster"></div>
+    <div class="reshead"><h2>Class shopping list</h2><span id="list-sub"></span></div>
+    <div class="btnrow">
+      <button type="button" class="btn-ghost" id="copy-list">Copy list</button>
+      <button type="button" class="btn-ghost" id="print-list">Print roster + list</button>
+    </div>
+    <div id="supply"></div>
+    <p class="basics">Assumes the classroom has scissors, glue sticks, tape, and markers. The list above only shows what to buy or gather beyond that. Every costume links to a free build guide with the steps, so send the link home with each kid.</p>
+  </div>
+
+  <div class="howto">
+    <p><b>How it works.</b> Pick a class size and age group, then choose a shared theme or assign individual costumes by interest. Costumes come from the same 137-idea bank as the main quiz, filtered to kid-appropriate picks. The shopping list adds up every costume's materials and scales them to your class, splitting "one per student" items from shared supplies.</p>
+    <p>Want to check what you already own first? Try <a href="/pantry">What do you have?</a> Or browse the <a href="/group-costumes">group costume packs</a> for families and teams.</p>
+  </div>
+
+  <footer>
+    Built with Muse. Made by Billy Litner.<br>
+    <a href="/">Pick My Costume</a> &middot; <a href="/group-costumes">Group packs</a> &middot; <a href="/pantry">What do you have?</a>
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ===== generated data: do not hand-edit (see hour-session/build_classroom.py) ===== */
+var KID_BANK = [{"id":"classic-ghost","tags":{"scary":2,"simple":3,"kid36":2,"kid7plus":2,"cute":1}},{"id":"blue-dog-family","tags":{"cute":3,"funny":1,"simple":2,"kid36":2,"animals":1,"tv":3}},{"id":"blue-alien-ohana","tags":{"cute":3,"funny":1,"simple":2,"kid36":2,"animals":1,"tv":3}},{"id":"fairy-tale-princesses","tags":{"cute":3,"simple":1,"kid36":2,"kid7plus":1,"princess":3}},{"id":"tin-hero","tags":{"cute":1,"funny":1,"simple":2,"crafty":1,"kid36":2,"kid7plus":2,"heroes":3,"tv":2}},{"id":"fuzzy-monster","tags":{"cute":3,"funny":1,"kid36":2,"kid7plus":1,"dinos":2}},{"id":"pocket-plush","tags":{"cute":3,"dinos":2,"funny":2,"simple":2,"kid36":2,"kid7plus":2}},{"id":"glow-skeleton","tags":{"scary":2,"cute":1,"kid36":2,"kid7plus":1}},{"id":"block-game-crew","tags":{"funny":2,"simple":2,"crafty":2,"kid36":2,"kid7plus":2,"games":3}},{"id":"little-pig-family","tags":{"cute":3,"dinos":1,"funny":1,"simple":2,"kid36":2,"animals":1,"tv":3}},{"id":"bumble-bee","tags":{"cute":2,"funny":1,"crafty":1,"kid36":2,"animals":2}},{"id":"baby-dino","tags":{"cute":2,"funny":1,"kid36":2,"dinos":3}},{"id":"little-lion","tags":{"cute":3,"kid36":2,"animals":2}},{"id":"tiny-firefighter","tags":{"simple":2,"kid36":2,"kid7plus":1,"heroes":3}},{"id":"little-shark","tags":{"cute":2,"kid36":2,"animals":2}},{"id":"walking-taco","tags":{"funny":3,"crafty":2,"kid36":2,"kid7plus":1,"food":2}},{"id":"ramen-bowl","tags":{"funny":2,"cute":2,"kid36":2,"food":2}},{"id":"tiny-snail","tags":{"cute":3,"simple":2,"kid36":2,"animals":2}},{"id":"little-witch","tags":{"cute":2,"scary":1,"kid36":2,"kid7plus":1}},{"id":"spider","tags":{"scary":2,"crafty":2,"kid36":2,"kid7plus":1}},{"id":"backyard-hero","tags":{"simple":2,"cute":1,"kid36":2,"kid7plus":1,"heroes":3}},{"id":"snow-sisters","tags":{"cute":3,"simple":2,"crafty":1,"kid36":2,"kid7plus":2,"princess":3,"tv":2}},{"id":"pizza-slice","tags":{"funny":2,"crafty":2,"kid36":2,"food":2}},{"id":"popcorn-bucket","tags":{"cute":2,"crafty":2,"kid36":2,"food":2}},{"id":"ice-cream-cone","tags":{"cute":2,"kid36":2,"food":2}},{"id":"basketball-star","tags":{"simple":2,"kid7plus":2,"sports":2}},{"id":"cheerleader","tags":{"cute":2,"crafty":2,"kid36":2,"sports":2}},{"id":"cardboard-knight","tags":{"funny":2,"kid7plus":2,"heroes":3}},{"id":"ninja","tags":{"scary":2,"kid36":2}},{"id":"robot-ranger","tags":{"cute":2,"kid36":2}},{"id":"pixel-ghost","tags":{"scary":2,"crafty":2,"kid36":2,"games":3}},{"id":"spaghetti-meatball","tags":{"cute":2,"kid36":2,"food":2}},{"id":"cupcake","tags":{"cute":2,"crafty":2,"kid36":2,"food":2}},{"id":"banana","tags":{"funny":2,"kid36":2,"food":2}},{"id":"donut","tags":{"cute":2,"kid36":2,"food":2}},{"id":"garden-fairy","tags":{"cute":3,"crafty":2,"kid36":2,"kid7plus":1,"princess":2}},{"id":"ballerina","tags":{"cute":3,"simple":2,"crafty":1,"kid36":2,"kid7plus":2}},{"id":"butterfly","tags":{"cute":3,"crafty":2,"kid36":2,"animals":2}},{"id":"pop-star","tags":{"cute":3,"funny":2,"simple":2,"kid36":2,"kid7plus":2}},{"id":"ice-skater","tags":{"cute":3,"simple":2,"kid36":2,"kid7plus":1,"sports":2}},{"id":"ladybug","tags":{"cute":3,"crafty":1,"simple":1,"kid36":2,"animals":2}},{"id":"daisy","tags":{"cute":3,"simple":2,"crafty":1,"kid36":2}},{"id":"little-baker","tags":{"cute":2,"funny":2,"crafty":2,"kid36":2,"kid7plus":1,"food":2}},{"id":"little-artist","tags":{"cute":3,"crafty":2,"funny":2,"kid36":2,"kid7plus":2}},{"id":"little-lifeguard","tags":{"heroes":3,"cute":2,"simple":2,"funny":1,"kid36":2,"kid7plus":1}},{"id":"little-prince","tags":{"princess":3,"funny":2,"cute":2,"simple":1,"kid36":2,"kid7plus":1}}];
+var GUIDES = {"blue-dog-family":{"t":"Aussie Dog Family","time":"25 min","cost":"$5-10","effort":"Easy","m":["Blue or orange t-shirt per person, 1 each (own, or buy: clothing store)","Headband per person, 1 each (buy: dollar store)","Blue, orange, and white craft felt, 1 sheet of each color 9x12 inches (buy: craft store, construction paper works too)","Safety pins, 4 per person (buy: dollar store)","Scissors, 1 pair"]},"pocket-plush":{"t":"Pocket Plush Monster","time":"25 min + drying","cost":"$3-8","effort":"Easy","m":["Fuzzy one-piece pajamas or sweatsuit, 1 (buy: thrift store, or own: from closet)","Felt ears: two big felt circles, about 4 inches across (buy: craft store; construction paper works too)","Fabric glue, 1 tube (buy: craft store)","Black and white felt for eyes and smile, 1 small sheet each (buy: craft store; paper works too)","Large shipping tag or big index card, 1 (buy: office supply store)","Marker, 1 (own: household)"]},"cupcake":{"t":"Cupcake","time":"15 min","cost":"$3-6","effort":"Easy","m":["Brown t-shirt or tunic for the wrapper, 1 (make: from closet)","White pillowcase for the frosting, 1 (make: from home)","Red pom-pom or ball for the cherry, 1 about 2 inches (buy: craft store)","Fabric glue, 1 tube (buy: craft store)"]},"ninja":{"t":"Ninja","time":"10 min","cost":"$0-2","effort":"Easy","m":["All-black outfit: t-shirt, pants, and a black beanie, 1 set (own: from closet)","Black belt or sash, 1 (own: an old tie or scarf)","Black headband or strip of black t-shirt, 1 strip about 3 inches wide (own: cut from an old shirt)","Scissors, 1 pair, and tape, 1 roll (own: household tools)","Black non-toxic face paint for a mask stripe, 1 tube (buy: drugstore, optional)"]},"classic-ghost":{"t":"Classic Ghost","time":"10 min","cost":"$0-3","effort":"Easy","m":["1 white flat sheet: twin size for kids under 8, full size for tweens and adults (make: use an old sheet; buy: thrift store for a dollar or two)","Black marker, thick tip, 1 (buy: dollar store)","Scissors, 1 pair","2 small squares of black tulle or sheer fabric, about 4 inches each (optional, for see-through eyes; buy: craft store)"]},"spaghetti-meatball":{"t":"Spaghetti & Meatball","time":"40 min","cost":"$5-10","effort":"Easy","m":["White t-shirt or sweatshirt, 1 (own: from closet)","Yellow or cream yarn, 1 skein (buy: craft store)","Brown pom-poms, 2 inch, 3 to 4 (buy: craft store)","Fabric glue or hot glue gun, 1 (buy: craft store)","Scissors, 1 pair"]},"block-game-crew":{"t":"Block Game Crew","time":"45 min + drying","cost":"$5-12","effort":"Medium","m":["1 large cardboard box per person, big enough to fit over the torso (make: ask a grocery store for spares)","Acrylic paint in each hero's colors, 1 small bottle per color (buy: craft store, tempera paint works too)","Paintbrushes, 1 wide and 1 detail per person","Black marker, 1 (buy: dollar store)","Scissors, 1 pair"]},"ladybug":{"t":"Ladybug","time":"20 min","cost":"$3-8","effort":"Easy","m":["Red shirt, 1 (own)","Black pants, 1 pair (own)","Black felt for dots, 1 sheet 9x12 inches (buy: craft store)","Headband, 1 (buy: dollar store)","Black pipe cleaners for antennae, 2 (buy: craft store)","Black pom-poms, 2 small (buy: craft store)","Scissors, 1 pair","Fabric glue, 1 tube (buy: craft store)"]},"ice-cream-cone":{"t":"Ice Cream Cone","time":"20 min","cost":"$2-6","effort":"Easy","m":["Tan paper party hat or cone, 1 (buy: dollar store)","White t-shirt, 1 (buy: craft store, or use one you own)","Colored dot stickers or pom-poms for sprinkles, 1 pack (buy: craft store; cut paper dots work too)","Brown paint or marker for the cone crosshatch, 1 (buy: craft store)","Tape, 1 roll (own)"]},"banana":{"t":"Banana","time":"10 min","cost":"$2-5","effort":"Easy","m":["Yellow sweatshirt and sweatpants, 1 set (make: from closet, or buy: clothing store)","Green felt, 1 sheet 9x12 inches (buy: craft store)","Headband, 1 (buy: dollar store)","Fabric glue, 1 tube (buy: craft store)"]},"pixel-ghost":{"t":"Pixel Ghost","time":"30 min + drying","cost":"$2-5","effort":"Easy","m":["White bedsheet or white fabric, 1 twin-size (buy: thrift store)","Black felt, 1 sheet 9x12 inches (buy: craft store; black paper works too)","Fabric glue, 1 tube (buy: craft store)","Scissors, 1 pair (own: household tools)","Marker and ruler, 1 each (own: household)"]},"little-pig-family":{"t":"Little Pig Family","time":"25 min","cost":"$3-8","effort":"Easy","m":["Pink t-shirts or pajamas, 1 per person (buy: thrift store, or own: from closet)","Pink headband, 1 per person (buy: dollar store)","Pink paper cup, 1 per snout (own: from the kitchen drawer)","Pink felt or construction paper, 2 triangles per ear (buy: craft store)","Pink string or yarn, 1 arm length per snout (own: from the craft drawer)","Scissors, 1 pair, and clear tape, 1 roll (own: household tools)","Pink blush or face paint for cheeks, 1 (buy: drugstore)"]},"garden-fairy":{"t":"Garden Fairy","time":"20 min","cost":"$3-8","effort":"Easy","m":["Pink tulle, 1 yard (buy: craft store)","Cardboard for wings, 1 large piece about 2x3 feet (make: from a shipping box)","Fake flowers, 1 bunch (buy: dollar store)","Headband, 1 (buy: dollar store, or own)","Wooden dowel or stick for the wand, about 12 inches (make: from the yard)","Cardboard star for the wand tip, 1 (make: from scraps)","Elastic for wing straps, about 2 feet (buy: craft store)","Glitter glue, 1 tube (buy: craft store)","Tape, 1 roll","Glue, 1 bottle","Scissors, 1 pair"]},"kart-racers":{"t":"Kart Racers","time":"45 min + drying","cost":"$2-6","effort":"Medium","m":["Large cardboard box, 1 per racer, big enough to fit around the torso (make: collect spares)","Red, blue, green, and yellow paint or wrapping paper, 1 bottle or roll per color (buy: dollar store)","Paper plates for wheels, 4 per kart (buy: dollar store)","Racing cap or helmet, 1 per person (own: from closet)","Scissors, 1 pair, tape, 1 roll, and string, 1 spool (own: household tools)","Ribbon for kart straps, about 3 feet per kart (own: from closet)"]},"little-shark":{"t":"Little Shark","time":"25 min + drying","cost":"$3-8","effort":"Easy","m":["Gray hoodie, 1 (buy: thrift store, or own: from closet)","Gray felt, 1 sheet 9x12 inches (buy: craft store; construction paper works too)","White felt, 1 small sheet (buy: craft store; white paper works too)","Fabric glue, 1 tube (buy: craft store)","Scissors, 1 pair (own: household tools)"]},"butterfly":{"t":"Butterfly","time":"40 min + drying","cost":"$5-10","effort":"Medium","m":["Large cardboard for wings, 1 sheet about 3x2 feet (make: from a shipping box)","Acrylic paint set, 1 (buy: craft store)","Black sweatsuit, 1 set (own, or buy: clothing store)","Elastic for wing straps, about 2 feet (buy: craft store)","Headband, 1 (buy: dollar store, or use your own)","Pipe cleaners for antennae, 2 (buy: craft store)","Tape, 1 roll","Scissors, 1 pair"]},"little-prince":{"t":"Little Prince","time":"20 min","cost":"$3-8","effort":"Easy","m":["Gold cardstock or a paper crown, 1 (buy: party store, or make: from cardstock)","Red or purple fabric for the cape, about 1 yard (own, or buy: craft store)","Wide ribbon for the sash, about 2 yards (buy: craft store)","Stick-on plastic gems, 1 pack (buy: dollar store)","White gloves, 1 pair (buy: dollar store, optional)","Safety pins, 2","Scissors, 1 pair","Glue stick, 1"]},"backyard-hero":{"t":"Backyard Superhero","time":"15 min","cost":"$0-3","effort":"Easy","m":["Old pillowcase or t-shirt for the cape, 1 (make: cut up)","Solid-color t-shirt to wear, 1 (own)","Cardstock or foam letter for the first initial, 1 sheet (make: cut from cardstock, or buy: craft store)","Ribbon or string for cape ties, about 2 feet (own, or buy: craft store)","Safety pins, 2","Scissors, 1 pair"]},"cheerleader":{"t":"Cheerleader","time":"15 min","cost":"$0-3","effort":"Easy","m":["Team-color t-shirt and skirt or shorts, 1 set (own)","4 to 6 white plastic grocery bags (make: save from home)","Hair ribbon in a team color, 1 (buy: dollar store)","Rubber bands or tape, 1 pack (own)","Scissors, 1 pair"]},"daisy":{"t":"Daisy","time":"30 min + drying","cost":"$5-8","effort":"Easy","m":["Yellow craft foam sheets, 2 (buy: craft store)","Brown craft foam for the flower center, 1 sheet (buy: craft store)","Green dress, 1 (own, or buy: thrift store)","Headband, 1 (buy: dollar store, or use your own)","Glue, 1 tube craft glue (buy: craft store)","Scissors, 1 pair"]},"little-baker":{"t":"Little Baker","time":"15 min","cost":"$2-5","effort":"Easy","m":["White paper or poster board for the hat, 2 sheets (buy: craft store, or use printer paper)","Apron, 1 (own, or buy: dollar store)","Toy whisk, 1 (buy: toy store or dollar store)","Flour from the kitchen, 1 pinch (optional, for the effect)","Tape, 1 roll","Scissors, 1"]},"glow-skeleton":{"t":"Glow Skeleton","time":"20 min","cost":"$5-10","effort":"Easy","m":["Black sweatsuit, 1 (buy: discount store, or own)","Glow-in-the-dark bone tape, 1 roll (buy: craft store)","Glow bracelets, 1 pack (buy: dollar store)","Scissors, 1 pair","Black face paint, non-toxic, 1 tube (buy: drugstore)"]},"numbered-players":{"t":"Numbered Players","time":"30 min","cost":"$4-10","effort":"Easy","m":["Green sweatsuit per person, 1 each (buy: thrift store, or own: from closet)","White t-shirt per person, 1 each (own: from closet)","Iron-on number patches or white paper numbers, 1 per person (buy: craft store)","White sneakers, 1 pair per person (own: from closet)","Dalgona candy or a round cookie per person, 1 each (buy: bakery, optional prop)","Iron, 1 (own: household)"]},"fairy-tale-princesses":{"t":"Fairy Tale Princesses","time":"15 min","cost":"$2-5","effort":"Easy","m":["1 dress from the closet per person (make: use what you own)","1 cereal box per crown (make: from a cereal box)","Gold or silver paint or markers, 1 set (buy: craft store)","Scissors, 1 pair and tape, 1 roll","1 hair ribbon per person (buy: dollar store)"]},"basketball-star":{"t":"Basketball Star","time":"5 min","cost":"$0-3","effort":"Easy","m":["Basketball jersey or numbered tank top, 1 (own, or buy: sporting goods store)","Basketball shorts, 1 pair (own)","Black non-toxic face paint or 1 eyeliner pencil (buy: toy store)","Basketball, 1 (own, or buy: toy store)"]},"emotion-crew":{"t":"Emotion Crew","time":"25 min","cost":"$5-10","effort":"Easy","m":["1 solid bright color outfit per person: yellow, blue, red, green, purple, or orange (make: from closet)","Face paint matching each outfit color, 1 per person (buy: drugstore)","1 white poster board per person (buy: dollar store)","Markers, 1 set (make: from the house)","Colored hair spray matching each outfit, 1 can per person, optional (buy: drugstore)"]},"snow-sisters":{"t":"Snow Sisters","time":"30 min + drying","cost":"$8-12","effort":"Easy","m":["Icy-blue dress or blue dress plus silver glitter glue, 1 set (buy glitter glue: craft store)","Pink or lavender dress, 1 (own)","White shirt, white pants, 3 large black felt circles (buy felt: craft store)","Brown clothes, 2 brown pipe cleaners, 1 red pom-pom (buy: craft store)","Silver headband, 1 (buy: dollar store)","Tape and scissors, 1 set (own)"]},"pizza-slice":{"t":"Pizza Slice","time":"45 min + drying","cost":"$8-12","effort":"Medium","m":["Large cardboard box, 1 (make: cut a big triangle, about 3 feet tall)","Yellow and orange acrylic paint, 1 bottle each (buy: craft store)","Red felt, 1 sheet (buy: craft store; red paper works too)","Brown felt scraps for crust, or 1 brown paper bag (buy: craft store)","Paintbrush, scissors, tape, 1 set (own)","Fabric glue, 1 tube (buy: craft store)"]},"emoji-crew":{"t":"Emoji Crew","time":"15 min","cost":"$0-5","effort":"Easy","m":["1 yellow t-shirt per person (buy: craft store, or use one you own)","1 large white paper plate, 10-inch, or cardboard circle per person (make: use what you own)","Markers in black, red, and blue, 1 set (make: use what you own)","Scissors, 1 pair and tape, 1 roll"]},"robot-ranger":{"t":"Robot Ranger","time":"60 min","cost":"$8-15","effort":"Medium","m":["Medium cardboard box for the torso, 1 (own: from home)","Aluminum foil, 1 roll (buy: grocery store)","Flexible aluminum dryer vent hose, 1 section about 3 feet (buy: hardware store)","Sticker dots or round stickers, 1 sheet (buy: craft store; punched paper circles work too)","Duct tape, 1 roll (buy: hardware store)","Blue or gray sweatsuit to wear underneath, 1 set (own: from closet)","Black marker, 1 (own: from home)","Scissors, 1 pair"]},"little-artist":{"t":"Little Artist","time":"15 min","cost":"$3-8","effort":"Easy","m":["Beret or flat cap, 1 (buy: thrift store)","Cardboard for the palette, 1 piece (make: from a shipping box)","Washable paint set, 1 (buy: craft store)","Old smock or oversized t-shirt, 1 (own)","Paintbrush, 1 (own, or buy: craft store)","Scissors, 1 (own)"]},"bumble-bee":{"t":"Bumble Bee","time":"20 min","cost":"$5-10","effort":"Easy","m":["Black sweatshirt and sweatpants, 1 set (own, or buy: clothing store)","Yellow duct or electrical tape, 1 roll (buy: dollar store)","Black headband, 1 (buy: dollar store)","2 yellow pipe cleaners, 12 inches each (buy: craft store, floral wire works too)","2 black pom-poms, 1 inch (buy: craft store, cotton balls work too)","Craft glue, 1 tube (buy: craft store)"]},"donut":{"t":"Donut","time":"35 min + drying","cost":"$3-8","effort":"Easy","m":["1 large cardboard box, about 24x24 inches flat (make: from home)","Pink paint, 1 small bottle (buy: craft store)","Felt sprinkles, 12 to 15 small pieces, or sticker sprinkles (buy: craft store)","Ribbon or string, 4 feet (make: from home)","Scissors, 1 pair and glue, 1 bottle"]},"ballerina":{"t":"Ballerina","time":"20 min","cost":"$3-8","effort":"Easy","m":["Pink tulle, 2 to 3 yards (buy: craft store; about $1 a yard)","Wide elastic, 1 inch wide, cut to the waist size plus 1 inch overlap (buy: craft store)","Pink leotard or fitted shirt, 1 (own, or buy: clothing store)","Pink tights, 1 pair (own, or buy: clothing store)","Hair ties and bobby pins, 1 pack (own)","Scissors, 1 pair"]},"ramen-bowl":{"t":"Ramen Bowl","time":"50 min","cost":"$8-12","effort":"Easy","m":["Large cardboard circle, about 2 feet wide (make: cut from a big box)","White and red acrylic paint, 2 small bottles (buy: craft store)","Yellow yarn, 1 skein (buy: craft store; yellow string works too)","White craft foam or 1 foam ball (buy: craft store; white paper works too)","Chopsticks, 1 pair (own: kitchen drawer)","Tape and string, 1 roll and about 2 feet (own: household)","Scissors, 1 pair"]},"popcorn-bucket":{"t":"Popcorn Bucket","time":"30 min","cost":"$5-10","effort":"Easy","m":["Cardboard box, 1 medium (make: tall enough to cover the torso)","Red and white striped wrapping paper or paint, 1 roll (buy: dollar store or craft store)","Yellow or white balloons, 8 to 10 (buy: dollar store)","Tape, string, scissors, 1 set (own)","Red marker for the label, 1 (own)"]},"bowling-pins":{"t":"Bowling Pins","time":"15 min","cost":"$2-5","effort":"Easy","m":["White shirt and pants per pin person, 1 set each (own)","Red duct or electrical tape, 1 roll (buy: dollar store)","Black shirt and pants for the bowler, 1 set (own)","Toy bowling ball or black playground ball, 1 (buy: toy store)","Scissors, 1 pair"]},"baby-dino":{"t":"Baby Dinosaur","time":"20 min","cost":"$3-8","effort":"Easy","m":["Green hoodie, 1 (buy: clothing store, or use your own)","2 sheets green craft felt, 9x12 inches each (buy: craft store, construction paper works too)","Pillow stuffing or 2 old socks (make: stuff from home)","Safety pins, 6 to 8 (buy: dollar store)","Masking tape, 1 roll","Scissors, 1 pair"]},"little-lion":{"t":"Little Lion","time":"20 min","cost":"$3-8","effort":"Easy","m":["Tan or brown sweatsuit, 1 (buy: discount store, or use one you own)","Brown fuzzy fabric strip or old brown towel for the mane, about 24 inches long (buy: fabric store, or make: cut from a towel)","Scissors, 1 pair (own)","Safety pins or fabric glue, 6 to 8 pins or 1 tube glue (buy: dollar store or craft store)","Brown non-toxic face paint, 1 tube (buy: drugstore)"]},"ice-skater":{"t":"Ice Skater","time":"10 min","cost":"$0-5","effort":"Easy","m":["White dress, 1 (buy: thrift store, or own)","White tights, 1 pair (own, or buy: clothing store)","Hair donut for the bun, 1 (buy: drugstore)","Blush, 1 (own, or buy: drugstore)","Bobby pins, 1 pack (own)"]},"little-lifeguard":{"t":"Little Lifeguard","time":"20 min","cost":"$3-8","effort":"Easy","m":["Red t-shirt, 1 (own, or buy: thrift store)","Plastic whistle on a lanyard, 1 (buy: dollar store or party store)","Pool noodle, 1 (buy: dollar store)","White duct tape, 1 roll (buy: dollar store)","Red shorts or swim trunks, 1 pair (own)","White face paint stick for the nose stripe, 1 (buy: craft store)","Scissors, 1 pair"]},"cardboard-knight":{"t":"Cardboard Knight","time":"60 min + drying","cost":"$5-10","effort":"Medium","m":["Large cardboard boxes, 2 to 3 (make: collect spares)","Silver acrylic paint, 1 bottle (buy: craft store, tempera paint works too)","Foam brush or paintbrush, 1 wide (own, or buy: craft store)","1 pool noodle (buy: toy store or dollar store)","Gray duct tape, 1 roll (buy: dollar store)","Black marker, 1 (buy: dollar store)","Scissors, 1 pair"]},"fuzzy-monster":{"t":"Fuzzy Monster","time":"15 min + drying","cost":"$8-15","effort":"Easy","m":["1 pastel fuzzy sweatsuit (buy: discount store)","2 large googly eyes, 3 inches or bigger (buy: craft store; paper circles work too)","1 sheet white felt, 9x12 inches, for the smile (buy: craft store; construction paper works too)","Scissors, 1 pair","Fabric glue, 1 tube, or 4 safety pins"]},"tiny-firefighter":{"t":"Tiny Firefighter","time":"25 min","cost":"$8-15","effort":"Easy","m":["Red sweatsuit, 1 (own: from closet)","Toy firefighter helmet, 1 (buy: toy store)","Toy fire hose or coiled garden hose, 1 (buy: toy store, or borrow a real coil of rope from home)","Yellow reflective tape, 1 roll (buy: hardware store)","Black marker, 1 (own: from home)"]},"little-witch":{"t":"Little Witch","time":"15 min","cost":"$3-8","effort":"Easy","m":["Black cape or black bedsheet, 1 (buy: dollar store, or make: cut a cape from a black t-shirt)","Pointy witch hat, 1 (buy: dollar store)","Black-and-white striped tights, 1 pair (buy: thrift store or online)","Green non-toxic face paint, 1 tube (buy: drugstore or craft store)","Safety pin or ribbon, 1 (own: from the sewing kit)"]},"pop-star":{"t":"Pop Star","time":"15 min","cost":"$0-8","effort":"Easy","m":["Sparkly or sequin jacket, 1 (buy: thrift store)","Toy microphone, 1 (buy: toy store or dollar store)","Hair teasing comb, 1 (own, or buy: drugstore)","Sunglasses, 1 pair (own, or buy: dollar store)","Dark jeans and a dark top, 1 set (own)"]},"walking-taco":{"t":"Walking Taco","time":"45 min","cost":"$5-10","effort":"Easy","m":["Tan vest or tan t-shirt, 1 (own: from closet)","Brown, red, green, and yellow felt sheets, 1 pack (buy: craft store; construction paper works too)","Fabric glue, 1 bottle (buy: craft store)","Headband, 1 (buy: dollar store)","Scissors, 1 pair (own: from home)"]},"spider":{"t":"Eight-Legged Spider","time":"45 min","cost":"$5-10","effort":"Medium","m":["Black sweatshirt and black sweatpants, 1 set (own: from closet)","Black socks, 8 (4 pairs, own: from the sock drawer)","Newspaper or tissue paper, 3 to 4 sheets, for stuffing (own: from home)","Thin black rope or black yarn, 4 feet (buy: craft store)","Black fabric glue, 1 bottle, or a needle and black thread (buy: craft store)","Large googly eyes, 2 (buy: craft store; drawn paper circles work too)","White face paint, 1 tube (buy: craft store or costume aisle)"]},"tin-hero":{"t":"The Tin Hero","time":"25 min","cost":"$5-10","effort":"Easy","m":["Red sweatsuit, 1 (own)","Gold duct tape, 1 roll (buy: dollar store or hardware store)","Battery tea light, 1 (buy: dollar store)","Cardboard, 1 piece (own)","Tape, 1 roll (own)","Safety pin, 1 (own)"]},"tiny-snail":{"t":"Tiny Snail","time":"30 min","cost":"$3-8","effort":"Easy","m":["Neutral beige or tan clothes, 1 set (own: from closet)","Large cardboard sheet or 1 flattened box (own: from home)","Brown and tan markers or crayons, 1 set (own: from home)","Backpack straps, 2, or 2 long ribbons (own: from home)","Headband, 1 (buy: dollar store)","Black pom-poms, 2 (buy: craft store; cotton balls work too)","Tape, 1 roll (own: from home)","Scissors, 1 pair"]},"blue-alien-ohana":{"t":"Blue Alien Ohana","time":"30 min","cost":"$5-10","effort":"Easy","m":["Blue hoodie per alien-role person, 1 each (own, or buy: clothing store)","Blue craft felt, 1 sheet 9x12 inches per alien (buy: craft store, construction paper works too)","Headband per alien-role person, 1 each (buy: dollar store)","Red t-shirt or dress per Lilo-role person, 1 each (make: from closet, or buy: thrift store)","White craft felt or paper, 1 sheet (buy: craft store)","Safety pins, 4 to 6 (buy: dollar store)","Scissors, 1 pair","Tape, 1 roll"]}};
+var THEMES = [{"id":"emoji-crew","blurb":"Everyone picks an emoji: a yellow tee plus a big printed face.","variations":["Heart-eyes emoji","Laughing-crying emoji","Sunglasses emoji","Winking emoji","Sleepy emoji","Star-struck emoji","Party emoji","Ghost emoji","Pumpkin emoji","Silly emoji","Cool emoji","Surprised emoji"]},{"id":"emotion-crew","blurb":"One loud color per person: each of you is a different emotion.","variations":["Joy","Sadness","Anger","Fear","Disgust","Envy","Anxiety","Embarrassment","Boredom","Nostalgia","Surprise","Shyness"]},{"id":"numbered-players","blurb":"Green tracksuits, numbered bibs, and a survival-game attitude.","variations":"auto:number"},{"id":"kart-racers","blurb":"Cardboard karts and racing caps for a full starting grid of friends.","variations":["Red kart","Blue kart","Green kart","Yellow kart","Purple kart","Orange kart"]},{"id":"bowling-pins","blurb":"White outfits with red neck stripes; every fourth kid is the bowler in black.","variations":["Bowling pin","Bowling pin","Bowling pin","Bowler"]},{"id":"block-game-crew","blurb":"Cardboard-box heads: pick your blocky hero.","variations":["Hero","Crawler","Pig","Knight","Dragon","Villager"]}];
+
+var INTERESTS = [
+  ["animals","🐾","Animals"],["heroes","🦸","Heroes"],["dinos","🦕","Dinosaurs"],
+  ["food","🍕","Food"],["princess","👑","Princess"],["funny","😂","Funny"],
+  ["scary","👻","Spooky"],["sports","⚽","Sports"],["games","🎮","Games"],
+  ["tv","📺","TV characters"],["cute","🐱","Cute"],["crafty","🎨","Loves making things"]
+];
+
+var state = { n: 24, age: "kid36", mode: "theme", themeId: "emoji-crew",
+              interests: [], noRepeat: true, assignments: [], supplyMode: "theme" };
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function guide(id){ return GUIDES[id] || {t:id, time:"", cost:"", effort:"", m:[]}; }
+function triple(id){ var g = guide(id); return [g.time, g.cost, g.effort].filter(Boolean).join(" · "); }
+
+/* ---------- step 1 ---------- */
+function setN(n){ state.n = Math.max(3, Math.min(40, n)); $("nval").textContent = state.n; refreshResults(); }
+$("minus").addEventListener("click", function(){ setN(state.n - 1); });
+$("plus").addEventListener("click", function(){ setN(state.n + 1); });
+function setAge(a){
+  state.age = a;
+  var little = a === "kid36";
+  $("age-little").classList.toggle("sel", little);
+  $("age-big").classList.toggle("sel", !little);
+  $("age-little").setAttribute("aria-checked", little);
+  $("age-big").setAttribute("aria-checked", !little);
+  refreshResults();
+}
+$("age-little").addEventListener("click", function(){ setAge("kid36"); });
+$("age-big").addEventListener("click", function(){ setAge("kid7plus"); });
+
+/* ---------- step 2: mode ---------- */
+function setMode(m){
+  state.mode = m;
+  $("mode-theme").classList.toggle("sel", m === "theme");
+  $("mode-own").classList.toggle("sel", m === "own");
+  $("pane-theme").hidden = m !== "theme";
+  $("pane-own").hidden = m !== "own";
+  /* 2026-09-26 QA: switching modes with results visible used to leave the
+     OTHER mode's roster on screen (mode button said "one theme" while the
+     roster showed individual picks). Re-run the newly selected mode quietly
+     so the visible roster always matches the selected mode. */
+  if ($("results").classList.contains("on")){
+    if (m === "theme") assignTheme(true); else assignOwn(true);
+  }
+}
+$("mode-theme").addEventListener("click", function(){ setMode("theme"); });
+$("mode-own").addEventListener("click", function(){ setMode("own"); });
+
+/* ---------- theme grid ---------- */
+function renderThemes(){
+  $("theme-grid").innerHTML = THEMES.map(function(t){
+    var g = guide(t.id);
+    return '<button type="button" class="theme' + (state.themeId === t.id ? " sel" : "") + '" data-id="' + t.id + '">' +
+      '<img src="/photos/' + t.id + '.webp" alt="' + esc(g.t) + '" loading="lazy">' +
+      '<span class="tbody"><span class="tname">' + esc(g.t) + '</span>' +
+      '<span class="ttriple">' + esc(triple(t.id)) + '</span>' +
+      '<span class="tblurb">' + esc(t.blurb) + '</span></span></button>';
+  }).join("");
+  var btns = $("theme-grid").querySelectorAll(".theme");
+  btns.forEach(function(b){
+    b.addEventListener("click", function(){
+      state.themeId = b.getAttribute("data-id");
+      renderThemes();
+      assignTheme();
+    });
+  });
+}
+
+/* ---------- interest chips ---------- */
+function renderInterests(){
+  $("interest-chips").innerHTML = INTERESTS.map(function(x){
+    var sel = state.interests.indexOf(x[0]) > -1;
+    return '<button type="button" class="chip' + (sel ? " sel" : "") + '" data-t="' + x[0] + '"' +
+      ' role="checkbox" aria-checked="' + sel + '"><span class="emo">' + x[1] + '</span>' + x[2] + '</button>';
+  }).join("");
+  $("interest-chips").querySelectorAll(".chip").forEach(function(c){
+    c.addEventListener("click", function(){
+      var t = c.getAttribute("data-t");
+      var i = state.interests.indexOf(t);
+      if (i > -1) state.interests.splice(i, 1); else state.interests.push(t);
+      renderInterests();
+    });
+  });
+}
+$("norepeat").addEventListener("change", function(){ state.noRepeat = $("norepeat").checked; });
+$("assign").addEventListener("click", assignOwn);
+
+/* ---------- assignment engine ---------- */
+function scoreIdea(idea, tag){
+  var tg = idea.tags || {};
+  var s = 4 * (tg[tag] || 0) + 3 * (tg[state.age] || 0) + (tg.simple || 0);
+  var g = guide(idea.id);
+  if (g.effort === "Easy") s += 1.5;
+  return s;
+}
+function candidatesFor(tag){
+  var c = KID_BANK.map(function(idea){ return { idea: idea, s: scoreIdea(idea, tag) }; })
+    .filter(function(x){ return x.s > 0; })
+    .sort(function(a, b){ return b.s - a.s; });
+  if (!c.length) c = KID_BANK.map(function(idea){ return { idea: idea, s: 0 }; });
+  return c;
+}
+function interestOrder(){
+  if (state.interests.length) return state.interests.slice();
+  /* surprise mix: weight toward interests with the deepest kid banks */
+  var depth = INTERESTS.map(function(x){ return [x[0], candidatesFor(x[0]).length]; })
+    .sort(function(a, b){ return b[1] - a[1]; });
+  return depth.slice(0, 6).map(function(d){ return d[0]; });
+}
+function assignOwn(quiet){
+  var order = interestOrder();
+  var used = {};
+  var assignments = [];
+  for (var k = 0; k < state.n; k++){
+    var tag = order[k % order.length];
+    var cands = candidatesFor(tag);
+    var pick = null;
+    if (state.noRepeat){
+      for (var i = 0; i < cands.length; i++){
+        if (!used[cands[i].idea.id]){ pick = cands[i]; break; }
+      }
+    }
+    if (!pick){
+      /* everything is used: take the least-used candidate and say so */
+      cands.sort(function(a, b){ return (used[a.idea.id] || 0) - (used[b.idea.id] || 0) || b.s - a.s; });
+      pick = cands[0];
+    }
+    used[pick.idea.id] = (used[pick.idea.id] || 0) + 1;
+    var prev = state.assignments[k];
+    assignments.push({ kid: k, ideaId: pick.idea.id, tag: tag,
+      shared: (used[pick.idea.id] > 1), candIdx: cands.indexOf(pick), cands: cands,
+      name: prev && prev.name });
+  }
+  state.assignments = assignments;
+  state.supplyMode = "own";
+  var dups = assignments.filter(function(a){ return a.shared; }).length;
+  var note = $("roster-note");
+  if (dups){
+    note.hidden = false;
+    note.textContent = "Heads up: " + dups + " costume" + (dups > 1 ? "s are" : " is") +
+      " shared by two kids. The bank has " + KID_BANK.length +
+      " kid costumes, and this class needed " + state.n + ". Untick 'No two kids get the same costume' if that is fine, or tap Try another on any card.";
+  } else note.hidden = true;
+  renderResults(quiet);
+}
+/* 2026-09-26 red-team: changing class size or age after assigning left the
+   roster and shopping list stale (built for the old n). Re-run the current
+   mode's assignment quietly so everything stays consistent; typed kid names
+   survive via state.assignments[k].name. */
+function refreshResults(){
+  if (!$("results").classList.contains("on")) return;
+  if (state.supplyMode === "theme") assignTheme(true); else assignOwn(true);
+}
+function assignTheme(quiet){
+  var t = THEMES.filter(function(x){ return x.id === state.themeId; })[0];
+  var assignments = [];
+  for (var k = 0; k < state.n; k++){
+    var v;
+    if (t.variations === "auto:number") v = "Player " + (k + 1);
+    else v = t.variations[k % t.variations.length];
+    var prev = state.assignments[k];
+    assignments.push({ kid: k, ideaId: t.id, variation: v, name: prev && prev.name });
+  }
+  state.assignments = assignments;
+  state.supplyMode = "theme";
+  $("roster-note").hidden = true;
+  renderResults(quiet);
+}
+function swapKid(k){
+  var a = state.assignments[k];
+  if (!a || !a.cands) return;
+  /* 2026-09-26 red-team follow-up S5: the old code blindly cycled to the
+     next candidate, so "Try another" could hand two kids the same costume
+     even with "No two kids get the same costume" ticked. With no-repeat on,
+     skip candidates already assigned to another kid; if every candidate is
+     taken, keep the current assignment rather than creating a duplicate. */
+  var used = {};
+  state.assignments.forEach(function(o, i){ if (i !== k) used[o.ideaId] = 1; });
+  var n = a.cands.length;
+  for (var step = 1; step <= n; step++){
+    var idx = (a.candIdx + step) % n;
+    var pick = a.cands[idx];
+    if (!state.noRepeat || !used[pick.idea.id]){
+      a.candIdx = idx;
+      a.ideaId = pick.idea.id;
+      a.shared = false;
+      renderResults();
+      return;
+    }
+  }
+}
+
+/* ---------- supply list ---------- */
+function normKey(s){
+  return s.toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+}
+/* 2026-09-26 red-team: per-student detection now covers the bank's real
+   phrasing (per kart / per racer / per snout / per crown / per ear / per pin
+   person / per alien ...), quantities are read from anywhere in the string
+   (not just the start), and a bare "each" no longer fires on "of each
+   color" or "in each hero's colors" (those are shared supplies). */
+var PER_UNIT = "person|kid|student|child|racer|kart|pin|alien|lilo|snout|crown|ear|hero|player|color";
+/* 2026-09-26 red-team follow-up: added "color" — "1 small bottle per color"
+   (block-game-crew) and "1 bottle or roll per color" (kart-racers) are one
+   bottle per color PER KID, not one bottle for the whole class. */
+function parseMat(s){
+  var qm = s.match(/(\d+(?:\.\d+)?)/);
+  var qty = qm ? parseFloat(qm[1]) : 1;
+  var rest = s;
+  /* 2026-09-26 red-team: \b before "per" — without it, "paper crown"
+     matched "per crown" and the label was mangled to "a pa,". */
+  var perUnit = new RegExp("\\bper (?:each )?(?:[a-z][\\w-]* )?(?:" + PER_UNIT + ")s?\\b", "i").test(rest);
+  /* "1 each" / "1 sheet each" mean one per kid; "12 inches each" means per
+     pipe cleaner (the qty already covers it); "in each hero's colors" is a
+     shared description. 2026-09-26 follow-up S4: "1 sheet of each color"
+     (blue-dog-family felt) is one sheet of EACH color PER KID, so it stays
+     firing as per-student — the label keeps "each color" intact below. */
+  var eachish = /\beach\b/i.test(rest) &&
+    !/\b(inches?|feet|foot|yards?|cm|mm)\s+each\b/i.test(rest) &&
+    !/in each |each hero/i.test(rest);
+  /* 2026-09-26 red-team follow-up S3: "Gold cardstock or a paper crown, 1"
+     is one crown per kid but phrased without a per-unit, so it stayed
+     Shared qty 1. A named wearable ("a paper crown", "one mask") is
+     one-per-kid in intent. The noun must end the item phrase (so "paint
+     for a mask stripe" does not fire). */
+  var itemUnit = /\b(?:a|one)\s+(?:paper\s+|gold\s+|plastic\s+|felt\s+|black\s+)?(?:crown|crowns|tiara|tiaras|headband|headbands|mask|masks|cape|capes|sash|sashes)(?=[,\s]*(?:\d|$|\())/i.test(rest);
+  var perStudent = perUnit || eachish || itemUnit || /\bapiece\b/i.test(rest);
+  var label = rest.replace(new RegExp("\\s*\\bper (?:each )?(?:[a-z][\\w-]* )?(?:" + PER_UNIT + ")s?\\.?", "gi"), "");
+  /* keep "each" when it belongs to "each color" (S4) so the line reads
+     "Sheet of each color" instead of the mangled "Sheet of color" */
+  if (eachish) label = label.replace(/\s*\beach\b(?!\s+colors?\b)\.?/gi, "");
+  if (qm) label = label.replace(qm[1], ""); /* drop the parsed qty so lines don't read "24 x 1 yellow t-shirt" */
+  label = label.replace(/\s+/g, " ").replace(/,\s*\(/g, " (").replace(/,\s*$/g, "").trim(); /* drop dangling commas left by qty/per/each removal */
+  label = label.charAt(0).toUpperCase() + label.slice(1);
+  return { qty: qty, label: label, perStudent: perStudent, key: normKey(label) };
+}
+function buildSupply(){
+  var n = state.n;
+  /* 2026-09-26 red-team: per-student items scale by how many kids got THAT
+     costume, not by class size. In theme mode every kid shares one idea so
+     the count equals n (unchanged); in individual mode it stops the list
+     from telling a teacher to buy 24 hoodies when one kid got that costume. */
+  var countByIdea = {};
+  state.assignments.forEach(function(a){ countByIdea[a.ideaId] = (countByIdea[a.ideaId] || 0) + 1; });
+  var per = {}, shared = {};
+  /* add each idea's materials once, scaled by its kid count */
+  var doneIdea = {};
+  state.assignments.forEach(function(a){
+    if (doneIdea[a.ideaId]) return;
+    doneIdea[a.ideaId] = 1;
+    var mats = guide(a.ideaId).m || [];
+    var c = countByIdea[a.ideaId] || 1;
+    mats.forEach(function(s){
+      var p = parseMat(s);
+      if (p.perStudent){
+        if (!per[p.key]) per[p.key] = { label: p.label, qty: 0 };
+        per[p.key].qty += p.qty * c;
+      } else {
+        if (!shared[p.key]) shared[p.key] = { label: p.label, qty: 0 };
+        shared[p.key].qty = Math.max(shared[p.key].qty, p.qty);
+      }
+    });
+  });
+  /* 2026-09-26 red-team follow-up S7: the same item can land in both buckets
+     (per-student for one costume, shared for another) and the list then shows
+     two identical lines, e.g. "2 x Headband" and "1 x Headband". Quantities
+     are right; tag the shared one so the teacher can tell them apart. */
+  Object.keys(shared).forEach(function(k){
+    if (per[k]) shared[k].label = shared[k].label + " (shared batch)";
+  });
+  function fmt(entry){
+    var q = entry.qty;
+    var qs = (Math.round(q) === q) ? String(Math.round(q)) : q.toFixed(1);
+    return '<li><span class="qty">' + qs + ' ×</span> ' + esc(entry.label) + '</li>';
+  }
+  var perList = Object.keys(per).sort().map(function(k){ return fmt(per[k]); });
+  var sharedList = Object.keys(shared).sort().map(function(k){ return fmt(shared[k]); });
+  var html = "";
+  var perHead = state.supplyMode === "theme"
+    ? "Buy or gather one of these for every kid (" + n + " kids)."
+    : "Quantities follow how many kids got each costume.";
+  if (perList.length){
+    html += '<div class="supply"><h3>One per student</h3><p class="ssub">' + esc(perHead) + '</p><ul>' + perList.join("") + '</ul></div>';
+  }
+  if (sharedList.length){
+    html += '<div class="supply"><h3>Shared for the class</h3><p class="ssub">One batch covers everyone.</p><ul>' + sharedList.join("") + '</ul></div>';
+  }
+  $("supply").innerHTML = html || '<p class="empty">No materials listed.</p>';
+  $("list-sub").textContent = n + " kids · " + state.assignments.length + " costumes";
+  return { per: per, shared: shared };
+}
+function plainTextList(){
+  var n = state.n;
+  var lines = ["Class costume shopping list (" + n + " kids)", ""];
+  lines.push("ONE PER STUDENT:");
+  Object.keys(buildSupplyCache.per).sort().forEach(function(k){
+    var e = buildSupplyCache.per[k];
+    lines.push("- " + (Math.round(e.qty) === e.qty ? Math.round(e.qty) : e.qty) + " x " + e.label);
+  });
+  lines.push("", "SHARED FOR THE CLASS:");
+  Object.keys(buildSupplyCache.shared).sort().forEach(function(k){
+    var e = buildSupplyCache.shared[k];
+    lines.push("- " + (Math.round(e.qty) === e.qty ? Math.round(e.qty) : e.qty) + " x " + e.label);
+  });
+  lines.push("", "Build guides: https://pickmycostume.com/classroom");
+  /* 2026-09-26 QA: the page promises "send the link home with each kid", but
+     the copied text carried no per-kid guide links. List them so the copied
+     list is actually sendable. */
+  lines.push("", "BUILD GUIDES (one per kid):");
+  state.assignments.forEach(function(a){
+    var g = guide(a.ideaId);
+    var nm = (a.name || "Kid " + (a.kid + 1)).replace(/\s+/g, " ").trim();
+    lines.push("- " + nm + ": " + g.t + " - https://pickmycostume.com/c/" + a.ideaId);
+  });
+  return lines.join("\n");
+}
+var buildSupplyCache = { per: {}, shared: {} };
+
+/* ---------- results ---------- */
+function renderResults(quiet){
+  var html = state.assignments.map(function(a){
+    var g = guide(a.ideaId);
+    var pickline = a.variation ? "Their version: <b>" + esc(a.variation) + "</b>"
+      : "Picked for: <b>" + esc(interestLabel(a.tag)) + "</b>" + (a.shared ? " · shared with a classmate" : "");
+    var swap = a.cands ? '<button type="button" class="swap" data-k="' + a.kid + '">Try another</button>' : "";
+    var nm = a.name ? esc(a.name) : "Kid " + (a.kid + 1);
+    return '<article class="kid"><div class="kidhead">' +
+      '<span class="kidname" contenteditable="true" spellcheck="false">' + nm + '</span>' + swap + '</div>' +
+      '<h3>' + esc(g.t) + '</h3>' +
+      '<p class="triple">' + esc(triple(a.ideaId)) + '</p>' +
+      '<p class="pickline">' + pickline + '</p>' +
+      '<a class="go" href="/c/' + a.ideaId + '">Build guide</a></article>';
+  }).join("");
+  $("roster").innerHTML = html;
+  $("roster").querySelectorAll(".swap").forEach(function(b){
+    b.addEventListener("click", function(){ swapKid(parseInt(b.getAttribute("data-k"), 10)); });
+  });
+  /* 2026-09-26 red-team: typed kid names are state, not DOM. Re-renders
+     (swap, theme switch, stepper, age) used to wipe them. */
+  var names = $("roster").querySelectorAll(".kidname");
+  names.forEach(function(sp, i){
+    sp.addEventListener("input", function(){ state.assignments[i].name = sp.textContent; });
+    /* 2026-09-26 red-team follow-up S6: contenteditable accepts formatted
+       paste, which can carry odd styling into the roster. Strip it: pasted
+       names always land as plain text, exactly like typed ones. */
+    sp.addEventListener("paste", function(e){
+      e.preventDefault();
+      var cd = e.clipboardData || window.clipboardData;
+      var txt = (cd && cd.getData) ? cd.getData("text/plain") : "";
+      if (document.queryCommandSupported("insertText")) document.execCommand("insertText", false, txt);
+    });
+  });
+  buildSupplyCache = buildSupply();
+  $("results").classList.add("on");
+  if (!quiet) $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function interestLabel(tag){
+  var f = INTERESTS.filter(function(x){ return x[0] === tag; })[0];
+  return f ? f[2] : tag;
+}
+
+$("copy-list").addEventListener("click", function(){
+  var t = plainTextList();
+  var done = function(btn){ var old = btn.textContent; btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = old; }, 1600); };
+  /* 2026-09-26 red-team: navigator.clipboard is undefined on non-secure
+     contexts, and the old code swallowed the failure, so the tap silently
+     did nothing. Fall back to the textarea trick. */
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = t;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done($("copy-list")); } catch(e){}
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){ done($("copy-list")); }).catch(fallback);
+  } else fallback();
+});
+$("print-list").addEventListener("click", function(){ window.print(); });
+
+renderThemes();
+renderInterests();
+/* 2026-09-26 QA: the theme grid renders with Emoji Crew pre-selected but no
+   results until the teacher taps a card, which reads as a dead selection.
+   Assign the default theme quietly on load so the page shows its output
+   (a 24-kid roster + shopping list) the moment the teacher scrolls down. */
+assignTheme(true);
+</script>
+</body>
+</html>
