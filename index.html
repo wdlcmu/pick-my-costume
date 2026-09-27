@@ -3998,7 +3998,7 @@ function planTextFor(idea, sid, origin){
    starts per share_created, teaser vs generic. */
 function teaserTextFor(idea, sid){
   var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
-  /* Audience grounding (duel kid-frame reframe, Billy-approved 2026-09-26):
+  /* Audience grounding (duel kid-frame reframe):
      the old line always said "picked my Halloween costume", but for
      kid/family quizzes the pick is the kid's / the family's, not the
      sender's -- same misattribution class as the shareCaptionFor fix. */
@@ -6226,7 +6226,7 @@ function duelIdeaById(id){
   IDEAS.forEach(function(it){ if (it.id === id) found = it; });
   return found;
 }
-/* Duel kid-frame reframe (Billy-approved 2026-09-26): true when the
+/* Duel kid-frame reframe: true when the
    sender's pick carries kid/family audience tags. Falls back to
    DUEL_IDEA_ID when no idea is passed. */
 function duelKidFrame(idea){
@@ -6265,7 +6265,7 @@ function buildDuelShareText(mine, theirs, sid){
   if (mine.id === theirs.id){
     return "Great minds: we both got " + mine.title + (tri ? " (" + tri + ")" : "") + " on the costume quiz. " + url;
   }
-  /* Duel kid-frame reframe (Billy-approved 2026-09-26): when the sender's
+  /* Duel kid-frame reframe: when the sender's
      pick is kid/family-tagged, drop the combat framing for one cooperative
      line -- a dad sharing his kid's pick should never "challenge" anyone. */
   if (duelKidFrame(theirs)){
@@ -6500,7 +6500,7 @@ function startDuelFlow(){
   var theirs = duelIdeaById(DUEL_IDEA_ID);
   if (!theirs) return; /* unknown slug: stay on the landing */
   DUEL_ANS = {q1: null, q2: null};
-  /* Duel kid-frame reframe (Billy-approved 2026-09-26): kid/family sender
+  /* Duel kid-frame reframe: kid/family sender
      picks get cooperative copy ("Compare costumes", "Side by side") instead
      of combat framing. */
   var _kf = duelKidFrame(theirs);
@@ -7049,7 +7049,6 @@ function buildRevealSharePrompt(idea){
   return btn;
 }
 /* ================= Halloween Wrapped (2026-09-26) =================
-   Billy-approved 2026-09-26 ("ship ideas too after a red team check").
    Red-teamed 2026-09-26 PM: 43/43, 4 defects fixed (audience-aware share
    text and slide headings, age-stat honesty, copy honesty).
    Full-screen recap of the just-completed quiz: 4 slides (pick, answers,
@@ -7355,7 +7354,7 @@ function renderResults(results){
   box.appendChild(buildRevealSharePrompt(results[0].idea));
   /* 2026-09-26 Halloween Wrapped: one calm entry to the 4-slide recap
      (pick, answers, numbers, share) rendered from the live bank and the
-     actual answers. Billy-approved after the 43/43 red-team pass. */
+     actual answers. */
   box.appendChild(buildWrappedButton(results));
   /* 2026-09-26 evening block-map experiment: additive, flag-gated; the
      builder returns null with the flag off so nothing renders. */
