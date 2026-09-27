@@ -208,6 +208,10 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .cfcount{background:var(--accent);color:var(--accent-ink);border-radius:20px;padding:2px 12px;font-size:13px;font-weight:700;flex:none}
 .cfcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;margin:10px 0}
 .cfcard h4{margin:0 0 4px;font-size:16px}
+/*Billy 2026-09-26: closet rail card titles are buttons (tap-to-detail).
+  Full-width with vertical padding for a real tap target; underline signals
+  the tap the way textlinks do elsewhere on the site.*/
+.cfcardlink{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 0;margin:0;font:inherit;font-size:16px;font-weight:700;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:44px}
 .cfcard p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
 .cfneed{margin-top:8px;font-size:13px;color:var(--accent);font-weight:700}
 .cfallown{margin-top:8px;font-size:13px;color:#2f9e5f;font-weight:700}
@@ -1764,6 +1768,11 @@ var PAIR_IDEA_ID = null;
 /* 2026-09-26 costume roulette experiment: ?spin=<sender idea slug> rides
    the spin share link so the recipient banner can name the spin result. */
 var SPIN_IDEA_ID = null;
+/* 2026-09-26 wrapped W1 fix: ?wpick=<sender idea slug> rides the wrapped
+   share link so the recipient banner can name the sharer's pick + rank.
+   Parsed in init; null when absent, and a garbage id falls back to the
+   Wrapped-branded generic banner. */
+var WRAPPED_PICK_ID = null;
 /* 2026-09-26 party link experiment: the group broadcast share. Flag-gated;
    PARTY_PARAMS is parsed in init. */
 var PARTY_LINK_ENABLED = false;
@@ -2597,7 +2606,7 @@ function show(id){
         html += '<p class="cfempty">Nothing here yet. Tick more items you own.</p>';
       } else {
         items.slice(0, 20).forEach(function(it){
-          html += '<div class="cfcard"><h4>' + esc(it.idea.title) + "</h4><p>" + esc(it.idea.blurb) + "</p>";
+          html += '<div class="cfcard"><h4><button type="button" class="cfcardlink" data-idea="' + esc(it.idea.id) + '">' + esc(it.idea.title) + "</button></h4><p>" + esc(it.idea.blurb) + "</p>";
           if (n === 0){
             html += '<p class="cfallown">You have everything.</p>';
           } else if (it.score.missingNames){
@@ -2633,7 +2642,20 @@ function show(id){
     if (b) b.addEventListener("click", function(){ show(cfReturnTo); });
     var hm = $("btn-closet-home");
     if (hm) hm.addEventListener("click", function(){ show("s-hero"); });
+    /* Tap-to-detail on rail cards (2026-09-26 gap fix): the card title is a
+       button; one delegated listener covers all rails. Guards on
+       openIdeaDetail so the screen still renders if detail code is absent. */
+    var railsEl = $("cf-rails");
+    if (railsEl) railsEl.addEventListener("click", function(e){
+      var t = (e.target && e.target.closest) ? e.target.closest(".cfcardlink") : null;
+      if (t && t.getAttribute("data-idea") && typeof openIdeaDetail === "function"){
+        openIdeaDetail(t.getAttribute("data-idea"), "Why it's great", "s-closet");
+      }
+    });
   }
+  /* Deep-link entry from costume detail screens (2026-09-26 gap fix):
+     window.openCloset(returnTo) mirrors window.openPlanner / openShuffler. */
+  window.openCloset = openCloset;
   if (document.readyState === "loading"){
     document.addEventListener("DOMContentLoaded", wire);
   } else {
@@ -3601,10 +3623,16 @@ function pantryMissing(ideaId){
   var ticked = pantryTicked();
   var n = 0;
   for (var i = 0; i < list.length; i++){
-    var ok = false;
-    for (var g = 0; g < list[i].length && !ok; g++){
-      var grp = list[i][g];
-      for (var k = 0; k < grp.length; k++){ if (grp[k] && ticked.has(grp[k])){ ok = true; break; } }
+    /* AND across groups (2026-09-26 red-team): a material is satisfied only
+       when EVERY group has a ticked id, mirroring pantry.html's reqOk
+       (m.g.every(groupOk)), the generator's canonical semantics. The old
+       OR walk let one satisfied group (e.g. a staple) hide real gaps in
+       other groups, undercounting missing on 18 ideas. */
+    var ok = true;
+    for (var g = 0; g < list[i].length && ok; g++){
+      var grp = list[i][g], gok = false;
+      for (var k = 0; k < grp.length; k++){ if (grp[k] && ticked.has(grp[k])){ gok = true; break; } }
+      if (!gok) ok = false;
     }
     if (!ok) n++;
   }
@@ -3671,14 +3699,24 @@ function pantryScore(ideaId, ticked){
   var texts = pantryMaterialTexts(ideaId);
   var total = list.length, missing = 0, names = [];
   for (var i = 0; i < list.length; i++){
-    var mat = list[i], ok = false, rep = null;
-    for (var g = 0; g < mat.length && !ok; g++){
-      var grp = mat[g];
+    /* AND across groups (2026-09-26 red-team): every group must be satisfied,
+       mirroring pantry.html's reqOk. The rep label comes from the first
+       UNSATISFIED group so "Still need" names the thing actually missing,
+       not an already-owned item from a satisfied group. */
+    var mat = list[i], ok = true, rep = null;
+    for (var g = 0; g < mat.length && ok; g++){
+      var grp = mat[g], gok = false;
       for (var k = 0; k < grp.length; k++){
         var id = grp[k];
         if (!id) continue;
-        if (!rep && PANTRY_LABELS[id]) rep = PANTRY_LABELS[id];
-        if (tk.has(id)){ ok = true; break; }
+        if (tk.has(id)){ gok = true; break; }
+      }
+      if (!gok){
+        ok = false;
+        for (var k2 = 0; k2 < grp.length; k2++){
+          var id2 = grp[k2];
+          if (id2 && PANTRY_LABELS[id2]){ rep = PANTRY_LABELS[id2]; break; }
+        }
       }
     }
     if (!ok){
@@ -5279,6 +5317,194 @@ function buildNamedShareStep(idea){
 }
 /* ============ END Named-result experiment ============ */
 
+/* ============ Living-share experiment (2026-09-26 pm12 novel find) ============
+   Locket Widget's mechanic: the share artifact never expires. It updates when
+   the sharer progresses, and the update IS the re-engagement. The web
+   equivalent: a share link whose page renders the sharer's live progress from
+   URL-carried state (picked -> claimed -> building -> made it), plus a
+   Halloween countdown, and the friend's own unfinished business ("you have
+   not taken the quiz yet") as the persistent CTA. The sharer advances their
+   stage on the results page (each advance is the sharer's own declared
+   milestone, stored on their device); the share button mints a fresh URL
+   carrying the current stage, so every re-share is the Locket-style update
+   notification. Crafted payloads cannot invent a stage: ?live= must carry a
+   real bank id and one of the four stages, or the arrival falls through to
+   the generic banner. Analytics: living_stage_advanced -> share_created
+   (share_origin=living) -> recipient_landing_viewed -> living_share_reopened
+   (second+ opens of the same URL) -> quiz_started. Kill criterion: at 50
+   opened living links, re-opens near zero or friend quiz starts per living
+   share not clearly beating generic means the living frame is wrong; cut it.
+   Flag-gated: LIVING_SHARE_ENABLED.
+   URL shape: ?s=<sid>&o=living&live=<idea-id>,<stage>. */
+var LIVING_SHARE_ENABLED = false;
+var LIVING_SHARE = null; /* {idea: idea, stage: "picked"|"claimed"|"building"|"madeit"} or null, parsed at load */
+/* Progress ladder. Labels are plain words, no dashes anywhere user-facing. */
+var LIVING_STAGES = ["picked", "claimed", "building", "madeit"];
+var LIVING_STAGE_LABELS = {picked: "Picked", claimed: "Claimed", building: "Building", madeit: "Made it"};
+var LIVING_ADVANCE_LABELS = {claimed: "Claimed it", building: "Building it", madeit: "Made it"};
+/* Pure: the display label for a stage, or null for garbage. */
+function livingStageLabel(stage){
+  return Object.prototype.hasOwnProperty.call(LIVING_STAGE_LABELS, stage) ? LIVING_STAGE_LABELS[stage] : null;
+}
+/* The sharer's declared stage for this idea, from on-device milestones.
+   Monotonic by construction: madeit implies the earlier steps. Nothing is
+   written anywhere unless the sharer taps an advance button (flag-gated UI). */
+function livingCurrentStage(idea){
+  var id = idea && idea.id;
+  if (!id || typeof load !== "function") return "picked";
+  var made = load("pmc_madeit_v1"), build = load("pmc_build_v1"), claim = load("pmc_claim_v1");
+  if (made && made[id]) return "madeit";
+  if (build && build[id]) return "building";
+  if (claim && claim[id]) return "claimed";
+  return "picked";
+}
+/* Records the sharer's declared milestone for this idea. Returns the new
+   current stage. Called only from the flag-gated step UI. */
+function livingAdvanceStage(idea, stage){
+  if (!idea || !idea.id || LIVING_STAGES.indexOf(stage) < 0 || typeof store !== "function")
+    return livingCurrentStage(idea);
+  var key = {claimed: "pmc_claim_v1", building: "pmc_build_v1", madeit: "pmc_madeit_v1"}[stage];
+  if (!key) return livingCurrentStage(idea);
+  var m = load(key) || {};
+  m[idea.id] = Date.now();
+  store(key, m);
+  return livingCurrentStage(idea);
+}
+/* Pure HTML: the progress strip with the current stage bolded. The separator
+   is a single angle quote, never a dash. Labels come from our own constant. */
+function livingStripHtml(stage){
+  return LIVING_STAGES.map(function(s){
+    var label = LIVING_STAGE_LABELS[s];
+    return s === stage ? "<b>" + label + "</b>" : label;
+  }).join(" \u203A ");
+}
+/* Arrival payload: ?live=<idea-id>,<stage>. The idea must be a real bank id
+   and the stage one of the four; garbage falls through to generic. The flag
+   is checked first, so flag-off arrivals never parse. */
+function livingStageFromQuery(){
+  if (typeof LIVING_SHARE_ENABLED === "undefined" || !LIVING_SHARE_ENABLED) return null;
+  var m = /[?&]live=([a-z0-9-]+),([a-z]+)/.exec(location.search || "");
+  if (!m) return null;
+  var idea = (typeof matchIdeaById === "function") ? matchIdeaById(m[1]) : null;
+  if (!idea) return null;
+  if (LIVING_STAGES.indexOf(m[2]) < 0) return null;
+  return {idea: idea, stage: m[2]};
+}
+/* 2026-09-26 share-credibility: kid/family picks get the audience-aware
+   line (same pattern as pairTextFor/matchTextFor/glowupTextFor), never
+   "I am going as X" for a parent sharing a kid's costume. */
+function livingTextFor(idea, stage, sid){
+  var link = "https://pickmycostume.com/?s=" + sid + "&o=living&live=" + idea.id + "," + stage;
+  var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  var kidFam = aud === "kid" || aud === "family";
+  var pair = aud === "couple" || aud === "group";
+  var who = aud === "kid" ? " for my kid" : aud === "family" ? " for our family" : "";
+  var line;
+  if (stage === "madeit"){
+    line = kidFam ? "The " + idea.title + " costume" + who + " is done."
+      : pair ? "Our " + idea.title + " costumes are done."
+      : "My " + idea.title + " costume is done.";
+    return line + " See how it turned out: " + link;
+  }
+  if (stage === "building"){
+    line = kidFam ? "We are building the " + idea.title + " costume" + who + "."
+      : pair ? "We are building our " + idea.title + " costumes."
+      : "I am building my " + idea.title + " costume.";
+    return line + " Follow along, this link updates as " + ((kidFam || pair) ? "we" : "I") + " go: " + link;
+  }
+  if (stage === "claimed"){
+    line = kidFam ? "We claimed " + idea.title + who + "."
+      : pair ? "We claimed " + idea.title + " as our costume."
+      : "I claimed " + idea.title + " as my costume.";
+    return line + " This link stays live while we build it: " + link;
+  }
+  line = kidFam ? "The quiz picked " + idea.title + who + " this Halloween."
+    : pair ? "We are going as " + idea.title + " this Halloween."
+    : "I am going as " + idea.title + " this Halloween.";
+  var maker = (kidFam || pair) ? "we make" : "I make";
+  return line + " This link stays live while " + maker + " it: " + link;
+}
+/* Renders the "Share a living link" step under the #1 pick. Returns null
+   with the flag off (DOM byte-identical). The strip shows the sharer's
+   current declared stage; the advance buttons record the next milestones;
+   the share button mints a fresh URL carrying the current stage, so each
+   re-share is the update notification. */
+function buildLivingShareStep(idea){
+  if (!LIVING_SHARE_ENABLED) return null;
+  var wrap = document.createElement("div");
+  wrap.className = "stuck"; wrap.id = "living-share-step";
+  wrap.style.marginTop = "16px";
+  var h = document.createElement("h3");
+  h.textContent = "Share a living link";
+  var p = document.createElement("p");
+  p.textContent = "This link shows your pick, the days to Halloween, and your progress. When you move a step, re-share it and your friend sees the update.";
+  var strip = document.createElement("p");
+  strip.style.cssText = "margin:8px 0;font-size:14px;color:#666";
+  var advRow = document.createElement("div");
+  advRow.className = "row"; advRow.style.marginTop = "8px";
+  var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
+  var sb = document.createElement("button");
+  sb.type = "button"; sb.className = "cta"; sb.textContent = "Share the living link";
+  var sst = document.createElement("p"); sst.className = "status";
+  wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(strip);
+  wrap.appendChild(advRow); wrap.appendChild(row); row.appendChild(sb); wrap.appendChild(sst);
+  function render(){
+    var stage = livingCurrentStage(idea);
+    strip.innerHTML = livingStripHtml(stage);
+    advRow.innerHTML = "";
+    var idx = LIVING_STAGES.indexOf(stage);
+    var rest = LIVING_STAGES.slice(idx + 1);
+    rest.forEach(function(s){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "ghost";
+      b.style.cssText = "width:auto;padding:8px 14px";
+      b.textContent = LIVING_ADVANCE_LABELS[s];
+      b.onclick = function(){
+        livingAdvanceStage(idea, s);
+        if (typeof Analytics !== "undefined" && Analytics.track)
+          Analytics.track("living_stage_advanced", {idea_id: idea.id, living_stage: s});
+        render();
+        sst.textContent = "Progress saved. Re-share the link so your friend sees the new step.";
+      };
+      advRow.appendChild(b);
+    });
+    advRow.style.display = rest.length ? "" : "none";
+  }
+  render();
+  sb.onclick = function(){
+    var rearm = armShareOnce(sb);
+    if (!rearm) return;
+    var stage = livingCurrentStage(idea);
+    var sid = newShareId();
+    var text = livingTextFor(idea, stage, sid);
+    var link = "https://pickmycostume.com/?s=" + sid + "&o=living&live=" + idea.id + "," + stage;
+    function done(ok, msg){
+      sst.textContent = msg;
+      rearm();
+      if (ok && typeof Analytics !== "undefined" && Analytics.track){
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "living", living_stage: stage, share_msg_variant: shareVariant()});
+        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "living", living_stage: stage});
+      }
+    }
+    if (navigator.share){
+      try {
+        navigator.share({title: "Pick My Costume", text: text, url: link}).then(
+          function(){ done(true, "Shared."); },
+          function(){ done(false, ""); }
+        );
+        return;
+      } catch(e){}
+    }
+    doCopy(text, function(ok, msg){
+      if (ok && typeof Analytics !== "undefined" && Analytics.track)
+        Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "living", living_stage: stage});
+      done(ok, ok ? "Copied. Paste it into any message." : msg);
+    });
+  };
+  return wrap;
+}
+/* ============ END Living-share experiment ============ */
+
 function pairTextFor(idea, sid){
   var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
   /* 2026-09-26 pm3 red-team: the unconditional "I am going as X" made a dad
@@ -6878,7 +7104,10 @@ function wrShareText(pick, stats, sid){
     : "I am going as " + pick.title + " this Halloween.";
   return "My 2026 Halloween Wrapped: " + who +
     " (ranked #" + stats.rank + " of " + stats.total + "). " +
-    "Find your pick: https://pickmycostume.com/?s=" + sid + "&o=wrapped";
+    /* 2026-09-26 wrapped W1 fix: ?wpick=<idea.id> lets the recipient
+       banner name the sharer's pick + rank; older links without it get
+       the Wrapped-branded generic banner instead. */
+    "Find your pick: https://pickmycostume.com/?s=" + sid + "&o=wrapped&wpick=" + pick.id;
 }
 function wrShowSlide(n){
   var SLIDES = ["pick", "answers", "numbers", "share"];
@@ -7206,6 +7435,10 @@ function renderResults(results){
      step. buildNamedShareStep returns null with the flag off. */
   var namedStep = buildNamedShareStep(results[0].idea);
   if (namedStep) box.appendChild(namedStep);
+  /* 2026-09-26 pm12 living-share experiment: "Share a living link" step.
+     buildLivingShareStep returns null with the flag off. */
+  var livingStep = buildLivingShareStep(results[0].idea);
+  if (livingStep) box.appendChild(livingStep);
   /* 2026-09-26 party link experiment: host entry ("Make a party link") and
      the guest share-back ("Send my pick to the host"). Both return null
      when they do not apply or with the flag off. */
@@ -8345,9 +8578,10 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   var idea = null;
   for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
   if (!idea) return;
-  detailReturnTo = (returnTo === "s-pantry") ? "s-pantry" : ((returnTo === "s-hero") ? "s-hero" : "s-browse");
+  detailReturnTo = (returnTo === "s-pantry") ? "s-pantry" : (returnTo === "s-closet") ? "s-closet" : ((returnTo === "s-hero") ? "s-hero" : "s-browse");
   var db = $("btn-dback");
   if (db) db.innerHTML = (detailReturnTo === "s-pantry") ? "&larr; Back to pantry"
+    : (detailReturnTo === "s-closet") ? "&larr; Back to closet"
     : ((detailReturnTo === "s-hero") ? "&larr; Back" : "&larr; Back to browse");
   var dp = $("detail-progress");
   if (dp) dp.textContent = progressText || "From browsing";
@@ -8364,6 +8598,17 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
     _plb.style.marginTop = "12px";
     _plb.onclick = function(){ openPlanner(idea.id, "s-detail"); };
     box.appendChild(_plb);
+  }
+  /* Closet-first deep link (2026-09-26 gap fix): "can I build this from what
+     I own?" Every idea has a mats entry, so no INSTRUCTIONS guard is needed.
+     A button, so the card-level click handler leaves it alone. */
+  if (typeof openCloset === "function"){
+    var _clb = document.createElement("button");
+    _clb.type = "button"; _clb.className = "ghost";
+    _clb.textContent = "Can you build this from your closet?";
+    _clb.style.marginTop = "12px";
+    _clb.onclick = function(){ openCloset("s-detail"); };
+    box.appendChild(_clb);
   }
   var _bde = {idea_id: idea.id, thumb_arm: thumbArm()};
   if (detailReturnTo === "s-pantry") _bde.via = "pantry";
@@ -11332,6 +11577,7 @@ var KIDS_RAIL_IDS = ["snow-sisters","fairy-tale-princesses","backyard-hero","bab
 function detailGoBack(){
   if (detailReturnTo === "s-hero"){ show("s-hero"); refreshReturnBox(); window.scrollTo(0,0); }
   else if (detailReturnTo === "s-pantry"){ location.href = "/pantry"; }
+  else if (detailReturnTo === "s-closet"){ show("s-closet"); window.scrollTo(0,0); }
   else { renderBrowse(); show("s-browse"); }
 }
 function detailGoHome(){ show("s-hero"); refreshReturnBox(); window.scrollTo(0,0);
@@ -11421,7 +11667,18 @@ function shareLandingHeadline(idea, search){
        shares; same survival rule as the other origins.
        2026-09-26 costume roulette experiment: ?o=spin marks "The shuffle
        picked" shares; same survival rule. */
-    var om = /[?&]o=(card|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first|named)/.exec(location.search || "");
+    /* 2026-09-26 D1 attribution fix: Experiment 1 mints ?o=generic_quick, which
+       this alternation previously prefix-matched as "generic" (generic_quick
+       must precede generic; no terminator is used so every other arm keeps
+       its existing prefix-match behavior). */
+    /* 2026-09-26 wrapped W1 fix: ?o=wrapped marks Halloween Wrapped shares.
+       Placed last in the alternation: no other arm shares a prefix with
+       "wrapped" in either direction (no arm starts with "w", and "wrapped"
+       is not a prefix of any arm), so no terminator or reordering is needed
+       -- the same prefix-collision care as the D1 generic_quick fix. Wrapped
+       is live, not an experiment: no flag gate, so VIA_SHARE_ORIGIN is set
+       to "wrapped" unconditionally below. */
+    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first|named|living|wrapped)/.exec(location.search || "");
     /* 2026-09-26 evening match-pair experiment: ?o=match is only recognized
        when the flag is on, so arrivals with the flag off behave exactly as
        before the experiment existed. */
@@ -11441,7 +11698,8 @@ function shareLandingHeadline(idea, search){
         && (om[1] !== "glow" || GLOWUP_ENABLED)
         && (om[1] !== "remix" || REMIX_ENABLED)
         && (om[1] !== "first" || FIRST_HALLOWEEN_ENABLED)
-        && (om[1] !== "named" || NAMED_RESULT_ENABLED)) VIA_SHARE_ORIGIN = om[1];
+        && (om[1] !== "named" || NAMED_RESULT_ENABLED)
+        && (om[1] !== "living" || LIVING_SHARE_ENABLED)) VIA_SHARE_ORIGIN = om[1];
     /* 2026-09-26 pm11 named-result experiment: ?o=named is only recognized
        when the flag is on, so arrivals with the flag off behave exactly as
        before the experiment existed. */
@@ -11493,6 +11751,12 @@ function shareLandingHeadline(idea, search){
        the flag on and the id real; a garbage name drops to the nameless
        fallback. */
     NAMED_PICK = namedPayloadFromQuery();
+    /* 2026-09-26 pm12 living-share experiment: ?live=<idea-id>,<stage> rides
+       the share link so the recipient page can render the sharer's declared
+       progress. Parsed into LIVING_SHARE only with the flag on, a real idea
+       id, and one of the four stages; garbage yields null and the arrival
+       falls through to the generic banner. */
+    LIVING_SHARE = livingStageFromQuery();
     /* 2026-09-26 staged-copy lint: ?nm= is a first name; keep it out of the
        PostHog pageview URL. NAMED_PICK is already parsed into memory above,
        so the banner, compare panel, and share-back are unaffected. */
@@ -11504,6 +11768,11 @@ function shareLandingHeadline(idea, search){
        share link so the recipient banner can name the spin result. */
     var spm = /[?&]spin=([a-z0-9-]+)/.exec(location.search || "");
     if (spm) SPIN_IDEA_ID = spm[1];
+    /* 2026-09-26 wrapped W1 fix: ?wpick=<sender idea slug> rides the
+       wrapped share link so the recipient banner can name the sharer's
+       pick + rank. */
+    var wpm = /[?&]wpick=([a-z0-9-]+)/.exec(location.search || "");
+    if (wpm) WRAPPED_PICK_ID = wpm[1];
     /* 2026-09-26 party link experiment: ?party=<6-char code> carries the
        group broadcast share; ?theme=, ?pname=, ?taken=, ?claim= ride along. */
     PARTY_PARAMS = partyParseParams();
@@ -11989,6 +12258,81 @@ function shareLandingHeadline(idea, search){
       };
       hero.insertBefore(npb, hero.firstChild);
       if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 wrapped W1 fix: genuine ?o=wrapped arrivals get the
+       Wrapped banner instead of the generic friend banner. The sharer's
+       pick rides ?wpick= (minted by wrShareText); when it resolves in the
+       live bank the banner names the pick + rank, otherwise (older links
+       without ?wpick=, or a garbage id) it falls back to the
+       Wrapped-branded generic. Wearer-safe: the headline names the
+       Wrapped, never who wears the costume. One tap starts the normal
+       quiz, attributed share_origin=wrapped. Fires
+       recipient_landing_viewed here because the ?idea= block never runs on
+       a bare /?s= arrival. */
+    if (typeof VIA_SHARE_ORIGIN !== "undefined" && VIA_SHARE_ORIGIN === "wrapped"){
+      var _wrTheirs = (typeof WRAPPED_PICK_ID !== "undefined" && WRAPPED_PICK_ID && typeof spinIdeaById === "function") ? spinIdeaById(WRAPPED_PICK_ID) : null;
+      var _wrRank = (_wrTheirs && typeof _wrTheirs.rank === "number") ? ", ranked #" + _wrTheirs.rank + " of " + IDEAS.length : "";
+      var wb = document.createElement("button");
+      wb.type = "button";
+      wb.id = "pmc-friend-banner";
+      wb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      wb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend's Halloween Wrapped</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + (_wrTheirs ? _wrTheirs.title + _wrRank + ". Take the 2-minute quiz to find your pick." : "They shared their 2026 Wrapped. Take the 2-minute quiz to find your pick and see your own.") + "</p>";
+      wb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        Analytics.track("quiz_started", viaShareProps());
+        renderQ();
+      };
+      hero.insertBefore(wb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+      return;
+    }
+    /* 2026-09-26 pm12 living-share experiment: genuine ?o=living arrivals
+       with a valid ?live= payload get the living banner. LIVING_SHARE is
+       null with the flag off or on garbage, so those arrivals fall through
+       to the generic banner exactly as before the experiment existed. The
+       banner renders the sharer's declared progress strip, the live
+       Halloween countdown, and the friend's own unfinished business as the
+       persistent CTA. A second+ open of the same URL fires
+       living_share_reopened: the Locket re-engagement event, measurable per
+       share_id with the site's own events. The quiz CTA carries living_reopen
+       so friend-quiz conversion on second+ opens is readable. Fires
+       recipient_landing_viewed here because the ?idea= block never runs on
+       a bare /?s= arrival. */
+    if (VIA_SHARE_ORIGIN === "living" && LIVING_SHARE){
+      var lsb = document.createElement("button");
+      lsb.type = "button";
+      lsb.id = "pmc-friend-banner";
+      lsb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
+      var _lsDays = daysToHalloween();
+      lsb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend shared a living costume link.</p>" +
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + LIVING_SHARE.idea.title + " &middot; " + _lsDays + " day" + (_lsDays === 1 ? "" : "s") + " to Halloween</p>" +
+        "<p style=\"margin:8px 0 0;font-size:13px;color:#666;line-height:1.6\">" + livingStripHtml(LIVING_SHARE.stage) + "</p>" +
+        "<p style=\"margin:8px 0 0;font-size:14px;color:#333;line-height:1.4\"><b>You have not taken the quiz yet.</b> Take the 2-minute quiz and find your pick.</p>";
+      lsb.onclick = function(){
+        state = {qi: 0, answers: {}};
+        state.pinpoint = null;
+        pinpointNote(""); pinpointClearNomatch();
+        clearK("pmc_pick_v1");
+        var _lsReopen = false;
+        try { _lsReopen = !!localStorage.getItem("pmc_seen_share_" + VIA_SHARE); } catch(e){}
+        Analytics.track("quiz_started", Object.assign({living_reopen: _lsReopen}, viaShareProps()));
+        renderQ();
+      };
+      hero.insertBefore(lsb, hero.firstChild);
+      if (isGenuineShareArrival(location.search || "")){
+        var _lsSeen = false;
+        try {
+          _lsSeen = !!localStorage.getItem("pmc_seen_share_" + VIA_SHARE);
+          localStorage.setItem("pmc_seen_share_" + VIA_SHARE, "1");
+        } catch(e){}
+        Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
+        if (_lsSeen) Analytics.track("living_share_reopened", {share_id: VIA_SHARE, living_stage: LIVING_SHARE.stage});
+      }
       return;
     }
     /* 2026-09-26 red-team a11y: a button, not a div with onclick, so
