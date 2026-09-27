@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="p:domain_verify" content="062f4d083666a1abd25ae0471080c9f7">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pick My Costume - A few quick questions. Three costume ideas.</title>
-<meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
+<title>Halloween Costume Quiz: What Should I Be? | Pick My Costume</title>
+<meta name="description" content="A free Halloween costume quiz. A few quick questions, three costume ideas for solo, couples, family, groups, and kids. No email, no account.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pickmycostume.com/">
-<meta property="og:title" content="Pick My Costume - A few quick questions. Three costume ideas.">
-<meta property="og:description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
+<meta property="og:title" content="Halloween Costume Quiz: What Should I Be? | Pick My Costume">
+<meta property="og:description" content="A free Halloween costume quiz. A few quick questions, three ideas, no email, no account. Solo, couples, groups, kids, and the whole family.">
 <!-- 2026-09-26 red-team: was the blocklisted neon-demon-hunter photo
      (proof-strip blocklist: taste + never top-saved, "never promote").
      The homepage share card is the recipient's first impression; it must
@@ -7878,11 +7878,20 @@ function renderWarmResults(){
   pl.appendChild(pa); box.appendChild(pl);
 
   /* 3. Backup if shipping fails. */
-  warmSection(box, "If it does not arrive in time", "Shipping fails sometimes. Each of these can be made tonight from stuff already at home.");
-  warmTonightIdeas(wearer === "kid" ? "kid" : "solo").forEach(function(m){
-    var card = warmPairCard(m, "Make tonight: everything it needs is already at home.");
-    box.appendChild(card);
-  });
+  /* 2026-09-27 red-team (last-minute journey): warmTonightIdeas() is empty
+     for anyone who never ticked their pantry -- no idea is make-tonight on
+     the 6 assumed staples alone (closest is 2 away) -- which rendered the
+     promise header with zero cards under it. Only render the section when
+     there is at least one real backup; the promise must never outrun the
+     cards. */
+  var _tonightBackups = warmTonightIdeas(wearer === "kid" ? "kid" : "solo");
+  if (_tonightBackups.length){
+    warmSection(box, "If it does not arrive in time", "Shipping fails sometimes. Each of these can be made tonight from stuff already at home.");
+    _tonightBackups.forEach(function(m){
+      var card = warmPairCard(m, "Make tonight: everything it needs is already at home.");
+      box.appendChild(card);
+    });
+  }
 
   show("s-results");
   try { window.scrollTo(0, 0); } catch(_){}
