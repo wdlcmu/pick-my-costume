@@ -1441,7 +1441,7 @@ function pinpointResolve(raw){
    (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
 var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:1},
-  {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"a perennial favorite", fit:"U", venue:{bar:1}, rank:2},
+  {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes.", why:"Top five for kids and adults alike. The most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"a perennial favorite", fit:"U", venue:{bar:1}, rank:2},
   {id:"blue-dog-family", title:"Aussie Dog Family", blurb:"Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.", why:"Blue and orange shirts, paper ears, and your kid completely loses it.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:3},
   {id:"superhero-family", title:"Superhero Family", blurb:"Red sweatsuits, black eye masks, felt logo. The whole family goes super.", why:"Scales from two to six people, and every age knows the movie.", audience:["family"], budget:["low","mid"], tags:{cute:2,funny:1,couch:1,simple:2,heroes:3,tv:2,occparty:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:4},
   {id:"blue-alien-ohana", title:"Blue Alien Ohana", blurb:"Blue hoodie, big ears: the alien, the girl, or the whole ohana.", why:"Everyone knows the alien without you saying a word, and the ears carry the whole costume.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2}, fit:"U", venue:{bar:2}, rank:5},
@@ -1977,6 +1977,36 @@ function scoreIdeas(full){
   if (_hVibeTag){
     var _vibePool = pool.filter(_vibeOk);
     if (_vibePool.length >= 3) pool = _vibePool;
+  }
+  /* Kid safety hard filter (Billy 2026-09-26: optimize for kid safety): for
+     kid quizzes where the age answer carries the kidunder3 tag ("Under 3" or
+     "Mixed ages"), suppress any idea with scary>=1 that lacks the kidunder3
+     tag. This is the Halloween Wrapped standard: zero scary picks for
+     toddlers without an explicit toddler-safe tag. Safety overrides the
+     vibe/interest promise. Unlike other filters, there is NO <3 relaxation
+     that would reintroduce scary picks -- instead we backfill from safe
+     (non-scary) kid ideas so the top 3 never comes back short. */
+  var _hAgeAns = state.answers.q5kid;
+  var _hAgeUnder3 = _hAgeAns && _hAgeAns.tags && _hAgeAns.tags.kidunder3;
+  if (aud === "kid" && _hAgeUnder3){
+    var _safePool = pool.filter(function(i){
+      var t = i.tags || {};
+      return !((t.scary||0) >= 1 && !((t.kidunder3||0) > 0));
+    });
+    if (_safePool.length < 3){
+      /* Backfill from safe kid ideas (non-scary, kidunder3 preferred) so we
+         never show fewer than 3, but never reintroduce a scary pick. */
+      var _fill = IDEAS.filter(function(i){
+        if (i.audience.indexOf("kid") === -1) return false;
+        if (_safePool.indexOf(i) !== -1) return false;
+        var t = i.tags || {};
+        return !((t.scary||0) >= 1 && !((t.kidunder3||0) > 0));
+      });
+      /* Prefer kidunder3-tagged ideas in the backfill. */
+      _fill.sort(function(a,b){ return ((b.tags.kidunder3||0) - (a.tags.kidunder3||0)); });
+      _safePool = _safePool.concat(_fill);
+    }
+    pool = _safePool;
   }
   /* Bar/club night is a hard venue filter: venue.bar 0 ideas (face-covering
      masks, box heads, stilts, oversized/fragile/hot builds) cannot do bar
@@ -11642,6 +11672,11 @@ function shareLandingHeadline(idea, search){
      recipient is invited to try their own face, not just pick a costume. */
   var isTryon = /[?&]o=tryon(?:&|$)/.test(q);
   if (isShare && isTryon) return "Your friend tried on " + idea.title + ". Try your own face in it.";
+  /* 2026-09-26 countdown experiment: ?o=countdown marks shares from the
+     12-Day Costume Countdown page. No flag gate: the page ships in the same
+     batch, so no old link can carry this origin. */
+  var isCountdown = /[?&]o=countdown(?:&|$)/.test(q);
+  if (isShare && isCountdown) return "Your friend is counting down to Halloween with " + idea.title + ". What is your pick?";
   if (isShare) return "Your friend picked " + idea.title + ". What would you pick?";
   return idea.title;
 }
@@ -11677,7 +11712,7 @@ function shareLandingHeadline(idea, search){
        -- the same prefix-collision care as the D1 generic_quick fix. Wrapped
        is live, not an experiment: no flag gate, so VIA_SHARE_ORIGIN is set
        to "wrapped" unconditionally below. */
-    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first|named|living|wrapped)/.exec(location.search || "");
+    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challenge|challengeresult|match|glow|remix|first|named|living|wrapped|countdown)/.exec(location.search || "");
     /* 2026-09-26 evening match-pair experiment: ?o=match is only recognized
        when the flag is on, so arrivals with the flag off behave exactly as
        before the experiment existed. */
