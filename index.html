@@ -472,6 +472,12 @@ button.ghost{
 .casttoggle.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
 .castline{font-size:15px;color:var(--muted);margin:10px 0 0;line-height:1.5}
 .castline b{color:var(--ink)}
+/* 2026-09-28 KitForma playtest: the share preview sat below the name form,
+   so typing names felt like a chore before any payoff. The live preview card
+   sits above the form and mirrors the share text on every keystroke. */
+.castliveprev{margin:10px 0 4px;padding:10px 12px;background:var(--card);border:2px solid var(--line);border-radius:var(--radius)}
+.castliveprev-lab{margin:0 0 4px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.castliveprev-text{margin:0;font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
 .card .blurb{margin:0 0 10px;font-size:17px}
 .card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
 .card .why b{color:var(--ink)}
@@ -11440,6 +11446,22 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var line = document.createElement("p"); line.className = "castline";
   box.appendChild(q1); box.appendChild(q1r);
   box.appendChild(q2); box.appendChild(q2r);
+  /* 2026-09-28 KitForma playtest: the share preview sat below the name form,
+     so typing names felt like a chore with no payoff. This live preview card
+     sits above the form and mirrors the share text on every keystroke, so the
+     form feels like watching your card come alive. Display-only: taps here
+     never bubble to the card's click-to-pick handler (the panel root already
+     stops propagation; this is belt and suspenders). */
+  var livePrev = document.createElement("div");
+  livePrev.className = "castliveprev";
+  if (livePrev.addEventListener) livePrev.addEventListener("click", function(e){ e.stopPropagation(); });
+  var livePrevLab = document.createElement("p");
+  livePrevLab.className = "castliveprev-lab";
+  livePrevLab.textContent = "Live preview";
+  var livePrevText = document.createElement("p");
+  livePrevText.className = "castliveprev-text";
+  livePrev.appendChild(livePrevLab); livePrev.appendChild(livePrevText);
+  box.appendChild(livePrev);
   box.appendChild(rows); box.appendChild(line);
   /* The cast share row, personal cards, and the per-person AI plan live INSIDE
      the panel -- personal cards first, share next, AI plan last (Billy
@@ -11558,6 +11580,10 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var b = document.createElement("b"); b.textContent = "Your cast: ";
     line.appendChild(b);
     line.appendChild(document.createTextNode(castLine(list) + "."));
+    /* Live preview above the form mirrors the share text on every keystroke.
+       buildCastShareText is pure (no analytics), so a constant preview sid is
+       safe here; the card is display-only and never copied or sent. */
+    livePrevText.textContent = buildCastShareText(idea, currentList(), "preview");
     /* The share text and the AI prompt ARE the cast list  --  rebuilt from the
        current inputs every time, so the preview is always what gets sent. */
     if (!shareHandle){
