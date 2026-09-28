@@ -33,9 +33,13 @@
   .proto{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 10px}
   h1{font-size:34px;line-height:1.1;margin:18px 0 8px;letter-spacing:-.5px}
   .sub{color:var(--muted);font-size:16px;line-height:1.5;margin:0 0 20px}
-  .staple-note{background:var(--card2);border:1px solid var(--line);border-radius:12px;
-    padding:12px 14px;font-size:13.5px;line-height:1.5;color:var(--muted);margin:0 0 6px}
-  .staple-note b{color:var(--ink)}
+  .staple-fold{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+    padding:0 14px;font-size:13.5px;line-height:1.5;color:var(--muted);margin:0 0 6px}
+  .staple-fold summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14px;
+    padding:12px 0;min-height:44px;display:flex;align-items:center;list-style:none}
+  .staple-fold summary::-webkit-details-marker{display:none}
+  .staple-fold p{margin:0 0 12px}
+  .staple-fold b{color:var(--ink)}
   fieldset{border:0;margin:0 0 8px;padding:0}
   legend{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:18px 0 8px;padding:0}
   .checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -99,17 +103,19 @@
   .reshead h2{font-size:20px;margin:0}
   .reshead span{font-size:13px;color:var(--muted)}
   .tier-sub{font-size:13.5px;color:var(--muted);margin:-6px 0 10px;line-height:1.45}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 10px;cursor:pointer}
+  /* 2026-09-28 (Billy): visual-first cards -- the costume photo leads as a
+     full-bleed banner, text collapses beneath it. Was a 76px floated thumb. */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0;margin:0 0 12px;cursor:pointer;overflow:hidden}
   .card.zero{border-color:var(--green)}
   .card.almost{border-color:var(--yellow)}
-  .card .rank{font-size:12px;color:var(--muted);font-weight:700}
-  .card .tile{float:right;width:76px;height:76px;border-radius:10px;margin:0 0 8px 12px;
-    background:linear-gradient(135deg,#2a2145,#3d2b63);display:grid;place-items:center;
-    position:relative;overflow:hidden;border:1px solid var(--line);flex:none}
-  .card .tile .temo{font-size:34px;line-height:1}
+  .card .tile{position:relative;overflow:hidden;display:grid;place-items:center;aspect-ratio:16/10;
+    background:linear-gradient(135deg,#2a2145,#3d2b63)}
+  .card .tile .temo{font-size:64px;line-height:1}
   .card .tile .thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
     border-radius:0;margin:0;background:transparent}
-  .card h3{margin:4px 0 6px;font-size:17px}
+  .card .cbody{padding:14px}
+  .card .rank{font-size:12px;color:var(--muted);font-weight:700}
+  .card h3{margin:4px 0 6px;font-size:19px}
   .likely{font-size:14px;color:var(--ink);margin:6px 0 2px;}
   .likely b{color:var(--ink);}
   .card .have{font-size:14px;color:var(--muted);margin:0 0 8px}
@@ -128,8 +134,15 @@
   .mrow.miss .mi{color:var(--yellow)}
   .mrow.have{color:var(--muted)}
   .mrow .memo{font-size:14px;flex:0 0 auto}
-  .go{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:14px;
-    text-decoration:none;border-radius:10px;padding:10px 16px;min-height:44px;line-height:1.4}
+  .go{display:block;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:15px;
+    text-decoration:none;border-radius:10px;padding:12px 16px;min-height:48px;line-height:1.4;margin-top:10px}
+  /* 2026-09-28 (Billy): the full materials checklist collapses behind one
+     tap -- the card leads with photo + title + the likely-have line. */
+  .needs{margin:8px 0 4px;border:1px solid var(--line);border-radius:10px}
+  .needs summary{cursor:pointer;padding:12px;font-size:13.5px;font-weight:700;color:var(--ink);
+    list-style:none;min-height:44px;display:flex;align-items:center}
+  .needs summary::-webkit-details-marker{display:none}
+  .needs .mrows{margin:0;padding:0 12px 10px}
   .challenge{background:#2a1a08;border:1px solid var(--accent);border-radius:14px;
     padding:14px 16px;font-size:14px;line-height:1.5;margin:0 0 16px}
   .challenge b{color:var(--accent)}
@@ -181,7 +194,10 @@
        missing. Tapping a missing row ticks it in the main list below. -->
   <div class="focus" id="focus" hidden></div>
 
-  <p class="staple-note"><b>We assume every home has the basics: a white t-shirt, black clothes, markers, scissors, tape, paper and pen, cardboard, socks, a bedsheet, and aluminum foil.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p>
+  <!-- 2026-09-28 (Billy): the assumed-basics list collapses behind one tap --
+       the page leads with costumes, not a wall of text. -->
+  <details class="staple-fold"><summary>What we assume you have</summary>
+  <p><b>We assume every home has the basics: a white t-shirt, a t-shirt (any color), black clothes, markers, scissors, tape, paper and pen, cardboard, socks, a bedsheet, a pillowcase, and aluminum foil.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p></details>
   <!-- Billy 2026-09-25: the opening leads with the alive number, not a dead
        "0 you can make tonight". With just the assumed basics, the count is
        already real the moment the page loads. -->
@@ -1316,13 +1332,17 @@ function cardHtml(r, i){
   }).filter((v, i, a) => a.indexOf(v) === i);
   const likelyHtml = likely.length
     ? '<p class="likely">You likely have: <b>' + esc(likely.join(', ')) + '</b></p>' : '';
+  /* 2026-09-28 (Billy): visual-first -- the full have/miss checklist
+     collapses into one tap so the card leads with the costume photo. */
+  const needsHtml = rows
+    ? '<details class="needs"><summary>What you need (' + r.it.mats.length + ')</summary>' +
+      '<div class="mrows">' + rows + '</div></details>' : '';
   return '<div class="card' + cls + '">' +
     '<div class="tile"><span class="temo" aria-hidden="true">' + ideaEmoji(r.it.id) + '</span>' +
     '<img class="thumb" src="photos/' + r.it.id + '.webp" alt="" loading="lazy" onerror="this.remove()"></div>' +
-    '<div class="rank">#' + (i + 1) + '</div>' +
-    '<h3>' + esc(r.it.title) + '</h3>' + likelyHtml +
-    '<div class="mrows">' + rows + '</div>' +
-    '<a class="go" href="index.html?pick=' + r.it.id + viaS + '">How to make it</a></div>';
+    '<div class="cbody"><div class="rank">#' + (i + 1) + '</div>' +
+    '<h3>' + esc(r.it.title) + '</h3>' + likelyHtml + needsHtml +
+    '<a class="go" href="index.html?pick=' + r.it.id + viaS + '">How to make it</a></div></div>';
 }
 
 /* 2026-09-26 pantry deep-link (Billy): focused checklist for one costume.
@@ -1417,8 +1437,9 @@ function render(){
     : 'Nothing is fully covered yet';
   const almostBit = t1.length ? (t0.length ? ', and ' : ' - ') + '<b>' + t1.length + '</b> ' +
     (t1.length === 1 ? 'is' : 'are') + ' 1 or 2 supplies away.' : '.';
-  stat.innerHTML = madeBit + almostBit +
-    '<p>Tick what else you own and the list reshuffles around your stuff.</p>';
+  /* 2026-09-28: the reshuffle hint lives on the supply-picker section below;
+     the stat stays one line of alive numbers. */
+  stat.innerHTML = madeBit + almostBit;
 
   // unlock suggestions: single-item gaps only, ranked by costumes unlocked
   const unlockMap = {};
@@ -1487,11 +1508,13 @@ function render(){
            button/input/select/textarea are the only exclusions. idea_id comes
            from the card's pick link. Additive only; the navigation below is
            unchanged. */
-        if (card.classList.contains('zero') && !ev.target.closest('button,input,select,textarea')){
+        /* 2026-09-28: summary taps toggle the collapsed details (what-you-need,
+           assumed basics) instead of navigating away. */
+        if (card.classList.contains('zero') && !ev.target.closest('button,input,select,textarea,summary')){
           var mtId = (link.getAttribute('href').match(/[?&]pick=([^&#]+)/) || [])[1];
           track('make_tonight_tapped', { idea_id: mtId ? decodeURIComponent(mtId) : '' });
         }
-        if (ev.target.closest('a,button,input,select,textarea')) return;
+        if (ev.target.closest('a,button,input,select,textarea,summary')) return;
         location.href = link.getAttribute('href');
       });
     }
