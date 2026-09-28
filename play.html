@@ -187,20 +187,7 @@
     'little-witch':{name:'Little Witch',image:'images/play/little-witch.webp',guide:'https://pickmycostume.com/c/little-witch'},
     'tiny-astronaut':{name:'Tiny Astronaut',image:'images/play/tiny-astronaut.webp',guide:'https://pickmycostume.com/c/astronaut'}
   };
-  var matchRounds=[
-    {label:'Easy matches',featured:'bumblebee',pairs:[
-      {id:'stem',label:'Pumpkin stem',type:'stem',to:'little-pumpkin'},
-      {id:'antennae',label:'Bee antennae',type:'headband',to:'bumblebee'},
-      {id:'dino-tail',label:'Dinosaur tail',type:'tail',to:'baby-dino'}]},
-    {label:'Look closer',featured:'friendly-ghost',pairs:[
-      {id:'poncho',label:'White poncho',type:'poncho',to:'friendly-ghost'},
-      {id:'witch-hat',label:'Pointy hat',type:'hat',to:'little-witch'},
-      {id:'mission-patch',label:'Mission patch',type:'patch',to:'tiny-astronaut'}]},
-    {label:'Super matcher',featured:'tiny-astronaut',pairs:[
-      {id:'white-fabric',label:'White fabric',type:'fabric-white',to:'friendly-ghost'},
-      {id:'silver-tape',label:'Silver tape',type:'tape',to:'tiny-astronaut'},
-      {id:'black-fabric',label:'Black fabric',type:'fabric-black',to:'little-witch'}]}
-  ];
+  var matchRounds=[     {label:'Easy matches',tip:'Tap a piece, then its costume.',featured:'bumblebee',pairs:[       {id:'witch-hat',label:'Pointy hat',type:'hat',to:'little-witch'},       {id:'dino-tail',label:'Dinosaur tail',type:'tail',to:'baby-dino'},       {id:'bee-wings',label:'Bee wings',type:'wings',to:'bumblebee'}]},     {label:'More pieces',tip:'New pieces — look at the shapes.',featured:'friendly-ghost',pairs:[       {id:'stem',label:'Pumpkin stem',type:'stem',to:'little-pumpkin'},       {id:'poncho',label:'White poncho',type:'poncho',to:'friendly-ghost'},       {id:'helmet',label:'Space helmet',type:'helmet',to:'tiny-astronaut'}]},     {label:'Look closer',tip:'Small details count.',featured:'little-witch',pairs:[       {id:'antennae',label:'Bee antennae',type:'headband',to:'bumblebee'},       {id:'broom',label:'Broom',type:'broom',to:'little-witch'},       {id:'orange-fabric',label:'Orange fabric',type:'fabric-orange',to:'little-pumpkin'}]},     {label:'Tricky pairs',tip:'Look at every little detail.',featured:'friendly-ghost',pairs:[       {id:'ghost-eyes',label:'Ghost eyes',type:'ghost-eyes',to:'friendly-ghost'},       {id:'stripes',label:'Bee stripes',type:'stripes',to:'bumblebee'},       {id:'vine',label:'Pumpkin vine',type:'vine',to:'little-pumpkin'}]},     {label:'Super matcher',tip:'Almost there — look closely.',featured:'tiny-astronaut',pairs:[       {id:'mission-patch',label:'Mission patch',type:'patch',to:'tiny-astronaut'},       {id:'claws',label:'Dino claws',type:'claws',to:'baby-dino'},       {id:'black-fabric',label:'Black fabric',type:'fabric-black',to:'little-witch'}]},     {label:'Master matcher',tip:'The tiniest clues. You’ve got this.',featured:'baby-dino',pairs:[       {id:'silver-tape',label:'Silver tape',type:'tape',to:'tiny-astronaut'},       {id:'spikes',label:'Dino spikes',type:'spikes',to:'baby-dino'},       {id:'white-fabric',label:'White fabric',type:'fabric-white',to:'friendly-ghost'}]}   ];
   var round=0,points=0,soundOn=true,answered=false,audio=null,mode='peek',selectedPiece=null,matchedCount=0;
   var intro=document.getElementById('intro'),game=document.getElementById('game'),materials=document.getElementById('materials'),finish=document.getElementById('finish');
   var hud=document.getElementById('hud'),progressWrap=document.getElementById('progressWrap'),stage=document.getElementById('stage'),answers=document.getElementById('answers');
@@ -238,13 +225,23 @@
       patch:'<path d="m12 3 3 3 4 .5-.5 4 2 3.5-3.5 2-1.5 4-3.5-2-3.5 2L7 16l-3.5-2 2-3.5-.5-4L9 6Z" fill="#cbd9e7"/><path d="m12 8 1.3 2.6 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4Z"/>',
       tape:'<circle cx="11" cy="11" r="7" fill="#cbd9e7"/><circle cx="11" cy="11" r="3" fill="var(--surface)"/><path d="M16 16h5v5h-8" fill="#cbd9e7"/>',
       'fabric-white':'<path d="M5 5h13l1 13H6Z" fill="#fff"/><path d="m8 5 1 13M14 5l1 13M6 12h13"/>',
-      'fabric-black':'<path d="M5 5h13l1 13H6Z" fill="#3d3848"/><path d="m8 5 1 13M14 5l1 13M6 12h13" stroke="#fff"/>'
+      'fabric-black':'<path d="M5 5h13l1 13H6Z" fill="#3d3848"/><path d="m8 5 1 13M14 5l1 13M6 12h13" stroke="#fff"/>',
+       'wings':'<ellipse cx="8" cy="13" rx="4.6" ry="8" fill="#fff"/><ellipse cx="16" cy="13" rx="4.6" ry="8" fill="#fff"/><path d="M8 6v14M16 6v14" stroke="#9db8c6" stroke-width="1.2"/>',
+       'spikes':'<path d="M5 19l4-11 4 11Z" fill="#67b96b"/><path d="M11 19l4-8 4 8Z" fill="#4da355"/><path d="M15.5 19l3-5 3 5Z" fill="#67b96b"/>',
+       'ghost-eyes':'<ellipse cx="8.5" cy="12" rx="3.2" ry="4.5" fill="#26223a"/><ellipse cx="15.5" cy="12" rx="3.2" ry="4.5" fill="#26223a"/>',
+       'broom':'<path d="M14 2l2 1-6 12-2-1Z" fill="#8a5a33"/><path d="M4 15l6-2 3 5-6 2Z" fill="#e3b96b"/><path d="M6.5 15.5 9.5 19M8.5 14.8l2.6 3" stroke="#8a5a33" stroke-width="1"/>',
+       'helmet':'<circle cx="12" cy="12" r="8" fill="#dceef5"/><path d="M7.5 11a5 5 0 0 1 9 0" stroke="#fff" stroke-width="2" fill="none"/>',
+       'fabric-orange':'<path d="M5 5h13l1 13H6Z" fill="#ff8c1a"/><path d="m8 5 1 13M14 5l1 13M6 12h13" stroke="#d96f0a"/>',
+       'stripes':'<rect x="4" y="9" width="16" height="7" rx="3.5" fill="#ffbd2e"/><path d="M9.5 9v7M14.5 9v7" stroke="#26223a" stroke-width="2.5"/>',
+       'vine':'<path d="M6 20Q6 12 12 12q5 0 5-6" fill="none"/><path d="M12 12q-4-1-5-5q4 0 5 5Z" fill="#67b96b"/>',
+       'claws':'<path d="M7 18 9 8l3 10Z" fill="#fff"/><path d="M12 19l2-11 3 11Z" fill="#fff"/><path d="M16.5 18l2-7 2.5 7Z" fill="#eef2f5"/>'
+
     };
     return '<svg viewBox="0 0 24 24" aria-hidden="true">'+paths[type]+'</svg>';
   }
   function renderMatch(){
     var item=matchRounds[round];matchedCount=0;selectedPiece=null;setHud(item.label,matchRounds.length);
-    document.getElementById('matchPrompt').textContent=round===0?'Tap a piece, then its costume.':round===1?'The clues are getting smaller.':'Look closely — two costumes look alike.';
+    document.getElementById('matchPrompt').textContent=item.tip;
     document.getElementById('materialFeedback').innerHTML='';document.getElementById('matchDone').hidden=true;matchLines.innerHTML='';pieceRow.innerHTML='';costumeRow.innerHTML='';
     shuffle(item.pairs.slice()).forEach(function(pair){var b=document.createElement('button');b.className='piece-card';b.setAttribute('data-match',pair.to);b.setAttribute('aria-label',pair.label);b.innerHTML=iconSvg(pair.type)+'<span>'+pair.label+'</span>';b.addEventListener('click',function(){choosePiece(b)});pieceRow.appendChild(b)});
     var targets=shuffle(item.pairs.map(function(pair){return pair.to}));targets.forEach(function(id){var look=looks[id],b=document.createElement('button');b.className='costume-card';b.setAttribute('data-match',id);b.innerHTML='<img src="'+look.image+'" alt="'+look.name+' costume"><span>'+look.name+'</span>';b.addEventListener('click',function(){chooseCostume(b)});costumeRow.appendChild(b)});
@@ -269,7 +266,7 @@
   }
   function next(){round++;if(mode==='match'){if(round<matchRounds.length)renderMatch();else showFinish()}else{if(round<peekRounds.length)renderPeek();else showFinish()}}
   function showFinish(){
-    hud.hidden=true;progressWrap.hidden=true;setScreen(finish);document.getElementById('result').textContent=mode==='match'?'You matched all 3 rounds!':'You found '+points+' out of '+peekRounds.length+'!';document.getElementById('finishTitle').textContent='Costume star!';document.getElementById('finishCopy').textContent=mode==='match'?'Every piece found its costume.':'Easy peek to master detective — you spotted them all.';renderFoundList();burst();tone(523,.15,0);tone(659,.15,.13);tone(784,.18,.26);tone(1047,.35,.39);
+    hud.hidden=true;progressWrap.hidden=true;setScreen(finish);document.getElementById('result').textContent=mode==='match'?'You matched all '+matchRounds.length+' rounds!':'You found '+points+' out of '+peekRounds.length+'!';document.getElementById('finishTitle').textContent='Costume star!';document.getElementById('finishCopy').textContent=mode==='match'?'Every piece found its costume.':'Easy peek to master detective — you spotted them all.';renderFoundList();burst();tone(523,.15,0);tone(659,.15,.13);tone(784,.18,.26);tone(1047,.35,.39);
   }
   function burst(){var box=document.getElementById('confetti'),colors=['#f16c3b','#ffbd2e','#167f7b','#4c8fdb','#e95e8d'];box.innerHTML='';for(var i=0;i<34;i++){var p=document.createElement('i');p.style.left=(5+Math.random()*90)+'%';p.style.background=colors[i%colors.length];p.style.setProperty('--drift',(Math.random()*180-90)+'px');p.style.animationDelay=(Math.random()*.45)+'s';box.appendChild(p)}setTimeout(function(){box.innerHTML=''},2600)}
   document.getElementById('start').addEventListener('click',start);
