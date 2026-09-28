@@ -19,7 +19,7 @@ var HTML = `<!DOCTYPE html>
 <body><main class="wrap">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Pick My Costume</a> &rsaquo; <a href="/costumes">All costume guides</a> &rsaquo; Family Halloween costume ideas</nav>
 <h1>Family Halloween costume ideas</h1>
-<p class="lede">Matching and theme costumes for the whole crew, from the bank of 144 ideas. Each guide lists what you need, the steps, and how long it takes. Free, no signup.</p>
+<p class="lede">Matching and theme costumes for the whole crew, from the bank of 164 ideas. Each guide lists what you need, the steps, and how long it takes. Free, no signup.</p>
 <a class="quizcta" href="/">Take the 2-minute quiz</a>
 <ul>
       <li><a href="/c/blue-dog-family">Aussie Dog Family</a><span>Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.</span></li>

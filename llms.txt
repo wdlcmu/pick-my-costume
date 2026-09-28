@@ -1,11 +1,11 @@
 # Pick My Costume
 
-> A free Halloween costume idea finder. Answer a short quiz (who the costume is for, the vibe, and the effort level) and get 3 costume ideas picked from a bank of 144. Every idea comes with a materials list and numbered step-by-step build instructions. No account, no signup, no ads.
+> A free Halloween costume idea finder. Answer a short quiz (who the costume is for, the vibe, and the effort level) and get 3 costume ideas picked from a bank of 164. Every idea comes with a materials list and numbered step-by-step build instructions. No account, no signup, no ads.
 
 ## What the site does
 
 - Quiz: a 2-minute picker that returns 3 costume ideas matched to your answers.
-- Browse: the full bank of 144 ideas, searchable by keyword.
+- Browse: the full bank of 164 ideas, searchable by keyword.
 - What do you have: tick the craft supplies you own and the site ranks the costumes by what you can make with them.
 - Build guides: every costume idea page shows a materials list and numbered steps.
 
@@ -13,7 +13,7 @@
 
 - https://pickmycostume.com/ - homepage and quiz
 - https://pickmycostume.com/pantry - the "what do you have" supplies page
-- https://pickmycostume.com/c/<slug> - one page per costume idea (144 total); each page carries the idea's metadata, a decision triple (build time, cost, effort), and two FAQs
+- https://pickmycostume.com/c/<slug> - one page per costume idea (164 total); each page carries the idea's metadata, a decision triple (build time, cost, effort), and two FAQs
 - https://pickmycostume.com/sitemap.xml - full list of costume pages
 
 ## Facts about the content
