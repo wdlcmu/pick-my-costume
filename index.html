@@ -104,7 +104,14 @@ body{
   line-height:1.5; min-height:100vh;
 }
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
-.herovis{display:none}
+/* Billy 2026-09-27: mobile leads with images too. The trending photo grid
+   becomes a horizontal snap strip right under the hero copy (headline and
+   Find-my-costume CTA stay first; photos come immediately after). */
+.herovis{display:flex;gap:10px;overflow-x:auto;padding:6px 16px 14px;margin:14px -16px 0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.herovis::-webkit-scrollbar{display:none}
+.herovis a{flex:0 0 128px;scroll-snap-align:start;display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink)}
+.herovis img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+.herovis span{display:block;padding:8px 10px;font-size:12px;font-weight:700}
 /* Billy 2026-09-27: desktop was a 640px phone column floating in dead space.
    On wide screens let the page breathe: wider content well, matching FAQ/how. */
 @media (min-width:900px){
@@ -126,6 +133,9 @@ body{
      Two columns on desktop: sticky photo left, title/why/actions right.
      Mobile keeps the single stacked column. */
   #s-detail #d-card>.card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:36px;align-items:start;text-align:left}
+  /* Billy 2026-09-27: warm "Your plan" strip had the same full-bleed photo
+     problem on desktop. Photo left, title/actions right. Mobile stacked. */
+  .warmstrip{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:start}
   #s-detail #d-card>.card>div:first-child{grid-column:1;grid-row:1/-1;position:sticky;top:16px}
 }
 .hero{text-align:center;padding:30px 8px 32px;position:relative}
@@ -145,7 +155,10 @@ body{
 @keyframes haloPulse{0%,100%{opacity:.55}50%{opacity:1}}
 /* Billy 2026-09-26: tappable moon panel. Phase name + illumination tonight,
    Halloween night's moon, days to go. */
-.moonpanel{position:absolute;top:100px;right:8px;z-index:30;width:min(300px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55;box-shadow:0 8px 28px rgba(0,0,0,.4)}
+/* Billy 2026-09-27: the panel used to float over the rail below it. Now it
+   expands in-flow (full-width banner under the moon) and pushes content down
+   instead of overlapping. Works in the desktop hero grid and mobile alike. */
+.moonpanel{position:static;grid-column:1/-1;width:min(560px,100%);margin:10px auto 0;z-index:30;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55;box-shadow:0 8px 28px rgba(0,0,0,.4)}
 .moonpanel p{margin:4px 0}
 .moonpanel .mp-fun{color:var(--accent);font-weight:600}
 /* Billy 2026-09-26: hero rewrite (BuzzFeed confident-challenge headline). */
@@ -805,9 +818,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <p class="fine" id="row-tonight-status" style="margin:8px 0 0" hidden></p>
           <div class="proofrow" id="row-new" role="tabpanel" aria-label="New costumes this week" hidden>
             <a href="/c/beekeeper-bee"><span class="proofbadge">✨ New</span><img src="photos/beekeeper-bee.webp" alt="Beekeeper and Bee costume" loading="lazy"><span>Beekeeper &amp; Bee</span></a>
+            <a href="/c/little-prince"><span class="proofbadge">✨ New</span><img src="photos/little-prince.webp" alt="Little Prince costume" loading="lazy"><span>Little Prince</span></a>
             <a href="/c/tetris-duo"><span class="proofbadge">✨ New</span><img src="photos/tetris-duo.webp" alt="Tetris Duo costume" loading="lazy"><span>Tetris Duo</span></a>
             <a href="/c/little-lifeguard"><span class="proofbadge">✨ New</span><img src="photos/little-lifeguard.webp" alt="Little Lifeguard costume" loading="lazy"><span>Little Lifeguard</span></a>
-            <a href="/c/little-prince"><span class="proofbadge">✨ New</span><img src="photos/little-prince.webp" alt="Little Prince costume" loading="lazy"><span>Little Prince</span></a>
             <a href="/c/fossil-hunter"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
           </div>
         </div>
@@ -1587,7 +1600,7 @@ var IDEAS = [
   {id:"safari-photographer", title:"Safari Photographer", blurb:"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.", why:"The camera does the talking, and the plush cub steals every photo.", audience:["solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,simple:1,animals:3,occcandy:1,occparty:1,occtreat:1}, fit:"U", venue:{bar:2}, rank:73},
   {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3,occbar:1,occparty:2}, fit:"U", venue:{bar:2}, rank:74},
   {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Matching dino hoodies need zero coordination, and the spikes sell it from far away.", audience:["family"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3,occtreat:2}, fit:"U", venue:{bar:1}, rank:75},
-  {id:"snow-sisters", title:"Snow Sisters", blurb:"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.", why:"The family costume every kid already knows by heart, and the snowman is basically pajamas.", audience:["family","group","kid"], budget:["diy","low"], tags:{cute:3,simple:2,couch:1,crafty:1,kidunder3:1,kid36:2,kid7plus:2,princess:3,tv:2,occparty:2,occtreat:2}, fit:"F", venue:{bar:1}, rank:76, roles:{kid:["the ice queen","the snow princess"],adult:["the talking snowman","the reindeer"]}},
+  {id:"snow-sisters", title:"Snow Kingdom Crew", blurb:"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.", why:"The family costume every kid already knows by heart, and the snowman is basically pajamas.", audience:["family","group","kid"], budget:["diy","low"], tags:{cute:3,simple:2,couch:1,crafty:1,kidunder3:1,kid36:2,kid7plus:2,princess:3,tv:2,occparty:2,occtreat:2}, fit:"F", venue:{bar:1}, rank:76, roles:{kid:["the ice queen","the snow princess"],adult:["the talking snowman","the reindeer"]}},
   {id:"sushi-roll", title:"Sushi Roll", blurb:"A white-sheet wrap with felt salmon and pom-pom wasabi. Chopsticks optional.", why:"It turns bedsheets into the most photogenic thing at the party.", audience:["solo"], budget:["diy"], tags:{cute:2,crafty:2,food:2,occparty:2}, fit:"U", venue:{bar:2}, rank:77},
   {id:"deviled-egg", title:"Deviled Egg", blurb:"White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.", why:"The yolk-and-horns combo reads from twenty feet away with zero explaining.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:2,food:2,occbar:2}, fit:"U", venue:{bar:2}, rank:78},
   {id:"pizza-slice", title:"Pizza Slice", blurb:"A big cardboard triangle, painted golden with felt pepperoni.", why:"Cardboard and felt become the rare costume kids and adults both reach for.", audience:["solo","kid"], budget:["diy"], tags:{funny:2,crafty:2,kid36:2,food:2,occtreat:2}, fit:"U", venue:{bar:1}, rank:79},
@@ -6766,6 +6779,122 @@ function buildVoteBox(results){
   }
   return vbox;
 }
+/* NOCLONE-START (2026-09-27 no-clone pact experiment): class-parade
+   duplicate-avoidance share. The one parent anxiety no surface serves:
+   six kids in the same costume at the school parade. The box sits with
+   the vote box (kid/family flows only), the text goes to the class chat,
+   and the reply happens there ("reply with your kid's costume"). Every
+   recipient is one tap from the quiz; every recipient can start their own
+   pact from their results (second generation), so the box is NOT
+   suppressed on the recipient leg. */
+function nocloneTextFor(idea, sid){
+  var aud = voiceAudience(idea);
+  var lead = (aud === "family")
+    ? "Our family is going as " + idea.title
+    : "My kid is going as " + idea.title;
+  var tri = "";
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var ins = INSTRUCTIONS[idea.id];
+    tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+  }
+  var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=noclone";
+  var reply = (aud === "family")
+    ? "Reply with your family's costume so we do not match."
+    : "Reply with your kid's costume so we do not match.";
+  return emojiLead("No matching costumes at the class parade this year.") + "\n" +
+    lead + (tri ? " (" + tri + ")" : "") + ": " + url + "\n" +
+    reply;
+}
+function buildNocloneBox(results){
+  var idea = results && results[0] && results[0].idea;
+  if (!idea) return null;
+  /* School-parade frame is the honest fit: kid/family flows only. */
+  var aud = voiceAudience(idea);
+  if (aud !== "kid" && aud !== "family") return null;
+  var nbox = document.createElement("div");
+  nbox.className = "stuck"; nbox.id = "noclone-box";
+  var nh = document.createElement("h3");
+  nh.textContent = "No matching costumes at the parade";
+  var np = document.createElement("p");
+  np.textContent = "Send your pick to the class chat. Everyone replies with their kid's costume, and nobody shows up in the same thing twice.";
+  var nrow = document.createElement("div"); nrow.className = "row";
+  var nbtn = document.createElement("button");
+  nbtn.type = "button"; nbtn.className = "ghost";
+  nbtn.textContent = "Start a no-clone pact";
+  var npanel = document.createElement("div");
+  npanel.style.display = "none"; npanel.style.marginTop = "10px";
+  nbtn.onclick = function(){
+    if (npanel.style.display !== "none"){
+      npanel.style.display = "none";
+      nbtn.textContent = "Start a no-clone pact";
+      return;
+    }
+    var sid = newShareId();
+    var text = nocloneTextFor(idea, sid);
+    npanel.innerHTML = "";
+    var ta = document.createElement("textarea");
+    ta.readOnly = true; ta.rows = 6;
+    ta.style.cssText = "width:100%;box-sizing:border-box;font-size:14px";
+    ta.value = text;
+    var brow = document.createElement("div"); brow.className = "row"; brow.style.marginTop = "8px";
+    var bCopy = document.createElement("button");
+    bCopy.type = "button"; bCopy.className = "ghost"; bCopy.textContent = "Copy pact text";
+    var bShare = document.createElement("button");
+    bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
+    var nst = document.createElement("div"); nst.className = "status"; nst.style.marginTop = "6px";
+    bCopy.onclick = function(){
+      if (!tapGuard("noclonecopy", 2000)) return;
+      doCopy(text, function(ok, msg){
+        nst.textContent = ok ? "Copied. Paste it into the class chat." : msg;
+        if (ok){
+          bCopy.textContent = "Copied \u2713";
+          setTimeout(function(){ bCopy.textContent = "Copy pact text"; }, 2000);
+          Analytics.track("noclone_text_copied", {share_id: sid, idea_id: idea.id, share_origin: "noclone", via: "clipboard"});
+        }
+      });
+    };
+    bShare.onclick = function(){
+      var rearmShare = armShareOnce(bShare);
+      if (!rearmShare) return; /* double-tap: a share is already in flight */
+      function doneShare(ok, msg){
+        nst.textContent = msg;
+        rearmShare();
+        if (ok){
+          Analytics.track("noclone_share_created", {share_id: sid, idea_id: idea.id, share_origin: "noclone", via: "share_sheet"});
+          if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "noclone"});
+        }
+      }
+      if (navigator.share){
+        try {
+          navigator.share({title: "Pick My Costume", text: text}).then(
+            function(){ doneShare(true, "Shared."); },
+            function(){ doneShare(false, ""); }
+          );
+        } catch(e){
+          doCopy(text, function(ok, msg){
+            nst.textContent = ok ? "Copied. Paste it into the class chat." : msg; rearmShare();
+            if (ok) Analytics.track("noclone_text_copied", {share_id: sid, idea_id: idea.id, share_origin: "noclone", via: "clipboard"});
+          });
+        }
+      } else {
+        doCopy(text, function(ok, msg){
+          nst.textContent = ok ? "Copied. Paste it into the class chat." : msg; rearmShare();
+          if (ok) Analytics.track("noclone_text_copied", {share_id: sid, idea_id: idea.id, share_origin: "noclone", via: "clipboard"});
+        });
+      }
+    };
+    npanel.appendChild(ta);
+    brow.appendChild(bCopy); brow.appendChild(bShare);
+    npanel.appendChild(brow); npanel.appendChild(nst);
+    npanel.style.display = "";
+    nbtn.textContent = "Hide the pact text";
+    Analytics.track("noclone_opened", {share_id: sid, idea_id: idea.id});
+  };
+  nrow.appendChild(nbtn);
+  nbox.appendChild(nh); nbox.appendChild(np); nbox.appendChild(nrow); nbox.appendChild(npanel);
+  return nbox;
+}
+/* NOCLONE-END */
 /* 2026-09-27 grandparent-loop distribution experiment: every share mechanic
    so far targets the sender's peers. Grandparents are the one audience no
    loop reaches: they help build grandkids' costumes, they are the most
@@ -7885,22 +8014,81 @@ function renderWarmResults(){
   /* The decided costume, when it matches our bank: our DIY take on it. */
   if (WARM.anchor){
     var strip = document.createElement("div");
-    strip.className = "card"; strip.style.marginBottom = "6px";
+    strip.className = "card warmstrip"; strip.style.marginBottom = "6px";
     strip.appendChild(ideaMedia(WARM.anchor, true));
+    /* Billy 2026-09-27: desktop two-column (photo left, text right) so the
+       concept photo stops going full-bleed. Mobile stays stacked. */
+    var stxt = document.createElement("div");
     var sh = document.createElement("h3"); sh.textContent = WARM.anchor.title;
-    strip.appendChild(sh);
+    stxt.appendChild(sh);
     var sp = document.createElement("p");
     sp.style.cssText = "margin:0 0 8px;font-size:14px;color:#666;line-height:1.4";
     sp.appendChild(document.createTextNode("Our closest homemade take on "));
     var nm = document.createElement("strong"); nm.textContent = name;
     sp.appendChild(nm);
     sp.appendChild(document.createTextNode(", if you ever want to DIY it instead."));
-    strip.appendChild(sp);
+    stxt.appendChild(sp);
     var sa = document.createElement("a");
     sa.className = "ghost"; sa.style.display = "inline-block"; sa.style.textDecoration = "none";
     sa.href = "/c/" + WARM.anchor.id; sa.textContent = "See the homemade plan";
-    strip.appendChild(sa);
+    stxt.appendChild(sa);
+    strip.appendChild(stxt);
     box.appendChild(strip);
+  }
+
+  /* 0. Build it. Billy 2026-09-27: the warm plan leads with the build, not a
+     link to it. Own-vs-make branch first: owners get the level-up path,
+     makers get materials (pantry-checked) and the full steps. */
+  if (WARM.anchor){
+    var _wbi = (typeof buildInstructions === "function") ? buildInstructions(WARM.anchor, {expanded: true, via: "warm"}) : null;
+    if (_wbi){
+      warmSection(box, "Build your " + name, "The plan for the costume itself, before the rest of the crew.");
+      var _bq = document.createElement("p");
+      _bq.style.cssText = "margin:0 0 8px;font-size:14px;font-weight:700";
+      _bq.textContent = "Do you already own a " + name + " costume?";
+      box.appendChild(_bq);
+      var _brow = document.createElement("div");
+      _brow.style.cssText = "display:flex;gap:10px;margin:0 0 4px;flex-wrap:wrap";
+      var _ownB = document.createElement("button"); _ownB.type = "button"; _ownB.className = "ghost"; _ownB.textContent = "I own one";
+      var _makeB = document.createElement("button"); _makeB.type = "button"; _makeB.className = "ghost"; _makeB.textContent = "I am making it";
+      _brow.appendChild(_ownB); _brow.appendChild(_makeB);
+      box.appendChild(_brow);
+      var _bbody = document.createElement("div");
+      _bbody.style.margin = "10px 0 0";
+      box.appendChild(_bbody);
+      function _pickBranch(which){
+        try { Analytics.track("warm_build_branch", {idea_id: WARM.anchor.id, branch: which}); } catch(_){}
+        _bbody.innerHTML = "";
+        if (which === "own"){
+          var _ol = document.createElement("p");
+          _ol.style.cssText = "margin:0;font-size:14px;color:#444;line-height:1.5";
+          _ol.textContent = "Nice, you are most of the way there. The level-up tips below are your best next move: one good prop and face paint instead of a mask.";
+          _bbody.appendChild(_ol);
+        } else {
+          var _mats = (typeof PANTRY_MATS !== "undefined" && PANTRY_MATS.mats[WARM.anchor.id]) || null;
+          var _pcov = document.createElement("p");
+          _pcov.style.cssText = "margin:0 0 12px;font-size:14px;color:#444";
+          if (typeof pantrySaved === "function" && pantrySaved() && _mats && typeof pantryMissing === "function" && pantryMissing(WARM.anchor.id) >= 0){
+            var _miss = pantryMissing(WARM.anchor.id);
+            _pcov.appendChild(document.createTextNode("You already have " + (_mats.length - _miss) + " of " + _mats.length + " things for this. "));
+            var _pl = document.createElement("a"); _pl.href = "/pantry"; _pl.textContent = "Update the pantry";
+            _pcov.appendChild(_pl); _pcov.appendChild(document.createTextNode("."));
+          } else {
+            _pcov.appendChild(document.createTextNode("Tick what you own in the "));
+            var _pl2 = document.createElement("a"); _pl2.href = "/pantry"; _pl2.textContent = "pantry";
+            _pcov.appendChild(_pl2);
+            _pcov.appendChild(document.createTextNode(" and we will check off what you already have."));
+          }
+          _bbody.appendChild(_pcov);
+          _bbody.appendChild(_wbi);
+        }
+      }
+      _ownB.onclick = function(e){ if (e && e.stopPropagation) e.stopPropagation(); _pickBranch("own"); };
+      _makeB.onclick = function(e){ if (e && e.stopPropagation) e.stopPropagation(); _pickBranch("make"); };
+      /* Default: the build. The warm user named a costume to make; owners are
+         one tap away from the level-up path. */
+      _pickBranch("make");
+    }
   }
 
   /* 1. Who pairs with it. */
@@ -8565,6 +8753,11 @@ function renderResults(results){
   /* 2026-09-26 family-vote experiment: the vote box sits between the
      runners-up and the "Still stuck?" escape hatch. */
   box.appendChild(buildVoteBox(results));
+  /* 2026-09-27 no-clone pact experiment: class-chat coordination share.
+     Sits with the vote box, clear of Experiment 1's share card and the
+     running share-message arms. */
+  var nocloneBox = buildNocloneBox(results);
+  if (nocloneBox) box.appendChild(nocloneBox);
   /* 2026-09-27 grandparent-loop: kid/family flows only (the builder returns
      null otherwise). Sits with the vote box, clear of Experiment 1's share
      card and the running share-message arms. */
@@ -12972,6 +13165,11 @@ function shareLandingHeadline(idea, search){
      the plan it is, not a generic friend pick. */
   var isGrandparent = /[?&]o=grandparent(?:&|$)/.test(q);
   if (isShare && isGrandparent) return "Your grandkid's Halloween plan: " + idea.title + ". Here is the guide.";
+  /* 2026-09-27 no-clone pact experiment: ?o=noclone marks class-chat
+     coordination shares. Name the pact so the recipient knows the job:
+     reply with their kid's costume, not just pick one. */
+  var isNoclone = /[?&]o=noclone(?:&|$)/.test(q);
+  if (isShare && isNoclone) return "Your friend picked " + idea.title + " and started a no-clone pact: no matching costumes at the parade. What is your pick?";
   /* 2026-09-26 proxy-quiz experiment: ?o=proxy marks the friend's
      tell-back pick. Flag-gated: with the flag off the branch never runs,
      so stale links read as generic shares. */
@@ -13062,7 +13260,12 @@ function shareLandingHeadline(idea, search){
        "role" shares no prefix with any other arm in either direction
        (no arm starts with "rol", "role" is not a prefix of any arm), so no
        terminator or reordering is needed -- same as the wrapped precedent. */
-    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challengeresult|challenge|match|glow|remix|first|named|living|wrapped|countdown|classroom-quiz|classroom|proxy|grandparent|role|emaillist)/.exec(location.search || "");
+    /* 2026-09-27 no-clone pact experiment: ?o=noclone marks class-chat
+       coordination shares. "noclone" shares no prefix with any other arm
+       in either direction, so it sits last with no terminator, same as the
+       wrapped precedent. Ungated: the box ships in the same batch, so no
+       old link can carry this origin. */
+    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challengeresult|challenge|match|glow|remix|first|named|living|wrapped|countdown|classroom-quiz|classroom|proxy|grandparent|role|emaillist|noclone)/.exec(location.search || "");
     /* 2026-09-26 proxy-quiz experiment: ?o=proxy marks proxy tell-back
        links (and the invite link itself). "proxy" shares no prefix with
        any other arm (no arm starts with "pr"), so it sits last with no
