@@ -11493,7 +11493,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var roles = autoRoles();
     return people.map(function(p, i){
       var nm = p.name.trim();
-      return {name: (nm || ("Person " + (i + 1))), rawName: nm, kid: !!p.kid, role: overrides[i] || roles[i]};
+      /* 2026-09-28 KitForma playtest: blank who's-who names fell back to
+         "Person 1"/"Person 2" in the AI-prompt preview, reading like a form
+         letter. Short generic fallback instead -- "Someone (adult) is the
+         mama dog" reads like a human wrote it. */
+      return {name: (nm || "Someone"), rawName: nm, kid: !!p.kid, role: overrides[i] || roles[i]};
     });
   }
   function render(){
