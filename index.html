@@ -12383,8 +12383,15 @@ function openTryOn(idea, personIdx, person){
    ignored. Re-arming twice is safe. */
 function armShareOnce(btn){
   if (!btn) return function(){};
-  if (btn.disabled) return null;
+  var now = Date.now();
+  /* 2026-09-27 pm red-team: disable-until-settle has a race. A fast clipboard
+     copy settles in ms, rearm() re-enables the button, and a finger-bounce
+     second tap (~150ms later) hits an enabled button and mints a second share
+     with a new sid. Floor every accepted tap with a time window so the bounce
+     is swallowed even after an early rearm. */
+  if (btn.disabled || (btn._armAt && now - btn._armAt < 800)) return null;
   btn.disabled = true;
+  btn._armAt = now;
   var live = true;
   return function rearm(){ if (live){ live = false; btn.disabled = false; } };
 }
