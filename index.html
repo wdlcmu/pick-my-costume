@@ -104,6 +104,12 @@ body{
   line-height:1.5; min-height:100vh;
 }
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+/* Billy 2026-09-27: desktop was a 640px phone column floating in dead space.
+   On wide screens let the page breathe: wider content well, matching FAQ/how. */
+@media (min-width:900px){
+  .wrap{max-width:1000px;padding:28px 32px 80px}
+  .homefaq,.homehow{max-width:1000px}
+}
 .hero{text-align:center;padding:30px 8px 32px;position:relative}
 /* Billy 2026-09-26: the celestial is now ambient and top-right, never a big
    centered block pushing the headline down. */
@@ -127,7 +133,6 @@ body{
 /* Billy 2026-09-26: hero rewrite (BuzzFeed confident-challenge headline). */
 .billyline{margin:8px 0 0;font-size:15px;color:var(--text)}
 /* Billy 2026-09-26 (landing refresh): hero copy lines. */
-.makerline{margin:-18px 0 26px;font-style:italic}
 .honestline{margin:10px 0 0}
 /* Billy 2026-09-26: tabbed Discover feed. One section, three collections,
    kills the stacked-rails CTA overload. */
@@ -441,6 +446,10 @@ a.howto-copy{text-decoration:underline}
 .stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
 footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
+/* 2026-09-27 red-team (eve): footer "About this site" was a bare 14px inline
+   link (~20px hit area). Inline-block + padding makes it a comfortable
+   phone tap target without changing the centered layout. */
+footer a#about-link{display:inline-block;padding:12px 18px}
 /* Homepage FAQ (AI-citation onsite checklist 2026-09-26): a compact honest
    FAQ section. The FAQPage JSON-LD in <head> mirrors this section verbatim,
    so the structured data is never ahead of what visitors can read. */
@@ -688,7 +697,6 @@ footer a{color:var(--accent)}
         <p class="fine" id="moon-caveat" style="margin:8px 0 0">The sun is a rough guess from your phone's clock, shown 6am to 6pm, not a sunrise lookup. We never ask for your location. The moon phase is astronomically computed.</p>
       </div>
       <h1 class="firstonly">We know your Halloween costume.</h1>
-      <p class="fine makerline firstonly">I'm a dad who burned a whole evening scrolling costume ideas, so I had AI build this quiz instead.</p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
       <p class="fine firstonly" id="trending-line" style="margin:6px 0 0"></p>
@@ -798,6 +806,7 @@ footer a{color:var(--accent)}
         <details style="margin-top:12px">
           <summary class="textlink" style="cursor:pointer;display:inline-block">More tools: browse all ideas, planners, printables</summary>
           <p style="margin:12px 0 0"><a class="pantry-link" href="/classroom" title="Costumes for the whole class: pick a theme, get a shopping list">Planning costumes for a classroom? Whole-class planner</a></p>
+          <p style="margin:12px 0 0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 138 ideas by the parts you already own">Own last year's costume? Turn it into this year's build</a></p>
           <p style="margin:12px 0 0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">Need a handout? Printable flyers for classrooms, waiting rooms, and parties</a></p>
           <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 138 ideas</button></p>
           <p style="margin:8px 0 0"><button type="button" id="btn-planner-hero" class="textlink">Plan your Halloween: buy day, build day, dress-up day</button></p>
