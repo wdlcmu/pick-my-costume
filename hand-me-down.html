@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hand-Me-Down Costumes: Reuse Last Year's Costume Parts | Pick My Costume</title>
+<meta name="description" content="Already own a Halloween costume? Pick it and see which of our 138 costume ideas reuse its parts, so this year's build costs less and takes less time.">
+<link rel="canonical" href="https://pickmycostume.com/hand-me-down">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Last year's costume is this year's parts list">
+<meta property="og:description" content="Pick the costume in your closet. We rank 138 ideas by the parts you already own.">
+<meta property="og:url" content="https://pickmycostume.com/hand-me-down">
+<meta property="og:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Does this work if last year's costume was store-bought?","acceptedAnswer":{"@type":"Answer","text":"If it was mostly store-bought, there are no homemade parts to match, and the page will tell you so honestly. It works best with DIY builds: capes, wings, face paint, cardboard props, and costumes made from old clothes."}},
+{"@type":"Question","name":"What counts as a matching part?","acceptedAnswer":{"@type":"Answer","text":"Exact matches are the same material, like green felt to green felt. Same-kind matches are the same material in a different color, like green paper to red paper. Those are shown separately because you will still need the new color. Craft-drawer basics like scissors and tape are never counted."}},
+{"@type":"Question","name":"Can I pass a costume down to a younger sibling instead?","acceptedAnswer":{"@type":"Answer","text":"Yes. The parts do not care who wears them. Pick the older kid's costume above and the ranking works the same. Check the build guide for sizing notes before you start."}}
+]}
+</script>
+<style>
+:root{--ink:#2b2118;--mut:#6b5d4f;--bg:#fff8f0;--card:#ffffff;--line:#ead9c2;--acc:#c2571b;--acc2:#5b2d8e;--good:#2e7d32;--warn:#8a5a00}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.top{padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+.top a{font-weight:800;color:var(--acc);text-decoration:none;font-size:18px}
+main{max-width:680px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:30px;line-height:1.2;margin:8px 0 8px}
+.lede{font-size:17px;color:var(--mut);margin:0 0 20px}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 16px}
+label.fld{display:block;font-weight:700;margin-bottom:8px}
+input[type=search]{width:100%;font-size:16px;padding:12px;border:2px solid var(--line);border-radius:10px}
+input[type=search]:focus{border-color:var(--acc);outline:none}
+#matches{list-style:none;margin:8px 0 0;padding:0;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+#matches:empty{display:none}
+#matches li button{width:100%;text-align:left;background:none;border:0;padding:12px;min-height:44px;font-size:16px;cursor:pointer;border-bottom:1px solid var(--line)}
+#matches li:last-child button{border-bottom:0}
+#matches li button:hover,#matches li button:focus{background:#fdf3e7}
+details.browse{margin-top:12px}
+details.browse summary{cursor:pointer;color:var(--acc2);font-weight:600;min-height:44px;display:inline-block;line-height:44px}
+#all-ideas{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+#all-ideas button{background:#f7efe3;border:1px solid var(--line);border-radius:20px;padding:8px 12px;min-height:44px;font-size:14px;cursor:pointer}
+#all-ideas button:hover{border-color:var(--acc)}
+#picked{display:flex;align-items:center;gap:10px;margin-top:12px;background:#eef6ee;border:1px solid #bfe0bf;border-radius:10px;padding:10px 12px}
+#picked .nm{font-weight:700;flex:1}
+.btn{border:0;border-radius:10px;padding:12px 18px;min-height:44px;font-size:16px;font-weight:700;cursor:pointer}
+.btn.acc{background:var(--acc);color:#fff}
+.btn.ghost{background:#f7efe3;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:8px 12px;font-size:14px;min-height:44px}
+#verdict{background:#f3ecfa;border:1px solid #d9c8f0;border-radius:12px;padding:14px;margin-bottom:14px}
+#verdict h2{margin:0 0 6px;font-size:19px}
+#verdict p{margin:6px 0}
+.bar{height:10px;background:#e7dccb;border-radius:6px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--good)}
+ol#cards{list-style:none;margin:0;padding:0}
+ol#cards>li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 12px}
+.rank{font-size:13px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+.card h3{margin:4px 0 4px;font-size:19px}
+.card .blurb{color:var(--mut);margin:0 0 8px;font-size:15px}
+.ownline{font-weight:700;margin:8px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.chips span{background:#eef6ee;border:1px solid #bfe0bf;border-radius:16px;padding:4px 10px;font-size:13px}
+.chips.need span{background:#fdf3e7;border-color:var(--line)}
+.chips.kind span{background:#f3ecfa;border-color:#d9c8f0}
+.chiplab{font-size:13px;font-weight:700;color:var(--mut);margin:8px 0 2px}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.links a{min-height:44px;display:inline-flex;align-items:center;color:var(--acc2);font-weight:700}
+.honest{font-size:14px;color:var(--mut);background:#faf6ee;border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:16px}
+#faq h2{font-size:21px}
+#faq details{border-top:1px solid var(--line);padding:10px 0}
+#faq summary{cursor:pointer;font-weight:700;min-height:44px}
+footer{max-width:680px;margin:0 auto;padding:20px 16px 40px;color:var(--mut);font-size:14px;border-top:1px solid var(--line)}
+footer a{color:var(--acc2)}
+.rowbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+#copy-status{min-height:24px;color:var(--good);font-weight:700;margin:8px 0 0}
+.empty{padding:14px;background:#faf6ee;border-radius:10px;color:var(--mut)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><a href="/">Pick My Costume</a></header>
+<main>
+  <h1>Last year's costume is this year's parts list</h1>
+  <p class="lede">Pick the costume already sitting in your closet. We rank all 138 ideas by the parts you already own, so this year costs less and builds faster.</p>
+
+  <section class="card" id="picker" aria-label="Pick the costume you own">
+    <label class="fld" for="q">Which costume do you already own?</label>
+    <input type="search" id="q" placeholder="Start typing, like ghost or pirate" autocomplete="off" aria-label="Search the 138 costume ideas">
+    <ul id="matches" role="listbox" aria-label="Matching costumes"></ul>
+    <details class="browse" id="browse">
+      <summary>Browse all 138 ideas</summary>
+      <div id="all-ideas"></div>
+    </details>
+    <div id="picked" hidden>
+      <span class="nm" id="picked-name"></span>
+      <button class="btn sm ghost" id="clear-pick" type="button">Change</button>
+    </div>
+  </section>
+
+  <section id="results" hidden aria-label="Matching costumes">
+    <div id="verdict" role="status"></div>
+    <ol id="cards"></ol>
+    <div class="rowbtns">
+      <button class="btn ghost" id="show-all" type="button" hidden>Show all matches</button>
+      <button class="btn acc" id="copy-plan" type="button">Copy my hand-me-down plan</button>
+    </div>
+    <p id="copy-status" role="status" aria-live="polite"></p>
+    <p class="honest">We count exact parts, not vibes. Green paper is not red paper. Parts that match by material but not color are shown separately as "same kind", so there are no surprises. We skip the craft-drawer basics (scissors, tape, cardboard, foil, socks, paper and pen). Everybody has those, so they do not change the ranking.</p>
+  </section>
+
+  <section id="faq">
+    <h2>How this works</h2>
+    <details open>
+      <summary>Does this work if last year's costume was store-bought?</summary>
+      <p>If it was mostly store-bought, there are no homemade parts to match, and the page will tell you so honestly. It works best with DIY builds: capes, wings, face paint, cardboard props, and costumes made from old clothes.</p>
+    </details>
+    <details>
+      <summary>What counts as a matching part?</summary>
+      <p>Exact matches are the same material, like green felt to green felt. Same-kind matches are the same material in a different color, like green paper to red paper. Those are shown separately because you will still need the new color. Craft-drawer basics like scissors and tape are never counted.</p>
+    </details>
+    <details>
+      <summary>Can I pass a costume down to a younger sibling instead?</summary>
+      <p>Yes. The parts do not care who wears them. Pick the older kid's costume above and the ranking works the same. Check the build guide for sizing notes before you start.</p>
+    </details>
+  </section>
+</main>
+<footer>
+  <p>Free, no signup. Built with Muse. Made by Billy Litner.</p>
+  <p><a href="/">Take the 2-minute quiz</a> &middot; <a href="/pantry">What is in your pantry?</a> &middot; <a href="/classroom">Classroom planner</a></p>
+</footer>
+<script>
+var HANDMEDOWN = {"ideas":[{"id":"neon-demon-hunter","t":"Neon Demon Hunter","b":"Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.","m":[]},{"id":"classic-ghost","t":"Classic Ghost","b":"A white sheet with cut-out eyes.","m":["bedsheet","markers"]},{"id":"blue-dog-family","t":"Aussie Dog Family","b":"Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.","m":["felt","headband","paper-blue","paper-orange","paper-white","safety-pins"]},{"id":"superhero-family","t":"Superhero Family","b":"Red sweatsuits, black eye masks, felt logo. The whole family goes super.","m":["felt","headband","paper-black","safety-pins","sweatsuit"]},{"id":"blue-alien-ohana","t":"Blue Alien Ohana","b":"Blue hoodie, big ears: the alien, the girl, or the whole ohana.","m":["felt","headband","hoodie","paper-blue","paper-white","safety-pins"]},{"id":"emerald-witch","t":"Emerald Witch","b":"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.","m":["paint-black","paint-green"]},{"id":"gloom-bloom","t":"Gloom & Bloom","b":"Braids and black for Gloom, color-pop and smiles for Bloom.","m":["black-clothes","paint-black","paint-white","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow"]},{"id":"deadpan-diva","t":"Deadpan Diva","b":"Black dress, two braids, pale makeup, and a stare that ends conversations.","m":["paint-black","paint-brown","paint-red","paint-white"]},{"id":"safari-zoo-crew","t":"Safari / Zoo Crew","b":"Everyone picks an animal: closet clothes in matching colors plus an ear headband.","m":["headband","paint-black","paint-brown","paper-black","paper-brown","paper-pink"]},{"id":"fairy-tale-princesses","t":"Fairy Tale Princesses","b":"A dress or a crown from the closet. Every princess works.","m":["markers","yarn"]},{"id":"tin-hero","t":"The Tin Hero","b":"Red and gold plus a glowing chest circle: the suit does the talking.","m":["safety-pins"]},{"id":"good-witch-bad-witch","t":"Good Witch, Bad Witch","b":"Green face paint and black for one, pink gown and crown for the other.","m":["black-clothes","markers","paint-green"]},{"id":"fuzzy-monster","t":"Fuzzy Monster","b":"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.","m":["felt","glue","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","safety-pins"]},{"id":"pocket-plush","t":"Pocket Plush Monster","b":"A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.","m":["felt","glue","markers","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","sweatsuit"]},{"id":"soccer-squad","t":"Soccer Squad","b":"Jerseys for the players, black for the ref, one red card.","m":["black-clothes","markers","paper-red","tape-white"]},{"id":"glow-skeleton","t":"Glow Skeleton","b":"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.","m":["paint-black","sweatsuit"]},{"id":"block-game-crew","t":"Block Game Crew","b":"Cardboard-box heads: pick your blocky hero.","m":["markers"]},{"id":"web-slinger-crew","t":"Web-Slinger Crew","b":"Red, black, and pink hoodies plus masks. Pick your spider.","m":["hoodie","paint-black","stickers","sunglasses","tape-white"]},{"id":"mermaid-crew","t":"Mermaid Crew","b":"The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.","m":["paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow"]},{"id":"little-pig-family","t":"Little Pig Family","b":"Pink clothes and a snout headband; little brother brings the dinosaur.","m":["headband","paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow","paper-pink","yarn"]},{"id":"enchanted-castle-crew","t":"Enchanted Castle Crew","b":"The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role.","m":["paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow"]},{"id":"bumble-bee","t":"Bumble Bee","b":"Black sweats with yellow tape stripes and soft felt antennae.","m":["black-clothes","glue","headband","pipe-cleaners","stuffing","tape-yellow"]},{"id":"baby-dino","t":"Baby Dinosaur","b":"Green hoodie, felt spikes down the back, stuffed tail.","m":["felt","hoodie","paper-green","safety-pins","stuffing"]},{"id":"little-lion","t":"Little Lion","b":"Tan sweatsuit plus a fuzzy mane hood.","m":["glue","paint-brown","safety-pins"]},{"id":"tiny-firefighter","t":"Tiny Firefighter","b":"Red sweats, a plastic helmet, and a toy hose.","m":["markers"]},{"id":"little-shark","t":"Little Shark","b":"Gray hoodie with a felt fin glued on the back.","m":["felt","glue","hoodie","paper-gray","paper-white"]},{"id":"walking-taco","t":"Walking Taco","b":"Tan vest painted like a taco shell with felt toppings.","m":["felt","glue","headband","paper-brown","paper-green","paper-red","paper-yellow","tshirt"]},{"id":"ramen-bowl","t":"Ramen Bowl","b":"Cardboard bowl rim, noodle-yarn hair, a foam egg on top.","m":["paper-white","yarn"]},{"id":"tiny-snail","t":"Tiny Snail","b":"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.","m":["headband","markers","stuffing","yarn"]},{"id":"little-witch","t":"Little Witch","b":"Black cape, pointy hat, striped tights, green face paint.","m":["black-clothes","paint-green","safety-pins","yarn"]},{"id":"spider","t":"Eight-Legged Spider","b":"Black sweats with stuffed sock legs attached at the sides.","m":["black-clothes","glue","newspaper","paint-white","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","yarn"]},{"id":"backyard-hero","t":"Backyard Superhero","b":"Short cape plus a first initial on the chest, mask optional.","m":["paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","pillowcase","safety-pins","tshirt","yarn"]},{"id":"pickle","t":"Pickle","b":"Green tunic, bumpy texture, smug grin.","m":["glue","paint-green"]},{"id":"vampire","t":"Classic Vampire","b":"Black cape, fangs, slicked hair.","m":["black-clothes","paint-red","paint-white"]},{"id":"bamboo-demon","t":"Bamboo-Muzzle Demon","b":"Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.","m":["paint-red","yarn"]},{"id":"emoji-crew","t":"Emoji Crew","b":"Everyone picks an emoji: a yellow tee plus a big printed face.","m":["markers","paper-plates"]},{"id":"robot-crew","t":"Cardboard Robot Crew","b":"Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.","m":["markers","yarn"]},{"id":"cereal-crew","t":"Cereal Crew","b":"Solid-color clothes plus a cereal-box front you decorate.","m":["markers","yarn"]},{"id":"decades-crew","t":"Decades Crew","b":"Each person picks a decade and dresses from their own closet.","m":["safety-pins"]},{"id":"under-the-sea","t":"Under the Sea","b":"Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.","m":["yarn"]},{"id":"dino-rangers","t":"Dino Rangers","b":"Khaki outfits for the grown-ups, dino hoods for the kids. Leash a toy raptor.","m":["hoodie","paper-white","yarn"]},{"id":"board-game-pieces","t":"Board Game Pieces","b":"Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.","m":["black-clothes","markers","yarn"]},{"id":"rain-cloud-rainbow","t":"Rain Cloud and Rainbow","b":"One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.","m":["glue","paint-blue","paper-blue","stuffing","yarn"]},{"id":"doctor-bride","t":"The Doctor & the Bride","b":"Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.","m":["bedsheet","glue","paint-black","paint-brown","paint-green"]},{"id":"breakfast-buffet","t":"Breakfast Buffet","b":"Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.","m":["markers","yarn"]},{"id":"ghost-hunters","t":"Ghost Hunters","b":"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.","m":["glue","markers","paper-white"]},{"id":"haunted-animatronics","t":"Haunted Animatronics","b":"Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves.","m":[]},{"id":"mystery-crew","t":"Mystery Crew","b":"Assign the leader, the style icon, the brains, the goofball, and one very good dog.","m":["headband","paint-brown"]},{"id":"headless-horsemen","t":"Headless Horsemen","b":"Black capes, jack-o-lanterns held at shoulder height, group gallop.","m":[]},{"id":"haunted-portraits","t":"Haunted Portraits","b":"Gray makeup, old-timey clothes, hold a gilt frame.","m":["paint-gray","paint-white"]},{"id":"goggle-crew","t":"Goggle Crew","b":"Yellow tees, denim overalls, goggles, black gloves.","m":[]},{"id":"garden-gnome","t":"Garden Gnome","b":"Wear earth tones, make a pointy hat from cardboard, draw a white beard, carry a tiny fishing rod or garden shovel.","m":["paint-white"]},{"id":"black-cat","t":"Black Cat Burglar","b":"Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.","m":["black-clothes","felt","headband","paint-black","paper-black","pillowcase","sweatsuit"]},{"id":"block-monster","t":"Block Monster","b":"Wear all one solid color, square up your silhouette with foam or cardboard blocks on shoulders/limbs, draw a pixelated face.","m":["paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow","sweatsuit"]},{"id":"space-crewmate","t":"Space Crewmate","b":"Colored sweatsuit plus a cardboard backpack.","m":["markers","sweatsuit","yarn"]},{"id":"sun-moon","t":"Sun and Moon","b":"One in yellow with cardboard rays, one in navy with paper stars and a crescent.","m":["black-clothes","paper-gray","paper-white","paper-yellow"]},{"id":"moth-porch-light","t":"Moth and Porch Light","b":"One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.","m":["headband","markers","pipe-cleaners","yarn"]},{"id":"raptor-ranger","t":"Raptor & Ranger","b":"One khaki ranger, one green dino hood. The ranger holds the leash.","m":["felt","hat","paint-black","paint-green","paper-green"]},{"id":"cat-mouse","t":"Cat & Mouse","b":"Cat ears versus mouse ears. Spend the night chasing each other.","m":["felt","headband","paint-black","paper-black","paper-gray"]},{"id":"ketchup-mustard","t":"Ketchup & Mustard","b":"Red bottle tunic and cap for one, yellow for the other.","m":["felt","paper-red","paper-yellow","safety-pins"]},{"id":"plumber-duo","t":"Plumber Brothers","b":"Overalls, red and green caps and shirts, drawn mustaches.","m":["markers","paint-brown","paper-white","stickers"]},{"id":"office-couple","t":"Office Couple","b":"White shirts, name tags, and a teapot. The office's finest.","m":["black-clothes","markers"]},{"id":"burger-joint-couple","t":"Burger Joint Couple","b":"White apron plus fake mustache, curly red wig plus glasses. Burger shop owners.","m":[]},{"id":"plug-socket","t":"Plug and Socket","b":"Cardboard plug and outlet worn front and back.","m":["markers","yarn"]},{"id":"lost-tourist","t":"Lost Tourist","b":"Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder.","m":["sunglasses"]},{"id":"tooth-fairy","t":"Tooth and Tooth Fairy","b":"One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.","m":["felt","paper-white"]},{"id":"web-hero-duo","t":"Web Hero Duo","b":"Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.","m":["black-clothes","paint-black","paint-white","stickers","sweatsuit"]},{"id":"plague-doctor","t":"Plague Doctor","b":"Long coat, wide hat, beaked mask.","m":["hat","markers","sunglasses"]},{"id":"crowd-camouflage","t":"Crowd Camouflage","b":"Gray hoodie, dark pants, blank expression. Vanish into any crowd.","m":["black-clothes","hat","hoodie"]},{"id":"error-404","t":"Error 404","b":"Wear all black with 'Page Not Found' printed on your chest; carry a phone with a cracked-screen prop or broken GPS.","m":["black-clothes","paper-white"]},{"id":"zombie-coworker","t":"Zombie Coworker","b":"Torn button-down, loosened tie, pale makeup, coffee mug.","m":["paint-black","paint-white"]},{"id":"the-olympians","t":"The Olympians","b":"Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.","m":["bedsheet","markers","paint-gold","safety-pins"]},{"id":"safari-photographer","t":"Safari Photographer","b":"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.","m":["markers"]},{"id":"player-one-two","t":"Player One & Two","b":"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.","m":["markers","tshirt"]},{"id":"dinosaur-family","t":"Dinosaur Family","b":"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.","m":["felt","glue","paint-green","paper-green","safety-pins","sweatsuit"]},{"id":"snow-sisters","t":"Snow Sisters","b":"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.","m":["felt","headband","pipe-cleaners","white-tshirt"]},{"id":"sushi-roll","t":"Sushi Roll","b":"A white-sheet wrap with felt salmon and pom-pom wasabi. Chopsticks optional.","m":["bedsheet","felt","glue","paper-green","stuffing","white-tshirt"]},{"id":"deviled-egg","t":"Deviled Egg","b":"White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.","m":["felt","glue","paint-red","paper-red","paper-yellow","pipe-cleaners","red-headband","white-tshirt"]},{"id":"pizza-slice","t":"Pizza Slice","b":"A big cardboard triangle, painted golden with felt pepperoni.","m":["felt","glue","paper-bag","paper-red"]},{"id":"popcorn-bucket","t":"Popcorn Bucket","b":"A striped cardboard-box body with balloon popcorn on top.","m":["balloons","markers","yarn"]},{"id":"ice-cream-cone","t":"Ice Cream Cone","b":"A tan paper cone hat and a sprinkle-dotted scoop shirt.","m":["markers","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","stickers","white-tshirt"]},{"id":"pbj","t":"Peanut Butter & Jelly","b":"One in brown with a PB label, one in purple with a J label.","m":["markers","paper-white","yarn"]},{"id":"bacon-eggs","t":"Bacon & Eggs","b":"Wavy bacon stripes and a sunny-side-up egg yolk.","m":["felt","paper-red","paper-white","paper-yellow","safety-pins","white-tshirt"]},{"id":"peas-pod","t":"Peas in a Pod","b":"Green shirts in a row under one long felt pod sash.","m":["felt","glue","paint-green"]},{"id":"basketball-star","t":"Basketball Star","b":"Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.","m":["paint-black"]},{"id":"referee","t":"Referee","b":"A striped shirt, a whistle, and a yellow penalty flag.","m":["black-clothes","tape-white"]},{"id":"boxer","t":"Boxer","b":"Bathrobe, toy gloves, bruise makeup, and entrance music.","m":["paint-purple","paint-yellow"]},{"id":"cheerleader","t":"Cheerleader","b":"Team colors and pom-poms made from cut plastic bags.","m":["yarn"]},{"id":"tennis-duo","t":"Tennis Duo","b":"All-white outfits, headbands, toy rackets, and a tube of balls.","m":["white-tshirt"]},{"id":"bowling-pins","t":"Bowling Pins","b":"White outfits with red neck stripes, plus one bowler in black.","m":["black-clothes","tape-red"]},{"id":"cardboard-knight","t":"Cardboard Knight","b":"Silver-painted cardboard armor and a pool-noodle sword.","m":["markers","tape-gray"]},{"id":"ninja","t":"Ninja","b":"All black with a belt sash and a slit headband.","m":["black-clothes","paint-black"]},{"id":"caped-duo","t":"Caped Duo","b":"Matching sheet capes, felt masks, and your own emblems.","m":["bedsheet","felt","glue","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","yarn"]},{"id":"hero-squad","t":"Hero Squad","b":"Color-coded capes and masks, one team pose for photos.","m":["safety-pins"]},{"id":"astronaut","t":"Astronaut","b":"White sweats, a paper-bag helmet, and a flag patch.","m":["paper-bag","stickers","sweatsuit","tape-silver"]},{"id":"robot-ranger","t":"Robot Ranger","b":"Silver boxes, dryer-vent arms, and sticker dials.","m":["markers","paper-black","paper-blue","paper-brown","paper-gray","paper-green","paper-orange","paper-pink","paper-red","paper-white","paper-yellow","stickers"]},{"id":"penguin-huddle","t":"Penguin Huddle","b":"Black shirts, felt bellies, beak headbands. Waddle together.","m":["black-clothes","felt","glue","headband","paper-orange","paper-white"]},{"id":"prince-princess","t":"Prince & Princess","b":"A crown and cape, a thrifted gown and tiara.","m":["paper-yellow"]},{"id":"dino-herd","t":"Dino Herd","b":"Green ponchos with felt spikes and stuffed-sock tails.","m":["felt","glue","paper-green","safety-pins","stuffing"]},{"id":"pixel-ghost","t":"Pixel Ghost","b":"A white sheet cut in chunky pixel squares with felt eyes.","m":["bedsheet","felt","glue","markers","paper-black"]},{"id":"spaghetti-meatball","t":"Spaghetti & Meatball","b":"White shirt with yarn spaghetti glued on, brown pom-pom meatballs.","m":["glue","white-tshirt","yarn"]},{"id":"cupcake","t":"Cupcake","b":"Brown tunic for the wrapper, white pillowcase for frosting, cherry on top.","m":["glue","pillowcase"]},{"id":"banana","t":"Banana","b":"Yellow sweatsuit with a green felt stem hat.","m":["felt","glue","headband","sweatsuit"]},{"id":"hot-dog","t":"Hot Dog","b":"Tan foam pool noodle bun, red shirt for the dog, mustard squiggle.","m":["glue","safety-pins"]},{"id":"donut","t":"Donut","b":"Pink cardboard ring with sprinkles, worn like a sandwich board.","m":["felt","glue","stickers","yarn"]},{"id":"coffee-cup","t":"Coffee Cup","b":"White trash bag over a cardboard tube, brown lid hat.","m":["bedsheet","felt","markers","paper-brown"]},{"id":"salt-pepper","t":"Salt & Pepper","b":"White and black outfits with shaker tops made from cardboard.","m":["black-clothes","glue","hat","markers","white-tshirt"]},{"id":"fruit-salad","t":"Fruit Salad Crew","b":"Each person picks a fruit color, wears it head to toe with a leaf hat.","m":["felt","glue","headband","paper-green"]},{"id":"wizard","t":"Classic Wizard","b":"Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional.","m":["paint-gray"]},{"id":"toy-box-crew","t":"Toy Box Crew","b":"A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite.","m":["felt","glue","markers","white-tshirt"]},{"id":"demon-boy-band","t":"Demon Boy Band","b":"Matching streetwear-idol outfits with glowing patterns for your whole boy band.","m":["black-clothes","paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow","sunglasses","white-tshirt"]},{"id":"dragon-rider-duo","t":"Dragon Rider Duo","b":"A viking rider and a cardboard dragon, ready to fly over the neighborhood.","m":["headband","yarn"]},{"id":"numbered-players","t":"Numbered Players","b":"Green tracksuits, numbered bibs, and a survival-game attitude.","m":["markers","paper-white","white-tshirt"]},{"id":"emotion-crew","t":"Emotion Crew","b":"One loud color per person: each of you is a different emotion.","m":["markers","paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow","paper-white"]},{"id":"kart-racers","t":"Kart Racers","b":"Cardboard karts and racing caps for a full starting grid of friends.","m":["paper-plates","yarn"]},{"id":"tall-hat-crew","t":"Tall Hat Crew","b":"A striped stovepipe hat, a bow tie, and two wild blue-haired Things.","m":["black-clothes","markers"]},{"id":"chipmunk-trio","t":"Chipmunk Trio","b":"Letter sweaters, felt ears, and whiskers for a singing trio of chipmunks.","m":["felt","glue","headband","markers","paint-brown"]},{"id":"galaxy-knights","t":"Galaxy Knights","b":"Robes, belts, and toy energy blades for knights of a far-off galaxy.","m":["paint-brown"]},{"id":"plastic-dream-crew","t":"Plastic Dream Crew","b":"Head-to-toe pink outfits with plastic accessories for the dream crew.","m":["sunglasses"]},{"id":"extinct-party-animal","t":"Extinct Party Animal","b":"Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago.","m":["felt","glue","markers","paper-green"]},{"id":"dino-tourist","t":"Dino Tourist","b":"Hawaiian shirt, dino tail, camera around your neck, and a fanny pack. The meteor missed this one.","m":["sunglasses"]},{"id":"raptor-barista","t":"Raptor Barista","b":"Green hoodie with a dino snout hood, tiny T. rex arms strapped on, and a coffee cup you can barely hold.","m":["hoodie","paint-brown"]},{"id":"emotional-support-dinosaur","t":"Emotional Support Dinosaur","b":"Dino-spike vest over normal clothes with a badge that says Emotional Support Dinosaur. Do not pet.","m":["felt","glue","markers","paper-green"]},{"id":"garden-fairy","t":"Garden Fairy","b":"Tulle wings, a flower crown, and a wand: the backyard turns into a fairy tale.","m":["glue","headband"]},{"id":"ballerina","t":"Ballerina","b":"A tulle tutu tied onto elastic, a leotard, and a neat ballerina bun.","m":[]},{"id":"butterfly","t":"Butterfly","b":"Painted cardboard wings on black sweats: the garden's prettiest visitor.","m":["headband","pipe-cleaners","sweatsuit"]},{"id":"pop-star","t":"Pop Star","b":"A sparkly jacket, a toy microphone, and the biggest hair in the room.","m":["sunglasses"]},{"id":"ice-skater","t":"Ice Skater","b":"A white dress, tights, and a perfect bun: gold-medal energy, no ice required.","m":["paint-pink"]},{"id":"ladybug","t":"Ladybug","b":"Red sweats, black felt dots, and little spotted wings.","m":["black-clothes","felt","glue","headband","paper-black","pipe-cleaners"]},{"id":"daisy","t":"Daisy","b":"A yellow petal headband and a green dress: a walking flower.","m":["glue","headband"]},{"id":"little-baker","t":"Little Baker","b":"A paper chef hat, an apron, and a toy whisk.","m":["paper-white"]},{"id":"little-artist","t":"Little Artist","b":"A beret, a cardboard paint palette, and a splatter-painted smock.","m":["hat","tshirt"]},{"id":"beekeeper-bee","t":"Beekeeper & Bee","b":"One goes as the beekeeper in white with a mesh veil; the other wears yellow and black stripes with antennae.","m":["hat","headband","paint-black","paint-yellow","pipe-cleaners","tape-black"]},{"id":"tetris-duo","t":"Tetris Duo","b":"Two interlocking tetromino shapes built from painted cardboard boxes, worn like sandwich boards.","m":["paint-black","paint-blue","paint-brown","paint-gold","paint-gray","paint-green","paint-pink","paint-purple","paint-red","paint-white","paint-yellow","yarn"]},{"id":"little-lifeguard","t":"Little Lifeguard","b":"Red tee, whistle, and a rescue buoy made from a pool noodle ring: an everyday hero costume.","m":["paint-white","tape-white"]},{"id":"little-prince","t":"Little Prince","b":"Crown, cape, and a royal sash from the dress-up box or the craft drawer.","m":["glue","paper-yellow","safety-pins","yarn"]},{"id":"fossil-hunter","t":"Fossil Hunter","b":"Khaki vest, toy brush, magnifying glass, and cardboard fossil bones in a belt pouch.","m":["paper-bag"]},{"id":"web-slinger-kid","t":"Web Slinger","b":"Red sweatsuit, tape web lines, big white eye lenses.","m":["felt","headband","paper-blue","paper-white","tape-black"]}],"labels":{"scissors":"Scissors","tape":"Tape (any kind)","paper-pen":"Paper and pen","tape-white":"White tape","tape-silver":"Silver tape","tape-gray":"Gray tape","tape-red":"Red tape","tape-yellow":"Yellow tape","tape-black":"Black tape","glue":"Glue (any kind)","safety-pins":"Safety pins","markers":"Markers","stickers":"Stickers","foil":"Aluminum foil","balloons":"Balloons","paper-red":"Red paper","paper-yellow":"Yellow paper","paper-green":"Green paper","paper-blue":"Blue paper","paper-black":"Black paper","paper-white":"White paper","paper-orange":"Orange paper","paper-pink":"Pink paper","paper-brown":"Brown paper","paper-gray":"Gray paper","cardboard":"Cardboard / boxes","paper-bag":"Brown paper bags","paper-plates":"Paper plates","newspaper":"Newspaper","white-tshirt":"White t-shirt","tshirt":"T-shirt (any color)","black-clothes":"Black clothes","sweatsuit":"Sweatsuit","bedsheet":"Old bedsheet","pillowcase":"Pillowcase","socks":"Socks","stuffing":"Stuffing / cotton balls","headband":"Headband (any color)","red-headband":"Red headband","sunglasses":"Sunglasses","yarn":"String / yarn / ribbon","hat":"Hat (any kind)","paint-red":"Red face paint / lipstick","paint-black":"Black face paint","paint-white":"White face paint","paint-green":"Green face paint","paint-brown":"Brown face paint","paint-blue":"Blue face paint","paint-pink":"Pink face paint / blush","paint-gold":"Gold face paint","paint-purple":"Purple face paint","paint-yellow":"Yellow face paint","paint-gray":"Gray face paint","felt":"Felt (multi-color stash)","pipe-cleaners":"Pipe cleaners (multi-color pack)","hoodie":"Hoodie (any color)"}};
+/* PostHog: anonymous usage stats only. Queued until the library loads. */
+var _phq = [];
+function track(name, props){
+  try {
+    if (window.posthog && posthog.capture) posthog.capture(name, props || {});
+    else _phq.push([name, props || {}]);
+  } catch (e) {}
+}
+(function(){
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://us.i.posthog.com/static/array.js';
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7', {
+          api_host: 'https://us.i.posthog.com', autocapture: false,
+          capture_pageview: true, disable_session_recording: true
+        });
+        _phq.splice(0).forEach(function(e){ try { posthog.capture(e[0], e[1]); } catch (x) {} });
+      }
+    } catch (e) {}
+  };
+  try { document.head.appendChild(s); } catch (e) {}
+})();
+
+var COLORS = ['black','blue','brown','gold','gray','green','orange','pink','purple','red','silver','white','yellow'];
+function baseOf(k){
+  var i = k.indexOf('-');
+  if (i > 0) {
+    var base = k.slice(0, i), rest = k.slice(i + 1);
+    if ((base === 'paper' || base === 'paint' || base === 'tape') && COLORS.indexOf(rest) >= 0) return base;
+  }
+  return k;
+}
+function labelOf(k){ return (HANDMEDOWN.labels[k] || k); }
+function ideaById(id){
+  for (var i = 0; i < HANDMEDOWN.ideas.length; i++) if (HANDMEDOWN.ideas[i].id === id) return HANDMEDOWN.ideas[i];
+  return null;
+}
+function rank(oldId){
+  var old = ideaById(oldId);
+  if (!old) return [];
+  var oldSet = {}, oldBase = {};
+  old.m.forEach(function(k){ oldSet[k] = 1; oldBase[baseOf(k)] = oldBase[baseOf(k)] || k; });
+  var out = [];
+  HANDMEDOWN.ideas.forEach(function(c){
+    if (c.id === oldId) return;
+    var exact = 0, base = 0, cBase = {};
+    c.m.forEach(function(k){
+      if (oldSet[k]) exact++;
+      var b = baseOf(k);
+      if (!cBase[b]) cBase[b] = k;
+    });
+    Object.keys(cBase).forEach(function(b){
+      if (oldBase[b] && cBase[b] !== oldBase[b]) base++;
+    });
+    var total = c.m.length;
+    var newParts = c.m.filter(function(k){ return !oldSet[k]; });
+    out.push({id: c.id, exact: exact, base: base, total: total, newParts: newParts});
+  });
+  out.sort(function(a, b){
+    if (b.exact !== a.exact) return b.exact - a.exact;
+    if (b.base !== a.base) return b.base - a.base;
+    if (a.newParts.length !== b.newParts.length) return a.newParts.length - b.newParts.length;
+    var ta = ideaById(a.id).t, tb = ideaById(b.id).t;
+    return ta < tb ? -1 : (ta > tb ? 1 : 0);
+  });
+  return out;
+}
+
+var state = { oldId: null, ranked: [], shown: 12 };
+var q = document.getElementById('q'),
+    matches = document.getElementById('matches'),
+    pickedBox = document.getElementById('picked'),
+    pickedName = document.getElementById('picked-name'),
+    results = document.getElementById('results'),
+    cards = document.getElementById('cards'),
+    verdict = document.getElementById('verdict'),
+    showAll = document.getElementById('show-all'),
+    copyPlan = document.getElementById('copy-plan'),
+    copyStatus = document.getElementById('copy-status');
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function fillBrowse(){
+  var box = document.getElementById('all-ideas');
+  if (box.dataset.done) return;
+  var sorted = HANDMEDOWN.ideas.slice().sort(function(a,b){ return a.t < b.t ? -1 : 1; });
+  sorted.forEach(function(it){
+    var b = document.createElement('button');
+    b.type = 'button'; b.textContent = it.t;
+    b.addEventListener('click', function(){ selectOld(it.id); });
+    box.appendChild(b);
+  });
+  box.dataset.done = '1';
+}
+document.getElementById('browse').addEventListener('toggle', fillBrowse);
+
+function searchIdeas(term){
+  term = term.trim().toLowerCase();
+  if (!term) return [];
+  return HANDMEDOWN.ideas.filter(function(it){
+    return it.t.toLowerCase().indexOf(term) >= 0;
+  }).slice(0, 12);
+}
+q.addEventListener('input', function(){
+  var list = searchIdeas(q.value);
+  matches.innerHTML = '';
+  list.forEach(function(it){
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button'; b.textContent = it.t;
+    b.setAttribute('role', 'option');
+    b.addEventListener('click', function(){ selectOld(it.id); });
+    li.appendChild(b); matches.appendChild(li);
+  });
+});
+q.addEventListener('keydown', function(e){
+  if (e.key === 'Enter') {
+    var list = searchIdeas(q.value);
+    if (list.length) selectOld(list[0].id);
+  }
+});
+
+function chipList(keys, cls, noteFor){
+  if (!keys.length) return '';
+  var h = '<div class="chips ' + cls + '">' + keys.map(function(k){
+    var lab = esc(labelOf(k));
+    var note = noteFor ? ' <span style="color:var(--mut)">(' + esc(noteFor(k)) + ')</span>' : '';
+    return '<span>' + lab + note + '</span>';
+  }).join('') + '</div>';
+  return h;
+}
+
+function renderCards(){
+  var r = state.ranked, n = Math.min(state.shown, r.length);
+  cards.innerHTML = '';
+  var old = ideaById(state.oldId);
+  var oldSet = {}, oldBase = {};
+  old.m.forEach(function(k){ oldSet[k] = 1; if (!oldBase[baseOf(k)]) oldBase[baseOf(k)] = k; });
+  for (var i = 0; i < n; i++) {
+    var e = r[i], it = ideaById(e.id);
+    var have = e.newParts.length === 0 ? [] : it.m.filter(function(k){ return oldSet[k]; });
+    var sameKind = [], need = [];
+    e.newParts.forEach(function(k){
+      var b = baseOf(k);
+      if (oldBase[b] && oldBase[b] !== k) sameKind.push(k); else need.push(k);
+    });
+    var pct = e.total ? Math.round(100 * e.exact / e.total) : 0;
+    var li = document.createElement('li');
+    li.innerHTML =
+      '<div class="rank">' + (i === 0 ? 'Best match' : 'Match ' + (i + 1)) + '</div>' +
+      '<h3>' + esc(it.t) + '</h3>' +
+      '<p class="blurb">' + esc(it.b) + '</p>' +
+      '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' +
+      '<p class="ownline">You own ' + e.exact + ' of ' + e.total + ' parts' + (e.base ? ' (' + e.base + ' more in a different color)' : '') + '</p>' +
+      (have.length ? '<p class="chiplab">Already have</p>' + chipList(have, '') : '') +
+      (sameKind.length ? '<p class="chiplab">Same kind, different color</p>' + chipList(sameKind, 'kind', function(k){ return 'you have ' + labelOf(oldBase[baseOf(k)]); }) : '') +
+      (need.length ? '<p class="chiplab">Still need</p>' + chipList(need, 'need') : '<p class="chiplab">Still need</p><p style="font-size:14px;color:var(--good);font-weight:700">Nothing. Just the craft-drawer basics.</p>') +
+      '<div class="links"><a href="/c/' + esc(it.id) + '" data-guide="' + esc(it.id) + '">See the build guide</a></div>';
+    cards.appendChild(li);
+  }
+  cards.querySelectorAll('a[data-guide]').forEach(function(a){
+    a.addEventListener('click', function(){ track('handmedown_guide_open', {old_id: state.oldId, idea_id: a.getAttribute('data-guide')}); });
+  });
+  showAll.hidden = !(r.length > state.shown);
+  if (!showAll.hidden) showAll.textContent = 'Show all ' + r.length + ' matches';
+}
+
+function renderVerdict(){
+  var e = state.ranked[0], it = ideaById(e.id);
+  var need = e.newParts.map(labelOf);
+  verdict.innerHTML = '<h2>Best match: ' + esc(it.t) + '</h2>' +
+    '<p>You already own <strong>' + e.exact + ' of ' + e.total + '</strong> parts' +
+    (e.base ? ', plus ' + e.base + ' in a different color' : '') + '.</p>' +
+    '<p>' + (need.length ? 'Still to get: ' + esc(need.join(', ')) + '.' : 'Still to get: nothing but the craft-drawer basics.') + '</p>' +
+    '<p><a href="/c/' + esc(it.id) + '">Open the ' + esc(it.t) + ' build guide</a> &middot; <a href="/">or take the 2-minute quiz instead</a></p>';
+}
+
+function selectOld(id){
+  var it = ideaById(id);
+  if (!it) return;
+  state.oldId = id;
+  pickedName.textContent = it.t;
+  pickedBox.hidden = false;
+  q.value = '';
+  matches.innerHTML = '';
+  document.getElementById('browse').open = false;
+  if (!it.m.length) {
+    results.hidden = false;
+    verdict.innerHTML = '<h2>' + esc(it.t) + '</h2><p>This one is built from store-bought pieces, so it has no reusable parts to match. Pick a homemade costume instead, or browse the quiz for a fresh start: <a href="/">take the 2-minute quiz</a>.</p>';
+    cards.innerHTML = '';
+    showAll.hidden = true;
+    copyPlan.disabled = true;
+  } else {
+    copyPlan.disabled = false;
+    state.ranked = rank(id);
+    state.shown = 12;
+    renderVerdict();
+    renderCards();
+    results.hidden = false;
+    try { if (results.scrollIntoView) results.scrollIntoView({behavior: 'smooth', block: 'start'}); } catch (e) {}
+  }
+  track('handmedown_old_picked', {old_id: id});
+  try {
+    var u = new URL(window.location.href);
+    u.searchParams.set('old', id);
+    window.history.replaceState(null, '', u.toString());
+  } catch (e) {}
+}
+document.getElementById('clear-pick').addEventListener('click', function(){
+  state.oldId = null;
+  pickedBox.hidden = true;
+  results.hidden = true;
+  q.focus();
+});
+showAll.addEventListener('click', function(){
+  state.shown = state.ranked.length;
+  renderCards();
+  track('handmedown_show_all', {old_id: state.oldId});
+});
+
+var copying = false;
+copyPlan.addEventListener('click', function(){
+  if (copying || !state.oldId || !state.ranked.length) return;
+  copying = true;
+  var old = ideaById(state.oldId), e = state.ranked[0], it = ideaById(e.id);
+  var have = it.m.filter(function(k){ return old.m.indexOf(k) >= 0; }).map(labelOf);
+  var need = e.newParts.map(labelOf);
+  var text = 'My hand-me-down costume plan (Pick My Costume)\n' +
+    'Already own: ' + old.t + '\n' +
+    "This year's pick: " + it.t + ' - you already own ' + e.exact + ' of ' + e.total + ' parts.\n' +
+    'Already have: ' + (have.join(', ') || 'none of the listed parts') + '\n' +
+    'Still need: ' + (need.join(', ') || 'nothing but the craft-drawer basics') + '\n' +
+    'Build guide: https://pickmycostume.com/c/' + it.id + '\n' +
+    'Make your own plan: https://pickmycostume.com/hand-me-down?old=' + old.id;
+  function done(ok){
+    copyStatus.textContent = ok ? 'Copied. Paste it into the family group chat.' : 'Copy failed. Long-press to select the text instead.';
+    if (ok) track('handmedown_plan_copied', {old_id: old.id, top_id: it.id});
+    copying = false;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { done(document.execCommand('copy')); } catch (x) { done(false); }
+    document.body.removeChild(ta);
+  }
+});
+
+(function init(){
+  track('handmedown_viewed', {});
+  try {
+    var p = new URLSearchParams(window.location.search).get('old');
+    if (p && ideaById(p)) selectOld(p);
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
