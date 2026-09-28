@@ -411,7 +411,9 @@ button.cta{
   background:var(--btn-bg);color:var(--btn-ink);
   border:0;border-radius:var(--radius);cursor:pointer;
 }
-button.ghost{
+button.lightsheet{color:#241a38;}
+.lightsheet .ghost{color:#241a38;background:#fff;}
+.ghost{
   min-height:56px;padding:14px 20px;font-size:17px;
   background:rgba(255,255,255,.05);color:var(--ink);
   border:2px solid #7a5fc4;border-radius:var(--radius);cursor:pointer;
@@ -3755,9 +3757,9 @@ function shareCaptionFor(idea){
   var line;
   if (aud === "kid") line = "The quiz picked " + idea.title + " for my kid this Halloween.";
   else if (aud === "family") line = "The quiz picked " + idea.title + " for our family this Halloween.";
-  else if (aud === "couple") line = "We are going as " + idea.title + " this Halloween.";
-  else if (aud === "group") line = "We are going as " + idea.title + " this Halloween.";
-  else line = "I am going as " + idea.title + " this Halloween.";
+  else if (aud === "couple") line = "We\u2019re thinking of going as " + idea.title + " this Halloween.";
+  else if (aud === "group") line = "We\u2019re thinking of going as " + idea.title + " this Halloween.";
+  else line = "I\u2019m thinking of going as " + idea.title + " this Halloween.";
   var cap = SHARE_CAPTIONS[idea.id];
   if (!cap) return line;
   /* Audience grounding 2026-09-26: for kid/family audiences the sharer is
@@ -4045,7 +4047,7 @@ function thumbArm(){
    data never cleared a winner, so the panel now carries one canonical
    message and this one line. */
 function shareAskLine(){
-  return "What would you go as? ";
+  return "What do you think? ";
 }
 /* The one canonical share action (2026-09-28 simplification): the native
    share sheet on phones, clipboard copy on desktop. Replaces the bespoke
@@ -5828,6 +5830,7 @@ function openGuessGame(gg){
   ov.setAttribute("data-guess-ov", "1");
   ov.style.cssText = "position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;";
   var card = document.createElement("div");
+  card.className = "lightsheet";
   card.style.cssText = "background:#fff;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:20px 20px 28px;";
   ov.appendChild(card);
   document.body.appendChild(ov);
@@ -10098,7 +10101,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   /* The share panel, simplified 2026-09-28. Billy: the loop had grown
      bloated -- teaser, plan, micro-quiz, SMS, save-image, riddle,
      guess-game, pantry dare, and eight message variants. What remains:
-       - primary "Share this costume" button (native sheet / clipboard)
+       - primary "Ask my people" button (native sheet / clipboard)
        - a Preview text toggle (collapsed by default)
        - Save the image (the one non-text share worth keeping)
        - Pick for a friend (secondary)
@@ -10116,12 +10119,12 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   }
   function primaryBtn(){
     var b = document.createElement("button");
-    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Share this costume";
+    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Ask my people";
     b.onclick = function(){ share("generic", b, statusEl); };
     return b;
   }
   var lab = document.createElement("p"); lab.className = "status";
-  lab.textContent = "Send it to your people. See what they get:";
+  lab.textContent = "Want a second opinion?";
   container.appendChild(lab);
   btn = primaryBtn();
   var primaryRow = document.createElement("div");
@@ -10673,6 +10676,7 @@ function openGiftFlow(){
   ov.setAttribute("data-gift-ov", "1");
   ov.style.cssText = "position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;";
   var card = document.createElement("div");
+  card.className = "lightsheet";
   card.style.cssText = "background:#fff;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:20px 20px 28px;";
   ov.appendChild(card);
   document.body.appendChild(ov);
@@ -11126,7 +11130,7 @@ function buildCastShareText(idea, list, sid){
     text = "Want to do " + idea.title + " this Halloween? " + shareAskLine() + castShareUrl;
   } else {
     /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
-    var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
+    var lead = (list.length === 1) ? "I\u2019m thinking of going as " : "We\u2019re thinking of going as ";
     text = lead + idea.title + " this Halloween: " + castLine(list) +
       ". " + shareAskLine() + castShareUrl;
   }
