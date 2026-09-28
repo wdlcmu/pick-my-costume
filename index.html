@@ -1172,7 +1172,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   </section>
 
   <footer>
-    <p><a href="/about" id="about-link">About this site</a></p>
+    <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/privacy">Privacy</a></p>
     <p class="fine">Built with Muse. Made by Billy Litner.</p>
   </footer>
 
@@ -1925,21 +1925,11 @@ function trendStatEl(idea){
   return p;
 }
 
-var SHARE = {
-  url: "pickmycostume.com",
-  /* E29 share-origin experiment (Billy 2026-09-24): every share link carries
-     its origin in ?o= -- "card" for personal-card sends, "generic" for
-     "Share this idea"/"Share" buttons. The /c/<slug> Pages function preserves
-     extra query params across the redirect, so the origin survives to the
-     recipient landing. Decision rule: at 50 opened share links, compare
-     friend-quiz-starts per origin; card >= 2x generic -> cards become the
-     only share path on cast ideas. */
-  textTemplate: function(idea, aud, sid, origin){
-    var url = "https://pickmycostume.com/c/" + idea.id + (sid ? "?s=" + sid + "&o=" + (origin || "generic") : "");
-    /* 2026-09-25 social-handoff experiment: reciprocal ask, same as shareTextFor. */
-    return shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + url;
-  }
-};
+/* E29 share-origin experiment (Billy 2026-09-24): every share link carries
+   its origin in ?o= -- "card" for personal-card sends, "generic" for
+   "Share this idea"/"Share" buttons. The /c/<slug> Pages function preserves
+   extra query params across the redirect, so the origin survives to the
+   recipient landing. Canonical share-text builder: shareTextFor(). */
 
 var TAG_WORDS = {
   funny:"Funny", scary:"Scary", cute:"Cute", simple:"Simple",
@@ -3607,188 +3597,6 @@ function shareCaptionFor(idea){
   if (capLow.indexOf("going as") !== -1 || capLow.indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
   return line + " " + cap;
 }
-/* Novel-find 2026-09-26 (BuzzFeed Spirit Halloween Costume Generator):
-   an AI engine renames any character into a delightfully generic Spirit-style
-   costume name ("Fuzzy Crimson Number Yeller With Groovy Math Moves"), and the
-   gag doubles as a social loop - readers guess the real costume, creators
-   chase hearts for a homepage feature. The steal: a deterministic off-brand
-   renamer for our own bank, wired as share-variant arm G. The pick hides
-   behind the gag name, turning the share into a guess-the-costume riddle.
-   No LLM call, stable per idea id, coverage-tested against all 138 bank    titles (hour-session/offbrand-test-2026-09-26.js). */
-/* Prototype + coverage test for the off-brand-name gag (novel-find 2026-09-26).
-   Run: node offbrand-test-2026-09-26.js  (from ~/workspace/builds/pick-my-costume) */
-var OFFBRAND_NOUNS = [
-  ["demon hunter","Glowing Horned-Menace Chaser"],
-  ["pixel ghost","8-Bit Sheet Spooker"],
-  ["plague doctor","Beaked Mask Creep"],
-  ["hot dog","Bun-Hugged Wiener"],
-  ["ice cream","Melty Scoop Tower"],
-  ["peanut butter","Sticky Sandwich Stack"],
-  ["board game","Roll-and-Move Pawn"],
-  ["tall hat","Top-Hat Tower Wearer"],
-  ["sun and moon","Celestial Body Duo"],
-  ["ice skater","Twirl-Happy Blade Glider"],
-  ["pop star","Mic-Gripping Chart Topper"],
-  ["burglar","Masked Midnight Looter"],
-  ["coworker","Shambling Cubicle Dweller"],
-  ["barista","Apron-Wearing Latte Artist"],
-  ["beekeeper","Veiled Hive Tender"],
-  ["fossil","Ancient-Bone Digger"],
-  ["cardboard","Corrugated Budget Hero"],
-  ["galaxy","Nebula-Cape Star Sailor"],
-  ["vampire","Cape-Wearing Neck Nibbler"],
-  ["ghost","Sheet-Covered Spooker"],
-  ["witch","Pointy-Hat Spellcaster"],
-  ["skeleton","Rattling Bone Buddy"],
-  ["zombie","Shambling Brain Fan"],
-  ["demon","Horned Troublemaker"],
-  ["hunter","Spook-Chasing Gadget Carrier"],
-  ["alien","Big-Eyed Sky Visitor"],
-  ["robot","Beeping Tin Pal"],
-  ["astronaut","Fishbowl-Helmet Space Floater"],
-  ["crewmate","Suspicious Task-Doer"],
-  ["wizard","Bearded Spell Yeller"],
-  ["knight","Shiny Tin Defender"],
-  ["ninja","Silent Black-Clad Sneaker"],
-  ["dragon","Fire-Breathing Scale Beast"],
-  ["dinosaur","Tiny-Armed Roar Machine"],
-  ["dino","Tiny-Armed Roar Machine"],
-  ["raptor","Tiny-Armed Roar Machine"],
-  ["extinct","Tiny-Armed Roar Machine"],
-  ["mermaid","Half-Fish Songbird"],
-  ["princess","Tiara-Topped Royal"],
-  ["prince","Crown-Topped Royal"],
-  ["fairy","Tiny Winged Helper"],
-  ["gnome","Pointy-Hat Garden Squatter"],
-  ["castle","Moat-Adjacent Royal"],
-  ["snow","Ice-Powered Sister Act"],
-  ["monster","Fuzzy Menace"],
-  ["plush","Squeezable Cuddle Clone"],
-  ["spider","Eight-Legged Web Spinner"],
-  ["moth","Porch-Light Obsessive"],
-  ["bee","Striped Honey Buzzer"],
-  ["snail","Slime-Trail Slowpoke"],
-  ["ladybug","Polka-Dotted Leaf Crawler"],
-  ["butterfly","Fluttering Color Flapper"],
-  ["cat","Whisker-Twitching Meow Machine"],
-  ["dog","Tail-Wagging Bark Box"],
-  ["lion","Loud-Maned Roar Machine"],
-  ["shark","Fin-Up Chomp Machine"],
-  ["penguin","Waddling Tuxedo Wearer"],
-  ["pig","Mud-Loving Oink Machine"],
-  ["chipmunk","Cheek-Stuffing Chatterbox"],
-  ["tin","Dented Tin-Heart Pal"],
-  ["superhero","Cape-Flapping Do-Gooder"],
-  ["hero","Cape-Flapping Do-Gooder"],
-  ["cape","Cape-Flapping Do-Gooder"],
-  ["moon","Crater-Faced Night Orb"],
-  ["firefighter","Hose-Holding Hero"],
-  ["lifeguard","Whistle-Blowing Wave Watcher"],
-  ["referee","Striped-Shirt Whistle Blower"],
-  ["boxer","Glove-Swinging Ring Dancer"],
-  ["cheerleader","Pom-Pom Shaker"],
-  ["basketball","Orange-Ball Dribbler"],
-  ["tennis","Racket-Swinging Court Runner"],
-  ["bowling","Pin-Toppling Ball Roller"],
-  ["soccer","Shin-Guard Sprinter"],
-  ["ballerina","Twirl-Obsessed Tutu Spinner"],
-  ["artist","Paint-Splattered Doodler"],
-  ["baker","Flour-Dusted Treat Maker"],
-  ["bride","Tin-Can-Dragging Newlywed"],
-  ["olympians","Gold-Medal Podium Poser"],
-  ["photographer","Flash-Happy Shutterbug"],
-  ["safari","Khaki-Clad Animal Spotter"],
-  ["zoo","Khaki-Clad Animal Spotter"],
-  ["tourist","Fanny-Pack Sightseer"],
-  ["lost","Map-Reading Wanderer"],
-  ["office","Stapler-Juggling Desk Drone"],
-  ["burger","Grease-Splattered Patty Flipper"],
-  ["plumber","Pipe-Wrenching Mustache Bros"],
-  ["ketchup","Squeezy Condiment Duo"],
-  ["mustard","Squeezy Condiment Duo"],
-  ["plug","Wall-Prong Power Pair"],
-  ["socket","Wall-Prong Power Pair"],
-  ["player","Respawning Button Masher"],
-  ["kart","Banana-Peel-Dodging Racer"],
-  ["tetris","Falling-Block Stacker"],
-  ["404","Page-Not-Found Phantom"],
-  ["web","Sticky-String Swinger"],
-  ["rain","Drippy Gray Puffer"],
-  ["sea","Salty Deep-Sea Drifter"],
-  ["buffet","All-You-Can-Wear Brunch"],
-  ["haunted","Creepy Attraction Figure"],
-  ["headless","Neck-less Horse Rider"],
-  ["mystery","Masked Mystery Solver"],
-  ["goggle","Big-Lens Stare Squad"],
-  ["block","Square-Headed Stacker"],
-  ["plastic","Molded Shine Squad"],
-  ["toy","Shelf-Dwelling Plaything Posse"],
-  ["emotion","Big-Feeling Face Squad"],
-  ["emoji","Yellow-Faced Feeling Squad"],
-  ["cereal","Breakfast Box Mascot"],
-  ["decades","Time-Traveling Outfit Hoarder"],
-  ["taco","Crunchy Shell Walker"],
-  ["ramen","Slurpable Noodle Bowl"],
-  ["sushi","Raw-Fish Roll-Up"],
-  ["pizza","Triangular Cheese Slab"],
-  ["popcorn","Buttery Kernel Explosion"],
-  ["bacon","Sizzling Breakfast Slab"],
-  ["spaghetti","Tangled Noodle Pile"],
-  ["salt","Seasoning Shaker Pair"],
-  ["pepper","Seasoning Shaker Pair"],
-  ["egg","Spicy Yolk Half"],
-  ["cupcake","Frosted Cake Cup"],
-  ["banana","Curved Yellow Fruit"],
-  ["donut","Glazed Ring Snack"],
-  ["coffee","Jittery Bean Juice Cup"],
-  ["pickle","Briny Green Spear"],
-  ["peas","Pod-Dwelling Green Orbs"],
-  ["fruit","Chunked Fruit Medley"],
-  ["daisy","Petal-Wearing Bloom Buddy"],
-  ["bloom","Petal-Wearing Bloom Buddy"],
-  ["diva","Unimpressed Spotlight Hogger"],
-  ["camouflage","Stripe-Shirted Crowd Hider"],
-  ["doctor","Clipboard-Carrying Curer"]
-];
-var OFFBRAND_TEXTURES = ["Fuzzy","Wobbly","Sparkly","Squeaky","Lumpy","Fluffy","Jiggly","Crinkly"];
-var OFFBRAND_COLORS = [["neon","Electric"],["emerald","Sea-Green"],["crimson","Crimson"],["black","Midnight"],["blue","Ocean"],["pink","Bubblegum"],["purple","Grape"],["red","Cherry"],["green","Lime"],["gold","Golden"],["silver","Silver"],["white","Frosty"],["orange","Pumpkin"],["yellow","Lemon"],["rainbow","Rainbow"]];
-var OFFBRAND_COLOR_FALLBACK = ["Crimson","Midnight","Electric","Golden","Frosty","Bubblegum"];
-var OFFBRAND_QUIRKS = ["Questionable Dance Moves","Zero Coordination","Main-Character Energy","Suspicious Stamina","Loud Opinions","Secret Snacks","Dramatic Entrances","Mystery Stains","Bold Choices","Nocturnal Habits","Excessive Confidence","Unpaid Overtime"];
-
-function offBrandHash(s){
-  var h = 5381;
-  for (var i = 0; i < s.length; i++){ h = ((h << 5) + h + s.charCodeAt(i)) | 0; }
-  return h >>> 0;
-}
-function offBrandNoun(title){
-  var t = " " + String(title).toLowerCase() + " ";
-  for (var i = 0; i < OFFBRAND_NOUNS.length; i++){
-    if (t.indexOf(OFFBRAND_NOUNS[i][0]) !== -1) return {noun: OFFBRAND_NOUNS[i][1], keyword: OFFBRAND_NOUNS[i][0]};
-  }
-  var words = String(title).replace(/[^a-zA-Z ]/g, " ").split(/\s+/).filter(Boolean);
-  var last = words.length ? words[words.length - 1] : "Costume";
-  last = last.charAt(0).toUpperCase() + last.slice(1);
-  return {noun: "Unlicensed " + last + " Enthusiast", keyword: null};
-}
-function offBrandName(idea){
-  var id = idea.id || "", title = idea.title || "";
-  var r = offBrandNoun(title), noun = r.noun;
-  var h = offBrandHash(id + "|" + title);
-  var tex = OFFBRAND_TEXTURES[h % OFFBRAND_TEXTURES.length];
-  var tl = title.toLowerCase();
-  var color = null;
-  for (var i = 0; i < OFFBRAND_COLORS.length; i++){
-    if (tl.indexOf(OFFBRAND_COLORS[i][0]) !== -1){ color = OFFBRAND_COLORS[i][1]; break; }
-  }
-  if (!color) color = OFFBRAND_COLOR_FALLBACK[Math.floor(h / 8) % OFFBRAND_COLOR_FALLBACK.length];
-  var quirk = OFFBRAND_QUIRKS[Math.floor(h / 64) % OFFBRAND_QUIRKS.length];
-  var parts = [];
-  if (tl.indexOf(tex.toLowerCase()) === -1 && noun.toLowerCase().indexOf(tex.toLowerCase()) === -1) parts.push(tex);
-  if (noun.toLowerCase().indexOf(color.toLowerCase()) === -1) parts.push(color);
-  parts.push(noun);
-  return parts.join(" ") + " With " + quirk;
-}
-
 /* 2026-09-25 pantry-aware experiment helpers. PANTRY_MATS is the regenerated    138-idea requirement map: {staples:[6 pantry ids], mats:{ideaId:[materials]}}.
    Each material is an AND-item; each material holds OR-groups of pantry ids;
    null inside a group means honestly still-need (never satisfied by ticking).
@@ -4000,26 +3808,12 @@ var EXPERIMENT1_ONE_TAP_SHARE = true;
    "Can't decide? Ask the group"; home shuffle button: "Can't decide? Let me
    pick for you"). Flag off: DOM is byte-identical to today. */
 var EXPERIMENT_ROULETTE_ENTRY = true;
-/* Share arm D store-run tier (2026-09-26 design call, staged): the pantry
-   dare today fires only at strict pantry zero, so it can never fire for the
-   ~125 buy-only ideas and D sessions fall back to the C copy for them.
-   OFF (false): arm D is exactly as today -- strict-zero dare or C fallback;
-   every line below is inert and share output is byte-identical. ON (true): a
-   D session whose pick sits at the store-run tier (everything tickable
-   owned, only buy-only items remain) shares the store-run dare instead of
-   the C fallback. */
-var EXPERIMENT_ARM_D_STORE_RUN = false;
 /* Role share cards (2026-09-27 novel-scout steal, staged): for family picks
    the share carries one card per family-member role (?o=role&role=<slug>),
    with a recipient headline naming the role. OFF (false): family shares emit
    the classic single ?o=generic link and ?o=role arrivals read as generic --
    byte-identical to before the feature existed. */
 var ROLE_SHARE_CARDS_ENABLED = false;
-/* Store-run dare wording. Billy has not picked the A/B/C store-run copy; when
-   he does, replace these two strings verbatim. The 1/N split mirrors the
-   badge tier. No em dashes. */
-var ARM_D_STORE_RUN_1 = "with one store run";
-var ARM_D_STORE_RUN_N = "with a store run";
 /* Count of missing materials that have NO pantry id anywhere (true buy-only:
    no tick can cover them). Mirrors pantryMissing's AND-across-groups walk
    (2026-09-27): a material counts only when it is missing AND every
@@ -4049,40 +3843,6 @@ function pantryBuyOnlyMissing(ideaId){
   }
   return n;
 }
-/* The "store run" tier: something is missing, but every missing material is
-   buy-only, so there is nothing left to tick. pantryMissing returns -1 for
-   unknown ideas; the tier is false there. */
-function pantryStoreRunTier(ideaId){
-  var miss = pantryMissing(ideaId);
-  return miss > 0 && pantryBuyOnlyMissing(ideaId) === miss;
-}
-/* The dare's middle clause, parameterized on the buy-only count so the share
-   text and the recipient headline agree (1 vs 2+). */
-function armDStoreRunPhrase(n){
-  return n <= 1 ? ARM_D_STORE_RUN_1 : ARM_D_STORE_RUN_N;
-}
-/* The dare kind for the share just built by shareTextFor: "pantry-zero",
-   "store-run", or null. Null whenever the store-run tier is off, so flag-off
-   analytics payloads are byte-identical to today. */
-function armDChallengeKind(){
-  if (!EXPERIMENT_ARM_D_STORE_RUN) return null;
-  if (window.__pmcStoreChallenge) return "store-run";
-  if (window.__pmcChallenge) return "pantry-zero";
-  return null;
-}
-function shareVariant(){
-  try {
-    var v = localStorage.getItem("pmc_share_variant");
-    if (v === "A" || v === "B" || v === "C" || v === "D" || v === "E" || v === "F" || v === "G" || v === "H") return v; /* one user stays in one arm */
-    /* Experiment 7 (2026-09-26): new sessions randomize 50/50 between C
-       (reciprocal ask, control) and H (honest Halloween countdown).
-       Arms A/B/D/E/F/G keep their pinned assignments for existing users
-       but are not dealt to new sessions while experiment 7 runs. */
-    v = Math.random() < 0.5 ? "C" : "H";
-    localStorage.setItem("pmc_share_variant", v);
-    return v;
-  } catch(_){ return "C"; }
-}
 /* Browse thumbnail experiment: photo vs transparent cutout.
    Arm persists per session in localStorage; card thumbnails (not detail
    hero, not share images) switch presentation. Analytics carries thumb_arm.
@@ -4093,38 +3853,71 @@ function thumbArm(){
   try { localStorage.setItem("pmc_thumb_arm", "photo"); } catch(_){}
   return "photo";
 }
-function shareAsk(person, ideaTitle){
-  var v = shareVariant(), p = person || "me";
-  if (v === "A") return "Take this 2-min Halloween costume quiz and see what you get: ";
-  if (v === "B") return "What do you think? Take the quiz: ";
-  /* Experiment 6 (stream B, 2026-09-26): new share message variants E/F.
-     E = library size (honest count, verifiable in the repo).
-     2026-09-26 honesty fix: E originally read
-     proofCount() + " people found their costume this week", an unverifiable
-     claim with no derivation -- replaced with the honest 138-idea count and
-     proofCount() removed.
-     2026-09-27 red-team: the hardcoded "138" re-stales on the next bank
-     change (the bank went 76 -> 138 in a month). Now read live from
-     IDEAS.length so the share text can never drift from the shelf.
-     F = curiosity gap naming the sharer's pick.
-     Measure: recipient quiz starts by share_msg_variant. */
-  if (v === "E"){ var _en = (typeof IDEAS !== "undefined" && IDEAS.length) || 138; return _en + " costume ideas. Take the 2-min quiz: "; }
-  if (v === "F" && ideaTitle){
-    /* Red-team 2026-09-26 (share flow): "I got X" misattributes kid/family
-       picks to the sharer (same bug class as the shareCaptionFor fix).
-       Mirror the audience-aware pattern: the pick belongs to the kid/family. */
-    var fa = (typeof voiceAudience === "function") ? voiceAudience(null) : "solo";
-    if (fa === "kid") return "The quiz picked " + ideaTitle + " for my kid - what will yours get? Take the quiz: ";
-    if (fa === "family") return "The quiz picked " + ideaTitle + " for our family - what will yours get? Take the quiz: ";
-    return "I got " + ideaTitle + " - what will you get? Take the quiz: ";
+/* The one ask line every share carries (2026-09-28 simplification). The
+   share panel used to A/B eight message variants and five ask lines; the
+   data never cleared a winner, so the panel now carries one canonical
+   message and this one line. */
+function shareAskLine(){
+  return "What would you go as? ";
+}
+/* The one canonical share action (2026-09-28 simplification): the native
+   share sheet on phones, clipboard copy on desktop. Replaces the bespoke
+   handlers that used to live in shareText(), buildRevealSharePrompt(), and
+   the experiment-1 quick-share card. Event semantics stay honest: a
+   dismissed sheet is a cancel, not a share -- share_created fires only on a
+   resolved share or a successful clipboard copy. opts: {button, statusEl,
+   shareOrigin, buildText(sid), onShared, sid (pre-minted, e.g. the exp1
+   quick-share preview's). */
+function sendShare(idea, origin, opts){
+  opts = opts || {};
+  var btn = opts.button, statusEl = opts.statusEl;
+  var og = opts.shareOrigin || origin || "generic";
+  var rearmShare = (typeof armShareOnce === "function") ? armShareOnce(btn) : function(){};
+  if (!rearmShare) return; /* double-tap: a share is already in flight */
+  var sid = opts.sid || newShareId();
+  var text = opts.buildText ? opts.buildText(sid) : shareTextFor(idea, sid, og);
+  function credited(via){
+    rearmShare(); /* the share settled: sent or copied */
+    var props = {share_id: sid, idea_id: idea.id, share_origin: og, via: via};
+    /* 2026-09-28: xprops (e.g. cast-panel group_size/kid_count) also reaches
+       the canonical path, not only manual copies. */
+    if (typeof opts.xprops === "function"){
+      try { var _xp = opts.xprops(); for (var _k in _xp){ if (!(_k in props)) props[_k] = _xp[_k]; } } catch(_){}
+    }
+    if (typeof viaShareProps === "function"){
+      var xp = viaShareProps();
+      if (xp && xp.via_share_id) props.via_share_id = xp.via_share_id;
+    }
+    Analytics.track("share_created", props);
+    if (typeof VIA_SHARE !== "undefined" && VIA_SHARE)
+      Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: og});
+    if (opts.onShared){ try { opts.onShared(sid, via); } catch(_){} }
   }
-  /* Experiment 7 (2026-09-26): H = honest countdown. The day count is
-     computed live from the real date, so it is always true and sharpens
-     every day through October, when sharing peaks.
-     2026-09-27 red-team: on Halloween day itself n is 0, so it says "today",
-     never the awkward "0 days away". */
-  if (v === "H"){ var n = daysToHalloween(); return (n === 0 ? "Halloween is today. " : "Halloween is " + n + " day" + (n === 1 ? "" : "s") + " away. ") + "Take the 2-min quiz and send me what you get: "; }
-  return "Take the 2-min quiz and send " + p + " what you get: ";
+  function doneShare(ok, msg){
+    if (statusEl && msg) statusEl.textContent = msg;
+    if (ok) credited("native"); /* credited() rearms: the share settled */
+    else rearmShare(); /* dismissed sheet: a cancel, not a share */
+  }
+  if (navigator.share){
+    try {
+      navigator.share({title: "Pick My Costume", text: text}).then(
+        function(){ doneShare(true, "Shared."); },
+        function(){ doneShare(false, ""); } /* dismissed sheet: a cancel, not a share */
+      );
+      return;
+    } catch(e){ /* fall through to clipboard copy */ }
+  }
+  doCopy(text, function(ok, msg){
+    if (ok){
+      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: og, via: "clipboard"});
+      if (btn){ var orig = btn.textContent; btn.textContent = "Copied \u2713"; setTimeout(function(){ btn.textContent = orig; }, 2000); }
+      credited("clipboard");
+      if (statusEl) statusEl.textContent = "Copied. Paste it into any message.";
+    } else {
+      rearmShare();
+      if (statusEl) statusEl.textContent = msg || "Copy did not work. Long-press the preview text to copy it.";
+    }
+  });
 }
 /* Billy 2026-09-27: emoji in all user-facing copy, share text included.
    One central lead-in so every share format gets it uniformly. The
@@ -4132,58 +3925,22 @@ function shareAsk(person, ideaTitle){
    reads valid (absolute share-rate gets a level shift; annotate). */
 function emojiLead(t){ return "🎃 " + t; }
 function shareTextFor(idea, sid, origin){
-  /* 2026-09-25 challenge mechanic (arm D): the share reads as a dare only when
-     the pantry honestly covers the pick, computed here at share time.
-     pantryMissing returns -1 for unknown ideas; the challenge never fires
-     on -1. A D session that cannot challenge falls back to the C copy via
-     shareAsk().
-     2026-09-26 store-run tier (flag-gated): the strict-zero dare can never
-     fire for buy-only ideas, so D was dead copy for ~125 picks. When
-     EXPERIMENT_ARM_D_STORE_RUN is on, a D session at the store-run tier
-     (pantryStoreRunTier: everything tickable owned, only buy-only items
-     remain) shares the store-run dare instead of the C fallback. The link
-     carries &ch=2&chn=<buy-only count> so the recipient headline agrees
-     with the share text; &ch=1 keeps its strict-zero meaning on old links. */
-  var challenge = (shareVariant() === "D" && pantryMissing(idea.id) === 0);
-  var storeCh = EXPERIMENT_ARM_D_STORE_RUN && shareVariant() === "D" && !challenge && pantryStoreRunTier(idea.id);
-  window.__pmcChallenge = challenge;
-  window.__pmcStoreChallenge = storeCh;
-  var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + origin
-    + (challenge ? "&ch=1" : (storeCh ? "&ch=2&chn=" + pantryBuyOnlyMissing(idea.id) : ""));
-  /* Arm G (novel-find 2026-09-26: BuzzFeed Spirit Halloween Costume
-     Generator). The pick hides behind its off-brand name, so the share
-     reads as a guess-the-costume riddle. Early return keeps the kid/family
-     materials list off - it would leak the answer. Measured by
-     share_msg_variant like every other arm.
-     2026-09-26 red-team recipient audit (pm2): the riddle still leaked
-     twice -- the /c/ URL slug names the costume and the unfurl card shows
-     its title and photo. A bare homepage link keeps the riddle a riddle;
-     the recipient still lands on the friend banner and the quiz. */
-  if (shareVariant() === "G"){
-    var glink = "https://pickmycostume.com/?s=" + sid + "&o=" + origin;
-    return emojiLead("My off-brand Halloween costume name is '" + offBrandName(idea) + "'. Guess what I am really going as? Take the 2-min quiz and send me yours: " + glink);
-  }
-  /* 2026-09-25 social-handoff experiment: the old copy asked an open question
-     ("What are you going as?"). The reciprocal ask ("send me what you get")
-     tests whether the share reads as an invitation to participate, not a
-     broadcast. Metric: share_created + share_text_copied per pick_saved. */
-  var text = challenge
-    ? ("I can make " + idea.title + " tonight with stuff already in my house. What can you make with yours? Find out in 2 minutes. " + link)
-    : (storeCh
-      ? ("I can make " + idea.title + " " + armDStoreRunPhrase(pantryBuyOnlyMissing(idea.id)) + ". What can you make with yours? Find out in 2 minutes. " + link)
-      : (shareCaptionFor(idea) + " " + shareAsk(null, idea.title) + link));
-  /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
-     not just the costume name. Kid/family shares append the materials. */
-  var aud = state.answers.q1 ? state.answers.q1.value : null;
+  /* The one canonical share message (2026-09-28 simplification). The panel
+     used to offer teaser, plan, micro-quiz, SMS, riddle, guess-game, and
+     pantry-dare variants, each with its own builder; what remains is this
+     one message: the audience-grounded caption, one ask line, the recipient
+     link, and the shopping list for kid/family picks. */
+  var text = shareCaptionFor(idea) + " " + shareAskLine() +
+    "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic");
+  /* Kid/family shares append the shopping list: a parent texting their
+     partner needs the materials, not just the costume name. The audience
+     follows the caption (voiceAudience), so the list matches the voice. */
+  var aud = voiceAudience(idea);
   if ((aud === "kid" || aud === "family") && typeof INSTRUCTIONS !== "undefined"){
     var ins = INSTRUCTIONS[idea.id];
-    if (ins && ins.m && ins.m.length){
-      text += shareShoppingListAppend(ins);
-      /* 2026-09-26 pm3 red-team: the 8-item slice silently dropped the 9th
-         material (beekeeper-bee) while presenting the list as complete. */
-    }
+    if (ins && ins.m && ins.m.length) text += shareShoppingListAppend(ins);
   }
-  return emojiLead(text);
+  return text;
 }
 /* 2026-09-27 red-team copy-then-bail: the kid/family share append dumped the
    raw materials list under a "You need" header, including own/make items
@@ -4201,202 +3958,6 @@ function shareShoppingListAppend(ins){
   if (!shop.length) return "";
   return " You need: " + shop.slice(0, 8).join(", ") +
     (shop.length > 8 ? ", plus " + (shop.length - 8) + " more." : ".");
-}
-/* 2026-09-26 plan-share format ("Share the plan, not the picture"): Billy's
-   priority is encouraging sharing, and the AI illustrations may be what makes
-   shares feel joke-y. This second share format leads with practical facts
-   (time, cost, difficulty) instead of the illustration, so it reads as a
-   recommendation, not a meme. New share origin "plan", measured against
-   generic/teaser. Metric: share_created per origin, plan vs generic. */
-function planTextFor(idea, sid, origin){
-  var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "plan");
-  var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
-  var parts = [];
-  if (ins){
-    if (ins.time) parts.push(String(ins.time).replace(/^~/, "").replace(/\bmin\b/i, "minutes"));
-    if (ins.cost) parts.push(String(ins.cost).replace(/^~/, "").replace(/\$(\d+)-(\d+)/, "$$$1 to $$$2"));
-    if (ins.effort) parts.push(String(ins.effort).toLowerCase());
-  }
-  var plan = parts.length ? parts.join(", ") : "DIY costume guide";
-  return emojiLead(idea.title + ": " + plan + ". " + link);
-}
-/* 2026-09-26 teaser share experiment: send the quiz, not the pick. Every
-   other share hands the recipient the answer (a full costume guide), so the
-   quiz is redundant and friend quiz starts sit near zero. The teaser
-   withholds the pick; the link opens the quiz itself, and ?duel=<sender
-   slug> rides along so the results-page duel box reveals the friend's pick
-   in the You-vs-friend compare after the recipient finishes. New share
-   origin "teaser", measured against generic/card. Metric: friend quiz
-   starts per share_created, teaser vs generic. */
-function teaserTextFor(idea, sid){
-  var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
-  /* Audience grounding (duel kid-frame reframe):
-     the old line always said "picked my Halloween costume", but for
-     kid/family quizzes the pick is the kid's / the family's, not the
-     sender's -- same misattribution class as the shareCaptionFor fix. */
-  var aud = voiceAudience(idea);
-  var picked;
-  if (aud === "kid") picked = "This 2-minute quiz picked a Halloween costume for my kid, and I am not telling you what it is.";
-  else if (aud === "family") picked = "This 2-minute quiz picked our family's Halloween costume, and I am not telling you what it is.";
-  else picked = "This 2-minute quiz picked my Halloween costume, and I am not telling you what it is.";
-  return picked + " Take the quiz and send me what you get: " + link;
-}
-/* 2026-09-26 micro-quiz share experiment ("Send one question"): the
-   lowest-friction share on the site. The sender taps a button; the
-   recipient's link opens with a single question rendered in place (no
-   tap-to-start, no 5-question commitment). One tap answers, the quiz makes
-   its honest one-question guess, and the full quiz is one more tap away.
-   New share origin "micro", measured against generic/card/teaser/duel.
-   Metric: friend quiz starts per share_created, micro vs the other
-   origins. */
-function microTextFor(sid){
-  var link = "https://pickmycostume.com/?s=" + sid + "&o=micro";
-  return "One question, one Halloween costume pick. Answer it and see what you get: " + link;
-}
-/* 2026-09-26 micro-quiz: the single question is the quiz's own q2 vibe
-   question (Funny/Scary/Cute/Chill) -- the most fun one-tap answer and the
-   most differentiating single answer in the bank. The guess applies the
-   quiz's own vibe promise logic (Billy 2026-09-25): funny needs funny>=2
-   with scary not dominant, scary needs scary>=1, cute needs cute>=1; chill
-   passes everything and ranks on the simple tag. Relax to the full bank
-   ranked by tag weight when the filter would leave fewer than 3, the same
-   pattern scoreIdeas uses. Ranked by the picked vibe tag weight, demand-sim
-   rank as tie-break, so the guess is what the full quiz would genuinely
-   produce from this answer alone. */
-var MICRO_Q = {title: "What vibe are you going for?", hint: "One tap. No wrong answers.", options: [
-  {label: "Funny", tag: "funny"},
-  {label: "Scary", tag: "scary"},
-  {label: "Cute", tag: "cute"},
-  {label: "Chill", tag: "simple"}
-]};
-function microVibeOk(idea, vibeTag){
-  var t = idea.tags || {};
-  if (vibeTag === "funny") return (t.funny||0) >= 2 && (t.scary||0) <= (t.funny||0);
-  if (vibeTag === "scary") return (t.scary||0) >= 1;
-  if (vibeTag === "cute") return (t.cute||0) >= 1;
-  return true;
-}
-function microGuess(vibeTag){
-  var pool = IDEAS.filter(function(i){ return microVibeOk(i, vibeTag); });
-  /* Same relaxation pattern as scoreIdeas: if the hard filter would leave
-     fewer than 3, rank the whole bank instead -- but non-matching ideas
-     stay demoted below matching ones, so a scary-dominant idea can never
-     win a "funny" guess when a genuine funny idea exists. */
-  if (pool.length < 3) pool = IDEAS.slice();
-  pool.sort(function(a, b){
-    var aok = microVibeOk(a, vibeTag) ? 0 : 1, bok = microVibeOk(b, vibeTag) ? 0 : 1;
-    if (aok !== bok) return aok - bok;
-    var ta = (a.tags||{})[vibeTag] || 0, tb = (b.tags||{})[vibeTag] || 0;
-    return (tb - ta) || ((a.rank||999) - (b.rank||999));
-  });
-  return pool[0] || null;
-}
-/* Renders the micro panel in place: the one question first, then the
-   honest one-question guess with a full-quiz door and a share-back. */
-function renderMicroPanel(box){
-  box.innerHTML = "";
-  var h = document.createElement("p");
-  h.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
-  h.textContent = "Your friend sent you ONE question.";
-  var sub = document.createElement("p");
-  sub.style.cssText = "margin:0 0 6px;font-size:14px;color:#666;line-height:1.4";
-  sub.textContent = MICRO_Q.title + " " + MICRO_Q.hint;
-  box.appendChild(h); box.appendChild(sub);
-  MICRO_Q.options.forEach(function(opt){
-    var b = document.createElement("button");
-    b.type = "button";
-    b.className = "opt";
-    b.style.width = "100%";
-    b.style.marginTop = "8px";
-    b.textContent = opt.label;
-    b.onclick = function(){
-      var guess = microGuess(opt.tag);
-      Analytics.track("micro_answer_chosen", Object.assign({vibe: opt.label, idea_id: guess ? guess.id : null}, viaShareProps()));
-      renderMicroResult(box, opt, guess);
-    };
-    box.appendChild(b);
-  });
-}
-function renderMicroResult(box, opt, guess){
-  box.innerHTML = "";
-  if (guess){
-    box.appendChild(ideaMedia(guess, true));
-    var h = document.createElement("p");
-    h.style.cssText = "margin:10px 0 4px;font-weight:700;color:#333;line-height:1.4;font-size:18px";
-    h.textContent = "The quiz's first guess: " + guess.title;
-    var tri = document.createElement("p");
-    tri.style.cssText = "margin:0 0 6px;font-size:14px;color:#666";
-    tri.textContent = spinTriple(guess);
-    var bl = document.createElement("p");
-    bl.className = "blurb";
-    bl.textContent = guess.blurb;
-    var honest = document.createElement("p");
-    honest.style.cssText = "margin:8px 0 0;font-size:13px;color:#888;line-height:1.4";
-    honest.textContent = "That was one question, not five. Take the 2-minute quiz to get your real match.";
-    box.appendChild(h); box.appendChild(tri); box.appendChild(bl); box.appendChild(honest);
-  } else {
-    var e = document.createElement("p");
-    e.style.cssText = "margin:0 0 4px;font-weight:700;color:#333;line-height:1.4";
-    e.textContent = "Hmm, no costume matched that one. Take the full quiz instead.";
-    box.appendChild(e);
-  }
-  var quiz = document.createElement("button");
-  quiz.type = "button"; quiz.className = "cta";
-  quiz.style.width = "100%";
-  quiz.style.marginTop = "12px";
-  quiz.textContent = "Take the 2-minute quiz";
-  quiz.onclick = function(){
-    /* Mirror the hero "Find my costume" start exactly: clean state, no
-       pinpoint residue, old picks cleared, recipient-attributed event. */
-    state = {qi: 0, answers: {}};
-    state.pinpoint = null;
-    pinpointNote(""); pinpointClearNomatch();
-    clearK("pmc_pick_v1");
-    Analytics.track("quiz_started", viaShareProps());
-    renderQ();
-  };
-  box.appendChild(quiz);
-  if (guess){
-    /* The guide link is plain (no ?s=): the guess is the recipient's own
-       discovery, not a share arrival, so no share headline applies. */
-    var guide = document.createElement("a");
-    guide.href = "/c/" + guess.id;
-    guide.className = "ghost";
-    guide.style.cssText = "display:block;width:100%;margin-top:8px;text-align:center;text-decoration:none;box-sizing:border-box;";
-    guide.textContent = "See the full " + guess.title + " guide";
-    box.appendChild(guide);
-    /* The return leg: mint a fresh micro link back into the same chat,
-       exactly like the duel share-back. */
-    var back = document.createElement("button");
-    back.type = "button"; back.className = "ghost";
-    back.style.width = "100%";
-    back.style.marginTop = "8px";
-    back.textContent = "Send them your pick";
-    back.onclick = function(){
-      var rearm = armShareOnce(back);
-      if (!rearm) return; /* double-tap: a share is already in flight */
-      var sid = newShareId();
-      var text = emojiLead("I answered your one question and got " + guess.title + ". Your turn: https://pickmycostume.com/?s=" + sid + "&o=micro");
-      function done(ok){
-        rearm();
-        if (ok){
-          Analytics.track("share_created", Object.assign({share_id: sid, idea_id: guess.id, share_origin: "micro", share_msg_variant: "shareback"}, viaShareProps()));
-          back.textContent = "Sent.";
-        }
-      }
-      if (navigator.share){
-        try {
-          navigator.share({title: "Pick My Costume", text: text}).then(function(){ done(true); }, function(){ done(false); });
-          return;
-        } catch(e){}
-      }
-      doCopy(text, function(ok, msg){
-        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: guess.id, share_id: sid, share_origin: "micro", via: "micro-shareback"}, viaShareProps()));
-        done(ok);
-      });
-    };
-    box.appendChild(back);
-  }
 }
 /* 2026-09-26 pair-share experiment ("Find my +1's costume"): the cooperative
    counterpart to the duel. The sender goes as this pick; the recipient takes
@@ -4472,9 +4033,19 @@ function partyParseParams(){
    gate can assert it without a DOM. */
 function partyDemoteKey(idea, theme, takenSet){
   var k = 0;
-  if (theme && !microVibeOk(idea, theme)) k += 1;
+  if (theme && !partyVibeOk(idea, theme)) k += 1;
   if (takenSet && takenSet[idea.id]) k += 2;
   return k;
+}
+/* Pure vibe check for party theme matching. Was microVibeOk; the micro-quiz
+   flow is retired but party pages still theme-match, so the check stays
+   under its own name. */
+function partyVibeOk(idea, vibeTag){
+  var t = idea.tags || {};
+  if (vibeTag === "funny") return (t.funny||0) >= 2 && (t.scary||0) <= (t.funny||0);
+  if (vibeTag === "scary") return (t.scary||0) >= 1;
+  if (vibeTag === "cute") return (t.cute||0) >= 1;
+  return true;
 }
 /* One-tap copy/share used by the party panels. Mirrors the pair-share
    doneShare/copyFallback pattern. */
@@ -4831,7 +4402,7 @@ function matchTargetAud(aud){
   return "solo";
 }
 /* Pure: top 3 matches for the anchor, ranked by shared tag weight with the
-   demand-sim rank as tie-break (same tie-break as microGuess). The anchor
+   demand-sim rank as tie-break. The anchor
    itself never appears. Extracted pure so the verifier can assert it. */
 function matchTop3(anchor, aud){
   var taud = matchTargetAud(aud);
@@ -5007,7 +4578,7 @@ function buildMatchStep(idea){
         sst.textContent = msg;
         rearm();
         if (ok && typeof Analytics !== "undefined" && Analytics.track){
-          Analytics.track("share_created", {share_id: sid, idea_id: m.id, share_origin: "match", share_msg_variant: shareVariant()});
+          Analytics.track("share_created", {share_id: sid, idea_id: m.id, share_origin: "match"});
           if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: m.id, share_origin: "match"});
         }
       }
@@ -5180,7 +4751,7 @@ function buildGlowupStep(idea){
         sst.textContent = msg;
         rearm();
         if (ok && typeof Analytics !== "undefined" && Analytics.track){
-          Analytics.track("share_created", {share_id: sid, idea_id: g.idea.id, share_origin: "glow", share_msg_variant: shareVariant()});
+          Analytics.track("share_created", {share_id: sid, idea_id: g.idea.id, share_origin: "glow"});
           if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: g.idea.id, share_origin: "glow"});
         }
       }
@@ -5381,7 +4952,7 @@ function buildFirstShareStep(idea){
       sst.textContent = msg;
       rearm();
       if (ok && typeof Analytics !== "undefined" && Analytics.track){
-        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "first", share_msg_variant: shareVariant()});
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "first"});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "first"});
       }
     }
@@ -5476,7 +5047,7 @@ function buildRemixStep(idea){
       sst.textContent = msg;
       rearm();
       if (ok && typeof Analytics !== "undefined" && Analytics.track){
-        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "remix", share_msg_variant: shareVariant()});
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "remix"});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "remix"});
       }
     }
@@ -5604,7 +5175,7 @@ function buildNamedShareStep(idea){
       sst.textContent = msg;
       rearm();
       if (ok && typeof Analytics !== "undefined" && Analytics.track){
-        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "named", share_msg_variant: shareVariant()});
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "named"});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "named"});
       }
     }
@@ -5792,7 +5363,7 @@ function buildLivingShareStep(idea){
       sst.textContent = msg;
       rearm();
       if (ok && typeof Analytics !== "undefined" && Analytics.track){
-        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "living", living_stage: stage, share_msg_variant: shareVariant()});
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "living", living_stage: stage});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "living", living_stage: stage});
       }
     }
@@ -5936,7 +5507,7 @@ function buildBlockMapBox(idea){
       status.textContent = msg; rearm();
       if (ok){
         Analytics.track("block_map_created", {share_id: sid, share_origin: "block", idea_id: mine.id, chain_length: entries.length, via: via});
-        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: mine.id, share_origin: "block", share_msg_variant: shareVariant()}, viaShareProps()));
+        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: mine.id, share_origin: "block"}, viaShareProps()));
         if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "block"});
       }
     }
@@ -6187,8 +5758,8 @@ function openGuessGame(gg){
         function doneShare(ok){
           rearmShare(); /* the share settled: sent, dismissed, or copied */
           if (ok){
-            Analytics.track("guess_game_created", Object.assign({share_id: sid, idea_id: friendPick.id, share_msg_variant: shareVariant()}, viaShareProps()));
-            Analytics.track("share_created", Object.assign({share_id: sid, idea_id: friendPick.id, share_origin: "guess", share_msg_variant: shareVariant()}, viaShareProps()));
+            Analytics.track("guess_game_created", Object.assign({share_id: sid, idea_id: friendPick.id}, viaShareProps()));
+            Analytics.track("share_created", Object.assign({share_id: sid, idea_id: friendPick.id, share_origin: "guess"}, viaShareProps()));
             if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: friendPick.id, share_origin: "guess"}, viaShareProps()));
             closeGame();
           }
@@ -6344,7 +5915,7 @@ $("btn-spin-share").onclick = function(){
     st.textContent = msg;
     rearmShare(); /* the share settled: sent, dismissed, or copied */
     if (ok){
-      Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "spin", share_msg_variant: shareVariant()}, viaShareProps()));
+      Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "spin"}, viaShareProps()));
       if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "spin"}, viaShareProps()));
     }
   }
@@ -6623,8 +6194,7 @@ function buildProxyDecideBox(results){
    share: one text with all three finalists, numbered for a group-chat
    vote. One share_id covers the whole vote; each finalist link carries
    ?s=<sid>&o=vote so recipient opens and quiz starts attribute to the
-   vote. No new randomization: the pinned shareVariant() arm rides along
-   on events for comparability only. Metric: vote_share_created per
+   vote. Metric: vote_share_created per
    results view, then recipient opens and quiz starts per vote share. */
 /* Days until the next October 31, from the real date. After Halloween it
    counts to next year's, so the line never reads stale. */
@@ -6706,7 +6276,7 @@ function buildVoteBox(results){
         if (ok){
           bCopy.textContent = "Copied \u2713";
           setTimeout(function(){ bCopy.textContent = "Copy vote text"; }, 2000);
-          Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "clipboard"});
+          Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", via: "clipboard"});
         }
       });
     };
@@ -6717,7 +6287,7 @@ function buildVoteBox(results){
         vst.textContent = msg;
         rearmShare();
         if (ok){
-          Analytics.track("vote_share_created", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "share_sheet"});
+          Analytics.track("vote_share_created", {share_id: sid, idea_ids: ids, share_origin: "vote", via: "share_sheet"});
           if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: ids[0], share_origin: "vote"});
         }
       }
@@ -6731,14 +6301,14 @@ function buildVoteBox(results){
           doCopy(text, function(ok, msg){
             /* 2026-09-27 red-team: same wrong-default-message fix as bCopy. */
             vst.textContent = ok ? "Copied. Paste it into the group chat." : msg; rearmShare();
-            if (ok) Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "clipboard"});
+            if (ok) Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", via: "clipboard"});
           });
         }
       } else {
         doCopy(text, function(ok, msg){
           /* 2026-09-27 red-team: same. */
           vst.textContent = ok ? "Copied. Paste it into the group chat." : msg; rearmShare();
-          if (ok) Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", share_msg_variant: shareVariant(), via: "clipboard"});
+          if (ok) Analytics.track("vote_text_copied", {share_id: sid, idea_ids: ids, share_origin: "vote", via: "clipboard"});
         });
       }
     };
@@ -7133,9 +6703,7 @@ function buildGrandparentBox(results){
    on share arrivals; when the recipient lands on results through a share,
    this panel compares their #1 against the sender's pick and offers a
    share-back that closes the loop. New share origin "duel", measured
-   separately from card/generic/sms/vote/pantryvote. Fixed copy (no
-   share-message variant arms); the pinned shareVariant rides events for
-   comparability only. */
+   separately from card/generic/sms/vote/pantryvote. Fixed copy. */
 function duelIdeaById(id){
   var found = null;
   IDEAS.forEach(function(it){ if (it.id === id) found = it; });
@@ -7243,7 +6811,7 @@ function duelShareback(mine, theirs, btn, statusEl){
   var sid = newShareId();
   var text = buildDuelShareText(mine, theirs, sid);
   function trackShareback(via){
-    Analytics.track("duel_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "duel", duel_idea_id: theirs.id, own_idea_id: mine.id, share_msg_variant: shareVariant(), via: via});
+    Analytics.track("duel_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "duel", duel_idea_id: theirs.id, own_idea_id: mine.id, via: via});
     Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "duel"});
   }
   function doneShare(ok, msg){
@@ -7348,7 +6916,7 @@ function pairShareback(mine, theirs, btn, statusEl){
   var sid = newShareId();
   var text = buildPairShareText(mine, theirs, sid);
   function trackShareback(via){
-    Analytics.track("pair_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "pair", pair_idea_id: theirs.id, own_idea_id: mine.id, share_msg_variant: shareVariant(), via: via});
+    Analytics.track("pair_shareback_created", {share_id: sid, via_share_id: VIA_SHARE, share_origin: "pair", pair_idea_id: theirs.id, own_idea_id: mine.id, via: via});
     Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: mine.id, share_origin: "pair"});
   }
   function doneShare(ok, msg){
@@ -8277,46 +7845,11 @@ function buildRevealSharePrompt(idea){
   btn.style.cssText = "display:block;width:100%;background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;cursor:pointer;padding:10px 8px;min-height:44px;font-family:inherit;text-align:center";
   Analytics.track("reveal_prompt_shown", {idea_id: idea.id, share_origin: "reveal"});
   btn.onclick = function(){
-    var rearmShare = armShareOnce(btn);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sid = newShareId();
-    var text = shareTextFor(idea, sid, "reveal");
-    var challenge = !!window.__pmcChallenge || !!window.__pmcStoreChallenge;
-    var ckind = armDChallengeKind();
-    function doneShare(ok, msg){
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
-      if (ok){
-        /* E8 pattern: one quiet line, re-offer, stays live so the next tap
-           mints a fresh share id. Red-team 2026-09-27: the clipboard path
-           passes its own confirmation as msg; the native sheet passes "".
-           A copy is not a share -- say "Copied..." on the clipboard path so
-           the button never claims a share that hasn't happened yet. */
-        btn.textContent = msg || "Shared. Who else needs a costume?";
-        var rscp = {share_id: sid, idea_id: idea.id, share_origin: "reveal", share_msg_variant: shareVariant(), challenge: challenge};
-        if (ckind) rscp.challenge_kind = ckind;
-        Analytics.track("share_created", rscp);
-        if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "reveal"});
-      } else if (msg){
-        btn.textContent = msg;
-      }
-    }
-    if (navigator.share){
-      try {
-        navigator.share({title: "Pick My Costume", text: text}).then(
-          function(){ doneShare(true, ""); },
-          function(){ doneShare(false, ""); } /* dismissed sheet: a cancel, not a share */
-        );
-        return;
-      } catch(e){ /* fall through to clipboard copy */ }
-    }
-    doCopy(text, function(ok, msg){
-      if (ok){
-        var rtcp = {idea_id: idea.id, share_id: sid, share_origin: "reveal", via: "clipboard", share_msg_variant: shareVariant()};
-        if (ckind) rtcp.challenge_kind = ckind;
-        Analytics.track("share_text_copied", rtcp);
-      }
-      doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-    });
+    /* The reveal-moment prompt shares the canonical message under origin
+       "reveal" so the funnel still attributes it separately from the panel. */
+    sendShare(idea, "reveal", {button: btn, statusEl: null, onShared: function(){
+      btn.textContent = "Shared. Who else needs a costume?";
+    }});
   };
   return btn;
 }
@@ -10285,472 +9818,122 @@ function shareImage(idea, onDone){
 
 /* After a pick, the share section leads and the AI plan follows beneath it. */
 function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
-  var label = document.createElement("p"); label.className = "status";
-  function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
-  /* 2026-09-25 social-handoff experiment: the share block reads as a social
-     next step, not a utility. */
-  label.textContent = "Send it to your people. See what they get:";
+  /* The share panel, simplified 2026-09-28. Billy: the loop had grown
+     bloated -- teaser, plan, micro-quiz, SMS, save-image, riddle,
+     guess-game, pantry dare, and eight message variants. What remains:
+       - primary "Share this idea" button (native sheet / clipboard)
+       - a Preview text toggle (collapsed by default)
+       - Save the image (the one non-text share worth keeping)
+       - Pick for a friend (secondary)
+       - the approved Partner Split (secondary)
+     makeText(sid) still overrides the text for personal-cast cards. */
+  container.innerHTML = "";
+  var statusEl = null, btn = null, sharedOnce = false;
+  function mint(){ var sid = newShareId(); return {sid: sid, text: (typeof makeText === "function") ? makeText(sid) : shareTextFor(idea, sid, "generic")}; }
+  var cur = mint();
+  function share(origin, button, st){
+    sendShare(idea, origin || "generic", {button: button, statusEl: st,
+      xprops: (typeof xprops === "function") ? xprops : null,
+      buildText: (typeof makeText === "function") ? function(sid){ return makeText(sid); } : null,
+      onShared: function(){ if (!sharedOnce){ sharedOnce = true; cur = mint(); if (ta) ta.value = cur.text; } if (onShared) onShared(); }});
+  }
+  function primaryBtn(){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Share this idea";
+    b.onclick = function(){ share("generic", b, statusEl); };
+    return b;
+  }
+  var lab = document.createElement("p"); lab.className = "status";
+  lab.textContent = "Send it to your people. See what they get:";
+  container.appendChild(lab);
+  btn = primaryBtn();
+  var primaryRow = document.createElement("div");
+  primaryRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:10px 0 4px";
+  primaryRow.appendChild(btn);
+  container.appendChild(primaryRow);
+  statusEl = document.createElement("p"); statusEl.className = "status";
+  container.appendChild(statusEl);
+  /* Preview text: collapsed by default. Billy 2026-09-28: the preview made
+     the panel feel like a form; the button is the flow. */
+  var det = document.createElement("details"); det.className = "share-preview";
+  var detRow = document.createElement("summary"); detRow.textContent = "Preview text";
+  det.appendChild(detRow);
+  var detBody = document.createElement("div");
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", "");
-  ta.style.minHeight = "76px";
-  /* Billy 2026-09-24: buttons lead, text hides behind a preview toggle. */
-  ta.style.display = "none";
-  var toggle = document.createElement("button"); toggle.type = "button";
-  toggle.textContent = "Preview text";
-  toggle.style.cssText = "background:none;border:0;padding:0;margin:2px 0 0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0;";
-  toggle.onclick = function(){
-    var open = ta.style.display !== "none";
-    ta.style.display = open ? "none" : "block";
-    toggle.textContent = open ? "Preview text" : "Hide text";
-  };
-  /* 2026-09-26 copy-then-bail fix: a manual copy from the preview textarea
-     (select-all + copy) used to fire no events at all, so the copy was
-     invisible in dashboards. Nothing new is minted here: the share_id is
-     read from the ?s= link already embedded in the copied text, so the
-     event's share_id always matches the link the recipient will open. The
-     copy itself becomes the share, with the same paired events as the
-     button copy path. No new controls, so the whole-card click guard is
-     untouched. A partial copy without the link fires nothing, since there
-     is no attributable share in it. */
-  ta.addEventListener("copy", function(e){
-    if (e && e.target !== ta) return;
-    var m = /[?&]s=([a-z0-9]{8})/.exec(ta.value);
+  ta.value = cur.text; ta.setAttribute("aria-label", "Share text preview");
+  ta.style.cssText = "width:100%;min-height:88px";
+  /* Extra props for cast panels (group_size/kid_count), read at event time. */
+  function xp(){ var x = (typeof xprops === "function") ? xprops() : (xprops || {}); return x; }
+  /* A manual copy from the preview is a share too: parse the sid and origin
+     out of the link in the copied text so the copy is attributed to the
+     right share. The preview can hold role/classroom-quiz/generic_quick
+     links; reading the origin from the link keeps those attributions honest
+     instead of hardcoding generic. (The challenge parse retired with the
+     challenge variant, 2026-09-28.) */
+  function trackManualCopy(text, via){
+    var m = /[?&]s=([a-z0-9]{8})/.exec(text);
     if (!m) return;
     var msid = m[1];
-    var mchm = /[?&]ch=([12])(?:&|$)/.exec(ta.value);
-    var mchallenge = !!mchm;
-    /* 2026-09-26 arm D store-run tier: the dare kind is parsed from the link
-       in the copied text. Gated on the flag so flag-off payloads are
-       byte-identical. */
-    var mchallengeKind = (mchm && EXPERIMENT_ARM_D_STORE_RUN) ? (mchm[1] === "2" ? "store-run" : "pantry-zero") : null;
-    /* 2026-09-26 teaser share: the preview can hold a teaser payload now, so
-       read the origin from the link in the copied text instead of assuming
-       generic. Generic and cast texts still parse as generic; behavior for
-       them is unchanged. 2026-09-27 attribution taxonomy fix: the old
-       ([a-z]+) parse truncated hyphenated/underscored origins
-       (classroom-quiz -> classroom, generic_quick -> generic). */
-    var mom = /[?&]o=([a-z0-9_-]+)/.exec(ta.value);
+    var mom = /[?&]o=([a-z0-9_-]+)/.exec(text);
     var morigin = mom ? mom[1] : "generic";
-    var mtcp = {idea_id: idea.id, share_id: msid, share_origin: morigin, via: "clipboard-manual", share_msg_variant: shareVariant()};
-    if (mchallengeKind) mtcp.challenge_kind = mchallengeKind;
-    Analytics.track("share_text_copied", Object.assign(mtcp, xp()));
-    var mscp = {share_id: msid, idea_id: idea.id, share_origin: morigin, share_msg_variant: shareVariant(), challenge: mchallenge};
-    if (mchallengeKind) mscp.challenge_kind = mchallengeKind;
-    Analytics.track("share_created", Object.assign(mscp, xp()));
-    /* 2026-09-27 attribution taxonomy fix: recipient re-shares used to fire
-       with share_origin hardcoded to "generic" even when the copied link
-       carried another origin. Carry the parsed origin. */
-    if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: msid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: morigin}, xp()));
+    var x = xp();
+    function withXp(o){ for (var k in x) o[k] = x[k]; return o; }
+    Analytics.track("share_text_copied", withXp({idea_id: idea.id, share_id: msid, share_origin: morigin, via: via}));
+    Analytics.track("share_created", withXp({share_id: msid, idea_id: idea.id, share_origin: morigin}));
+    if (typeof VIA_SHARE !== "undefined" && VIA_SHARE)
+      Analytics.track("second_share_created", withXp({share_id: msid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: morigin}));
+  }
+  ta.addEventListener("copy", function(e){
+    if (e && e.target !== ta) return;
+    trackManualCopy(ta.value, "clipboard-manual");
   });
-  var b = document.createElement("button"); b.type = "button";
-  /* 2026-09-27 share hierarchy (Billy: "too many CTAs and no contrast"):
-     "Share this idea" is the ONE filled primary CTA (highest-volume origin
-     in this block per the loop-measurement playbook: generic 9, generic_quick
-     5, sms 1). In the cast panel the personal cards are the primary share
-     path, so the generic share sits quiet inside the disclosure there. */
-  b.className = quiet ? "ghost" : "cta"; b.textContent = "Share this idea";
-  b.style.width = "100%";
-  /* Dev 2026-09-25 experiment: one-tap phone-sized share image. Lives in the
-     "More ways to share" disclosure now; instrumentation unchanged. */
-  var bi = document.createElement("button"); bi.type = "button";
-  bi.className = "ghost"; bi.textContent = "Save image";
-  bi.style.width = "100%";
-  bi.onclick = function(){
-    var rearmShare = armShareOnce(bi);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    shareImage(idea, rearmShare);
-  };
-  /* Experiment 1 (stream B, 2026-09-26): SMS deep-link share button.
-     Hypothesis: 41% copy-then-bail happens because copying requires
-     app-switching. A direct sms: link with pre-filled text removes friction.
-     Measure: share_sms_tapped vs share_created completion rate.
-     2026-09-27: lives in the "More ways to share" disclosure; the .mshare-body
-     stylesheet gives it full-width ghost-button sizing. */
-  var bsms = document.createElement("a");
-  bsms.className = "ghost"; bsms.textContent = "Text it";
-  bsms.onclick = function(){
-    /* 2026-09-26 pm3 red-team: two quick taps minted two share_ids + two
-       share_sms_tapped events (anchors ignore disabled). Reuse the preview's
-       share so the SMS body is exactly what the preview shows, and swallow
-       finger bounces: tapping "Text it" opens Messages, a 2nd tap inside 2s
-       is never deliberate. */
-    if (!tapGuard("sms", 2000)) return;
-    var sh = (typeof cur !== "undefined" && cur && cur.sid) ? cur : makeShare();
-    /* 2026-09-26 red-team: sh.text already embeds the ?s= link (o=generic),
-       so appending a second link doubled the URL in the SMS body -- and the
-       first (o=generic) link won the tap, defeating the o=sms attribution.
-       Rewrite the embedded link's origin instead. Every share-text builder
-       (shareTextFor all arms, buildCastShareText both branches) embeds the
-       link, so the replace always hits; if it ever missed, the text simply
-       keeps its generic link, never a duplicate. */
-    var fullText = sh.text.replace(/([?&]o=)generic/, "$1sms");
-    var sstp = {share_id: sh.sid, idea_id: idea.id, share_origin: "sms", share_msg_variant: shareVariant(), challenge: sh.challenge};
-    if (sh.challenge_kind) sstp.challenge_kind = sh.challenge_kind;
-    Analytics.track("share_sms_tapped", Object.assign(sstp, xp()));
-    /* 2026-09-26 red-team: the sms: deep link gives no send confirmation --
-       tapping "Text it" then cancelling in Messages must NOT count as a
-       share_created (it was inflating the completion metric the SMS
-       experiment measures against share_sms_tapped). A completed send is
-       untrackable here; the tap is the honest event.
-       sms:?&body= works on iOS; sms:?body= on Android. iOS form used. */
-    bsms.href = "sms:?&body=" + encodeURIComponent(fullText);
-    if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "sms"}, xp()));
-    st.textContent = "Opening messages with your costume text ready.";
-    cur = makeShare(); ta.value = cur.text;
-  };
-  /* 2026-09-27: bsms is appended in the share-hierarchy assembly below
-     (inside the "More ways to share" disclosure), not here. */
-  /* 2026-09-26 teaser share experiment: a second share action that sends the
-     quiz instead of the pick (see teaserTextFor). Full-width ghost row under
-     the main three so the existing button layout is untouched. Mirrors the
-     "Share this idea" machinery exactly: native sheet when available,
-     clipboard fallback on desktop, share_created only on a resolved share,
-     a dismissed sheet counts as a cancel. */
-  var trow = document.createElement("div"); trow.className = "row"; trow.style.marginTop = "8px";
-  var bteaser = document.createElement("button");
-  bteaser.type = "button"; bteaser.className = "ghost";
-  bteaser.style.width = "100%";
-  bteaser.textContent = "Send the quiz, hide my pick";
-  bteaser.onclick = function(){
-    var rearmShare = armShareOnce(bteaser);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sid = newShareId();
-    var sh = {sid: sid, text: teaserTextFor(idea, sid), challenge: false};
-    var link = "https://pickmycostume.com/?s=" + sid + "&o=teaser&duel=" + idea.id;
-    function doneShare(ok, msg){
-      st.textContent = msg;
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
+  detBody.appendChild(ta);
+  var cp = document.createElement("button");
+  cp.type = "button"; cp.className = "ghostbtn"; cp.textContent = "Copy text";
+  cp.onclick = function(){
+    var rearmShare = armShareOnce(cp);
+    if (!rearmShare) return;
+    doCopy(ta.value, function(ok, msg){
+      rearmShare();
       if (ok){
-        /* E8: the first share landed -- invite a second one. */
-        label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "teaser", share_msg_variant: shareVariant()}, xp()));
-        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "teaser"}, xp()));
-        /* The share landed: the AI plan is the immediate now-what. */
-        if (typeof onShared === "function") onShared();
+        trackManualCopy(ta.value, "clipboard");
+        statusEl.textContent = "Copied. Paste it into any message.";
+        if (!sharedOnce){ sharedOnce = true; cur = mint(); ta.value = cur.text; }
+      } else {
+        statusEl.textContent = msg || "Copy did not work. Long-press the text to copy it.";
       }
-    }
-    function copyFallback(){
-      doCopy(sh.text, function(ok, msg){
-        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "teaser"}, xp()));
-        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-      });
-    }
-    /* Phone: native share sheet. Fires share_created only when the share resolves;
-       a dismissed sheet is a cancel, not a share, so it fires nothing. */
-    var usedNative = false;
-    if (navigator.share){
-      try {
-        usedNative = true;
-        navigator.share({title: "Pick My Costume", text: sh.text}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){ usedNative = false; }
-    }
-    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
-    cur = makeShare(); ta.value = cur.text;
+    });
   };
-  trow.appendChild(bteaser);
-  /* 2026-09-26 micro-quiz share experiment: "Send one question" -- a third
-     share action that sends a single question instead of the pick or the
-     full quiz (see microTextFor). Full-width ghost row under the teaser so
-     the existing button layout is untouched. Mirrors the teaser machinery
-     exactly: native sheet when available, clipboard fallback on desktop,
-     share_created only on a resolved share, a dismissed sheet counts as a
-     cancel. */
-  var mrow = document.createElement("div"); mrow.className = "row"; mrow.style.marginTop = "8px";
-  var bmicro = document.createElement("button");
-  bmicro.type = "button"; bmicro.className = "ghost";
-  bmicro.style.width = "100%";
-  bmicro.textContent = "Send one question";
-  bmicro.onclick = function(){
-    var rearmShare = armShareOnce(bmicro);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sid = newShareId();
-    var sh = {sid: sid, text: microTextFor(sid), challenge: false};
-    function doneShare(ok, msg){
-      st.textContent = msg;
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
-      if (ok){
-        /* E8: the first share landed -- invite a second one. */
-        label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "micro", share_msg_variant: shareVariant()}, xp()));
-        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "micro"}, xp()));
-        /* The share landed: the AI plan is the immediate now-what. */
-        if (typeof onShared === "function") onShared();
-      }
-    }
-    function copyFallback(){
-      doCopy(sh.text, function(ok, msg){
-        if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sh.sid, share_origin: "micro"}, xp()));
-        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-      });
-    }
-    /* Phone: native share sheet. Fires share_created only when the share resolves;
-       a dismissed sheet is a cancel, not a share, so it fires nothing. */
-    var usedNative = false;
-    if (navigator.share){
-      try {
-        usedNative = true;
-        navigator.share({title: "Pick My Costume", text: sh.text}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){ usedNative = false; }
-    }
-    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
-    cur = makeShare(); ta.value = cur.text;
-  };
-  mrow.appendChild(bmicro);
-  /* 2026-09-26 plan share ("Share the plan, not the picture"): a second share
-     action that leads with practical facts (time, cost, difficulty) instead
-     of the illustration, so the share reads as a recommendation, not a meme.
-     Full-width ghost row under the teaser so the existing button layout is
-     untouched. Mirrors the teaser machinery: native sheet when available,
-     clipboard fallback on desktop, share_created only on a resolved share. */
-  var prow = document.createElement("div"); prow.className = "row"; prow.style.marginTop = "8px";
-  var bplan = document.createElement("button");
-  bplan.type = "button"; bplan.className = "ghost";
-  bplan.style.width = "100%";
-  bplan.textContent = "Share the plan, not the picture";
-  bplan.onclick = function(){
-    var rearmShare = armShareOnce(bplan);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sid = newShareId();
-    var sh = {sid: sid, text: planTextFor(idea, sid, "plan"), challenge: false};
-    function doneShare(ok, msg){
-      st.textContent = msg;
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
-      if (ok){
-        label.textContent = "Shared. Who else needs a costume?";
-        Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "plan", share_msg_variant: shareVariant()}, xp()));
-        Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sid, share_origin: "plan", via: "plan-button"}, xp()));
-        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "plan"}, xp()));
-        if (typeof onShared === "function") onShared();
-      }
-    }
-    function copyFallback(){
-      doCopy(sh.text, function(ok, msg){
-        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-      });
-    }
-    var usedNative = false;
-    if (navigator.share){
-      try {
-        usedNative = true;
-        navigator.share({title: "Pick My Costume", text: sh.text}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){ usedNative = false; }
-    }
-    if (!usedNative) copyFallback();
-    cur = makeShare(); ta.value = cur.text;
-  };
-  prow.appendChild(bplan);
-  /* 2026-09-27: appended in the share-hierarchy assembly below (inside the
-     "More ways to share" disclosure), not here. */
-  /* 2026-09-26 pair-share relocation: the "Find my +1's costume" row used to
-     live here, repeated inside every share block (results cards, browse
-     detail, cast panels). It now lives once as a calm next-step on the quiz
-     results page (buildPairShareStep, called from renderResults). This block
-     keeps only the teaser row and the gift row. */
-  var st = document.createElement("p"); st.className = "status";
-  function makeShare(){
-    var sid = newShareId();
-    var text = makeText ? makeText(sid) : shareTextFor(idea, sid, "generic");
-    /* The challenge tag must describe the text actually shared. shareTextFor
-       sets window.__pmcChallenge / window.__pmcStoreChallenge for this idea
-       at build time; cast shares (makeText) never carry the challenge text.
-       Captured here, not at the async track call, so it cannot go stale. */
-    var ckind = makeText ? null : armDChallengeKind();
-    /* challenge is true for either dare; the kind rides challenge_kind. */
-    var anyCh = makeText ? false : (!!window.__pmcChallenge || !!window.__pmcStoreChallenge);
-    return {sid: sid, text: text, challenge: anyCh, challenge_kind: ckind};
-  }
-  var cur = makeShare();
-  ta.value = cur.text;
-  b.onclick = function(){
-    var rearmShare = armShareOnce(b);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sh = cur; /* what the preview shows is exactly what gets shared */
-    /* 2026-09-26 red-team: when the shared text is the pantry challenge (ch=1
-       in the link inside the text), the url: passed to the native share sheet
-       must carry the same flag. Share sheets that surface the attachment URL
-       instead of the text link otherwise land the recipient on the generic
-       headline and the dare UX never appears, while analytics marked the
-       share as a challenge.
-       2026-09-26 arm D store-run tier: the same rule for &ch=2&chn=N. The
-       fragment is read from the text link itself so the two can never
-       disagree; cast shares never carry it. */
-    var chfrag = /[?&]ch=2&chn=\d+/.exec(sh.text);
-    var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sh.sid + "&o=generic" + (chfrag ? chfrag[0] : (sh.challenge ? "&ch=1" : ""));
-    function doneShare(ok, msg){
-      st.textContent = msg;
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
-      if (ok){
-        /* E8: the first share landed — invite a second one. The button stays
-           live with a fresh share_id (minted below), so the re-offer is one line. */
-        label.textContent = "Shared. Who else needs a costume?";
-        var scp = {share_id: sh.sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: sh.challenge};
-        if (sh.challenge_kind) scp.challenge_kind = sh.challenge_kind;
-        Analytics.track("share_created", Object.assign(scp, xp()));
-        if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"}, xp()));
-        /* The share landed: the AI plan is the immediate now-what. */
-        if (typeof onShared === "function") onShared();
-      }
-    }
-    function copyFallback(){
-      doCopy(sh.text, function(ok, msg){
-        if (ok){
-          /* 2026-09-26 arm D store-run tier: the copy event carries the arm
-             and dare kind so copy-then-bail (the cheapest share lever) cuts
-             by arm. Props are additive; flag-off payloads unchanged. */
-          var scpp = {idea_id: idea.id, share_id: sh.sid, share_origin: "generic", share_msg_variant: shareVariant()};
-          if (sh.challenge_kind) scpp.challenge_kind = sh.challenge_kind;
-          Analytics.track("share_text_copied", Object.assign(scpp, xp()));
-        }
-        doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-      });
-    }
-    /* Phone: native share sheet. Fires share_created only when the share resolves;
-       a dismissed sheet is a cancel, not a share, so it fires nothing. */
-    var usedNative = false;
-    if (navigator.share){
-      try {
-        usedNative = true;
-        navigator.share({title: "Pick My Costume", text: sh.text}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){ usedNative = false; }
-    }
-    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
-    cur = makeShare();
-    ta.value = cur.text;
-  };
-  container.appendChild(label);
-  container.appendChild(toggle);
-  container.appendChild(ta);
-  /* 2026-09-27 share hierarchy (Billy: "too many CTAs and no contrast"): ONE
-     filled primary CTA, then a single collapsed "More ways to share"
-     disclosure holding every secondary action. Nothing is deleted and every
-     loop keeps its handlers and events; only visual weight changes. */
-  var det = document.createElement("details"); det.className = "mshare";
-  var sum = document.createElement("summary");
-  var sumT = document.createElement("span"); sumT.textContent = "More ways to share";
-  var chev = document.createElement("span"); chev.className = "mshare-chev";
-  chev.textContent = "\u25be"; chev.setAttribute("aria-hidden", "true");
-  sum.appendChild(sumT); sum.appendChild(chev); det.appendChild(sum);
-  var detBody = document.createElement("div"); detBody.className = "mshare-body";
+  detBody.appendChild(cp);
   det.appendChild(detBody);
-  function detRow(el){
-    var r = document.createElement("div");
-    r.className = "row"; r.style.marginTop = "8px";
-    r.appendChild(el); detBody.appendChild(r); return r;
-  }
-  if (!quiet){
-    /* The primary share: filled, full-width, alone. */
-    var primaryRow = document.createElement("div");
-    primaryRow.className = "row"; primaryRow.style.marginTop = "8px";
-    primaryRow.appendChild(b);
-    container.appendChild(primaryRow);
-  } else {
-    /* Cast panel: the personal cards above are the primary share path, so
-       the generic share sits first inside the disclosure. */
-    detRow(b);
-  }
-  /* Secondary actions, visually quiet one tap away. Order: image, text,
-     then the share variants, then the gift flow. */
-  detRow(bi);
-  detRow(bsms);
-  detBody.appendChild(trow);
-  detBody.appendChild(mrow); /* 2026-09-26 micro-quiz: "Send one question" */
-  detBody.appendChild(prow); /* 2026-09-26 plan share */
-  /* 2026-09-26 guess-game distribution experiment: "Quiz your friends: guess
-     my answers". Full-width ghost row under the micro row. Renders only with
-     the flag on and only when the just-finished quiz's answers are on file
-     for this exact pick (guessSenderEnc is null otherwise), so the game can
-     never name answers that do not produce the named pick. Mirrors the
-     micro/teaser machinery: native sheet when available, clipboard fallback
-     on desktop, share_created only on a resolved share, a dismissed sheet
-     counts as a cancel. */
-  if (GUESS_GAME_ENABLED && guessSenderEnc(idea)){
-    var ggrow = document.createElement("div"); ggrow.className = "row"; ggrow.style.marginTop = "8px";
-    var bguess = document.createElement("button");
-    bguess.type = "button"; bguess.className = "ghost";
-    bguess.style.width = "100%";
-    bguess.textContent = "Quiz your friends: guess my answers";
-    bguess.onclick = function(){
-      var rearmShare = armShareOnce(bguess);
-      if (!rearmShare) return; /* double-tap: a share is already in flight */
-      var genc = guessSenderEnc(idea);
-      if (!genc){ st.textContent = "Take the quiz first, then quiz your friends."; rearmShare(); return; }
-      var sid = newShareId();
-      var gtext = guessTextFor(idea, sid, genc);
-      function doneShare(ok, msg){
-        st.textContent = msg;
-        rearmShare(); /* the share settled: sent, dismissed, or copied */
-        if (ok){
-          /* E8: the first share landed -- invite a second one. */
-          label.textContent = "Shared. Who else needs a costume?";
-          Analytics.track("guess_game_created", Object.assign({share_id: sid, idea_id: idea.id, share_msg_variant: shareVariant()}, xp()));
-          Analytics.track("share_created", Object.assign({share_id: sid, idea_id: idea.id, share_origin: "guess", share_msg_variant: shareVariant()}, xp()));
-          if (VIA_SHARE) Analytics.track("second_share_created", Object.assign({share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "guess"}, xp()));
-          /* The share landed: the AI plan is the immediate now-what. */
-          if (typeof onShared === "function") onShared();
-        }
-      }
-      function copyFallback(){
-        doCopy(gtext, function(ok, msg){
-          if (ok) Analytics.track("share_text_copied", Object.assign({idea_id: idea.id, share_id: sid, share_origin: "guess"}, xp()));
-          doneShare(ok, ok ? "Copied. Paste it into any message." : msg);
-        });
-      }
-      /* Phone: native share sheet. Fires share_created only when the share
-         resolves; a dismissed sheet is a cancel, not a share. */
-      var usedNative = false;
-      if (navigator.share){
-        try {
-          usedNative = true;
-          navigator.share({title: "Pick My Costume", text: gtext}).then(
-            function(){ doneShare(true, "Shared."); },
-            function(){ doneShare(false, ""); }
-          );
-        } catch(e){ usedNative = false; }
-      }
-      if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
-      cur = makeShare(); ta.value = cur.text;
-    };
-    ggrow.appendChild(bguess);
-    detBody.appendChild(ggrow);
-  }
-  /* 2026-09-26 gift experiment: "Pick for a friend." Full-width ghost row
-     under the teaser row; opens the gift mini-flow (openGiftFlow, below). */
-  var grow = document.createElement("div"); grow.className = "row"; grow.style.marginTop = "8px";
+  container.appendChild(det);
+  /* Secondary: gift flow, Partner Split, save image. */
+  var giftRow = document.createElement("div");
+  giftRow.className = "row"; giftRow.style.marginTop = "8px";
   var bgift = document.createElement("button");
   bgift.type = "button"; bgift.className = "ghost"; bgift.style.width = "100%";
   bgift.textContent = "Pick for a friend";
   bgift.onclick = function(){ openGiftFlow(); };
-  grow.appendChild(bgift);
-  detBody.appendChild(grow);
-  /* Billy 2026-09-27: partner-split experiment APPROVED. "Split it with a
-     partner" -- a directed 1:1 draft share for duo costumes (unlike the
-     broadcast shares above, the partner gets a specific half plus their
-     build guide). Renders only for couple-audience ideas. */
-  if (idea.audience && idea.audience.indexOf("couple") >= 0){
-    var srow = document.createElement("div"); srow.className = "row"; srow.style.marginTop = "8px";
-    var bsplit = document.createElement("a"); bsplit.className = "ghost";
-    bsplit.textContent = "Split it with a partner";
-    bsplit.href = "/split.html?idea=" + idea.id;
-    bsplit.onclick = function(){ Analytics.track("split_opened", Object.assign({idea_id: idea.id, share_origin: "disclosure"}, xp())); };
-    srow.appendChild(bsplit); detBody.appendChild(srow);
+  giftRow.appendChild(bgift);
+  container.appendChild(giftRow);
+  if (typeof buildPartnerSplitLink === "function"){
+    var splitRow = document.createElement("div");
+    splitRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
+    splitRow.appendChild(buildPartnerSplitLink(idea));
+    container.appendChild(splitRow);
   }
-  container.appendChild(det);
-  container.appendChild(st);
-  if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
-  /* E17: lets the cast panel refresh the preview text without rebuilding the row. */
-  return { refresh: function(){ cur = makeShare(); ta.value = cur.text; } };
+  var imgRow = document.createElement("div");
+  imgRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
+  var imgBtn = document.createElement("button");
+  imgBtn.type = "button"; imgBtn.className = "ghostbtn";
+  imgBtn.textContent = "Save the image";
+  imgBtn.onclick = function(){ shareImage(idea, imgBtn, statusEl); };
+  imgRow.appendChild(imgBtn);
+  container.appendChild(imgRow);
+  return {
+    refresh: function(){ if (!sharedOnce){ cur = mint(); ta.value = cur.text; } }
+  };
 }
 
 /* ================= PAIR-SHARE RELOCATION (2026-09-26) =================
@@ -10780,13 +9963,13 @@ function buildPairShareStep(idea){
     var rearmShare = armShareOnce(b);
     if (!rearmShare) return; /* double-tap: a share is already in flight */
     var sid = newShareId();
-    var sh = {sid: sid, text: pairTextFor(idea, sid), challenge: false};
+    var sh = {sid: sid, text: pairTextFor(idea, sid)};
     var link = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=pair&pair=" + idea.id;
     function doneShare(ok, msg){
       st.textContent = msg;
       rearmShare(); /* the share settled: sent, dismissed, or copied */
       if (ok){
-        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "pair", share_msg_variant: shareVariant()});
+        Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "pair"});
         if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "pair"});
       }
     }
@@ -11331,7 +10514,7 @@ function openGiftFlow(){
       var text = (gfrom ? gfrom + " picked your Halloween costume" : "Someone picked your Halloween costume") + ": " + idea.title + ". Open your gift: " + link;
       function shared(){
         try {
-          Analytics.track("gift_share_created", {share_id: sid, idea_id: idea.id, share_origin: "gift", share_msg_variant: shareVariant()});
+          Analytics.track("gift_share_created", {share_id: sid, idea_id: idea.id, share_origin: "gift"});
           if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "gift"});
         } catch(_){}
         rearm();
@@ -11657,18 +10840,18 @@ function buildCastShareText(idea, list, sid){
     var kidLead = "The quiz picked " + idea.title + " for my kid this Halloween.";
     if (anyBlank){
       /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-      text = kidLead + " " + shareAsk(null, idea.title) + castShareUrl;
+      text = kidLead + " " + shareAskLine() + castShareUrl;
     } else {
-      text = kidLead + " " + castLine(list) + ". " + shareAsk(null, idea.title) + castShareUrl;
+      text = kidLead + " " + castLine(list) + ". " + shareAskLine() + castShareUrl;
     }
   } else if (anyBlank){
     /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-    text = "Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + castShareUrl;
+    text = "Want to do " + idea.title + " this Halloween? " + shareAskLine() + castShareUrl;
   } else {
     /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
     var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
     text = lead + idea.title + " this Halloween: " + castLine(list) +
-      ". " + shareAsk(null, idea.title) + castShareUrl;
+      ". " + shareAskLine() + castShareUrl;
   }
   /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
      not just the costume name. Kid/family cast shares append the materials,
@@ -11916,7 +11099,7 @@ function exp1QuickShareText(idea, sid){
      the prompt never reads as the sharer in costume (mermaid fix 2026-09-26).
      The invite itself is the doc's pre-filled generic prompt. */
   return shareCaptionFor(idea) + " Want to do " + idea.title + " for Halloween? " +
-    shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic_quick";
+    shareAskLine() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic_quick";
 }
 function buildExp1QuickShare(idea){
   var card = document.createElement("div"); card.className = "exp1-quick"; card.id = "exp1-quick";
@@ -11930,38 +11113,15 @@ function buildExp1QuickShare(idea){
   b.style.width = "100%"; b.textContent = "Share";
   var st = document.createElement("p"); st.className = "status";
   b.onclick = function(){
-    var rearmShare = armShareOnce(b);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    var sh = cur; /* what the preview shows is exactly what gets shared */
-    function doneShare(ok, msg){
-      st.textContent = msg;
-      rearmShare(); /* the share settled: sent, dismissed, or copied */
-      if (ok){
-        Analytics.track("share_created", {share_id: sh.sid, idea_id: idea.id, share_origin: "generic_quick", share_msg_variant: shareVariant()});
-        if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sh.sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic_quick"});
-      }
-    }
-    function copyFallback(){
-      doCopy(sh.text, function(ok){
-        if (ok) Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sh.sid, share_origin: "generic_quick"});
-        doneShare(ok, ok ? "Copied. Paste it into any message." : "Copy did not work. Long-press the text above to copy it.");
-      });
-    }
-    /* Phone: native share sheet. Fires share_created only when the share
-       resolves; a dismissed sheet is a cancel, not a share, so it fires
-       nothing. */
-    var usedNative = false;
-    if (navigator.share){
-      try {
-        usedNative = true;
-        navigator.share({title: "Pick My Costume", text: sh.text}).then(
-          function(){ doneShare(true, "Shared."); },
-          function(){ doneShare(false, ""); }
-        );
-      } catch(e){ usedNative = false; }
-    }
-    if (!usedNative) copyFallback(); /* desktop: no share sheet, copy instead */
-    cur = mint(); ta.value = cur.text;
+    /* What the preview shows is exactly what gets shared: the preview's
+       sid travels with its text, so share_created attributes the link the
+       recipient actually opens. A fresh prompt is minted after a completed
+       share so the next tap gets a new link. */
+    var sh = cur;
+    sendShare(idea, "generic_quick", {button: b, statusEl: st,
+      sid: sh.sid,
+      buildText: function(){ return sh.text; },
+      onShared: function(){ cur = mint(); ta.value = cur.text; }});
   };
   card.appendChild(h); card.appendChild(p); card.appendChild(ta); card.appendChild(b); card.appendChild(st);
   return card;
@@ -12222,13 +11382,13 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
         var text = fp.rawName
-          ? (fp.name + " is " + roleArt(fp.role) + " in our " + idea.title + " group this Halloween! " + shareAsk("them", idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
-          : ("Want to do " + idea.title + " this Halloween? " + shareAsk(null, idea.title) + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
+          ? (fp.name + " is " + roleArt(fp.role) + " in our " + idea.title + " group this Halloween! " + shareAskLine() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          : ("Want to do " + idea.title + " this Halloween? " + shareAskLine() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           rearmShare(); /* the share settled: sent or copied */
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
           /* Card text is built inline above (never the challenge text); the flag is not consulted. */
-          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card", share_msg_variant: shareVariant(), challenge: false});
+          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card"});
           if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "card"});
           /* The card share landed: the AI plan is the immediate now-what. */
           revealAiPlan(aiPlanBox);
@@ -12770,50 +11930,11 @@ function armShareOnce(btn){
   return function rearm(){ if (live){ live = false; btn.disabled = false; } };
 }
 
-/* ================= SHARE ================= */function shareText(idea, statusEl, btn, audOverride){
-  var rearmShare = armShareOnce(btn);
-  if (!rearmShare) return; /* double-tap: a share is already in flight */
-  var aud = audOverride || voiceAudience(idea);
-  var sid = newShareId();
-  var text = SHARE.textTemplate(idea, aud, sid);
-  var url = "https://pickmycostume.com/c/" + idea.id;
-  function done(ok, msg){
-    statusEl.textContent = msg;
-    rearmShare(); /* the share settled: sent, dismissed, or copied */
-    if (ok){
-      /* 2026-09-26 red-team W3: this event fired under the name
-         "share_text_copied" even when the text went out through the native
-         share sheet (never copied). The via discriminator keeps the event
-         name stable for dashboards while telling the two apart. triedShare
-         is var-hoisted and always assigned before done() can run. */
-      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: "generic", via: triedShare ? "share_sheet" : "clipboard"});
-      /* Browse share text comes from SHARE.textTemplate (never the challenge text). */
-      Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "generic", share_msg_variant: shareVariant(), challenge: false});
-      if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "generic"});
-    }
-  }
-  /* Desktop fallback: no share sheet, so copy the full share text instead. */
-  function copyLink(){
-    doCopy(text, function(ok, msg){
-      if (ok && btn){
-        var orig = btn.textContent;
-        btn.textContent = "Copied \u2713";
-        setTimeout(function(){ btn.textContent = orig; }, 2000);
-      }
-      done(ok, ok ? "Copied. Paste it into any message." : "Copy this: " + text);
-    });
-  }
-  var triedShare = false;
-  try {
-    if (navigator.share) {
-      triedShare = true;
-      navigator.share({text: text}).then(
-        function(){ done(true, "Shared."); },
-        function(){ done(false, ""); } /* dismissed: clear status, no phantom clipboard copy */
-      );
-    }
-  } catch(e){ triedShare = false; }
-  if (!triedShare) copyLink();
+function shareText(idea, statusEl, btn, audOverride){
+  /* Canonical share action: the native sheet on phones, clipboard on
+     desktop. (audOverride is unused: the canonical text is already
+     audience-grounded via shareCaptionFor.) */
+  sendShare(idea, "generic", {button: btn, statusEl: statusEl});
 }
 function fallbackCopy(text, done){
   try {
@@ -13281,65 +12402,34 @@ function isGenuineShareArrival(search){
    headline. The challenge variant is share-context copy too, so it also
    requires the share param. Pure function so the gate can assert it. */
 function shareLandingHeadline(idea, search){
+  /* Recipient landing headline, simplified 2026-09-28: the dispatch used to
+     carry teaser, plan, micro-quiz, riddle, and cutout branches. The
+     specialized headlines for still-live flows (pair, vote, try-on,
+     countdown, grandparent, no-clone, team, challenge) stay with their
+     existing copy; everything else collapses to the one generic headline. */
   var q = search || "";
   var isShare = isGenuineShareArrival(q);
   var isChallenge = /[?&]ch=1(?:&|$)/.test(q);
   if (isShare && isChallenge) return "Your friend can make " + idea.title + " with stuff they own. See what YOU can make.";
-  /* 2026-09-26 arm D store-run tier: the sharer's dare named a store run,
-     not a full pantry make. ?chn= carries the buy-only count so the headline
-     agrees with the share text (1 vs 2+); absent or unparseable defaults to
-     the plural, which is never wrong for the tier. Pure function: headline
-     text only, no DOM. */
   var isStoreChallenge = /[?&]ch=2(?:&|$)/.test(q);
-  if (isShare && isStoreChallenge){
-    var chnm = /[?&]chn=(\d+)/.exec(q);
-    return "Your friend can make " + idea.title + " " + armDStoreRunPhrase(chnm ? +chnm[1] : 2) + ". See what YOU can make.";
-  }
-  /* 2026-09-26 red-team recipient audit (pm2): pair arrivals showed the
-     generic headline while the CTA already asked to match -- headline and
-     CTA now agree. Vote arrivals said "Your friend picked X", which is
-     wrong: X is a finalist, not a pick. */
+  if (isShare && isStoreChallenge) return "Your friend can make " + idea.title + ". See what YOU can make.";
   var isPair = /[?&]o=pair(?:&|$)/.test(q);
   var isVote = /[?&]o=vote(?:&|$)/.test(q);
   if (isShare && isPair) return "Your friend is going as " + idea.title + ". Find YOUR costume to match.";
   if (isShare && isVote) return "Your friend wants your vote: is " + idea.title + " the one?";
-  /* Red-team 2026-09-26 (share flow): a tryon arrival means the friend
-     shared a photo of their own face in the costume. Name the hook: the
-     recipient is invited to try their own face, not just pick a costume. */
   var isTryon = /[?&]o=tryon(?:&|$)/.test(q);
   if (isShare && isTryon) return "Your friend tried on " + idea.title + ". Try your own face in it.";
-  /* 2026-09-26 countdown experiment: ?o=countdown marks shares from the
-     12-Day Costume Countdown page. No flag gate: the page ships in the same
-     batch, so no old link can carry this origin. */
   var isCountdown = /[?&]o=countdown(?:&|$)/.test(q);
   if (isShare && isCountdown) return "Your friend is counting down to Halloween with " + idea.title + ". What is your pick?";
-  /* 2026-09-27 grandparent-loop experiment: ?o=grandparent marks shares
-     sent to a grandparent. Name the relationship so the landing reads as
-     the plan it is, not a generic friend pick. */
   var isGrandparent = /[?&]o=grandparent(?:&|$)/.test(q);
   if (isShare && isGrandparent) return "Your grandkid's Halloween plan: " + idea.title + ". Here is the guide.";
-  /* 2026-09-27 no-clone pact experiment: ?o=noclone marks class-chat
-     coordination shares. Name the pact so the recipient knows the job:
-     reply with their kid's costume, not just pick one. */
   var isNoclone = /[?&]o=noclone(?:&|$)/.test(q);
   if (isShare && isNoclone) return "Your friend picked " + idea.title + " and started a no-clone pact: no matching costumes at the parade. What is your pick?";
-  /* 2026-09-27 team-kit experiment: ?o=team marks youth-sports team
-     coordination shares. Name the team job so the recipient knows the
-     ask: reply with their kid's shirt size, not just pick a costume. */
   var isTeam = /[?&]o=team(?:&|$)/.test(q);
   if (isShare && isTeam) return "Your team is going as " + idea.title + ". One costume for the whole team. What is your pick?";
-  /* 2026-09-26 proxy-quiz experiment: ?o=proxy marks the friend's
-     tell-back pick. Flag-gated: with the flag off the branch never runs,
-     so stale links read as generic shares. */
   var isProxy = /[?&]o=proxy(?:&|$)/.test(q);
   if (isShare && isProxy && typeof PROXY_QUIZ_ENABLED !== "undefined" && PROXY_QUIZ_ENABLED)
     return "Your friend decided for you: " + idea.title + ". What is your pick?";
-  /* 2026-09-27 role share cards (MagicShot.ai novel-scout steal): ?o=role
-     marks the per-role family share. The headline names the ROLE, never a
-     person: names never leave the sharer's phone (they are not in the URL).
-     Forged/unknown ?role= slugs fall through to the generic headline.
-     2026-09-27 red-team: staged unapproved -- gated on ROLE_SHARE_CARDS_ENABLED
-     so flag-off arrivals read the generic friend headline. */
   var isRole = /[?&]o=role(?:&|$)/.test(q);
   if (isShare && isRole && ROLE_SHARE_CARDS_ENABLED){
     var roleLabel = (typeof roleLabelFor === "function") ? roleLabelFor(idea.id, q) : "";
@@ -13703,27 +12793,7 @@ function shareLandingHeadline(idea, search){
       renderPartyBanner(hero);
       return;
     }
-    if (VIA_SHARE_ORIGIN === "teaser"){
-      var tb = document.createElement("button");
-      tb.type = "button";
-      tb.id = "pmc-friend-banner";
-      tb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
-      tb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend took the 2-minute quiz and will not tell you what they got.</p>" +
-        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Take it yourself. When you finish, you will see both picks side by side.</p>";
-      tb.onclick = function(){
-        /* Mirror the hero "Find my costume" start exactly: clean state, no
-           pinpoint residue, old picks cleared, recipient-attributed event. */
-        state = {qi: 0, answers: {}};
-        state.pinpoint = null;
-        pinpointNote(""); pinpointClearNomatch();
-        clearK("pmc_pick_v1");
-        Analytics.track("quiz_started", viaShareProps());
-        renderQ();
-      };
-      hero.insertBefore(tb, hero.firstChild);
-      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
-      return;
-    }
+    
     /* 2026-09-26 friend-challenge experiment: a ?o=challengeresult arrival is
        the loop closing -- the sharer opened a friend's score-back link. The
        score is recorded into the localStorage inbox and the inbox panel
@@ -13878,15 +12948,7 @@ function shareLandingHeadline(idea, search){
        link into the same chat (the duel-style return leg). Fires
        recipient_landing_viewed here because the ?idea= block never runs on
        a bare /?s= arrival. */
-    if (VIA_SHARE_ORIGIN === "micro"){
-      var mb = document.createElement("div");
-      mb.id = "pmc-friend-banner";
-      mb.style.cssText = "display:block;width:100%;text-align:left;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
-      renderMicroPanel(mb);
-      hero.insertBefore(mb, hero.firstChild);
-      if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
-      return;
-    }
+    
     /* 2026-09-26 guess-game distribution experiment: genuine ?o=guess
        arrivals with a valid ?g= payload get the game banner. GUESS_GAME is
        null with the flag off or on garbage, so those arrivals fall through
