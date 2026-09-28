@@ -30,6 +30,10 @@ h2{font-size:22px;margin:40px 0 4px;}
 .cta{margin:0;}
 .cta a{color:#e07b00;font-weight:700;text-decoration:none;font-size:15px;}
 .cta a:hover{text-decoration:underline;}
+/* 2026-09-27 red-team: the #classrooms planner CTA was a bare inline link
+   (~22px tap row). 11px vertical padding makes it a 44px target; scoped to
+   #classrooms so the pack "Build guide" CTAs are untouched. */
+#classrooms .cta a{display:inline-block;padding:11px 0;}
 nav.packs{margin:20px 0 8px;font-size:15px;line-height:2;}
 nav.packs a{color:#e07b00;font-weight:700;margin-right:14px;text-decoration:none;}
 .quiz-cta{margin:48px 0 0;padding:24px;border:1px solid #eee;border-radius:12px;text-align:center;background:#fffaf2;}
@@ -82,7 +86,7 @@ footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
         <div class="cardbody">
           <h3><a href="/c/cat-mouse">Cat &amp; Mouse</a></h3>
           <p class="triple">15 min &middot; $3-6 &middot; Easy</p>
-          <p class="blurb">Cat ears versus mouse ears -- spend the night chasing each other.</p>
+          <p class="blurb">Cat ears versus mouse ears. Spend the night chasing each other.</p>
           <p class="cta"><a href="/c/cat-mouse">Build guide</a></p>
         </div>
       </article>
@@ -142,7 +146,7 @@ footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
         <div class="cardbody">
           <h3><a href="/c/superhero-family">Superhero Family</a></h3>
           <p class="triple">30 min &middot; $5-10 &middot; Easy</p>
-          <p class="blurb">Red sweatsuits, black eye masks, felt logo -- the whole family goes super.</p>
+          <p class="blurb">Red sweatsuits, black eye masks, felt logo. The whole family goes super.</p>
           <p class="cta"><a href="/c/superhero-family">Build guide</a></p>
         </div>
       </article>
@@ -169,16 +173,15 @@ footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
   <section id="classrooms">
     <h2>Classroom and big-group themes</h2>
     <p class="lede">One theme for the whole class: every child picks a variation, the teacher coordinates, the photo looks incredible.</p>
-    <!-- 2026-09-26: classroom planner CTA removed — the classroom page is
-         staged (Billy's taste check pending) and not deployed, so nothing
-         may link to it yet. Re-add the "New: the classroom planner" CTA
-         linking at /classroom when classroom.html ships. -->
+    <!-- 2026-09-27: classroom planner shipped live (verified 200). CTA re-added
+         per the 2026-09-26 staged instruction. -->
+    <p class="cta"><a href="/classroom">New: the classroom planner</a> <span class="fine">- pick a class size and theme, get a shopping list for the whole class.</span></p>
     <div class="grid">
       <article class="card">
         <a href="/c/emoji-crew"><img src="/photos/emoji-crew.webp" alt="Emoji Crew" loading="lazy" width="600" height="600"></a>
         <div class="cardbody">
           <h3><a href="/c/emoji-crew">Emoji Crew</a></h3>
-          <p class="triple">15 min &middot; $0-5 &middot; Easy</p>
+          <p class="triple">15 min &middot; $5-12 &middot; Easy</p>
           <p class="blurb">Everyone picks an emoji: a yellow tee plus a big printed face.</p>
           <p class="cta"><a href="/c/emoji-crew">Build guide</a></p>
         </div>
@@ -317,7 +320,7 @@ footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
         <div class="cardbody">
           <h3><a href="/c/cat-mouse">Cat &amp; Mouse</a></h3>
           <p class="triple">15 min &middot; $3-6 &middot; Easy</p>
-          <p class="blurb">Cat ears versus mouse ears -- spend the night chasing each other.</p>
+          <p class="blurb">Cat ears versus mouse ears. Spend the night chasing each other.</p>
           <p class="cta"><a href="/c/cat-mouse">Build guide</a></p>
         </div>
       </article>
@@ -358,8 +361,8 @@ footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
         <a href="/c/web-slinger-crew"><img src="/photos/web-slinger-crew.webp" alt="Web-Slinger Crew" loading="lazy" width="600" height="600"></a>
         <div class="cardbody">
           <h3><a href="/c/web-slinger-crew">Web-Slinger Crew</a></h3>
-          <p class="triple">30 min &middot; $5-10 &middot; Easy</p>
-          <p class="blurb">Red, black, and pink hoodies plus masks -- pick your spider.</p>
+          <p class="triple">30 min + drying &middot; $5-10 &middot; Easy</p>
+          <p class="blurb">Red, black, and pink hoodies plus masks. Pick your spider.</p>
           <p class="cta"><a href="/c/web-slinger-crew">Build guide</a></p>
         </div>
       </article>
@@ -414,6 +417,10 @@ footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
 <p>Still deciding? Take the 2-minute quiz and get one picked for you.</p>
 <a href="/">Find your costume</a>
 </div>
-<p class="home"><a href="/costumes">Browse all 137 costume guides A-Z</a></p>
+<p class="home"><a href="/costumes">Browse all 144 costume guides A-Z</a></p>
+<!-- 2026-09-26 red-team distro: hub cross-links. Group visitors had no path
+     to the pantry ("builds from what is at home" is this page's whole pitch)
+     or to trending/compare. -->
+<p class="home">Explore: <a href="/trending">Trending costumes</a> &middot; <a href="/compare">Compare easy costumes</a> &middot; <a href="/pantry">What does your crew already own?</a></p>
 <footer>Built with Muse. Made by Billy Litner.</footer>
 </main></body></html>
