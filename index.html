@@ -413,6 +413,12 @@ button.cta{
 }
 button.lightsheet{color:#241a38;}
 .lightsheet .ghost{color:#241a38;background:#fff;}
+/* 2026-09-28: lightsheets are white cards on the dark theme; every heading,
+   label, and paragraph without an explicit color inherited the theme's pale
+   ink and washed out (the "Pick for a friend" question/result headings).
+   Base the whole sheet dark; elements with explicit readable colors
+   (#666, #888, #999, ...) keep theirs. */
+.lightsheet{color:#241a38;}
 /* Party friend-banner is a cream card: same fix for its ghost buttons
    and status text, which inherited the theme's pale colors. */
 #pmc-friend-banner .ghost{color:#241a38;}
@@ -3989,7 +3995,10 @@ function buildClosetBadge(idea){
    prompt and one Share button; the names form drops below as an optional
    "make it personal" upgrade. No half-states: the flag gates the whole
    reorder, and the flag-off DOM is byte-identical to today. */
-var EXPERIMENT1_ONE_TAP_SHARE = true;
+/* 2026-09-28 share-flow consolidation (Billy: too many share doors on the
+   result page): the Experiment 1 "Share this pick" quick-share card is
+   retired. "Ask my people" is the single send-to-people path. */
+var EXPERIMENT1_ONE_TAP_SHARE = false;
 /* Roulette entry experiment (2026-09-26): the costume shuffle lives
    4-5 phone viewports down on the homepage under "More ways to explore" with
    nothing hinting it exists, while the results page is where indecision peaks.
@@ -9927,8 +9936,9 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   var curText = text;
   function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
   var label = document.createElement("p"); label.className = "status";
-  /* Billy 2026-09-24: "Plan my costume" + helper, not "Get your AI costume plan". */
-  label.textContent = "Plan my costume";
+  /* Billy 2026-09-24: "Plan this costume" + helper, not "Get your AI costume plan".
+     2026-09-28 consolidation: one plan label everywhere, matching the card CTA. */
+  label.textContent = "Plan this costume";
   var helper = document.createElement("p"); helper.className = "status";
   helper.textContent = "Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.";
   var ta = document.createElement("textarea");
@@ -10101,12 +10111,14 @@ function shareImage(idea, onDone){
 }
 
 /* After a pick, the share section leads and the AI plan follows beneath it. */
-function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
+function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noPreview){
   /* The share panel, simplified 2026-09-28. Billy: the loop had grown
      bloated -- teaser, plan, micro-quiz, SMS, save-image, riddle,
      guess-game, pantry dare, and eight message variants. What remains:
        - primary "Ask my people" button (native sheet / clipboard)
-       - a Preview text toggle (collapsed by default)
+       - a Preview text toggle (collapsed by default; skipped in the cast
+         panel via noPreview, where the live preview above the who's-who
+         form already shows the text)
        - Save the image (the one non-text share worth keeping)
        - Pick for a friend (secondary)
        - the approved Partner Split (secondary)
@@ -10138,7 +10150,12 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   statusEl = document.createElement("p"); statusEl.className = "status";
   container.appendChild(statusEl);
   /* Preview text: collapsed by default. Billy 2026-09-28: the preview made
-     the panel feel like a form; the button is the flow. */
+     the panel feel like a form; the button is the flow.
+     2026-09-28 consolidation: the cast panel already shows a live preview
+     above the who's-who form that mirrors the text on every keystroke, so
+     this duplicate toggle is skipped there; the generic share row keeps it. */
+  var ta = null;
+  if (!noPreview){
   var det = document.createElement("details"); det.className = "share-preview";
   var detRow = document.createElement("summary"); detRow.textContent = "Preview text";
   det.appendChild(detRow);
@@ -10192,6 +10209,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   detBody.appendChild(cp);
   det.appendChild(detBody);
   container.appendChild(det);
+  } /* end if (!noPreview) */
   /* Secondary: gift flow, Partner Split, save image. */
   var giftRow = document.createElement("div");
   giftRow.className = "row"; giftRow.style.marginTop = "8px";
@@ -10216,7 +10234,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   imgRow.appendChild(imgBtn);
   container.appendChild(imgRow);
   return {
-    refresh: function(){ if (!sharedOnce){ cur = mint(); ta.value = cur.text; } }
+    refresh: function(){ if (!sharedOnce){ cur = mint(); if (ta) ta.value = cur.text; } }
   };
 }
 
@@ -10696,7 +10714,12 @@ function openGiftFlow(){
     card.appendChild(x);
     var prog = document.createElement("p");
     prog.style.cssText = "font-size:13px;color:#999;margin:4px 0 6px;clear:both;";
-    prog.textContent = "Pick for a friend - " + (si + 1) + " of " + steps.length;
+    /* 2026-09-28: the age question is conditional on the "who" answer, so the
+       step total is unknowable on step 1 ("1 of 3" then became "2 of 4"
+       mid-flow). Show the total only once the path is fixed. */
+    prog.textContent = si === 0
+      ? "Pick for a friend - Step 1"
+      : "Pick for a friend - Step " + (si + 1) + " of " + steps.length;
     card.appendChild(prog);
     var h = document.createElement("h3");
     h.style.cssText = "font-size:20px;margin:0 0 14px;";
@@ -11373,7 +11396,10 @@ function headwearWord(ideaId){
   }
   return null;
 }
-/* ================= EXPERIMENT 1: ONE-TAP SHARE (2026-09-26, staged) =================
+/* ================= EXPERIMENT 1: ONE-TAP SHARE (2026-09-26, retired 2026-09-28) =================
+   Retired in the share-flow consolidation: the "Share this pick" quick-share
+   card duplicated the "Ask my people" path. The builder functions stay for
+   reference but nothing calls them while EXPERIMENT1_ONE_TAP_SHARE is false.
    Design: hour-session/share-lift-experiments.md, "Experiment 1". Gated by
    EXPERIMENT1_ONE_TAP_SHARE (default false). When on, buildCastPanel renders
    this quick-share card FIRST and demotes the names form to an optional
@@ -11425,14 +11451,14 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var sub = document.createElement("p"); sub.className = "status";
   sub.textContent = "Two quick questions, then type each person's name and pick their role. Names are optional and never stored anywhere. I never see them.";
   box.appendChild(h); box.appendChild(sub);
-  if (EXPERIMENT1_ONE_TAP_SHARE){
-    /* Experiment 1: the quick-share card leads; the names form becomes an
-       optional upgrade instead of a gate. The personalized card flow below
-       is untouched. */
-    box.insertBefore(buildExp1QuickShare(idea), h);
-    h.textContent = "Make it personal (optional)";
-    sub.textContent = "Add names and roles for personal cards. Optional: the share above is ready to send as-is. Names are never stored anywhere. I never see them.";
-  }
+  /* 2026-09-28 share-flow consolidation: the Experiment 1 quick-share card
+     ("Share this pick") is retired, so the block that inserted it above the
+     form is gone. One personal-cards flow lives here: the who's-who form
+     feeds live personal cards below, with no separate "Make personal cards"
+     gate. "Ask my people" (in the share row under the cards) is the single
+     send-to-people path. */
+  h.textContent = "Make it personal (optional)";
+  sub.textContent = "Add names and roles for personal cards. Names are optional and never stored anywhere. I never see them.";
   /* Billy 2026-09-26: the quick-share duplicate was removed. One "Share this
      idea" per card (the shareBox below, with cast-aware text) -- the duplicate
      broke the single-share-path design and confused the order tests. */
@@ -11481,7 +11507,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      rebuilt on every render so names and roles stay in sync. */
   var plansBox = document.createElement("div");
   box.insertBefore(plansBox, aiPlanBox);
-  var shareHandle = null, aiHandle = null, pcCards = [];
+  var shareHandle = null, aiHandle = null, pcCards = [], pcTracked = false;
   /* Kid flags are per-person and sticky. The count buttons set the last N slots as
      kids in one tap; the Kid/Adult toggle fine-tunes individuals. Neither ever
      touches names or explicit role picks. */
@@ -11599,7 +11625,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       var xp = function(){ return {cast: 1, group_size: size, kid_count: kids}; };
       shareHandle = addCopyShareRow(shareBox, idea,
         function(sid){ return buildCastShareText(idea, currentList(), sid); }, xp,
-        function(){ revealAiPlan(aiPlanBox); }, true);
+        function(){ revealAiPlan(aiPlanBox); }, true, true);
       aiHandle = showPromptPreview(aiPlanBox, "", "e17_cast_plan_copied", true, xp);
     }
     shareHandle.refresh();
@@ -11607,19 +11633,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     /* Per-person plans stay in sync with names and roles. */
     plansBox.innerHTML = "";
     plansBox.appendChild(buildPersonPlans(idea, list));
-    /* Personal cards stay in sync with the name/role inputs: a name typed
-       after "Make personal cards" updates the card head, the send label, and
-       (via the send-time read) the text that actually gets sent. */
-    if (pcCards.length){
-      var fresh = currentList();
-      pcCards.forEach(function(c){
-        var cp = fresh[c.idx];
-        if (!cp) return;
-        c.head.textContent = cp.rawName ? (cp.name + " is " + roleArt(cp.role)) : ("You're " + roleArt(cp.role));
-        c.send.textContent = cp.rawName ? ("Send " + cp.name + "'s card") : "Send my card";
-        c.sub2.textContent = idea.title + " · group costume";
-      });
-    }
+    /* 2026-09-28 consolidation: one personal-cards flow. The cards render
+       live under the who's-who form on every refresh (no "Make personal
+       cards" gate); pcList does not exist yet during the very first
+       refresh at panel init, so guard and render explicitly once below. */
+    if (typeof pcList !== "undefined" && pcList) renderPersonalCards();
   }
   Analytics.track("e17_cast_started", {idea_id: idea.id});
   /* Restored panels keep the size, kid flags, names, and roles the user left;
@@ -11636,22 +11654,22 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   }
   /* Personal role cards: one card per cast member, each with a single send
      CTA ("Send this card to <name>", or "Send this card" with no name).
-     For spouses sending to each other and groups sharing in group chat. */
+     For spouses sending to each other and groups sharing in group chat.
+     2026-09-28 consolidation: the cards render live under the form (no
+     "Make personal cards" gate), so the form and the cards are one flow. */
   var pcWrap = document.createElement("div");
   pcWrap.className = "pcards";
-  var pcBtn = document.createElement("button");
-  pcBtn.type = "button"; pcBtn.className = "cta";
-  pcBtn.textContent = "Make personal cards";
   var pcList = document.createElement("div");
   pcList.className = "pclist";
-  pcBtn.onclick = function(){
+  function renderPersonalCards(){
     /* Billy 2026-09-24: every cast member gets a card, named or not. The send
        button reads "Send this card to <name>" with a typed name, plain
        "Send this card" without one -- never "Send this card to Person 1". */
     var list = currentList();
     pcList.innerHTML = "";
     pcCards = [];
-    Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length});
+    /* renderPersonalCards runs on every keystroke now; count the flow once. */
+    if (!pcTracked){ pcTracked = true; Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length}); }
     /* Billy 2026-09-26: one shared group photo at the top, then the who's-who
        list, then individual cards WITHOUT the duplicate photo. */
     var groupImg = document.createElement("img");
@@ -11692,7 +11710,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         var rearmShare = armShareOnce(send);
         if (!rearmShare) return; /* double-tap: a share is already in flight */
         var sid = newShareId();
-        /* Names typed after "Make personal cards" still count: read the live
+        /* Names typed after the cards render still count: read the live
            inputs at send time, not the card-build snapshot. */
         var fp = currentList()[idx] || p;
         /* Reddit 2026-09-25: blank name on a personal card sends the generic
@@ -11741,7 +11759,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       tryon.type = "button"; tryon.className = "ghost pcard-tryon";
       tryon.textContent = "Try it on";
       tryon.onclick = function(){
-        /* Names typed after "Make personal cards" still count: read the live
+        /* Names typed after the cards render still count: read the live
            inputs at tap time, not the card-build snapshot. */
         var fp = currentList()[idx] || p;
         openTryOn(idea, idx, fp);
@@ -11751,14 +11769,16 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       pcCards.push({head: head, send: send, sub2: sub2, idx: idx});
       pcList.appendChild(card);
     });
-  };
-  pcWrap.appendChild(pcBtn);
+  }
   pcWrap.appendChild(pcList);
   /* Billy 2026-09-24: one flow -- cast, personal cards, share, AI plan.
      The share used to lead the panel; it now comes after the personal
      cards so there is a single share path instead of two competing ones. */
   box.insertBefore(pcWrap, aiPlanBox);
   box.insertBefore(shareBox, aiPlanBox);
+  /* The cards render on panel open too, not just on input: the first
+     refresh ran before pcList existed. */
+  renderPersonalCards();
   /* Who's-who shuffler deep link (2026-09-26): one-tap role dealer for the
      group. A button, so the card-level click handler leaves it alone; the
      panel's own stopPropagation keeps the tap local anyway. */
