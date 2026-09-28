@@ -181,6 +181,31 @@
   .fneed b{color:var(--accent)}
   .fready{font-size:14px;margin:12px 0 0;color:var(--green);font-weight:600}
   .fgo{display:inline-block;margin-top:12px;color:var(--accent);font-size:14px;font-weight:700;text-decoration:none}
+  /* 2026-09-28 (Billy): materials go visual -- big emoji tiles with 1-3 word
+     labels instead of long text rows. Used by the focus card, the result-card
+     "What you need" details, and the assumed-basics chips. */
+  .mtiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
+  .mtile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;padding:12px 6px 10px;border-radius:12px;background:var(--card);
+    border:1px solid var(--line);text-align:center;min-height:96px;box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;user-select:none}
+  .mtile .mtemo{font-size:38px;line-height:1.1}
+  .mtile .mtlabel{font-size:11px;line-height:1.25;color:var(--ink);overflow-wrap:anywhere}
+  .mtile.have{border-color:var(--green)}
+  .mtile.have .mtlabel{color:var(--muted)}
+  .mtile.miss{border-style:dashed}
+  .mtile .mtbadge{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+  .mtile.have .mtbadge{background:var(--green);color:#0c2b18}
+  .mtile.miss .mtbadge{border:2px solid var(--accent);color:var(--accent)}
+  .mtile.missing{cursor:pointer;border-color:var(--accent);border-style:solid}
+  .mtile.missing:active{background:var(--card2)}
+  .mchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+  .mchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 10px;
+    border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink)}
+  .mchip .memo{font-size:16px}
+  .staple-note{font-size:13px;color:var(--muted);margin:0 0 4px}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -201,7 +226,8 @@
   <!-- 2026-09-28 (Billy): the assumed-basics list collapses behind one tap --
        the page leads with costumes, not a wall of text. -->
   <details class="staple-fold"><summary>What we assume you have</summary>
-  <p><b>We assume every home has the basics: a white t-shirt, a t-shirt (any color), black clothes, markers, scissors, tape, paper and pen, cardboard, socks, a bedsheet, a pillowcase, and aluminum foil.</b> Untick any you don't actually have. Everything else only counts if you tick it.</p></details>
+  <p class="staple-note">Untick any you don't actually have. Everything else only counts if you tick it.</p>
+  <div class="mchips" id="staplechips"></div></details>
   <!-- Billy 2026-09-25: the opening leads with the alive number, not a dead
        "0 you can make tonight". With just the assumed basics, the count is
        already real the moment the page loads. -->
@@ -280,6 +306,14 @@ function track(name, props){
 })();
 const STAPLES = DATA.pantry.filter(p => p.staple).map(p => p.id);
 let ticked;
+/* 2026-09-28 (Billy): the assumed-basics render as emoji chips instead of a
+   text paragraph. Runs at parse time; emoChar/supplyLabel are hoisted. */
+try {
+  const sc = document.getElementById('staplechips');
+  if (sc) sc.innerHTML = STAPLES.map(id =>
+    '<span class="mchip"><span class="memo" aria-hidden="true">' + emoChar(id) + '</span>' +
+    esc(lc1(supplyLabel(id))) + '</span>').join('');
+} catch (e) {}
 /* 2026-09-26 challenge rematch: when the page loads from a ?kit= dare link,
    CH holds the challenger's kit so the recipient can answer the dare back. */
 let CH = null;
@@ -371,6 +405,37 @@ const SUPPLY_EMOJI = {
 function emo(id){
   const e = id && SUPPLY_EMOJI[id];
   return e ? '<span class="emo" aria-hidden="true">' + e + '</span> ' : '';
+}
+/* 2026-09-28 (Billy): visual materials -- raw emoji char for the big tiles,
+   and a 1-3 word label (bank label) instead of the full requirement sentence. */
+function emoChar(id){
+  const e = id && SUPPLY_EMOJI[id];
+  return e || '';
+}
+/* 2026-09-28 (Billy): visual materials -- one primary emoji plus a 1-3 word
+   label per requirement. Multi-group requirements show the first group's
+   label with a +N. Unmapped (buy-only) requirements fall back to a shortened
+   noun phrase from the raw text. */
+function matBits(m){
+  const groups = (m && m.g) || [];
+  const reps = [];
+  groups.forEach(g => {
+    for (const id of (g || [])){
+      if (id && SUPPLY_EMOJI[id]){ if (reps.indexOf(id) === -1) reps.push(id); break; }
+    }
+  });
+  if (reps.length){
+    const label = reps.length === 1 ? supplyLabel(reps[0])
+      : supplyLabel(reps[0]) + ' +' + (groups.length - 1);
+    return { e: SUPPLY_EMOJI[reps[0]], label: label, buy: false };
+  }
+  let s = String((m && m.t) || '');
+  s = s.replace(/\s*\(.*?\)\s*$/, '')
+       .replace(/^\d+\s+(sheets?|pair|large|medium|small|rolls?|pack|ft\s)?/i, '')
+       .replace(/^\d+\s+/, '').replace(/\s+/g, ' ').trim();
+  s = s.split(',')[0].trim();
+  if (s.length > 26 && /\sor\s/i.test(s)) s = s.split(/\sor\s/i)[0].trim();
+  return { e: '🛒', label: s, buy: true };
 }
 /* 2026-09-26 pantry thumbnails: per-idea emoji shown as an instant tile behind
    the lazy photo. Generated by hour-session/gen_idea_emoji.py; re-run it and
@@ -1315,11 +1380,14 @@ function cardHtml(r, i){
      ("based on XYZ you can be this"). Replaces the old Still-need chips. */
   const rows = r.it.mats.map(m => {
     const ok = (typeof reqOk !== 'undefined') ? reqOk(m) : true;
-    const em = (typeof emo !== 'undefined' && typeof repId !== 'undefined') ? emo(repId(m)) : '';
-    return '<div class="mrow ' + (ok ? 'have' : 'miss') + '">' +
-      '<span class="mi" aria-hidden="true">' + (ok ? '\u2713' : '\u25CB') + '</span>' +
-      (em ? '<span class="memo" aria-hidden="true">' + em + '</span>' : '') +
-      '<span>' + esc(m.t) + '</span></div>';
+    const b = (typeof matBits !== 'undefined') ? matBits(m) : { e: '🛒', label: (m.t || '') };
+    const lbl = b.label;
+    const e = b.e;
+    const buyNote = (!ok && b.buy) ? '<span class="vh">buy it</span>' : '';
+    return '<div class="mtile ' + (ok ? 'have' : 'miss') + '">' +
+      '<span class="mtbadge" aria-hidden="true">' + (ok ? '\u2713' : '\u25CB') + '</span>' +
+      '<span class="mtemo" aria-hidden="true">' + e + '</span>' +
+      '<span class="mtlabel">' + esc(lbl) + '</span>' + buyNote + '</div>';
   }).join('');
   /* 2026-09-27 (Billy): lead with what they likely have -- the
      requirements satisfied by the assumed basics -- so each card reads
@@ -1340,7 +1408,7 @@ function cardHtml(r, i){
      collapses into one tap so the card leads with the costume photo. */
   const needsHtml = rows
     ? '<details class="needs"><summary>What you need (' + r.it.mats.length + ')</summary>' +
-      '<div class="mrows">' + rows + '</div></details>' : '';
+      '<div class="mtiles">' + rows + '</div></details>' : '';
   return '<div class="card' + cls + '">' +
     '<div class="tile"><span class="temo" aria-hidden="true">' + ideaEmoji(r.it.id) + '</span>' +
     '<img class="thumb" src="photos/' + r.it.id + '.webp" alt="" loading="lazy" onerror="this.remove()"></div>' +
@@ -1368,33 +1436,39 @@ function renderFocus(){
   const it = focusIdea();
   if (!it){ host.hidden = true; host.innerHTML = ''; return; }
   const r = score(it);
+  /* 2026-09-28 (Billy): visual materials -- tappable emoji tiles instead of
+     text rows. Same tick behavior, same data-i hooks. */
   const rows = it.mats.map((m, i) => {
     const ok = reqOk(m);
     const rid = nextTapId(m);
     const tappable = !ok && !!rid;
-    const icon = ok ? '\u2713' : '\u25CB';
     const cls = ok ? 'have' : 'missing';
-    const label = rid ? supplyLabel(rid) : null;
-    const buyTag = (!ok && !rid) ? '<span class="fbuy">buy it</span>' : '';
-    return '<div class="frow ' + cls + '" data-i="' + i + '"' +
+    const b = matBits(m);
+    const label = b.label;
+    const e = b.e;
+    const buyNote = (!ok && b.buy) ? '<span class="vh">buy it</span>' : '';
+    return '<div class="mtile ' + cls + '" data-i="' + i + '"' +
       (tappable ? ' role="button" tabindex="0" aria-label="Tick ' + esc(label) + '"' : '') + '>' +
-      '<span class="fi" aria-hidden="true">' + icon + '</span>' +
-      '<span>' + esc(m.t) + '</span>' + buyTag + '</div>';
+      '<span class="mtbadge" aria-hidden="true">' + (ok ? '\u2713' : '\u25CB') + '</span>' +
+      '<span class="mtemo" aria-hidden="true">' + e + '</span>' +
+      '<span class="mtlabel">' + esc(label) + '</span>' + buyNote + '</div>';
   }).join('');
   const head = '<h2>' + esc(it.title) + ' needs:</h2>' +
     '<p class="fsub">You have <b>' + r.have + ' of ' + r.total + '</b>.' +
     (r.missing.length ? ' Tap a missing supply to tick it below.' : '') + '</p>';
-  const need = r.missing.length === 0
+  const needMats = it.mats.filter(mm => !reqOk(mm));
+  const need = needMats.length === 0
     ? '<p class="fready">Nothing to buy. You are ready.</p>'
-    : '<p class="fneed"><b>Still need:</b> ' + esc(r.missing.map((t, i) => {
-        const rid = r.missingIds[i];
-        return rid ? lc1(supplyLabel(rid)) : t;
-      }).join(', ')) + '.</p>';
+    : '<p class="fneed"><b>Still need:</b></p><div class="mchips">' + needMats.map(mm => {
+        const b = matBits(mm);
+        return '<span class="mchip"><span class="memo" aria-hidden="true">' +
+          b.e + '</span>' + esc(lc1(b.label)) + '</span>';
+      }).join('') + '</div>';
   const viaS = (typeof VIA_S !== 'undefined' && VIA_S) ? '&s=' + VIA_S : '';
-  host.innerHTML = head + rows + need +
+  host.innerHTML = head + '<div class="mtiles">' + rows + '</div>' + need +
     '<a class="fgo" href="index.html?pick=' + encodeURIComponent(it.id) + viaS + '">See the full build guide &rarr;</a>';
   host.hidden = false;
-  host.querySelectorAll('.frow.missing[role="button"]').forEach(row => {
+  host.querySelectorAll('.mtile.missing[role="button"]').forEach(row => {
     const tap = () => {
       const m = it.mats[+row.dataset.i];
       const rid = m && nextTapId(m);
