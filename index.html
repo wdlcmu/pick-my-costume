@@ -505,6 +505,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .homehow li b{color:var(--ink)}
 .returnhero{max-width:440px;margin:4px auto 0;padding:18px 16px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);animation:returnIn .55s cubic-bezier(.2,.7,.3,1)}
 .returnhero[hidden]{display:none}
+.returnhero{position:relative}
+.returnhero-dismiss{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:10px;min-width:44px;min-height:44px}
 .returnhero-photo{width:108px;height:108px;object-fit:cover;border-radius:22px;display:block;margin:0 auto 10px;box-shadow:0 6px 22px rgba(0,0,0,.4)}
 .returnhero-kicker{margin:0 0 4px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .returnhero h1{margin:0 0 14px;font-size:25px;line-height:1.2}
@@ -751,6 +753,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            first-timer elements (.firstonly) hide for these visitors. One calm
            share entry point, no nudges. -->
       <div class="returnhero" id="returnbox" hidden>
+        <button class="returnhero-dismiss" id="btn-returndismiss" type="button" aria-label="Dismiss">×</button>
         <img class="returnhero-photo" id="returnhero-photo" alt="">
         <p class="returnhero-kicker">Welcome back</p>
         <h1 id="returnhero-title">Still going as Pickle?</h1>
@@ -8120,8 +8123,6 @@ function renderResults(results){
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
      the household in one run, and other audiences have no sibling case. */
   $("btn-nextkid").style.display = (state.answers.q1 && state.answers.q1.value === "kid") ? "" : "none";
-  var ac = buildAnswerChips();
-  if (ac) box.appendChild(ac);
   var pick = load("pmc_pick_v1");
   var cards = {}; /* idea id -> card element, for picked-panel restore */
   /* Pinpoint: name the match so the #1 never feels arbitrary. */
@@ -8131,21 +8132,9 @@ function renderResults(results){
     pn.textContent = "You asked for " + state.pinpoint.label + ": here is our DIY take.";
     box.appendChild(pn);
   }
-  var fr = buildFitRefinement();
-  if (fr) box.appendChild(fr);
-  var ar = buildAgeRefinement();
-  if (ar) box.appendChild(ar);
-  /* 2026-09-26 constraint refinement: time/budget chips, shown only when a
-     chip can change the top 3 (buildConstraintRefinement returns null
-     otherwise). */
-  var cr = buildConstraintRefinement();
-  if (cr) box.appendChild(cr);
-  /* 2026-09-26 party link experiment: the pre-applied party theme renders
-     as a clearable refinement chip (buildPartyThemeChip returns null for
-     non-party guests or with the flag off). */
-  var pth = buildPartyThemeChip();
-  if (pth) box.appendChild(pth);
-  /* Hero: the #1 idea, presented as the answer. */
+  /* Hero: the #1 idea, presented as the answer. Billy 2026-09-28: visual-first
+     results. The hero (photo) renders before the answer chips and refinement
+     rows, so the payoff is above the fold instead of a wall of text. */
   var hero = document.createElement("div");
   hero.className = "hero12";
   /* Result roles: computed labels (Best Match / Easiest / Wildcard); a
@@ -8165,6 +8154,22 @@ function renderResults(results){
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
+  /* Billy 2026-09-28: answer chips and refinement rows live one tap behind
+     this collapsed disclosure, below the hero. Tapping a chip re-renders
+     results (the disclosure re-collapses); the new #1 is the feedback. */
+  var refinements = [buildAnswerChips(), buildFitRefinement(), buildAgeRefinement(),
+    buildConstraintRefinement(), buildPartyThemeChip()].filter(function(x){ return !!x; });
+  if (refinements.length){
+    var rdet = document.createElement("details");
+    rdet.style.margin = "16px 0 14px";
+    var rsum = document.createElement("summary");
+    rsum.className = "textlink";
+    rsum.style.cssText = "cursor:pointer;display:inline-block;font-weight:700";
+    rsum.textContent = "Refine your picks";
+    rdet.appendChild(rsum);
+    refinements.forEach(function(el){ rdet.appendChild(el); });
+    box.appendChild(rdet);
+  }
   /* 2026-09-26 reveal-moment share prompt: one calm line at the
      peak-delight second, one tap to share, never buried in the pick panel. */
   box.appendChild(buildRevealSharePrompt(results[0].idea));
@@ -13749,6 +13754,15 @@ function shareLandingHeadline(idea, search){
     document.addEventListener("pointerdown", _wxAsk);
     document.addEventListener("keydown", _wxAsk);
   })();
+  var _dismissBtn = document.getElementById("btn-returndismiss");
+  if (_dismissBtn) _dismissBtn.addEventListener("click", function(){
+    var pk = load("pmc_pick_v1");
+    try { localStorage.setItem("pmc_returnhero_dismissed_v1", JSON.stringify({ideaId: pk && pk.ideaId, at: Date.now()})); } catch(e){}
+    var bx = document.getElementById("returnbox"); if (bx) bx.hidden = true;
+    var hEl = document.querySelector(".hero"); if (hEl) hEl.classList.remove("returning");
+    try { track("returnhero_dismissed", {}); } catch(e){}
+    refreshReturnBox();
+  });
   refreshReturnBox();
   renderPinpointChips();
   var _ic = document.getElementById("idea-count"); if (_ic) _ic.textContent = IDEAS.length;
@@ -13765,6 +13779,11 @@ function refreshReturnBox(){
   var pick = load("pmc_pick_v1");
   var last = load("pmc_last_v1");
   var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
+  /* Billy 2026-09-28: the welcome-back card is dismissible. A dismissal is
+     tied to the dismissed pick: retaking the quiz and landing a new pick
+     re-shows the card. */
+  var dismissed = load("pmc_returnhero_dismissed_v1");
+  if (dismissed && pick && dismissed.ideaId === pick.ideaId) fresh = false;
   if (fresh && last && last.results && last.results.length) {
     var idea = null;
     for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === pick.ideaId){ idea = IDEAS[i]; break; }
