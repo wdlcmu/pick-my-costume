@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Split the costume | Pick My Costume</title>
+<meta name="description" content="Going as a duo this Halloween? Pick your half, draft your partner, and send them their one-tap build guide.">
+<link rel="canonical" href="https://pickmycostume.com/split.html">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1a1033;color:#f5efff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.5;padding:20px 16px 64px}
+.wrap{max-width:520px;margin:0 auto}
+a{color:#ff9f43}
+h1{font-size:28px;margin:8px 0 4px}
+.sub{color:#b8a8d8;margin:0 0 20px}
+.card{background:#2a1b4d;border:1px solid #4a3578;border-radius:16px;padding:16px;margin:16px 0;text-align:center}
+.card img{width:100%;border-radius:12px;display:block}
+.card .t{font-weight:800;font-size:20px;margin:12px 0 2px}
+.card .halves{color:#b8a8d8;font-size:14px}
+.halfrow{display:flex;gap:10px;margin:16px 0}
+button.half{flex:1;background:#2a1b4d;border:2px solid #4a3578;color:#f5efff;border-radius:14px;padding:16px 8px;font-size:16px;font-weight:700;cursor:pointer;min-height:64px}
+button.half.on{border-color:#ff9f43;background:#3a2666}
+label.lbl{display:block;font-weight:700;margin:18px 0 6px}
+input.name{width:100%;background:#241545;border:2px solid #4a3578;color:#f5efff;border-radius:12px;padding:14px;font-size:17px}
+button.cta{display:block;width:100%;background:#ff9f43;color:#1a1033;font-weight:800;font-size:18px;padding:16px;border:0;border-radius:14px;margin:22px 0 8px;cursor:pointer}
+button.cta:disabled{opacity:.45;cursor:default}
+a.ghost{display:block;text-align:center;color:#b8a8d8;margin-top:10px;font-size:15px}
+.status{min-height:24px;color:#b8a8d8;font-size:14px;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.grid a{background:#2a1b4d;border:1px solid #4a3578;border-radius:14px;overflow:hidden;text-decoration:none;color:#f5efff}
+.grid img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover}
+.grid .gt{padding:10px;font-size:14px;font-weight:700}
+.grid .gh{padding:0 10px 10px;font-size:12px;color:#b8a8d8}
+.home{display:inline-block;margin-bottom:8px;color:#b8a8d8;font-size:14px}
+</style>
+<script>
+/* PostHog (same snippet as party.html/school-check.html) */
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7",{api_host:"https://us.i.posthog.com"});
+function track(n,p){try{if(window.posthog&&posthog.capture)posthog.capture(n,p||{});}catch(e){}}
+</script>
+</head>
+<body>
+<div class="wrap">
+<a class="home" href="/">Pick My Costume</a>
+<div id="app"></div>
+</div>
+<script>
+var SPLIT_DATA = {"bacon-eggs": {"t": "Bacon & Eggs", "halves": ["Bacon", "Eggs"], "img": "/images/og/bacon-eggs.jpg"}, "beekeeper-bee": {"t": "Beekeeper & Bee", "halves": ["Beekeeper", "Bee"], "img": "/images/og/beekeeper-bee.jpg"}, "burger-joint-couple": {"t": "Burger Joint Couple", "halves": ["The cook", "The server"], "img": "/images/og/burger-joint-couple.jpg"}, "caped-duo": {"t": "Caped Duo", "halves": ["The masked hero", "The partner in crime"], "img": "/images/og/caped-duo.jpg"}, "cat-mouse": {"t": "Cat & Mouse", "halves": ["Cat", "Mouse"], "img": "/images/og/cat-mouse.jpg"}, "doctor-bride": {"t": "The Doctor & the Bride", "halves": ["Doctor", "Bride"], "img": "/images/og/doctor-bride.jpg"}, "dragon-rider-duo": {"t": "Dragon Rider Duo", "halves": ["The viking rider", "The dragon"], "img": "/images/og/dragon-rider-duo.jpg"}, "galaxy-knights": {"t": "Galaxy Knights", "halves": ["The knight", "The squire"], "img": "/images/og/galaxy-knights.jpg"}, "haunted-portraits": {"t": "Haunted Portraits", "halves": ["The haunted portrait", "The gilt frame"], "img": "/images/og/haunted-portraits.jpg"}, "ketchup-mustard": {"t": "Ketchup & Mustard", "halves": ["Ketchup", "Mustard"], "img": "/images/og/ketchup-mustard.jpg"}, "moth-porch-light": {"t": "Moth and Porch Light", "halves": ["Moth", "Porch Light"], "img": "/images/og/moth-porch-light.jpg"}, "office-couple": {"t": "Office Couple", "halves": ["The boss", "The assistant"], "img": "/images/og/office-couple.jpg"}, "pbj": {"t": "Peanut Butter & Jelly", "halves": ["Peanut Butter", "Jelly"], "img": "/images/og/pbj.jpg"}, "plastic-dream-crew": {"t": "Plastic Dream Crew", "halves": ["The pink dream", "The dream date"], "img": "/images/og/plastic-dream-crew.jpg"}, "player-one-two": {"t": "Player One & Two", "halves": ["Player One", "Player Two"], "img": "/images/og/player-one-two.jpg"}, "plug-socket": {"t": "Plug and Socket", "halves": ["Plug", "Socket"], "img": "/images/og/plug-socket.jpg"}, "plumber-duo": {"t": "Plumber Brothers", "halves": ["Red plumber", "Green plumber"], "img": "/images/og/plumber-duo.jpg"}, "prince-princess": {"t": "Prince & Princess", "halves": ["Prince", "Princess"], "img": "/images/og/prince-princess.jpg"}, "rain-cloud-rainbow": {"t": "Rain Cloud and Rainbow", "halves": ["Rain Cloud", "Rainbow"], "img": "/images/og/rain-cloud-rainbow.jpg"}, "raptor-ranger": {"t": "Raptor & Ranger", "halves": ["Raptor", "Ranger"], "img": "/images/og/raptor-ranger.jpg"}, "salt-pepper": {"t": "Salt & Pepper", "halves": ["Salt", "Pepper"], "img": "/images/og/salt-pepper.jpg"}, "sun-moon": {"t": "Sun and Moon", "halves": ["Sun", "Moon"], "img": "/images/og/sun-moon.jpg"}, "tennis-duo": {"t": "Tennis Duo", "halves": ["The server", "The receiver"], "img": "/images/og/tennis-duo.jpg"}, "tetris-duo": {"t": "Tetris Duo", "halves": ["The L-block", "The square block"], "img": "/images/og/tetris-duo.jpg"}, "the-olympians": {"t": "The Olympians", "halves": ["The lightning god", "The owl god"], "img": "/images/og/the-olympians.jpg"}, "tooth-fairy": {"t": "Tooth and Tooth Fairy", "halves": ["Tooth", "Tooth Fairy"], "img": "/images/og/tooth-fairy.jpg"}, "web-hero-duo": {"t": "Web Hero Duo", "halves": ["The web hero", "The sidekick"], "img": "/images/og/web-hero-duo.jpg"}};
+var app = document.getElementById("app");
+var q = new URLSearchParams(location.search || "");
+var ideaId = q.get("idea") || "";
+/* tapGuard (standing lesson 2026-09-27): finger bounces must not double-fire shares. */
+var _lastTap = {};
+function tapGuard(key, ms){ var n = Date.now(); if (_lastTap[key] && n - _lastTap[key] < ms) return false; _lastTap[key] = n; return true; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function newShareId(){ var c="abcdefghijklmnopqrstuvwxyz0123456789",s=""; for(var i=0;i<8;i++) s+=c[Math.floor(Math.random()*c.length)]; return s; }
+function doCopy(t, done){ function fb(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(true); } if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){done(true);},fb); } else fb(); }
+
+function renderPicker() {
+  var slugs = Object.keys(SPLIT_DATA).sort(function(a,b){ return SPLIT_DATA[a].t.localeCompare(SPLIT_DATA[b].t); });
+  var h = "<h1>Split the costume</h1>" +
+    "<p class='sub'>Going as a duo this Halloween? Pick the costume, claim your half, and draft your partner. They get their one-tap build guide.</p>" +
+    "<div class='grid'>";
+  slugs.forEach(function(s){ var d = SPLIT_DATA[s];
+    h += "<a href='/split.html?idea=" + s + "'><img src='" + d.img + "' alt='" + esc(d.t) + " costume' loading='lazy'><div class='gt'>" + esc(d.t) + "</div><div class='gh'>" + esc(d.halves[0]) + " + " + esc(d.halves[1]) + "</div></a>";
+  });
+  h += "</div>";
+  app.innerHTML = h;
+  track("split_view", {view: "picker"});
+}
+
+function renderSender(slug) {
+  var d = SPLIT_DATA[slug];
+  var myHalf = -1;
+  var h = "<h1>Split: " + esc(d.t) + "</h1>" +
+    "<p class='sub'>Draft your partner. They get their half and the build guide in one tap.</p>" +
+    "<div class='card'><img src='" + d.img + "' alt='" + esc(d.t) + " costume'><div class='t'>" + esc(d.t) + "</div>" +
+    "<div class='halves'>" + esc(d.halves[0]) + " + " + esc(d.halves[1]) + "</div></div>" +
+    "<label class='lbl'>Which half are you?</label><div class='halfrow'>" +
+    "<button type='button' class='half' data-i='0'>" + esc(d.halves[0]) + "</button>" +
+    "<button type='button' class='half' data-i='1'>" + esc(d.halves[1]) + "</button></div>" +
+    "<label class='lbl' for='pname'>Your partner's name <span style='color:#b8a8d8;font-weight:400'>(optional)</span></label>" +
+    "<input class='name' id='pname' maxlength='24' placeholder='e.g. Maya' autocomplete='off'>" +
+    "<button type='button' class='cta' id='sendbtn' disabled>Pick your half first</button>" +
+    "<a class='ghost' href='/split.html'>Pick a different duo</a>" +
+    "<p class='status' id='st'></p>";
+  app.innerHTML = h;
+  track("split_view", {view: "sender", idea_id: slug});
+  var btns = app.querySelectorAll("button.half");
+  var send = document.getElementById("sendbtn");
+  var st = document.getElementById("st");
+  btns.forEach(function(b){ b.onclick = function() {
+    btns.forEach(function(x){ x.classList.remove("on"); });
+    b.classList.add("on");
+    myHalf = parseInt(b.getAttribute("data-i"), 10);
+    send.disabled = false;
+    send.textContent = "Send them their half";
+    track("split_half_picked", {idea_id: slug, half_idx: myHalf});
+  }; });
+  function cleanName(s){ return String(s || "").replace(/[~|&=<>\"']/g, "").trim().slice(0, 24); }
+  send.onclick = function() {
+    if (myHalf < 0) return;
+    if (!tapGuard("splitsend", 2000)) return;
+    var theirHalf = 1 - myHalf;
+    var pname = cleanName(document.getElementById("pname").value);
+    var sid = newShareId();
+    var url = "https://pickmycostume.com/c/" + slug + "?for=" + theirHalf +
+      (pname ? "&partner=" + encodeURIComponent(pname) : "") +
+      "&s=" + sid + "&o=split";
+    var text = "I'm going as " + d.halves[myHalf] + " this Halloween. " +
+      (pname ? pname + ", you're " : "You're ") + d.halves[theirHalf] + "! " +
+      "Your one-tap build guide: " + url;
+    function done(ok, via) {
+      if (ok) {
+        st.textContent = via === "native" ? "Shared. Now go build your half." : "Copied. Paste it into any message.";
+        track("split_shared", {idea_id: slug, half_idx: myHalf, share_id: sid, share_origin: "split", via: via});
+        /* 2026-09-27 red-team: the site's attribution chain joins
+           share_created.share_id -> recipient_landing_viewed.via_share_id.
+           Without share_created, split arrivals are orphans in the funnel
+           and the running card-vs-generic open counting misses them. */
+        track("share_created", {share_id: sid, idea_id: slug, share_origin: "split", via: via});
+      } else {
+        st.textContent = "Share cancelled. Nothing was sent.";
+      }
+    }
+    if (navigator.share) {
+      try {
+        navigator.share({title: "Pick My Costume", text: text, url: url}).then(
+          function(){ done(true, "native"); },
+          function(){ done(false); }
+        );
+        return;
+      } catch (e) {}
+    }
+    doCopy(text, function(){ done(true, "clipboard"); });
+  };
+}
+
+if (ideaId && SPLIT_DATA[ideaId]) renderSender(ideaId);
+else renderPicker();
+</script>
+</body>
+</html>

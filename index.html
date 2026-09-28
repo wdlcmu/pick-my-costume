@@ -10381,6 +10381,18 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   bgift.onclick = function(){ openGiftFlow(); };
   grow.appendChild(bgift);
   detBody.appendChild(grow);
+  /* Billy 2026-09-27: partner-split experiment APPROVED. "Split it with a
+     partner" -- a directed 1:1 draft share for duo costumes (unlike the
+     broadcast shares above, the partner gets a specific half plus their
+     build guide). Renders only for couple-audience ideas. */
+  if (idea.audience && idea.audience.indexOf("couple") >= 0){
+    var srow = document.createElement("div"); srow.className = "row"; srow.style.marginTop = "8px";
+    var bsplit = document.createElement("a"); bsplit.className = "ghost";
+    bsplit.textContent = "Split it with a partner";
+    bsplit.href = "/split.html?idea=" + idea.id;
+    bsplit.onclick = function(){ Analytics.track("split_opened", Object.assign({idea_id: idea.id, share_origin: "disclosure"}, xp())); };
+    srow.appendChild(bsplit); detBody.appendChild(srow);
+  }
   container.appendChild(det);
   container.appendChild(st);
   if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
