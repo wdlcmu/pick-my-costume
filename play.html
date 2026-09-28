@@ -119,7 +119,6 @@
   <div class="shell">
     <div class="topline" id="hud" hidden>
       <div class="round-label" id="roundLabel">Round 1 of 6</div>
-      <button class="hudswitch" id="switchGame" type="button">Try: Match the pieces</button>
       <div class="score"><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 2.8 5.7 6.3.9-4.5 4.4 1 6.3-5.6-3-5.6 3 1-6.3L.9 9.1l6.3-.9Z"/></svg><span id="score">0</span></div>
     </div>
     <div class="progress" id="progressWrap" hidden aria-hidden="true"><span id="progress"></span></div>
@@ -141,12 +140,12 @@
       <section class="screen game" id="game" aria-live="polite">
         <h2>Who’s behind the curtain?</h2>
         <div class="stage" id="stage">
-          <svg class="costume" data-id="ghost" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a friendly ghost"><path d="M80 255V103Q82 37 150 35q68 2 70 68v152l-35-22-35 24-35-24Z" fill="#fff" stroke="#26223a" stroke-width="7"/><ellipse cx="122" cy="114" rx="13" ry="18" fill="#26223a"/><ellipse cx="178" cy="114" rx="13" ry="18" fill="#26223a"/><path d="M134 154q16 13 32 0" fill="none" stroke="#26223a" stroke-width="7" stroke-linecap="round"/></svg>
-          <svg class="costume" data-id="witch" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a witch"><path d="m92 87 60-76 46 76" fill="#4b3475" stroke="#26223a" stroke-width="7"/><ellipse cx="149" cy="89" rx="93" ry="18" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="149" cy="137" r="47" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="133" cy="132" r="5"/><circle cx="167" cy="132" r="5"/><path d="M137 155q13 10 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M75 288q13-100 74-100t77 100" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="150" cy="225" r="11" fill="#ffbd2e"/></svg>
-          <svg class="costume" data-id="pirate" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a pirate"><circle cx="150" cy="117" r="67" fill="#e7a167" stroke="#26223a" stroke-width="7"/><path d="M85 102q5-71 65-71 58 0 65 71-67-28-130 0Z" fill="#1e293b" stroke="#26223a" stroke-width="7"/><path d="m89 51 50 4-15 43-52-15Z" fill="#f16c3b" stroke="#26223a" stroke-width="7"/><circle cx="124" cy="120" r="6"/><path d="M161 106h41v33h-41zM202 122h19" fill="#26223a" stroke="#26223a" stroke-width="7"/><path d="M134 151q17 11 34-1" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M63 290q9-102 87-102t88 102" fill="#f3e4c0" stroke="#26223a" stroke-width="7"/><path d="m117 203 33 40 33-40" fill="#f16c3b" stroke="#26223a" stroke-width="6"/></svg>
-          <svg class="costume" data-id="astronaut" viewBox="0 0 300 300" role="img" aria-label="A child dressed as an astronaut"><path d="M88 95q0-73 62-73t62 73v38H88Z" fill="#f3f5f2" stroke="#26223a" stroke-width="7"/><rect x="100" y="47" width="100" height="81" rx="35" fill="#70c4e8" stroke="#26223a" stroke-width="7"/><circle cx="132" cy="86" r="6"/><circle cx="169" cy="86" r="6"/><path d="M137 104q13 9 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M74 289V162q9-28 76-28t76 28v127" fill="#f3f5f2" stroke="#26223a" stroke-width="7"/><rect x="111" y="169" width="78" height="61" rx="8" fill="#d5dfeb" stroke="#26223a" stroke-width="6"/><circle cx="131" cy="190" r="7" fill="#f16c3b"/><circle cx="153" cy="190" r="7" fill="#ffbd2e"/><path d="M127 211h48" stroke="#167f7b" stroke-width="7"/></svg>
-          <svg class="costume" data-id="dinosaur" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a dinosaur"><path d="M72 288V105q2-73 77-73 72 0 80 64l28 28-31 5v159Z" fill="#67b96b" stroke="#26223a" stroke-width="7"/><path d="m88 63-29-22 41-6m45 2-17-34 39 14m38 31 15-34 20 34" fill="#ffbd2e" stroke="#26223a" stroke-width="7" stroke-linejoin="round"/><circle cx="167" cy="88" r="7"/><circle cx="215" cy="108" r="5"/><path d="M115 137h74" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><circle cx="136" cy="174" r="35" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="124" cy="170" r="5"/><circle cx="149" cy="170" r="5"/></svg>
-          <svg class="costume" data-id="robot" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a robot"><path d="M150 32V7m-12 0h24" stroke="#26223a" stroke-width="7" stroke-linecap="round"/><rect x="73" y="35" width="154" height="126" rx="17" fill="#aebdcc" stroke="#26223a" stroke-width="7"/><circle cx="119" cy="92" r="13" fill="#ffbd2e" stroke="#26223a" stroke-width="6"/><circle cx="181" cy="92" r="13" fill="#ffbd2e" stroke="#26223a" stroke-width="6"/><path d="M118 132h64" stroke="#26223a" stroke-width="7" stroke-linecap="round"/><path d="M83 290V177h134v113" fill="#aebdcc" stroke="#26223a" stroke-width="7"/><rect x="112" y="203" width="76" height="48" rx="7" fill="#edf2f5" stroke="#26223a" stroke-width="6"/><circle cx="134" cy="226" r="7" fill="#f16c3b"/><circle cx="165" cy="226" r="7" fill="#167f7b"/></svg>
+          <svg class="costume" data-id="ghost" viewBox="0 0 300 300" role="img" aria-label="Cartoon friendly ghost costume"><path d="M80 255V103Q82 37 150 35q68 2 70 68v152l-35-22-35 24-35-24Z" fill="#fff" stroke="#26223a" stroke-width="7"/><ellipse cx="122" cy="114" rx="13" ry="18" fill="#26223a"/><ellipse cx="178" cy="114" rx="13" ry="18" fill="#26223a"/><path d="M134 154q16 13 32 0" fill="none" stroke="#26223a" stroke-width="7" stroke-linecap="round"/></svg>
+          <svg class="costume" data-id="witch" viewBox="0 0 300 300" role="img" aria-label="Cartoon witch costume"><path d="m92 87 60-76 46 76" fill="#4b3475" stroke="#26223a" stroke-width="7"/><ellipse cx="149" cy="89" rx="93" ry="18" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="149" cy="137" r="47" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="133" cy="132" r="5"/><circle cx="167" cy="132" r="5"/><path d="M137 155q13 10 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M75 288q13-100 74-100t77 100" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="150" cy="225" r="11" fill="#ffbd2e"/></svg>
+          <svg class="costume" data-id="pirate" viewBox="0 0 300 300" role="img" aria-label="Cartoon pirate costume"><circle cx="150" cy="117" r="67" fill="#e7a167" stroke="#26223a" stroke-width="7"/><path d="M85 102q5-71 65-71 58 0 65 71-67-28-130 0Z" fill="#1e293b" stroke="#26223a" stroke-width="7"/><path d="m89 51 50 4-15 43-52-15Z" fill="#f16c3b" stroke="#26223a" stroke-width="7"/><circle cx="124" cy="120" r="6"/><path d="M161 106h41v33h-41zM202 122h19" fill="#26223a" stroke="#26223a" stroke-width="7"/><path d="M134 151q17 11 34-1" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M63 290q9-102 87-102t88 102" fill="#f3e4c0" stroke="#26223a" stroke-width="7"/><path d="m117 203 33 40 33-40" fill="#f16c3b" stroke="#26223a" stroke-width="6"/></svg>
+          <svg class="costume" data-id="astronaut" viewBox="0 0 300 300" role="img" aria-label="Cartoon astronaut costume"><path d="M88 95q0-73 62-73t62 73v38H88Z" fill="#f3f5f2" stroke="#26223a" stroke-width="7"/><rect x="100" y="47" width="100" height="81" rx="35" fill="#70c4e8" stroke="#26223a" stroke-width="7"/><circle cx="132" cy="86" r="6"/><circle cx="169" cy="86" r="6"/><path d="M137 104q13 9 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M74 289V162q9-28 76-28t76 28v127" fill="#f3f5f2" stroke="#26223a" stroke-width="7"/><rect x="111" y="169" width="78" height="61" rx="8" fill="#d5dfeb" stroke="#26223a" stroke-width="6"/><circle cx="131" cy="190" r="7" fill="#f16c3b"/><circle cx="153" cy="190" r="7" fill="#ffbd2e"/><path d="M127 211h48" stroke="#167f7b" stroke-width="7"/></svg>
+          <svg class="costume" data-id="dinosaur" viewBox="0 0 300 300" role="img" aria-label="Cartoon dinosaur costume"><path d="M72 288V105q2-73 77-73 72 0 80 64l28 28-31 5v159Z" fill="#67b96b" stroke="#26223a" stroke-width="7"/><path d="m88 63-29-22 41-6m45 2-17-34 39 14m38 31 15-34 20 34" fill="#ffbd2e" stroke="#26223a" stroke-width="7" stroke-linejoin="round"/><circle cx="167" cy="88" r="7"/><circle cx="215" cy="108" r="5"/><path d="M115 137h74" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><circle cx="136" cy="174" r="35" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="124" cy="170" r="5"/><circle cx="149" cy="170" r="5"/></svg>
+          <svg class="costume" data-id="robot" viewBox="0 0 300 300" role="img" aria-label="Cartoon robot costume"><path d="M150 32V7m-12 0h24" stroke="#26223a" stroke-width="7" stroke-linecap="round"/><rect x="73" y="35" width="154" height="126" rx="17" fill="#aebdcc" stroke="#26223a" stroke-width="7"/><circle cx="119" cy="92" r="13" fill="#ffbd2e" stroke="#26223a" stroke-width="6"/><circle cx="181" cy="92" r="13" fill="#ffbd2e" stroke="#26223a" stroke-width="6"/><path d="M118 132h64" stroke="#26223a" stroke-width="7" stroke-linecap="round"/><path d="M83 290V177h134v113" fill="#aebdcc" stroke="#26223a" stroke-width="7"/><rect x="112" y="203" width="76" height="48" rx="7" fill="#edf2f5" stroke="#26223a" stroke-width="6"/><circle cx="134" cy="226" r="7" fill="#f16c3b"/><circle cx="165" cy="226" r="7" fill="#167f7b"/></svg>
           <div class="curtain" aria-hidden="true"><div></div><div></div></div>
           <button class="primary peek" id="peek">Open curtains</button>
         </div>
@@ -193,6 +192,13 @@
   var hud=document.getElementById('hud'),progressWrap=document.getElementById('progressWrap'),stage=document.getElementById('stage'),answers=document.getElementById('answers');
   var pieceRow=document.getElementById('pieceRow'),costumeRow=document.getElementById('costumeRow'),matchLines=document.getElementById('matchLines');
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+  /* 2026-09-28: finger-bounce guard. A fast double-tap on Next must not skip
+     a round. Standing rule: every multi-step flow gets tapGuard at build time. */
+  var _tapLast={};
+  function tapGuard(key,ms){var n=Date.now(),l=_tapLast[key]||0;if(n-l<(ms||400))return false;_tapLast[key]=n;return true}
+  /* 2026-09-28: keep ?probe= (and other page params) on outbound guide links
+     so QA traffic stays attributable instead of leaking into clean analytics. */
+  function withProbe(url){try{var q=location.search||'';if(!q||!/probe=/.test(q))return url;return url+(url.indexOf('?')>=0?'&':'?')+q.replace(/^\?/,'')}catch(e){return url}}
   function tone(freq,dur,delay){if(!soundOn)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();var o=audio.createOscillator(),g=audio.createGain();o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.0001,audio.currentTime+delay);g.gain.exponentialRampToValueAtTime(.13,audio.currentTime+delay+.01);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+delay+dur);o.connect(g);g.connect(audio.destination);o.start(audio.currentTime+delay);o.stop(audio.currentTime+delay+dur+.02)}catch(e){}}
   function setScreen(el){[intro,game,materials,finish].forEach(function(x){x.classList.toggle('active',x===el)})}
   function resetRun(){round=0;points=0;document.getElementById('score').textContent='0';hud.hidden=false;progressWrap.hidden=false}
@@ -245,7 +251,11 @@
     document.getElementById('materialFeedback').innerHTML='';document.getElementById('matchDone').hidden=true;matchLines.innerHTML='';pieceRow.innerHTML='';costumeRow.innerHTML='';
     shuffle(item.pairs.slice()).forEach(function(pair){var b=document.createElement('button');b.className='piece-card';b.setAttribute('data-match',pair.to);b.setAttribute('aria-label',pair.label);b.innerHTML=iconSvg(pair.type)+'<span>'+pair.label+'</span>';b.addEventListener('click',function(){choosePiece(b)});pieceRow.appendChild(b)});
     var targets=shuffle(item.pairs.map(function(pair){return pair.to}));targets.forEach(function(id){var look=looks[id],b=document.createElement('button');b.className='costume-card';b.setAttribute('data-match',id);b.innerHTML='<img src="'+look.image+'" alt="'+look.name+' costume"><span>'+look.name+'</span>';b.addEventListener('click',function(){chooseCostume(b)});costumeRow.appendChild(b)});
-    document.getElementById('guideLink').href=looks[item.featured].guide;
+    /* 2026-09-28 playtest: "See how to make it" after a 3-costume round was
+       ambiguous about which costume it meant. Name the featured costume. */
+    var _gl=document.getElementById('guideLink'),_feat=looks[item.featured];
+    if(_feat&&_feat.guide){_gl.href=withProbe(_feat.guide);_gl.textContent='See how to make the '+_feat.name;_gl.style.display='';}
+    else{_gl.style.display='none';}
   }
   function choosePiece(button){
     if(button.classList.contains('matched'))return;
@@ -255,7 +265,7 @@
     if(button.classList.contains('matched'))return;
     if(!selectedPiece){document.getElementById('materialFeedback').innerHTML='<strong>Pick a piece first.</strong><span>Then choose its costume.</span>';return}
     if(selectedPiece.getAttribute('data-match')!==button.getAttribute('data-match')){
-      selectedPiece.classList.add('shake');button.classList.add('shake');document.getElementById('materialFeedback').innerHTML='<strong>Try again!</strong><span>That piece belongs with a different costume.</span>';tone(330,.12,0);setTimeout(function(){selectedPiece&&selectedPiece.classList.remove('shake');button.classList.remove('shake')},430);return;
+      var _sp=selectedPiece;_sp.classList.add('shake');button.classList.add('shake');document.getElementById('materialFeedback').innerHTML='<strong>Try again!</strong><span>That piece belongs with a different costume.</span>';tone(330,.12,0);setTimeout(function(){_sp.classList.remove('shake');button.classList.remove('shake')},430);return;
     }
     var piece=selectedPiece;piece.classList.remove('selected');piece.classList.add('matched');piece.disabled=true;button.classList.add('matched');button.disabled=true;selectedPiece=null;matchedCount++;drawLink(piece,button);tone(523,.12,0);tone(700,.18,.1);
     document.getElementById('materialFeedback').innerHTML='<strong>That’s a match!</strong><span>'+matchedCount+' of 3 connected.</span>';
@@ -272,8 +282,8 @@
   document.getElementById('start').addEventListener('click',start);
   document.getElementById('startMaterials').addEventListener('click',startMaterials);
   document.getElementById('peek').addEventListener('click',openCurtain);
-  document.getElementById('next').addEventListener('click',next);
-  document.getElementById('materialNext').addEventListener('click',next);
+  document.getElementById('next').addEventListener('click',function(){if(tapGuard('gnext',500))next()});
+  document.getElementById('materialNext').addEventListener('click',function(){if(tapGuard('gnext',500))next()});
   document.getElementById('again').addEventListener('click',function(){mode==='match'?startMaterials():start()});
   document.getElementById('sound').addEventListener('click',function(){soundOn=!soundOn;this.textContent=soundOn?'Sound on':'Sound off';this.setAttribute('aria-pressed',soundOn?'true':'false');if(soundOn)tone(600,.15,0)});
 
@@ -288,19 +298,27 @@ function renderFoundList(){
   var grid=document.createElement('div');grid.className='found-grid';
   items.forEach(function(it){
     if(it.guide){
-      var a=document.createElement('a');a.className='found-chip';a.href=it.guide;
+      var a=document.createElement('a');a.className='found-chip';a.href=withProbe(it.guide);
       a.target='_blank';a.rel='noopener';
       var nm=document.createElement('span');nm.textContent=it.name;a.appendChild(nm);
       var ar=document.createElement('span');ar.setAttribute('aria-hidden','true');ar.textContent=' \u2192';a.appendChild(ar);
       grid.appendChild(a);
     }else{
+      /* 2026-09-28 playtest: dashed chips with no guide gave no feedback on
+         tap. A tooltip at least explains why it is not a link. */
       var s=document.createElement('span');s.className='found-chip no-link';s.textContent=it.name;
+      s.title=it.name+': how-to guide coming soon';
       grid.appendChild(s);
     }
   });
   box.appendChild(grid);
 }
-/* 2026-09-28: game switcher. Either mode can jump to the other mid-run. */
+/* 2026-09-28: the mid-run HUD switcher is gone. It sat one tap away during
+   active play and silently reset the current game to round 1 (confirmed by
+   playtest: 5 finished Match rounds lost to one tap). Switching still lives
+   where it is safe: the intro "Pick a way to play" buttons and the finish
+   screen's "Try the other game". syncSwitchLabel/switchToOther stay
+   null-safe below in case the button ever returns. */
 var switchGame=document.getElementById('switchGame'),switchGameEnd=document.getElementById('switchGameEnd');
 function syncSwitchLabel(){if(switchGame)switchGame.textContent=mode==='peek'?'Try: Match the pieces':'Try: Peekaboo';}
 function switchToOther(){if(mode==='peek'){startMaterials()}else{start()}}
