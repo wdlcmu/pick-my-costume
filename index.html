@@ -149,6 +149,16 @@ body{
      ~700px-tall full-bleed photos on desktop. Same two-column treatment as
      the hero strip: photo left, text right. Mobile stacks. */
   .warmpair{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:start}
+  /* Billy 2026-09-28: result/landing cards rendered the 1:2 concept photo at
+     ~1000px wide on desktop, pushing every action below the fold ("the
+     picture doesn't fit"). Cap the photo so the whole picture fits in view;
+     contain (not cover) so nothing crops. Mobile unchanged. The detail page
+     keeps its two-column treatment: its photo nests inside .dcol-l, so this
+     direct-child selector leaves it alone. */
+  .card>div>img[src^="photos/"]{max-height:60vh;object-fit:contain;background:#14101d}
+  /* Runner-up fullscreen overlay: same photo cap, and center the column so
+     the card doesn't stretch edge to edge on wide screens. */
+  #ru-overlay-content{max-width:720px;margin:0 auto}
 }
 .hero{text-align:center;padding:30px 8px 32px;position:relative}
 /* Billy 2026-09-26: the celestial is now ambient and top-right, never a big
@@ -160,6 +170,24 @@ body{
 .hero .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;line-height:1.35}
 /* Billy 2026-09-26 (returning-hero QA): the caption wraps to two lines inside
    the 54px wrap so it never slides left under the countdown at phone width. */
+/* Billy 2026-09-28: visual-first hero. On phone the trending photo strip
+   moves right under the CTA so imagery leads: headline, CTA, photos,
+   countdown, then the text rows (honest line, play card). Desktop keeps
+   its two-column hero untouched. The flattening is mobile-only. */
+@media (max-width:899px){
+  .hero{display:flex;flex-direction:column}
+  .hero .moonpanel{order:0}
+  .hero .herotext{display:contents}
+  .hero h1.firstonly{order:1}
+  #btn-start{order:2;align-self:center}
+  .hero .herovis{order:3;align-self:stretch}
+  #tminus{order:4}
+  .hero .honestline{order:5}
+  #playcard-hero{order:6}
+  #resume-wrap{order:7}
+  #hw-weather{order:8}
+  #returnbox{order:9;align-self:stretch}
+}
 /* Billy 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
    it stays cheap on phones; off entirely under prefers-reduced-motion. */
 .hero .halo{position:absolute;top:-18px;left:50%;width:88px;height:88px;margin-left:-44px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite;pointer-events:none}
@@ -358,6 +386,22 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .opt.sel{border-color:var(--sel-border);background:var(--sel-bg)}
 .opt.sel .tick{border-color:var(--accent);color:var(--accent)}
 .opt:hover{border-color:var(--accent)}
+/* Billy 2026-09-28: visual-first quiz. The main quiz's options are
+   emoji-led tiles: big emoji + short label in a 2-col grid (3 cols for
+   the 9-option interest question). The selected tile shows the check
+   as a corner badge. Duel/gift/warm keep the old row look: they render
+   plain .opt buttons, never into #q-opts.tiles. */
+#q-opts.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+#q-opts.tiles.many{grid-template-columns:repeat(3,1fr)}
+.opt.tile{flex-direction:column;justify-content:center;align-items:center;
+  gap:8px;text-align:center;min-height:104px;padding:16px 10px;
+  font-size:15px;font-weight:700;position:relative}
+#q-opts.tiles.many .opt.tile{min-height:96px;font-size:13px}
+.opt-emoji{font-size:38px;line-height:1}
+#q-opts.tiles.many .opt-emoji{font-size:30px}
+.opt-lab{line-height:1.35}
+.opt.tile .tick{position:absolute;top:8px;right:8px;flex:none}
+.opt.tile:hover{border-color:var(--accent)}
 button:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 button.cta:hover{filter:brightness(1.08)}
 button.ghost:hover{border-color:var(--accent)}
@@ -771,7 +815,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <span class="playcard-text"><strong>Let your kid pick by playing</strong><em>Two quick costume games</em></span>
         <span class="playcard-go" aria-hidden="true">&rarr;</span>
       </a>
-      <p class="fine firstonly" id="trending-line" style="margin:6px 0 0"></p>
+      <p class="fine firstonly" id="trending-line" style="margin:6px 0 0" hidden></p>
+      <!-- Billy 2026-09-28: visual-first hero. The trending text line was
+           redundant with the photo strip (same names under photos), so it
+           is hidden: imagery leads, text stays minimal. Kept in DOM so the
+           population guard (line && row) no-ops harmlessly. -->
       <!-- 2026-09-26 P4: stranded-results resume. Quiet text-link, shown iff
            pmc_last_v1 has results but no fresh pick (returnbox hidden). Reuses
            the btn-return handler verbatim; visibility managed by
@@ -1444,30 +1492,30 @@ function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent || ""); }
 /* ================= CONFIG: QUESTIONS ================= */
 var QUESTIONS = [
   {id:"q1", title:"Who is dressing up?", hint:"Pick the one that fits best.", options:[
-    {label:"Solo", value:"solo", tags:{}},
-    {label:"My kid", value:"kid", tags:{}},
-    {label:"My family", value:"family", tags:{}},
-    {label:"Couple", value:"couple", tags:{}},
-    {label:"Group", value:"group", tags:{}}
+    {label:"Solo", value:"solo", emoji:"\uD83D\uDC64", tags:{}},
+    {label:"My kid", value:"kid", emoji:"\uD83E\uDDD2", tags:{}},
+    {label:"My family", value:"family", emoji:"\uD83D\uDC6A", tags:{}},
+    {label:"Couple", value:"couple", emoji:"\uD83D\uDC91", tags:{}},
+    {label:"Group", value:"group", emoji:"\uD83D\uDC65", tags:{}}
   ]},
   {id:"q2", title:"What vibe are you going for?", hint:"There are no wrong answers.", options:[
-    {label:"Funny", tags:{funny:2}},
-    {label:"Scary", tags:{scary:2}},
-    {label:"Cute", tags:{cute:2}},
-    {label:"Chill", tags:{simple:2}}
+    {label:"Funny", emoji:"\uD83D\uDE02", tags:{funny:2}},
+    {label:"Scary", emoji:"\uD83D\uDE31", tags:{scary:2}},
+    {label:"Cute", emoji:"\uD83E\uDD70", tags:{cute:2}},
+    {label:"Chill", emoji:"\uD83D\uDE0E", tags:{simple:2}}
   ]},
   {id:"q4", title:"How much effort?", hint:"Be honest. Couch-level is a fine answer.", options:[
-    {label:"Couch-level", tags:{couch:2}},
-    {label:"A little crafty", tags:{crafty:2}},
-    {label:"Go all out", tags:{allout:2}}
+    {label:"Couch-level", emoji:"\uD83D\uDECB\uFE0F", tags:{couch:2}},
+    {label:"A little crafty", emoji:"\u2702\uFE0F", tags:{crafty:2}},
+    {label:"Go all out", emoji:"\uD83D\uDE80", tags:{allout:2}}
   ]},
   {id:"q5kid", title:"How old?", hint:"So we keep it age-safe.", options:[
-    {label:"Under 3", tags:{kidunder3:4}},
-    {label:"3 to 6", tags:{kid36:4}},
-    {label:"7+", tags:{kid7plus:4}},
+    {label:"Under 3", emoji:"\uD83D\uDC76", tags:{kidunder3:4}},
+    {label:"3 to 6", emoji:"\uD83E\uDDD2", tags:{kid36:4}},
+    {label:"7+", emoji:"\uD83C\uDF92", tags:{kid7plus:4}},
     /* Mara 2026-09-25: moms of 2+ bounced on the singular. Mixed ages gets
        the safest pool (toddler-safe picks work for the older ones too). */
-    {label:"Mixed ages", tags:{kidunder3:4}}
+    {label:"Mixed ages", emoji:"\uD83E\uDDF8", tags:{kidunder3:4}}
   ]},
   /* qfit retired 2026-09-24: the conditional fit follow-up ("Which look feels
      more like you?") could make a rare 6th quiz question, breaking Billy's
@@ -1475,22 +1523,22 @@ var QUESTIONS = [
      row, shown only when the answer can change the top 3. Same scoring
      effect, zero question tax. */
   {id:"qocc", title:"What's the Halloween plan?", hint:"So the pick fits the night.", options:[
-    {label:"Trick-or-treating", tags:{occtreat:2}},
-    {label:"House party", tags:{occparty:2}},
-    {label:"Bar / club night", value:"bar", tags:{occbar:2}},
-    {label:"Handing out candy", tags:{occcandy:2}},
-    {label:"Low-key night in", tags:{occlowkey:2}}
+    {label:"Trick-or-treating", emoji:"\uD83C\uDF6C", tags:{occtreat:2}},
+    {label:"House party", emoji:"\uD83C\uDF89", tags:{occparty:2}},
+    {label:"Bar / club night", value:"bar", emoji:"\uD83C\uDF78", tags:{occbar:2}},
+    {label:"Handing out candy", emoji:"\uD83C\uDF6D", tags:{occcandy:2}},
+    {label:"Low-key night in", emoji:"\uD83C\uDF19", tags:{occlowkey:2}}
   ]},
   {id:"qinterest", title:"What is your kid into?", hint:"Pick the closest match.", options:[
-    {label:"Animals", tags:{animals:2}},
-    {label:"Princesses & fairy tales", tags:{princess:2}},
-    {label:"Superheroes", tags:{heroes:2}},
-    {label:"Dinosaurs & monsters", tags:{dinos:2}},
-    {label:"Video games", tags:{games:2}},
-    {label:"TV & movie characters", tags:{tv:2}},
-    {label:"Food & snacks", tags:{food:2}},
-    {label:"Sports", tags:{sports:2}},
-    {label:"Surprise me", tags:{}}
+    {label:"Animals", emoji:"\uD83D\uDC3E", tags:{animals:2}},
+    {label:"Princesses & fairy tales", emoji:"\uD83D\uDC51", tags:{princess:2}},
+    {label:"Superheroes", emoji:"\uD83E\uDDB8", tags:{heroes:2}},
+    {label:"Dinosaurs & monsters", emoji:"\uD83E\uDD96", tags:{dinos:2}},
+    {label:"Video games", emoji:"\uD83C\uDFAE", tags:{games:2}},
+    {label:"TV & movie characters", emoji:"\uD83D\uDCFA", tags:{tv:2}},
+    {label:"Food & snacks", emoji:"\uD83C\uDF55", tags:{food:2}},
+    {label:"Sports", emoji:"\u26BD", tags:{sports:2}},
+    {label:"Surprise me", emoji:"\uD83C\uDFB2", tags:{}}
   ]}
 ];
 
@@ -2868,6 +2916,11 @@ function renderQ(){
   box.innerHTML = "";
   var current = state.answers[qid];
   var opts = q.options;
+  /* Billy 2026-09-28: visual-first quiz. Option buttons render as
+     emoji-led tiles (big emoji + short label) in a 2-col grid; the
+     9-option interest question gets 3 cols. Duel/gift/warm keep the
+     old .opt row look: they never touch #q-opts' classes. */
+  box.className = "opts tiles" + (opts.length >= 7 ? " many" : "");
   if (qid === "qinterest") {
     var aud0 = state.answers.q1 && state.answers.q1.value;
     if (aud0) opts = opts.filter(function(opt){
@@ -2890,15 +2943,20 @@ function renderQ(){
     var b = document.createElement("button");
     b.type = "button";
     var sel = current && current.label === opt.label;
-    b.className = "opt" + (sel ? " sel" : "");
+    b.className = "opt tile" + (sel ? " sel" : "");
     b.setAttribute("aria-pressed", sel ? "true" : "false");
     var tick = document.createElement("span");
     tick.className = "tick";
     tick.setAttribute("aria-hidden", "true");
     tick.textContent = "\u2713";
+    var em = document.createElement("span");
+    em.className = "opt-emoji";
+    em.setAttribute("aria-hidden", "true");
+    em.textContent = opt.emoji || "\uD83C\uDF83";
     var lab = document.createElement("span");
+    lab.className = "opt-lab";
     lab.textContent = opt.label;
-    b.appendChild(tick); b.appendChild(lab);
+    b.appendChild(tick); b.appendChild(em); b.appendChild(lab);
     b.onclick = function(){
       /* 2026-09-26 pm3 red-team: ignore finger-bounce double-taps. Without
          this, tap 2 lands on the synchronously re-rendered next question and
@@ -3984,7 +4042,10 @@ function shareTextFor(idea, sid, origin){
     var ins = INSTRUCTIONS[idea.id];
     if (ins && ins.m && ins.m.length) text += shareShoppingListAppend(ins);
   }
-  return text;
+  /* 2026-09-28 share red-team P2: standing rule is emoji in all user-facing
+     copy, share text included. Every other share builder goes through
+     emojiLead(); the canonical quiz text was the one that did not. */
+  return emojiLead(text);
 }
 /* 2026-09-27 red-team copy-then-bail: the kid/family share append dumped the
    raw materials list under a "You need" header, including own/make items
@@ -4000,7 +4061,15 @@ function shareShoppingListAppend(ins){
     return /\bbuy\b/.test(low) && !/\bown\b/.test(low);
   });
   if (!shop.length) return "";
-  return " You need: " + shop.slice(0, 8).join(", ") +
+  /* 2026-09-28 share red-team P3: the raw material strings carry bank
+     annotations like "(buy: discount store)" -- internal sourcing notes,
+     not human language. Strip the buy-annotation parentheticals in the
+     share-text path only (keep the item, drop the note); the pantry
+     buy-only logic elsewhere is untouched. */
+  var items = shop.slice(0, 8).map(function(s){
+    return String(s).replace(/\s*\([^)]*\bbuy\b[^)]*\)/gi, "").replace(/\s+/g, " ").trim();
+  });
+  return " You need: " + items.join(", ") +
     (shop.length > 8 ? ", plus " + (shop.length - 8) + " more." : ".");
 }
 /* 2026-09-26 pair-share experiment ("Find my +1's costume"): the cooperative
@@ -7599,6 +7668,9 @@ function warmQuizChrome(title, hint){
   $("q-hint").textContent = hint;
   var pb = $("q-proxybanner"); if (pb) pb.style.display = "none";
   var box = $("q-opts"); box.innerHTML = "";
+  /* 2026-09-28: the main quiz renders emoji tiles into #q-opts; the warm
+     rows keep the old full-width look, so reset the classes here. */
+  box.className = "opts";
   window.scrollTo(0, 0);
   return box;
 }
