@@ -4081,15 +4081,13 @@ function shareVariant(){
 }
 /* Browse thumbnail experiment: photo vs transparent cutout.
    Arm persists per session in localStorage; card thumbnails (not detail
-   hero, not share images) switch presentation. Analytics carries thumb_arm. */
+   hero, not share images) switch presentation. Analytics carries thumb_arm.
+   2026-09-27 Billy verdict: the cutout "sticker" look is broken (rembg left
+   background remnants, halos, and stray props on many of the 109). The
+   experiment is retired; every browse card shows the photo. */
 function thumbArm(){
-  try {
-    var v = localStorage.getItem("pmc_thumb_arm");
-    if (v === "photo" || v === "cutout") return v;
-    v = Math.random() < 0.5 ? "photo" : "cutout";
-    localStorage.setItem("pmc_thumb_arm", v);
-    return v;
-  } catch(_){ return "photo"; }
+  try { localStorage.setItem("pmc_thumb_arm", "photo"); } catch(_){}
+  return "photo";
 }
 function shareAsk(person, ideaTitle){
   var v = shareVariant(), p = person || "me";
@@ -9959,6 +9957,34 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
     _clb.style.marginTop = "12px";
     _clb.onclick = function(){ openCloset("s-detail"); };
     box.appendChild(_clb);
+  }
+  /* 2026-09-27 Billy: "email me the instructions" -- a mailto: link with the
+     build plan prefilled. No email collection, no backend; the tap opens the
+     user's own mail app with the instructions ready to send to themselves. */
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var _emb = document.createElement("button");
+    _emb.type = "button"; _emb.className = "ghost";
+    _emb.textContent = "Email me the instructions";
+    _emb.style.marginTop = "12px";
+    _emb.onclick = function(){
+      var _ins = INSTRUCTIONS[idea.id];
+      var _lines = [];
+      _lines.push(idea.title.toUpperCase() + " -- build instructions (via Pick My Costume)");
+      _lines.push("");
+      _lines.push("YOU NEED:");
+      for (var _mi = 0; _mi < _ins.m.length; _mi++) _lines.push("- " + _ins.m[_mi]);
+      _lines.push("");
+      _lines.push("STEPS:");
+      for (var _si = 0; _si < _ins.s.length; _si++) _lines.push((_si + 1) + ". " + _ins.s[_si]);
+      _lines.push("");
+      _lines.push(_ins.time + " | " + _ins.cost + " | " + _ins.effort);
+      _lines.push("Full guide: https://pickmycostume.com/c/" + idea.id);
+      var _href = "mailto:?subject=" + encodeURIComponent("How to make: " + idea.title + " (Pick My Costume)")
+        + "&body=" + encodeURIComponent(_lines.join("\n"));
+      try { Analytics.track("email_instructions_tapped", {idea_id: idea.id}); } catch(_){}
+      window.location.href = _href;
+    };
+    box.appendChild(_emb);
   }
   var _bde = {idea_id: idea.id, thumb_arm: thumbArm()};
   if (detailReturnTo === "s-pantry") _bde.via = "pantry";
