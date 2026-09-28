@@ -10228,7 +10228,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   var imgRow = document.createElement("div");
   imgRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
   var imgBtn = document.createElement("button");
-  imgBtn.type = "button"; imgBtn.className = "ghostbtn";
+  imgBtn.type = "button"; imgBtn.className = "ghost";
   imgBtn.textContent = "Save the image";
   imgBtn.onclick = function(){ shareImage(idea, imgBtn, statusEl); };
   imgRow.appendChild(imgBtn);
