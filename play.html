@@ -214,7 +214,14 @@
   function startMaterials(){mode='match';resetRun();setScreen(materials);syncSwitchLabel();renderMatch()}
   function renderPeek(){
     answered=false;var item=peekRounds[round];
+    /* 2026-09-28 spoiler-guard (Billy: half-second glimpse of the costume
+       before the hider card covers it). The solved round's hider sits at
+       opacity 0; resetting the stage class lets it fade/slide back in over
+       .35-.45s while the new costume is already display:block. Snap the
+       hider to fully-covering instantly, then restore transitions. */
+    var hiderEl=document.getElementById('hider');hiderEl.style.transition='none';
     stage.className='stage level-'+item.level+' rv-'+item.rv;stage.style.setProperty('--open',item.open+'%');
+    void hiderEl.offsetWidth;hiderEl.style.transition='';
     document.querySelectorAll('.costume').forEach(function(x){x.classList.toggle('show',x.getAttribute('data-id')===item.id)});
     setHud(item.label,peekRounds.length);
     document.getElementById('feedback').innerHTML='';document.getElementById('next').classList.remove('show');var pk=document.getElementById('peek');pk.style.display='block';pk.textContent=item.peek;answers.innerHTML='';
