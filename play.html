@@ -170,7 +170,7 @@
         <h2 id="finishTitle">Costume star!</h2>
         <div class="result" id="result">You found 3 out of 3</div>
         <p id="finishCopy">Those costumes couldn’t fool you.</p>
-        <div class="found-list" id="foundList"></div><div class="actions"><button class="primary" id="again">Play again</button><button class="quiet" id="switchGameEnd" type="button">Try the other game</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
+        <div class="found-list" id="foundList"></div><div class="actions"><button class="primary" id="again">Play again</button><button class="primary" id="shareScore">Share my score</button><button class="quiet" id="switchGameEnd" type="button">Try the other game</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
         <!-- 2026-09-28: distribution. The game is top of funnel: kid plays,
              parent takes the quiz, quiz feeds the share loop. Quiet link,
              never a popup, never mid-game. -->
@@ -289,6 +289,72 @@
   document.getElementById('next').addEventListener('click',function(){if(tapGuard('gnext',500))next()});
   document.getElementById('materialNext').addEventListener('click',function(){if(tapGuard('gnext',500))next()});
   document.getElementById('again').addEventListener('click',function(){mode==='match'?startMaterials():start()});
+  /* 2026-09-28: "Share my score" (Billy-approved one-tap). The distribution
+     loop: kid plays -> parent shares the score dare -> recipient lands on
+     /play?s=<sid> and plays too. The button lives ONLY on the finish screen,
+     never mid-game. Native sheet on phones, clipboard fallback on desktop.
+     share_created fires only on a real share; a dismissed sheet is not credit.
+     Single-flight: the button disables until the share settles, and tapGuard
+     swallows a finger bounce. */
+  function gcap(n,p){try{if(window.posthog&&posthog.capture)posthog.capture(n,p||{})}catch(e){}}
+  function gameShareId(){var c='abcdefghijklmnopqrstuvwxyz0123456789',s='';for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+  function gameShareCopy(){
+    var sc=points,total=6,sid=gameShareId();
+    var url='https://pickmycostume.com/play?s='+sid+'&o=game';
+    var body;
+    if(mode==='match'){
+      body=sc>=total?'I matched every costume piece, 6/6! Can you?':'I matched '+sc+'/6 costume rounds! Can you beat me?';
+    }else{
+      body=sc>=total?'I found 6/6 hiding costumes! Can you?':'I found '+sc+'/6 hiding costumes! Can you beat me?';
+    }
+    /* Standing rule (2026-09-27): emoji in all user-facing copy, share text
+       included. Matches the site's emojiLead convention. */
+    return {text:'\uD83C\uDF83 '+body+' '+url,sid:sid,score:sc};
+  }
+  function gameCopy(text,done){
+    function fin(ok,msg){done(ok,msg)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){fin(true)},function(){legacy()});
+    }else legacy();
+    function legacy(){
+      try{
+        var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+        document.body.appendChild(ta);ta.select();
+        var ok=document.execCommand('copy');document.body.removeChild(ta);fin(!!ok);
+      }catch(e){fin(false)}
+    }
+  }
+  document.getElementById('shareScore').addEventListener('click',function(){
+    if(!tapGuard('gscore',800))return;
+    var btn=this;
+    if(btn.disabled)return;
+    btn.disabled=true;
+    var live=true;
+    function rearm(){if(live){live=false;btn.disabled=false}}
+    var c=gameShareCopy();
+    function credited(via){
+      rearm();
+      gcap('share_created',{surface:'game',mode:mode,score:c.score,share_id:c.sid,via:via});
+    }
+    if(navigator.share){
+      try{
+        navigator.share({title:'Pick My Costume',text:c.text}).then(
+          function(){credited('native');},
+          function(){rearm();} /* dismissed sheet: a cancel, not a share */
+        );
+        return;
+      }catch(e){/* fall through to clipboard */}
+    }
+    gameCopy(c.text,function(ok){
+      if(ok){
+        var orig=btn.textContent;btn.textContent='Copied \u2713';
+        setTimeout(function(){btn.textContent=orig},2000);
+        credited('clipboard');
+      }else{
+        rearm();
+      }
+    });
+  });
   /* 2026-09-28: distribution loop tracking. play -> quiz -> share. */
   document.getElementById('finishQuiz').addEventListener('click',function(){try{if(window.posthog&&posthog.capture)posthog.capture('play_finish_quiz_cta',{mode:mode})}catch(e){}});
   document.getElementById('sound').addEventListener('click',function(){soundOn=!soundOn;this.textContent=soundOn?'Sound on':'Sound off';this.setAttribute('aria-pressed',soundOn?'true':'false');if(soundOn)tone(600,.15,0)});
@@ -342,6 +408,15 @@ if(switchGameEnd)switchGameEnd.addEventListener('click',switchToOther);
   }
   var curMode = '';
   document.addEventListener('DOMContentLoaded', function(){
+    /* 2026-09-28: distribution attribution. A shared game link carries ?s=<sid>;
+       record the recipient landing so the play -> share -> play loop is measurable. */
+    try{
+      var sm=/[?&]s=([a-z0-9]{8})/.exec(location.search||'');
+      if(sm){
+        var om=/[?&]o=([a-z0-9_-]+)/.exec(location.search||'');
+        cap('play_shared_opened',{share_id:sm[1],origin:om?om[1]:'unknown'});
+      }
+    }catch(e){}
     var s1 = document.getElementById('start'), s2 = document.getElementById('startMaterials');
     if (s1) s1.addEventListener('click', function(){ curMode='peek'; cap('play_started', {mode:'peek'}); });
     if (s2) s2.addEventListener('click', function(){ curMode='match'; cap('play_started', {mode:'match'}); });
