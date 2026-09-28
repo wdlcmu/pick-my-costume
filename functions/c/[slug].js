@@ -327,7 +327,7 @@ export function onRequest(context) {
       (_qtip ? "<p class=\"qtip\">Tip: " + esc(_qtip) + "</p>" : "");
     /* Decision triple: the most quotable line of the guide, first under h1. */
     var _t = [_hw.time, _hw.cost, _hw.effort].filter(function(x){ return x; });
-    if (_t.length) _triple = "<p class=\"triple\">" + _t.map(esc).join(" &middot; ") + "</p>";
+    if (_t.length) _triple = "<p class=\"triple\">" + _t.map(function(x){ return "<span class=\"pill\">" + esc(x) + "</span>"; }).join("") + "</p>";
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing) _fit = "<p class=\"fit\">Fit: " + esc(_hw.sizing) + "</p>";
     /* Parent FAQs: visible static HTML so AI assistants can quote them. */
@@ -454,6 +454,18 @@ export function onRequest(context) {
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend picked <strong>" + title + "</strong> and started a no-clone pact.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">No matching costumes at the parade. Reply with your kid's costume in the chat, or take the 2-minute quiz to get your own.</p>\" +" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    "main.insertBefore(b, main.firstChild);" +
+    "return;" +
+    "}" +
+    "/* 2026-09-27 team-kit experiment: ?o=team marks youth-sports team" +
+    " coordination shares. The recipient job is to reply with their kid's" +
+    " shirt size, not just pick -- the banner names the team job. */" +
+    "if (q.get(\"o\") === \"team\") {" +
+    "var b = document.createElement(\"div\");" +
+    "b.className = \"rbanner\";" +
+    "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your team is going as <strong>" + title + "</strong>.</p>\" +" +
+    " \"<p class=\\\"rbanner-sub\\\">One costume for the whole team. Reply with your kid's shirt size in the team chat, or take the 2-minute quiz to find your own.</p>\" +" +
     " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
@@ -592,29 +604,39 @@ export function onRequest(context) {
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
     _ld +
     "<style>" +
-    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#222;background:#fff;}" +
-    ".guide{max-width:640px;margin:0 auto;padding:24px 20px 48px;}" +
-    "h1{font-size:28px;margin:0 0 8px;}" +
-    ".triple{font-size:15px;font-weight:700;color:#555;margin:0 0 8px;}" +
+    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#1f1f1f;background:#fff;line-height:1.55;}" +
+    ".topbar{background:#fff;border-bottom:1px solid #eee2d3;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
+    ".topbar a{color:#1f1f1f;text-decoration:none;font-weight:800;font-size:16px;}" +
+    ".topbar a span{color:#ff8c1a;}" +
+    ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
+    "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
+    ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
+    ".pill{display:inline-block;background:#fff4e5;border:1px solid #ffd9a3;color:#8a4a0c;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
     ".fit{font-size:15px;color:#444;margin:0 0 8px;}" +
     ".lede{font-size:17px;color:#444;margin:0;}" +
-    "h2{font-size:22px;margin:30px 0 10px;}" +
+    "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
+    ".quickcard{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
+    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#222;margin:0 0 8px;}" +
+    ".quickcard .qsteps{font-size:16px;line-height:1.5;padding-left:22px;margin:0;}" +
+    ".quickcard .qsteps li{margin:8px 0;}" +
+    ".quickcard .qtip{font-size:15px;color:#555;font-style:italic;margin:10px 0 0;}" +
     "details.faq{border:1px solid #e3ddd2;border-radius:10px;margin:8px 0;background:#faf8f4;}" +
     "details.faq summary{font-weight:700;font-size:16px;padding:12px 14px;cursor:pointer;list-style:none;}" +
     "details.faq summary::-webkit-details-marker{display:none;}" +
     "details.faq summary::before{content:'+ ';color:#b3540c;font-weight:700;}" +
-    "details.faq[open] summary::before{content:'− ';}" +
+    "details.faq[open] summary::before{content:'\u2212 ';}" +
     "details.faq p{margin:0;padding:0 14px 12px;font-size:16px;line-height:1.55;}" +
-    ".qsteps li{margin:10px 0;line-height:1.6;}" +
+    ".mats{list-style:none;padding:0;margin:0;background:#faf8f4;border:1px solid #eee2d3;border-radius:14px;padding:6px 18px;}" +
+    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #f0e8da;position:relative;font-size:16px;}" +
+    ".mats li:last-child{border-bottom:none;}" +
+    ".mats li::before{content:'✓';position:absolute;left:2px;color:#b3540c;font-weight:700;}" +
+    "ol.steps{list-style:none;counter-reset:step;padding:0;margin:0;}" +
+    "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
+    "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
     ".ctawrap{margin:20px 0;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
     ".guide img{max-width:100%;height:auto;border-radius:12px;margin:6px 0;}" +
-    ".qtriple{font-size:16px;font-weight:700;color:#222;margin:14px 0 8px;}" +
-    ".qsteps{font-size:16px;line-height:1.5;padding-left:22px;margin:0;}" +
-    ".qtip{font-size:15px;color:#555;font-style:italic;margin:8px 0 0;}" +
-    "h2{font-size:21px;margin:26px 0 10px;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
-    "li{margin:7px 0;}" +
     ".quizline{font-size:15px;color:#555;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
     ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
@@ -623,7 +645,6 @@ export function onRequest(context) {
     ".rbanner-line{font-size:17px;font-weight:700;color:#333;margin:0 0 6px;line-height:1.4;}" +
     ".rbanner-sub{font-size:15px;color:#666;margin:0 0 14px;line-height:1.45;}" +
     ".rbanner .cta{margin:0;}" +
-    /* Split-the-build styles (2026-09-26). Static for every visitor. */
     ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #e0a33e;border-radius:14px;background:#fffdf6;}" +
     ".splitwrap .splitopen{width:100%;}" +
     ".splitq{font-size:16px;font-weight:700;margin:0 0 8px;}" +
@@ -640,15 +661,16 @@ export function onRequest(context) {
     ".splitmine-head{font-size:16px;font-weight:700;margin:12px 0 6px;}" +
     ".splititems{font-size:16px;}" +
     ".splititems-empty{font-size:15px;color:#777;}" +
-    /* "I made it" proof-photo block (novel-find 2026-09-26i, MakerWorld steal) */
     ".madeit-line{font-size:16px;color:#444;margin:0 0 14px;line-height:1.55;}" +
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
     ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
     ".crumb{font-size:13px;color:#777;margin:0 0 8px;}" +
     ".crumb a{color:#b3541e;text-decoration:none;}" +
+    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
+    ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
     "</style>" +
-    "</head><body><main class=\"guide\">" +
+    "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + title + "</h1>" +
     _triple +
@@ -656,10 +678,10 @@ export function onRequest(context) {
     "<p class=\"lede\">" + blurb + "</p>" +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<img src=\"" + img + "\" alt=\"" + title + " costume idea\">" +
-    _quick +
-    "<h2>You need</h2><ul>" + _mats + "</ul>" +
+    (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
+    "<h2>You need</h2><ul class=\"mats\">" + _mats + "</ul>" +
     _splitHtml +
-    "<h2>Steps</h2><ol>" + _steps + "</ol>" +
+    "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
     _faqs +
     _relHtml +
     _splitPartnerHtml +
@@ -671,6 +693,7 @@ export function onRequest(context) {
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
+    "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse. Made by Billy Litner.</footer>" +
     _bannerScript +
     _splitScript +
     "</main></body></html>";
