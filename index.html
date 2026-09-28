@@ -136,6 +136,10 @@ body{
   /* Billy 2026-09-27: warm "Your plan" strip had the same full-bleed photo
      problem on desktop. Photo left, title/actions right. Mobile stacked. */
   .warmstrip{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:start}
+  /* 2026-09-27 warm QA: companion cards ("Costumes that go with") rendered
+     ~700px-tall full-bleed photos on desktop. Same two-column treatment as
+     the hero strip: photo left, text right. Mobile stacks. */
+  .warmpair{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:start}
   #s-detail #d-card>.card>div:first-child{grid-column:1;grid-row:1/-1;position:sticky;top:16px}
 }
 .hero{text-align:center;padding:30px 8px 32px;position:relative}
@@ -8060,22 +8064,26 @@ function renderWarmCapture(){
 /* Compact warm card: photo, title, honest reason line, guide link. */
 function warmPairCard(idea, reason){
   var card = document.createElement("div");
-  card.className = "card"; card.style.marginBottom = "12px";
+  card.className = "card warmpair"; card.style.marginBottom = "12px";
   card.appendChild(ideaMedia(idea, true));
+  /* 2026-09-27 warm QA: text wrapped so the desktop .warmpair grid can put
+     the photo left and the text right instead of full-bleed. */
+  var txt = document.createElement("div");
   var h = document.createElement("h3"); h.textContent = idea.title;
-  card.appendChild(h);
+  txt.appendChild(h);
   var tri = document.createElement("p");
   tri.style.cssText = "margin:0 0 6px;font-size:14px;color:#666";
   tri.textContent = spinTriple(idea);
-  card.appendChild(tri);
+  txt.appendChild(tri);
   var bl = document.createElement("p");
   bl.style.cssText = "margin:0 0 8px;font-size:14px;color:#666;line-height:1.4";
   bl.textContent = reason;
-  card.appendChild(bl);
+  txt.appendChild(bl);
   var a = document.createElement("a");
   a.className = "ghost"; a.style.display = "inline-block"; a.style.textDecoration = "none";
   a.href = "/c/" + idea.id; a.textContent = "See the full guide";
-  card.appendChild(a);
+  txt.appendChild(a);
+  card.appendChild(txt);
   return card;
 }
 /* No bank match for the typed name: group-friendly ideas pair with almost anything. */
