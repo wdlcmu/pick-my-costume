@@ -762,7 +762,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            fills the right column on wide screens; the centered stack left the
            sides as dead starfield. Desktop-only (display:none below 900px). -->
       <div class="herovis" aria-label="Trending costumes">
-        <a href="/c/snow-sisters?from=hero"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
+        <a href="/c/snow-sisters?from=hero"><img src="photos/snow-sisters.webp" alt="Snow Kingdom Crew costume" loading="lazy"><span>Snow Kingdom Crew</span></a>
         <a href="/c/tin-hero?from=hero"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
         <a href="/c/lost-tourist?from=hero"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
         <a href="/c/classic-ghost?from=hero"><img src="photos/classic-ghost.webp" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
@@ -799,7 +799,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <!-- Billy 2026-09-27: F/M/F/M visual rhythm; 🔥 badges stay on the
                  true top-3 by saves. The Monday proof-strip cron rebuilds this
                  rail weekly and must preserve the interleave (see its body). -->
-            <a href="/c/snow-sisters?from=rail"><span class="proofbadge">🔥 #1</span><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
+            <a href="/c/snow-sisters?from=rail"><span class="proofbadge">🔥 #1</span><img src="photos/snow-sisters.webp" alt="Snow Kingdom Crew costume" loading="lazy"><span>Snow Kingdom Crew</span></a>
             <a href="/c/tin-hero?from=rail"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
             <a href="/c/lost-tourist?from=rail"><span class="proofbadge">🔥 #3</span><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
             <a href="/c/blue-dog-family?from=rail"><span class="proofbadge">🔥 #2</span><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
@@ -6895,6 +6895,119 @@ function buildNocloneBox(results){
   return nbox;
 }
 /* NOCLONE-END */
+/* TEAMKIT-START (2026-09-27 team-kit distribution experiment): youth-sports
+   team costume coordination. Every coordination surface so far targets
+   class chats (no-clone), family, or couples. Youth sports teams are the
+   one active-now community none of them reaches: soccer/baseball/
+   basketball teams run Halloween practices and team photos in late
+   October, and every team has a group chat plus a coach sending weekly
+   emails. The box shows on group-audience results only, the text goes to
+   the team chat, and the reply happens there ("reply with your kid's
+   shirt size"). Coach-to-coach is the distribution path: one coach's
+   share teaches the next coach the quiz exists. Every recipient is one
+   tap from the quiz; every recipient can start their own team kit from
+   their results, so the box is NOT suppressed on the recipient leg. */
+function teamkitTextFor(idea, sid){
+  var tri = "";
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var ins = INSTRUCTIONS[idea.id];
+    tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+  }
+  var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=team";
+  return emojiLead("One costume for the whole team this Halloween.") + "\n" +
+    "Our team is going as " + idea.title + (tri ? " (" + tri + ")" : "") + ": " + url + "\n" +
+    "Send it to the team chat. Reply with your kid's shirt size.";
+}
+function buildTeamKitBox(results){
+  var idea = results && results[0] && results[0].idea;
+  if (!idea) return null;
+  /* Team frame is the honest fit: group-audience results only. */
+  var aud = voiceAudience(idea);
+  if (aud !== "group") return null;
+  var tbox = document.createElement("div");
+  tbox.className = "stuck"; tbox.id = "teamkit-box";
+  var th = document.createElement("h3");
+  th.textContent = "Dress the whole team";
+  var tp = document.createElement("p");
+  tp.textContent = "One costume for every kid on the team. Send your pick to the team chat and ask parents to reply with their kid's shirt size.";
+  var trow = document.createElement("div"); trow.className = "row";
+  var tbtn = document.createElement("button");
+  tbtn.type = "button"; tbtn.className = "ghost";
+  tbtn.textContent = "Share the team costume";
+  var tpanel = document.createElement("div");
+  tpanel.style.display = "none"; tpanel.style.marginTop = "10px";
+  tbtn.onclick = function(){
+    if (tpanel.style.display !== "none"){
+      tpanel.style.display = "none";
+      tbtn.textContent = "Share the team costume";
+      return;
+    }
+    var sid = newShareId();
+    var text = teamkitTextFor(idea, sid);
+    tpanel.innerHTML = "";
+    var ta = document.createElement("textarea");
+    ta.readOnly = true; ta.rows = 6;
+    ta.style.cssText = "width:100%;box-sizing:border-box;font-size:14px";
+    ta.value = text;
+    var brow = document.createElement("div"); brow.className = "row"; brow.style.marginTop = "8px";
+    var bCopy = document.createElement("button");
+    bCopy.type = "button"; bCopy.className = "ghost"; bCopy.textContent = "Copy team text";
+    var bShare = document.createElement("button");
+    bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
+    var tst = document.createElement("div"); tst.className = "status"; tst.style.marginTop = "6px";
+    bCopy.onclick = function(){
+      if (!tapGuard("teamkitcopy", 2000)) return;
+      doCopy(text, function(ok, msg){
+        tst.textContent = ok ? "Copied. Paste it into the team chat." : msg;
+        if (ok){
+          bCopy.textContent = "Copied \u2713";
+          setTimeout(function(){ bCopy.textContent = "Copy team text"; }, 2000);
+          Analytics.track("teamkit_text_copied", {share_id: sid, idea_id: idea.id, share_origin: "team", via: "clipboard"});
+        }
+      });
+    };
+    bShare.onclick = function(){
+      var rearmShare = armShareOnce(bShare);
+      if (!rearmShare) return; /* double-tap: a share is already in flight */
+      function doneShare(ok, msg){
+        tst.textContent = msg;
+        rearmShare();
+        if (ok){
+          Analytics.track("teamkit_share_created", {share_id: sid, idea_id: idea.id, share_origin: "team", via: "share_sheet"});
+          if (typeof VIA_SHARE !== "undefined" && VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "team"});
+        }
+      }
+      if (navigator.share){
+        try {
+          navigator.share({title: "Pick My Costume", text: text}).then(
+            function(){ doneShare(true, "Shared."); },
+            function(){ doneShare(false, ""); }
+          );
+        } catch(e){
+          doCopy(text, function(ok, msg){
+            tst.textContent = ok ? "Copied. Paste it into the team chat." : msg; rearmShare();
+            if (ok) Analytics.track("teamkit_text_copied", {share_id: sid, idea_id: idea.id, share_origin: "team", via: "clipboard"});
+          });
+        }
+      } else {
+        doCopy(text, function(ok, msg){
+          tst.textContent = ok ? "Copied. Paste it into the team chat." : msg; rearmShare();
+          if (ok) Analytics.track("teamkit_text_copied", {share_id: sid, idea_id: idea.id, share_origin: "team", via: "clipboard"});
+        });
+      }
+    };
+    tpanel.appendChild(ta);
+    brow.appendChild(bCopy); brow.appendChild(bShare);
+    tpanel.appendChild(brow); tpanel.appendChild(tst);
+    tpanel.style.display = "";
+    tbtn.textContent = "Hide the team text";
+    Analytics.track("teamkit_opened", {share_id: sid, idea_id: idea.id});
+  };
+  trow.appendChild(tbtn);
+  tbox.appendChild(th); tbox.appendChild(tp); tbox.appendChild(trow); tbox.appendChild(tpanel);
+  return tbox;
+}
+/* TEAMKIT-END */
 /* 2026-09-27 grandparent-loop distribution experiment: every share mechanic
    so far targets the sender's peers. Grandparents are the one audience no
    loop reaches: they help build grandkids' costumes, they are the most
@@ -8758,6 +8871,12 @@ function renderResults(results){
      running share-message arms. */
   var nocloneBox = buildNocloneBox(results);
   if (nocloneBox) box.appendChild(nocloneBox);
+  /* 2026-09-27 team-kit distribution experiment: youth-sports team
+     coordination share. Group-audience results only (the builder returns
+     null otherwise). Sits with the vote box, clear of Experiment 1's share
+     card and the running share-message arms. */
+  var teamkitBox = buildTeamKitBox(results);
+  if (teamkitBox) box.appendChild(teamkitBox);
   /* 2026-09-27 grandparent-loop: kid/family flows only (the builder returns
      null otherwise). Sits with the vote box, clear of Experiment 1's share
      card and the running share-message arms. */
@@ -9186,7 +9305,7 @@ var SEARCH_SUGGESTIONS = [
   {label:"Nursery rhymes", q:"cocomelon", w:46},
   {label:"Robot cars", q:"transformers", w:44},
   {label:"Emotion crew", q:"inside out", w:42},
-  {label:"Snow Sisters", q:"snow sisters", w:118},
+  {label:"Snow Kingdom Crew", q:"snow kingdom crew", w:118},
   {label:"Mermaid", q:"mermaid", w:112},
   {label:"Ghost Hunters", q:"ghost hunters", w:110},
   {label:"Breakfast Buffet", q:"breakfast buffet", w:108},
@@ -9216,7 +9335,7 @@ function prettyAliasKey(k){
     "ketchupmustard":"Ketchup & Mustard","baconandeggs":"Bacon & Eggs",
     "sunandmoon":"Sun & Moon","catandmouse":"Cat & Mouse",
     "tomandjerry":"Cat & Mouse","spaghettimeatball":"Spaghetti & Meatball",
-    "snowsisters":"Snow Sisters","ghosthunters":"Ghost Hunters",
+    "snowsisters":"Snow Kingdom Crew","ghosthunters":"Ghost Hunters",
     "breakfastbuffet":"Breakfast Buffet","losttourist":"Lost Tourist",
     "barbieken":"Doll couple","barbieandken":"Doll couple","scoobygang":"Mystery gang",
     "whereswaldo":"Crowd camouflage","fivenightsatfreddys":"Haunted pizzeria",
@@ -13170,6 +13289,11 @@ function shareLandingHeadline(idea, search){
      reply with their kid's costume, not just pick one. */
   var isNoclone = /[?&]o=noclone(?:&|$)/.test(q);
   if (isShare && isNoclone) return "Your friend picked " + idea.title + " and started a no-clone pact: no matching costumes at the parade. What is your pick?";
+  /* 2026-09-27 team-kit experiment: ?o=team marks youth-sports team
+     coordination shares. Name the team job so the recipient knows the
+     ask: reply with their kid's shirt size, not just pick a costume. */
+  var isTeam = /[?&]o=team(?:&|$)/.test(q);
+  if (isShare && isTeam) return "Your team is going as " + idea.title + ". One costume for the whole team. What is your pick?";
   /* 2026-09-26 proxy-quiz experiment: ?o=proxy marks the friend's
      tell-back pick. Flag-gated: with the flag off the branch never runs,
      so stale links read as generic shares. */
@@ -13265,7 +13389,16 @@ function shareLandingHeadline(idea, search){
        in either direction, so it sits last with no terminator, same as the
        wrapped precedent. Ungated: the box ships in the same batch, so no
        old link can carry this origin. */
-    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challengeresult|challenge|match|glow|remix|first|named|living|wrapped|countdown|classroom-quiz|classroom|proxy|grandparent|role|emaillist|noclone)/.exec(location.search || "");
+    /* 2026-09-27 team-kit experiment: ?o=team marks youth-sports team
+       coordination shares. "team" shares no prefix with any other arm in
+       either direction (no arm starts with "tea" except "teaser", and
+       "teaser" is not a prefix of "team" nor vice versa), so it sits last
+       with no terminator, same as the wrapped precedent. Ungated: the box
+       ships in the same batch, so no old link can carry this origin.
+       DEPLOY COORDINATION: staged/costume-dare-2026-09-26/apply_dare_index.py
+       anchors on this line's literal arms list -- it is now 4 edits behind
+       (vote, pantryvote, noclone, team). Update its anchor before applying. */
+    var om = /[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challengeresult|challenge|match|glow|remix|first|named|living|wrapped|countdown|classroom-quiz|classroom|proxy|grandparent|role|emaillist|noclone|team)/.exec(location.search || "");
     /* 2026-09-26 proxy-quiz experiment: ?o=proxy marks proxy tell-back
        links (and the invite link itself). "proxy" shares no prefix with
        any other arm (no arm starts with "pr"), so it sits last with no
