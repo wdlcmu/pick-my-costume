@@ -40,6 +40,10 @@
   .staple-fold summary::-webkit-details-marker{display:none}
   .staple-fold p{margin:0 0 12px}
   .staple-fold b{color:var(--ink)}
+  /* 2026-09-28: collapsed rows need a visible tap affordance. */
+  .staple-fold summary::after,.needs summary::after{content:"+";margin-left:auto;
+    color:var(--muted);font-size:18px;font-weight:400;flex:0 0 auto}
+  .staple-fold[open]>summary::after,.needs[open]>summary::after{content:"\2013"}
   fieldset{border:0;margin:0 0 8px;padding:0}
   legend{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:18px 0 8px;padding:0}
   .checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
