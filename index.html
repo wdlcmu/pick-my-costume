@@ -169,6 +169,25 @@ body{
 .billyline{margin:8px 0 0;font-size:15px;color:var(--text)}
 /* Billy 2026-09-26 (landing refresh): hero copy lines. */
 .honestline{margin:10px 0 0}
+/* Billy 2026-09-28: Play tab entry. Visual card next to the quiz CTA in the
+   hero: the game is a third way to pick (the kid picks by playing). */
+.playcard{display:flex;align-items:center;gap:14px;margin:16px auto 0;max-width:430px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;text-decoration:none;color:var(--ink)}
+.playcard:hover{border-color:var(--accent)}
+.playcard-art{flex:0 0 64px}
+.playcard-art svg{width:64px;height:64px;display:block}
+.playcard-text{flex:1;text-align:left;min-width:0}
+.playcard-text strong{display:block;font-size:16px;line-height:1.3}
+.playcard-text em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:2px}
+.playcard-go{font-size:22px;color:var(--accent);font-weight:700;flex:0 0 auto}
+/* Billy 2026-09-28: Play nudge on the results screen. Quiet visual card for
+   the stuck parent: hand the phone to the kid. */
+.playnudge{display:flex;align-items:center;gap:12px;margin:14px 0 4px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;text-decoration:none;color:var(--ink)}
+.playnudge:hover{border-color:var(--accent)}
+.playnudge-art{flex:0 0 48px}
+.playnudge-art svg{width:48px;height:48px;display:block}
+.playnudge-text{flex:1;min-width:0;font-size:14px;line-height:1.4}
+.playnudge-text strong{font-size:15px}
+.playnudge-go{color:var(--accent);font-weight:700;font-size:20px;flex:0 0 auto}
 /* Billy 2026-09-26: tabbed Discover feed. One section, three collections,
    kills the stacked-rails CTA overload. */
 .chiprow{display:flex;gap:8px;margin:8px -16px 0;padding:2px 16px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -737,6 +756,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <h1 class="firstonly">We know your Halloween costume.</h1>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
+      <!-- Billy 2026-09-28: Play tab entry. Visual card next to the quiz CTA;
+           the game is a third way to pick: the kid picks by playing. -->
+      <a class="playcard firstonly" href="/play" id="playcard-hero">
+        <span class="playcard-art" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="4" y="6" width="56" height="52" rx="8" fill="#167f7b"/><path d="M13 58V16q0-8 8-8h5v50z" fill="#0b5e5b"/><path d="M51 58V16q0-8-8-8h-5v50z" fill="#0b5e5b"/><path d="M24 54V32q0-11 8-11t8 11v22l-8-5z" fill="#fff"/><circle cx="29" cy="35" r="2.2" fill="#26223a"/><circle cx="35" cy="35" r="2.2" fill="#26223a"/></svg></span>
+        <span class="playcard-text"><strong>Let your kid pick by playing</strong><em>Two quick costume games</em></span>
+        <span class="playcard-go" aria-hidden="true">&rarr;</span>
+      </a>
       <p class="fine firstonly" id="trending-line" style="margin:6px 0 0"></p>
       <!-- 2026-09-26 P4: stranded-results resume. Quiet text-link, shown iff
            pmc_last_v1 has results but no fresh pick (returnbox hidden). Reuses
@@ -907,6 +933,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <h2 class="q-title">&#127875; Here is what you got</h2>
     <p class="q-hint">This is our top pick for you. Tap &ldquo;Claim this costume&rdquo; to save it and plan your costume, or see the other ideas below.</p>
     <div id="r-cards"></div>
+    <!-- Billy 2026-09-28: Play nudge. Shown for kid/family results only:
+         the stuck parent hands the phone to the kid. -->
+    <a class="playnudge" href="/play" id="playnudge-results" hidden>
+      <span class="playnudge-art" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="4" y="6" width="56" height="52" rx="8" fill="#167f7b"/><path d="M13 58V16q0-8 8-8h5v50z" fill="#0b5e5b"/><path d="M51 58V16q0-8-8-8h-5v50z" fill="#0b5e5b"/><path d="M24 54V32q0-11 8-11t8 11v22l-8-5z" fill="#fff"/><circle cx="29" cy="35" r="2.2" fill="#26223a"/><circle cx="35" cy="35" r="2.2" fill="#26223a"/></svg></span>
+      <span class="playnudge-text"><strong>Still deciding?</strong> Hand the phone to your kid and let them pick by playing.</span>
+      <span class="playnudge-go" aria-hidden="true">&rarr;</span>
+    </a>
     <div class="navrow" style="margin-top:8px">
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
@@ -8123,6 +8156,9 @@ function renderResults(results){
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
      the household in one run, and other audiences have no sibling case. */
   $("btn-nextkid").style.display = (state.answers.q1 && state.answers.q1.value === "kid") ? "" : "none";
+  /* Billy 2026-09-28: Play nudge. Kid/family results only: the stuck parent
+     hands the phone to the kid. */
+  $("playnudge-results").hidden = !(state.answers.q1 && (state.answers.q1.value === "kid" || state.answers.q1.value === "family"));
   var pick = load("pmc_pick_v1");
   var cards = {}; /* idea id -> card element, for picked-panel restore */
   /* Pinpoint: name the match so the #1 never feels arbitrary. */
@@ -12124,6 +12160,13 @@ $("btn-rback").onclick = function(){
 };
 /* Billy 2026-09-26: the above-the-fold twin of back-to-questions. */
 $("btn-rtop").onclick = $("btn-rback").onclick;
+/* Billy 2026-09-28: Play tab entries. Plain links to /play; tracked so we
+   can see whether the game becomes a real picking path. */
+(function(){
+  var hero = $("playcard-hero"), res = $("playnudge-results");
+  if (hero) hero.addEventListener("click", function(){ track("play_tab_opened", {from:"hero"}); });
+  if (res) res.addEventListener("click", function(){ track("play_tab_opened", {from:"results"}); });
+})();
 $("btn-restart").onclick = function(){
   /* 2026-09-27: a warm "start over" returns to the warm/cold fork, not the
      cold quiz. Capture before the reset below. */

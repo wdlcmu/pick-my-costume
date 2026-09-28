@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Costume Games for Kids: Play to Pick | Pick My Costume</title>
+  <meta name="description" content="Two free costume games for kids: peek behind the curtain and match the pieces to pick a Halloween costume. No account, no email.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pickmycostume.com/play">
+  <meta property="og:title" content="Costume Games for Kids | Pick My Costume">
+  <meta property="og:description" content="Peek behind the curtain or match the pieces, then see how to make the costume. Free, no account.">
+  <meta property="og:image" content="https://pickmycostume.com/images/play/little-pumpkin.webp">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://pickmycostume.com/play">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ink:#26223a; --muted:#625c72; --paper:#fff9ec; --surface:#ffffff;
+      --sun:#ffbd2e; --orange:#f16c3b; --teal:#167f7b; --teal-dark:#0b5e5b;
+      --blue:#4c8fdb; --line:#ded5c2; --soft:#fff1c4; --good:#197344; --bad:#a83b32;
+      --shadow:0 12px 30px rgba(77,49,20,.15);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{--ink:#fff7e6;--muted:#d2c9b8;--paper:#171725;--surface:#242235;--line:#4b465b;--soft:#3e321c;--teal:#48b7ad;--teal-dark:#72d0c7;--good:#65d592;--bad:#ff8e83;--shadow:0 16px 34px rgba(0,0,0,.3)}
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    body{margin:0;min-height:100vh;background:
+      radial-gradient(circle at 10% 8%,color-mix(in srgb,var(--sun) 20%,transparent) 0 8rem,transparent 8.1rem),
+      radial-gradient(circle at 92% 92%,color-mix(in srgb,var(--teal) 15%,transparent) 0 10rem,transparent 10.1rem),var(--paper);color:var(--ink);font-family:Nunito,sans-serif}
+    button{font:inherit}
+    .shell{width:min(100%,760px);min-height:100vh;margin:0 auto;padding:clamp(18px,4vw,34px) clamp(16px,4vw,30px) calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+    .topline{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:42px}
+    .round-label{font-family:"Baloo 2",sans-serif;font-size:1.05rem;font-weight:800}
+    .score{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--teal-dark);background:var(--surface);border:2px solid var(--line);padding:7px 12px;border-radius:999px}
+    .star{width:20px;height:20px;fill:var(--sun);stroke:var(--ink);stroke-width:1.7}
+    .progress{height:10px;margin:12px 0 24px;background:color-mix(in srgb,var(--line) 62%,transparent);border-radius:999px;overflow:hidden}
+    .progress span{display:block;height:100%;width:0;background:var(--teal);border-radius:inherit;transition:width .35s ease}
+    main{flex:1;display:flex;flex-direction:column}
+    .screen{display:none;flex:1}.screen.active{display:flex;flex-direction:column}
+    .intro{justify-content:center;text-align:center;padding-bottom:8vh}
+    h1,h2{font-family:"Baloo 2",sans-serif;line-height:.98;margin:0}
+    .intro h1{font-size:clamp(2.7rem,8vw,4.7rem);letter-spacing:-.045em;max-width:690px;margin:0 auto}
+    .intro h1 em{font-style:normal;color:var(--orange)}
+    .intro p{font-size:clamp(1rem,2.6vw,1.18rem);line-height:1.45;color:var(--muted);max-width:520px;margin:14px auto 22px}
+    .mini-cast{height:210px;display:flex;align-items:end;justify-content:center;gap:12px;margin:0 0 20px}
+    .mini{width:124px;height:174px;filter:drop-shadow(0 7px 4px rgba(40,30,10,.12))}.mini:nth-child(2){width:148px;height:206px}.mini:nth-child(3){transform:scaleX(-1)}
+    .primary{appearance:none;border:0;border-radius:18px;background:var(--orange);color:white;box-shadow:0 5px 0 #a73f20;padding:15px 26px;font-family:"Baloo 2",sans-serif;font-size:1.3rem;font-weight:800;cursor:pointer;min-height:58px;transition:transform .12s,box-shadow .12s}.primary:hover{filter:brightness(1.04)}.primary:active{transform:translateY(4px);box-shadow:0 1px 0 #a73f20}.primary:focus-visible,.answer:focus-visible,.quiet:focus-visible,.mode-card:focus-visible,.piece-card:focus-visible,.costume-card:focus-visible,.guide:focus-visible{outline:4px solid color-mix(in srgb,var(--blue) 70%,white);outline-offset:3px}
+    .mode-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,210px));justify-content:center;gap:14px;margin:2px auto 0}.mode-card{appearance:none;border:2px solid var(--ink);border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 5px 0 var(--ink);padding:13px 14px 10px;cursor:pointer;min-height:76px;text-align:center}.mode-card:first-child{background:var(--orange);color:#fff;border-color:#a73f20;box-shadow:0 5px 0 #a73f20}.mode-card:active{transform:translateY(4px);box-shadow:0 1px 0 currentColor}.mode-title{display:block;font-family:"Baloo 2",sans-serif;font-size:1.2rem;font-weight:800;line-height:1.05}.mode-copy{display:block;font-size:.82rem;font-weight:800;opacity:.78;margin-top:3px}
+    .game h2{text-align:center;font-size:clamp(2rem,7vw,3.4rem);letter-spacing:-.025em;margin:0 0 14px}
+    .stage{position:relative;width:min(100%,520px);aspect-ratio:1.23;margin:0 auto 22px;border:3px solid var(--ink);border-radius:32px 32px 20px 20px;background:#ffe4a5;box-shadow:var(--shadow);overflow:hidden;isolation:isolate}
+    .stage:before{content:"";position:absolute;inset:auto 0 0;height:25%;background:#e6b872;border-top:3px solid var(--ink)}
+    .stage:after{content:"";position:absolute;left:50%;bottom:9%;width:65%;height:10%;transform:translateX(-50%);background:rgba(79,49,27,.17);border-radius:50%;filter:blur(5px)}
+    .costume{position:absolute;inset:5% 10% 13%;width:80%;height:82%;z-index:1;display:none;filter:drop-shadow(0 8px 3px rgba(70,45,20,.15))}.costume.show{display:block}.costume *{vector-effect:non-scaling-stroke}
+    .curtain{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:1fr 1fr;pointer-events:none}.curtain div{background:var(--teal);transition:transform .65s cubic-bezier(.2,.8,.2,1);position:relative}.curtain div:first-child{border-right:3px solid var(--teal-dark)}.curtain div:last-child{border-left:3px solid var(--teal-dark)}.curtain div:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22%,rgba(255,255,255,.08) 22% 44%)}.stage.peeked.level-easy .curtain div:first-child{transform:translateX(-72%)}.stage.peeked.level-easy .curtain div:last-child{transform:translateX(72%)}.stage.peeked.level-tricky .curtain div:first-child{transform:translateX(-42%)}.stage.peeked.level-tricky .curtain div:last-child{transform:translateX(42%)}.stage.peeked.level-super .curtain div:first-child{transform:translateX(-13%)}.stage.peeked.level-super .curtain div:last-child{transform:translateX(13%)}.stage.solved .curtain div:first-child{transform:translateX(-96%)}.stage.solved .curtain div:last-child{transform:translateX(96%)}.stage.level-super .costume.show{transform:scale(1.38);transform-origin:50% 43%}
+    .peek{position:absolute;z-index:5;inset:auto 50% 24px auto;transform:translateX(50%);white-space:nowrap}.stage.peeked .peek{opacity:0;pointer-events:none}
+    .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(100%,650px);margin:0 auto}
+    .answer{min-height:66px;border:2px solid var(--ink);border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);font-family:"Baloo 2",sans-serif;font-size:clamp(1rem,3vw,1.2rem);font-weight:800;padding:10px 8px;cursor:pointer;transition:transform .12s,background .15s}.answer:not(:disabled):hover{background:var(--soft)}.answer:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.answer:disabled{cursor:default}.answer.correct{background:color-mix(in srgb,var(--good) 18%,var(--surface));border-color:var(--good);box-shadow:0 4px 0 var(--good);color:var(--good)}.answer.wrong{background:color-mix(in srgb,var(--bad) 14%,var(--surface));border-color:var(--bad);color:var(--bad);box-shadow:0 4px 0 var(--bad)}
+    .feedback{min-height:80px;margin-top:20px;text-align:center}.feedback strong{display:block;font-family:"Baloo 2";font-size:1.65rem;line-height:1}.feedback span{color:var(--muted)}
+    .next{display:none;margin:14px auto 0}.next.show{display:block}
+    .materials h2{text-align:center;font-size:clamp(2rem,7vw,3.4rem);letter-spacing:-.025em;margin:0 0 5px}.materials .prompt{text-align:center;color:var(--muted);margin:0 0 14px;font-weight:700}.clue-tray{width:min(100%,560px);margin:0 auto 18px;padding:18px;background:var(--soft);border:3px solid var(--ink);border-radius:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;box-shadow:var(--shadow)}.clue{min-height:116px;padding:10px 6px 8px;background:var(--surface);border:2px solid var(--line);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;font-size:.9rem;font-weight:800;line-height:1.1}.clue svg{width:52px;height:52px;fill:none;stroke:var(--teal-dark);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.photo-answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(100%,650px);margin:0 auto}.photo-answer{appearance:none;border:2px solid var(--ink);border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);padding:0;overflow:hidden;cursor:pointer;text-align:center}.photo-answer img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--soft)}.photo-answer span{display:flex;min-height:48px;padding:7px 5px;align-items:center;justify-content:center;font-family:"Baloo 2",sans-serif;font-size:1rem;font-weight:800;line-height:1}.photo-answer:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.photo-answer:disabled{cursor:default}.photo-answer.correct{border-color:var(--good);box-shadow:0 4px 0 var(--good);color:var(--good)}.photo-answer.wrong{border-color:var(--bad);box-shadow:0 4px 0 var(--bad);color:var(--bad)}.guide{display:inline-flex;align-items:center;justify-content:center;margin-top:10px;min-height:48px;padding:10px 18px;border-radius:14px;background:var(--teal);color:white;text-decoration:none;font-family:"Baloo 2",sans-serif;font-size:1.05rem;font-weight:800;box-shadow:0 4px 0 var(--teal-dark)}
+    .match-title{text-align:center;font-size:clamp(2rem,7vw,3.4rem);letter-spacing:-.025em;margin:0 0 5px}.match-prompt{text-align:center;color:var(--muted);margin:0 0 14px;font-weight:800}.match-board{position:relative;width:min(100%,650px);margin:0 auto}.match-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;position:relative;z-index:2}.match-row+.match-row{margin-top:48px}.piece-card,.costume-card{appearance:none;border:2px solid var(--ink);border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);padding:8px;cursor:pointer;min-width:0;transition:transform .15s,background .15s,box-shadow .15s}.piece-card{min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800;line-height:1.05}.piece-card svg{width:58px;height:58px;fill:none;stroke:var(--teal-dark);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.costume-card{overflow:hidden;padding:0}.costume-card img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--soft)}.costume-card span{display:flex;align-items:center;justify-content:center;min-height:46px;padding:6px 4px;font-family:"Baloo 2";font-weight:800;line-height:1}.piece-card.selected{background:var(--soft);outline:4px solid var(--sun);outline-offset:2px}.piece-card.matched,.costume-card.matched{border-color:var(--good);box-shadow:0 0 0 5px color-mix(in srgb,var(--good) 18%,transparent),0 4px 0 var(--good);color:var(--good);cursor:default}.match-lines{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}.match-lines line{stroke:var(--good);stroke-width:6;stroke-linecap:round;stroke-dasharray:260;stroke-dashoffset:260;animation:drawLink .45s ease forwards}.shake{animation:gentleShake .34s ease}.match-done{text-align:center;margin-top:18px}.match-done .guide{margin-top:4px}@keyframes drawLink{to{stroke-dashoffset:0}}@keyframes gentleShake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    .finish{justify-content:center;text-align:center;padding-bottom:6vh}.finish h2{font-size:clamp(3.2rem,11vw,6rem);letter-spacing:-.045em}.finish .result{font-family:"Baloo 2";font-size:clamp(1.8rem,6vw,2.6rem);color:var(--teal-dark);margin:14px 0 8px}.finish p{color:var(--muted);font-size:1.12rem;margin:0 auto 28px;max-width:450px}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.quiet{appearance:none;border:2px solid var(--ink);border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);padding:13px 20px;font-weight:800;cursor:pointer}.quiet:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}.confetti i{position:absolute;top:-30px;width:12px;height:19px;border-radius:3px;animation:fall 1.8s ease-in forwards}
+    @keyframes fall{to{transform:translate(var(--drift),110vh) rotate(720deg)}}
+    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.progress,.curtain div{transition:none}.confetti{display:none}}
+    @media (max-width:560px){.shell{padding-top:14px}.progress{margin-bottom:15px}.game h2,.match-title{font-size:2rem}.stage{aspect-ratio:1.1;border-radius:24px 24px 16px 16px;margin-bottom:16px}.answers{grid-template-columns:1fr}.answer{min-height:52px;padding:7px}.feedback{min-height:62px;margin-top:15px}.intro{padding-bottom:2vh}.intro h1{font-size:2.75rem}.intro p{margin:8px auto 14px}.mini-cast{height:150px;margin-bottom:10px}.mini{width:88px;height:126px}.mini:nth-child(2){width:104px;height:148px}.mode-buttons{grid-template-columns:1fr;width:min(100%,330px);gap:10px}.mode-card{min-height:62px;padding:10px}.match-row{gap:7px}.match-row+.match-row{margin-top:40px}.piece-card{min-height:94px;padding:5px 3px;font-size:.76rem}.piece-card svg{width:46px;height:46px}.costume-card span{font-size:.78rem;min-height:40px;padding:5px 2px}.match-done{margin-top:14px}}
+  
+    /* 2026-09-28 Play tab: site chrome. Slim top bar + footer credit. */
+    .sitebar{max-width:760px;margin:0 auto;padding:14px clamp(16px,4vw,30px) 0;display:flex;align-items:center}
+    .sitebar a{color:var(--teal-dark);font-weight:800;text-decoration:none;font-size:15px}
+    .sitebar a:hover{text-decoration:underline}
+    .sitefoot{max-width:760px;margin:0 auto;padding:26px clamp(16px,4vw,30px) calc(30px + env(safe-area-inset-bottom));text-align:center}
+    .sitefoot p{margin:0;font-size:13px;color:var(--muted)}
+  </style>
+<script>
+/* PostHog: anonymous usage stats only. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+</script>
+</head>
+<body>
+<div class="sitebar"><a href="/">&larr; Pick My Costume</a></div>
+
+  <div class="shell">
+    <div class="topline" id="hud" hidden>
+      <div class="round-label" id="roundLabel">Round 1 of 3</div>
+      <div class="score"><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 2.8 5.7 6.3.9-4.5 4.4 1 6.3-5.6-3-5.6 3 1-6.3L.9 9.1l6.3-.9Z"/></svg><span id="score">0</span></div>
+    </div>
+    <div class="progress" id="progressWrap" hidden aria-hidden="true"><span id="progress"></span></div>
+    <main>
+      <section class="screen intro active" id="intro">
+        <div class="mini-cast" aria-hidden="true">
+          <svg class="mini" viewBox="0 0 100 140"><path d="M30 56Q50 39 70 56l15 62-19-10-16 13-16-13-19 10Z" fill="#fff" stroke="#26223a" stroke-width="4"/><circle cx="41" cy="70" r="5" fill="#26223a"/><circle cx="60" cy="70" r="5" fill="#26223a"/></svg>
+          <svg class="mini" viewBox="0 0 100 140"><path d="m22 50 29-43 20 43" fill="#4b3475" stroke="#26223a" stroke-width="4"/><ellipse cx="48" cy="51" rx="38" ry="9" fill="#4b3475" stroke="#26223a" stroke-width="4"/><circle cx="49" cy="76" r="24" fill="#e9a56c" stroke="#26223a" stroke-width="4"/><path d="M22 137q5-41 27-41t29 41" fill="#4b3475" stroke="#26223a" stroke-width="4"/></svg>
+          <svg class="mini" viewBox="0 0 100 140"><path d="M50 9 20 38l8 83h44l8-83Z" fill="#cbd9e7" stroke="#26223a" stroke-width="4"/><rect x="29" y="31" width="42" height="37" rx="16" fill="#6fc3e7" stroke="#26223a" stroke-width="4"/><path d="M35 81h30" stroke="#f16c3b" stroke-width="6"/></svg>
+        </div>
+        <h1>Who’s hiding<br><em>in costume?</em></h1>
+        <p>Pick a way to play.</p>
+        <div class="mode-buttons">
+          <button class="mode-card" id="start"><span class="mode-title">Peekaboo</span><span class="mode-copy">Open the curtains</span></button>
+          <button class="mode-card" id="startMaterials"><span class="mode-title">Match the pieces</span><span class="mode-copy">Which one goes with which?</span></button>
+        </div>
+      </section>
+
+      <section class="screen game" id="game" aria-live="polite">
+        <h2>Who’s behind the curtain?</h2>
+        <div class="stage" id="stage">
+          <svg class="costume" data-id="ghost" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a friendly ghost"><path d="M80 255V103Q82 37 150 35q68 2 70 68v152l-35-22-35 24-35-24Z" fill="#fff" stroke="#26223a" stroke-width="7"/><ellipse cx="122" cy="114" rx="13" ry="18" fill="#26223a"/><ellipse cx="178" cy="114" rx="13" ry="18" fill="#26223a"/><path d="M134 154q16 13 32 0" fill="none" stroke="#26223a" stroke-width="7" stroke-linecap="round"/></svg>
+          <svg class="costume" data-id="witch" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a witch"><path d="m92 87 60-76 46 76" fill="#4b3475" stroke="#26223a" stroke-width="7"/><ellipse cx="149" cy="89" rx="93" ry="18" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="149" cy="137" r="47" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="133" cy="132" r="5"/><circle cx="167" cy="132" r="5"/><path d="M137 155q13 10 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M75 288q13-100 74-100t77 100" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="150" cy="225" r="11" fill="#ffbd2e"/></svg>
+          <svg class="costume" data-id="pirate" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a pirate"><circle cx="150" cy="117" r="67" fill="#e7a167" stroke="#26223a" stroke-width="7"/><path d="M85 102q5-71 65-71 58 0 65 71-67-28-130 0Z" fill="#1e293b" stroke="#26223a" stroke-width="7"/><path d="m89 51 50 4-15 43-52-15Z" fill="#f16c3b" stroke="#26223a" stroke-width="7"/><circle cx="124" cy="120" r="6"/><path d="M161 106h41v33h-41zM202 122h19" fill="#26223a" stroke="#26223a" stroke-width="7"/><path d="M134 151q17 11 34-1" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M63 290q9-102 87-102t88 102" fill="#f3e4c0" stroke="#26223a" stroke-width="7"/><path d="m117 203 33 40 33-40" fill="#f16c3b" stroke="#26223a" stroke-width="6"/></svg>
+          <svg class="costume" data-id="astronaut" viewBox="0 0 300 300" role="img" aria-label="A child dressed as an astronaut"><path d="M88 95q0-73 62-73t62 73v38H88Z" fill="#f3f5f2" stroke="#26223a" stroke-width="7"/><rect x="100" y="47" width="100" height="81" rx="35" fill="#70c4e8" stroke="#26223a" stroke-width="7"/><circle cx="132" cy="86" r="6"/><circle cx="169" cy="86" r="6"/><path d="M137 104q13 9 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M74 289V162q9-28 76-28t76 28v127" fill="#f3f5f2" stroke="#26223a" stroke-width="7"/><rect x="111" y="169" width="78" height="61" rx="8" fill="#d5dfeb" stroke="#26223a" stroke-width="6"/><circle cx="131" cy="190" r="7" fill="#f16c3b"/><circle cx="153" cy="190" r="7" fill="#ffbd2e"/><path d="M127 211h48" stroke="#167f7b" stroke-width="7"/></svg>
+          <svg class="costume" data-id="dinosaur" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a dinosaur"><path d="M72 288V105q2-73 77-73 72 0 80 64l28 28-31 5v159Z" fill="#67b96b" stroke="#26223a" stroke-width="7"/><path d="m88 63-29-22 41-6m45 2-17-34 39 14m38 31 15-34 20 34" fill="#ffbd2e" stroke="#26223a" stroke-width="7" stroke-linejoin="round"/><circle cx="167" cy="88" r="7"/><circle cx="215" cy="108" r="5"/><path d="M115 137h74" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><circle cx="136" cy="174" r="35" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="124" cy="170" r="5"/><circle cx="149" cy="170" r="5"/></svg>
+          <svg class="costume" data-id="robot" viewBox="0 0 300 300" role="img" aria-label="A child dressed as a robot"><path d="M150 32V7m-12 0h24" stroke="#26223a" stroke-width="7" stroke-linecap="round"/><rect x="73" y="35" width="154" height="126" rx="17" fill="#aebdcc" stroke="#26223a" stroke-width="7"/><circle cx="119" cy="92" r="13" fill="#ffbd2e" stroke="#26223a" stroke-width="6"/><circle cx="181" cy="92" r="13" fill="#ffbd2e" stroke="#26223a" stroke-width="6"/><path d="M118 132h64" stroke="#26223a" stroke-width="7" stroke-linecap="round"/><path d="M83 290V177h134v113" fill="#aebdcc" stroke="#26223a" stroke-width="7"/><rect x="112" y="203" width="76" height="48" rx="7" fill="#edf2f5" stroke="#26223a" stroke-width="6"/><circle cx="134" cy="226" r="7" fill="#f16c3b"/><circle cx="165" cy="226" r="7" fill="#167f7b"/></svg>
+          <div class="curtain" aria-hidden="true"><div></div><div></div></div>
+          <button class="primary peek" id="peek">Open curtains</button>
+        </div>
+        <div class="answers" id="answers" aria-label="Choose the costume"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="primary next" id="next">Next costume</button>
+      </section>
+
+      <section class="screen materials" id="materials" aria-live="polite">
+        <h2 class="match-title">Match the pieces</h2>
+        <p class="match-prompt" id="matchPrompt">Tap a piece, then its costume.</p>
+        <div class="match-board" id="matchBoard">
+          <svg class="match-lines" id="matchLines" aria-hidden="true"></svg>
+          <div class="match-row" id="pieceRow" aria-label="Costume pieces"></div>
+          <div class="match-row" id="costumeRow" aria-label="Costumes"></div>
+        </div>
+        <div class="feedback" id="materialFeedback"></div>
+        <div class="match-done" id="matchDone" hidden><a class="guide" id="guideLink" target="_blank" rel="noopener">See how to make it</a><br><button class="primary next show" id="materialNext">Next round</button></div>
+      </section>
+
+      <section class="screen finish" id="finish">
+        <h2 id="finishTitle">Costume star!</h2>
+        <div class="result" id="result">You found 3 out of 3</div>
+        <p id="finishCopy">Those costumes couldn’t fool you.</p>
+        <div class="actions"><button class="primary" id="again">Play again</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
+      </section>
+    </main>
+  </div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+<script>
+(function(){
+  var peekRounds=[
+    {id:'witch',name:'Witch',level:'easy',label:'Easy peek',choices:['Witch','Friendly Ghost','Astronaut']},
+    {id:'pirate',name:'Pirate',level:'tricky',label:'Trickier',choices:['Robot','Pirate','Dinosaur']},
+    {id:'robot',name:'Robot',level:'super',label:'Super sleuth',choices:['Astronaut','Friendly Ghost','Robot']}
+  ];
+  var looks={
+    'little-pumpkin':{name:'Little Pumpkin',image:'images/play/little-pumpkin.webp',guide:'https://pickmycostume.com/c/little-pumpkin'},
+    'bumblebee':{name:'Bumble Bee',image:'images/play/bumblebee.webp',guide:'https://pickmycostume.com/c/bumble-bee'},
+    'baby-dino':{name:'Baby Dinosaur',image:'images/play/baby-dino.webp',guide:'https://pickmycostume.com/c/baby-dino'},
+    'friendly-ghost':{name:'Friendly Ghost',image:'images/play/friendly-ghost.webp',guide:'https://pickmycostume.com/c/friendly-ghost'},
+    'little-witch':{name:'Little Witch',image:'images/play/little-witch.webp',guide:'https://pickmycostume.com/c/little-witch'},
+    'tiny-astronaut':{name:'Tiny Astronaut',image:'images/play/tiny-astronaut.webp',guide:'https://pickmycostume.com/c/tiny-astronaut'}
+  };
+  var matchRounds=[
+    {label:'Easy matches',featured:'little-pumpkin',pairs:[
+      {id:'stem',label:'Pumpkin stem',type:'stem',to:'little-pumpkin'},
+      {id:'antennae',label:'Bee antennae',type:'headband',to:'bumblebee'},
+      {id:'dino-tail',label:'Dinosaur tail',type:'tail',to:'baby-dino'}]},
+    {label:'Look closer',featured:'friendly-ghost',pairs:[
+      {id:'poncho',label:'White poncho',type:'poncho',to:'friendly-ghost'},
+      {id:'witch-hat',label:'Pointy hat',type:'hat',to:'little-witch'},
+      {id:'mission-patch',label:'Mission patch',type:'patch',to:'tiny-astronaut'}]},
+    {label:'Super matcher',featured:'tiny-astronaut',pairs:[
+      {id:'white-fabric',label:'White fabric',type:'fabric-white',to:'friendly-ghost'},
+      {id:'silver-tape',label:'Silver tape',type:'tape',to:'tiny-astronaut'},
+      {id:'black-fabric',label:'Black fabric',type:'fabric-black',to:'little-witch'}]}
+  ];
+  var round=0,points=0,soundOn=true,answered=false,audio=null,mode='peek',selectedPiece=null,matchedCount=0;
+  var intro=document.getElementById('intro'),game=document.getElementById('game'),materials=document.getElementById('materials'),finish=document.getElementById('finish');
+  var hud=document.getElementById('hud'),progressWrap=document.getElementById('progressWrap'),stage=document.getElementById('stage'),answers=document.getElementById('answers');
+  var pieceRow=document.getElementById('pieceRow'),costumeRow=document.getElementById('costumeRow'),matchLines=document.getElementById('matchLines');
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+  function tone(freq,dur,delay){if(!soundOn)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();var o=audio.createOscillator(),g=audio.createGain();o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.0001,audio.currentTime+delay);g.gain.exponentialRampToValueAtTime(.13,audio.currentTime+delay+.01);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+delay+dur);o.connect(g);g.connect(audio.destination);o.start(audio.currentTime+delay);o.stop(audio.currentTime+delay+dur+.02)}catch(e){}}
+  function setScreen(el){[intro,game,materials,finish].forEach(function(x){x.classList.toggle('active',x===el)})}
+  function resetRun(){round=0;points=0;document.getElementById('score').textContent='0';hud.hidden=false;progressWrap.hidden=false}
+  function setHud(label,total){document.getElementById('roundLabel').textContent='Round '+(round+1)+' of '+total+' · '+label;document.getElementById('progress').style.width=(round/total*100)+'%'}
+  function start(){mode='peek';resetRun();setScreen(game);renderPeek()}
+  function startMaterials(){mode='match';resetRun();setScreen(materials);renderMatch()}
+  function renderPeek(){
+    answered=false;var item=peekRounds[round];
+    stage.className='stage level-'+item.level;
+    document.querySelectorAll('.costume').forEach(function(x){x.classList.toggle('show',x.getAttribute('data-id')===item.id)});
+    setHud(item.label,peekRounds.length);
+    document.getElementById('feedback').innerHTML='';document.getElementById('next').classList.remove('show');document.getElementById('peek').style.display='block';answers.innerHTML='';
+    shuffle(item.choices.slice()).forEach(function(name){var b=document.createElement('button');b.className='answer';b.textContent=name;b.disabled=true;b.addEventListener('click',function(){guessPeek(b,name,item)});answers.appendChild(b)});
+  }
+  function openCurtain(){stage.classList.add('peeked');document.getElementById('peek').style.display='none';Array.prototype.forEach.call(answers.children,function(b){b.disabled=false});tone(420,.12,0);tone(620,.16,.08)}
+  function guessPeek(button,name,item){
+    if(answered)return;
+    if(name!==item.name){button.classList.add('wrong');button.disabled=true;document.getElementById('feedback').innerHTML='<strong>Try again!</strong><span>Take another look through the curtain.</span>';tone(330,.13,0);setTimeout(function(){button.classList.remove('wrong');button.disabled=false},520);return}
+    answered=true;points++;stage.classList.add('solved');document.getElementById('score').textContent=points;
+    Array.prototype.forEach.call(answers.children,function(b){b.disabled=true;if(b.textContent===item.name)b.classList.add('correct')});
+    document.getElementById('feedback').innerHTML='<strong>You got it!</strong><span>That’s the '+item.name+'.</span>';document.getElementById('next').classList.add('show');tone(523,.15,0);tone(659,.15,.12);tone(784,.23,.24);
+  }
+  function iconSvg(type){
+    var paths={
+      stem:'<path d="M12 11V4q0-2 2-2h2"/><path d="M12 8Q7 4 4 8q4 5 8 3Z" fill="#67b96b"/><path d="M12 10Q17 6 20 10q-4 5-8 3Z" fill="#67b96b"/>',
+      headband:'<path d="M5 20Q6 8 12 8t7 12"/><path d="M8 9 6 3M16 9l2-6"/><circle cx="5.5" cy="3" r="2" fill="#ffbd2e"/><circle cx="18.5" cy="3" r="2" fill="#ffbd2e"/>',
+      tail:'<path d="M4 6q12 0 13 10 0 3 3 4-8 2-10-5Q8 10 4 6Z" fill="#67b96b"/><path d="m8 8-3 3m7 1-3 3"/>',
+      poncho:'<path d="m12 3 9 17H3Z" fill="#fff"/><circle cx="12" cy="7" r="2"/><path d="M7 16h10"/>',
+      hat:'<path d="m7 17 6-14 5 14Z" fill="#4b3475"/><path d="M3 18h18"/>',
+      patch:'<path d="m12 3 3 3 4 .5-.5 4 2 3.5-3.5 2-1.5 4-3.5-2-3.5 2L7 16l-3.5-2 2-3.5-.5-4L9 6Z" fill="#cbd9e7"/><path d="m12 8 1.3 2.6 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4Z"/>',
+      tape:'<circle cx="11" cy="11" r="7" fill="#cbd9e7"/><circle cx="11" cy="11" r="3" fill="var(--surface)"/><path d="M16 16h5v5h-8" fill="#cbd9e7"/>',
+      'fabric-white':'<path d="M5 5h13l1 13H6Z" fill="#fff"/><path d="m8 5 1 13M14 5l1 13M6 12h13"/>',
+      'fabric-black':'<path d="M5 5h13l1 13H6Z" fill="#3d3848"/><path d="m8 5 1 13M14 5l1 13M6 12h13" stroke="#fff"/>'
+    };
+    return '<svg viewBox="0 0 24 24" aria-hidden="true">'+paths[type]+'</svg>';
+  }
+  function renderMatch(){
+    var item=matchRounds[round];matchedCount=0;selectedPiece=null;setHud(item.label,matchRounds.length);
+    document.getElementById('matchPrompt').textContent=round===0?'Tap a piece, then its costume.':round===1?'The clues are getting smaller.':'Look closely — two costumes look alike.';
+    document.getElementById('materialFeedback').innerHTML='';document.getElementById('matchDone').hidden=true;matchLines.innerHTML='';pieceRow.innerHTML='';costumeRow.innerHTML='';
+    shuffle(item.pairs.slice()).forEach(function(pair){var b=document.createElement('button');b.className='piece-card';b.setAttribute('data-match',pair.to);b.setAttribute('aria-label',pair.label);b.innerHTML=iconSvg(pair.type)+'<span>'+pair.label+'</span>';b.addEventListener('click',function(){choosePiece(b)});pieceRow.appendChild(b)});
+    var targets=shuffle(item.pairs.map(function(pair){return pair.to}));targets.forEach(function(id){var look=looks[id],b=document.createElement('button');b.className='costume-card';b.setAttribute('data-match',id);b.innerHTML='<img src="'+look.image+'" alt="'+look.name+' costume"><span>'+look.name+'</span>';b.addEventListener('click',function(){chooseCostume(b)});costumeRow.appendChild(b)});
+    document.getElementById('guideLink').href=looks[item.featured].guide;
+  }
+  function choosePiece(button){
+    if(button.classList.contains('matched'))return;
+    Array.prototype.forEach.call(pieceRow.children,function(b){b.classList.remove('selected')});selectedPiece=button;button.classList.add('selected');document.getElementById('materialFeedback').innerHTML='<span>Now tap the costume it belongs to.</span>';tone(500,.08,0);
+  }
+  function chooseCostume(button){
+    if(button.classList.contains('matched'))return;
+    if(!selectedPiece){document.getElementById('materialFeedback').innerHTML='<strong>Pick a piece first.</strong><span>Then choose its costume.</span>';return}
+    if(selectedPiece.getAttribute('data-match')!==button.getAttribute('data-match')){
+      selectedPiece.classList.add('shake');button.classList.add('shake');document.getElementById('materialFeedback').innerHTML='<strong>Try again!</strong><span>That piece belongs with a different costume.</span>';tone(330,.12,0);setTimeout(function(){selectedPiece&&selectedPiece.classList.remove('shake');button.classList.remove('shake')},430);return;
+    }
+    var piece=selectedPiece;piece.classList.remove('selected');piece.classList.add('matched');piece.disabled=true;button.classList.add('matched');button.disabled=true;selectedPiece=null;matchedCount++;drawLink(piece,button);tone(523,.12,0);tone(700,.18,.1);
+    document.getElementById('materialFeedback').innerHTML='<strong>That’s a match!</strong><span>'+matchedCount+' of 3 connected.</span>';
+    if(matchedCount===3){points++;document.getElementById('score').textContent=points;document.getElementById('materialFeedback').innerHTML='<strong>Round matched!</strong><span>Every piece found its costume.</span>';document.getElementById('matchDone').hidden=false;tone(784,.18,.18)}
+  }
+  function drawLink(piece,costume){
+    var board=document.getElementById('matchBoard'),br=board.getBoundingClientRect(),pr=piece.getBoundingClientRect(),cr=costume.getBoundingClientRect();matchLines.setAttribute('viewBox','0 0 '+br.width+' '+br.height);var line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',pr.left-br.left+pr.width/2);line.setAttribute('y1',pr.bottom-br.top-4);line.setAttribute('x2',cr.left-br.left+cr.width/2);line.setAttribute('y2',cr.top-br.top+4);matchLines.appendChild(line);
+  }
+  function next(){round++;if(mode==='match'){if(round<matchRounds.length)renderMatch();else showFinish()}else{if(round<peekRounds.length)renderPeek();else showFinish()}}
+  function showFinish(){
+    hud.hidden=true;progressWrap.hidden=true;setScreen(finish);document.getElementById('result').textContent=mode==='match'?'You matched all 3 rounds':'You found 3 out of 3';document.getElementById('finishTitle').textContent='Costume star!';document.getElementById('finishCopy').textContent=mode==='match'?'Every piece found its costume.':'Easy peek to super sleuth — you spotted them all.';burst();tone(523,.15,0);tone(659,.15,.13);tone(784,.18,.26);tone(1047,.35,.39);
+  }
+  function burst(){var box=document.getElementById('confetti'),colors=['#f16c3b','#ffbd2e','#167f7b','#4c8fdb','#e95e8d'];box.innerHTML='';for(var i=0;i<34;i++){var p=document.createElement('i');p.style.left=(5+Math.random()*90)+'%';p.style.background=colors[i%colors.length];p.style.setProperty('--drift',(Math.random()*180-90)+'px');p.style.animationDelay=(Math.random()*.45)+'s';box.appendChild(p)}setTimeout(function(){box.innerHTML=''},2600)}
+  document.getElementById('start').addEventListener('click',start);
+  document.getElementById('startMaterials').addEventListener('click',startMaterials);
+  document.getElementById('peek').addEventListener('click',openCurtain);
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('materialNext').addEventListener('click',next);
+  document.getElementById('again').addEventListener('click',function(){mode==='match'?startMaterials():start()});
+  document.getElementById('sound').addEventListener('click',function(){soundOn=!soundOn;this.textContent=soundOn?'Sound on':'Sound off';this.setAttribute('aria-pressed',soundOn?'true':'false');if(soundOn)tone(600,.15,0)});
+})();
+</script>
+<footer class="sitefoot"><p>Built with Muse. Made by Billy Litner.</p></footer>
+<script>
+/* 2026-09-28 Play tab: minimal game analytics. Guarded so ad-blockers never break play. */
+(function(){
+  function cap(name, props){
+    try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); } catch(e){}
+  }
+  var curMode = '';
+  document.addEventListener('DOMContentLoaded', function(){
+    var s1 = document.getElementById('start'), s2 = document.getElementById('startMaterials');
+    if (s1) s1.addEventListener('click', function(){ curMode='peek'; cap('play_started', {mode:'peek'}); });
+    if (s2) s2.addEventListener('click', function(){ curMode='match'; cap('play_started', {mode:'match'}); });
+    var fin = document.getElementById('finish');
+    if (fin && window.MutationObserver) {
+      var fired = false;
+      new MutationObserver(function(){
+        if (!fired && fin.classList.contains('active')) {
+          fired = true;
+          var sc = document.getElementById('score');
+          cap('play_completed', {mode: curMode, stars: sc ? sc.textContent : ''});
+        }
+      }).observe(fin, {attributes:true, attributeFilter:['class']});
+    }
+    var again = document.getElementById('again');
+    if (again) again.addEventListener('click', function(){ fired = false; });
+  });
+})();
+</script>
+</body>
+</html>
