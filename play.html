@@ -58,7 +58,7 @@
     .stage:before{content:"";position:absolute;inset:auto 0 0;height:25%;background:#e6b872;border-top:3px solid var(--ink)}
     .stage:after{content:"";position:absolute;left:50%;bottom:9%;width:65%;height:10%;transform:translateX(-50%);background:rgba(79,49,27,.17);border-radius:50%;filter:blur(5px)}
     .costume{position:absolute;inset:5% 10% 13%;width:80%;height:82%;z-index:1;display:none;filter:drop-shadow(0 8px 3px rgba(70,45,20,.15))}.costume.show{display:block}.costume *{vector-effect:non-scaling-stroke}
-    .curtain{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:1fr 1fr;pointer-events:none}.curtain div{background:var(--teal);transition:transform .65s cubic-bezier(.2,.8,.2,1);position:relative}.curtain div:first-child{border-right:3px solid var(--teal-dark)}.curtain div:last-child{border-left:3px solid var(--teal-dark)}.curtain div:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22%,rgba(255,255,255,.08) 22% 44%)}.stage.peeked.level-easy .curtain div:first-child{transform:translateX(-72%)}.stage.peeked.level-easy .curtain div:last-child{transform:translateX(72%)}.stage.peeked.level-tricky .curtain div:first-child{transform:translateX(-42%)}.stage.peeked.level-tricky .curtain div:last-child{transform:translateX(42%)}.stage.peeked.level-super .curtain div:first-child{transform:translateX(-13%)}.stage.peeked.level-super .curtain div:last-child{transform:translateX(13%)}.stage.solved .curtain div:first-child{transform:translateX(-96%)}.stage.solved .curtain div:last-child{transform:translateX(96%)}.stage.level-super .costume.show{transform:scale(1.38);transform-origin:50% 43%}
+    .curtain{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:1fr 1fr;pointer-events:none}.curtain div{background:var(--teal);transition:transform .65s cubic-bezier(.2,.8,.2,1);position:relative}.curtain div:first-child{border-right:3px solid var(--teal-dark)}.curtain div:last-child{border-left:3px solid var(--teal-dark)}.curtain div:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22%,rgba(255,255,255,.08) 22% 44%)}.stage{--open:60%;overflow:hidden}.stage.peeked.rv-center .curtain div:first-child{transform:translateX(calc(var(--open)*-1))}.stage.peeked.rv-center .curtain div:last-child{transform:translateX(var(--open))}.stage.peeked.rv-side .curtain div{transform:translateX(var(--open))}.stage.peeked.rv-top .curtain div{transform:translateY(var(--open))}.stage.solved .curtain div:first-child{transform:translateX(-96%)}.stage.solved .curtain div:last-child{transform:translateX(96%)}.stage.level-super .costume.show{transform:scale(1.38);transform-origin:50% 43%}
     .peek{position:absolute;z-index:5;inset:auto 50% 24px auto;transform:translateX(50%);white-space:nowrap}.stage.peeked .peek{opacity:0;pointer-events:none}
     .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(100%,650px);margin:0 auto}
     .answer{min-height:66px;border:2px solid var(--ink);border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);font-family:"Baloo 2",sans-serif;font-size:clamp(1rem,3vw,1.2rem);font-weight:800;padding:10px 8px;cursor:pointer;transition:transform .12s,background .15s}.answer:not(:disabled):hover{background:var(--soft)}.answer:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.answer:disabled{cursor:default}.answer.correct{background:color-mix(in srgb,var(--good) 18%,var(--surface));border-color:var(--good);box-shadow:0 4px 0 var(--good);color:var(--good)}.answer.wrong{background:color-mix(in srgb,var(--bad) 14%,var(--surface));border-color:var(--bad);color:var(--bad);box-shadow:0 4px 0 var(--bad)}
@@ -71,6 +71,18 @@
     @keyframes fall{to{transform:translate(var(--drift),110vh) rotate(720deg)}}
     @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.progress,.curtain div{transition:none}.confetti{display:none}}
     @media (max-width:560px){.shell{padding-top:14px}.progress{margin-bottom:15px}.game h2,.match-title{font-size:2rem}.stage{aspect-ratio:1.1;border-radius:24px 24px 16px 16px;margin-bottom:16px}.answers{grid-template-columns:1fr}.answer{min-height:52px;padding:7px}.feedback{min-height:62px;margin-top:15px}.intro{padding-bottom:2vh}.intro h1{font-size:2.75rem}.intro p{margin:8px auto 14px}.mini-cast{height:150px;margin-bottom:10px}.mini{width:88px;height:126px}.mini:nth-child(2){width:104px;height:148px}.mode-buttons{grid-template-columns:1fr;width:min(100%,330px);gap:10px}.mode-card{min-height:62px;padding:10px}.match-row{gap:7px}.match-row+.match-row{margin-top:40px}.piece-card{min-height:94px;padding:5px 3px;font-size:.76rem}.piece-card svg{width:46px;height:46px}.costume-card span{font-size:.78rem;min-height:40px;padding:5px 2px}.match-done{margin-top:14px}}
+  
+    /* 2026-09-28: finish-screen guide list + game switcher. */
+    .hudswitch{font:inherit;font-size:13px;font-weight:700;color:var(--teal-dark);background:#fff;
+      border:2px solid var(--teal-dark);border-radius:999px;padding:8px 14px;min-height:44px;cursor:pointer}
+    .found-list{margin:20px auto 0;max-width:560px}
+    .found-head{margin:0 0 10px;font-weight:800;color:var(--ink)}
+    .found-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .found-chip{min-height:56px;display:flex;align-items:center;justify-content:center;gap:6px;
+      background:#fff;border:2px solid var(--ink);border-radius:16px;font-weight:800;color:var(--ink);
+      text-decoration:none;font-size:16px;padding:10px 12px}
+    a.found-chip{color:var(--teal-dark);border-color:var(--teal-dark)}
+    .found-chip.no-link{opacity:.65;border-style:dashed}
   
     /* 2026-09-28 Play tab: site chrome. Slim top bar + footer credit. */
     .sitebar{max-width:760px;margin:0 auto;padding:14px clamp(16px,4vw,30px) 0;display:flex;align-items:center}
@@ -106,7 +118,8 @@
 
   <div class="shell">
     <div class="topline" id="hud" hidden>
-      <div class="round-label" id="roundLabel">Round 1 of 3</div>
+      <div class="round-label" id="roundLabel">Round 1 of 6</div>
+      <button class="hudswitch" id="switchGame" type="button">Try: Match the pieces</button>
       <div class="score"><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 2.8 5.7 6.3.9-4.5 4.4 1 6.3-5.6-3-5.6 3 1-6.3L.9 9.1l6.3-.9Z"/></svg><span id="score">0</span></div>
     </div>
     <div class="progress" id="progressWrap" hidden aria-hidden="true"><span id="progress"></span></div>
@@ -158,20 +171,16 @@
         <h2 id="finishTitle">Costume star!</h2>
         <div class="result" id="result">You found 3 out of 3</div>
         <p id="finishCopy">Those costumes couldn’t fool you.</p>
-        <div class="actions"><button class="primary" id="again">Play again</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
+        <div class="found-list" id="foundList"></div><div class="actions"><button class="primary" id="again">Play again</button><button class="quiet" id="switchGameEnd" type="button">Try the other game</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
       </section>
     </main>
   </div>
   <div class="confetti" id="confetti" aria-hidden="true"></div>
 <script>
 (function(){
-  var peekRounds=[
-    {id:'witch',name:'Witch',level:'easy',label:'Easy peek',choices:['Witch','Friendly Ghost','Astronaut']},
-    {id:'pirate',name:'Pirate',level:'tricky',label:'Trickier',choices:['Robot','Pirate','Dinosaur']},
-    {id:'robot',name:'Robot',level:'super',label:'Super sleuth',choices:['Astronaut','Friendly Ghost','Robot']}
-  ];
+  var peekRounds=[     {id:'ghost',name:'Friendly Ghost',level:'easy',rv:'center',open:72,label:'Easy peek',peek:'Peek!',guide:'https://pickmycostume.com/c/classic-ghost',choices:['Friendly Ghost','Astronaut','Dinosaur']},     {id:'witch',name:'Witch',level:'easy',rv:'center',open:55,label:'Getting warmer',peek:'Take a peek',guide:'https://pickmycostume.com/c/little-witch',choices:['Pirate','Robot','Witch']},     {id:'pirate',name:'Pirate',level:'tricky',rv:'side',open:45,label:'Trickier',peek:'Sneak a look',guide:'',choices:['Astronaut','Pirate','Friendly Ghost']},     {id:'astronaut',name:'Astronaut',level:'tricky',rv:'top',open:35,label:'Look closer',peek:'Spy the top',guide:'https://pickmycostume.com/c/astronaut',choices:['Robot','Dinosaur','Astronaut']},     {id:'dinosaur',name:'Dinosaur',level:'super',rv:'center',open:22,label:'Super sleuth',peek:'Tiny peek',guide:'https://pickmycostume.com/c/baby-dino',choices:['Witch','Friendly Ghost','Dinosaur']},     {id:'robot',name:'Robot',level:'super',rv:'side',open:12,label:'Master detective',peek:'Super sneaky peek',guide:'https://pickmycostume.com/c/robot-ranger',choices:['Pirate','Robot','Astronaut']}   ];
   var looks={
-    'little-pumpkin':{name:'Little Pumpkin',image:'images/play/little-pumpkin.webp',guide:'https://pickmycostume.com/c/bumble-bee'},
+    'little-pumpkin':{name:'Little Pumpkin',image:'images/play/little-pumpkin.webp',guide:''},
     'bumblebee':{name:'Bumble Bee',image:'images/play/bumblebee.webp',guide:'https://pickmycostume.com/c/bumble-bee'},
     'baby-dino':{name:'Baby Dinosaur',image:'images/play/baby-dino.webp',guide:'https://pickmycostume.com/c/baby-dino'},
     'friendly-ghost':{name:'Friendly Ghost',image:'images/play/friendly-ghost.webp',guide:'https://pickmycostume.com/c/classic-ghost'},
@@ -201,14 +210,14 @@
   function setScreen(el){[intro,game,materials,finish].forEach(function(x){x.classList.toggle('active',x===el)})}
   function resetRun(){round=0;points=0;document.getElementById('score').textContent='0';hud.hidden=false;progressWrap.hidden=false}
   function setHud(label,total){document.getElementById('roundLabel').textContent='Round '+(round+1)+' of '+total+' · '+label;document.getElementById('progress').style.width=(round/total*100)+'%'}
-  function start(){mode='peek';resetRun();setScreen(game);renderPeek()}
-  function startMaterials(){mode='match';resetRun();setScreen(materials);renderMatch()}
+  function start(){mode='peek';resetRun();setScreen(game);syncSwitchLabel();renderPeek()}
+  function startMaterials(){mode='match';resetRun();setScreen(materials);syncSwitchLabel();renderMatch()}
   function renderPeek(){
     answered=false;var item=peekRounds[round];
-    stage.className='stage level-'+item.level;
+    stage.className='stage level-'+item.level+' rv-'+item.rv;stage.style.setProperty('--open',item.open+'%');
     document.querySelectorAll('.costume').forEach(function(x){x.classList.toggle('show',x.getAttribute('data-id')===item.id)});
     setHud(item.label,peekRounds.length);
-    document.getElementById('feedback').innerHTML='';document.getElementById('next').classList.remove('show');document.getElementById('peek').style.display='block';answers.innerHTML='';
+    document.getElementById('feedback').innerHTML='';document.getElementById('next').classList.remove('show');var pk=document.getElementById('peek');pk.style.display='block';pk.textContent=item.peek;answers.innerHTML='';
     shuffle(item.choices.slice()).forEach(function(name){var b=document.createElement('button');b.className='answer';b.textContent=name;b.disabled=true;b.addEventListener('click',function(){guessPeek(b,name,item)});answers.appendChild(b)});
   }
   function openCurtain(){stage.classList.add('peeked');document.getElementById('peek').style.display='none';Array.prototype.forEach.call(answers.children,function(b){b.disabled=false});tone(420,.12,0);tone(620,.16,.08)}
@@ -260,7 +269,7 @@
   }
   function next(){round++;if(mode==='match'){if(round<matchRounds.length)renderMatch();else showFinish()}else{if(round<peekRounds.length)renderPeek();else showFinish()}}
   function showFinish(){
-    hud.hidden=true;progressWrap.hidden=true;setScreen(finish);document.getElementById('result').textContent=mode==='match'?'You matched all 3 rounds':'You found 3 out of 3';document.getElementById('finishTitle').textContent='Costume star!';document.getElementById('finishCopy').textContent=mode==='match'?'Every piece found its costume.':'Easy peek to super sleuth — you spotted them all.';burst();tone(523,.15,0);tone(659,.15,.13);tone(784,.18,.26);tone(1047,.35,.39);
+    hud.hidden=true;progressWrap.hidden=true;setScreen(finish);document.getElementById('result').textContent=mode==='match'?'You matched all 3 rounds!':'You found '+points+' out of '+peekRounds.length+'!';document.getElementById('finishTitle').textContent='Costume star!';document.getElementById('finishCopy').textContent=mode==='match'?'Every piece found its costume.':'Easy peek to master detective — you spotted them all.';renderFoundList();burst();tone(523,.15,0);tone(659,.15,.13);tone(784,.18,.26);tone(1047,.35,.39);
   }
   function burst(){var box=document.getElementById('confetti'),colors=['#f16c3b','#ffbd2e','#167f7b','#4c8fdb','#e95e8d'];box.innerHTML='';for(var i=0;i<34;i++){var p=document.createElement('i');p.style.left=(5+Math.random()*90)+'%';p.style.background=colors[i%colors.length];p.style.setProperty('--drift',(Math.random()*180-90)+'px');p.style.animationDelay=(Math.random()*.45)+'s';box.appendChild(p)}setTimeout(function(){box.innerHTML=''},2600)}
   document.getElementById('start').addEventListener('click',start);
@@ -270,6 +279,37 @@
   document.getElementById('materialNext').addEventListener('click',next);
   document.getElementById('again').addEventListener('click',function(){mode==='match'?startMaterials():start()});
   document.getElementById('sound').addEventListener('click',function(){soundOn=!soundOn;this.textContent=soundOn?'Sound on':'Sound off';this.setAttribute('aria-pressed',soundOn?'true':'false');if(soundOn)tone(600,.15,0)});
+
+/* 2026-09-28: finish screen lists each costume found with its guide link. */
+function renderFoundList(){
+  var box=document.getElementById('foundList');if(!box)return;box.innerHTML='';
+  var items=mode==='match'
+    ?Object.keys(looks).map(function(k){return {name:looks[k].name,guide:looks[k].guide};})
+    :peekRounds.map(function(r){return {name:r.name,guide:r.guide};});
+  var head=document.createElement('p');head.className='found-head';
+  head.textContent='See how to make them:';box.appendChild(head);
+  var grid=document.createElement('div');grid.className='found-grid';
+  items.forEach(function(it){
+    if(it.guide){
+      var a=document.createElement('a');a.className='found-chip';a.href=it.guide;
+      a.target='_blank';a.rel='noopener';
+      var nm=document.createElement('span');nm.textContent=it.name;a.appendChild(nm);
+      var ar=document.createElement('span');ar.setAttribute('aria-hidden','true');ar.textContent=' \u2192';a.appendChild(ar);
+      grid.appendChild(a);
+    }else{
+      var s=document.createElement('span');s.className='found-chip no-link';s.textContent=it.name;
+      grid.appendChild(s);
+    }
+  });
+  box.appendChild(grid);
+}
+/* 2026-09-28: game switcher. Either mode can jump to the other mid-run. */
+var switchGame=document.getElementById('switchGame'),switchGameEnd=document.getElementById('switchGameEnd');
+function syncSwitchLabel(){if(switchGame)switchGame.textContent=mode==='peek'?'Try: Match the pieces':'Try: Peekaboo';}
+function switchToOther(){if(mode==='peek'){startMaterials()}else{start()}}
+if(switchGame)switchGame.addEventListener('click',switchToOther);
+if(switchGameEnd)switchGameEnd.addEventListener('click',switchToOther);
+
 })();
 </script>
 <footer class="sitefoot"><p>Built with Muse. Made by Billy Litner.</p></footer>
