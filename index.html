@@ -7466,7 +7466,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
       if (_pb && _pm === 0) Analytics.track("make_tonight_tapped", {idea_id: idea.id});
       doPick();
     });
-    row.appendChild(bPick); /* "This is my pick" stands alone full-width: the post-pick panel owns the single share path */
+    row.appendChild(bPick); /* "Claim this costume" stands alone full-width: the post-pick panel owns the single share path */
     if (!noArt){ card.appendChild(im); card.appendChild(h); } /* noArt=true only when the caller renders art+title itself; the fullscreen runner-up overlay passes false so the detail matches the #1 card */
     if (_pb) card.appendChild(_pb); /* pantry badge: right after the title on the hero; before the blurb on runner-up detail */
     card.appendChild(bl);
@@ -10372,19 +10372,6 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   bgift.onclick = function(){ openGiftFlow(); };
   grow.appendChild(bgift);
   detBody.appendChild(grow);
-  /* 2026-09-27 partner-split experiment: "Split it with a partner" -- a
-     directed 1:1 draft share for duo costumes (unlike the broadcast shares
-     above, the partner gets a specific half plus their build guide).
-     Renders only for couple-audience ideas, inside the "More ways to share"
-     disclosure per the 2026-09-27 share hierarchy. */
-  if (idea.audience && idea.audience.indexOf("couple") >= 0){
-    var srow = document.createElement("div"); srow.className = "row"; srow.style.marginTop = "8px";
-    var bsplit = document.createElement("a"); bsplit.className = "ghost";
-    bsplit.textContent = "Split it with a partner";
-    bsplit.href = "/split.html?idea=" + idea.id;
-    bsplit.onclick = function(){ Analytics.track("split_opened", Object.assign({idea_id: idea.id, share_origin: "disclosure"}, xp())); };
-    srow.appendChild(bsplit); detBody.appendChild(srow);
-  }
   container.appendChild(det);
   container.appendChild(st);
   if (label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
