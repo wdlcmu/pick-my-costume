@@ -203,6 +203,10 @@
   /* 2026-09-28: keep ?probe= (and other page params) on outbound guide links
      so QA traffic stays attributable instead of leaking into clean analytics. */
   function withProbe(url){try{var q=location.search||'';if(!q||!/probe=/.test(q))return url;return url+(url.indexOf('?')>=0?'&':'?')+q.replace(/^\?/,'')}catch(e){return url}}
+  /* 2026-09-28 share red-team P2: the finish-screen "Find your costume"
+     CTA used a bare href="/", dropping ?s=&o=game for share recipients.
+     Carry the share params forward (same class as the /c/-page fix). */
+  function withShare(url){try{var q=location.search||'';var sm=/[?&]s=([a-z0-9]{8})/.exec(q);if(!sm)return url;var om=/[?&]o=([a-z0-9_-]+)/.exec(q);return url+(url.indexOf('?')>=0?'&':'?')+'s='+sm[1]+(om?'&o='+om[1]:'')}catch(e){return url}}
   function tone(freq,dur,delay){if(!soundOn)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();var o=audio.createOscillator(),g=audio.createGain();o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.0001,audio.currentTime+delay);g.gain.exponentialRampToValueAtTime(.13,audio.currentTime+delay+.01);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+delay+dur);o.connect(g);g.connect(audio.destination);o.start(audio.currentTime+delay);o.stop(audio.currentTime+delay+dur+.02)}catch(e){}}
   function setScreen(el){[intro,game,materials,finish].forEach(function(x){x.classList.toggle('active',x===el)})}
   function resetRun(){round=0;points=0;document.getElementById('score').textContent='0';hud.hidden=false;progressWrap.hidden=false}
@@ -356,6 +360,7 @@
     });
   });
   /* 2026-09-28: distribution loop tracking. play -> quiz -> share. */
+  document.getElementById('finishQuiz').href = withShare('/');
   document.getElementById('finishQuiz').addEventListener('click',function(){try{if(window.posthog&&posthog.capture)posthog.capture('play_finish_quiz_cta',{mode:mode})}catch(e){}});
   document.getElementById('sound').addEventListener('click',function(){soundOn=!soundOn;this.textContent=soundOn?'Sound on':'Sound off';this.setAttribute('aria-pressed',soundOn?'true':'false');if(soundOn)tone(600,.15,0)});
 
