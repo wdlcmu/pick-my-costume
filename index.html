@@ -104,11 +104,29 @@ body{
   line-height:1.5; min-height:100vh;
 }
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+.herovis{display:none}
 /* Billy 2026-09-27: desktop was a 640px phone column floating in dead space.
    On wide screens let the page breathe: wider content well, matching FAQ/how. */
 @media (min-width:900px){
   .wrap{max-width:1000px;padding:28px 32px 80px}
   .homefaq,.homehow{max-width:1000px}
+  /* Billy 2026-09-27: the centered hero stack still read narrow on desktop,
+     sides left as dead starfield. Two-column hero: pitch left, trending
+     photo grid right. Mobile unchanged (single centered column). */
+  .hero{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);gap:48px;align-items:center;text-align:left;padding:40px 0 52px}
+  .herotext{text-align:left}
+  .herotext .tminus{text-align:left}
+  .herovis{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding-top:72px;margin:0}
+  .herovis a{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink)}
+  .herovis a:hover{border-color:var(--accent)}
+  .herovis img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+  .herovis span{display:block;padding:8px 10px;font-size:13px;font-weight:700}
+  /* Billy 2026-09-27: on the idea detail page the full-width photo pushed
+     every action (pantry check, make-it-this-week, claim) below the fold.
+     Two columns on desktop: sticky photo left, title/why/actions right.
+     Mobile keeps the single stacked column. */
+  #s-detail #d-card>.card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:36px;align-items:start;text-align:left}
+  #s-detail #d-card>.card>div:first-child{grid-column:1;grid-row:1/-1;position:sticky;top:16px}
 }
 .hero{text-align:center;padding:30px 8px 32px;position:relative}
 /* Billy 2026-09-26: the celestial is now ambient and top-right, never a big
@@ -696,6 +714,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
              heuristic; the moon phase is genuinely computed. -->
         <p class="fine" id="moon-caveat" style="margin:8px 0 0">The sun is a rough guess from your phone's clock, shown 6am to 6pm, not a sunrise lookup. We never ask for your location. The moon phase is astronomically computed.</p>
       </div>
+      <div class="herotext">
       <h1 class="firstonly">We know your Halloween costume.</h1>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
@@ -724,6 +743,16 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <button class="returnhero-share" id="btn-returnshare" type="button">Share my pick</button>
         </div>
         <p class="fine" id="returnhero-share-status" role="status" style="margin:8px 0 0"></p>
+      </div>
+      </div><!-- /herotext -->
+      <!-- Billy 2026-09-27: desktop hero visual. 2x2 trending-costume photo grid
+           fills the right column on wide screens; the centered stack left the
+           sides as dead starfield. Desktop-only (display:none below 900px). -->
+      <div class="herovis" aria-label="Trending costumes">
+        <a href="/c/snow-sisters?from=hero"><img src="photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span>Snow Sisters</span></a>
+        <a href="/c/tin-hero?from=hero"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
+        <a href="/c/lost-tourist?from=hero"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
+        <a href="/c/classic-ghost?from=hero"><img src="photos/classic-ghost.webp" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
       </div>
       </div>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
@@ -797,20 +826,20 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            flow via openIdeaDetail (browse parity). -->
       <div class="explore">
         <p class="fine explore-head">More ways to explore</p>
-        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">What materials or clothes are already in your house?</a></p>
-      <p class="fine" style="margin:6px 0 0">Tick the clothes and materials already in your house, we rank costumes by what you own.</p>
+        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">👕 What materials or clothes are already in your house?</a></p>
+      <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 138 ideas by what you can build tonight.</p>
         <!-- Billy 2026-09-27: this section had five competing links (classroom,
              flyer, browse, planner, group shuffler) under one heading. Cold-user
              QA miss, owned. One collapsed disclosure now; pantry card stays
              elevated above it. -->
         <details style="margin-top:12px">
           <summary class="textlink" style="cursor:pointer;display:inline-block">More tools: browse all ideas, planners, printables</summary>
-          <p style="margin:12px 0 0"><a class="pantry-link" href="/classroom" title="Costumes for the whole class: pick a theme, get a shopping list">Planning costumes for a classroom? Whole-class planner</a></p>
-          <p style="margin:12px 0 0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 138 ideas by the parts you already own">Own last year's costume? Turn it into this year's build</a></p>
-          <p style="margin:12px 0 0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">Need a handout? Printable flyers for classrooms, waiting rooms, and parties</a></p>
-          <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">Browse all 138 ideas</button></p>
-          <p style="margin:8px 0 0"><button type="button" id="btn-planner-hero" class="textlink">Plan your Halloween: buy day, build day, dress-up day</button></p>
-          <p style="margin:8px 0 0"><button type="button" id="btn-shuffler-hero" class="textlink">Dealing out group roles? Shuffle who's who</button></p>
+          <p style="margin:12px 0 0"><a class="pantry-link" href="/classroom" title="Costumes for the whole class: pick a theme, get a shopping list">🏫 Planning costumes for a classroom? Whole-class planner</a></p>
+          <p style="margin:12px 0 0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 138 ideas by the parts you already own">♻️ Own last year's costume? Turn it into this year's build</a></p>
+          <p style="margin:12px 0 0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">🖨️ Need a handout? Printable flyers for classrooms, waiting rooms, and parties</a></p>
+          <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">🔍 Browse all 138 ideas</button></p>
+          <p style="margin:8px 0 0"><button type="button" id="btn-planner-hero" class="textlink">📅 Plan your Halloween: buy day, build day, dress-up day</button></p>
+          <p style="margin:8px 0 0"><button type="button" id="btn-shuffler-hero" class="textlink">🎲 Dealing out group roles? Shuffle who's who</button></p>
         </details>
       <p style="margin:16px 0 0" hidden><button type="button" id="btn-spin" class="ghost">Can&#39;t decide?</button></p>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
@@ -2898,40 +2927,18 @@ function finishQuiz(){
    secondary illustrations. */
 function ideaMedia(idea, photoOnly){
   var wrap = document.createElement("div");
-  /* Billy 2026-09-26: animations back on cards. 29 ideas have -loop.mp4 files.
-     iOS-safe: muted, playsinline, loop, autoplay. Respects reduced-motion.
-     Falls back to static photo if no video or video fails. */
-  var ANIM_IDS = {"astronaut":1,"bacon-eggs":1,"basketball-star":1,"blue-dog-family":1,"bowling-pins":1,"boxer":1,"caped-duo":1,"cardboard-knight":1,"cheerleader":1,"deviled-egg":1,"dino-herd":1,"hero-squad":1,"ice-cream-cone":1,"lost-tourist":1,"mermaid-crew":1,"ninja":1,"pbj":1,"peas-pod":1,"penguin-huddle":1,"pixel-ghost":1,"pizza-slice":1,"popcorn-bucket":1,"prince-princess":1,"referee":1,"robot-ranger":1,"snow-sisters":1,"sushi-roll":1,"tennis-duo":1,"wizard":1};
-  var useVideo = !photoOnly && ANIM_IDS[idea.id];
-  var reducedMotion = false;
-  try { reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){}
-  if (useVideo && !reducedMotion){
-    var vid = document.createElement("video");
-    vid.src = "images/anim/" + idea.id + "-loop.mp4";
-    vid.muted = true; vid.loop = true; vid.playsInline = true; vid.autoplay = true;
-    vid.setAttribute("muted",""); vid.setAttribute("loop",""); vid.setAttribute("playsinline",""); vid.setAttribute("autoplay","");
-    vid.style.width = "100%"; vid.style.borderRadius = "10px"; vid.style.marginBottom = "4px";
-    vid.style.aspectRatio = "3/2"; vid.style.objectFit = "cover";
-    /* Fallback to static photo if video fails to load */
-    vid.setAttribute("onerror", "this.style.display='none';this.nextElementSibling.style.display=''");
-    var fallback = document.createElement("img");
-    fallback.src = "photos/" + idea.id + ".webp";
-    fallback.alt = "";
-    fallback.style.width = "100%"; fallback.style.borderRadius = "10px"; fallback.style.marginBottom = "4px";
-    fallback.style.display = "none";
-    fallback.setAttribute("onerror", "this.style.display='none'");
-    wrap.appendChild(vid);
-    wrap.appendChild(fallback);
-  } else {
-    var photo = document.createElement("img");
-    photo.src = "photos/" + idea.id + ".webp";
-    photo.alt = "";
-    photo.style.width = "100%";
-    photo.style.borderRadius = "10px";
-    photo.style.marginBottom = "4px";
-    photo.setAttribute("onerror", "this.style.display='none'");
-    wrap.appendChild(photo);
-  }
+  /* Billy 2026-09-27: AI loop videos left out on purpose. Motion magnifies AI
+     artifacts and cheapens trust in the build guides, so cards and detail
+     views show the static concept photo only. The mp4s stay in images/anim/
+     if we ever reverse this. */
+  var photo = document.createElement("img");
+  photo.src = "photos/" + idea.id + ".webp";
+  photo.alt = "";
+  photo.style.width = "100%";
+  photo.style.borderRadius = "10px";
+  photo.style.marginBottom = "4px";
+  photo.setAttribute("onerror", "this.style.display='none'");
+  wrap.appendChild(photo);
   var tag = document.createElement("div");
   tag.textContent = "AI-generated concept photo";
   tag.style.cssText = "font-size:11px;color:#9a8fb8;margin-bottom:12px;";
@@ -14201,6 +14208,9 @@ function shareLandingHeadline(idea, search){
     if (!el) return;
     var now = new Date();
     var hw = new Date(now.getFullYear(), 9, 31);
+    /* Billy 2026-09-27: name the weekday. "34 days until Halloween (Saturday)"
+       helps parents plan around the weekend. */
+    var hwDay = hw.toLocaleDateString(undefined, {weekday: "long"});
     var days = Math.ceil((hw.getTime() - now.getTime()) / 86400000);
     /* 2026-09-26 red-team D11: the clock hid ON Halloween (days <= 0 at midnight).
        Halloween day deserves its own line, not silence. Hides only after Oct 31. */
@@ -14208,8 +14218,8 @@ function shareLandingHeadline(idea, search){
     var msg;
     if (days === 0) msg = "🎃 Halloween is today: pick a costume you can build tonight";
     else if (days === 1) msg = "🎃 Halloween is tomorrow: pick a costume you can build tonight";
-    else if (days <= 7) msg = "🎃 Halloween is in " + days + " days: every idea here builds from your closet";
-    else msg = "🎃 " + days + " days until Halloween";
+    else if (days <= 7) msg = "🎃 " + days + " days until Halloween (" + hwDay + "): every idea here builds from your closet";
+    else msg = "🎃 " + days + " days until Halloween (" + hwDay + ")";
     el.textContent = msg;
     el.style.display = "";
   })();
