@@ -32,7 +32,7 @@
      Honest markup only: every question and answer below appears verbatim in
      the visible FAQ section above the footer, added in the same edit. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no email, no checkout. Answer 5 questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store."}},{"@type":"Question","name":"Do I need to download anything?","acceptedAnswer":{"@type":"Answer","text":"No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits."}},{"@type":"Question","name":"What if I do not like the ideas I get?","acceptedAnswer":{"@type":"Answer","text":"Answer the quiz differently and try again, or skip the quiz and browse all 138 costume guides yourself. Every guide shows what you need, what it costs, and how long it takes."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no email, no checkout. Answer a few quick questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store."}},{"@type":"Question","name":"Do I need to download anything?","acceptedAnswer":{"@type":"Answer","text":"No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits."}},{"@type":"Question","name":"What if I do not like the ideas I get?","acceptedAnswer":{"@type":"Answer","text":"Answer the quiz differently and try again, or skip the quiz and browse all 138 costume guides yourself. Every guide shows what you need, what it costs, and how long it takes."}}]}
 </script>
 <!-- HowTo for the quiz flow (AI-citation onsite checklist: answer-shape).
      Honest data only: "2 minutes" and "free forever" are the landing's own
@@ -40,7 +40,7 @@
      "How it works" strip below verbatim. Costume build times and prices
      live on each /c/ guide's own HowTo, not here. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","publisher":{"@id":"https://pickmycostume.com/#organization"},"name":"How to pick your Halloween costume","description":"Answer 5 quick questions and get 3 costume ideas picked for you from 138 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer 5 questions","text":"Five quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 138 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Claim it and make it","text":"Tap \"Claim this costume\" to save it, text it to your group, and open the guide for materials, cost, and build steps."}]}
+{"@context":"https://schema.org","@type":"HowTo","publisher":{"@id":"https://pickmycostume.com/#organization"},"name":"How to pick your Halloween costume","description":"Answer a few quick questions and get 3 costume ideas picked for you from 138 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer a few quick questions","text":"A few quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 138 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Claim it and make it","text":"Tap \"Claim this costume\" to save it, text it to your group, and open the guide for materials, cost, and build steps."}]}
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -1193,7 +1193,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <section class="homehow" aria-label="How it works">
     <h2>How it works</h2>
     <ol>
-      <li><b>Answer 5 questions.</b> About 2 minutes.</li>
+      <li><b>Answer a few quick questions.</b> About 2 minutes.</li>
       <li><b>Get 3 ideas picked for you.</b> Each with cost, time, and a how-to.</li>
       <li><b>Claim it and make it.</b> Save it, text it to your group, build it.</li>
     </ol>
@@ -1203,7 +1203,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <h2>Quick answers</h2>
     <details>
       <summary>Is it really free?</summary>
-      <p>Yes. No account, no email, no checkout. Answer 5 questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store.</p>
+      <p>Yes. No account, no email, no checkout. Answer a few quick questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store.</p>
     </details>
     <details>
       <summary>Do I need to download anything?</summary>
@@ -9636,6 +9636,18 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   var _bde = {idea_id: idea.id, thumb_arm: thumbArm()};
   if (detailReturnTo === "s-pantry") _bde.via = "pantry";
   Analytics.track("browse_detail_opened", _bde);
+  /* 2026-09-28 journey sim: in-app taps ("More like this", hero, rails)
+     swapped the costume without touching the URL, so refresh, back-button,
+     and copied links all landed on the WRONG costume. Keep the address bar
+     in sync with what's on screen. replaceState (not pushState) so the
+     in-page Back button still exits to where you came from. */
+  try {
+    var _u = new URL(location.href);
+    if (_u.searchParams.get("idea") !== idea.id){
+      _u.searchParams.set("idea", idea.id);
+      history.replaceState(null, "", _u.pathname + "?" + _u.searchParams.toString() + _u.hash);
+    }
+  } catch(_url){}
   show("s-detail");
 }
 
@@ -11422,7 +11434,15 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   /* Restored panels keep the size, kid flags, names, and roles the user left;
      only a brand-new panel starts at two. (setSize(2) here used to wipe a
      restored 4-person cast back to two.) */
-  if (hadState){ recountKids(); render(); } else { setSize(2); }
+  if (hadState){ recountKids(); render(); }
+  else {
+    /* 2026-09-28 journey sim: the quiz heard "My kid" but the share cast
+       still defaulted to 2 people. A brand-new panel now starts from the
+       quiz answer: one kid for "My kid", the generic two otherwise. */
+    var _q1kid = (typeof state !== "undefined" && state.answers && state.answers.q1 && state.answers.q1.value === "kid");
+    setSize(_q1kid ? 1 : 2);
+    if (_q1kid && people.length){ people[0].kid = true; kids = 1; syncCastState(); render(); }
+  }
   /* Personal role cards: one card per cast member, each with a single send
      CTA ("Send this card to <name>", or "Send this card" with no name).
      For spouses sending to each other and groups sharing in group chat. */
