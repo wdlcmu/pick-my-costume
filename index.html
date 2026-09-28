@@ -9602,7 +9602,9 @@ function renderEmailCapture(box, idea){
   var btn = document.createElement("button");
   btn.type = "button"; btn.className = "ghost";
   btn.textContent = "Email me the instructions";
-  btn.style.marginTop = "12px"; btn.style.width = "100%";
+  /* 2026-09-28 Billy: the full-width button looked weird next to the two
+     natural-width ghost buttons above it. Match the siblings. */
+  btn.style.marginTop = "12px";
 
   var wrap = document.createElement("div");
   wrap.style.display = "none"; wrap.style.marginTop = "10px";
