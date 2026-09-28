@@ -133,6 +133,15 @@ body{
      Two columns on desktop: sticky photo left, title/why/actions right.
      Mobile keeps the single stacked column. */
   #s-detail #d-card>.card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:36px;align-items:start;text-align:left}
+  /* 2026-09-28 desktop fix: explicit left/right column wrappers. The old
+     flat grid pinned the photo with grid-row:1/-1, which does not span
+     implicit rows, so the photo took only row 1 and every section zigzagged
+     across columns (rail overlapping the photo, dead space on the right). */
+  #s-detail #d-card>.card>.dcol-l{grid-column:1;grid-row:1;position:sticky;top:16px;align-self:start;min-width:0}
+  #s-detail #d-card>.card>.dcol-r{grid-column:2;grid-row:1;min-width:0}
+  /* 2026-09-28: the rail's mobile edge-bleed (-16px margins) must not poke
+     out of the desktop right column. */
+  #s-detail #d-card .proofrow{margin-left:0;margin-right:0}
   /* Billy 2026-09-27: warm "Your plan" strip had the same full-bleed photo
      problem on desktop. Photo left, title/actions right. Mobile stacked. */
   .warmstrip{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:start}
@@ -140,7 +149,6 @@ body{
      ~700px-tall full-bleed photos on desktop. Same two-column treatment as
      the hero strip: photo left, text right. Mobile stacks. */
   .warmpair{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:start}
-  #s-detail #d-card>.card>div:first-child{grid-column:1;grid-row:1/-1;position:sticky;top:16px}
 }
 .hero{text-align:center;padding:30px 8px 32px;position:relative}
 /* Billy 2026-09-26: the celestial is now ambient and top-right, never a big
@@ -9433,9 +9441,17 @@ function buildMoreLikeThisRail(idea){
 function buildBrowseDetailCard(idea, whyHead){
   var card = document.createElement("div");
   card.className = "card";
-  card.appendChild(ideaMedia(idea));
+  /* 2026-09-28 desktop fix: explicit left/right columns. The old flat grid
+     pinned the photo with grid-row:1/-1, which does not span implicit rows,
+     so the photo took only row 1 and every section zigzagged across columns
+     (rail overlapping the photo, dead space on the right). */
+  var left = document.createElement("div");
+  left.className = "dcol-l";
+  left.appendChild(ideaMedia(idea));
+  var right = document.createElement("div");
+  right.className = "dcol-r";
   var h = document.createElement("h3"); h.textContent = idea.title;
-  var _tse = trendStatEl(idea); if (_tse) card.appendChild(_tse);
+  var _tse = trendStatEl(idea); if (_tse) right.appendChild(_tse);
   var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
   var wh = document.createElement("p"); wh.className = "why";
   var wb = document.createElement("b"); wb.textContent = whyHead || (hasQuizAnswers() ? "Why this fits you" : "Why it's great");
@@ -9488,17 +9504,18 @@ function buildBrowseDetailCard(idea, whyHead){
   /* Already picked earlier (e.g. from the quiz): show its sections at once. */
   if (pick && pick.ideaId === idea.id) mountPickSections();
   row.appendChild(bPick); /* pick stands alone full-width; the post-pick "Text this to a friend" section is the single share path */
-  card.appendChild(h); card.appendChild(bl); card.appendChild(wh);
+  right.appendChild(h); right.appendChild(bl); right.appendChild(wh);
   /* 2026-09-26 closet-coverage badge: decision input, so it sits with the
      decision inputs under the why-line, above the build steps. Renders even
      when buildInstructions returns null (no guide data). */
   var _closetB = buildClosetBadge(idea);
-  if (_closetB) card.appendChild(_closetB);
+  if (_closetB) right.appendChild(_closetB);
   var _howtoB = buildInstructions(idea, {via: "browse_detail"});
-  if (_howtoB) card.appendChild(_howtoB);
-  card.appendChild(row); card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+  if (_howtoB) right.appendChild(_howtoB);
+  right.appendChild(row); right.appendChild(hint); right.appendChild(note); right.appendChild(planBox); right.appendChild(status);
   var _mlt = buildMoreLikeThisRail(idea);
-  if (_mlt) card.appendChild(_mlt); /* "More like this" rail closes the detail page */
+  if (_mlt) right.appendChild(_mlt); /* "More like this" rail closes the detail page */
+  card.appendChild(left); card.appendChild(right);
   return card;
 }
 /* detailReturnTo: where the detail screen's back button goes. Browse taps
@@ -12759,6 +12776,17 @@ function shareLandingHeadline(idea, search){
         else if (fm[1] === "hero" || fm[1] === "rail") pt = "Trending now";
       }
       try { openIdeaDetail(idea.id, null, "s-hero", pt); } catch(e){}
+      /* 2026-09-28: the from tag did its job (the context line above). Scrub
+         it from the visible URL so shared/copied links stay clean; the page
+         state is already set and nothing downstream re-reads it. */
+      try {
+        var _u = new URL(location.href);
+        if (_u.searchParams.has("from")){
+          _u.searchParams.delete("from");
+          var _qs = _u.searchParams.toString();
+          history.replaceState(null, "", _u.pathname + (_qs ? "?" + _qs : "") + _u.hash);
+        }
+      } catch(e){}
     })();
     if ($("s-detail") && $("s-detail").classList.contains("on")) return;
     /* 2026-09-25 challenge mechanic (arm D): ?ch=1 means the sharer claimed
