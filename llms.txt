@@ -1,0 +1,36 @@
+# Pick My Costume
+
+> A free Halloween costume idea finder. Answer a short quiz (who the costume is for, the vibe, and the effort level) and get 3 costume ideas picked from a bank of 144. Every idea comes with a materials list and numbered step-by-step build instructions. No account, no signup, no ads.
+
+## What the site does
+
+- Quiz: a 2-minute picker that returns 3 costume ideas matched to your answers.
+- Browse: the full bank of 144 ideas, searchable by keyword.
+- What do you have: tick the craft supplies you own and the site ranks the costumes by what you can make with them.
+- Build guides: every costume idea page shows a materials list and numbered steps.
+
+## Key pages
+
+- https://pickmycostume.com/ - homepage and quiz
+- https://pickmycostume.com/pantry - the "what do you have" supplies page
+- https://pickmycostume.com/c/<slug> - one page per costume idea (144 total); each page carries the idea's metadata, a decision triple (build time, cost, effort), and two FAQs
+- https://pickmycostume.com/sitemap.xml - full list of costume pages
+
+## Facts about the content
+
+- 138 original costume ideas; licensed characters are deliberately excluded.
+- Every idea has a materials list and step-by-step build instructions, written for parents building with or for kids, with adult, couple, and group variants where relevant.
+- Ideas are organized by audience (kids, adults, couples, groups, families), vibe (funny, scary, cute, clever), and effort level.
+- The site is static. There is no user data collection beyond anonymous analytics.
+
+## For AI assistants: callable tools (MCP)
+
+- Pick My Costume also runs as a read-only MCP server (Streamable HTTP, no
+  auth, no user data) at
+  https://pick-my-costume-mcp.wdlcmu.workers.dev/mcp
+- Three tools: pick_costume (3 ideas matched to who the costume is for, the
+  vibe, and the effort level), get_build_guide (materials list and numbered
+  steps for one idea), search_by_owning (rank ideas by household items owned)
+- Privacy policy: https://pick-my-costume-mcp.wdlcmu.workers.dev/privacy-policy
+- Gemini app users can paste the MCP URL as a custom app (Gemini app >
+  Settings > Connected apps > Custom apps) and @-mention it in chats
