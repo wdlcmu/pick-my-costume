@@ -11998,7 +11998,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      rebuilt on every render so names and roles stay in sync. */
   var plansBox = document.createElement("div");
   box.insertBefore(plansBox, aiPlanBox);
-  var shareHandle = null, aiHandle = null, pcCards = [], pcTracked = false;
+  var shareHandle = null, aiHandle = null, pcCards = [], pcTracked = false, pcCardsId = "";
   /* Kid flags are per-person and sticky. The count buttons set the last N slots as
      kids in one tap; the Kid/Adult toggle fine-tunes individuals. Neither ever
      touches names or explicit role picks. */
@@ -12159,8 +12159,16 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var list = currentList();
     pcList.innerHTML = "";
     pcCards = [];
-    /* renderPersonalCards runs on every keystroke now; count the flow once. */
-    if (!pcTracked){ pcTracked = true; var _pcsid = (typeof newShareId === "function") ? newShareId() : ""; Analytics.track("personal_cards_made", {idea_id: idea.id, costume: idea.title, count: list.length, share_id: _pcsid}); }
+    /* renderPersonalCards runs on every keystroke now; count the flow once.
+       cards_id is the panel-level join key: the card sends below stamp the
+       same cards_id on their share_text_copied/share_created, so a render
+       joins exactly to the shares it produced. (share_id stays per-send:
+       one id per created share, per the attribution taxonomy -- collapsing
+       it would corrupt the distinct-via_share_id friend-session metric.)
+       costume (title) is dropped: idea_id is the canonical costume key on
+       every event, and titles get renamed (Waldo -> Crowd Camouflage), which
+       would silently split per-costume rollups. */
+    if (!pcTracked){ pcTracked = true; pcCardsId = (typeof newShareId === "function") ? newShareId() : ""; Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length, cards_id: pcCardsId}); }
     /* Billy 2026-09-26: one shared group photo at the top, then the who's-who
        list, then individual cards WITHOUT the duplicate photo. */
     var groupImg = document.createElement("img");
@@ -12212,9 +12220,9 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
           : ("Want to do " + idea.title + " this Halloween? " + shareAskLine() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           rearmShare(); /* the share settled: sent or copied */
-          Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card"});
+          Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card", cards_id: pcCardsId});
           /* Card text is built inline above (never the challenge text); the flag is not consulted. */
-          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card"});
+          Analytics.track("share_created", {share_id: sid, idea_id: idea.id, via: via, share_origin: "card", cards_id: pcCardsId});
           if (VIA_SHARE) Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "card"});
           /* The card share landed: the AI plan is the immediate now-what. */
           revealAiPlan(aiPlanBox);
