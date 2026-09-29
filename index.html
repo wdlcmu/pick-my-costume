@@ -9924,6 +9924,10 @@ function renderEmailCapture(box, idea){
   function tracked(sent){ try { Analytics.track("email_instructions_sent", {idea_id: idea.id, sent: sent}); } catch(_){} }
 
   btn.onclick = function(){
+    /* 2026-09-28 journey QA: a finger-bounce second tap landed on the
+       synchronously-toggled capture and closed it instantly (flash).
+       A second tap inside 400ms is a bounce, not a close intent. */
+    if (!tapGuard("emailcap", 400)) return;
     var isOpen = wrap.style.display !== "none";
     wrap.style.display = isOpen ? "none" : "block";
     if (!isOpen) { say(NOTE_IDLE); try { input.focus(); } catch(_){} }
