@@ -634,6 +634,8 @@ export function onRequest(context) {
     "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
     "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
     ".ctawrap{margin:20px 0;}" +
+    ".storyline{font-size:16px;margin:0 0 14px;color:#444;}" +
+    ".storyline a{color:#b3541e;font-weight:700;text-decoration:none;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
     ".guide img{max-width:100%;height:auto;border-radius:12px;margin:6px 0;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
@@ -676,6 +678,7 @@ export function onRequest(context) {
     _triple +
     _fit +
     "<p class=\"lede\">" + blurb + "</p>" +
+    "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<img src=\"" + img + "\" alt=\"" + title + " costume idea\">" +
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
