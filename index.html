@@ -39,7 +39,7 @@
      live on each /c/ guide's own HowTo, not here.
      Billy 2026-09-28: step 3 rewritten for the plan-first flow.
      Billy 2026-09-29 (Victory Lap): the plan panel leads with the share
-     block ("Tell my people", the one filled CTA); build actions, email
+     block ("Share my costume", the one filled CTA); build actions, email
      instructions, the AI plan, and save-image/pin-it collapse into one
      "Keep building your costume" disclosure below it. -->
 <script type="application/ld+json">
@@ -4293,7 +4293,7 @@ function buildClosetBadge(idea){
    reorder, and the flag-off DOM is byte-identical to today. */
 /* 2026-09-28 share-flow consolidation (Billy: too many share doors on the
    result page): the Experiment 1 "Share this pick" quick-share card is
-   retired. "Tell my people" is the single send-to-people path. */
+   retired. "Share my costume" is the single send-to-people path. */
 var EXPERIMENT1_ONE_TAP_SHARE = false;
 /* Roulette entry experiment (2026-09-26): the costume shuffle lives
    4-5 phone viewports down on the homepage under "More ways to explore" with
@@ -10226,7 +10226,7 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
     return;
   }
   /* Billy 2026-09-29 (Victory Lap): the share block LEADS the panel as the
-     single primary action -- "Tell my people" is the one filled CTA, not a
+     single primary action -- "Share my costume" is the one filled CTA, not a
      ghost button buried last. Everything else (build actions, email capture,
      AI plan, save-image / pin-it) collapses into one "Keep building your
      costume" disclosure below it. onShared opens the disclosure first: the
@@ -10521,7 +10521,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   /* The share panel, simplified 2026-09-28. Billy: the loop had grown
      bloated -- teaser, plan, micro-quiz, SMS, save-image, riddle,
      guess-game, pantry dare, and eight message variants. What remains:
-       - primary "Tell my people" button (native sheet / clipboard)
+       - primary "Share my costume" button (native sheet / clipboard)
        - a Preview text toggle (collapsed by default; skipped in the cast
          panel via noPreview, where the live preview above the who's-who
          form already shows the text)
@@ -10532,7 +10532,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
          instead, so the share block stays one loud action)
      Billy 2026-09-29 (Victory Lap): "Want a second opinion?" asked the
      sharer to perform indecision. The block now declares: "Going as X?
-     Tell your people." This supersedes the pending "Ask my people" rename.
+     Share it." This supersedes the pending "Ask my people" rename.
      makeText(sid) still overrides the text for personal-cast cards. */
   container.innerHTML = "";
   var statusEl = null, btn = null, sharedOnce = false;
@@ -10546,12 +10546,12 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   }
   function primaryBtn(){
     var b = document.createElement("button");
-    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Tell my people";
+    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Share my costume";
     b.onclick = function(){ share("generic", b, statusEl); };
     return b;
   }
   var lab = document.createElement("p"); lab.className = "status";
-  lab.textContent = "Going as " + idea.title + "? Tell your people.";
+  lab.textContent = "Going as " + idea.title + "? Share it.";
   container.appendChild(lab);
   btn = primaryBtn();
   var primaryRow = document.createElement("div");
@@ -11805,7 +11805,7 @@ function headwearWord(ideaId){
 }
 /* ================= EXPERIMENT 1: ONE-TAP SHARE (2026-09-26, retired 2026-09-28) =================
    Retired in the share-flow consolidation: the "Share this pick" quick-share
-   card duplicated the "Tell my people" path. The builder functions stay for
+   card duplicated the "Share my costume" path. The builder functions stay for
    reference but nothing calls them while EXPERIMENT1_ONE_TAP_SHARE is false.
    Design: hour-session/share-lift-experiments.md, "Experiment 1". Gated by
    EXPERIMENT1_ONE_TAP_SHARE (default false). When on, buildCastPanel renders
@@ -11862,7 +11862,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      ("Share this pick") is retired, so the block that inserted it above the
      form is gone. One personal-cards flow lives here: the who's-who form
      feeds live personal cards below, with no separate "Make personal cards"
-     gate. "Tell my people" (in the share row under the cards) is the single
+     gate. "Share my costume" (in the share row under the cards) is the single
      send-to-people path. */
   h.textContent = "Make it personal (optional)";
   sub.textContent = "Add names and roles for personal cards. Names are optional and never stored anywhere. I never see them.";
