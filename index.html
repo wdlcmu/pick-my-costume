@@ -12160,7 +12160,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     pcList.innerHTML = "";
     pcCards = [];
     /* renderPersonalCards runs on every keystroke now; count the flow once. */
-    if (!pcTracked){ pcTracked = true; Analytics.track("personal_cards_made", {idea_id: idea.id, count: list.length}); }
+    if (!pcTracked){ pcTracked = true; var _pcsid = (typeof newShareId === "function") ? newShareId() : ""; Analytics.track("personal_cards_made", {idea_id: idea.id, costume: idea.title, count: list.length, share_id: _pcsid}); }
     /* Billy 2026-09-26: one shared group photo at the top, then the who's-who
        list, then individual cards WITHOUT the duplicate photo. */
     var groupImg = document.createElement("img");
