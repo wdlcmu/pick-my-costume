@@ -11,6 +11,8 @@
   try {
     var m = /[?&]costume=([a-z0-9-]+)/.exec(location.search || "");
     var dest = "/?storytime" + (m ? "&costume=" + m[1] : "");
+    var qm = /[?&]((?:probe|sim)=[^&]*)/.exec(location.search || "");
+    if (qm) dest += "&" + qm[1];
     location.replace(dest);
   } catch(e){}
 })();
