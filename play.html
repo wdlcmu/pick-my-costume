@@ -408,6 +408,26 @@ function switchToOther(){if(mode==='peek'){startMaterials()}else{start()}}
 if(switchGame)switchGame.addEventListener('click',switchToOther);
 if(switchGameEnd)switchGameEnd.addEventListener('click',switchToOther);
 
+/* 2026-09-28: deep links for the homepage kid-games chip bar (?game=peekaboo
+   or ?game=match). A cold load boots straight into that game; an unknown or
+   missing value shows the normal "Pick a way to play" intro, so there is no
+   dead end. Manual starts never touch the URL, so the browser back button
+   returns to the page before /play, never into a trap. ?probe= and share
+   params ride along untouched. */
+function gameFromQuery(qs){
+  var m=/[?&]game=([^&]*)/.exec(qs||'');
+  if(!m)return '';
+  var v='';
+  try{v=decodeURIComponent(m[1]||'').toLowerCase()}catch(e){v=(m[1]||'').toLowerCase()}
+  v=v.replace(/[^a-z]/g,'');
+  if(v==='peekaboo'||v==='peek')return 'peek';
+  if(v==='match'||v==='matchthepieces'||v==='matchpieces')return 'match';
+  return '';
+}
+var _dlGame=gameFromQuery(location.search);
+if(_dlGame==='peek'){start();gcap('play_started',{mode:'peek',via:'deeplink'});}
+else if(_dlGame==='match'){startMaterials();gcap('play_started',{mode:'match',via:'deeplink'});}
+
 })();
 </script>
 <footer class="sitefoot"><p>Built with Muse. Made by Billy Litner.</p></footer>
