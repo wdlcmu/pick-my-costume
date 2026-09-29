@@ -4270,9 +4270,12 @@ function thumbArm(){
 /* The one ask line every share carries (2026-09-28 simplification). The
    share panel used to A/B eight message variants and five ask lines; the
    data never cleared a winner, so the panel now carries one canonical
-   message and this one line. */
+   message and this one line. 2026-09-28 P0 growth: rewritten in Billy's
+   register -- how he actually texted the first share ("I had AI make this
+   for me / Let me know what you think"), with a concrete quiz ask so the
+   recipient has something to do, not just something to read. */
 function shareAskLine(){
-  return "What do you think? ";
+  return "I picked this with Pick My Costume. Take the 2-minute quiz and tell me what you get. ";
 }
 /* The one canonical share action (2026-09-28 simplification): the native
    share sheet on phones, clipboard copy on desktop. Replaces the bespoke
@@ -10349,6 +10352,8 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
          panel via noPreview, where the live preview above the who's-who
          form already shows the text)
        - Save the image (the one non-text share worth keeping)
+       - Pin it on Pinterest (2026-09-28 P0 growth: save link using the
+         guide's own og image as pin media)
        - Pick for a friend (secondary)
        - the approved Partner Split (secondary)
      makeText(sid) still overrides the text for personal-cast cards. */
@@ -10462,6 +10467,27 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   imgBtn.onclick = function(){ shareImage(idea, imgBtn, statusEl); };
   imgRow.appendChild(imgBtn);
   container.appendChild(imgRow);
+  /* 2026-09-28 P0 growth: Pin-it save link. Pinterest is the highest-ROI
+     Halloween search channel and the guide already has its own og image,
+     so the pin media is the guide's share card. URL-encoded per the
+     pin/create/button contract. */
+  var pinRow = document.createElement("div");
+  pinRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
+  var pinBtn = document.createElement("button");
+  pinBtn.type = "button"; pinBtn.className = "ghost"; pinBtn.style.width = "100%";
+  pinBtn.textContent = "Pin it on Pinterest";
+  pinBtn.onclick = function(){
+    if (typeof Analytics !== "undefined" && Analytics.track){
+      try { Analytics.track("pin_click", {idea_id: idea.id}); } catch(_){}
+    }
+    var pinUrl = "https://pinterest.com/pin/create/button/" +
+      "?url=" + encodeURIComponent("https://pickmycostume.com/c/" + idea.id) +
+      "&media=" + encodeURIComponent("https://pickmycostume.com/images/og/" + idea.id + ".jpg") +
+      "&description=" + encodeURIComponent(idea.title + " - DIY Halloween costume guide from Pick My Costume");
+    window.open(pinUrl, "_blank", "noopener");
+  };
+  pinRow.appendChild(pinBtn);
+  container.appendChild(pinRow);
   return {
     refresh: function(){ if (!sharedOnce){ cur = mint(); if (ta) ta.value = cur.text; } }
   };
