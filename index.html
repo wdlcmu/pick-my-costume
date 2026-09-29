@@ -538,11 +538,6 @@ button.lightsheet{color:#241a38;}
 /* After a successful share, the AI plan section gets a brief highlight so it
    reads as the immediate next step (added by revealAiPlan). */
 .ai-flash{animation:aiFlash 1.6s ease-out}
-/* 2026-09-28 reduced-motion: the post-share outline pulse stays behind
-   no-preference, like the other decorative animations. Under reduce the
-   class is a no-op and the instant scroll (revealAiPlan) still lands the
-   user on the AI plan as the next step. */
-@media (prefers-reduced-motion: reduce){.ai-flash{animation:none}}
 @keyframes aiFlash{0%{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}100%{outline:2px solid transparent;outline-offset:4px}}
 /* Billy 2026-09-24: "get a color behind the AI plan". The AI plan reads as one
    distinct block: a soft orange wash drawn from the accent (no new hue),
@@ -788,11 +783,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .wr-dots i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.25)}
 .wr-dots i.done{background:#ffb020}
 .wr-close{position:absolute;top:calc(28px + env(safe-area-inset-top));right:16px;z-index:6;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;width:44px;height:44px;font-size:20px;line-height:1;cursor:pointer}
-.wr-slide{padding:80px 24px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;min-height:100vh;min-height:100dvh}
-@media (prefers-reduced-motion: no-preference){
-  .wr-slide{animation:wr-fadein .35s ease}
-  @keyframes wr-fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-}
+.wr-slide{padding:80px 24px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;min-height:100vh;min-height:100dvh;animation:wr-fadein .35s ease}
+@keyframes wr-fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .wr-kicker{text-transform:uppercase;letter-spacing:2px;font-size:12px;opacity:.75;margin:0 0 10px;color:#fff}
 .wr-h1{font-size:40px;line-height:1.05;margin:0 0 12px;letter-spacing:-1px;color:#fff;font-weight:800}
 .wr-h1 .wr-accent{color:#ffb020}
@@ -2989,7 +2981,7 @@ function show(id){
     $("shuffler-hint").textContent = "Dealt " + out.length + " roles for " + (idea ? idea.title : id) + ".";
     var res = $("shuffler-result");
     res.style.display = "block";
-    if (res.scrollIntoView) res.scrollIntoView({behavior: scrollBehavior(), block: "nearest"});
+    if (res.scrollIntoView) res.scrollIntoView({behavior: "smooth", block: "nearest"});
     var deal = {costume: idea ? idea.title : id, idea_id: id, lineup: out};
     Analytics.track("shuffler_dealt", {idea_id: id, group_size: out.length,
       kid_count: people.filter(function(p){ return p.kid; }).length, fillers: fillers});
@@ -10240,18 +10232,10 @@ function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   };
   row.appendChild(b);
   container.appendChild(label); container.appendChild(helper); container.appendChild(toggle); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
-  if (!noScroll && label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:scrollBehavior()});
+  if (!noScroll && label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:"smooth"});
   return { setText: function(t){ curText = t; ta.value = t; } };
 }
 
-/* 2026-09-28 reduced-motion P3: every smooth scroll honors the user's
-   preference. Under reduce the scrolls jump instantly instead of gliding.
-   All three are functional (they land the user on new content), never
-   decorative, so they stay; only the animation goes. */
-function scrollBehavior(){
-  try { return (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) ? "auto" : "smooth"; }
-  catch(e){ return "smooth"; }
-}
 /* After a successful share, the AI plan is the immediate now-what: scroll it
    into view and give it a brief highlight so it reads as the next step.
    No new screens, no modals. */
@@ -10262,7 +10246,7 @@ function revealAiPlan(aiBox){
      highlight for kid/family flows (the quiet block below still exists). */
   var aud = (typeof state !== "undefined" && state.answers.q1) ? state.answers.q1.value : null;
   if (aud === "kid" || aud === "family") return;
-  try { if (aiBox.scrollIntoView) aiBox.scrollIntoView({block: "nearest", behavior: scrollBehavior()}); } catch(e){}
+  try { if (aiBox.scrollIntoView) aiBox.scrollIntoView({block: "nearest", behavior: "smooth"}); } catch(e){}
 
   aiBox.classList.remove("ai-flash");
   void aiBox.offsetWidth; /* restart the animation on back-to-back shares */
@@ -10368,7 +10352,7 @@ function ideaFact(idea, kind){
 }
 function shareImage(idea, onDone){
   Analytics.track("share_image_tapped", {idea_id: idea.id});
-  function settled(){ if (typeof onDone === "function") onDone(); }
+  function settled(){ if (onDone) onDone(); }
   drawShareImage(idea, function(cv){
     function finish(blob){
       var file = new File([blob], "halloween-costume.png", {type: "image/png"});
@@ -10512,11 +10496,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   var imgBtn = document.createElement("button");
   imgBtn.type = "button"; imgBtn.className = "ghost";
   imgBtn.textContent = "Save the image";
-  imgBtn.onclick = function(){
-    var rearmShare = armShareOnce(imgBtn);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    shareImage(idea, rearmShare);
-  };
+  imgBtn.onclick = function(){ shareImage(idea, imgBtn, statusEl); };
   imgRow.appendChild(imgBtn);
   container.appendChild(imgRow);
   /* 2026-09-28 P0 growth: Pin-it save link. Pinterest is the highest-ROI
