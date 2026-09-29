@@ -328,8 +328,19 @@ export function onRequest(context) {
     /* Decision triple: the most quotable line of the guide, first under h1. */
     var _t = [_hw.time, _hw.cost, _hw.effort].filter(function(x){ return x; });
     if (_t.length) _triple = "<p class=\"triple\">" + _t.map(function(x){ return "<span class=\"pill\">" + esc(x) + "</span>"; }).join("") + "</p>";
-    /* Sizing guidance: the fit note every parent asks about. */
-    if (_hw.sizing) _fit = "<p class=\"fit\">Fit: " + esc(_hw.sizing) + "</p>";
+    /* Sizing guidance: the fit note every parent asks about. Billy 2026-09-29:
+       strip the paper-bag/mask boilerplate clause unless this costume's own
+       materials or steps mention a paper bag or mask (Elsa's guide showed it
+       though the costume uses neither). */
+    var _marker = "if the costume uses a paper bag or mask";
+    var _hay = ((_hw.m || []).join(" ") + " " + ((_hw.s || []).join(" "))).toLowerCase();
+    var _keepClause = /paper bag/.test(_hay) || /\bmask\b/.test(_hay);
+    var _sizing = _hw.sizing || "";
+    if (!_keepClause && _sizing.indexOf(_marker) !== -1){
+      var _cut = _sizing.indexOf("; " + _marker);
+      if (_cut !== -1) _sizing = _sizing.slice(0, _cut) + ".";
+    }
+    if (_sizing) _fit = "<p class=\"fit\">Fit: " + esc(_sizing) + "</p>";
     /* Parent FAQs: visible static HTML so AI assistants can quote them. */
     if (_hw.faqs && _hw.faqs.length) {
       _faqs = "<h2>Common questions</h2>" + _hw.faqs.map(function(f){
