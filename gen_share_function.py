@@ -154,13 +154,23 @@ for _slug, _rmap in ROLE_CARDS.items():
         assert os.path.exists(_p), "missing role share card: " + _p + \
             " (run gen_role_cards.py)"
 _topics = sorted(_safety["topics"], key=lambda t: t["match_order"])
+# Word-boundary keyword matching (2026-09-28): the old naive substring test
+# (`k in low`) false-positived on partial words, e.g. "trip" inside
+# "stripes" and "hem" inside "them", attaching the CPSC citation to Safety
+# steps the linked page does not support. Each keyword now compiles to
+# \b<keyword>s?\b: the leading boundary kills interior/suffix hits, while
+# the optional plural "s" keeps legitimate matches ("eye hole" in
+# "eye holes", "trip" in "trips", "headband" in "headbands").
+_topic_res = [(t, [re.compile(r"\b" + re.escape(k) + r"s?\b")
+                   for k in t["keywords"]])
+              for t in _topics]
 def _safety_link_for(steps):
     for i, st in enumerate(steps):
         low = st.lower()
         if not low.startswith("safety:"):
             continue
-        for t in _topics:
-            if any(k in low for k in t["keywords"]):
+        for t, res in _topic_res:
+            if any(r.search(low) for r in res):
                 return {"step_idx": i, "url": t["url"], "label": t["label"]}
     return None
 
