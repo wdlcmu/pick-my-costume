@@ -2795,11 +2795,15 @@ function show(id){
     var p = plannerPlanFor(ideaId);
     var ins = p.ins;
     var lastStep = p.buildSteps.length ? p.buildSteps[p.buildSteps.length-1] : "Gather everything in one spot the night before.";
-    var buyDetails = "Buy these for your " + idea.title + " costume (about " + ins.cost + "):\n" +
+    var buyDetails = "\uD83C\uDF83 Supply run: " + idea.title + " costume (about " + ins.cost + ")" + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\n" +
+      "You need:\n" +
       p.buyList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") +
-      (p.ownList.length ? "\n\nCheck at home first:\n" + p.ownList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") : "");
-    var buildDetails = "Build your " + idea.title + " costume (about " + ins.time + "):\n" +
-      p.buildSteps.map(function(s,i){ return (i+1) + ". " + s; }).join("\n");
+      (p.ownList.length ? "\n\nCheck at home first:\n" + p.ownList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") : "") +
+      "\n\n-- Pick My Costume";
+    var buildDetails = "\uD83D\uDD28 Build day: " + idea.title + " costume (about " + ins.time + ")" + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\n" +
+      "Steps:\n" +
+      p.buildSteps.map(function(s,i){ return (i+1) + ". " + s; }).join("\n") +
+      "\n\n-- Pick My Costume";
     var h = '<div class="ptl">';
     /* Buy */
     h += '<div class="pms"><p class="pdate">Buy by ' + plannerFmt(p.buyDay) + '</p>';
@@ -2815,20 +2819,20 @@ function show(id){
       h += '<p class="psec">Check at home first</p><ul>' +
         p.ownList.map(function(m){ return "<li>" + esc(m) + "</li>"; }).join("") + '</ul>';
     }
-    h += '<a class="pcal" data-cal="buy" href="' + plannerCalUrl("Buy materials: " + idea.title, p.buyDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buyDay, buyDetails) + '" target="_blank" rel="noopener">Add buy day to calendar</a></div>';
+    h += '<a class="pcal" data-cal="buy" href="' + plannerCalUrl("\uD83C\uDF83 Supply run: " + idea.title + " costume", p.buyDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buyDay, buyDetails) + '" target="_blank" rel="noopener">Add buy day to calendar</a></div>';
     /* Build */
     h += '<div class="pms"><p class="pdate">Build on ' + plannerFmt(p.buildDay) + '</p>';
     h += '<h3>Build the costume</h3>';
     h += '<p class="pcount">' + esc(plannerCountText(p.buildDay)) + ' Takes about ' + esc(ins.time) + '.</p>';
     h += '<ol>' + p.buildSteps.map(function(s){ return "<li>" + esc(s) + "</li>"; }).join("") + '</ol>';
     if (p.hasDrying) h += '<p class="pnote">Something needs drying time, so build day is pushed one day earlier. Paint before dinner, not after.</p>';
-    h += '<a class="pcal" data-cal="build" href="' + plannerCalUrl("Build costume: " + idea.title, p.buildDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buildDay, buildDetails) + '" target="_blank" rel="noopener">Add build day to calendar</a></div>';
+    h += '<a class="pcal" data-cal="build" href="' + plannerCalUrl("\uD83D\uDD28 Build day: " + idea.title + " costume", p.buildDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buildDay, buildDetails) + '" target="_blank" rel="noopener">Add build day to calendar</a></div>';
     /* Dress up */
     h += '<div class="pms"><p class="pdate">Dress up ' + plannerFmt(p.hw) + '</p>';
     h += '<h3>Wear it</h3>';
     h += '<p class="pcount">' + esc(plannerCountText(p.hw)) + '</p>';
     h += '<p>Last check: ' + esc(lastStep) + '</p>';
-    h += '<a class="pcal" data-cal="dress" href="' + plannerCalUrl("Dress up: " + idea.title, p.hw, "Dress-up day. Final check: " + lastStep) + '" target="_blank" rel="noopener">Add dress-up day to calendar</a></div>';
+    h += '<a class="pcal" data-cal="dress" href="' + plannerCalUrl("\uD83C\uDF83 Dress-up day: " + idea.title, p.hw, "\uD83C\uDF83 Dress-up day: " + idea.title + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\nFinal check: " + lastStep + "\n\nHave a great Halloween night.\n-- Pick My Costume") + '" target="_blank" rel="noopener">Add dress-up day to calendar</a></div>';
     h += '</div>';
     box.innerHTML = h;
     /* Calendar taps: track which milestone, counts only. */
