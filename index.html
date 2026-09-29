@@ -407,8 +407,8 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
      Transform-only on the wrapper; the blurred puffs inside are static, so
      the blur paints once. Behind the moon (z 2 vs 20), pointer-transparent. */
   .herocloud{position:absolute;pointer-events:none;z-index:2;opacity:0;animation:herocloud linear infinite}
-  .herocloud i{position:absolute;border-radius:50%;background:rgba(238,233,222,.40);filter:blur(16px)}
-  @keyframes herocloud{0%{transform:translate(-36vw,4px);opacity:0}14%{opacity:.6}82%{opacity:.55}100%{transform:translate(114vw,-6px);opacity:0}}
+  .herocloud i{position:absolute;border-radius:50%;background:rgba(238,233,222,.48);filter:blur(16px)}
+  @keyframes herocloud{0%{transform:translate(-36vw,4px);opacity:0}14%{opacity:.7}82%{opacity:.62}100%{transform:translate(114vw,-6px);opacity:0}}
   /* Billy 2026-09-29: shooting star, night only. One quick streak every 16s,
      then a long pause. Gated on #s-hero.night, set from window._pmcIsDay. */
   .heroshoot{display:none}
