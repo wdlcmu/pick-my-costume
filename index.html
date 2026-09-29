@@ -26,14 +26,12 @@
      crawlers have a canonical entity for the site. Honest facts only;
      no invented sameAs links. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","@id":"https://pickmycostume.com/#organization","name":"Pick My Costume","url":"https://pickmycostume.com/","description":"A free Halloween costume picker. A few quick questions, three ideas, no email, no account."}
+{"@context":"https://schema.org","@type":"Organization","@id":"https://pickmycostume.com/#organization","name":"Pick My Costume","url":"https://pickmycostume.com/","description":"A free Halloween costume picker. A few quick questions, one top pick, no account."}
 </script>
-<!-- FAQPage entity anchor (AI-citation onsite checklist: answer-shape).
-     Honest markup only: every question and answer below appears verbatim in
-     the visible FAQ section above the footer, added in the same edit. -->
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no email, no checkout. Answer a few quick questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store."}},{"@type":"Question","name":"Do I need to download anything?","acceptedAnswer":{"@type":"Answer","text":"No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits."}},{"@type":"Question","name":"What if I do not like the ideas I get?","acceptedAnswer":{"@type":"Answer","text":"Answer the quiz differently and try again, or skip the quiz and browse all 164 costume guides yourself. Every guide shows what you need, what it costs, and how long it takes."}}]}
-</script>
+<!-- Billy 2026-09-28: the visible FAQ section was cut for simplicity, so its
+     FAQPage JSON-LD went with it. Structured data never describes content
+     visitors cannot read. The HowTo (quiz flow) below stays: it still
+     describes the product. -->
 <!-- HowTo for the quiz flow (AI-citation onsite checklist: answer-shape).
      Honest data only: "2 minutes" and "free forever" are the landing's own
      claims; 164 is the real bank count; every step mirrors the visible
@@ -108,7 +106,6 @@ body{
    On wide screens let the page breathe: wider content well, matching FAQ/how. */
 @media (min-width:900px){
   .wrap{max-width:1000px;padding:28px 32px 80px}
-  .homefaq,.homehow{max-width:1000px}
   /* Billy 2026-09-28: hero photo-strip unit removed entirely (Billy did not
      like the unit, not the picks). Desktop hero returns to a centered single
      column; the moon and headline carry the hero. */
@@ -384,6 +381,18 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 }
 @keyframes batFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
 @media (prefers-reduced-motion:reduce){.bat{display:none}}
+/* Billy 2026-09-28: hero alive. Fireflies rise, leaves fall, stars twinkle.
+   Pure CSS, pointer-transparent, aria-hidden in markup. Same deal as the
+   bats: everything lives behind no-preference, display:none under reduce. */
+@media (prefers-reduced-motion: no-preference){
+  .herostar{position:absolute;pointer-events:none;z-index:0;width:3px;height:3px;border-radius:50%;background:#fdf3e3;opacity:.2;animation:herostar 3.8s ease-in-out infinite}
+  @keyframes herostar{0%,100%{opacity:.1}50%{opacity:.55}}
+  .herofly{position:absolute;pointer-events:none;z-index:1;border-radius:50%;background:#ffe9b8;box-shadow:0 0 8px 2px rgba(255,233,184,.55);opacity:0;animation:herofly 15s linear infinite}
+  @keyframes herofly{0%{transform:translate(0,0);opacity:0}12%{opacity:.7}70%{opacity:.35}100%{transform:translate(4vw,-44vh);opacity:0}}
+  .heroleaf{position:absolute;pointer-events:none;z-index:1;width:9px;height:13px;border-radius:60% 8% 60% 8%;background:#c9762a;opacity:0;animation:heroleaf 12s linear infinite}
+  @keyframes heroleaf{0%{transform:translate(0,-4vh) rotate(0deg);opacity:0}10%{opacity:.8}100%{transform:translate(-9vw,54vh) rotate(330deg);opacity:0}}
+}
+@media (prefers-reduced-motion:reduce){.herofly,.heroleaf,.herostar{display:none}}
 #s-hero.on{display:flex;flex-direction:column;justify-content:flex-start;min-height:85svh}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
@@ -593,24 +602,11 @@ footer a{color:var(--accent)}
    link (~20px hit area). Inline-block + padding makes it a comfortable
    phone tap target without changing the centered layout. */
 footer a#about-link{display:inline-block;padding:12px 18px}
-/* Homepage FAQ (AI-citation onsite checklist 2026-09-26): a compact honest
-   FAQ section. The FAQPage JSON-LD in <head> mirrors this section verbatim,
-   so the structured data is never ahead of what visitors can read. */
-.homefaq{margin:56px auto 0;max-width:640px;text-align:left}
-.homefaq h2{font-size:20px;margin:0 0 8px}
-.homefaq details{border-top:1px solid var(--line);padding:10px 2px}
-.homefaq details:last-of-type{border-bottom:1px solid var(--line)}
-.homefaq summary{font-weight:700;cursor:pointer;font-size:15px}
-.homefaq summary::-webkit-details-marker{display:none}
-.homefaq p{margin:8px 0 4px;color:var(--muted);font-size:15px;line-height:1.55}
-/* Homepage How it works (AI-citation onsite checklist: answer-shape).
-   Static crawlable 3-step strip; the HowTo JSON-LD in <head> mirrors these
-   steps verbatim, so structured data never runs ahead of the page. */
-.homehow{margin:56px auto 0;max-width:640px;text-align:left}
-.homehow h2{font-size:20px;margin:0 0 8px}
-.homehow ol{margin:0;padding:0 0 0 22px}
-.homehow li{margin:0 0 10px;color:var(--muted);font-size:15px;line-height:1.55}
-.homehow li b{color:var(--ink)}
+/* Billy 2026-09-28: plan-first panel. "You picked this costume. Now build it."
+   The build actions live in one stacked block inside the expanded plan panel. */
+.plan-build{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
+.plan-build>.status{margin:0 0 2px}
+.plan-build .ghost{width:100%}
 .returnhero{max-width:440px;margin:4px auto 0;padding:18px 16px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);animation:returnIn .55s cubic-bezier(.2,.7,.3,1)}
 .returnhero[hidden]{display:none}
 .returnhero{position:relative}
@@ -869,6 +865,25 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <div class="bat" style="top:9%;animation-duration:19s;animation-delay:-6s"><svg viewBox="0 0 64 32" width="40" height="20" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
     <div class="bat" style="top:16%;animation-duration:26s;animation-delay:-17s"><svg viewBox="0 0 64 32" width="30" height="15" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
     <div class="bat" style="top:5%;animation-duration:32s;animation-delay:-24s"><svg viewBox="0 0 64 32" width="48" height="24" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
+    <!-- Billy 2026-09-28: hero sky life. Stars, fireflies, falling leaves.
+         aria-hidden, pointer-transparent, CSS-only; reduced-motion hides all. -->
+    <div aria-hidden="true">
+      <span class="herostar" style="top:6%;left:12%;animation-delay:-1.2s"></span>
+      <span class="herostar" style="top:3%;left:31%;animation-delay:-2.6s"></span>
+      <span class="herostar" style="top:9%;left:56%;animation-delay:-.4s"></span>
+      <span class="herostar" style="top:4%;left:79%;animation-delay:-3.1s"></span>
+      <span class="herostar" style="top:13%;left:44%;animation-delay:-1.9s"></span>
+      <span class="herostar" style="top:11%;left:90%;animation-delay:-2.2s"></span>
+      <span class="herofly" style="left:16%;bottom:9%;width:5px;height:5px;animation-delay:-3s"></span>
+      <span class="herofly" style="left:36%;bottom:6%;width:4px;height:4px;animation-delay:-8s;animation-duration:18s"></span>
+      <span class="herofly" style="left:61%;bottom:11%;width:5px;height:5px;animation-delay:-11s;animation-duration:13s"></span>
+      <span class="herofly" style="left:82%;bottom:7%;width:4px;height:4px;animation-delay:-5.5s;animation-duration:17s"></span>
+      <span class="herofly" style="left:48%;bottom:4%;width:3px;height:3px;animation-delay:-13s;animation-duration:20s"></span>
+      <span class="heroleaf" style="left:22%;top:0;animation-delay:-2s"></span>
+      <span class="heroleaf" style="left:47%;top:0;animation-delay:-7s;animation-duration:14s"></span>
+      <span class="heroleaf" style="left:70%;top:0;animation-delay:-4.5s;animation-duration:10s"></span>
+      <span class="heroleaf" style="left:86%;top:0;animation-delay:-9.5s;animation-duration:15s"></span>
+    </div>
     <div class="hero">
       <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
         <div class="halo" id="moon-halo" aria-hidden="true"></div>
@@ -1233,14 +1248,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <p class="progress">About this site</p>
     <h2 class="q-title">What this is</h2>
     <div class="about-body">
-      <p>Answer 5 quick questions. Get 3 Halloween costume ideas picked for you, each with a one-line how-to. For yourself, your kid, your partner, your group, or the whole family.</p>
+      <p>Answer a few quick questions. Get your top costume pick, plus two runners-up, each with a one-line how-to. For yourself, your kid, your partner, your group, or the whole family.</p>
       <div class="examplebox">
         <p class="ex-label">Example</p>
         <p>You answer: <b>couple, funny, couch-level</b>.</p>
         <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
         <p>Tap &ldquo;Plan this costume&rdquo; to save your pick, text it to your partner, and get an AI plan for putting it together.</p>
       </div>
-      <p>Your answers are scored against <span class="ideacount">164</span> hand-picked ideas. No account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
+      <p>Your answers are scored against <span class="ideacount">164</span> hand-picked ideas. No account, no email required. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
       <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
     </div>
@@ -1360,34 +1375,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     </div>
   </section>
 
-  <!-- Homepage How it works (AI-citation onsite checklist: answer-shape).
-       Static, crawlable 3-step strip. The HowTo JSON-LD in <head> mirrors
-       these steps verbatim, so the structured data never runs ahead of
-       what visitors can read. -->
-  <section class="homehow" aria-label="How it works">
-    <h2>How it works</h2>
-    <ol>
-      <li><b>Answer a few quick questions.</b> About 2 minutes.</li>
-      <li><b>Get 3 ideas picked for you.</b> Each with cost, time, and a how-to.</li>
-      <li><b>Plan it and make it.</b> Save it, text it to your group, build it.</li>
-    </ol>
-  </section>
-
-  <section class="homefaq" aria-label="Frequently asked questions">
-    <h2>Quick answers</h2>
-    <details>
-      <summary>Is it really free?</summary>
-      <p>Yes. No account, no email, no checkout. Answer a few quick questions and get 3 costume ideas, each with a how-to. Make your list, screenshot it, and take it to the store.</p>
-    </details>
-    <details>
-      <summary>Do I need to download anything?</summary>
-      <p>No. It is a website, and the quiz runs in your browser. Your answers never leave your phone. We only count anonymous visits.</p>
-    </details>
-    <details>
-      <summary>What if I do not like the ideas I get?</summary>
-      <p>Answer the quiz differently and try again, or skip the quiz and browse all <span class="ideacount">164</span> costume guides yourself. Every guide shows what you need, what it costs, and how long it takes.</p>
-    </details>
-  </section>
+  <!-- Billy 2026-09-28: cut the "How it works" strip and FAQ. The flow is
+       self-evident (one CTA, one quiz), and the answers live where they are
+       needed: retry affordance on results, privacy on /privacy. The HowTo
+       JSON-LD in <head> stays; it still accurately describes the service. -->
 
   <footer>
     <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/privacy">Privacy</a></p>
@@ -7649,18 +7640,9 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          everyone, not just pickers), so it is NOT repeated inside the panel.
          Two copies showed "Great, have fun with it." twice after voting. */
 
-      var shareBox = document.createElement("div");
-      var aiPlanBox = document.createElement("div");
-      var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
-      if (_cast && typeof buildCastPanel === "function"){
-        /* Cast mapping replaces the generic share + AI sections for cast-enabled ideas. */
-        planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
-      } else {
-        planBox.appendChild(shareBox); /* share leads */
-        planBox.appendChild(aiPlanBox); /* AI plan follows */
-        addCopyShareRow(shareBox, idea, null, null, function(){ revealAiPlan(aiPlanBox); });
-        showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "pick_plan_copied", true);
-      }
+      /* Billy 2026-09-28: plan-first. "You picked this costume. Now build it."
+         Build actions lead; share goes quiet below. */
+      mountPlanFirstPanel(planBox, idea, "s-results", "pick_plan_copied");
       /* Billy 2026-09-26: the build guide is one section now; the separate
          "Make it this week" block was merged into it above. */
       card.setAttribute("data-panel", "1");
@@ -9860,20 +9842,9 @@ function buildBrowseDetailCard(idea, whyHead){
   var pick = load("pmc_pick_v1");
   if (pick && pick.ideaId === idea.id){ note.style.display = "block"; hint.style.display = "none"; }
   function mountPickSections(){
-    planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
-    var shareBox = document.createElement("div");
-    var aiPlanBox = document.createElement("div");
-    var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
-    if (_cast && typeof buildCastPanel === "function"){
-      /* E17 hook: cast mapping replaces the generic share + AI sections. */
-      planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
-    } else {
-      planBox.appendChild(shareBox); /* share leads */
-      planBox.appendChild(aiPlanBox); /* AI plan follows */
-      addCopyShareRow(shareBox, idea, null, null, function(){ revealAiPlan(aiPlanBox); });
-      showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), "browse_detail_plan_copied", true);
-    }
-    /* Billy 2026-09-26: one build section; the separate block was merged. */
+    /* Billy 2026-09-28: plan-first. "You picked this costume. Now build it."
+       Build actions lead; share goes quiet below. */
+    mountPlanFirstPanel(planBox, idea, "s-detail", "browse_detail_plan_copied");
   }
   function doPick(){
     var _already = load("pmc_pick_v1");
@@ -10001,33 +9972,9 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   var box = $("d-card");
   box.innerHTML = "";
   box.appendChild(buildBrowseDetailCard(idea, whyHead));
-  /* Countdown planner deep link (2026-09-26): turn this pick into a
-     buy-day / build-day / dress-up-day plan. A button, so the card-level
-     click handler (if any) leaves it alone. */
-  if (typeof openPlanner === "function" && typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
-    var _plb = document.createElement("button");
-    _plb.type = "button"; _plb.className = "ghost";
-    _plb.textContent = "Plan your Halloween around this";
-    _plb.style.marginTop = "12px";
-    _plb.onclick = function(){ openPlanner(idea.id, "s-detail"); };
-    box.appendChild(_plb);
-  }
-  /* Closet-first deep link (2026-09-26 gap fix): "can I build this from what
-     I own?" Every idea has a mats entry, so no INSTRUCTIONS guard is needed.
-     A button, so the card-level click handler leaves it alone. */
-  if (typeof openCloset === "function"){
-    var _clb = document.createElement("button");
-    _clb.type = "button"; _clb.className = "ghost";
-    _clb.textContent = "Can you build this from your closet?";
-    _clb.style.marginTop = "12px";
-    _clb.onclick = function(){ openCloset("s-detail"); };
-    box.appendChild(_clb);
-  }
-  /* 2026-09-28 Billy: the button now really sends -- inline email capture,
-     POST /send-instructions. (Replaces the 2026-09-27 mailto: fallback.) */
-  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
-    renderEmailCapture(box, idea);
-  }
+  /* Billy 2026-09-28: the planner / closet / email CTAs moved INTO the
+     "Plan this costume" panel (mountPlanFirstPanel), one consistent flow:
+     pick the costume, then build it. No more scattered buttons below the card. */
   var _bde = {idea_id: idea.id, thumb_arm: thumbArm()};
   if (detailReturnTo === "s-pantry") _bde.via = "pantry";
   Analytics.track("browse_detail_opened", _bde);
@@ -10146,7 +10093,62 @@ function doCopy(text, done){
     fallbackCopy(text, done);
   }
 }
-function showPromptPreview(container, text, eventName, noScroll, xprops){
+/* Billy 2026-09-28: plan-first panel. "You picked this costume. Now build it."
+   Pressing "Plan this costume" used to open share-first ("Want a second
+   opinion?"), which read as nothing happening. Now the expanded panel leads
+   with build actions (calendar, closet check, email the instructions, AI
+   step-by-step plan) and the share row goes quiet below. Shared by the quiz
+   results pick panel and the browse detail pick panel; returnTo is the
+   screen the planner/closet return to ("s-results" vs "s-detail").
+   Cast-enabled ideas keep their own panel via buildCastPanel. */
+function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
+  planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+  var shareBox = document.createElement("div");
+  var aiPlanBox = document.createElement("div");
+  var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
+  if (_cast && typeof buildCastPanel === "function"){
+    planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
+    return;
+  }
+  /* Build actions lead. */
+  var buildBox = document.createElement("div");
+  buildBox.className = "plan-build";
+  var head = document.createElement("p"); head.className = "status"; head.textContent = "Now build it.";
+  buildBox.appendChild(head);
+  function ghostBtn(label, onclick){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "ghost"; b.textContent = label;
+    b.onclick = onclick;
+    /* E17 lesson: taps on buttons inside a pick card must not re-run doPick. */
+    b.addEventListener("click", function(e){ e.stopPropagation(); });
+    buildBox.appendChild(b);
+    return b;
+  }
+  if (typeof openPlanner === "function" && typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    ghostBtn("Add to my calendar", function(){ openPlanner(idea.id, returnTo); });
+  }
+  if (typeof openCloset === "function"){
+    ghostBtn("Check against your closet", function(){ openCloset(returnTo); });
+  }
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id] && typeof renderEmailCapture === "function"){
+    var emWrap = document.createElement("div");
+    emWrap.addEventListener("click", function(e){ e.stopPropagation(); });
+    renderEmailCapture(emWrap, idea);
+    /* The capture's own 12px top margin assumed standalone placement; inside
+       the stacked plan-build the gap owns the rhythm. */
+    var _emb = emWrap.querySelector("button");
+    if (_emb) _emb.style.marginTop = "0";
+    buildBox.appendChild(emWrap);
+  }
+  planBox.appendChild(buildBox);
+  /* AI step-by-step plan follows the actions. */
+  planBox.appendChild(aiPlanBox);
+  showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), copyEvent, true, null, "Step-by-step AI plan");
+  /* Share goes quiet last. */
+  planBox.appendChild(shareBox);
+  addCopyShareRow(shareBox, idea, null, null, function(){ revealAiPlan(aiPlanBox); }, true);
+}
+function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   container.innerHTML = "";
   /* Billy 2026-09-24: tinted block behind the AI plan. This is the single
      choke point for every AI-plan block (quiz pick panels, browse detail,
@@ -10157,8 +10159,11 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
   var label = document.createElement("p"); label.className = "status";
   /* Billy 2026-09-24: "Plan this costume" + helper, not "Get your AI costume plan".
-     2026-09-28 consolidation: one plan label everywhere, matching the card CTA. */
-  label.textContent = "Plan this costume";
+     2026-09-28 consolidation: one plan label everywhere, matching the card CTA.
+     2026-09-28 plan-first: inside the expanded plan panel the block is retitled
+     via the optional title param ("Step-by-step AI plan"); every other caller
+     keeps the default. */
+  label.textContent = title || "Plan this costume";
   var helper = document.createElement("p"); helper.className = "status";
   helper.textContent = "Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.";
   var ta = document.createElement("textarea");
