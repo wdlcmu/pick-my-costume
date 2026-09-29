@@ -641,6 +641,8 @@ export function onRequest(context) {
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
     ".quizline{font-size:15px;color:#555;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
+    ".pinline{font-size:14px;color:#555;margin:10px 0 0;}" +
+    ".pinline a{color:#b3541e;font-weight:700;}" +
     ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
     ".safesrc{font-size:14px;color:#777;}" +
     ".rbanner{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
@@ -696,6 +698,7 @@ export function onRequest(context) {
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
+    "<p class=\"pinline\">Saving this idea? <a target=\"_blank\" rel=\"noopener\" href=\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\">Pin it on Pinterest</a></p>" +
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse. Made by Billy Litner.</footer>" +
     _bannerScript +
     _splitScript +
