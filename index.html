@@ -3451,6 +3451,21 @@ function buildInstructions(idea, opts){
     if (!adultAudience()) return m;
     return m.replace(/^Kids:\s*/i, "").replace(/per kid\b/gi, "per person").replace(/per child\b/gi, "per person");
   }
+  /* Billy 2026-09-29: the fit line's paper-bag/mask clause is boilerplate that
+     leaked onto costumes with no bag or mask (Elsa's page showed it). Keep
+     the clause only when the costume's own materials or steps mention a
+     paper bag or a mask; otherwise strip it so the fit note only says
+     what applies to this costume. */
+  function fitTextFor(){
+    var t = ins.sizing || "";
+    var marker = "if the costume uses a paper bag or mask";
+    if (t.indexOf(marker) === -1) return t;
+    var hay = ((ins.m || []).join(" ") + " " + (ins.s || []).join(" ")).toLowerCase();
+    if (/paper bag/.test(hay) || /\bmask\b/.test(hay)) return t;
+    var cut = t.indexOf("; " + marker);
+    if (cut !== -1) return t.slice(0, cut) + ".";
+    return t;
+  }
   /* Plain-text build list for the copy button: decision triple, materials,
      numbered steps. */
   function tripleText(){
@@ -3469,7 +3484,8 @@ function buildInstructions(idea, opts){
     } else {
       var _tr = tripleText();
       if (_tr) lines.push(_tr);
-      if (ins.sizing) lines.push("Fit: " + ins.sizing);
+      var _ft = fitTextFor();
+      if (_ft) lines.push("Fit: " + _ft);
       lines.push("", "You need:");
       ins.m.forEach(function(m){ lines.push("- " + adaptMaterial(m)); });
     }
@@ -3535,9 +3551,10 @@ function buildInstructions(idea, opts){
     wrap.appendChild(head);
     /* Content layer 2026-09-25: sizing guidance, the fit note every parent
        asks about, right under the decision triple. */
-    if (ins.sizing){
+    var _fitText = fitTextFor();
+    if (_fitText){
       var _fit = document.createElement("p");
-      _fit.className = "howto-fit"; _fit.textContent = "Fit: " + ins.sizing;
+      _fit.className = "howto-fit"; _fit.textContent = "Fit: " + _fitText;
       wrap.appendChild(_fit);
     }
     var ul = document.createElement("ul");
@@ -8152,6 +8169,26 @@ function warmSection(box, title, sub){
 }
 function renderWarmResults(){
   WARM.step = "results";
+  /* Billy 2026-09-29: keep the address bar in sync with the decided costume,
+     the same fix openIdeaDetail got on 9-28. Without this, a stale ?idea=
+     (e.g. rain-cloud-rainbow from an earlier session) stays in the URL while
+     the warm plan shows a different costume (Elsa -> snow-sisters), so a
+     refresh or a copied link lands on the WRONG costume. replaceState, not
+     pushState, so in-page Back still exits to where you came from. */
+  try {
+    var _wu = new URL(location.href);
+    var _want = WARM.anchor ? WARM.anchor.id : null;
+    if (_want){
+      if (_wu.searchParams.get("idea") !== _want){
+        _wu.searchParams.set("idea", _want);
+        history.replaceState(null, "", _wu.pathname + "?" + _wu.searchParams.toString() + _wu.hash);
+      }
+    } else if (_wu.searchParams.has("idea")){
+      _wu.searchParams.delete("idea");
+      var _wqs = _wu.searchParams.toString();
+      history.replaceState(null, "", _wu.pathname + (_wqs ? "?" + _wqs : "") + _wu.hash);
+    }
+  } catch(_wurl){}
   var name = WARM.name, wearer = WARM.wearer || "solo";
   /* The s-results shell is shared with the cold quiz; renderResults resets
      this header and the nav buttons for the cold path. */
