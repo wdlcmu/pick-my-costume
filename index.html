@@ -402,8 +402,20 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
   @keyframes herofly{0%{transform:translate(0,0);opacity:0}12%{opacity:.7}70%{opacity:.35}100%{transform:translate(4vw,-44vh);opacity:0}}
   .heroleaf{position:absolute;pointer-events:none;z-index:1;width:9px;height:13px;border-radius:60% 8% 60% 8%;background:#c9762a;opacity:0;animation:heroleaf 12s linear infinite}
   @keyframes heroleaf{0%{transform:translate(0,-4vh) rotate(0deg);opacity:0}10%{opacity:.8}100%{transform:translate(-9vw,54vh) rotate(330deg);opacity:0}}
+  /* Billy 2026-09-29: drifting clouds. Two wisps cross the top of the hero
+     sky on slow loops, sliding past the sun by day and the moon by night.
+     Transform-only on the wrapper; the blurred puffs inside are static, so
+     the blur paints once. Behind the moon (z 2 vs 20), pointer-transparent. */
+  .herocloud{position:absolute;pointer-events:none;z-index:2;opacity:0;animation:herocloud linear infinite}
+  .herocloud i{position:absolute;border-radius:50%;background:rgba(238,233,222,.40);filter:blur(16px)}
+  @keyframes herocloud{0%{transform:translate(-36vw,4px);opacity:0}14%{opacity:.6}82%{opacity:.55}100%{transform:translate(114vw,-6px);opacity:0}}
+  /* Billy 2026-09-29: shooting star, night only. One quick streak every 16s,
+     then a long pause. Gated on #s-hero.night, set from window._pmcIsDay. */
+  .heroshoot{display:none}
+  #s-hero.night .heroshoot{display:block;position:absolute;top:5%;right:6%;width:96px;height:2px;border-radius:2px;pointer-events:none;z-index:1;opacity:0;background:linear-gradient(to left,rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(-24deg);animation:heroshoot 16s linear infinite}
+  @keyframes heroshoot{0%{opacity:0;transform:rotate(-24deg) translateX(0)}1.5%{opacity:.9}7%{opacity:0;transform:rotate(-24deg) translateX(-52vw)}100%{opacity:0;transform:rotate(-24deg) translateX(-52vw)}}
 }
-@media (prefers-reduced-motion:reduce){.herofly,.heroleaf,.herostar{display:none}}
+@media (prefers-reduced-motion:reduce){.herofly,.heroleaf,.herostar,.herocloud,.heroshoot{display:none}}
 #s-hero.on{display:flex;flex-direction:column;justify-content:flex-start;min-height:85svh}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
@@ -902,6 +914,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <span class="heroleaf" style="left:47%;top:0;animation-delay:-7s;animation-duration:14s"></span>
       <span class="heroleaf" style="left:70%;top:0;animation-delay:-4.5s;animation-duration:10s"></span>
       <span class="heroleaf" style="left:86%;top:0;animation-delay:-9.5s;animation-duration:15s"></span>
+      <!-- Billy 2026-09-29: drifting clouds, two slow wisps across the hero sky. -->
+      <span class="herocloud" style="top:4%;animation-duration:96s;animation-delay:-22s"><i style="width:120px;height:34px;left:0;top:0"></i><i style="width:80px;height:26px;left:52px;top:-12px"></i><i style="width:64px;height:22px;left:96px;top:4px"></i></span>
+      <span class="herocloud" style="top:10%;animation-duration:132s;animation-delay:-71s"><i style="width:150px;height:38px;left:0;top:0"></i><i style="width:92px;height:28px;left:70px;top:-14px"></i></span>
+      <!-- Billy 2026-09-29: shooting star, night only (gated by #s-hero.night). -->
+      <span class="heroshoot"></span>
     </div>
     <div class="hero">
       <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
@@ -14491,6 +14508,8 @@ function shareLandingHeadline(idea, search){
       " A " + rx.toFixed(2) + " " + r + " 0 0 " + termSweep + " " + cx + " " + (cy - r) + " Z");
   }
   window._pmcIsDay = (function(){ var h = new Date().getHours(); return h >= 6 && h < 18; })();
+  /* Billy 2026-09-29: night class gates the shooting star (day sky gets none). */
+  try { document.getElementById("s-hero").classList.toggle("night", !window._pmcIsDay); } catch(_night){}
   (function paintHeroSky(){
     var cap0 = document.getElementById("mooncap");
     /* Billy 2026-09-26 (landing refresh): the moon caption's tooltip says the
