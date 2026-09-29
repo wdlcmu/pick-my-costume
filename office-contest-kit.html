@@ -10,11 +10,11 @@
 <meta property="og:url" content="https://pickmycostume.com/office-contest-kit">
 <meta property="og:title" content="Office Costume Contest Kit - Pick My Costume">
 <meta property="og:description" content="Categories, printable ballots, vote tally, and winner announcements for your office Halloween contest. Free, no account.">
-<meta property="og:image" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<meta property="og:image" content="https://pickmycostume.com/images/og/coffee-cup.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Office Costume Contest Kit - Pick My Costume">
 <meta name="twitter:description" content="Categories, printable ballots, vote tally, and winner announcements for your office Halloween contest. Free, no account.">
-<meta name="twitter:image" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<meta name="twitter:image" content="https://pickmycostume.com/images/og/coffee-cup.jpg">
 <script>
 /* PostHog: anonymous usage stats only. No answers or names are sent. Session replay is off. */
 (function(){
@@ -164,7 +164,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     </div>
     <div class="fieldrow">
       <label class="field" for="contestdate">Contest date</label>
-      <input type="text" id="contestdate" value="Friday, October 31" maxlength="40">
+      <input type="text" id="contestdate" value="Saturday, October 31" maxlength="40">
     </div>
     <div class="fieldrow">
       <label class="field">Categories (tap to toggle, pick 2 or more)</label>
@@ -258,6 +258,36 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
   function $(id){ return document.getElementById(id); }
 
   /* ---------- categories ---------- */
+  /* ---------- state persistence (refresh-safe) ---------- */
+  var LS_KEY = "ock-v1";
+  function saveState(){
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        contestname: $("contestname").value,
+        contestdate: $("contestdate").value,
+        cats: selectedCats(),
+        contestants: contestants,
+        nextId: nextId,
+        votes: votes
+      }));
+    } catch(e){}
+  }
+  function loadState(){
+    try {
+      var s = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+      if(!s) return;
+      if(typeof s.contestname === "string") $("contestname").value = s.contestname;
+      if(typeof s.contestdate === "string") $("contestdate").value = s.contestdate;
+      if(Array.isArray(s.cats)){
+        document.querySelectorAll("#cats .chip").forEach(function(c){
+          c.classList.toggle("sel", s.cats.indexOf(c.getAttribute("data-cat")) !== -1);
+        });
+      }
+      if(Array.isArray(s.contestants)) contestants = s.contestants.filter(function(p){ return p && p.name; });
+      if(typeof s.nextId === "number" && s.nextId > 0) nextId = s.nextId;
+      if(s.votes && typeof s.votes === "object") votes = s.votes;
+    } catch(e){}
+  }
   function selectedCats(){
     var out = [];
     document.querySelectorAll("#cats .chip.sel").forEach(function(c){ out.push(c.getAttribute("data-cat")); });
@@ -268,11 +298,13 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
       c.classList.toggle("sel");
       renderTally();
       refreshAnnounce();
+      saveState();
     });
   });
 
   /* ---------- contestants ---------- */
   var contestants = [];
+  var nextId = 1;
   function renderNames(){
     var ul = $("names");
     ul.innerHTML = "";
@@ -284,7 +316,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
       var rm = document.createElement("button");
       rm.type = "button"; rm.className = "rm"; rm.setAttribute("aria-label","Remove " + p.name);
       rm.textContent = "×";
-      rm.addEventListener("click", function(){ contestants.splice(i,1); renderNames(); renderTally(); });
+      rm.addEventListener("click", function(){ contestants.splice(i,1); renderNames(); renderTally(); refreshAnnounce(); saveState(); });
       li.appendChild(d); li.appendChild(rm);
       ul.appendChild(li);
     });
@@ -292,10 +324,10 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
   function addName(){
     var n = $("newname").value.trim(), a = $("newas").value.trim();
     if(!n) return;
-    contestants.push({name:n, as:a});
+    contestants.push({id: nextId++, name:n, as:a});
     $("newname").value = ""; $("newas").value = "";
     $("newname").focus();
-    renderNames(); renderTally();
+    renderNames(); renderTally(); saveState();
   }
   $("addname").addEventListener("click", addName);
   [$("newname"), $("newas")].forEach(function(el){
@@ -313,7 +345,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
       return;
     }
     contestants.forEach(function(p, i){
-      votes[i] = votes[i] || {};
+      votes[p.id] = votes[p.id] || {};
       var row = document.createElement("div");
       row.className = "trow";
       var nm = document.createElement("div");
@@ -321,26 +353,26 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
       nm.textContent = p.name;
       row.appendChild(nm);
       cats.forEach(function(c){
-        votes[i][c] = votes[i][c] || 0;
+        votes[p.id][c] = votes[p.id][c] || 0;
         var tc = document.createElement("div");
         tc.className = "tcat";
         var cl = document.createElement("span");
-        cl.className = "cl"; cl.textContent = c;
+        cl.className = "cl"; cl.textContent = c; cl.title = c;
         var minus = document.createElement("button");
-        minus.type = "button"; minus.textContent = "–";
+        minus.type = "button"; minus.textContent = "-";
         minus.setAttribute("aria-label","Fewer votes for " + p.name + " in " + c);
         var v = document.createElement("span");
-        v.className = "v"; v.textContent = votes[i][c];
+        v.className = "v"; v.textContent = votes[p.id][c];
         var plus = document.createElement("button");
         plus.type = "button"; plus.textContent = "+";
         plus.setAttribute("aria-label","One more vote for " + p.name + " in " + c);
         minus.addEventListener("click", function(){
-          votes[i][c] = Math.max(0, votes[i][c] - 1);
-          v.textContent = votes[i][c]; refreshAnnounce();
+          votes[p.id][c] = Math.max(0, votes[p.id][c] - 1);
+          v.textContent = votes[p.id][c]; refreshAnnounce(); saveState();
         });
         plus.addEventListener("click", function(){
-          votes[i][c] = votes[i][c] + 1;
-          v.textContent = votes[i][c]; refreshAnnounce();
+          votes[p.id][c] = votes[p.id][c] + 1;
+          v.textContent = votes[p.id][c]; refreshAnnounce(); saveState();
         });
         tc.appendChild(cl); tc.appendChild(minus); tc.appendChild(v); tc.appendChild(plus);
         row.appendChild(tc);
@@ -349,7 +381,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     });
   }
   $("resettally").addEventListener("click", function(){
-    votes = {}; renderTally(); refreshAnnounce();
+    votes = {}; renderTally(); refreshAnnounce(); saveState();
   });
 
   /* ---------- winners ---------- */
@@ -358,7 +390,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     return cats.map(function(c){
       var best = -1, tops = [];
       contestants.forEach(function(p, i){
-        var n = (votes[i] && votes[i][c]) || 0;
+        var n = (votes[p.id] && votes[p.id][c]) || 0;
         if(n > best){ best = n; tops = [p]; }
         else if(n === best){ tops.push(p); }
       });
@@ -390,7 +422,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     winnerText().forEach(function(t){
       var d = document.createElement("span");
       d.className = "winner";
-      d.textContent = "🏅 " + t;
+      d.textContent = (/no votes yet/.test(t) ? "· " : "🏅 ") + t;
       wl.appendChild(d);
     });
   }
@@ -404,11 +436,22 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
   }
   $("copyannounce").addEventListener("click", function(){ copyText($("announce"), $("announceok")); });
 
-  var shackMsg = "Hey team — we are running a Halloween costume contest! Categories: Funniest, Scariest, and Most Creative. Dress up on the contest day, grab a ballot at the front desk, and vote for your favorites. Still need a costume idea? Take this 2-minute quiz and get three ideas from stuff you already own: " + QUIZ_URL + " — no signup, free.";
+  function shackMsg(){
+    var cname = $("contestname").value.trim() || "our Halloween costume contest";
+    var cdate = $("contestdate").value.trim();
+    var cats = selectedCats();
+    var catText = cats.length > 1
+      ? cats.slice(0, -1).join(", ") + ", and " + cats[cats.length - 1]
+      : (cats[0] || "funniest costume");
+    return "Hey team, we are running a Halloween costume contest" + (cdate ? " (" + cdate + ")" : "") +
+      "! Categories: " + catText + ". Dress up" + (cdate ? " on " + cdate : " on contest day") +
+      ", grab a ballot at the front desk, and vote for your favorites. Still need a costume idea? Take this 2-minute quiz and get three ideas from stuff you already own: " +
+      QUIZ_URL + " (no signup, free).";
+  }
   var shackBtn = $("copyshack");
   shackBtn.addEventListener("click", function(){
     var ta = document.createElement("textarea");
-    ta.value = shackMsg; ta.style.position = "fixed"; ta.style.opacity = "0";
+    ta.value = shackMsg(); ta.style.position = "fixed"; ta.style.opacity = "0";
     document.body.appendChild(ta);
     copyText(ta, $("shackok"));
     setTimeout(function(){ document.body.removeChild(ta); }, 3000);
@@ -430,7 +473,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
         (p.as ? "<br><span class='plink'>" + esc(p.as) + "</span>" : "") +
         "</td>" + cats.map(function(){ return "<td><span class='box'></span></td>"; }).join("") + "</tr>";
     }).join("");
-    var foot = "<p class='plink'>One vote per category. Need a costume idea? " + esc(QUIZ_URL) + " — a free 2-minute quiz, no signup.</p>";
+    var foot = "<p class='plink'>One vote per category. Need a costume idea? " + esc(QUIZ_URL) + ", a free 2-minute quiz, no signup.</p>";
     var one = "<div class='psheet'><h2>" + cname + "</h2>" +
       "<p class='psub'>Official ballot" + (cdate ? " - " + cdate : "") + ". Check one box per category, then drop this in the ballot box.</p>" +
       "<table>" + head + rows + "</table>" + foot + "</div>";
@@ -451,7 +494,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
       var names = r.best > 0
         ? r.tops.map(function(p){ return esc(p.name) + (p.as ? " (" + esc(p.as) + ")" : ""); }).join(" and ") + (r.tops.length > 1 ? " - tie" : "")
         : "No votes recorded";
-      return "<p class='winrow'>🏅 <strong>" + esc(r.cat) + ":</strong> " + names + "</p>";
+      return "<p class='winrow'>" + (r.best > 0 ? "🏅 " : "") + "<strong>" + esc(r.cat) + ":</strong> " + names + "</p>";
     }).join("");
     $("printarea").innerHTML =
       "<div class='psheet'><h2>" + cname + " - Winners</h2>" +
@@ -461,10 +504,13 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     window.print();
   });
 
+  loadState();
   renderNames();
   renderTally();
   refreshAnnounce();
-})();
-</script>
+  ["contestname", "contestdate"].forEach(function(id){
+    $(id).addEventListener("input", saveState);
+  });
+})();</script>
 </body>
 </html>
