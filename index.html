@@ -169,7 +169,7 @@ body{
   #btn-start{order:2;align-self:center}
   #tminus{order:4}
   .hero .honestline{order:5}
-  #playcard-hero{order:6}
+  #kidbar{order:6}
   #resume-wrap{order:7}
   #hw-weather{order:8}
   #returnbox{order:9;align-self:stretch}
@@ -201,6 +201,13 @@ body{
 .playcard-text strong{display:block;font-size:16px;line-height:1.3}
 .playcard-text em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:2px}
 .playcard-go{font-size:22px;color:var(--accent);font-weight:700;flex:0 0 auto}
+/* Billy 2026-09-28 (Phase-2 Variant A): slim kid-games bar. The two games
+   earn chips, not a banner (what-earns-the-right audit: rails for browsable
+   things, chips for secondary features). 44px tap targets. */
+.kidbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px auto 0;max-width:430px}
+.kidbar .fine{margin:0}
+.kidbar a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap}
+.kidbar a:hover{border-color:var(--accent)}
 /* Billy 2026-09-28: Play nudge on the results screen. Quiet visual card for
    the stuck parent: hand the phone to the kid. */
 .playnudge{display:flex;align-items:center;gap:12px;margin:14px 0 4px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;text-decoration:none;color:var(--ink)}
@@ -913,19 +920,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <h1 class="firstonly">We know your Halloween costume.</h1>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
-      <!-- Billy 2026-09-28: Play tab entry. Visual card next to the quiz CTA;
-           the game is a third way to pick: the kid picks by playing. -->
-      <a class="playcard firstonly" href="/play" id="playcard-hero">
-        <span class="playcard-art" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="4" y="6" width="56" height="52" rx="8" fill="#167f7b"/><path d="M13 58V16q0-8 8-8h5v50z" fill="#0b5e5b"/><path d="M51 58V16q0-8-8-8h-5v50z" fill="#0b5e5b"/><path d="M24 54V32q0-11 8-11t8 11v22l-8-5z" fill="#fff"/><circle cx="29" cy="35" r="2.2" fill="#26223a"/><circle cx="35" cy="35" r="2.2" fill="#26223a"/></svg></span>
-        <span class="playcard-text"><strong>Let your kid pick by playing</strong><em>Two quick costume games</em></span>
-        <span class="playcard-go" aria-hidden="true">&rarr;</span>
-      </a>
-       <!-- Billy 2026-09-28: Storytime entry. Fourth door: don't decide, just watch. -->
-       <a class="playcard firstonly" href="/storytime" id="storycard-hero">
-         <span class="playcard-art" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M42 6a26 26 0 1 0 16 44A30 30 0 0 1 42 6z" fill="#f5c86e"/><circle cx="46" cy="18" r="2.4" fill="#fdf3e3"/><circle cx="55" cy="30" r="1.8" fill="#fdf3e3"/></svg></span>
-         <span class="playcard-text"><strong>Storytime</strong><em>Costumes as bedtime stories</em></span>
-         <span class="playcard-go" aria-hidden="true">&rarr;</span>
-       </a>
+      <!-- Billy 2026-09-28 (Phase-2 Variant A): Play tab entry as a slim chip
+           bar. The games earn chips, not a banner; deep links start each game
+           directly (?game= scheme, verified in play.html). Unit: kids-bar. -->
+      <div class="kidbar firstonly" id="kidbar" aria-label="Costume games for kids">
+        <p class="fine">For kids:</p>
+        <a href="/play?game=peekaboo">Peekaboo</a>
+        <a href="/play?game=match">Match the pieces</a>
+      </div>
 
       <p class="fine firstonly" id="trending-line" style="margin:6px 0 0" hidden></p>
       <!-- Billy 2026-09-28: visual-first hero. The trending text line was
@@ -970,6 +972,26 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            order). Curated rail, F/M/F/M visual rhythm, generic names only
            (never licensed character names). When web-slinger-kid's photo
            lands, insert it at index 1 of KIDS_RAIL_IDS. -->
+<!-- Billy 2026-09-28 (Phase-2 Variant A): Storytime as a horizontal rail
+           of costume-photo thumbnails, reusing the .kidsrail wrapper and the
+           .proofrow tile pattern. Tiles deep-link to the narrated tale.
+           Unit: storytime-rail. -->
+      <div class="kidsrail" id="storytimerail">
+        <p class="fine" style="margin:14px 0 0">Storytime</p>
+        <p class="fine" style="margin:2px 0 0">Ten costumes as narrated bedtime stories. Tap one to hear it read aloud.</p>
+        <div class="proofrow" id="row-storytime" role="list" aria-label="Storytime tales">
+          <a href="/?storytime&costume=little-witch" role="listitem"><img src="photos/little-witch.webp" alt="Little Witch costume" loading="lazy"><span>Little Witch</span></a>
+          <a href="/?storytime&costume=classic-ghost" role="listitem"><img src="photos/classic-ghost.webp" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
+          <a href="/?storytime&costume=glow-skeleton" role="listitem"><img src="photos/glow-skeleton.webp" alt="Glow Skeleton costume" loading="lazy"><span>Glow Skeleton</span></a>
+          <a href="/?storytime&costume=fuzzy-monster" role="listitem"><img src="photos/fuzzy-monster.webp" alt="Fuzzy Monster costume" loading="lazy"><span>Fuzzy Monster</span></a>
+          <a href="/?storytime&costume=neon-demon-hunter" role="listitem"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
+          <a href="/?storytime&costume=baby-dino" role="listitem"><img src="photos/baby-dino.webp" alt="Baby Dinosaur costume" loading="lazy"><span>Baby Dinosaur</span></a>
+          <a href="/?storytime&costume=bumble-bee" role="listitem"><img src="photos/bumble-bee.webp" alt="Bumble Bee costume" loading="lazy"><span>Bumble Bee</span></a>
+          <a href="/?storytime&costume=walking-taco" role="listitem"><img src="photos/walking-taco.webp" alt="Walking Taco costume" loading="lazy"><span>Walking Taco</span></a>
+          <a href="/?storytime&costume=blue-alien-ohana" role="listitem"><img src="photos/blue-alien-ohana.webp" alt="Blue Alien Ohana costume" loading="lazy"><span>Blue Alien Ohana</span></a>
+          <a href="/?storytime&costume=emerald-witch" role="listitem"><img src="photos/emerald-witch.webp" alt="Emerald Witch costume" loading="lazy"><span>Emerald Witch</span></a>
+        </div>
+      </div>
       <div class="kidsrail" id="kidsrail">
         <p class="fine" style="margin:14px 0 0">Kid favorites</p>
         <p class="fine" style="margin:2px 0 0">The classics kids ask for every Halloween. Tap one to see the plan.</p>
@@ -1479,7 +1501,11 @@ var UNIT_REGISTRY = {
   "discover-trending": {type: "rail", container: "row-trending"},
   "discover-tonight":  {type: "rail", container: "row-tonight"},
   "discover-new":      {type: "rail", container: "row-new"},
-  "storytime-card":    {type: "card", container: "storycard-hero"}
+  /* Billy 2026-09-28 (Phase-2 Variant A): storytime-card retired with the
+     removed full-width hero card; the storytime rail and kids chip bar
+     replace it. */
+  "storytime-rail":    {type: "rail", container: "row-storytime"},
+  "kids-bar":          {type: "bar",  container: "kidbar"}
 };
 var UnitTrack = (function(){
   "use strict";
@@ -1496,6 +1522,12 @@ var UnitTrack = (function(){
     if (m) { try { return decodeURIComponent(m[1]); } catch(e){ return m[1]; } }
     m = href.match(/\/c\/([^\/?#]+)/);
     if (m) return m[1];
+    /* Billy 2026-09-28 (Phase-2 Variant A): storytime rail tiles carry
+       ?costume=<slug>; kids-bar chips carry ?game=<peekaboo|match>. */
+    m = href.match(/[?&]costume=([a-z0-9-]+)/);
+    if (m) return m[1];
+    m = href.match(/[?&]game=([a-z]+)/);
+    if (m) return "play-" + m[1];
     var clean = href.replace(/^[/#?]+/, "").split(/[?#]/)[0];
     return clean || "unknown";
   }
@@ -12712,10 +12744,16 @@ $("btn-rback").onclick = function(){
 /* Billy 2026-09-26: the above-the-fold twin of back-to-questions. */
 $("btn-rtop").onclick = $("btn-rback").onclick;
 /* Billy 2026-09-28: Play tab entries. Plain links to /play; tracked so we
-   can see whether the game becomes a real picking path. */
+   can see whether the game becomes a real picking path.
+   2026-09-28 (Phase-2 Variant A): the hero card became a slim chip bar; the
+   tracked entry is now each game chip, with the game named. */
 (function(){
-  var hero = $("playcard-hero"), res = $("playnudge-results");
-  if (hero) hero.addEventListener("click", function(){ track("play_tab_opened", {from:"hero"}); });
+  var bar = $("kidbar"), res = $("playnudge-results");
+  if (bar) bar.addEventListener("click", function(e){
+    var a = e.target && e.target.closest ? e.target.closest("a") : null, game = "";
+    if (a){ var gm = /[?&]game=([a-z]+)/.exec(a.getAttribute("href") || ""); if (gm) game = gm[1]; }
+    track("play_tab_opened", {from:"kids-bar", game: game});
+  });
   if (res) res.addEventListener("click", function(){ track("play_tab_opened", {from:"results"}); });
 })();
 $("btn-restart").onclick = function(){
