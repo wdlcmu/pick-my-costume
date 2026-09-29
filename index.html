@@ -823,8 +823,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .st-count{color:#fdf3e3;font-size:14px;opacity:.9;margin:0}
 .st-progress{position:absolute;top:calc(66px + env(safe-area-inset-top));left:14px;right:14px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden;z-index:3}
 .st-bar{height:100%;width:0;background:var(--accent)}
-.st-narr{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffd9a0;border:1px solid rgba(255,217,160,.5);border-radius:999px;padding:3px 10px;margin:0 0 6px}
-.st-narr[hidden]{display:none}
 .st-bar.run{transition:width 15s linear;width:100%}
 @media (prefers-reduced-motion: no-preference){
   .st-photo.kb{animation:st-kb 26s ease-in-out infinite alternate}
@@ -1319,7 +1317,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <div class="st-progress" aria-hidden="true"><div class="st-bar" id="st-bar"></div></div>
         <div class="st-bottom" id="st-bottom">
           <p class="st-kicker" id="st-kicker">Storytime</p>
-          <p class="st-narr" id="st-narr" hidden>Narrated tale</p>
           <h2 class="st-title" id="st-title"></h2>
           <p class="st-tale" id="st-tale"></p>
           <p class="st-meta" id="st-meta"></p>
@@ -13189,11 +13186,15 @@ function shareLandingHeadline(idea, search){
   "use strict";
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  /* Billy 2026-09-29: Storytime collapsed to the 10 narrated signature tales.
+     A robotic browser voice is worse than no story, so the assembled tales are
+     retired from the player. taleFor's assembled path below stays for reference. */
+  var PILOT_ORDER = ["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"];
   var CHANNELS = [
-    {id:"all",   label:"Everything", sub:"All the costumes, shuffled", test:function(){ return true; }},
-    {id:"spooky",label:"Spooky",     sub:"Ghosts, monsters, things that go bump", test:function(t){ return (t.scary||0) >= 2; }},
-    {id:"funny", label:"Funny",      sub:"The laugh-getters", test:function(t){ return (t.funny||0) >= 2; }},
-    {id:"cute",  label:"Cute",       sub:"The aww pile", test:function(t){ return (t.cute||0) >= 2; }}
+    {id:"all",   label:"Everything", sub:"All ten tales, shuffled", slugs:PILOT_ORDER.slice()},
+    {id:"spooky",label:"Spooky",     sub:"Ghosts, monsters, things that go bump", slugs:["classic-ghost","glow-skeleton","neon-demon-hunter","emerald-witch","little-witch"]},
+    {id:"funny", label:"Funny",      sub:"The laugh-getters", slugs:["classic-ghost","fuzzy-monster","baby-dino","walking-taco"]},
+    {id:"cute",  label:"Cute",       sub:"The aww pile", slugs:["little-witch","glow-skeleton","fuzzy-monster","baby-dino","bumble-bee","blue-alien-ohana","emerald-witch"]}
   ];
   var ADV_MS = 15000;
   var order = [], idx = 0, timer = null, playing = true, speakOn = false, started = false;
@@ -13219,6 +13220,9 @@ function shareLandingHeadline(idea, search){
 };
   var PILOT_AUDIO = {};
   Object.keys(PILOT_TALES).forEach(function(s){ PILOT_AUDIO[s] = "audio/storytime/" + s + ".mp3"; });
+  /* ARCHIVED 2026-09-29 (Billy): the assembled-tale path below is retired from
+     the Storytime player, which now carries only the 10 narrated signature tales.
+     Kept here for reference; a future expansion can re-enable it per-costume. */
   function taleFor(idea){
     var p = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
     if (PILOT_TALES[idea.id]) return PILOT_TALES[idea.id];
@@ -13238,11 +13242,12 @@ function shareLandingHeadline(idea, search){
   }
   function shuffle(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 
+  function ideaById(id){ for (var k=0;k<IDEAS.length;k++) if (IDEAS[k].id===id) return IDEAS[k]; return null; }
   function buildOrder(channelId){
     var ch = CHANNELS[0];
     for (var i=0;i<CHANNELS.length;i++) if (CHANNELS[i].id===channelId) ch = CHANNELS[i];
     var list = [];
-    for (var k=0;k<IDEAS.length;k++){ if (ch.test(IDEAS[k].tags||{})) list.push(IDEAS[k]); }
+    for (var s2=0;s2<ch.slugs.length;s2++){ var it = ideaById(ch.slugs[s2]); if (it) list.push(it); }
     return {ch:ch, list:shuffle(list)};
   }
 
@@ -13339,7 +13344,6 @@ function shareLandingHeadline(idea, search){
     $("st-kicker").textContent = currentLabel;
     $("st-title").textContent = idea.title;
     $("st-tale").textContent = tale;
-    $("st-narr").hidden = !isNarrated(idea);
     $("st-meta").textContent = metaFor(idea);
     $("st-count").textContent = (idx+1) + " of " + order.length;
     $("st-build").href = "/c/" + idea.id;
@@ -13392,8 +13396,7 @@ function shareLandingHeadline(idea, search){
     var box = $("st-chanlist");
     box.innerHTML = "";
     CHANNELS.forEach(function(ch){
-      var n = 0;
-      for (var k=0;k<IDEAS.length;k++) if (ch.test(IDEAS[k].tags||{})) n++;
+      var n = ch.slugs.length;
       var b = document.createElement("button");
       b.type = "button"; b.className = "st-chan";
       b.innerHTML = esc(ch.label) + "<small>" + esc(ch.sub) + " \u00b7 " + n + "</small>";
@@ -13460,8 +13463,7 @@ function shareLandingHeadline(idea, search){
     if (!/[?&]storytime([&=]|$)/.test(q)) return;
     var cm = /[?&]costume=([a-z0-9-]+)/.exec(q);
     var slug = cm ? cm[1] : null;
-    var ok = false;
-    if (slug){ for (var i=0;i<IDEAS.length;i++) if (IDEAS[i].id === slug){ ok = true; break; } }
+    var ok = slug && PILOT_ORDER.indexOf(slug) >= 0;
     if (slug && ok) open("all", slug);
     else openPicker();
   }
