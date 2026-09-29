@@ -171,13 +171,12 @@ body{
   .hero .moonpanel{order:0}
   .hero .herotext{display:contents}
   .hero h1.firstonly{order:1}
-  #btn-start{order:2;align-self:center}
-  #tminus{order:4}
-  .hero .honestline{order:5}
-  #kidbar{order:6}
-  #resume-wrap{order:7}
-  #hw-weather{order:8}
-  #returnbox{order:9;align-self:stretch}
+  #tminus{order:2}
+  #btn-start{order:3;align-self:center}
+  .hero .honestline{order:4}
+  #resume-wrap{order:5}
+  #hw-weather{order:6}
+  #returnbox{order:7;align-self:stretch}
 }
 /* Billy 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
    it stays cheap on phones; off entirely under prefers-reduced-motion. */
@@ -213,6 +212,37 @@ body{
 .kidbar .fine{margin:0}
 .kidbar a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap}
 .kidbar a:hover{border-color:var(--accent)}
+/* Billy 2026-09-29: desktop hero mosaic. Real costume photos beside the
+   headline at >=1024px kill the dead-space column; phone stays single-column
+   (mosaic hidden). Tiles link to their /c/ guides. Unit: hero-mosaic. */
+#hero-mosaic{display:none}
+@media (min-width:1024px){
+  #s-hero .hero{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:44px;align-items:center;max-width:1140px;text-align:left}
+  #s-hero .hero .herotext{text-align:left}
+  #s-hero .hero h1{margin-left:0;margin-right:0;max-width:none}
+  #s-hero .hero .honestline{margin-left:0;margin-right:0}
+  #hero-mosaic{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-self:center}
+  #hero-mosaic a{position:relative;display:block;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  #hero-mosaic a:nth-child(even){transform:translateY(20px)}
+  #hero-mosaic img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
+  #hero-mosaic span{position:absolute;left:8px;right:8px;bottom:8px;font-size:12px;font-weight:700;color:#fff;background:rgba(20,10,30,.6);border-radius:8px;padding:5px 8px;text-align:center;line-height:1.3}
+}
+@media (prefers-reduced-motion:reduce){
+  #hero-mosaic a:nth-child(even){transform:none}
+}
+/* Billy 2026-09-29: Kids zone. One heading over the games chips and the
+   kid-favorites rail (were split across the hero and far below). */
+.kidszone{max-width:760px;margin:0 auto}
+/* Billy 2026-09-29: tools as a horizontal tab row. One tap reveals the tool
+   inline below; only one panel open at a time. Mirrors .chip/.chiprow. */
+.tooltabrow{display:flex;gap:8px;margin:12px -16px 0;padding:2px 16px 8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tooltabrow::-webkit-scrollbar{display:none}
+.tooltab{flex:0 0 auto;display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:none;font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;white-space:nowrap;cursor:pointer}
+.tooltab:hover{border-color:var(--accent)}
+.tooltab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.tooltab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.toolpanel{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:10px;background:var(--card)}
+.toolpanel .pantry-link{margin:0}
 /* Billy 2026-09-28: Play nudge on the results screen. Quiet visual card for
    the stuck parent: hand the phone to the kid. */
 .playnudge{display:flex;align-items:center;gap:12px;margin:14px 0 4px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;text-decoration:none;color:var(--ink)}
@@ -948,16 +978,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       </div>
       <div class="herotext">
       <h1 class="firstonly">We know your Halloween costume.</h1>
+      <!-- Billy 2026-09-29: countdown sits directly under the tagline, above
+           the CTA. Populated by the tminus renderer; keep the id. -->
+      <p class="tminus" id="tminus" style="display:none"></p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <p class="fine honestline firstonly">Every idea shows what it costs and how long it takes before you click.</p>
-      <!-- Billy 2026-09-28 (Phase-2 Variant A): Play tab entry as a slim chip
-           bar. The games earn chips, not a banner; deep links start each game
-           directly (?game= scheme, verified in play.html). Unit: kids-bar. -->
-      <div class="kidbar firstonly" id="kidbar" aria-label="Costume games for kids">
-        <p class="fine">For kids:</p>
-        <a href="/play?game=peekaboo">Peekaboo</a>
-        <a href="/play?game=match">Match the pieces</a>
-      </div>
 
       <p class="fine firstonly" id="trending-line" style="margin:6px 0 0" hidden></p>
       <!-- Billy 2026-09-28: visual-first hero. The trending text line was
@@ -969,7 +994,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            the btn-return handler verbatim; visibility managed by
            refreshReturnBox(). -->
       <p class="fine" id="resume-wrap" style="margin:6px 0 0;text-align:center" hidden><button type="button" class="resume-link" id="btn-resume">See my ideas again</button></p>
-      <p class="tminus" id="tminus" style="display:none"></p>
       <!-- Billy 2026-09-26: Halloween night weather. Geolocation + Open-Meteo
            forecast for Oct 31. Renders async under the countdown; silent when
            geolocation is denied, the forecast is out of range, or fetch fails. -->
@@ -991,6 +1015,35 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="fine" id="returnhero-share-status" role="status" style="margin:8px 0 0"></p>
       </div>
       </div><!-- /herotext -->
+      <!-- Billy 2026-09-29: desktop hero mosaic. Real costume photos beside
+           the headline at >=1024px; hidden on phone (single column as today).
+           Each tile links to its /c/ guide. Unit: hero-mosaic. -->
+      <div class="hero-mosaic" id="hero-mosaic" aria-label="Popular costume ideas">
+        <a href="/c/snow-sisters" aria-label="Snow Kingdom Crew costume guide"><img src="photos/snow-sisters.webp" alt="Snow Kingdom Crew costume" loading="lazy"><span>Snow Kingdom Crew</span></a>
+        <a href="/c/tin-hero" aria-label="The Tin Hero costume guide"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
+        <a href="/c/lost-tourist" aria-label="Lost Tourist costume guide"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
+        <a href="/c/blue-dog-family" aria-label="Aussie Dog Family costume guide"><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+      </div>
+      </div>
+      <!-- Billy 2026-09-29: Kids zone. The games chips and the kid-favorites
+           rail grouped under one heading (was: chips in the hero, rail far
+           below the storytime rail). Unit: kids-bar, kids-rail. -->
+      <div class="kidszone" id="kidszone">
+        <p class="fine" style="margin:14px 0 0">For kids</p>
+        <p class="fine" style="margin:2px 0 0">Costume games plus the classics kids ask for every year.</p>
+        <!-- Billy 2026-09-28 (Phase-2 Variant A): Play tab entry as a slim chip
+             bar. The games earn chips, not a banner; deep links start each game
+             directly (?game= scheme, verified in play.html). Unit: kids-bar. -->
+        <div class="kidbar firstonly" id="kidbar" aria-label="Costume games for kids">
+          <a href="/play?game=peekaboo">Peekaboo</a>
+          <a href="/play?game=match">Match the pieces</a>
+          <a href="/pantry">Chopped</a>
+        </div>
+        <div class="kidsrail" id="kidsrail">
+          <p class="fine" style="margin:14px 0 0">Kid favorites</p>
+          <p class="fine" style="margin:2px 0 0">The classics kids ask for every Halloween. Tap one to see the plan.</p>
+          <div class="proofrow" id="row-kids" role="list" aria-label="Kid favorites"></div>
+        </div>
       </div>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">164</span> costumes directly</p>
@@ -1021,11 +1074,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <a href="/?storytime&costume=blue-alien-ohana" role="listitem"><img src="photos/blue-alien-ohana.webp" alt="Blue Alien Ohana costume" loading="lazy"><span>Blue Alien Ohana</span></a>
           <a href="/?storytime&costume=emerald-witch" role="listitem"><img src="photos/emerald-witch.webp" alt="Emerald Witch costume" loading="lazy"><span>Emerald Witch</span></a>
         </div>
-      </div>
-      <div class="kidsrail" id="kidsrail">
-        <p class="fine" style="margin:14px 0 0">Kid favorites</p>
-        <p class="fine" style="margin:2px 0 0">The classics kids ask for every Halloween. Tap one to see the plan.</p>
-        <div class="proofrow" id="row-kids" role="list" aria-label="Kid favorites"></div>
       </div>
       <!-- Billy 2026-09-26: tabbed Discover feed. One section with three
            collections (Trending / Make tonight / New) instead of stacked
@@ -1075,7 +1123,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
              repetition to a cold user. The living-feed honesty line stays: it
              makes staleness visible instead of dishonest. Refresh the rank
              pills + this line with the Monday cron. -->
-        <p class="fine" style="margin:12px 0 0">Live from this week, refreshed Mondays.</p>
+        <p class="fine" style="margin:12px 0 0">The 🔥 #1, #2, #3 marks go to the most-saved costumes of the last 7 days. Ranks refresh every Monday.</p>
       </div>
       <!-- 2026-09-26 "Most wanted by kids" merchandising rail: perennial kid
            favorites with generic names only (never licensed character names).
@@ -1085,19 +1133,44 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="fine explore-head">More ways to explore</p>
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">👕 What materials or clothes are already in your house?</a></p>
       <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 164 ideas by what you can build tonight.</p>
-        <!-- Billy 2026-09-27: this section had five competing links (classroom,
-             flyer, browse, planner, group shuffler) under one heading. Cold-user
-             QA miss, owned. One collapsed disclosure now; pantry card stays
-             elevated above it. -->
-        <details style="margin-top:12px">
-          <summary class="textlink" style="cursor:pointer;display:inline-block">More tools: browse all ideas, planners, printables</summary>
-          <p style="margin:12px 0 0"><a class="pantry-link" href="/classroom" title="Costumes for the whole class: pick a theme, get a shopping list">🏫 Planning costumes for a classroom? Whole-class planner</a></p>
-          <p style="margin:12px 0 0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 164 ideas by the parts you already own">♻️ Own last year's costume? Turn it into this year's build</a></p>
-          <p style="margin:12px 0 0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">🖨️ Need a handout? Printable flyers for classrooms, waiting rooms, and parties</a></p>
-          <p style="margin:16px 0 0"><button type="button" id="btn-browse-hero" class="textlink">🔍 Browse all 164 ideas</button></p>
-          <p style="margin:8px 0 0"><button type="button" id="btn-planner-hero" class="textlink">📅 Plan your Halloween: buy day, build day, dress-up day</button></p>
-          <p style="margin:8px 0 0"><button type="button" id="btn-shuffler-hero" class="textlink">🎲 Dealing out group roles? Shuffle who's who</button></p>
-        </details>
+        <!-- Billy 2026-09-29: tools as a horizontal tab row. One tap reveals
+             the tool inline below; only one panel open at a time. Every tool
+             stays reachable; panels reuse the existing destinations instead of
+             duplicating flows. Unit: tools-bar. -->
+        <div class="tooltabrow" id="tool-tabs" role="tablist" aria-label="Costume tools" style="margin-top:12px">
+          <button class="tooltab" type="button" role="tab" id="toolt-classroom" aria-selected="false" aria-controls="toolpanel-classroom" data-item-id="classroom">🏫 Class planner</button>
+          <button class="tooltab" type="button" role="tab" id="toolt-handmedown" aria-selected="false" aria-controls="toolpanel-handmedown" data-item-id="handmedown">♻️ Closet refresh</button>
+          <button class="tooltab" type="button" role="tab" id="toolt-flyer" aria-selected="false" aria-controls="toolpanel-flyer" data-item-id="flyer">🖨️ Printables</button>
+          <button class="tooltab" type="button" role="tab" id="toolt-browse" aria-selected="false" aria-controls="toolpanel-browse" data-item-id="browse">🔍 Browse all</button>
+          <button class="tooltab" type="button" role="tab" id="toolt-planner" aria-selected="false" aria-controls="toolpanel-planner" data-item-id="planner">📅 Halloween plan</button>
+          <button class="tooltab" type="button" role="tab" id="toolt-shuffle" aria-selected="false" aria-controls="toolpanel-shuffle" data-item-id="shuffle">🎲 Role shuffle</button>
+        </div>
+        <div class="toolpanels" id="tool-panels">
+          <div class="toolpanel" id="toolpanel-classroom" role="tabpanel" aria-labelledby="toolt-classroom" hidden>
+            <p class="fine" style="margin:0 0 10px">Planning costumes for a whole class? Pick a theme and get a shopping list for every kid.</p>
+            <p style="margin:0"><a class="pantry-link" href="/classroom" title="Costumes for the whole class: pick a theme, get a shopping list">🏫 Open the class planner</a></p>
+          </div>
+          <div class="toolpanel" id="toolpanel-handmedown" role="tabpanel" aria-labelledby="toolt-handmedown" hidden>
+            <p class="fine" style="margin:0 0 10px">Own last year&rsquo;s costume? Tick the parts you already own and we rank all 164 ideas by what you can reuse.</p>
+            <p style="margin:0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 164 ideas by the parts you already own">♻️ Turn it into this year&rsquo;s build</a></p>
+          </div>
+          <div class="toolpanel" id="toolpanel-flyer" role="tabpanel" aria-labelledby="toolt-flyer" hidden>
+            <p class="fine" style="margin:0 0 10px">Need a handout? One-page printables for teachers, waiting rooms, libraries, and party hosts.</p>
+            <p style="margin:0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">🖨️ Get the printable flyers</a></p>
+          </div>
+          <div class="toolpanel" id="toolpanel-browse" role="tabpanel" aria-labelledby="toolt-browse" hidden>
+            <p class="fine" style="margin:0 0 10px">Scroll every idea at once, then tap any card to see the plan.</p>
+            <p style="margin:0"><button type="button" id="btn-browse-hero" class="textlink">🔍 Browse all 164 ideas</button></p>
+          </div>
+          <div class="toolpanel" id="toolpanel-planner" role="tabpanel" aria-labelledby="toolt-planner" hidden>
+            <p class="fine" style="margin:0 0 10px">Buy day, build day, dress-up day: a simple plan for your Halloween.</p>
+            <p style="margin:0"><button type="button" id="btn-planner-hero" class="textlink">📅 Open the Halloween planner</button></p>
+          </div>
+          <div class="toolpanel" id="toolpanel-shuffle" role="tabpanel" aria-labelledby="toolt-shuffle" hidden>
+            <p class="fine" style="margin:0 0 10px">Dealing out group roles? Deal them fairly.</p>
+            <p style="margin:0"><button type="button" id="btn-shuffler-hero" class="textlink">🎲 Shuffle who&rsquo;s who</button></p>
+          </div>
+        </div>
       <p style="margin:16px 0 0" hidden><button type="button" id="btn-spin" class="ghost">Can&#39;t decide?</button></p>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
         <p class="fine" style="margin:0 0 8px">Here&#39;s a pick for you:</p>
@@ -1432,9 +1505,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        needed: retry affordance on results, privacy on /privacy. The HowTo
        JSON-LD in <head> stays; it still accurately describes the service. -->
 
+  <!-- Billy 2026-09-29: the maker credit lives on About only (about.html
+       line 70); the homepage footer keeps just the nav links. -->
   <footer>
     <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/privacy">Privacy</a></p>
-    <p class="fine">Built with Muse. Made by Billy Litner.</p>
   </footer>
 
 </div>
@@ -1535,19 +1609,26 @@ var UNIT_REGISTRY = {
      removed full-width hero card; the storytime rail and kids chip bar
      replace it. */
   "storytime-rail":    {type: "rail", container: "row-storytime"},
-  "kids-bar":          {type: "bar",  container: "kidbar"}
+  "kids-bar":          {type: "bar",  container: "kidbar"},
+  /* Billy 2026-09-29: desktop hero mosaic (tiles link to /c/ guides) and the
+     horizontal tool tabs (buttons carry explicit data-item-id). */
+  "hero-mosaic":       {type: "mosaic", container: "hero-mosaic"},
+  "tools-bar":         {type: "bar",  container: "tool-tabs"}
 };
 var UnitTrack = (function(){
   "use strict";
   var seen = {}; /* unit_id -> true once its impression has fired this page load */
   function pageName(){ try { return location.pathname || "/"; } catch(e){ return "/"; } }
   function anchorsOf(container){
-    var out = [], list = container.querySelectorAll("a"), i;
+    /* Billy 2026-09-29: tool tabs are <button>s, not anchors; they carry
+       explicit data-item-id so the same impression/click logging applies. */
+    var out = [], list = container.querySelectorAll("a,button[data-item-id]"), i;
     for (i = 0; i < list.length; i++) out.push(list[i]);
     return out;
   }
-  function itemIdFor(a){
-    var href = a.getAttribute("href") || "";
+  function itemIdFor(el){
+    if (el.getAttribute && el.getAttribute("data-item-id")) return el.getAttribute("data-item-id");
+    var a = el, href = a.getAttribute("href") || "";
     var m = href.match(/[?&]idea=([^&#]+)/);
     if (m) { try { return decodeURIComponent(m[1]); } catch(e){ return m[1]; } }
     m = href.match(/\/c\/([^\/?#]+)/);
@@ -1576,7 +1657,7 @@ var UnitTrack = (function(){
     /* Clicks: delegated; position resolved live at click time. */
     container.addEventListener("click", function(e){
       var t = e.target;
-      var a = (t && t.closest) ? t.closest("a") : null;
+      var a = (t && t.closest) ? t.closest("a,button[data-item-id]") : null;
       if (!a || !container.contains(a)) return;
       var pos = anchorsOf(container).indexOf(a);
       try {
@@ -14676,6 +14757,42 @@ function shareLandingHeadline(idea, search){
         chip.addEventListener("click", function(){ activate(chip.getAttribute("data-tab"), chip); });
       })(chips[i]);
     }
+  })();
+  /* Billy 2026-09-29: tool tabs. One panel open at a time; re-tapping the
+     open tab closes it. Impression + click logging comes from UnitTrack
+     (tools-bar; tabs carry data-item-id). Panels reuse existing destinations,
+     no new multi-step inline flows, so no tapGuard needed. */
+  (function(){
+    var tabs = Array.prototype.slice.call(document.querySelectorAll("#tool-tabs .tooltab"));
+    if (!tabs.length) return;
+    function panelFor(tab){ return document.getElementById(tab.getAttribute("aria-controls")); }
+    function closeAll(){
+      tabs.forEach(function(t){ t.setAttribute("aria-selected", "false"); t.setAttribute("tabindex", "-1"); });
+      tabs.forEach(function(t){ var p = panelFor(t); if (p) p.hidden = true; });
+    }
+    function openTab(tab){
+      var wasOpen = tab.getAttribute("aria-selected") === "true";
+      closeAll();
+      if (!wasOpen){
+        tab.setAttribute("aria-selected", "true");
+        tab.setAttribute("tabindex", "0");
+        var p = panelFor(tab);
+        if (p) p.hidden = false;
+      }
+    }
+    tabs.forEach(function(tab, idx){
+      tab.setAttribute("tabindex", idx === 0 ? "0" : "-1");
+      tab.addEventListener("click", function(){ openTab(tab); });
+      tab.addEventListener("keydown", function(e){
+        var j = null;
+        if (e.key === "ArrowRight") j = (idx + 1) % tabs.length;
+        else if (e.key === "ArrowLeft") j = (idx - 1 + tabs.length) % tabs.length;
+        else if (e.key === "Home") j = 0;
+        else if (e.key === "End") j = tabs.length - 1;
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openTab(tab); return; }
+        if (j !== null){ e.preventDefault(); tabs[j].focus(); openTab(tabs[j]); }
+      });
+    });
   })();
   /* Billy 2026-09-26 (landing refresh): the proof-card entrance runs once on
      first paint. The .fresh gate is retired ~1.2s after load so Discover tab
