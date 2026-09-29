@@ -104,30 +104,15 @@ body{
   line-height:1.5; min-height:100vh;
 }
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
-/* Billy 2026-09-27: mobile leads with images too. The trending photo grid
-   becomes a horizontal snap strip right under the hero copy (headline and
-   Find-my-costume CTA stay first; photos come immediately after). */
-.herovis{display:flex;gap:10px;overflow-x:auto;padding:6px 16px 14px;margin:14px -16px 0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.herovis::-webkit-scrollbar{display:none}
-.herovis a{flex:0 0 128px;scroll-snap-align:start;display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink)}
-.herovis img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
-.herovis span{display:block;padding:8px 10px;font-size:12px;font-weight:700}
 /* Billy 2026-09-27: desktop was a 640px phone column floating in dead space.
    On wide screens let the page breathe: wider content well, matching FAQ/how. */
 @media (min-width:900px){
   .wrap{max-width:1000px;padding:28px 32px 80px}
   .homefaq,.homehow{max-width:1000px}
-  /* Billy 2026-09-27: the centered hero stack still read narrow on desktop,
-     sides left as dead starfield. Two-column hero: pitch left, trending
-     photo grid right. Mobile unchanged (single centered column). */
-  .hero{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);gap:48px;align-items:center;text-align:left;padding:40px 0 52px}
-  .herotext{text-align:left}
-  .herotext .tminus{text-align:left}
-  .herovis{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding-top:72px;margin:0}
-  .herovis a{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink)}
-  .herovis a:hover{border-color:var(--accent)}
-  .herovis img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
-  .herovis span{display:block;padding:8px 10px;font-size:13px;font-weight:700}
+  /* Billy 2026-09-28: hero photo-strip unit removed entirely (Billy did not
+     like the unit, not the picks). Desktop hero returns to a centered single
+     column; the moon and headline carry the hero. */
+  .hero{display:block;text-align:center;padding:44px 0 52px;max-width:760px;margin:0 auto}
   /* Billy 2026-09-27: on the idea detail page the full-width photo pushed
      every action (pantry check, make-it-this-week, claim) below the fold.
      Two columns on desktop: sticky photo left, title/why/actions right.
@@ -180,7 +165,6 @@ body{
   .hero .herotext{display:contents}
   .hero h1.firstonly{order:1}
   #btn-start{order:2;align-self:center}
-  .hero .herovis{order:3;align-self:stretch}
   #tminus{order:4}
   .hero .honestline{order:5}
   #playcard-hero{order:6}
@@ -365,6 +349,36 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
 .screen{display:none}
 .screen.on{display:block;animation:fadein .22s ease-out}
+/* Billy 2026-09-28: the quiz opens as a bottom sheet over the homepage
+   (Billy: keep the homepage and the moon visible while taking the quiz).
+   The sheet overlays whichever screen sits underneath; closing it returns
+   there. Above the sticky CTA (900), below full-screen overlays (1000). */
+#quizBackdrop{display:none;position:fixed;inset:0;background:rgba(10,4,24,.6);z-index:950;opacity:0;transition:opacity .25s ease}
+#quizBackdrop.on{display:block;opacity:1}
+#s-quiz.sheet{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:960;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;box-shadow:0 -18px 60px rgba(0,0,0,.55);padding:6px 20px calc(24px + env(safe-area-inset-bottom));transform:translateY(0);transition:transform .32s cubic-bezier(.32,.72,.35,1)}
+#s-quiz.sheet.on{animation:none}
+#s-quiz.sheet.pre{transform:translateY(103%);transition:none}
+.quiz-grabber{width:42px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 10px}
+@media (min-width:900px){
+  #s-quiz.sheet{left:50%;right:auto;width:min(620px,94vw);margin-bottom:22px;border:1px solid var(--line);border-radius:22px;transform:translateX(-50%) translateY(0)}
+  #s-quiz.sheet.pre{transform:translateX(-50%) translateY(103%)}
+}
+@media (prefers-reduced-motion:reduce){
+  #s-quiz.sheet,#quizBackdrop{transition:none}
+}
+/* Billy 2026-09-28: a few bats drift across the hero now and then. Pure CSS,
+   pointer-transparent, silhouettes only. Off under reduced-motion. */
+.bat{position:absolute;pointer-events:none;z-index:1;opacity:.75;animation:batFly linear infinite}
+.bat svg{display:block;animation:batFlap .55s ease-in-out infinite;transform-origin:50% 50%}
+@keyframes batFly{
+  0%{transform:translate(-14vw,0)}
+  25%{transform:translate(22vw,-16px)}
+  50%{transform:translate(55vw,8px)}
+  75%{transform:translate(86vw,-12px)}
+  100%{transform:translate(118vw,0)}
+}
+@keyframes batFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+@media (prefers-reduced-motion:reduce){.bat{display:none}}
 #s-hero.on{display:flex;flex-direction:column;justify-content:flex-start;min-height:85svh}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
@@ -830,6 +844,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 
   <!-- HERO -->
   <section class="screen on" id="s-hero">
+    <div class="bat" style="top:9%;animation-duration:19s;animation-delay:-6s"><svg viewBox="0 0 64 32" width="40" height="20" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
+    <div class="bat" style="top:16%;animation-duration:26s;animation-delay:-17s"><svg viewBox="0 0 64 32" width="30" height="15" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
+    <div class="bat" style="top:5%;animation-duration:32s;animation-delay:-24s"><svg viewBox="0 0 64 32" width="48" height="24" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
     <div class="hero">
       <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
         <div class="halo" id="moon-halo" aria-hidden="true"></div>
@@ -905,15 +922,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="fine" id="returnhero-share-status" role="status" style="margin:8px 0 0"></p>
       </div>
       </div><!-- /herotext -->
-      <!-- Billy 2026-09-27: desktop hero visual. 2x2 trending-costume photo grid
-           fills the right column on wide screens; the centered stack left the
-           sides as dead starfield. Desktop-only (display:none below 900px). -->
-      <div class="herovis" aria-label="Trending costumes">
-        <a href="/?idea=snow-sisters&from=hero"><img src="photos/snow-sisters.webp" alt="Snow Kingdom Crew costume" loading="lazy"><span>Snow Kingdom Crew</span></a>
-        <a href="/?idea=tin-hero&from=hero"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
-        <a href="/?idea=lost-tourist&from=hero"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-        <a href="/?idea=classic-ghost&from=hero"><img src="photos/classic-ghost.webp" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
-      </div>
       </div>
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Or search <span id="hero-search-count">164</span> costumes directly</p>
@@ -1023,7 +1031,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   </section>
 
   <!-- QUIZ -->
-  <section class="screen" id="s-quiz">
+  <div id="quizBackdrop" aria-hidden="true"></div>
+  <section class="screen" id="s-quiz" role="dialog" aria-modal="true" aria-label="Costume quiz">
+    <div class="quiz-grabber" aria-hidden="true"></div>
     <p class="progress" id="q-progress">Question 1 of 5</p>
     <p class="proxybanner" id="q-proxybanner"></p>
     <!-- Billy 2026-09-26: goal-gradient bar. Starts at 15%, never 0%. -->
@@ -1441,6 +1451,88 @@ var Analytics = {
     } catch(e2){}
   }
 };
+
+/* ============ UNIT ANALYTICS FOUNDATION (Billy 2026-09-28) ============
+   Every content unit (rail, card, collection) on every page logs an
+   impression and per-item clicks WITH POSITION. This is the foundation for
+   reading CTR per unit, per position within a unit, and per page, both
+   event-based (raw counts) and unique-user (distinct_id), once volume picks
+   up. Standing rule: a new unit is not done until it is registered in
+   UNIT_REGISTRY below. Query recipes: hour-session/unit-analytics.md */
+var UNIT_REGISTRY = {
+  /* unit_id: {type, container} — container is the element id holding the items */
+  "kids-rail":         {type: "rail", container: "row-kids"},
+  "discover-trending": {type: "rail", container: "row-trending"},
+  "discover-tonight":  {type: "rail", container: "row-tonight"},
+  "discover-new":      {type: "rail", container: "row-new"},
+  "storytime-card":    {type: "card", container: "storycard-hero"}
+};
+var UnitTrack = (function(){
+  "use strict";
+  var seen = {}; /* unit_id -> true once its impression has fired this page load */
+  function pageName(){ try { return location.pathname || "/"; } catch(e){ return "/"; } }
+  function anchorsOf(container){
+    var out = [], list = container.querySelectorAll("a"), i;
+    for (i = 0; i < list.length; i++) out.push(list[i]);
+    return out;
+  }
+  function itemIdFor(a){
+    var href = a.getAttribute("href") || "";
+    var m = href.match(/[?&]idea=([^&#]+)/);
+    if (m) { try { return decodeURIComponent(m[1]); } catch(e){ return m[1]; } }
+    m = href.match(/\/c\/([^\/?#]+)/);
+    if (m) return m[1];
+    var clean = href.replace(/^[/#?]+/, "").split(/[?#]/)[0];
+    return clean || "unknown";
+  }
+  function fireImpression(unitId, def, container){
+    if (seen[unitId]) return; seen[unitId] = true;
+    var ids = anchorsOf(container).map(itemIdFor);
+    try {
+      Analytics.track("unit_impression", {
+        unit_id: unitId, unit_type: def.type, page: pageName(),
+        item_count: ids.length, item_ids: ids.slice(0, 40)
+      });
+    } catch(e){}
+  }
+  function instrument(unitId, def){
+    var container = $(def.container); if (!container) return;
+    /* Clicks: delegated; position resolved live at click time. */
+    container.addEventListener("click", function(e){
+      var t = e.target;
+      var a = (t && t.closest) ? t.closest("a") : null;
+      if (!a || !container.contains(a)) return;
+      var pos = anchorsOf(container).indexOf(a);
+      try {
+        Analytics.track("unit_click", {
+          unit_id: unitId, unit_type: def.type, page: pageName(),
+          item_id: itemIdFor(a), position: pos
+        });
+      } catch(e2){}
+    });
+    /* Impressions: once per unit per page load, when substantially visible. */
+    try {
+      if ("IntersectionObserver" in window){
+        var io = new IntersectionObserver(function(entries){
+          for (var i = 0; i < entries.length; i++){
+            if (entries[i].isIntersecting){ fireImpression(unitId, def, container); io.disconnect(); }
+          }
+        }, {threshold: 0.4});
+        io.observe(container);
+      } else { fireImpression(unitId, def, container); }
+    } catch(e3){ fireImpression(unitId, def, container); }
+  }
+  function instrumentAll(){
+    for (var id in UNIT_REGISTRY){
+      if (Object.prototype.hasOwnProperty.call(UNIT_REGISTRY, id)){
+        try { instrument(id, UNIT_REGISTRY[id]); } catch(e){}
+      }
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", instrumentAll);
+  else instrumentAll();
+  return {instrumentAll: instrumentAll, registry: UNIT_REGISTRY};
+})();
 /* Billy 2026-09-26 (proof-strip step-6 grade): tap->quiz-start within-session
    attribution. When a quiz_started fires and the same tab session recorded a
    proof-strip tap, also fire proofstrip_to_quiz with that idea_id — this is
@@ -2558,7 +2650,34 @@ function recipientChannel(){
   return "other";
 }
 /* ================= SCREENS ================= */
+/* Billy 2026-09-28: the quiz is a bottom sheet over the current screen.
+   openQuizSheet() shows it without hiding what sits underneath; any real
+   screen navigation dismisses it first. */
+function openQuizSheet(){
+  var q = $("s-quiz"); if (!q) return;
+  q.classList.add("sheet");
+  q.classList.add("on");
+  q.classList.add("pre");
+  var bd = $("quizBackdrop"); if (bd) bd.classList.add("on");
+  try { document.body.style.overflow = "hidden"; } catch(e){}
+  void q.offsetHeight; /* reflow so the slide-up transition plays */
+  q.classList.remove("pre");
+  try { q.scrollTop = 0; } catch(e2){}
+}
+function closeQuizSheet(){
+  var q = $("s-quiz"); if (!q) return;
+  q.classList.remove("sheet"); q.classList.remove("on"); q.classList.remove("pre");
+  var bd = $("quizBackdrop"); if (bd) bd.classList.remove("on");
+  try { document.body.style.overflow = ""; } catch(e){}
+}
+document.addEventListener("click", function(e){
+  if (e.target && e.target.id === "quizBackdrop"){
+    try { Analytics.track("quiz_sheet_dismissed", {at_question: (typeof state !== "undefined" && state) ? state.qi : -1}); } catch(_){}
+    closeQuizSheet();
+  }
+});
 function show(id){
+  closeQuizSheet();
   var screens = document.querySelectorAll(".screen");
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove("on");
   $(id).classList.add("on");
@@ -3187,7 +3306,7 @@ function renderQ(){
     };
     box.appendChild(b);
   });
-  show("s-quiz");
+  openQuizSheet();
 }
 
 /* Standing privacy rule: quiz answers never leave the device, and the idea
@@ -7837,7 +7956,7 @@ function warmOptButton(label, guardKey, onTap){
 }
 /* Shared s-quiz chrome reset for the warm screens (no question counter). */
 function warmQuizChrome(title, hint){
-  show("s-quiz");
+  openQuizSheet();
   $("q-progress").textContent = "";
   var qbf = $("qbar-fill"); if (qbf) qbf.style.width = "0%";
   $("q-title").textContent = title;
@@ -7847,7 +7966,6 @@ function warmQuizChrome(title, hint){
   /* 2026-09-28: the main quiz renders emoji tiles into #q-opts; the warm
      rows keep the old full-width look, so reset the classes here. */
   box.className = "opts";
-  window.scrollTo(0, 0);
   return box;
 }
 function renderWarmCold(){
@@ -12521,7 +12639,7 @@ $("q-back").onclick = function(){
   }
   /* 2026-09-27: Back from the warm capture step returns to the fork. */
   if (state.warmMode && typeof WARM !== "undefined" && WARM.step === "capture"){ renderWarmCold(); return; }
-  if (state.qi === 0) { show("s-hero"); refreshReturnBox(); return; }
+  if (state.qi === 0) { closeQuizSheet(); refreshReturnBox(); return; }
   state.qi--;
   renderQ();
 };
