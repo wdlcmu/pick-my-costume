@@ -789,6 +789,39 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .wr-bg4{background:linear-gradient(160deg,#3d0b2a 0%,#14060f 70%)}
 .wr-bg5{background:linear-gradient(160deg,#1a2a6c 0%,#0a0d20 70%)}
 .wr-bg6{background:linear-gradient(160deg,#4d2b00 0%,#170e02 70%)}
+
+/* ============ STORYTIME (Billy 2026-09-28) ============
+   Costumes as bedtime stories: full-screen photo, an honest tale assembled
+   only from the bank's own fields (title/why/materials/time/cost), optional
+   read-aloud, 15s auto-advance. One screen, one job: watch, don't decide. */
+#s-storytime.on{display:block;position:fixed;inset:0;z-index:80;background:#0b0616}
+.st-stage{position:absolute;inset:0;overflow:hidden}
+.st-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.st-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,6,22,.55) 0%,rgba(11,6,22,0) 30%,rgba(11,6,22,0) 55%,rgba(11,6,22,.9) 100%)}
+.st-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;z-index:3}
+.st-x,.st-sound{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:20px;cursor:pointer;line-height:1}
+.st-sound[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.st-count{color:#fdf3e3;font-size:14px;opacity:.9;margin:0}
+.st-progress{position:absolute;top:calc(66px + env(safe-area-inset-top));left:14px;right:14px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden;z-index:3}
+.st-bar{height:100%;width:0;background:var(--accent)}
+.st-bar.run{transition:width 15s linear;width:100%}
+.st-bottom{position:absolute;left:0;right:0;bottom:0;padding:18px 20px calc(20px + env(safe-area-inset-bottom));color:#fdf3e3;z-index:3}
+.st-kicker{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.st-title{margin:0 0 8px;font-size:30px;line-height:1.15;color:#fdf3e3}
+.st-tale{margin:0 0 8px;font-size:16px;line-height:1.55;color:#fdf3e3;max-width:34em}
+.st-meta{margin:0 0 14px;font-size:14px;color:var(--muted)}
+.st-actions{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.st-prev,.st-next{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:22px;cursor:pointer;line-height:1}
+.st-play{flex:1;max-width:220px;height:52px;border-radius:999px;border:none;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;cursor:pointer}
+.st-build{display:inline-block;color:#fdf3e3;font-weight:700;font-size:16px;text-decoration:underline;text-underline-offset:4px}
+.st-channels{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,6,22,.94);padding:24px;z-index:4}
+.st-channels[hidden]{display:none}
+.st-channels h2{color:#fdf3e3;margin:0 0 6px;font-size:26px}
+.st-channels p{color:var(--muted);margin:0 0 10px;font-size:15px;text-align:center;max-width:26em}
+.st-chan{width:min(320px,84vw);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-weight:700;cursor:pointer;text-align:left}
+.st-chan small{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+.st-chan:hover{border-color:var(--accent)}
+@media (min-width:900px){.st-title{font-size:40px}.st-bottom{padding:28px 48px calc(28px + env(safe-area-inset-bottom))}.st-tale{font-size:18px}}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
@@ -833,6 +866,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <span class="playcard-text"><strong>Let your kid pick by playing</strong><em>Two quick costume games</em></span>
         <span class="playcard-go" aria-hidden="true">&rarr;</span>
       </a>
+       <!-- Billy 2026-09-28: Storytime entry. Fourth door: don't decide, just watch. -->
+       <a class="playcard firstonly" href="/storytime" id="storycard-hero">
+         <span class="playcard-art" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M42 6a26 26 0 1 0 16 44A30 30 0 0 1 42 6z" fill="#f5c86e"/><circle cx="46" cy="18" r="2.4" fill="#fdf3e3"/><circle cx="55" cy="30" r="1.8" fill="#fdf3e3"/></svg></span>
+         <span class="playcard-text"><strong>Storytime</strong><em>Costumes as bedtime stories</em></span>
+         <span class="playcard-go" aria-hidden="true">&rarr;</span>
+       </a>
+
       <p class="fine firstonly" id="trending-line" style="margin:6px 0 0" hidden></p>
       <!-- Billy 2026-09-28: visual-first hero. The trending text line was
            redundant with the photo strip (same names under photos), so it
@@ -1227,6 +1267,41 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       </div>
     </div>
   </section>
+    <!-- Billy 2026-09-28: STORYTIME. Costumes as bedtime stories: full-screen
+         photo, an honest tale assembled from the bank's own fields (title,
+         why, materials, time, cost), optional read-aloud, auto-advance.
+         Every slide links its build guide: story, instructions, and
+         materials travel together. -->
+    <section class="screen" id="s-storytime" aria-label="Storytime">
+      <div class="st-stage">
+        <img class="st-photo" id="st-photo" alt="">
+        <div class="st-shade" aria-hidden="true"></div>
+        <div class="st-top">
+          <button class="st-x" id="st-close" type="button" aria-label="Close storytime">&times;</button>
+          <p class="st-count" id="st-count" aria-live="polite"></p>
+          <button class="st-sound" id="st-sound" type="button" aria-label="Read the story aloud" aria-pressed="false">&#128266;</button>
+        </div>
+        <div class="st-progress" aria-hidden="true"><div class="st-bar" id="st-bar"></div></div>
+        <div class="st-bottom">
+          <p class="st-kicker" id="st-kicker">Storytime</p>
+          <h2 class="st-title" id="st-title"></h2>
+          <p class="st-tale" id="st-tale"></p>
+          <p class="st-meta" id="st-meta"></p>
+          <div class="st-actions">
+            <button class="st-prev" id="st-prev" type="button" aria-label="Previous costume">&larr;</button>
+            <button class="st-play" id="st-play" type="button">Pause</button>
+            <button class="st-next" id="st-next" type="button" aria-label="Next costume">&rarr;</button>
+          </div>
+          <a class="st-build" id="st-build" href="#">Build this costume &rarr;</a>
+        </div>
+        <div class="st-channels" id="st-channels" hidden>
+          <h2>Storytime</h2>
+          <p>Costumes as bedtime stories. Pick a channel and watch.</p>
+          <div id="st-chanlist" style="display:flex;flex-direction:column;gap:12px;align-items:center"></div>
+        </div>
+      </div>
+    </section>
+
 
   <!-- CLOSET-FIRST -->
   <section class="screen" id="s-closet">
@@ -12958,6 +13033,190 @@ function shareLandingHeadline(idea, search){
       var _nqs = location.search.replace(/([?&])nm=[^&]*&?/, function(m, s){ return s === "?" ? "?" : ""; }).replace(/[?&]$/, "");
       history.replaceState(null, "", location.pathname + _nqs);
     }
+    /* ================= STORYTIME (Billy 2026-09-28) =================
+   Costumes as bedtime stories. Full-screen photo, a tale assembled only
+   from the bank's own fields (title / why / materials / time / cost:
+   nothing invented), optional speechSynthesis read-aloud, 15s
+   auto-advance. Channels are tag cuts (spooky/funny/cute), so the "feed"
+   idea arrives as costume TV, not an endless-scroll clone.
+   Deep link: ?storytime&costume=<slug> ("see this costume in a story").
+   Analytics: storytime_started / storytime_slide / storytime_build_tap. */
+(function(){
+  "use strict";
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  var CHANNELS = [
+    {id:"all",   label:"Everything", sub:"All the costumes, shuffled", test:function(){ return true; }},
+    {id:"spooky",label:"Spooky",     sub:"Ghosts, monsters, things that go bump", test:function(t){ return (t.scary||0) >= 2; }},
+    {id:"funny", label:"Funny",      sub:"The laugh-getters", test:function(t){ return (t.funny||0) >= 2; }},
+    {id:"cute",  label:"Cute",       sub:"The aww pile", test:function(t){ return (t.cute||0) >= 2; }}
+  ];
+  var ADV_MS = 15000;
+  var order = [], idx = 0, timer = null, playing = true, speakOn = false, started = false;
+  var currentId = "all", currentLabel = "Storytime";
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){}
+
+  function taleFor(idea){
+    var p = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
+    var tale = "Tonight's tale: " + idea.title + ". " + idea.why;
+    if (p && p.buy && p.buy.length){
+      tale += " To dress up as " + idea.title + ", you'll need " + p.buy.slice(0,3).join(", ") + ".";
+    }
+    if (p && (p.time || p.cost)){
+      tale += " It takes " + (p.time || "some time") + " and costs " + (p.cost || "a few dollars") + ".";
+    }
+    return tale;
+  }
+  function metaFor(idea){
+    var p = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
+    if (p && (p.time || p.cost)) return "Build it: " + [p.time, p.cost].filter(Boolean).join(" \u00b7 ");
+    return "";
+  }
+  function shuffle(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+
+  function buildOrder(channelId){
+    var ch = CHANNELS[0];
+    for (var i=0;i<CHANNELS.length;i++) if (CHANNELS[i].id===channelId) ch = CHANNELS[i];
+    var list = [];
+    for (var k=0;k<IDEAS.length;k++){ if (ch.test(IDEAS[k].tags||{})) list.push(IDEAS[k]); }
+    return {ch:ch, list:shuffle(list)};
+  }
+
+  function stopSpeak(){ try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e){} }
+  function speak(text){
+    stopSpeak();
+    if (!speakOn) return;
+    try {
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    } catch(e){}
+  }
+
+  function render(){
+    var idea = order[idx];
+    if (!idea) return;
+    var tale = taleFor(idea);
+    $("st-photo").src = "photos/" + idea.id + ".webp";
+    $("st-photo").alt = idea.title + " costume";
+    $("st-kicker").textContent = currentLabel;
+    $("st-title").textContent = idea.title;
+    $("st-tale").textContent = tale;
+    $("st-meta").textContent = metaFor(idea);
+    $("st-count").textContent = (idx+1) + " of " + order.length;
+    $("st-build").href = "/c/" + idea.id;
+    var bar = $("st-bar");
+    bar.classList.remove("run");
+    void bar.offsetWidth;
+    if (playing && !reduceMotion) bar.classList.add("run");
+    speak(tale);
+    try { var nx = order[(idx+1)%order.length]; var im = new Image(); im.src = "photos/" + nx.id + ".webp"; } catch(e){}
+    Analytics.track("storytime_slide", {n: idx+1, costume: idea.id, channel: currentId});
+  }
+
+  function arm(){
+    if (timer) { clearInterval(timer); timer = null; }
+    if (playing && !reduceMotion && order.length > 1){
+      timer = setInterval(function(){ if (!document.hidden) next(); }, ADV_MS);
+    }
+  }
+  function next(){ idx = (idx+1) % order.length; render(); arm(); }
+  function prev(){ idx = (idx-1+order.length) % order.length; return render(), arm(); }
+
+  function open(channelId, startSlug){
+    var built = buildOrder(channelId);
+    if (!built.list.length) return;
+    currentId = built.ch.id;
+    currentLabel = built.ch.id === "all" ? "Storytime" : "Storytime: " + built.ch.label;
+    order = built.list;
+    idx = 0;
+    if (startSlug){
+      for (var i=0;i<order.length;i++) if (order[i].id === startSlug){ idx = i; break; }
+    }
+    $("st-channels").hidden = true;
+    show("s-storytime");
+    playing = !reduceMotion;
+    $("st-play").textContent = playing ? "Pause" : "Play";
+    if (!started){ started = true; Analytics.track("storytime_started", {channel: currentId, via: startSlug ? "costume_link" : "channel"}); }
+    render(); arm();
+  }
+  function renderChannels(){
+    var box = $("st-chanlist");
+    box.innerHTML = "";
+    CHANNELS.forEach(function(ch){
+      var n = 0;
+      for (var k=0;k<IDEAS.length;k++) if (ch.test(IDEAS[k].tags||{})) n++;
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "st-chan";
+      b.innerHTML = esc(ch.label) + "<small>" + esc(ch.sub) + " \u00b7 " + n + "</small>";
+      b.onclick = (function(id){ return function(){ open(id, null); }; })(ch.id);
+      box.appendChild(b);
+    });
+  }
+  function openPicker(){
+    renderChannels();
+    $("st-channels").hidden = false;
+    show("s-storytime");
+  }
+  function close(){
+    stopSpeak();
+    if (timer){ clearInterval(timer); timer = null; }
+    started = false;
+    show("s-hero");
+  }
+
+  var heroCard = $("storycard-hero");
+  if (heroCard) heroCard.addEventListener("click", function(e){
+    e.preventDefault();
+    openPicker();
+  });
+  $("st-close").onclick = close;
+  $("st-next").onclick = next;
+  $("st-prev").onclick = prev;
+  $("st-play").onclick = function(){
+    playing = !playing;
+    this.textContent = playing ? "Pause" : "Play";
+    if (!playing) stopSpeak();
+    render(); arm();
+  };
+  $("st-sound").onclick = function(){
+    speakOn = !speakOn;
+    this.setAttribute("aria-pressed", speakOn ? "true" : "false");
+    if (speakOn && order.length) speak(taleFor(order[idx]));
+    else stopSpeak();
+  };
+  $("st-build").onclick = function(){
+    var idea = order[idx];
+    Analytics.track("storytime_build_tap", {costume: idea ? idea.id : "", channel: currentId});
+  };
+  document.addEventListener("keydown", function(e){
+    var st = $("s-storytime");
+    if (!st || !st.classList.contains("on")) return;
+    if (e.key === "Escape") close();
+    else if (e.key === "ArrowRight") next();
+    else if (e.key === "ArrowLeft") prev();
+    else if (e.key === " "){ e.preventDefault(); $("st-play").click(); }
+  });
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden) stopSpeak();
+  });
+
+  /* Deep link: /storytime?costume=<slug> redirects here as ?storytime&costume=<slug>. */
+  function openFromUrl(){
+    var q = location.search || "";
+    if (!/[?&]storytime([&=]|$)/.test(q)) return;
+    var cm = /[?&]costume=([a-z0-9-]+)/.exec(q);
+    var slug = cm ? cm[1] : null;
+    var ok = false;
+    if (slug){ for (var i=0;i<IDEAS.length;i++) if (IDEAS[i].id === slug){ ok = true; break; } }
+    if (slug && ok) open("all", slug);
+    else openPicker();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", openFromUrl);
+  else openFromUrl();
+})();
+
     /* 2026-09-26 costume roulette: ?spin=<sender idea slug> rides the spin
        share link so the recipient banner can name the spin result. */
     var spm = /[?&]spin=([a-z0-9-]+)/.exec(location.search || "");
