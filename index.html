@@ -37,12 +37,13 @@
      claims; 164 is the real bank count; every step describes the quiz flow
      itself, which is the product. Costume build times and prices
      live on each /c/ guide's own HowTo, not here.
-     Billy 2026-09-28: step 3 rewritten for the plan-first flow. Tapping
-     "Plan this costume" no longer opens share-first; the plan panel leads
-     with build actions (calendar, closet check, email instructions, AI
-     step-by-step plan) and share goes quiet last. -->
+     Billy 2026-09-28: step 3 rewritten for the plan-first flow.
+     Billy 2026-09-29 (Victory Lap): the plan panel leads with the share
+     block ("Tell my people", the one filled CTA); build actions, email
+     instructions, the AI plan, and save-image/pin-it collapse into one
+     "Keep building your costume" disclosure below it. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","publisher":{"@id":"https://pickmycostume.com/#organization"},"name":"How to pick your Halloween costume","description":"Answer a few quick questions and get 3 costume ideas picked for you from 164 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer a few quick questions","text":"A few quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 164 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Plan it and make it","text":"Tap \"Plan this costume\" to save your pick. The plan panel leads with build actions: add to your calendar, check materials against your closet, email yourself the instructions, and copy a step-by-step AI plan. Share it with your group last."}]}
+{"@context":"https://schema.org","@type":"HowTo","publisher":{"@id":"https://pickmycostume.com/#organization"},"name":"How to pick your Halloween costume","description":"Answer a few quick questions and get 3 costume ideas picked for you from 164 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer a few quick questions","text":"A few quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get 3 ideas picked for you","text":"Your answers are scored against 164 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Plan it and make it","text":"Tap \"Plan this costume\" to save your pick. Tell your people you are going as this costume first, then keep building it: add to your calendar, check materials against your closet, email yourself the instructions, and copy a step-by-step AI plan."}]}
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -4055,11 +4056,16 @@ function shareCaptionFor(idea){
      "I am going as Mermaid Crew. We are going as mermaids." */
   var aud = voiceAudience(idea);
   var line;
-  if (aud === "kid") line = "The quiz picked " + idea.title + " for my kid this Halloween.";
-  else if (aud === "family") line = "The quiz picked " + idea.title + " for our family this Halloween.";
-  else if (aud === "couple") line = "We\u2019re thinking of going as " + idea.title + " this Halloween.";
-  else if (aud === "group") line = "We\u2019re thinking of going as " + idea.title + " this Halloween.";
-  else line = "I\u2019m thinking of going as " + idea.title + " this Halloween.";
+  /* Billy 2026-09-29 (Victory Lap): sharing is a declaration, not a cry for
+     help. The old "thinking of going as" / "the quiz picked" hedges asked the
+     sharer to perform indecision after they had already decided. Billy's own
+     proven share text ("I'm going as Neon Demon Hunter this Halloween. What
+     are you?") declares and asks, zero homework. */
+  if (aud === "kid") line = "My kid\u2019s going as " + idea.title + " this Halloween.";
+  else if (aud === "family") line = "We\u2019re going as " + idea.title + " this Halloween.";
+  else if (aud === "couple") line = "We\u2019re going as " + idea.title + " this Halloween.";
+  else if (aud === "group") line = "We\u2019re going as " + idea.title + " this Halloween.";
+  else line = "I\u2019m going as " + idea.title + " this Halloween.";
   var cap = SHARE_CAPTIONS[idea.id];
   if (!cap) return line;
   /* Audience grounding 2026-09-26: for kid/family audiences the sharer is
@@ -4287,7 +4293,7 @@ function buildClosetBadge(idea){
    reorder, and the flag-off DOM is byte-identical to today. */
 /* 2026-09-28 share-flow consolidation (Billy: too many share doors on the
    result page): the Experiment 1 "Share this pick" quick-share card is
-   retired. "Ask my people" is the single send-to-people path. */
+   retired. "Tell my people" is the single send-to-people path. */
 var EXPERIMENT1_ONE_TAP_SHARE = false;
 /* Roulette entry experiment (2026-09-26): the costume shuffle lives
    4-5 phone viewports down on the homepage under "More ways to explore" with
@@ -4353,7 +4359,11 @@ function thumbArm(){
    for me / Let me know what you think"), with a concrete quiz ask so the
    recipient has something to do, not just something to read. */
 function shareAskLine(){
-  return "I picked this with Pick My Costume. Take the 2-minute quiz and tell me what you get. ";
+  /* Billy 2026-09-29 (Victory Lap): the old ask line assigned homework
+     ("take the 2-minute quiz and tell me what you get"). The new one asks
+     Billy's four-word human question and names the quiz as where the
+     costume came from, nothing more. */
+  return "What are you going as? Found mine with this 2-min quiz: ";
 }
 /* The one canonical share action (2026-09-28 simplification): the native
    share sheet on phones, clipboard copy on desktop. Replaces the bespoke
@@ -7722,7 +7732,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          Two copies showed "Great, have fun with it." twice after voting. */
 
       /* Billy 2026-09-28: plan-first. "You picked this costume. Now build it."
-         Build actions lead; share goes quiet below. */
+         Billy 2026-09-29 (Victory Lap): share leads as the one filled CTA; build actions collapse into the "Keep building your costume" disclosure. */
       mountPlanFirstPanel(planBox, idea, "s-results", "pick_plan_copied");
       /* Billy 2026-09-26: the build guide is one section now; the separate
          "Make it this week" block was merged into it above. */
@@ -9944,7 +9954,7 @@ function buildBrowseDetailCard(idea, whyHead){
   if (pick && pick.ideaId === idea.id){ note.style.display = "block"; hint.style.display = "none"; }
   function mountPickSections(){
     /* Billy 2026-09-28: plan-first. "You picked this costume. Now build it."
-       Build actions lead; share goes quiet below. */
+       Billy 2026-09-29 (Victory Lap): share leads as the one filled CTA; build actions collapse into the "Keep building your costume" disclosure. */
     mountPlanFirstPanel(planBox, idea, "s-detail", "browse_detail_plan_copied");
   }
   function doPick(){
@@ -10215,7 +10225,25 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
     planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
     return;
   }
-  /* Build actions lead. */
+  /* Billy 2026-09-29 (Victory Lap): the share block LEADS the panel as the
+     single primary action -- "Tell my people" is the one filled CTA, not a
+     ghost button buried last. Everything else (build actions, email capture,
+     AI plan, save-image / pin-it) collapses into one "Keep building your
+     costume" disclosure below it. onShared opens the disclosure first: the
+     AI plan lives inside it now, and revealAiPlan scrolls to it. */
+  planBox.appendChild(shareBox);
+  var keepBuilding = document.createElement("details");
+  keepBuilding.className = "keep-building";
+  addCopyShareRow(shareBox, idea, null, null, function(){
+    try { keepBuilding.open = true; } catch(_){}
+    revealAiPlan(aiPlanBox);
+  }, false, false, true);
+  var kbSum = document.createElement("summary");
+  kbSum.className = "textlink";
+  kbSum.style.cssText = "cursor:pointer;display:inline-block;font-weight:700;margin:14px 0 4px";
+  kbSum.textContent = "Keep building your costume";
+  keepBuilding.appendChild(kbSum);
+  /* Build actions live inside the disclosure now. */
   var buildBox = document.createElement("div");
   buildBox.className = "plan-build";
   var head = document.createElement("p"); head.className = "status"; head.textContent = "Now build it.";
@@ -10245,13 +10273,13 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
     if (_emb) _emb.style.marginTop = "0";
     buildBox.appendChild(emWrap);
   }
-  planBox.appendChild(buildBox);
-  /* AI step-by-step plan follows the actions. */
-  planBox.appendChild(aiPlanBox);
+  keepBuilding.appendChild(buildBox);
+  /* AI step-by-step plan follows the actions, inside the disclosure. */
+  keepBuilding.appendChild(aiPlanBox);
   showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), copyEvent, true, null, "Step-by-step AI plan");
-  /* Share goes quiet last. */
-  planBox.appendChild(shareBox);
-  addCopyShareRow(shareBox, idea, null, null, function(){ revealAiPlan(aiPlanBox); }, true);
+  /* Save-the-image / Pin-it moved out of the share block (Victory Lap). */
+  keepBuilding.appendChild(buildMediaShareRows(idea));
+  planBox.appendChild(keepBuilding);
 }
 function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   container.innerHTML = "";
@@ -10449,19 +10477,62 @@ function shareImage(idea, onDone){
 }
 
 /* After a pick, the share section leads and the AI plan follows beneath it. */
-function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noPreview){
+/* Billy 2026-09-29 (Victory Lap): the save-image / pin-it rows moved out of
+   the share block into the "Keep building your costume" disclosure in the
+   plan-first panel. One builder so both call sites stay identical. */
+function buildMediaShareRows(idea){
+  var wrap = document.createElement("div");
+  var imgRow = document.createElement("div");
+  imgRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
+  var imgBtn = document.createElement("button");
+  imgBtn.type = "button"; imgBtn.className = "ghost";
+  imgBtn.textContent = "Save the image";
+  imgBtn.onclick = function(){
+    var rearmShare = armShareOnce(imgBtn);
+    if (!rearmShare) return; /* double-tap: a share is already in flight */
+    shareImage(idea, rearmShare);
+  };
+  imgRow.appendChild(imgBtn);
+  wrap.appendChild(imgRow);
+  /* 2026-09-28 P0 growth: Pin-it save link. Pinterest is the highest-ROI
+     Halloween search channel and the guide already has its own og image,
+     so the pin media is the guide's share card. URL-encoded per the
+     pin/create/button contract. */
+  var pinRow = document.createElement("div");
+  pinRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
+  var pinBtn = document.createElement("button");
+  pinBtn.type = "button"; pinBtn.className = "ghost"; pinBtn.style.width = "100%";
+  pinBtn.textContent = "Pin it on Pinterest";
+  pinBtn.onclick = function(){
+    if (typeof Analytics !== "undefined" && Analytics.track){
+      try { Analytics.track("pin_click", {idea_id: idea.id}); } catch(_){}
+    }
+    var pinUrl = "https://pinterest.com/pin/create/button/" +
+      "?url=" + encodeURIComponent("https://pickmycostume.com/c/" + idea.id) +
+      "&media=" + encodeURIComponent("https://pickmycostume.com/images/og/" + idea.id + ".jpg") +
+      "&description=" + encodeURIComponent(idea.title + " - DIY Halloween costume guide from Pick My Costume");
+    window.open(pinUrl, "_blank", "noopener");
+  };
+  pinRow.appendChild(pinBtn);
+  wrap.appendChild(pinRow);
+  return wrap;
+}
+function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noPreview, noMedia){
   /* The share panel, simplified 2026-09-28. Billy: the loop had grown
      bloated -- teaser, plan, micro-quiz, SMS, save-image, riddle,
      guess-game, pantry dare, and eight message variants. What remains:
-       - primary "Ask my people" button (native sheet / clipboard)
+       - primary "Tell my people" button (native sheet / clipboard)
        - a Preview text toggle (collapsed by default; skipped in the cast
          panel via noPreview, where the live preview above the who's-who
          form already shows the text)
-       - Save the image (the one non-text share worth keeping)
-       - Pin it on Pinterest (2026-09-28 P0 growth: save link using the
-         guide's own og image as pin media)
        - Pick for a friend (secondary)
        - the approved Partner Split (secondary)
+       - Save the image + Pin it (via noMedia=false; the plan-first panel
+         renders them inside its "Keep building your costume" disclosure
+         instead, so the share block stays one loud action)
+     Billy 2026-09-29 (Victory Lap): "Want a second opinion?" asked the
+     sharer to perform indecision. The block now declares: "Going as X?
+     Tell your people." This supersedes the pending "Ask my people" rename.
      makeText(sid) still overrides the text for personal-cast cards. */
   container.innerHTML = "";
   var statusEl = null, btn = null, sharedOnce = false;
@@ -10475,12 +10546,12 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   }
   function primaryBtn(){
     var b = document.createElement("button");
-    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Ask my people";
+    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Tell my people";
     b.onclick = function(){ share("generic", b, statusEl); };
     return b;
   }
   var lab = document.createElement("p"); lab.className = "status";
-  lab.textContent = "Want a second opinion?";
+  lab.textContent = "Going as " + idea.title + "? Tell your people.";
   container.appendChild(lab);
   btn = primaryBtn();
   var primaryRow = document.createElement("div");
@@ -10565,39 +10636,10 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
     splitRow.appendChild(buildPartnerSplitLink(idea));
     container.appendChild(splitRow);
   }
-  var imgRow = document.createElement("div");
-  imgRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
-  var imgBtn = document.createElement("button");
-  imgBtn.type = "button"; imgBtn.className = "ghost";
-  imgBtn.textContent = "Save the image";
-  imgBtn.onclick = function(){
-    var rearmShare = armShareOnce(imgBtn);
-    if (!rearmShare) return; /* double-tap: a share is already in flight */
-    shareImage(idea, rearmShare);
-  };
-  imgRow.appendChild(imgBtn);
-  container.appendChild(imgRow);
-  /* 2026-09-28 P0 growth: Pin-it save link. Pinterest is the highest-ROI
-     Halloween search channel and the guide already has its own og image,
-     so the pin media is the guide's share card. URL-encoded per the
-     pin/create/button contract. */
-  var pinRow = document.createElement("div");
-  pinRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
-  var pinBtn = document.createElement("button");
-  pinBtn.type = "button"; pinBtn.className = "ghost"; pinBtn.style.width = "100%";
-  pinBtn.textContent = "Pin it on Pinterest";
-  pinBtn.onclick = function(){
-    if (typeof Analytics !== "undefined" && Analytics.track){
-      try { Analytics.track("pin_click", {idea_id: idea.id}); } catch(_){}
-    }
-    var pinUrl = "https://pinterest.com/pin/create/button/" +
-      "?url=" + encodeURIComponent("https://pickmycostume.com/c/" + idea.id) +
-      "&media=" + encodeURIComponent("https://pickmycostume.com/images/og/" + idea.id + ".jpg") +
-      "&description=" + encodeURIComponent(idea.title + " - DIY Halloween costume guide from Pick My Costume");
-    window.open(pinUrl, "_blank", "noopener");
-  };
-  pinRow.appendChild(pinBtn);
-  container.appendChild(pinRow);
+  /* Billy 2026-09-29 (Victory Lap): the plan-first panel passes noMedia so
+     Save-the-image / Pin-it live inside its "Keep building your costume"
+     disclosure instead of the share block. */
+  if (!noMedia) container.appendChild(buildMediaShareRows(idea));
   return {
     refresh: function(){ if (!sharedOnce){ cur = mint(); if (ta) ta.value = cur.text; } }
   };
@@ -11763,7 +11805,7 @@ function headwearWord(ideaId){
 }
 /* ================= EXPERIMENT 1: ONE-TAP SHARE (2026-09-26, retired 2026-09-28) =================
    Retired in the share-flow consolidation: the "Share this pick" quick-share
-   card duplicated the "Ask my people" path. The builder functions stay for
+   card duplicated the "Tell my people" path. The builder functions stay for
    reference but nothing calls them while EXPERIMENT1_ONE_TAP_SHARE is false.
    Design: hour-session/share-lift-experiments.md, "Experiment 1". Gated by
    EXPERIMENT1_ONE_TAP_SHARE (default false). When on, buildCastPanel renders
@@ -11820,7 +11862,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
      ("Share this pick") is retired, so the block that inserted it above the
      form is gone. One personal-cards flow lives here: the who's-who form
      feeds live personal cards below, with no separate "Make personal cards"
-     gate. "Ask my people" (in the share row under the cards) is the single
+     gate. "Tell my people" (in the share row under the cards) is the single
      send-to-people path. */
   h.textContent = "Make it personal (optional)";
   sub.textContent = "Add names and roles for personal cards. Names are optional and never stored anywhere. I never see them.";
