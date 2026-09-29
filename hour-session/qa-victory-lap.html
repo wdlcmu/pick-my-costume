@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Victory Lap QA fixture</title>
+<meta name="robots" content="noindex">
+<style>
+/* ============ HALLOWEEN VISUAL IDENTITY ============
+   The site's seasonal skin, confirmed by Billy. All theme colors
+   live in these variables: to re-skin later, swap this block only.
+   Selection state never relies on color alone (checkmark + border). */
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --btn-bg: #ff8c1a;
+  --btn-ink: #2a1500;
+  --radius: 14px;
+}
+*{box-sizing:border-box}
+/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
+   rendered as dark browser-default blue on the dark background -- unreadable.
+   Every link now gets the accent-orange treatment (bold, underlined) so no
+   surface can silently regress to browser-default blue. */
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+/* Billy 2026-09-27: desktop was a 640px phone column floating in dead space.
+   On wide screens let the page breathe: wider content well, matching FAQ/how. */
+@media (min-width:900px){
+  .wrap{max-width:1000px;padding:28px 32px 80px}
+  /* Billy 2026-09-28: hero photo-strip unit removed entirely (Billy did not
+     like the unit, not the picks). Desktop hero returns to a centered single
+     column; the moon and headline carry the hero. */
+  .hero{display:block;text-align:center;padding:44px 0 52px;max-width:760px;margin:0 auto}
+  /* The moon sits absolute top-right; keep the headline clear of it. The
+     tiny "tonight's moon" caption tucks away on desktop (the moon and its
+     tap-for-details panel stay). */
+  .hero h1{max-width:560px;margin-left:auto;margin-right:auto}
+  .hero .mooncap{display:none}
+  /* Billy 2026-09-27: on the idea detail page the full-width photo pushed
+     every action (pantry check, make-it-this-week, claim) below the fold.
+     Two columns on desktop: sticky photo left, title/why/actions right.
+     Mobile keeps the single stacked column. */
+  #s-detail #d-card>.card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:36px;align-items:start;text-align:left}
+  /* 2026-09-28 desktop fix: explicit left/right column wrappers. The old
+     flat grid pinned the photo with grid-row:1/-1, which does not span
+     implicit rows, so the photo took only row 1 and every section zigzagged
+     across columns (rail overlapping the photo, dead space on the right). */
+  #s-detail #d-card>.card>.dcol-l{grid-column:1;grid-row:1;position:sticky;top:16px;align-self:start;min-width:0}
+  #s-detail #d-card>.card>.dcol-r{grid-column:2;grid-row:1;min-width:0}
+  /* 2026-09-28: the rail's mobile edge-bleed (-16px margins) must not poke
+     out of the desktop right column. */
+  #s-detail #d-card .proofrow{margin-left:0;margin-right:0}
+  /* Billy 2026-09-27: warm "Your plan" strip had the same full-bleed photo
+     problem on desktop. Photo left, title/actions right. Mobile stacked. */
+  .warmstrip{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:start}
+  /* 2026-09-27 warm QA: companion cards ("Costumes that go with") rendered
+     ~700px-tall full-bleed photos on desktop. Same two-column treatment as
+     the hero strip: photo left, text right. Mobile stacks. */
+  .warmpair{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:start}
+  /* Billy 2026-09-28: result/landing cards rendered the 1:2 concept photo at
+     ~1000px wide on desktop, pushing every action below the fold ("the
+     picture doesn't fit"). Cap the photo so the whole picture fits in view;
+     contain (not cover) so nothing crops. Mobile unchanged. The detail page
+     keeps its two-column treatment: its photo nests inside .dcol-l, so this
+     direct-child selector leaves it alone. */
+  .card>div>img[src^="photos/"]{max-height:60vh;object-fit:contain;background:#14101d}
+  /* Runner-up fullscreen overlay: same photo cap, and center the column so
+     the card doesn't stretch edge to edge on wide screens. */
+  #ru-overlay-content{max-width:720px;margin:0 auto}
+}
+.hero{text-align:center;padding:30px 8px 32px;position:relative}
+/* Billy 2026-09-26: the celestial is now ambient and top-right, never a big
+   centered block pushing the headline down. */
+.hero .moonwrap{position:absolute;top:8px;right:10px;width:54px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;z-index:20}
+.hero .moonwrap:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
+.hero .moon,.hero .sun{width:52px;height:52px;display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(245,238,210,.35))}
+.hero .sun{filter:drop-shadow(0 0 12px rgba(255,200,90,.5))}
+.hero .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;line-height:1.35}
+/* Billy 2026-09-26 (returning-hero QA): the caption wraps to two lines inside
+   the 54px wrap so it never slides left under the countdown at phone width. */
+/* Billy 2026-09-28: visual-first hero. On phone the trending photo strip
+   moves right under the CTA so imagery leads: headline, CTA, photos,
+   countdown, then the text rows (honest line, play card). Desktop keeps
+   its two-column hero untouched. The flattening is mobile-only. */
+@media (max-width:899px){
+  .hero{display:flex;flex-direction:column}
+  .hero .moonpanel{order:0}
+  .hero .herotext{display:contents}
+  .hero h1.firstonly{order:1}
+  #btn-start{order:2;align-self:center}
+  #tminus{order:4}
+  .hero .honestline{order:5}
+  #kidbar{order:6}
+  #resume-wrap{order:7}
+  #hw-weather{order:8}
+  #returnbox{order:9;align-self:stretch}
+}
+/* Billy 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
+   it stays cheap on phones; off entirely under prefers-reduced-motion. */
+.hero .halo{position:absolute;top:-18px;left:50%;width:88px;height:88px;margin-left:-44px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite;pointer-events:none}
+.hero .halo.day{background:radial-gradient(circle,rgba(255,200,90,.38) 0%,transparent 70%)}
+@keyframes haloPulse{0%,100%{opacity:.55}50%{opacity:1}}
+/* Billy 2026-09-26: tappable moon panel. Phase name + illumination tonight,
+   Halloween night's moon, days to go. */
+/* Billy 2026-09-27: the panel used to float over the rail below it. Now it
+   expands in-flow (full-width banner under the moon) and pushes content down
+   instead of overlapping. Works in the desktop hero grid and mobile alike. */
+.moonpanel{position:static;grid-column:1/-1;width:min(560px,100%);margin:10px auto 0;z-index:30;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-size:13px;line-height:1.55;box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.moonpanel p{margin:4px 0}
+.moonpanel .mp-fun{color:var(--accent);font-weight:600}
+/* Billy 2026-09-26: hero rewrite (BuzzFeed confident-challenge headline). */
+.billyline{margin:8px 0 0;font-size:15px;color:var(--text)}
+/* Billy 2026-09-26 (landing refresh): hero copy lines. */
+.honestline{margin:10px 0 0}
+/* Billy 2026-09-28: Play tab entry. Visual card next to the quiz CTA in the
+   hero: the game is a third way to pick (the kid picks by playing). */
+.playcard{display:flex;align-items:center;gap:14px;margin:16px auto 0;max-width:430px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;text-decoration:none;color:var(--ink)}
+.playcard:hover{border-color:var(--accent)}
+.playcard-art{flex:0 0 64px}
+.playcard-art svg{width:64px;height:64px;display:block}
+.playcard-text{flex:1;text-align:left;min-width:0}
+.playcard-text strong{display:block;font-size:16px;line-height:1.3}
+.playcard-text em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:2px}
+.playcard-go{font-size:22px;color:var(--accent);font-weight:700;flex:0 0 auto}
+/* Billy 2026-09-28 (Phase-2 Variant A): slim kid-games bar. The two games
+   earn chips, not a banner (what-earns-the-right audit: rails for browsable
+   things, chips for secondary features). 44px tap targets. */
+.kidbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px auto 0;max-width:430px}
+.kidbar .fine{margin:0}
+.kidbar a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap}
+.kidbar a:hover{border-color:var(--accent)}
+/* Billy 2026-09-28: Play nudge on the results screen. Quiet visual card for
+   the stuck parent: hand the phone to the kid. */
+.playnudge{display:flex;align-items:center;gap:12px;margin:14px 0 4px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;text-decoration:none;color:var(--ink)}
+.playnudge:hover{border-color:var(--accent)}
+.playnudge-art{flex:0 0 48px}
+.playnudge-art svg{width:48px;height:48px;display:block}
+.playnudge-text{flex:1;min-width:0;font-size:14px;line-height:1.4}
+.playnudge-text strong{font-size:15px}
+.playnudge-go{color:var(--accent);font-weight:700;font-size:20px;flex:0 0 auto}
+/* Billy 2026-09-26: tabbed Discover feed. One section, three collections,
+   kills the stacked-rails CTA overload. */
+.chiprow{display:flex;gap:8px;margin:8px -16px 0;padding:2px 16px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chiprow::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;background:none;border:1px solid var(--line);border-radius:999px;min-height:44px;padding:10px 18px;font-size:14px;color:var(--muted);cursor:pointer;font-family:inherit;box-sizing:border-box;white-space:nowrap}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+/* 2026-09-26 closet-coverage badge: slim strip under the why-line on the
+   detail page. Quiet on purpose, it is a decision input, not a CTA. */
+.closet-badge{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:12px 0;background:rgba(0,0,0,.18)}
+.closet-badge p{margin:0 0 6px}
+.closet-badge p:last-child{margin-bottom:0}
+.closet-line{font-weight:700;font-size:15px;color:var(--ink)}
+.closet-sub,.closet-need{color:var(--muted);font-size:13px;line-height:1.45}
+.closet-link{font-size:13px;color:var(--accent);text-decoration:underline;cursor:pointer}
+.proofrow{transition:opacity .18s ease}
+/* Billy 2026-09-26: .proofrow sets display:flex, which overrides the hidden
+   attribute's UA display:none -- the Discover tabs changed highlight but all
+   three panels stayed visible. This restores hidden everywhere. */
+[hidden]{display:none!important}
+.proofrow.fading{opacity:0}
+.proofrow .proofmeta{display:block;font-size:10px;color:var(--muted);text-align:center;padding:0 2px 6px;line-height:1.2}
+/* Billy 2026-09-26: quiz goal-gradient bar. Starts at 15%, never 0%. */
+.qbar{height:4px;background:var(--line);border-radius:2px;margin:0 0 12px;overflow:hidden}
+.qbar-fill{height:100%;width:15%;background:var(--accent);border-radius:2px;transition:width .3s ease}
+/* Billy 2026-09-26: sticky bottom quiz CTA, mobile only. Appears once the
+   hero CTA scrolls out of view; hides on quiz start. */
+.stickycta{position:fixed;left:0;right:0;bottom:0;z-index:900;display:none;pointer-events:none;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(20,20,40,.97),rgba(20,20,40,0))}
+/* 2026-09-26 red-team: the overlay container must not swallow taps on content
+   scrolled beneath it (hero search chips, Discover tabs). Taps pass through
+   the transparent gradient; only the CTA button itself takes taps. */
+.stickycta button{width:100%;min-height:48px;border:none;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;pointer-events:auto}
+@media (max-width:640px){ .stickycta.show{display:block} }
+.textlink{background:none;border:0;padding:8px;color:var(--muted);text-decoration:underline;font-size:14px;cursor:pointer;font-family:inherit;min-height:44px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
+/* ================= COUNTDOWN PLANNER + WHO'S-WHO SHUFFLER (2026-09-26) =================
+   Two group-planning tools, integrated from the love-it prototypes.
+   Planner: works backwards from Oct 31 using real INSTRUCTIONS data (materials,
+   steps, build time) and offers Add-to-calendar links. Shuffler: one-tap role
+   dealer using the existing CASTS data. Names live in JS memory only. */
+.plabel{display:block;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:16px 0 8px}
+select.pselect{width:100%;font-size:16px;padding:14px;border:2px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--ink);margin:0;min-height:56px}
+.ptl{position:relative;margin:16px 0 0;padding-left:26px}
+.ptl::before{content:"";position:absolute;left:8px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.pms{position:relative;background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:16px;margin:0 0 16px}
+.pms::before{content:"";position:absolute;left:-24px;top:22px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.pms .pdate{font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;font-weight:700}
+.pms h3{margin:0 0 6px;font-size:20px}
+.pms .pcount{color:var(--muted);font-size:14px;margin:0 0 10px}
+.pms ul,.pms ol{margin:8px 0;padding-left:20px}
+.pms li{margin:5px 0;font-size:15px}
+.psec{color:var(--muted);font-size:13px;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(--btn-ink);font-weight:700;text-decoration:none;border-radius:10px;padding:12px 18px;font-size:15px;min-height:48px}
+.pnote{background:rgba(255,140,26,.08);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 10px 10px 0;color:var(--muted);font-size:14px;margin:12px 0 0}
+.sperson{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.sperson input{flex:1;font-size:16px;padding:12px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-height:52px}
+.sseg{display:flex;border:2px solid var(--line);border-radius:10px;overflow:hidden;flex:none}
+.sseg button{border:0;background:transparent;color:var(--muted);font-size:14px;padding:12px;cursor:pointer;min-height:52px}
+.sseg button.on{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.slineup{list-style:none;margin:6px 0 0;padding:0}
+.slineup li{display:flex;align-items:baseline;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);font-size:17px}
+.slineup li:last-child{border-bottom:0}
+.swho{font-weight:700;flex:none;max-width:45%;overflow:hidden;text-overflow:ellipsis}
+.sarrow{color:var(--muted);flex:none}
+.srole{color:var(--accent);font-weight:700;text-transform:capitalize}
+/* ================= CLOSET-FIRST (2026-09-26) =================
+   Tick-what-you-own tool, integrated from the closet-first prototype
+   (red-teamed 2026-09-26). Scores the live PANTRY_MATS through pantryScore();
+   the three rails are 0 / 1 / 2 purchases away. Ticks are page-local; the
+   user's saved pantry (if any) pre-ticks the boxes. */
+.cftickgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cftick{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:10px 12px;font-size:14px;cursor:pointer;min-height:48px}
+.cftick input{width:20px;height:20px;accent-color:var(--accent);flex:none}
+.cfgroup{font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin:18px 0 8px}
+.cfstaple{font-size:12px;color:var(--muted)}
+.cfrail{margin:26px 0 0}
+.cfrailhead{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+.cfrailhead h3{margin:0;font-size:20px}
+.cfcount{background:var(--accent);color:var(--accent-ink);border-radius:20px;padding:2px 12px;font-size:13px;font-weight:700;flex:none}
+.cfcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;margin:10px 0}
+.cfcard h4{margin:0 0 4px;font-size:16px}
+/*Billy 2026-09-26: closet rail card titles are buttons (tap-to-detail).
+  Full-width with vertical padding for a real tap target; underline signals
+  the tap the way textlinks do elsewhere on the site.*/
+.cfcardlink{display:block;width:100%;text-align:left;background:none;border:none;padding:8px 0;margin:0;font:inherit;font-size:16px;font-weight:700;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px;min-height:44px}
+.cfcard p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+.cfneed{margin-top:8px;font-size:13px;color:var(--accent);font-weight:700}
+.cfallown{margin-top:8px;font-size:13px;color:#2f9e5f;font-weight:700}
+.cfempty{color:var(--muted);font-style:italic;padding:12px;text-align:center;font-size:14px}
+.cfsummary{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:18px;margin:16px 0;text-align:center}
+.cfsummary .big{font-size:36px;font-weight:800;color:var(--accent)}
+.cfsummary p{margin:6px 0 0;color:var(--muted);font-size:14px}
+/*Billy 2026-09-25: visual proof strip. Real top-save costumes with photos
+  above the fold so visitors see the taste before starting the quiz. Names
+  sit on the photo with a scrim (the streaming-rail pattern) so they never
+  get buried; the rail ends with a quiz CTA card.*/
+/* Billy 2026-09-25: the proof strip is proof, not a gallery. A slim row of
+   small thumbnails; the hero CTA stays the dominant action on the page. */
+.proofstrip{margin-top:14px}
+/* Billy 2026-09-25: the strip is a horizontal swipe rail, not a fixed row. */
+.proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.proofrow::-webkit-scrollbar{display:none}
+/* Billy 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
+.proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
+/* Billy 2026-09-26 (landing refresh): proof-card entrance. A soft staggered
+   fade-up on first paint only; the .fresh gate below is retired by JS ~1.2s
+   after load, so Discover tab switches (un-hiding a row restarts its cards'
+   CSS animations) never replay the stagger. Scoped to .proofstrip so the kids
+   rail and the detail "more like this" rail keep their static look. Cards are
+   already 128px (tabbed-feed work), so no size change here. */
+@keyframes cardin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.proofstrip.fresh .proofrow a{animation:cardin .45s ease-out backwards}
+.proofstrip.fresh .proofrow a:nth-child(2){animation-delay:.06s}
+.proofstrip.fresh .proofrow a:nth-child(3){animation-delay:.12s}
+.proofstrip.fresh .proofrow a:nth-child(4){animation-delay:.18s}
+.proofstrip.fresh .proofrow a:nth-child(5){animation-delay:.24s}
+.proofstrip.fresh .proofrow a:nth-child(6){animation-delay:.30s}
+.proofstrip.fresh .proofrow a:nth-child(7){animation-delay:.36s}
+.proofstrip.fresh .proofrow a:nth-child(8){animation-delay:.42s}
+/* D1 hook (landing refresh): the "New this week" badge on browse-shelf cards.
+   Text uses --accent-ink (not white): white on the orange accent fails
+   contrast, and the codebase already pairs accent backgrounds with accent-ink
+   (see .chip.on). */
+.newbadge{position:absolute;top:18px;left:18px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.proofrow a{flex:0 0 128px;scroll-snap-align:start;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
+.proofrow img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.proofrow span{display:block;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;color:var(--text);text-align:center;padding:6px 6px;line-height:1.3;font-weight:600;min-height:31px}
+/* 2026-09-26 "Most wanted by kids" rail: button cards reuse the proofrow
+   swipe pattern. The row is JS-rendered from KIDS_RAIL_IDS; every card opens
+   the full pick flow (browse parity, no dead ends). */
+.kidsrail{margin-top:14px}
+.kidsrail .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
+.proofrow button.kidscard{flex:0 0 128px;scroll-snap-align:start;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative;padding:0;cursor:pointer;font:inherit;color:inherit}
+/* Billy 2026-09-26: social proof badge on proof-strip cards */
+.proofbadge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600}
+/* "More ways to explore": the quiet secondary surfaces live here, below the strip. */
+.explore{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.explore-head{margin:0 0 12px}
+.explore .pantry-link{display:inline-block;min-height:44px;box-sizing:border-box;padding:12px 20px;border:1px solid var(--line);border-radius:10px;color:var(--ink);font-size:15px;text-decoration:none}
+h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
+.tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
+.screen{display:none}
+.screen.on{display:block;animation:fadein .22s ease-out}
+/* Billy 2026-09-28: the quiz opens as a bottom sheet over the homepage
+   (Billy: keep the homepage and the moon visible while taking the quiz).
+   The sheet overlays whichever screen sits underneath; closing it returns
+   there. Above the sticky CTA (900), below full-screen overlays (1000). */
+#quizBackdrop{display:none;position:fixed;inset:0;background:rgba(10,4,24,.6);z-index:950;opacity:0;transition:opacity .25s ease}
+#quizBackdrop.on{display:block;opacity:1}
+#s-quiz.sheet{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:960;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;box-shadow:0 -18px 60px rgba(0,0,0,.55);padding:6px 20px calc(24px + env(safe-area-inset-bottom));transform:translateY(0);transition:transform .32s cubic-bezier(.32,.72,.35,1)}
+#s-quiz.sheet.on{animation:none}
+#s-quiz.sheet.pre{transform:translateY(103%);transition:none}
+.quiz-grabber{width:42px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 10px}
+@media (min-width:900px){
+  #s-quiz.sheet{left:50%;right:auto;width:min(620px,94vw);margin-bottom:22px;border:1px solid var(--line);border-radius:22px;transform:translateX(-50%) translateY(0)}
+  #s-quiz.sheet.pre{transform:translateX(-50%) translateY(103%)}
+}
+@media (prefers-reduced-motion:reduce){
+  #s-quiz.sheet,#quizBackdrop{transition:none}
+}
+/* Billy 2026-09-28: a few bats drift across the hero now and then. Pure CSS,
+   pointer-transparent, silhouettes only. Off under reduced-motion. */
+.bat{position:absolute;pointer-events:none;z-index:1;opacity:.75;animation:batFly linear infinite}
+.bat svg{display:block;animation:batFlap .55s ease-in-out infinite;transform-origin:50% 50%}
+@keyframes batFly{
+  0%{transform:translate(-14vw,0)}
+  25%{transform:translate(22vw,-16px)}
+  50%{transform:translate(55vw,8px)}
+  75%{transform:translate(86vw,-12px)}
+  100%{transform:translate(118vw,0)}
+}
+@keyframes batFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+@media (prefers-reduced-motion:reduce){.bat{display:none}}
+/* Billy 2026-09-28: hero alive. Fireflies rise, leaves fall, stars twinkle.
+   Pure CSS, pointer-transparent, aria-hidden in markup. Same deal as the
+   bats: everything lives behind no-preference, display:none under reduce. */
+@media (prefers-reduced-motion: no-preference){
+  .herostar{position:absolute;pointer-events:none;z-index:0;width:3px;height:3px;border-radius:50%;background:#fdf3e3;opacity:.2;animation:herostar 3.8s ease-in-out infinite}
+  @keyframes herostar{0%,100%{opacity:.1}50%{opacity:.55}}
+  .herofly{position:absolute;pointer-events:none;z-index:1;border-radius:50%;background:#ffe9b8;box-shadow:0 0 8px 2px rgba(255,233,184,.55);opacity:0;animation:herofly 15s linear infinite}
+  @keyframes herofly{0%{transform:translate(0,0);opacity:0}12%{opacity:.7}70%{opacity:.35}100%{transform:translate(4vw,-44vh);opacity:0}}
+  .heroleaf{position:absolute;pointer-events:none;z-index:1;width:9px;height:13px;border-radius:60% 8% 60% 8%;background:#c9762a;opacity:0;animation:heroleaf 12s linear infinite}
+  @keyframes heroleaf{0%{transform:translate(0,-4vh) rotate(0deg);opacity:0}10%{opacity:.8}100%{transform:translate(-9vw,54vh) rotate(330deg);opacity:0}}
+  /* Billy 2026-09-29: drifting clouds. Two wisps cross the top of the hero
+     sky on slow loops, sliding past the sun by day and the moon by night.
+     Transform-only on the wrapper; the blurred puffs inside are static, so
+     the blur paints once. Behind the moon (z 2 vs 20), pointer-transparent. */
+  .herocloud{position:absolute;pointer-events:none;z-index:2;opacity:0;animation:herocloud linear infinite}
+  .herocloud i{position:absolute;border-radius:50%;background:rgba(238,233,222,.48);filter:blur(16px)}
+  @keyframes herocloud{0%{transform:translate(-36vw,4px);opacity:0}14%{opacity:.7}82%{opacity:.62}100%{transform:translate(114vw,-6px);opacity:0}}
+  /* Billy 2026-09-29: shooting star, night only. One quick streak every 16s,
+     then a long pause. Gated on #s-hero.night, set from window._pmcIsDay. */
+  .heroshoot{display:none}
+  #s-hero.night .heroshoot{display:block;position:absolute;top:5%;right:6%;width:96px;height:2px;border-radius:2px;pointer-events:none;z-index:1;opacity:0;background:linear-gradient(to left,rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(-24deg);animation:heroshoot 16s linear infinite}
+  @keyframes heroshoot{0%{opacity:0;transform:rotate(-24deg) translateX(0)}1.5%{opacity:.9}7%{opacity:0;transform:rotate(-24deg) translateX(-52vw)}100%{opacity:0;transform:rotate(-24deg) translateX(-52vw)}}
+}
+@media (prefers-reduced-motion:reduce){.herofly,.heroleaf,.herostar,.herocloud,.heroshoot{display:none}}
+#s-hero.on{display:flex;flex-direction:column;justify-content:flex-start;min-height:85svh}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
+.proxybanner{display:none;background:#fff7ec;border:1px solid #ffd9a3;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:14px;color:#666;line-height:1.4}
+.q-title{font-size:28px;margin:0 0 6px}
+.q-hint{color:var(--muted);margin:0 0 20px}
+.opts{display:grid;gap:12px;margin-bottom:20px}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;
+  min-height:60px;padding:14px 16px;font-size:18px;text-align:left;
+  background:var(--card);color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+}
+.opt .tick{
+  flex:0 0 26px;height:26px;border:2px solid var(--muted);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:transparent;user-select:none;
+}
+.opt.sel{border-color:var(--sel-border);background:var(--sel-bg)}
+.opt.sel .tick{border-color:var(--accent);color:var(--accent)}
+.opt:hover{border-color:var(--accent)}
+/* Billy 2026-09-28: visual-first quiz. The main quiz's options are
+   emoji-led tiles: big emoji + short label in a 2-col grid (3 cols for
+   the 9-option interest question). The selected tile shows the check
+   as a corner badge. Duel/gift/warm keep the old row look: they render
+   plain .opt buttons, never into #q-opts.tiles. */
+#q-opts.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+#q-opts.tiles.many{grid-template-columns:repeat(3,1fr)}
+.opt.tile{flex-direction:column;justify-content:center;align-items:center;
+  gap:8px;text-align:center;min-height:104px;padding:16px 10px;
+  font-size:15px;font-weight:700;position:relative}
+#q-opts.tiles.many .opt.tile{min-height:96px;font-size:13px}
+.opt-emoji{font-size:38px;line-height:1}
+#q-opts.tiles.many .opt-emoji{font-size:30px}
+.opt-lab{line-height:1.35}
+.opt.tile .tick{position:absolute;top:8px;right:8px;flex:none}
+.opt.tile:hover{border-color:var(--accent)}
+button:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.cta:hover{filter:brightness(1.08)}
+button.ghost:hover{border-color:var(--accent)}
+.navrow{display:flex;gap:12px;flex-wrap:wrap}
+button.cta{
+  display:inline-block;min-height:56px;padding:14px 28px;font-size:18px;font-weight:700;
+  background:var(--btn-bg);color:var(--btn-ink);
+  border:0;border-radius:var(--radius);cursor:pointer;
+}
+button.lightsheet{color:#241a38;}
+.lightsheet .ghost{color:#241a38;background:#fff;}
+/* 2026-09-28: lightsheets are white cards on the dark theme; every heading,
+   label, and paragraph without an explicit color inherited the theme's pale
+   ink and washed out (the "Pick for a friend" question/result headings).
+   Base the whole sheet dark; elements with explicit readable colors
+   (#666, #888, #999, ...) keep theirs. */
+.lightsheet{color:#241a38;}
+/* Party friend-banner is a cream card: same fix for its ghost buttons
+   and status text, which inherited the theme's pale colors. */
+#pmc-friend-banner .ghost{color:#241a38;}
+#pmc-friend-banner .status{color:#666;}
+.ghost{
+  min-height:56px;padding:14px 20px;font-size:17px;
+  background:rgba(255,255,255,.05);color:var(--ink);
+  border:2px solid #7a5fc4;border-radius:var(--radius);cursor:pointer;
+} /* Billy 2026-09-24: lifted border from var(--line) for contrast; washes out on dark cards */
+/* 2026-09-27 share hierarchy (Billy: "too many CTAs and no contrast"): the
+   pick-panel share block shows ONE filled primary CTA; every secondary share
+   action lives one tap behind this collapsed disclosure. The demoted loops
+   keep their handlers and instrumentation, only their visual weight changes. */
+.mshare{margin:10px 0 0;border:0;padding:0}
+.mshare>summary{list-style:none;cursor:pointer;display:block;text-align:center;color:var(--accent);
+  font-size:14px;text-decoration:underline;padding:12px 8px;min-height:44px;font-family:inherit;background:none;border:0;width:100%}
+.mshare>summary::-webkit-details-marker{display:none}
+.mshare>summary::marker{content:""}
+.mshare>summary .mshare-chev{display:inline-block;margin-left:6px;transition:transform .15s ease;font-size:12px;text-decoration:none}
+.mshare[open]>summary .mshare-chev{transform:rotate(180deg)}
+.mshare-body{padding:2px 0 4px}
+.mshare-body .ghost{width:100%}
+.mshare-body a.ghost{display:block;text-align:center;text-decoration:none;align-self:center;padding:14px 20px}
+.card{
+  background:var(--card);border:2px solid var(--line);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+#r-cards .card img{width:100%;height:auto;display:block}
+/* Billy-reported 2026-09-23: the old 230px fixed height + object-fit:cover
+   cropped nearly every card image (73 of 75 bank illustrations are square,
+   so cover cut ~105px vertically at phone width — e.g. Walking Taco's legs).
+   Natural aspect ratio shows the full illustration on every card. */
+.card h3{margin:0 0 6px;font-size:24px}
+.toppick{display:inline-block;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+.rolebadge{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;margin-bottom:8px;background:var(--bg2);color:var(--ink);border:1px solid var(--line)}
+.rolenote{font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.4}
+.rolesline{font-size:15px;font-weight:600;margin:-6px 0 10px;line-height:1.4}
+.makeplan{margin:16px 0 0;padding:14px;background:var(--bg2);border-radius:var(--radius);border:1px solid var(--line)}
+.makeplan h3{margin:0 0 6px;font-size:18px}
+.makeplan .mp-meta{font-size:13px;color:#5b6467;margin:0 0 8px;font-weight:600}
+.makeplan .mp-buy{font-size:14px;margin:0 0 8px}
+.makeplan ol{margin:8px 0 0;padding-left:20px;font-size:14px}
+.makeplan ol li{margin-bottom:6px}
+.pantrybadge{display:inline-block;font-size:12px;font-weight:600;line-height:1;color:#5b6467;background:transparent;border:1px solid #c9cfd1;border-radius:999px;padding:5px 10px;margin:6px 0 0}
+.trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
+.castbox h3{margin:0 0 4px;font-size:20px}
+/* Experiment 1 (2026-09-26, staged): the quick-share card that leads the cast
+   panel when EXPERIMENT1_ONE_TAP_SHARE is on. */
+.exp1-quick{margin:0 0 18px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+.exp1-quick h3{margin:0 0 4px;font-size:20px}
+.exp1-quick .promptbox{margin:8px 0 10px}
+.castq{margin:12px 0 4px;font-weight:700;font-size:15px}
+.castbtns{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.castbtns button{min-height:44px;min-width:52px;padding:8px 14px;font-size:15px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:10px;cursor:pointer;font-family:inherit}
+.castbtns button.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.castrow{display:flex;gap:8px;margin:8px 0;align-items:flex-end}
+.castname{flex:1.1;min-width:0}
+.castlab{display:block;font-size:11px;color:var(--muted);margin:0 0 2px}
+.castname input{width:100%;min-height:44px;padding:8px 10px;font-size:16px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;box-sizing:border-box}
+.castrow select{flex:1;min-height:44px;min-width:0;font-size:16px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit}
+.casttoggle{min-height:44px;padding:8px 10px;font-size:14px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;white-space:nowrap}
+.casttoggle.sel{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.castline{font-size:15px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+.castline b{color:var(--ink)}
+/* 2026-09-28 KitForma playtest: the share preview sat below the name form,
+   so typing names felt like a chore before any payoff. The live preview card
+   sits above the form and mirrors the share text on every keystroke. */
+.castliveprev{margin:10px 0 4px;padding:10px 12px;background:var(--card);border:2px solid var(--line);border-radius:var(--radius)}
+.castliveprev-lab{margin:0 0 4px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.castliveprev-text{margin:0;font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.card .blurb{margin:0 0 10px;font-size:17px}
+.card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
+.card .why b{color:var(--ink)}
+.card .row{display:flex;flex-wrap:wrap;gap:10px}
+.card .row button{min-height:48px;font-size:14px;flex:1}
+.card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
+.card .pick-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.75}
+.status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px;overflow-wrap:anywhere}
+.linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
+.promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:16px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
+/* After a successful share, the AI plan section gets a brief highlight so it
+   reads as the immediate next step (added by revealAiPlan). */
+.ai-flash{animation:aiFlash 1.6s ease-out}
+/* 2026-09-28 reduced-motion: the post-share outline pulse stays behind
+   no-preference, like the other decorative animations. Under reduce the
+   class is a no-op and the instant scroll (revealAiPlan) still lands the
+   user on the AI plan as the next step. */
+@media (prefers-reduced-motion: reduce){.ai-flash{animation:none}}
+@keyframes aiFlash{0%{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}100%{outline:2px solid transparent;outline-offset:4px}}
+/* Billy 2026-09-24: "get a color behind the AI plan". The AI plan reads as one
+   distinct block: a soft orange wash drawn from the accent (no new hue),
+   comfortable padding, rounded corners. Applied by showPromptPreview to the
+   plan container, so every surface that renders the block gets the tint. */
+.ai-plan{background:rgba(255,140,26,.10);border-radius:var(--radius);padding:14px 16px;margin-top:12px}
+/* "How to make it": in-site build steps. Result/browse cards get a
+   <details> disclosure; the share-recipient landing renders it expanded. */
+.howto{margin-top:12px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
+.howto summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:16px;list-style:none}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::before{content:"+";color:var(--accent);font-weight:700;margin-right:8px}
+.howto[open] summary::before{content:"\2212"}
+.howto[open] summary{border-bottom:1px solid var(--line)}
+.howto-body{padding:12px 14px 14px}
+.howto-body h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.howto-body ul{margin:0 0 12px;padding-left:20px;font-size:15px;line-height:1.5}
+.howto-body ol{margin:0;padding-left:20px;font-size:15px;line-height:1.55}
+.howto-body ol li{margin-bottom:8px}
+.howto-body ol li:last-child{margin-bottom:0}
+.howto-open{padding:14px 16px}
+.howto-open h3{margin:0 0 10px;font-size:18px}
+.howto-open .howto-body{padding:0}
+/* Billy 2026-09-24: materials read as chips, not a wall of bullets. The
+   build list gets a copy button: parents take it to the store. */
+.howto-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.howto-chip{display:inline-block;padding:6px 12px;background:var(--card);border:2px solid var(--line);border-radius:999px;font-size:14px;line-height:1.3}
+.howto-copyrow{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+button.howto-copy,.howto-copy{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0}
+a.howto-copy{text-decoration:underline}
+.howto-copyrow .status{margin:0}
+/* Guide decision triple + parent FAQs: the most quotable bank fields,
+   rendered visibly (not just stored) so AI assistants can cite them. */
+.howto-triple{margin:0 0 12px;font-size:14px;font-weight:700;color:var(--muted)}
+/* Content layer 2026-09-25: sizing guidance, the fit note every parent asks about. */
+.howto-fit{margin:0 0 12px;font-size:14px;color:var(--muted)}
+/* Billy 2026-09-25: quick-guide readability. Short bullets, generous spacing,
+   the tip in muted italic like a friend's aside. */
+.howto-quick-steps{margin:0 0 10px;padding-left:20px}
+.howto-quick-steps li{margin:0 0 8px;font-size:15px;line-height:1.45}
+.howto-tip{margin:4px 0 0;font-size:14px;color:var(--muted);font-style:italic}
+.howto-safety{margin:8px 0 0;font-size:13px;color:#b3261e;line-height:1.45}
+/* Billy 2026-09-25: per-person cast plans (Buy + DIY per role). */
+.personplans{margin:16px 0}
+.personplans h3{font-size:17px;margin:0 0 10px}
+.personplan{background:#f8f6f0;border:1px solid #e2ddd2;border-radius:10px;padding:12px 14px;margin:0 0 12px;color:#2b2b2b}
+.personplan h4{font-size:15px;margin:0 0 8px}
+.personplan-compact{padding:10px 14px;margin:0 0 8px}
+.personplan-compact h4{margin:0}
+.pp-roleline{font-size:14px;margin:6px 0 0;color:#2b2b2b}
+.personplan-guide{border-color:#d4cdbd}
+.pp-opt{font-weight:700;font-size:14px;margin:10px 0 4px}
+.pp-buy{font-size:14px;line-height:1.5;margin:0 0 6px}
+.pp-easy{font-size:14px;line-height:1.5;background:#eef6ee;border-radius:8px;padding:10px 12px;margin:12px 0 0;color:#2b2b2b}
+.howto-faq{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.howto-faq summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
+.howto-faq summary::-webkit-details-marker{display:none}
+.howto-faq summary::before{content:"+";color:var(--accent);font-weight:700;margin-right:8px}
+.howto-faq[open] summary::before{content:"\2212"}
+.howto-faq dl{margin:10px 0 0}
+.howto-faq dt{font-weight:700;font-size:15px;margin:10px 0 3px}
+.howto-faq dd{margin:0;font-size:15px;line-height:1.55}
+.stuck{margin-top:28px;padding:18px;background:var(--bg2);border:2px dashed var(--line);border-radius:var(--radius)}
+.stuck h3{margin:0 0 6px;font-size:20px}
+.stuck p{margin:0 0 12px;color:var(--muted);font-size:15px}
+footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}
+/* 2026-09-27 red-team (eve): footer "About this site" was a bare 14px inline
+   link (~20px hit area). Inline-block + padding makes it a comfortable
+   phone tap target without changing the centered layout. */
+footer a#about-link{display:inline-block;padding:12px 18px}
+/* Billy 2026-09-28: plan-first panel. "You picked this costume. Now build it."
+   The build actions live in one stacked block inside the expanded plan panel. */
+.plan-build{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}
+.plan-build>.status{margin:0 0 2px}
+.plan-build .ghost{width:100%}
+.returnhero{max-width:440px;margin:4px auto 0;padding:18px 16px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);animation:returnIn .55s cubic-bezier(.2,.7,.3,1)}
+.returnhero[hidden]{display:none}
+.returnhero{position:relative}
+.returnhero-dismiss{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:10px;min-width:44px;min-height:44px}
+.returnhero-photo{width:108px;height:108px;object-fit:cover;border-radius:22px;display:block;margin:0 auto 10px;box-shadow:0 6px 22px rgba(0,0,0,.4)}
+.returnhero-kicker{margin:0 0 4px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.returnhero h1{margin:0 0 14px;font-size:25px;line-height:1.2}
+.returnhero-actions{display:flex;flex-direction:column;gap:10px}
+.returnhero-actions .cta{width:100%}
+.returnhero-share{background:none;border:0;color:var(--accent);font-size:14px;text-decoration:underline;cursor:pointer;padding:8px;min-height:44px}
+/* 2026-09-26 P4: stranded-results resume. Quiet text-link under the hero CTA. */
+.resume-link{background:none;border:0;color:var(--accent);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px;min-height:32px}
+.hero.returning .firstonly{display:none}
+@keyframes returnIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* Billy 2026-09-26: detail-view celestial. Small, ambient, pinned to the top
+   of the detail screen so it can never sit half-clipped against the browser
+   chrome. Time-aware (sun by day, real moon phase by night), animated unless
+   the visitor prefers reduced motion. */
+#s-detail{position:relative}
+.detail-sky{position:absolute;top:10px;right:12px;width:38px;height:38px;pointer-events:none;z-index:5}
+.detail-sky svg{width:38px;height:38px;display:block}
+.detail-sky .halo{position:absolute;top:-9px;left:50%;width:56px;height:56px;margin-left:-28px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite}
+.detail-sky .halo.day{background:radial-gradient(circle,rgba(255,200,90,.38) 0%,transparent 70%)}
+@media (prefers-reduced-motion: reduce){
+  .returnhero{animation:none}
+  .hero .halo,.detail-sky .halo{animation:none;opacity:.75}
+  /* Billy 2026-09-26 (landing refresh): the card-entrance stagger stills too,
+     plus the pre-existing .screen fadein and any Discover tab-switch motion.
+     This block sits AFTER every rule it overrides: at equal specificity the
+     later rule wins, so placing it earlier would silently fail (QA 2026-09-26). */
+  .proofstrip.fresh .proofrow a{animation:none}
+  .screen.on{animation:none}
+  .proofrow{transition:none}
+}
+.fine{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+/* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
+   tagline, never a ticking widget. Hides itself after Oct 31. */
+.tminus{margin:10px 0 0;font-size:15px;font-weight:700;color:var(--accent)}
+/* Billy 2026-09-26 (returning-hero QA): at phone width the centered countdown
+   ran under the moon's halo; give it right clearance on narrow screens.
+   The moon's caption hides there too: at 390px it collided with the countdown
+   (returning) and the giant H1 (first-timer). The moon stays tappable via its
+   title/aria label. */
+@media (max-width:520px){.tminus{padding-right:64px}.hero .mooncap{display:none}}
+.about-body p{margin:0 0 14px;line-height:1.55}
+.examplebox{margin:0 0 14px;padding:14px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
+.examplebox p{margin:0 0 8px}
+.examplebox p:last-child{margin-bottom:0}
+.ex-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.bcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:12px;position:relative}
+.bcard img{width:100%;border-radius:8px;display:block;margin-bottom:8px}
+.bcard h3{margin:0 0 4px;font-size:17px}
+.bcard p{margin:0;font-size:14px;color:var(--muted)}
+.bcard .bmeta{margin-top:6px;font-weight:700;color:var(--text)}
+.bcard .row{display:flex;flex-wrap:wrap;gap:10px}
+.bcard .row button{flex:1;min-height:48px;font-size:14px}
+.bfilters{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
+.bfl{display:flex;flex-direction:column;gap:4px;flex:1 1 140px;min-width:0}
+.bfl>span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding-left:2px}
+/* Three selects share one row on wide screens and wrap on narrow phones.
+   16px type avoids iOS auto-zoom on tap. Sticky kept. */
+.bfilters select{flex:1 1 auto;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+/* Z5 browse search: type-ahead search-first for the 164-idea shelf. 16px
+   type avoids iOS auto-zoom on tap; sits above the cards, never inside one. */
+.bsearch{margin:0 0 8px}
+.bsearch input{width:100%;box-sizing:border-box;padding:12px 14px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
+.bsearch input:focus{outline:none;border-color:var(--accent)}
+.bcount{margin:0 0 10px;font-size:13px;color:var(--muted)}
+.bempty{color:var(--muted);padding:24px 0 8px;text-align:center}
+/* Type-ahead suggestions: tappable rows under the search box, 44px+ targets. */
+.bsuggest{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.bsuggest .sug{padding:10px 14px;min-height:44px;font-size:15px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);color:var(--ink);font-family:inherit;cursor:pointer}
+.bsuggest .sug:active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Empty-state popular searches: a dead end becomes a way forward. */
+.bpop{margin:6px 0 4px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.bpop span{font-size:13px;color:var(--muted);width:100%;text-align:center}
+.bchip{padding:10px 16px;min-height:44px;font-size:15px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);color:var(--ink);font-family:inherit;cursor:pointer}
+.bchip:active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bclose{margin:18px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+/* Sticky browse filters: the filter bar stays pinned while the grid
+   scrolls, so the 164 ideas never strand you without a way to narrow them.
+   (Spirit Halloween pattern; Party City lets its toolbar scroll away.) */
+.bsticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 4px;border-bottom:1px solid var(--line)}
+.bsticky .bcount{margin:2px 0 6px}
+/* One-hero results: the #1 idea is the answer; runners-up stay compact. */
+.hero12{border:3px solid var(--accent);border-radius:16px;padding:14px;background:var(--bg2)}
+/* Shareable result card: "Your <year> Halloween costume." The kicker names the
+   year so screenshots feel current; the fact row answers the four questions
+   every recipient asks (vibe, build time, budget, difficulty) at a glance. */
+.rkicker{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:0 0 8px}
+.factrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.fact{flex:1 1 0;min-width:70px;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 8px;text-align:center}
+.fact b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fact span{font-size:13px;font-weight:700}
+.fitreasons{margin:10px 0}
+.fitreasons>ul{margin:6px 0 0;padding-left:20px}
+.fitreasons li{margin:4px 0;font-size:15px}
+.hero12 .card{border:none;background:transparent;padding:0;margin:0}
+.hero12 h3{margin-top:0}
+/* Personal role cards: one card per named person, with a single send CTA. */
+.pcards{margin:18px 0 0}
+.pclist{display:grid;gap:12px;margin-top:12px}
+.pcard{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
+.pcard-img{width:128px;height:128px;object-fit:cover;border-radius:12px;border:2px solid var(--line)}
+.pcard-head{font-size:22px;font-weight:800;margin:10px 0 2px}
+.pcard-sub{color:var(--muted);font-size:14px;margin:0 0 4px}
+.pcard-send{width:100%;margin-top:10px}
+.pcard .status{margin:8px 0 0}
+/* Billy 2026-09-26: shared group photo + who's-who above individual cards. */
+.pcard-group-img{width:180px;height:180px;object-fit:cover;border-radius:12px;border:2px solid var(--line);display:block;margin:0 auto}
+.pcard-whoswho{font-size:14px;color:var(--muted);text-align:center;margin:10px 0 14px;line-height:1.5}
+.pcard-nophoto{margin-bottom:12px}
+/* Billy 2026-09-26: "Try it on" face preview on personal cards.
+   Private by design: the photo never leaves the phone. */
+.pcard-tryon{width:100%;margin-top:8px}
+.tryon-ov{position:fixed;inset:0;z-index:1000;background:rgba(10,6,24,.94);display:flex;align-items:flex-start;justify-content:center;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tryon-card{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);padding:14px;width:100%;max-width:520px;text-align:center;margin:auto 0}
+.tryon-card h3{margin:0 0 4px;font-size:20px}
+.tryon-stage{position:relative;width:100%;border-radius:12px;overflow:hidden;border:2px solid var(--line);touch-action:none;margin:10px 0;background:var(--bg2)}
+.tryon-stage canvas{display:block;width:100%;height:auto}
+.tryon-privacy{font-size:13px;color:#7ddfa0;background:#1e3a2a;border:1px solid #2d5a3d;border-radius:8px;padding:8px 10px;margin:10px 0;text-align:left}
+.tryon-row{display:flex;gap:10px;margin-top:10px}
+.tryon-row .cta,.tryon-row .ghost{flex:1;min-height:52px;font-size:16px;padding:12px 16px}
+.tryon-slider{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin-top:10px}
+.tryon-slider input{flex:1;min-height:44px}
+.tryon-hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.tryon-nudge{font-size:14px;color:#ffd9a3;margin:10px 0 0;font-weight:700}
+.tryon-status{min-height:20px;font-size:14px;margin:8px 0 0}
+/* Fit refinement: a quiet results-screen follow-up, not a sixth question. */
+.fitref{margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2)}
+.fitref p{margin:0 0 8px;font-size:14px}
+.fitref .row{display:flex;gap:8px;flex-wrap:wrap}
+.fitref .row button.sel{border-color:var(--accent);color:var(--accent)}
+/* Pinpoint capture: optional "who exactly?" input on the hero. Zero question
+   tax: it never becomes a quiz question, it just boosts one idea to #1. */
+.pinpoint{margin:14px 0 4px;max-width:340px;margin-left:auto;margin-right:auto}
+.pinpoint-row{display:flex;gap:8px;align-items:stretch}.pinpoint-row input{flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;border:2px solid var(--line);border-radius:var(--radius);font-size:16px;font-family:inherit;background:var(--card);color:var(--ink)}.pinpoint-go{flex:0 0 auto;padding:0 16px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit}
+.pinpoint input:focus{outline:none;border-color:var(--accent)}
+.pinpoint-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.pinpoint-chips button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
+.pinpoint-chips button:hover{border-color:var(--accent);color:var(--accent)}
+/* Z5 tap targets: pinpoint chip buttons must clear 44x44px on touch. */
+.pinpoint-chips button{min-height:44px;min-width:44px;padding:10px 18px;box-sizing:border-box}
+.pinpoint-note{font-size:13px;color:var(--muted);margin:6px 0 0;min-height:18px}
+/* 2026-09-26 duel: lightweight 2-question recipient flow. Dark-theme cards
+   matching the site; tap targets clear 44px (Z5 rule). */
+.duel-hero-photo{width:100%;max-width:280px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;display:block;margin:12px auto}
+.duel-vs{display:flex;gap:10px;align-items:stretch;margin:16px 0}
+.duel-fighter{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center;min-width:0}
+.duel-fighter img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;display:block}
+.duel-fighter .who{font-size:12px;color:var(--muted);margin:8px 0 2px}
+.duel-fighter .what{font-weight:800;font-size:15px;line-height:1.3}
+.duel-vs-badge{align-self:center;font-size:22px;font-weight:900;color:var(--accent);flex:0 0 auto}
+.duel-verdict{background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:16px;margin:16px 0;font-size:16px}
+.duel-verdict .vlabel{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800;margin-bottom:6px}
+.duel-triple{font-size:14px;color:var(--muted);margin:8px 0 0}
+.duel-step{display:none}
+.duel-step.on{display:block}
+/* ================= Halloween Wrapped (2026-09-26) =================
+   Full-screen recap overlay: 4 slides (pick, answers, numbers, share).
+   All classes prefixed wr- to avoid collisions with quiz styles. */
+#wr-overlay{position:fixed;inset:0;z-index:1001;background:#0d0716;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#wr-overlay.open{display:block}
+.wr-app{width:100%;max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;overflow:hidden;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}
+.wr-dots{position:absolute;top:calc(14px + env(safe-area-inset-top));left:0;right:0;display:flex;gap:6px;padding:0 24px;z-index:5}
+.wr-dots i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.25)}
+.wr-dots i.done{background:#ffb020}
+.wr-close{position:absolute;top:calc(28px + env(safe-area-inset-top));right:16px;z-index:6;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;width:44px;height:44px;font-size:20px;line-height:1;cursor:pointer}
+.wr-slide{padding:80px 24px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;min-height:100vh;min-height:100dvh}
+@media (prefers-reduced-motion: no-preference){
+  .wr-slide{animation:wr-fadein .35s ease}
+  @keyframes wr-fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+}
+.wr-kicker{text-transform:uppercase;letter-spacing:2px;font-size:12px;opacity:.75;margin:0 0 10px;color:#fff}
+.wr-h1{font-size:40px;line-height:1.05;margin:0 0 12px;letter-spacing:-1px;color:#fff;font-weight:800}
+.wr-h1 .wr-accent{color:#ffb020}
+.wr-sub{font-size:17px;line-height:1.45;opacity:.85;margin:0 0 24px;color:#fff}
+.wr-btn{display:block;width:100%;border:0;border-radius:14px;background:#ffb020;color:#231303;font-size:18px;font-weight:700;padding:16px;margin-top:12px;cursor:pointer;font-family:inherit}
+.wr-btn.wr-ghost{background:rgba(255,255,255,.14);color:#fff;font-weight:600}
+.wr-btn:disabled{opacity:.5}
+.wr-stat{margin:0 0 18px}
+.wr-stat .wr-num{font-size:44px;font-weight:800;color:#ffb020;letter-spacing:-1px;line-height:1}
+.wr-stat .wr-lbl{font-size:15px;opacity:.85;margin-top:4px;line-height:1.4;color:#fff}
+.wr-ansrow{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.14);font-size:16px;color:#fff}
+.wr-ansrow .wr-q{opacity:.65}
+.wr-ansrow .wr-a{font-weight:700;text-align:right}
+.wr-badge{display:inline-block;background:rgba(255,176,32,.18);color:#ffb020;border:1px solid rgba(255,176,32,.5);border-radius:999px;font-size:13px;font-weight:700;padding:6px 12px;margin:0 0 14px}
+.wr-pickblurb{font-size:16px;line-height:1.5;opacity:.9;margin:0 0 10px;color:#fff}
+.wr-pickwhy{font-size:15px;line-height:1.5;opacity:.75;font-style:italic;margin:0 0 8px;color:#fff}
+.wr-tapnext{text-align:center;font-size:13px;opacity:.55;margin-top:20px;color:#fff}
+.wr-copied{text-align:center;font-size:14px;color:#ffb020;margin-top:12px}
+.wr-navrow{display:flex;gap:10px;margin-top:8px}
+.wr-navrow .wr-btn{margin-top:0}
+.wr-bg1{background:linear-gradient(160deg,#2b0f4d 0%,#0d0716 70%)}
+.wr-bg2{background:linear-gradient(160deg,#4d1500 0%,#1c0a02 70%)}
+.wr-bg3{background:linear-gradient(160deg,#0b3d2e 0%,#07120e 70%)}
+.wr-bg4{background:linear-gradient(160deg,#3d0b2a 0%,#14060f 70%)}
+.wr-bg5{background:linear-gradient(160deg,#1a2a6c 0%,#0a0d20 70%)}
+.wr-bg6{background:linear-gradient(160deg,#4d2b00 0%,#170e02 70%)}
+
+/* ============ STORYTIME (Billy 2026-09-28) ============
+   Costumes as bedtime stories: full-screen photo, an honest tale assembled
+   only from the bank's own fields (title/why/materials/time/cost), optional
+   read-aloud, 15s auto-advance. One screen, one job: watch, don't decide. */
+#s-storytime.on{display:block;position:fixed;inset:0;z-index:80;background:#0b0616}
+.st-stage{position:absolute;inset:0;overflow:hidden}
+.st-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.st-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,6,22,.55) 0%,rgba(11,6,22,0) 30%,rgba(11,6,22,0) 55%,rgba(11,6,22,.9) 100%)}
+.st-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;z-index:3}
+.st-x,.st-sound{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:20px;cursor:pointer;line-height:1}
+.st-sound[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.st-count{color:#fdf3e3;font-size:14px;opacity:.9;margin:0}
+.st-progress{position:absolute;top:calc(66px + env(safe-area-inset-top));left:14px;right:14px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden;z-index:3}
+.st-bar{height:100%;width:0;background:var(--accent)}
+.st-bar.run{transition:width 15s linear;width:100%}
+@media (prefers-reduced-motion: no-preference){
+  .st-photo.kb{animation:st-kb 26s ease-in-out infinite alternate}
+  .st-photo.kb-rev{animation:st-kb-rev 26s ease-in-out infinite alternate}
+  @keyframes st-kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-1.5%,1%)}}
+  @keyframes st-kb-rev{from{transform:scale(1.07) translate(1.5%,-1%)}to{transform:scale(1) translate(0,0)}}
+  .st-fireflies{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+  .st-fireflies i{position:absolute;bottom:-12px;border-radius:50%;background:#ffe9b8;opacity:0;box-shadow:0 0 8px 2px rgba(255,233,184,.65);animation:st-fly 16s linear infinite}
+  @keyframes st-fly{0%{transform:translate(0,0);opacity:0}10%{opacity:.8}75%{opacity:.45}100%{transform:translate(3vw,-52vh);opacity:0}}
+  .st-bar.run{box-shadow:0 0 10px rgba(255,255,255,.4)}
+  .st-bottom.rise>:nth-child(-n+5){animation:st-rise .7s cubic-bezier(.2,.7,.3,1) both}
+  .st-bottom.rise>:nth-child(2){animation-delay:.07s}
+  .st-bottom.rise>:nth-child(3){animation-delay:.14s}
+  .st-bottom.rise>:nth-child(4){animation-delay:.21s}
+  .st-bottom.rise>:nth-child(5){animation-delay:.28s}
+  @keyframes st-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion: reduce){.st-fireflies{display:none}}
+.st-bottom{position:absolute;left:0;right:0;bottom:0;padding:18px 20px calc(20px + env(safe-area-inset-bottom));color:#fdf3e3;z-index:3}
+.st-kicker{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.st-title{margin:0 0 8px;font-size:30px;line-height:1.15;color:#fdf3e3}
+.st-tale{margin:0 0 8px;font-size:16px;line-height:1.55;color:#fdf3e3;max-width:34em;white-space:pre-line;max-height:32vh;overflow-y:auto;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(#000 88%,transparent);mask-image:linear-gradient(#000 88%,transparent)}
+.st-meta{margin:0 0 14px;font-size:14px;color:var(--muted)}
+.st-actions{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.st-prev,.st-next{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:22px;cursor:pointer;line-height:1}
+.st-play{flex:1;max-width:220px;height:52px;border-radius:999px;border:none;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;cursor:pointer}
+.st-build{display:inline-block;color:#fdf3e3;font-weight:700;font-size:16px;text-decoration:underline;text-underline-offset:4px}
+.st-channels{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,6,22,.94);padding:24px;z-index:4}
+.st-channels[hidden]{display:none}
+.st-channels h2{color:#fdf3e3;margin:0 0 6px;font-size:26px}
+.st-channels p{color:var(--muted);margin:0 0 10px;font-size:15px;text-align:center;max-width:26em}
+.st-chan{width:min(320px,84vw);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-weight:700;cursor:pointer;text-align:left}
+.st-chan small{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
+.st-chan:hover{border-color:var(--accent)}
+@media (min-width:900px){.st-title{font-size:40px}.st-bottom{padding:28px 48px calc(28px + env(safe-area-inset-bottom))}.st-tale{font-size:18px}}
+
+#spin-panel.spin-reveal{animation:fadein .3s ease-out}</style>
+</head>
+<body>
+<main class="wrap">
+  <!-- Static hero stand-in: same photo + title the results page shows above the panel -->
+  <section class="card hero-standin">
+    <img src="https://pickmycostume.com/images/og/neon-demon-hunter.jpg" alt="Neon Demon Hunter costume" style="width:100%;border-radius:12px">
+    <h2>Neon Demon Hunter</h2>
+    <p class="status">You picked this costume.</p>
+  </section>
+  <div class="plan-panel"><div><p class="status">Going as Neon Demon Hunter? Tell your people.</p><div style="display: flex; flex-direction: column; gap: 8px; margin: 10px 0px 4px;"><button type="button" class="cta">Tell my people</button></div><p class="status"></p><details class="share-preview"><summary>Preview text</summary><div><textarea class="promptbox" readonly="" aria-label="Share text preview" style="width: 100%; min-height: 88px;"></textarea><button type="button" class="ghostbtn">Copy text</button></div></details><div class="row" style="margin-top: 8px;"><button type="button" class="ghost" style="width: 100%;">Pick for a friend</button></div></div><details class="keep-building"><summary class="textlink" style="cursor: pointer; display: inline-block; font-weight: 700; margin: 14px 0px 4px;">Keep building your costume</summary><div class="plan-build"><p class="status">Now build it.</p><button type="button" class="ghost">Add to my calendar</button><button type="button" class="ghost">Check against your closet</button><div><button type="button" class="ghost" style="margin-top: 0px;">Email me the instructions</button><div style="display: none; margin-top: 10px;"><div style="display: flex; gap: 8px;"><input type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Email address" style="flex: 1; min-height: 56px; min-width: 0; padding: 14px 16px; font-size: 17px; border-radius: var(--radius); border: 2px solid #7a5fc4; background: rgba(255, 255, 255, 0.05); font-family: inherit;"><button type="button" style="min-height: 56px; padding: 14px 22px; font-size: 17px; font-weight: 700; border-radius: var(--radius); border: 0px; color: rgb(35, 19, 3); cursor: pointer; font-family: inherit;">Send</button></div><div style="margin-top: 8px; font-size: 13px; opacity: 0.75;">We'll only use this to send the instructions.</div></div></div></div><div class="ai-plan"><p class="status">Step-by-step AI plan</p><p class="status">Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.</p><button type="button" style="background: none; border: 0px; padding: 0px; margin: 2px 0px 0px; text-decoration: underline; font-size: 13px; cursor: pointer; font-family: inherit; min-height: 0;">Preview prompt</button><textarea class="promptbox" readonly="" style="display: none;"></textarea><div class="row" style="margin-top: 8px;"><button type="button" class="ghost">Copy AI prompt</button></div><p class="status"></p></div><div><div style="display: flex; flex-direction: column; gap: 8px; margin: 8px 0px 4px;"><button type="button" class="ghost">Save the image</button></div><div style="display: flex; flex-direction: column; gap: 8px; margin: 8px 0px 4px;"><button type="button" class="ghost" style="width: 100%;">Pin it on Pinterest</button></div></div></details></div>
+  <p class="status" style="margin-top:24px">QA fixture: panel markup and CSS are production-identical; hero is a static stand-in.</p>
+</main>
+</body>
+</html>
