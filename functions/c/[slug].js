@@ -678,7 +678,7 @@ export function onRequest(context) {
     _triple +
     _fit +
     "<p class=\"lede\">" + blurb + "</p>" +
-    "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" +
+    ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<img src=\"" + img + "\" alt=\"" + title + " costume idea\">" +
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
