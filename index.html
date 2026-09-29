@@ -826,6 +826,23 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .st-narr{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffd9a0;border:1px solid rgba(255,217,160,.5);border-radius:999px;padding:3px 10px;margin:0 0 6px}
 .st-narr[hidden]{display:none}
 .st-bar.run{transition:width 15s linear;width:100%}
+@media (prefers-reduced-motion: no-preference){
+  .st-photo.kb{animation:st-kb 26s ease-in-out infinite alternate}
+  .st-photo.kb-rev{animation:st-kb-rev 26s ease-in-out infinite alternate}
+  @keyframes st-kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-1.5%,1%)}}
+  @keyframes st-kb-rev{from{transform:scale(1.07) translate(1.5%,-1%)}to{transform:scale(1) translate(0,0)}}
+  .st-fireflies{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+  .st-fireflies i{position:absolute;bottom:-12px;border-radius:50%;background:#ffe9b8;opacity:0;box-shadow:0 0 8px 2px rgba(255,233,184,.65);animation:st-fly 16s linear infinite}
+  @keyframes st-fly{0%{transform:translate(0,0);opacity:0}10%{opacity:.8}75%{opacity:.45}100%{transform:translate(3vw,-52vh);opacity:0}}
+  .st-bar.run{box-shadow:0 0 10px rgba(255,255,255,.4)}
+  .st-bottom.rise>:nth-child(-n+5){animation:st-rise .7s cubic-bezier(.2,.7,.3,1) both}
+  .st-bottom.rise>:nth-child(2){animation-delay:.07s}
+  .st-bottom.rise>:nth-child(3){animation-delay:.14s}
+  .st-bottom.rise>:nth-child(4){animation-delay:.21s}
+  .st-bottom.rise>:nth-child(5){animation-delay:.28s}
+  @keyframes st-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion: reduce){.st-fireflies{display:none}}
 .st-bottom{position:absolute;left:0;right:0;bottom:0;padding:18px 20px calc(20px + env(safe-area-inset-bottom));color:#fdf3e3;z-index:3}
 .st-kicker{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .st-title{margin:0 0 8px;font-size:30px;line-height:1.15;color:#fdf3e3}
@@ -1293,13 +1310,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <div class="st-stage">
         <img class="st-photo" id="st-photo" alt="">
         <div class="st-shade" aria-hidden="true"></div>
+        <div class="st-fireflies" aria-hidden="true"><i style="left:8%;width:5px;height:5px;animation-duration:15s"></i><i style="left:22%;width:4px;height:4px;animation-duration:19s;animation-delay:-6s"></i><i style="left:41%;width:6px;height:6px;animation-duration:14s;animation-delay:-3s"></i><i style="left:58%;width:4px;height:4px;animation-duration:21s;animation-delay:-11s"></i><i style="left:73%;width:5px;height:5px;animation-duration:17s;animation-delay:-8s"></i><i style="left:86%;width:4px;height:4px;animation-duration:13s;animation-delay:-5s"></i><i style="left:94%;width:6px;height:6px;animation-duration:23s;animation-delay:-14s"></i></div>
         <div class="st-top">
           <button class="st-x" id="st-close" type="button" aria-label="Close storytime">&times;</button>
           <p class="st-count" id="st-count" aria-live="polite"></p>
           <button class="st-sound" id="st-sound" type="button" aria-label="Read the story aloud" aria-pressed="false">&#128266;</button>
         </div>
         <div class="st-progress" aria-hidden="true"><div class="st-bar" id="st-bar"></div></div>
-        <div class="st-bottom">
+        <div class="st-bottom" id="st-bottom">
           <p class="st-kicker" id="st-kicker">Storytime</p>
           <p class="st-narr" id="st-narr" hidden>Narrated tale</p>
           <h2 class="st-title" id="st-title"></h2>
@@ -13181,6 +13199,7 @@ function shareLandingHeadline(idea, search){
   var order = [], idx = 0, timer = null, playing = true, speakOn = false, started = false;
   var currentId = "all", currentLabel = "Storytime";
   var reduceMotion = false;
+  var kbFlip = false;
   try { reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){}
 
   /* Billy 2026-09-29: Storytime voiceover pilot. Ten hand-written tales with
@@ -13328,6 +13347,16 @@ function shareLandingHeadline(idea, search){
     bar.classList.remove("run");
     void bar.offsetWidth;
     if (playing && !reduceMotion) bar.classList.add("run");
+    var ph = $("st-photo");
+    ph.classList.remove("kb"); ph.classList.remove("kb-rev");
+    void ph.offsetWidth;
+    var bot = $("st-bottom");
+    bot.classList.remove("rise");
+    void bot.offsetWidth;
+    if (!reduceMotion){
+      ph.classList.add(kbFlip ? "kb-rev" : "kb"); kbFlip = !kbFlip;
+      bot.classList.add("rise");
+    }
     speakTale(tale, idea);
     try { var nx = order[(idx+1)%order.length]; var im = new Image(); im.src = "photos/" + nx.id + ".webp"; } catch(e){}
     Analytics.track("storytime_slide", {n: idx+1, costume: idea.id, channel: currentId, narrated: isNarrated(idea)});
