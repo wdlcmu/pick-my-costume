@@ -13084,12 +13084,36 @@ function shareLandingHeadline(idea, search){
   }
 
   function stopSpeak(){ try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch(e){} }
+  function pickVoice(){
+    try {
+      var synth = window.speechSynthesis;
+      if (!synth || !synth.getVoices) return null;
+      var vs = synth.getVoices().filter(function(v){ return v && /^en([-_]|$)/i.test(v.lang || ""); });
+      if (!vs.length) return null;
+      function score(v){
+        var n = ((v.name || "") + " " + (v.voiceURI || "")).toLowerCase();
+        var s = 0;
+        if (n.indexOf("siri") > -1) s += 4;
+        if (n.indexOf("natural") > -1 || n.indexOf("neural") > -1) s += 3;
+        if (n.indexOf("enhanced") > -1 || n.indexOf("premium") > -1) s += 2;
+        if (v.localService) s += 1;
+        if (/^en[-_]us/i.test(v.lang || "")) s += 1;
+        if (n.indexOf("compact") > -1) s -= 3;
+        if (n.indexOf("robot") > -1) s -= 5;
+        return s;
+      }
+      vs.sort(function(a, b){ return score(b) - score(a); });
+      return vs[0];
+    } catch(e){ return null; }
+  }
   function speak(text){
     stopSpeak();
     if (!speakOn) return;
     try {
       var u = new SpeechSynthesisUtterance(text);
       u.rate = 0.95;
+      var v = pickVoice();
+      if (v) u.voice = v;
       window.speechSynthesis.speak(u);
     } catch(e){}
   }
