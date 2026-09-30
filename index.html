@@ -8452,8 +8452,7 @@ function buildAnswerChips(){
   return wrap;
 }
 /* ================= WARM vs COLD (2026-09-27) =================
-   Many visitors arrive already knowing a costume ("my daughter says Minnie
-   Mouse") instead of cold ("no idea"). btn-start opens this one-tap fork
+   Many visitors arrive already knowing a costume ("my daughter says witch" instead of cold ("no idea"). btn-start opens this one-tap fork
    first. The cold path is untouched (renderQ exactly as before). The warm
    path works AROUND the decided costume: who pairs with it, how to level it
    up at home, and a make-tonight backup if the package does not arrive.
@@ -8491,14 +8490,14 @@ function warmQuizChrome(title, hint){
 }
 function renderWarmCapture(){
   WARM = { name: "", wearer: null, anchor: null, step: "capture" };
-  var box = warmQuizChrome("What is the costume?", "Type the character or costume name. Minnie Mouse, dinosaur, ghost, anything.");
+  var box = warmQuizChrome("What is the costume?", "Type the character or costume name. witch, dinosaur, ghost, anything.");
   var prow = document.createElement("div");
   prow.className = "pinpoint"; prow.style.marginTop = "4px";
   var row = document.createElement("div");
   row.className = "pinpoint-row";
   var inp = document.createElement("input");
   inp.type = "text"; inp.id = "warm-input"; inp.maxLength = 60;
-  inp.placeholder = "e.g. Minnie Mouse"; inp.autocomplete = "off";
+  inp.placeholder = "e.g. witch"; inp.autocomplete = "off";
   inp.setAttribute("aria-label", "Costume name");
   row.appendChild(inp); prow.appendChild(row); box.appendChild(prow);
   var whoLab = document.createElement("p");
@@ -13168,7 +13167,7 @@ function fallbackCopy(text, done){
    pre-filtered to that term through the full search intelligence
    (parseSearch: aliases + attribute filters), with the term editable in the
    shelf search box. The typed hero input keeps pinpoint name resolution. */
-var HERO_SEARCH_CHIPS = ["Dinosaur","cheap","couples","witch","tonight"];
+var HERO_SEARCH_CHIPS = ["vampire","couples","cheap","Dinosaur","tonight"];
 function renderPinpointChips(){
   var box = $("pinpoint-chips");
   if (!box || box.children.length) return;
