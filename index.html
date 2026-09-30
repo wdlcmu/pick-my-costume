@@ -635,6 +635,7 @@ button.lightsheet{color:#241a38;}
 .card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
 .card .pick-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.75}
 .status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px;overflow-wrap:anywhere}
+p.status:empty{display:none}
 .linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
 .promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:16px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
 /* After a successful share, the AI plan section gets a brief highlight so it
@@ -4105,6 +4106,8 @@ function buildInstructions(idea, opts){
    per-person plans via buildCastPanel. */
 function buildInlinePlan(idea){
   var box = document.createElement("div");
+  /* 2026-09-30 (share-block spec): scroll target for "How to make it \u2192". */
+  box.id = "build-guide";
   box.className = "howto howto-open plan-inline";
   /* E17 lesson: taps inside the pick card must not re-run doPick. */
   if (box.addEventListener) box.addEventListener("click", function(e){ e.stopPropagation(); });
@@ -4157,6 +4160,20 @@ function buildInlinePlan(idea){
   });
   body.appendChild(ol);
   box.appendChild(body);
+  /* 2026-09-30 (share-block spec): the AI plan left the share block; a quiet
+     text link at the end of the build guide opens it in place. Event name
+     "browse_ai_prompt_copied" is the existing event used for the identical
+     showPromptPreview(div, buildIdeaPrompt(idea), ...) pattern on browse
+     cards (line 10421). The link hides after one tap: one plan per guide. */
+  var aiLink = document.createElement("button");
+  aiLink.type = "button"; aiLink.className = "textlink"; aiLink.textContent = "Want a custom plan?";
+  aiLink.onclick = function(){
+    var d = document.createElement("div");
+    box.appendChild(d);
+    showPromptPreview(d, buildIdeaPrompt(idea), "browse_ai_prompt_copied", true, null, "Custom AI plan");
+    aiLink.style.display = "none";
+  };
+  box.appendChild(aiLink);
   return box;
 }
 /* ================= SHAREABLE RESULT CARD =================
@@ -11216,9 +11233,13 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
   }
   var keepBuilding = document.createElement("details");
   keepBuilding.className = "keep-building";
+  /* 2026-09-30 (share-block spec): after a share, open the "Keep building your
+     costume" disclosure. The AI plan left this block (it now lives as a "Want a
+     custom plan?" link inside the build guide), so the revealAiPlan scroll is
+     dropped here. revealAiPlan itself stays: still called by the cast flow
+     (line ~12893) and the personal-card share (line ~13003). */
   addCopyShareRow(shareBox, idea, null, null, function(){
     try { keepBuilding.open = true; } catch(_){}
-    revealAiPlan(aiPlanBox);
   }, false, false, true);
   var kbSum = document.createElement("summary");
   kbSum.className = "textlink";
@@ -11256,9 +11277,7 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
     buildBox.appendChild(emWrap);
   }
   keepBuilding.appendChild(buildBox);
-  /* AI step-by-step plan follows the actions, inside the disclosure. */
-  keepBuilding.appendChild(aiPlanBox);
-  showPromptPreview(aiPlanBox, buildIdeaPrompt(idea), copyEvent, true, null, "Step-by-step AI plan");
+
   /* Save-the-image / Pin-it moved out of the share block (Victory Lap). */
   keepBuilding.appendChild(buildMediaShareRows(idea));
   planBox.appendChild(keepBuilding);
@@ -11275,9 +11294,9 @@ function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   var label = document.createElement("p"); label.className = "status";
   /* 2026-09-24: "Plan this costume" + helper, not "Get your AI costume plan".
      2026-09-28 consolidation: one plan label everywhere, matching the card CTA.
-     2026-09-28 plan-first: inside the expanded plan panel the block is retitled
-     via the optional title param ("Step-by-step AI plan"); every other caller
-     keeps the default. */
+     2026-09-30 share-block spec: the build guide's "Want a custom plan?" link
+     retitles the block via the optional title param ("Custom AI plan"); every
+     other caller keeps the default. */
   label.textContent = title || "Plan this costume";
   var helper = document.createElement("p"); helper.className = "status";
   helper.textContent = "Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.";
@@ -11467,6 +11486,10 @@ function shareImage(idea, onDone){
    plan-first panel. One builder so both call sites stay identical. */
 function buildMediaShareRows(idea){
   var wrap = document.createElement("div");
+  /* 2026-09-30 (share-block spec): on phones the native share sheet already
+     carries Save Image + Pinterest, so Download/Pinterest stay as a desktop
+     fallback only. No caller changes needed. */
+  if (typeof navigator !== "undefined" && navigator.share) return wrap;
   var imgRow = document.createElement("div");
   imgRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
   var imgBtn = document.createElement("button");
@@ -11529,19 +11552,35 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
       buildText: (typeof makeText === "function") ? function(sid){ return makeText(sid); } : null,
       onShared: function(){ if (!sharedOnce){ sharedOnce = true; cur = mint(); if (ta) ta.value = cur.text; } if (onShared) onShared(); }});
   }
-  function primaryBtn(){
-    var b = document.createElement("button");
-    b.type = "button"; b.className = quiet ? "ghost" : "cta"; b.textContent = "Share my costume";
-    b.onclick = function(){ share("generic", b, statusEl); };
-    return b;
-  }
+  /* 2026-09-30 (share-block spec): the plan comes first. CAST-PANEL GUARD:
+     when quiet is true the block is untouched (ghost "Share my costume").
+     Otherwise the primary is "How to make it \u2192" (orange .cta,
+     --btn-bg #ff8c1a) scrolling to the inline build guide; the secondary
+     outlined "Share" (.ghost) runs the existing native-sheet/clipboard
+     share flow (share("generic", b, statusEl) -- reused, not rewritten). */
   var lab = document.createElement("p"); lab.className = "status";
   lab.textContent = "Going as " + idea.title + "? Share it.";
   container.appendChild(lab);
-  btn = primaryBtn();
   var primaryRow = document.createElement("div");
   primaryRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:10px 0 4px";
-  primaryRow.appendChild(btn);
+  if (quiet){
+    var qb = document.createElement("button");
+    qb.type = "button"; qb.className = "ghost"; qb.textContent = "Share my costume";
+    qb.onclick = function(){ share("generic", qb, statusEl); };
+    primaryRow.appendChild(qb);
+  } else {
+    var hb = document.createElement("button");
+    hb.type = "button"; hb.className = "cta"; hb.textContent = "How to make it \u2192";
+    hb.onclick = function(){
+      var t = document.getElementById("build-guide");
+      if (t && t.scrollIntoView) t.scrollIntoView({behavior: scrollBehavior(), block: "start"});
+    };
+    primaryRow.appendChild(hb);
+    var sb = document.createElement("button");
+    sb.type = "button"; sb.className = "ghost"; sb.textContent = "Share";
+    sb.onclick = function(){ share("generic", sb, statusEl); };
+    primaryRow.appendChild(sb);
+  }
   container.appendChild(primaryRow);
   statusEl = document.createElement("p"); statusEl.className = "status";
   container.appendChild(statusEl);
@@ -11606,15 +11645,28 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
   det.appendChild(detBody);
   container.appendChild(det);
   } /* end if (!noPreview) */
-  /* Secondary: gift flow, Partner Split, save image. */
-  var giftRow = document.createElement("div");
-  giftRow.className = "row"; giftRow.style.marginTop = "8px";
-  var bgift = document.createElement("button");
-  bgift.type = "button"; bgift.className = "ghost"; bgift.style.width = "100%";
-  bgift.textContent = "Pick for a friend";
-  bgift.onclick = function(){ openGiftFlow(); };
-  giftRow.appendChild(bgift);
-  container.appendChild(giftRow);
+  /* 2026-09-30 (share-block spec): "Pick for a friend" becomes a quiet text
+     link that restarts the quiz through the EXISTING #btn-restart warm-restart
+     handler (line ~13829: state reset, warmMode preserved, pmc_pick_v1 /
+     pmc_quiz_v1 cleared, quiz_started tracked with is_retake=true, renderQ()
+     re-renders Q1 and re-opens the quiz sheet). No new flow invented.
+     Untouched when quiet (cast flow keeps the gift button). */
+  if (!quiet){
+    var rl = document.createElement("button");
+    rl.type = "button"; rl.className = "textlink";
+    rl.textContent = "Picking for someone else? Start over";
+    rl.onclick = function(){ var rb = $("btn-restart"); if (rb && rb.onclick) rb.onclick(); };
+    container.appendChild(rl);
+  } else {
+    var giftRow = document.createElement("div");
+    giftRow.className = "row"; giftRow.style.marginTop = "8px";
+    var bgift = document.createElement("button");
+    bgift.type = "button"; bgift.className = "ghost"; bgift.style.width = "100%";
+    bgift.textContent = "Pick for a friend";
+    bgift.onclick = function(){ openGiftFlow(); };
+    giftRow.appendChild(bgift);
+    container.appendChild(giftRow);
+  }
   if (typeof buildPartnerSplitLink === "function"){
     var splitRow = document.createElement("div");
     splitRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
