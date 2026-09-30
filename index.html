@@ -1767,7 +1767,11 @@ var UNIT_REGISTRY = {
      (Plan + Share). Built dynamically by buildBrowseDetailCard, so they are
      instrumented via UnitTrack.instrumentUnit, not instrumentAll. */
   "detail-materials":  {type: "panel", container: "detail-mats"},
-  "detail-actions":    {type: "bar", container: "detail-actions"}
+  "detail-actions":    {type: "bar", container: "detail-actions"},
+  /* 2026-09-30 (Billy, Claude R2): "Pairs well with" rail on the detail
+     page -- curated same-theme solo/couple/family versions. Built dynamically
+     by buildBrowseDetailCard, so instrumented via UnitTrack.instrumentUnit. */
+  "pairs-well":        {type: "rail", container: "pairs-well"}
 };
 var UnitTrack = (function(){
   "use strict";
@@ -10592,6 +10596,99 @@ function moreLikeThis(idea){
   return cands.slice(0, 4);
 }
 /* ==== end more-like-this data ==== */
+/* 2026-09-30 (Billy, Claude R2 "Pairs well with"): curated same-theme
+   versions of one costume idea (solo / couple / family / group), the way
+   Chasing Fireflies links its Girls/Boys/Adults products to each other.
+   Groups below are hand-picked: only pairings a human would defend. A wrong
+   link is worse than no row, so ideas with no confident relatives get no row.
+   idea id -> array of related idea ids, expanded from the groups. */
+var PAIRS_WELL_GROUPS = [
+  ["bumble-bee", "beekeeper-bee"],
+  ["web-slinger-kid", "web-hero-duo", "web-slinger-crew"],
+  ["vampire", "juke-joint-vampires"],
+  ["blue-heeler-pup", "blue-dog-family", "rescue-pups"],
+  ["mystery-crew", "mystery-teens"],
+  ["safari-photographer", "safari-zoo-crew"],
+  ["robot-ranger", "robot-crew"],
+  ["backyard-hero", "superhero-family", "hero-squad", "caped-duo"],
+  ["emerald-witch", "little-witch", "good-witch-bad-witch", "witchy-sisters"],
+  ["lost-tourist", "dino-tourist"],
+  ["raptor-ranger", "raptor-barista"],
+  ["pop-star", "moonwalk-star"],
+  ["wayfinder-princess", "fairy-tale-princesses", "prince-princess"],
+  ["neon-demon-hunter", "kpop-demon-huntresses"],
+  ["classic-ghost", "pixel-ghost"],
+  ["donut", "donut-coffee"],
+  ["sushi-roll", "sushi-soy"],
+  ["black-cat", "cat-mouse"],
+  ["goth-braids", "macabre-couple"],
+  ["baby-dino", "dinosaur-family", "dino-rangers", "dino-herd"],
+  ["garden-fairy", "tooth-fairy"],
+  ["office-couple", "zombie-coworker"],
+  ["banana", "fruit-salad"],
+  ["coffee-cup", "donut-coffee"]
+];
+var PAIRS_WELL = {};
+(function(){
+  var byId = {}, i;
+  for (i = 0; i < IDEAS.length; i++) byId[IDEAS[i].id] = 1;
+  PAIRS_WELL_GROUPS.forEach(function(g){
+    var valid = g.filter(function(id){ return byId[id]; });
+    valid.forEach(function(id){
+      var others = valid.filter(function(o){ return o !== id; });
+      PAIRS_WELL[id] = (PAIRS_WELL[id] || []).concat(others);
+    });
+  });
+  for (var k in PAIRS_WELL){
+    if (Object.prototype.hasOwnProperty.call(PAIRS_WELL, k)){
+      var seen = {}, out = [];
+      PAIRS_WELL[k].forEach(function(id){ if (!seen[id]){ seen[id] = 1; out.push(id); } });
+      PAIRS_WELL[k] = out.slice(0, 4);
+    }
+  }
+})();
+function pairsWellFor(idea){
+  var ids = PAIRS_WELL[idea.id];
+  if (!ids || !ids.length) return [];
+  var out = [], i, j, o;
+  for (i = 0; i < ids.length && out.length < 4; i++){
+    o = null;
+    for (j = 0; j < IDEAS.length; j++) if (IDEAS[j].id === ids[i]){ o = IDEAS[j]; break; }
+    if (o) out.push(o);
+  }
+  return out;
+}
+function buildPairsWellRow(idea){
+  var rel = pairsWellFor(idea);
+  if (!rel.length) return null;
+  var wrap = document.createElement("div");
+  wrap.id = "pairs-well";
+  wrap.className = "proofstrip";
+  var head = document.createElement("p");
+  head.className = "fine";
+  head.style.margin = "14px 0 6px";
+  head.textContent = "Pairs well with";
+  var row = document.createElement("div");
+  row.className = "proofrow";
+  rel.forEach(function(o){
+    var a = document.createElement("a");
+    a.href = "/c/" + o.id;
+    a.setAttribute("data-idea", o.id);
+    a.onclick = function(ev){ ev.preventDefault(); openIdeaDetail(o.id, "Why it's great", detailReturnTo); };
+    var img = document.createElement("img");
+    img.src = "photos/" + o.id + ".webp";
+    pmcSrcset(img, o.id, "128px");
+    img.alt = o.title + " costume";
+    img.loading = "lazy";
+    img.setAttribute("onerror", "this.style.display='none'");
+    var sp = document.createElement("span");
+    sp.textContent = o.title;
+    a.appendChild(img); a.appendChild(sp);
+    row.appendChild(a);
+  });
+  wrap.appendChild(head); wrap.appendChild(row);
+  return wrap;
+}
 function buildMoreLikeThisRail(idea){
   var rel = moreLikeThis(idea);
   if (!rel.length) return null;
@@ -10696,6 +10793,10 @@ function buildBrowseDetailCard(idea, whyHead){
   var _howtoB = buildInstructions(idea, {via: "browse_detail"});
   if (_howtoB) right.appendChild(_howtoB);
   right.appendChild(row); right.appendChild(hint); right.appendChild(note); right.appendChild(planBox); right.appendChild(status);
+  /* 2026-09-30 (Billy, Claude R2): curated "Pairs well with" row sits above
+     the algorithmic rail. Quiz result cards are untouched (item-9 minimal). */
+  var _pairs = buildPairsWellRow(idea);
+  if (_pairs) right.appendChild(_pairs);
   var _mlt = buildMoreLikeThisRail(idea);
   if (_mlt) right.appendChild(_mlt); /* "More like this" rail closes the detail page */
   card.appendChild(left); card.appendChild(right);
@@ -10798,6 +10899,8 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   /* 2026-09-30: instrument the dynamic detail units (tile panel + action row). */
   try { UnitTrack.instrumentUnit("detail-materials"); } catch(_du1){}
   try { UnitTrack.instrumentUnit("detail-actions"); } catch(_du2){}
+  /* 2026-09-30 (Billy, Claude R2): the curated "Pairs well with" rail. */
+  try { UnitTrack.instrumentUnit("pairs-well"); } catch(_du3){}
   /* 2026-09-28: the planner / closet / email CTAs moved INTO the
      "Plan this costume" panel (mountPlanFirstPanel), one consistent flow:
      pick the costume, then build it. No more scattered buttons below the card. */
