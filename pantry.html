@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Costumes From Clothes You Already Have | Pick My Costume</title>
-<meta name="description" content="Tick what is already in your house and we will rank all 164 costume ideas by how little you still need. Updated September 2026.">
+<meta name="description" content="Costumes from clothes you already have. Tick what is in your house and we rank all 164 costume ideas by how little you still need. Updated for Halloween 2026.">
 <link rel="canonical" href="https://pickmycostume.com/pantry">
 <meta property="og:type" content="website">
 <meta property="og:title" content="What materials or clothes are already in your house? - Pick My Costume">
 <meta property="og:description" content="Tick what is already in your house and we will rank all 164 costume ideas by how little you still need.">
 <meta property="og:url" content="https://pickmycostume.com/pantry">
-<meta property="og:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
-<meta property="og:image:secure_url" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
+<meta property="og:image" content="https://pickmycostume.com/images/og/classic-ghost.jpg">
+<meta property="og:image:secure_url" content="https://pickmycostume.com/images/og/classic-ghost.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
+<meta name="twitter:image" content="https://pickmycostume.com/images/og/classic-ghost.jpg">
 <style>
   :root{
     --bg:#14101f; --card:#1e1830; --card2:#2a2145; --line:#352a55;
@@ -61,7 +61,7 @@
      Tighten tile/tag spacing on phones so the pill fits inside the tile. */
   @media (max-width:480px){
     .check{padding:10px;gap:8px}
-    .check .tag{padding:2px 5px}
+    .check .tag{padding:2px 5px;white-space:normal}
   }
   .check input{appearance:none;-webkit-appearance:none;flex:0 0 22px;width:22px;height:22px;margin:0;
     border:2px solid var(--muted);border-radius:7px;background:transparent;cursor:pointer;position:relative}
@@ -187,8 +187,15 @@
   .foot{margin-top:28px;color:var(--muted);font-size:13px;line-height:1.6;text-align:center}
   /* 2026-09-27 red-team: footer links were bare inline text (~21px tap rows).
      12px vertical padding makes the classroom-planner link a 44px target. */
-  .foot a{display:inline-block;padding:12px 6px}
+  .foot a{display:inline-block;padding:12px 6px;color:var(--accent)}
   .empty{color:var(--muted);font-size:14px;text-align:center;padding:18px 0}
+  .jumprow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;margin:6px 0 0}
+  .jumprow a{color:var(--accent);font-weight:700}
+  .basics-line{font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 6px}
+  .tphotos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 4px}
+  .tphoto{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--ink)}
+  .tphoto img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--card2)}
+  .tphoto span{display:block;font-size:12.5px;font-weight:700;padding:8px 10px;line-height:1.3}
   /* 2026-09-26 pantry deep-link: focused checklist card for one costume.
      Sits at the top when arriving via ?for=<idea-id>. Missing rows are
      tappable (44px) and tick the matching supply in the main list. */
@@ -246,9 +253,9 @@
     <a class="brand" href="/">Pick My <span>Costume</span></a>
   </div>
 
-  <h1>Here&apos;s what you can probably make tonight.</h1>
+  <h1>What can you make tonight from stuff already in your house?</h1>
   <p class="sub">We assume your home has the basics, so these costumes lead. Tick anything else you own below and the list reshuffles around your stuff.</p>
-  <p class="fresh">Updated September 2026</p>
+  <p class="fresh">Updated for Halloween 2026</p>
 
   <!-- 2026-09-26 pantry deep-link: arriving from a costume detail's
        "Check my pantry" (?for=<idea-id>) renders a focused checklist card
@@ -258,13 +265,14 @@
 
   <!-- 2026-09-28: the assumed-basics list collapses behind one tap --
        the page leads with costumes, not a wall of text. -->
-  <details class="staple-fold"><summary>What we assume you have</summary>
-  <p class="staple-note">Untick any you don't actually have. Everything else only counts if you tick it.</p>
-  <div class="mchips" id="staplechips"></div></details>
+  <p class="basics-line">We assume you have: <span id="basicsline"></span> &mdash; untick any you don&rsquo;t actually have in the grid below.</p>
   <!-- 2026-09-25: the opening leads with the alive number, not a dead
        "0 you can make tonight". With just the assumed basics, the count is
        already real the moment the page loads. -->
   <div class="stat" id="stat" role="status" aria-live="polite" style="margin:12px 0"></div>
+  <p class="jumprow"><a href="#supply-search">Tick what&apos;s in your house ↓</a>
+    <button class="btn btn-ghost" id="sharesheet" type="button">Send this list to your partner</button></p>
+  <p class="matchnote" id="sharestatus" role="status"></p>
   <div class="challenge" id="challenge-banner" hidden></div>
   <div class="challenge" id="ask-banner" hidden></div>
 
@@ -272,10 +280,11 @@
   <p class="tier-sub">Zero extra shopping. Every requirement is something you ticked or we assumed.</p>
   <div id="tier0"></div>
 
-  <div class="reshead"><h2>Almost: 1 or 2 things away</h2><span>the gap is named</span></div>
-  <p class="tier-sub">One quick grab and these are yours. We never call anything missing 3+ things "almost".</p>
+  <div class="reshead"><h2>Almost: 1 or 2 things away</h2><span>one quick grab</span></div>
+  <p class="tier-sub">One quick grab and these are yours.</p>
   <div id="tier1"></div>
 
+  <div id="tonight-photos"></div>
   <div class="reshead"><h2>Own more than the basics?</h2><span>fine-tune the list</span></div>
   <p class="tier-sub">Tick anything else already in your house and the costumes above reshuffle around your stuff.</p>
   <div class="searchrow">
@@ -283,6 +292,7 @@
     <p class="matchnote" id="matchnote" role="status"></p>
   </div>
 
+  <p id="tickpulse" class="matchnote" role="status"></p>
   <div id="groups"></div>
 
   <div class="actions">
@@ -347,13 +357,10 @@ function track(name, props){
 })();
 const STAPLES = DATA.pantry.filter(p => p.staple).map(p => p.id);
 let ticked;
-/* 2026-09-28: the assumed-basics render as emoji chips instead of a
-   text paragraph. Runs at parse time; emoChar/supplyLabel are hoisted. */
+/* 2026-09-30 Tab 4 A1: the assumed basics read as one line, not a grid. */
 try {
-  const sc = document.getElementById('staplechips');
-  if (sc) sc.innerHTML = STAPLES.map(id =>
-    '<span class="mchip"><span class="memo" aria-hidden="true">' + emoChar(id) + '</span>' +
-    esc(lc1(supplyLabel(id))) + '</span>').join('');
+  const bl = document.getElementById('basicsline');
+  if (bl) bl.textContent = STAPLES.map(id => lc1(supplyLabel(id))).join(', ') + '.';
 } catch (e) {}
 /* 2026-09-26 challenge rematch: when the page loads from a ?kit= dare link,
    CH holds the challenger's kit so the recipient can answer the dare back. */
@@ -1126,7 +1133,7 @@ function renderSupplyAsk(t1){
   box.innerHTML =
     '<h3>Only ' + (n === 1 ? 'one thing' : 'two things') + ' standing between you and ' +
     esc(r.it.title) + '?</h3>' +
-    '<p>You need: <b>' + esc(r.missing.join(', ')) + '</b>. Ask the house group chat. ' +
+    '<p>You need: <b>' + esc(r.missing.map(s => s.replace(/\s*\((own|make|buy)\)$/, '')).join(', ')) + '</b>. Ask the house group chat. ' +
     'Someone might have ' + (n === 1 ? 'it' : 'them') + ' to lend.</p>' +
     '<div class="pvrow"><button class="btn" id="sask-btn" type="button">Ask the group chat</button></div>' +
     '<div id="sask-panel" style="display:none;margin-top:10px"></div>';
@@ -1460,7 +1467,7 @@ function normUnlock(t){
   return s;
 }
 
-function cardHtml(r, i){
+function cardHtml(r, i, firstEager){
   /* typeof-guard: some test harnesses eval this function in isolation. */
   const viaS = (typeof VIA_S !== 'undefined' && VIA_S) ? '&s=' + VIA_S : '';
   const cls = r.missing.length === 0 ? ' zero' : (r.missing.length <= 2 ? ' almost' : '');
@@ -1492,8 +1499,11 @@ function cardHtml(r, i){
     const lbl = (typeof supplyLabel !== 'undefined') ? supplyLabel(repId(m)) : repId(m);
     return (typeof lc1 !== 'undefined') ? lc1(lbl) : lbl;
   }).filter((v, i, a) => a.indexOf(v) === i);
-  const likelyHtml = likely.length
-    ? '<p class="likely">You likely have: <b>' + esc(likely.join(', ')) + '</b></p>' : '';
+  /* 2026-09-30 Tab 6 fix 4: name the gap when it is 1-2 things; fix 11: strip (own)/(make)/(buy) tags. */
+  const needNames = (r.missing || []).map(s => s.replace(/\s*\((own|make|buy)\)$/, '').replace(/^./, c => c.toLowerCase()));
+  const likelyHtml = (r.missing.length === 1 || r.missing.length === 2)
+    ? '<p class="likely">Just need: <b>' + esc(needNames.join(', ')) + '</b></p>'
+    : (likely.length ? '<p class="likely">You likely have: <b>' + esc(likely.join(', ')) + '</b></p>' : '');
   /* 2026-09-28: visual-first -- the full have/miss checklist
      collapses into one tap so the card leads with the costume photo. */
   const needsHtml = rows
@@ -1501,7 +1511,9 @@ function cardHtml(r, i){
       '<div class="mtiles">' + rows + '</div></details>' : '';
   return '<div class="card' + cls + '">' +
     '<div class="tile"><span class="temo" aria-hidden="true">' + ideaEmoji(r.it.id) + '</span>' +
-    '<img class="thumb" src="photos/' + r.it.id + '.webp" alt="" loading="lazy" onerror="this.remove()"></div>' +
+    '<img class="thumb" src="photos/' + r.it.id + '.webp" alt="' + esc(r.it.title) + '"' +
+    (firstEager && i === 0 ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"') +
+    ' onerror="this.remove()"></div>' +
     '<div class="cbody"><div class="rank">#' + (i + 1) + '</div>' +
     '<h3>' + esc(r.it.title) + '</h3>' + likelyHtml + needsHtml +
     '<a class="go" href="index.html?pick=' + r.it.id + viaS + '">How to make it</a></div></div>';
@@ -1660,6 +1672,9 @@ function renderFocus(){
   if (!window._phFv){ window._phFv = 1; track('pantry_focus_viewed', { idea_id: it.id, have_count: r.have, total_count: r.total }); }
 }
 
+/* 2026-09-30 Tab 6 fixes 1/6: Almost and Bigger build render capped; one tap reveals the full list.
+   Persisted across render() ticks. */
+let showAllT1 = false, showAllT2 = false;
 function render(){
   const rows = DATA.ideas.map(score);
   const byMissing = (a, b) =>
@@ -1686,7 +1701,30 @@ function render(){
   /* 2026-09-28: the reshuffle hint lives on the supply-picker section below;
      the stat stays one line of alive numbers. */
   stat.innerHTML = madeBit + almostBit;
+  /* 2026-09-30 Tab 6 fix 5: visible result right above the supply tiles. */
+  (function(){
+    const tp = document.getElementById('tickpulse');
+    if (!tp) return;
+    if (t0.length || t1.length) {
+      tp.innerHTML = 'Now: ' + t0.length + ' tonight · ' + t1.length + ' almost — <a href="#tier1">see them</a>';
+      tp.style.display = 'block';
+    } else { tp.innerHTML = ''; tp.style.display = 'none'; }
+  })();
 
+  /* 2026-09-30 Tab 4 A2: 3 make-tonight photo cards above the supply grid. */
+  (function(){
+    const host = document.getElementById('tonight-photos');
+    if (!host) return;
+    const viaS = (typeof VIA_S !== 'undefined' && VIA_S) ? '&s=' + VIA_S : '';
+    const top = t0.slice(0, 3);
+    if (!top.length) { host.innerHTML = ''; return; }
+    host.innerHTML =
+      '<div class="reshead"><h2>Ready to make tonight</h2><span>with what you have ticked</span></div>' +
+      '<div class="tphotos">' + top.map(r =>
+        '<a class="tphoto" href="index.html?pick=' + r.it.id + viaS + '">' +
+        '<img src="photos/' + r.it.id + '.webp" alt="' + esc(r.it.title) + '" loading="lazy" onerror="this.remove()">' +
+        '<span>' + esc(r.it.title) + '</span></a>').join('') + '</div>';
+  })();
   // unlock suggestions: single-item gaps only, ranked by costumes unlocked
   const unlockMap = {};
   rows.forEach(r => {
@@ -1704,11 +1742,11 @@ function render(){
   if (unlocks.length) {
     uh.hidden = false;
     uh.innerHTML = '<h2>One store trip away</h2>' +
-      '<p class="lede">Grab one of these and unlock a pile of costumes. ' +
+      '<p class="lede">Grab one of these to unlock more costumes. ' +
       '<button class="btn btn-ghost copylist" id="copylist" type="button">Copy shopping list</button></p>' +
       unlocks.map(u =>
         '<div class="unlock-row"><span class="n">Buy ' + esc(u.display.charAt(0).toLowerCase() + u.display.slice(1)) +
-        '</span><span>: unlocks <b>' + u.ideas.length + '</b> costume' + (u.ideas.length > 1 ? 's' : '') +
+        '</span><span> &middot; unlocks <b>' + u.ideas.length + '</b> costume' + (u.ideas.length > 1 ? 's' : '') +
         '<span class="w">' + esc(u.ideas.slice(0, 6).join(', ')) +
         (u.ideas.length > 6 ? ', +' + (u.ideas.length - 6) + ' more' : '') + '</span></span></div>'
       ).join('');
@@ -1720,14 +1758,34 @@ function render(){
        in 7 days. The underlying ?kit= challenge/rematch flow is untouched. */
   } else { uh.hidden = true; uh.innerHTML = ''; lastUnlocks = []; }
 
-  const put = (id, list, emptyMsg) => {
+  const put = (id, list, emptyMsg, firstEager) => {
     document.getElementById(id).innerHTML = list.length
-      ? list.map(cardHtml).join('')
+      ? list.map(function(r, i){ return cardHtml(r, i, firstEager); }).join('')
       : '<p class="empty">' + emptyMsg + '</p>';
   };
-  put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.');
-  put('tier1', t1, 'Nothing is just 1 or 2 things away right now.');
-  put('tier2', t2, '');
+  put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.', true);
+  put('tier1', showAllT1 ? t1 : t1.slice(0,3), 'Nothing is just 1 or 2 things away right now.');
+  /* 2026-09-30 Tab 6 fix 1: capped Almost gets a one-tap reveal. */
+  (function(){
+    const host = document.getElementById('tier1');
+    if (!host || showAllT1 || t1.length <= 3) return;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn btn-ghost'; b.style.margin = '10px auto'; b.style.display = 'block';
+    b.textContent = 'Show all ' + t1.length;
+    b.addEventListener('click', function(){ showAllT1 = true; render(); });
+    host.appendChild(b);
+  })();
+  put('tier2', showAllT2 ? t2 : t2.slice(0,8), '');
+  /* 2026-09-30 Tab 6 fix 6: capped Bigger build gets a one-tap reveal. */
+  (function(){
+    const host = document.getElementById('tier2');
+    if (!host || showAllT2 || t2.length <= 8) return;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn btn-ghost'; b.style.margin = '10px auto'; b.style.display = 'block';
+    b.textContent = 'Show all ' + t2.length + ' bigger builds';
+    b.addEventListener('click', function(){ showAllT2 = true; render(); });
+    host.appendChild(b);
+  })();
   /* 2026-09-26: engagement instrumentation. Counts only, once per
      page load: did the ranked list actually render for them. */
   if (!window._phRv) { window._phRv = 1; track('pantry_results_viewed', { ready_count: t0.length, almost_count: t1.length, ticked_count: ticked.size }); }
@@ -1986,6 +2044,25 @@ renderGroups();
 render();
 chopRenderIntro();
 document.getElementById('supply-search').addEventListener('input', applySearch);
+/* 2026-09-30 Tab 4 A4: share the pantry list with a partner. */
+(function(){
+  const btn = document.getElementById('sharesheet');
+  if (!btn) return;
+  const status = document.getElementById('sharestatus');
+  const url = 'https://pickmycostume.com/pantry';
+  const text = 'I ticked what we already own \u2014 see what costumes we can make tonight: ' + url;
+  const done = function(via){
+    if (status){ status.style.display = 'block'; status.textContent = 'Copied \u2014 send it to your partner.'; }
+    track('pantry_share', { via: via });
+  };
+  btn.addEventListener('click', function(){
+    if (navigator.share) {
+      navigator.share({ title: 'Pick My Costume \u2014 pantry', text: text, url: url }).catch(function(){});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ done('clipboard'); }, function(){});
+    } else { fallbackCopy(text, function(){ done('fallback'); }); }
+  });
+})();
 const _chInit = document.getElementById('challenge');
 if (_chInit) _chInit.addEventListener('click', onChallenge);
 </script>
