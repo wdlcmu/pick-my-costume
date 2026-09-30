@@ -4601,31 +4601,52 @@ function sendShare(idea, origin, opts){
       Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: og});
     if (opts.onShared){ try { opts.onShared(sid, via); } catch(_){} }
   }
+  /* 2026-09-29 QA-cycle-1 P0: some share prompts (e.g. the reveal-moment one)
+     pass statusEl: null. The button itself becomes the feedback surface so a
+     share can never silently re-arm with zero feedback. The label restore
+     only fires if nothing else (e.g. onShared) changed the button meanwhile. */
+  function btnFlash(msg){
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = msg;
+    setTimeout(function(){ if (btn.textContent === msg) btn.textContent = orig; }, 2500);
+  }
+  function say(msg){
+    if (msg && statusEl) statusEl.textContent = msg;
+    else if (msg) btnFlash(msg);
+  }
   function doneShare(ok, msg){
-    if (statusEl && msg) statusEl.textContent = msg;
+    say(msg);
     if (ok) credited("native"); /* credited() rearms: the share settled */
     else rearmShare(); /* dismissed sheet: a cancel, not a share */
+  }
+  /* 2026-09-29 QA-cycle-1 P0: a navigator.share REJECTION is not a cancel
+     unless the user dismissed the sheet (AbortError). Any other rejection
+     (desktop headless/broken share target) falls through to the clipboard
+     copy path instead of silently re-arming. */
+  function copyPath(){
+    doCopy(text, function(ok, msg){
+      if (ok){
+        Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: og, via: "clipboard"});
+        if (btn) btnFlash("Copied \u2713");
+        if (statusEl) statusEl.textContent = "Copied. Paste it into any message.";
+        credited("clipboard");
+      } else {
+        rearmShare();
+        say(msg || "Copy didn't work \u2014 long-press the text to copy it.");
+      }
+    });
   }
   if (navigator.share){
     try {
       navigator.share({title: "Pick My Costume", text: text}).then(
         function(){ doneShare(true, "Shared."); },
-        function(){ doneShare(false, ""); } /* dismissed sheet: a cancel, not a share */
+        function(err){ if (err && err.name === "AbortError") doneShare(false, ""); else copyPath(); }
       );
       return;
     } catch(e){ /* fall through to clipboard copy */ }
   }
-  doCopy(text, function(ok, msg){
-    if (ok){
-      Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: og, via: "clipboard"});
-      if (btn){ var orig = btn.textContent; btn.textContent = "Copied \u2713"; setTimeout(function(){ btn.textContent = orig; }, 2000); }
-      credited("clipboard");
-      if (statusEl) statusEl.textContent = "Copied. Paste it into any message.";
-    } else {
-      rearmShare();
-      if (statusEl) statusEl.textContent = msg || "Copy did not work. Long-press the preview text to copy it.";
-    }
-  });
+  copyPath();
 }
 /* 2026-09-27: emoji in all user-facing copy, share text included.
    One central lead-in so every share format gets it uniformly. The
