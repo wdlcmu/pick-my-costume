@@ -201,12 +201,19 @@ body{
 .herosub{margin:8px 0 0;font-size:15px;color:var(--text)}
 /* 2026-09-26 (landing refresh): hero copy lines. */
 .honestline{margin:10px 0 0}
-/* 2026-09-30: visible FAQ. Questions are full-width left-aligned toggles;
-   answers are expanded by default (visible for readers and crawlers). */
-.faq-item{margin:0;border-top:1px solid var(--line);padding:12px 0}
+/* 2026-09-30 (Billy): visible FAQ. Answers are collapsed by default; each
+   question is a full-width left-aligned toggle with a clear tap target
+   (44px, plus/minus affordance). One question style: the old .textlink
+   class centered the questions and fought .faq-q. Section caps at 680px,
+   centered, on desktop. */
+#faq{max-width:680px;margin-left:auto;margin-right:auto}
+.faq-item{margin:0;border-top:1px solid var(--line);padding:2px 0}
 .faq-item:last-child{border-bottom:1px solid var(--line)}
-.faq-q{font-size:16px;text-align:left;width:100%;cursor:pointer;display:block;font-weight:700}
-.faq-a{margin:6px 0 0;font-size:15px}
+.faq-q{font-size:16px;text-align:left;width:100%;cursor:pointer;display:block;font-weight:700;position:relative;min-height:44px;padding:12px 38px 12px 0;background:none;border:0;color:var(--ink);font-family:inherit}
+.faq-q::after{content:"+";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:400;color:var(--accent);transition:transform .18s ease;line-height:1}
+.faq-q[aria-expanded="true"]::after{transform:translateY(-50%) rotate(45deg)}
+.faq-q[aria-expanded="false"] + .faq-a{display:none}
+.faq-a{margin:0 0 12px;font-size:15px}
 .faq-a p{margin:0}
 /* 2026-09-28: Play tab entry. Visual card next to the quiz CTA in the
    hero: the game is a third way to pick (the kid picks by playing). */
@@ -1604,36 +1611,38 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        needed: retry affordance on results, privacy on /privacy.
        2026-09-30: FAQ restored as a visible section below (reversing the cut)
        to carry FAQPage schema; the HowTo JSON-LD in <head> is replaced. -->
-  <!-- 2026-09-30: visible FAQ. Answers are expanded by default so the
-       content is on the page for readers and crawlers alike; each question
-       toggles its answer. Unit: faq (questions are button[data-item-id]
-       toggles, instrumented like every other content unit). -->
+  <!-- 2026-09-30: visible FAQ. Answers are collapsed by default (Billy);
+       each question toggles its answer. Unit: faq (questions are button[data-item-id]
+       toggles, instrumented like every other content unit). The FAQPage
+       JSON-LD in <head> mirrors these Q&As verbatim; the content stays in
+       the DOM so the schema and the visible section never drift. -->
   <section id="faq" aria-label="Frequently asked questions" style="margin-top:28px">
     <h2 class="q-title">Good questions</h2>
     <div class="faq-item">
-      <button type="button" class="textlink faq-q" data-item-id="faq-1" aria-expanded="true">What should I be for Halloween?</button>
+      <button type="button" class="faq-q" data-item-id="faq-1" aria-expanded="false">What should I be for Halloween?</button>
       <div class="faq-a"><p>Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe, budget, and timeline. Every pick comes with a free DIY build guide that shows the real cost and build time up front.</p></div>
     </div>
     <div class="faq-item">
-      <button type="button" class="textlink faq-q" data-item-id="faq-2" aria-expanded="true">I need a costume for tonight. What is actually last-minute?</button>
+      <button type="button" class="faq-q" data-item-id="faq-2" aria-expanded="false">I need a costume for tonight. What is actually last-minute?</button>
       <div class="faq-a"><p>Open the pantry page and tick off what you already own. It ranks all 164 ideas by what you can make tonight with zero shopping, what needs one purchase, and what needs two.</p></div>
     </div>
     <div class="faq-item">
-      <button type="button" class="textlink faq-q" data-item-id="faq-3" aria-expanded="true">What are some cheap couples costumes?</button>
+      <button type="button" class="faq-q" data-item-id="faq-3" aria-expanded="false">What are some cheap couples costumes?</button>
       <div class="faq-a"><p>Take the quiz as a couple. Every build guide lists the estimated cost before you start, and the ideas are designed around thrift-store and closet basics.</p></div>
     </div>
     <div class="faq-item">
-      <button type="button" class="textlink faq-q" data-item-id="faq-4" aria-expanded="true">Do you have costume ideas for kids?</button>
+      <button type="button" class="faq-q" data-item-id="faq-4" aria-expanded="false">Do you have costume ideas for kids?</button>
       <div class="faq-a"><p>Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones.</p></div>
     </div>
     <div class="faq-item">
-      <button type="button" class="textlink faq-q" data-item-id="faq-5" aria-expanded="true">Is it really free?</button>
+      <button type="button" class="faq-q" data-item-id="faq-5" aria-expanded="false">Is it really free?</button>
       <div class="faq-a"><p>Yes. No account, no ads, no checkout. It is a hobby project, free forever.</p></div>
     </div>
   </section>
   <script>
-  /* 2026-09-30: FAQ toggles. Answers start expanded (visible content for
-     the FAQPage schema); each question collapses or reopens its answer. */
+  /* 2026-09-30 (Billy): FAQ toggles. Answers start collapsed (CSS hides
+     .faq-a when its button reads aria-expanded="false"); each question
+     collapses or reopens its answer. */
   (function(){
     var faq = document.getElementById("faq");
     if (!faq) return;
@@ -10035,7 +10044,7 @@ var SEARCH_ALIASES = {
    30-day pull (2026-09-25; pick_saved, share_created, proofstrip_tapped;
    ?probe= and ?sim= traffic excluded). trend_base encodes Google-trends-style
    demand for the term; the on-site boost lets ideas our audience actually
-   saves and shares outrank pure trend terms. Attribute terms (couples) map
+   saves and shares outrank pure trend terms. Attribute terms (couple) map
    to idea sets rather than one idea, so they carry trend_base only.
    Every term is verified non-empty through the full pipeline (gate
    section 6). Tapping one clears the dropdown filters. */
@@ -10055,7 +10064,7 @@ var POPULAR_SEARCHES = [
   {term:"frozen", w:95},
   {term:"kpop demon hunters", w:92},
   {term:"pickle", w:89},
-  {term:"couples", w:86},
+  {term:"couple", w:86},
   {term:"dinosaur", w:84},
   {term:"peanut butter jelly", w:84}
 ];
@@ -10092,7 +10101,7 @@ var SEARCH_SUGGESTIONS = [
   {label:"Breakfast Buffet", q:"breakfast buffet", w:108},
   {label:"Lost Tourist", q:"lost tourist", w:97},
   {label:"Pickle", q:"pickle", w:89},
-  {label:"Couples", q:"couples", w:86},
+  {label:"Couple", q:"couple", w:86},
   {label:"Peanut Butter and Jelly", q:"peanut butter jelly", w:84},
   {label:"Doll couple", q:"barbie ken", w:70},
   {label:"Ghost hunters", q:"ghostbusters", w:68},
@@ -13545,8 +13554,10 @@ function fallbackCopy(text, done){
    a search surface, not pinpoint. Tapping a chip opens the browse shelf
    pre-filtered to that term through the full search intelligence
    (parseSearch: aliases + attribute filters), with the term editable in the
-   shelf search box. The typed hero input keeps pinpoint name resolution. */
-var HERO_SEARCH_CHIPS = ["vampire","couples","cheap","Dinosaur","tonight"];
+   shelf search box. The typed hero input keeps pinpoint name resolution.
+   2026-09-30 (Billy): chip labels use the site's own words ("couple" is the
+   quiz wearer label, not "couples") and lowercase, matching the shelf. */
+var HERO_SEARCH_CHIPS = ["vampire","couple","cheap","dinosaur","tonight"];
 function renderPinpointChips(){
   var box = $("pinpoint-chips");
   if (!box || box.children.length) return;
@@ -13554,9 +13565,23 @@ function renderPinpointChips(){
     var b = document.createElement("button");
     b.type = "button"; b.textContent = label;
     b.onclick = function(){
+      /* tapGuard lesson (2026-09-27): per-label key blocks the double-tap
+         without swallowing a quick hop to a different chip. */
+      if (!tapGuard("hchip-" + label, 800)) return;
       var inp = $("pinpoint-input");
       if (inp) inp.value = label;
       try { Analytics.track("hero_chip_tapped", {term: label}); } catch(e){}
+      /* 2026-09-30 (Billy): a chip that names exactly one costume opens that
+         costume's full detail, exactly like typing the term and hitting
+         Enter. Multi-result terms keep the prefiltered shelf. Uses the
+         shelf's own parseSearch so the two can never disagree. */
+      try {
+        var spec = (typeof parseSearch === "function") ? parseSearch(label) : null;
+        if (spec && spec.aliasIds.length === 1 && !spec.filters.length && !spec.textTokens.length){
+          openIdeaDetail(spec.aliasIds[0], null, "s-hero");
+          return;
+        }
+      } catch(_hchip){}
       openBrowse();
     };
     box.appendChild(b);
@@ -13611,6 +13636,70 @@ function pinpointClearNomatch(){
   var box = $("pinpoint-nomatch");
   if (box){ box.innerHTML = ""; box.style.display = "none"; }
 }
+/* 2026-09-30 (Billy): hero typeahead. The browse shelf has suggestions; the
+   hero box had none. Same intelligence as the shelf (SEARCH_SUGGESTIONS +
+   SEARCH_ALIASES prefix match, same .bsuggest pill style); tapping a
+   suggestion fills the hero box and runs the same resolution as Enter. */
+var _pinSuggestBox = null;
+function hidePinpointSuggest(){
+  if (_pinSuggestBox){ _pinSuggestBox.style.display = "none"; _pinSuggestBox.innerHTML = ""; }
+}
+function renderPinpointSuggest(q){
+  if (!_pinSuggestBox) return;
+  _pinSuggestBox.innerHTML = "";
+  var norm = normalizeSearch(q);
+  if (norm.length < 2){ _pinSuggestBox.style.display = "none"; return; }
+  var key = norm.replace(/\s+/g, "");
+  var out = [], seen = {};
+  SEARCH_SUGGESTIONS.forEach(function(s){
+    var sk = s.q.replace(/\s+/g, "");
+    if (sk.indexOf(key) === 0 && sk !== key && !seen[s.q]){ seen[s.q] = 1; out.push(s); }
+  });
+  if (out.length < 6){
+    for (var k in SEARCH_ALIASES){
+      if (out.length >= 6) break;
+      if (k.indexOf(key) === 0 && k !== key && !seen[k]){
+        seen[k] = 1;
+        out.push({label: prettyAliasKey(k), q: k, w: 10});
+      }
+    }
+  }
+  out.sort(function(a,b){ return b.w - a.w; });
+  out = out.slice(0, 6);
+  if (!out.length){ _pinSuggestBox.style.display = "none"; return; }
+  out.forEach(function(s){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "sug"; b.textContent = s.label;
+    b.onclick = (function(sug){ return function(){
+      /* tapGuard lesson: suggestion taps are an option flow, guard the bounce. */
+      if (!tapGuard("pinsug", 800)) return;
+      var inp = $("pinpoint-input");
+      if (inp) inp.value = sug.q;
+      hidePinpointSuggest();
+      try { if (inp) inp.blur(); } catch(e){}
+      try { Analytics.track("pinpoint_suggest_tapped", {q: sug.q, label: sug.label}); } catch(_a){}
+      pinpointTypedGo();
+    }; })(s);
+    _pinSuggestBox.appendChild(b);
+  });
+  _pinSuggestBox.style.display = "flex";
+}
+(function initPinpointSuggest(){
+  var inp = $("pinpoint-input");
+  if (!inp || !inp.parentNode) return;
+  var row = inp.parentNode; /* .pinpoint-row */
+  _pinSuggestBox = document.createElement("div");
+  _pinSuggestBox.id = "pinpoint-suggest";
+  _pinSuggestBox.className = "bsuggest";
+  _pinSuggestBox.style.display = "none";
+  _pinSuggestBox.setAttribute("role", "listbox");
+  _pinSuggestBox.setAttribute("aria-label", "Search suggestions");
+  row.parentNode.insertBefore(_pinSuggestBox, row.nextSibling);
+  inp.addEventListener("input", function(){ renderPinpointSuggest(inp.value); });
+  inp.addEventListener("keydown", function(ev){ if (ev.key === "Escape") hidePinpointSuggest(); });
+  /* Delay hiding so a suggestion tap registers before the box unmounts. */
+  inp.addEventListener("blur", function(){ setTimeout(hidePinpointSuggest, 180); });
+})();
 /* Open the matched idea's full detail (photo, plan, share, pick) as if the
    user had tapped its browse card. Back returns to the hero, not the shelf. */
 function pinpointOpenIdea(hit, kind){
@@ -13620,6 +13709,7 @@ function pinpointOpenIdea(hit, kind){
   openIdeaDetail(hit.idea, "You asked for " + hit.label + ": our DIY take", "s-hero");
 }
 function pinpointTypedGo(){
+  hidePinpointSuggest();
   var raw = $("pinpoint-input") ? $("pinpoint-input").value.trim() : "";
   if (!raw) return;
   var res = pinpointResolve(raw);

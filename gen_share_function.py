@@ -577,9 +577,10 @@ export function onRequest(context) {
      X. What would you pick?" -- no em dashes, phone-first. */
   var _bannerScript = "<script>var RECIPIENT_BANNER = " + (RECIPIENT_BANNER ? "true" : "false") + ";" +
     "var GIFT_FROM = " + _gfromJs + ";" +
-    "var SHARER_NAME=JSON.stringify(_sharerEsc);" +
+    "var SHARER_NAME=" + JSON.stringify(_sharerEsc) + ";" +
     "var DRAFTH = " + JSON.stringify(DRAFT_HALVES[slug] || null) + ";" +
     "(function(){" +
+    "function _rmSL(){var _sl=document.querySelector('.sharerline');if(_sl)_sl.parentNode.removeChild(_sl);}" +
     "var q = new URLSearchParams(location.search || \\\"\\\");" +
     "var main = document.querySelector(\\\"main.guide\\\");" +
     "if (!main) return;" +
@@ -596,6 +597,7 @@ export function onRequest(context) {
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">\\\\u{1F381} \\" + who + \\" <strong>" + title + "</strong> for you.</p>\\\" +" +
     " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">A starting idea, not a verdict. Take the 2-minute quiz to get your own costume.</p>\\\" +" +
     " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    "_rmSL();" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -639,6 +641,7 @@ export function onRequest(context) {
     "_b2.appendChild(_l1);" +
     "_b2.appendChild(_l2);" +
     "_b2.appendChild(_cta);" +
+    "_rmSL();" +
     "main.insertBefore(_b2, main.firstChild);" +
     "return;" +
     "}" +
@@ -646,6 +649,7 @@ export function onRequest(context) {
     " rule (8+ chars). A forged ?s=x rendered a fake anonymous friend" +
     " banner; the homepage already rejects short ids. */" +
     "if (!s || s.length < 8) return;" +
+    "_rmSL();" +
     "var main = document.querySelector(\\\"main.guide\\\");" +
     "if (!main) return;" +
     "/* 2026-09-26 red-team recipient audit (pm2): pair-share recipients saw" +
@@ -907,6 +911,11 @@ export function onRequest(context) {
     ".crumb a{color:#b3541e;text-decoration:none;}" +
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
     ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
+    /* AI honesty label (2026-09-30): the quiz-results page tags concept
+       photos "AI-generated concept photo"; the guide page shows the same AI
+       photo (og card rendered from photos/<slug>.webp), so it carries the
+       same tag with the same styling. */
+    ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
     "</style>" +
     "</head><body><div class=\\"topbar\\"><a href=\\"/\\">🎃 Pick My <span>Costume</span></a></div><main class=\\"guide\\">" +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
@@ -918,6 +927,8 @@ export function onRequest(context) {
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
     "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
     "<img src=\\"" + img + "\\" alt=\\"" + title + " costume idea\\">" +
+    /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
+    "<div class=\\"aiphoto\\">AI-generated concept photo</div>" +
     (_quick ? "<div class=\\"quickcard\\">" + _quick + "</div>" : "") +
     _splitHtml +
     "<h2>Steps</h2><ol class=\\"steps\\">" + _steps + "</ol>" +

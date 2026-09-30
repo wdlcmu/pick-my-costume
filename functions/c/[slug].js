@@ -687,6 +687,11 @@ export function onRequest(context) {
     ".crumb a{color:#b3541e;text-decoration:none;}" +
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
     ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
+    /* AI honesty label (2026-09-30): the quiz-results page tags concept
+       photos "AI-generated concept photo"; the guide page shows the same AI
+       photo (og card rendered from photos/<slug>.webp), so it carries the
+       same tag with the same styling. */
+    ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
     "</style>" +
     "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
@@ -698,6 +703,8 @@ export function onRequest(context) {
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a><span class=\"ctasub\">No signup \u00b7 2 minutes.</span></p>" +
     "<img src=\"" + img + "\" alt=\"" + title + " costume idea\">" +
+    /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
+    "<div class=\"aiphoto\">AI-generated concept photo</div>" +
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
     _splitHtml +
     "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
