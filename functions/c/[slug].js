@@ -353,9 +353,10 @@ export function onRequest(context) {
      X. What would you pick?" -- no em dashes, phone-first. */
   var _bannerScript = "<script>var RECIPIENT_BANNER = " + (RECIPIENT_BANNER ? "true" : "false") + ";" +
     "var GIFT_FROM = " + _gfromJs + ";" +
-    "var SHARER_NAME=JSON.stringify(_sharerEsc);" +
+    "var SHARER_NAME=" + JSON.stringify(_sharerEsc) + ";" +
     "var DRAFTH = " + JSON.stringify(DRAFT_HALVES[slug] || null) + ";" +
     "(function(){" +
+    "function _rmSL(){var _sl=document.querySelector('.sharerline');if(_sl)_sl.parentNode.removeChild(_sl);}" +
     "var q = new URLSearchParams(location.search || \"\");" +
     "var main = document.querySelector(\"main.guide\");" +
     "if (!main) return;" +
@@ -372,6 +373,7 @@ export function onRequest(context) {
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\\u{1F381} \" + who + \" <strong>" + title + "</strong> for you.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">A starting idea, not a verdict. Take the 2-minute quiz to get your own costume.</p>\" +" +
     " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    "_rmSL();" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -415,6 +417,7 @@ export function onRequest(context) {
     "_b2.appendChild(_l1);" +
     "_b2.appendChild(_l2);" +
     "_b2.appendChild(_cta);" +
+    "_rmSL();" +
     "main.insertBefore(_b2, main.firstChild);" +
     "return;" +
     "}" +
@@ -422,6 +425,7 @@ export function onRequest(context) {
     " rule (8+ chars). A forged ?s=x rendered a fake anonymous friend" +
     " banner; the homepage already rejects short ids. */" +
     "if (!s || s.length < 8) return;" +
+    "_rmSL();" +
     "var main = document.querySelector(\"main.guide\");" +
     "if (!main) return;" +
     "/* 2026-09-26 red-team recipient audit (pm2): pair-share recipients saw" +
