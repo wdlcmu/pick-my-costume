@@ -40,7 +40,7 @@
 </script>
 <style>
 /* ============ HALLOWEEN VISUAL IDENTITY ============
-   The site's seasonal skin, confirmed by Billy. All theme colors
+   The site's seasonal skin, confirmed. All theme colors
    live in these variables: to re-skin later, swap this block only.
    Selection state never relies on color alone (checkmark + border). */
 :root{
@@ -114,7 +114,7 @@ button.ghost{
   border-radius:var(--radius);padding:20px;margin-bottom:16px;
 }
 #r-cards .card img{width:100%;height:auto;display:block}
-/* Billy-reported 2026-09-23: the old 230px fixed height + object-fit:cover
+/* Reported 2026-09-23: the old 230px fixed height + object-fit:cover
    cropped nearly every card image (73 of 75 bank illustrations are square,
    so cover cut ~105px vertically at phone width — e.g. Walking Taco's legs).
    Natural aspect ratio shows the full illustration on every card. */
@@ -308,7 +308,7 @@ var QUESTIONS = [
 /* ================= CONFIG: IDEAS =================
    rank = editorial order: browse-all sorting AND quiz tiebreak (lower wins).
    Rubric: (1) 2026 trend heat, (2) fit for the core audience (parents/kids/family),
-   (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
+   (3) thumbnail readability, (4) DIY ease and budget-friendliness. final call. */
 var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, rank:1},
   {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes. The easiest costume ever made.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,dinos:2,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"top 5 for kids and adults", rank:2},
@@ -816,7 +816,7 @@ function showPromptPreview(container, text, eventName, noScroll){
 }
 
 /* After a pick, the share section leads and the AI plan follows beneath it. */
-/* E13 PROTOTYPE (staged for Billy's tap test — not shipped). DM-first share
+/* E13 PROTOTYPE (staged for the tap test — not shipped). DM-first share
    mechanic from the OMG teardown: in a chat bubble a rendered picture beats a
    bare link. Canvas-generated 1200x630 PNG: idea art + "I'M GOING AS <title>"
    + pickmycostume.com. Images are same-origin so the canvas is never tainted.
