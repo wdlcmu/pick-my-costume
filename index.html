@@ -276,6 +276,28 @@ body{
 .closet-badge{border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:12px 0;background:rgba(0,0,0,.18)}
 .closet-badge p{margin:0 0 6px}
 .closet-badge p:last-child{margin-bottom:0}
+/* 2026-09-30: pantry tile-grid on the detail page (ported from pantry.html
+   renderFocus). Replaces the closet-badge strip as the default materials
+   presentation. Tiles are links: pantry stays the editing route. */
+.ptiles-sub{margin:0 0 10px;color:var(--muted);font-size:14px}
+.ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
+.ptile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;min-height:96px;padding:10px 6px;text-align:center;text-decoration:none;
+  border:2px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18);color:var(--ink)}
+.ptile .ptemo{font-size:36px;line-height:1.1}
+.ptile .ptlabel{font-size:11px;line-height:1.25;overflow-wrap:anywhere}
+.ptile.have{border-color:#7ee2a8}
+.ptile.have .ptlabel{color:var(--muted)}
+.ptile.miss{border-style:dashed}
+.ptile .ptbadge{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.ptile.have .ptbadge{background:#7ee2a8;color:#0c2b18}
+.ptile.miss .ptbadge{border:2px solid var(--accent);color:var(--accent)}
+.ptile:active{background:rgba(255,255,255,.06)}
+.pchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+.pchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 10px;
+  border:1px dashed var(--line);border-radius:999px;color:var(--ink)}
+.pchip .pmemo{font-size:16px}
 .closet-line{font-weight:700;font-size:15px;color:var(--ink)}
 .closet-sub,.closet-need{color:var(--muted);font-size:13px;line-height:1.45}
 .closet-link{font-size:13px;color:var(--accent);text-decoration:underline;cursor:pointer}
@@ -1740,7 +1762,12 @@ var UNIT_REGISTRY = {
      instrumented via UnitTrack.instrumentUnit, not instrumentAll. */
   "more-options":      {type: "toggle", container: "more-opts"},
   /* 2026-09-30: visible FAQ section (static markup, instrumented on load). */
-  "faq":               {type: "section", container: "faq"}
+  "faq":               {type: "section", container: "faq"},
+  /* 2026-09-30: detail-page pantry tile panel + primary action row
+     (Plan + Share). Built dynamically by buildBrowseDetailCard, so they are
+     instrumented via UnitTrack.instrumentUnit, not instrumentAll. */
+  "detail-materials":  {type: "panel", container: "detail-mats"},
+  "detail-actions":    {type: "bar", container: "detail-actions"}
 };
 var UnitTrack = (function(){
   "use strict";
@@ -4498,6 +4525,65 @@ function pantryMissing(ideaId){
    pantry cards. Analytics carries counts and state only: never material ids,
    labels, or ticked contents. */
 var PANTRY_LABELS = {"scissors":"Scissors","tape":"Tape (any kind)","paper-pen":"Paper and pen","tape-white":"White tape","tape-silver":"Silver tape","tape-gray":"Gray tape","tape-red":"Red tape","tape-yellow":"Yellow tape","tape-black":"Black tape","glue":"Glue (any kind)","safety-pins":"Safety pins","markers":"Markers","stickers":"Stickers","foil":"Aluminum foil","balloons":"Balloons","paper-red":"Red paper","paper-yellow":"Yellow paper","paper-green":"Green paper","paper-blue":"Blue paper","paper-black":"Black paper","paper-white":"White paper","paper-orange":"Orange paper","paper-pink":"Pink paper","paper-brown":"Brown paper","paper-gray":"Gray paper","cardboard":"Cardboard / boxes","paper-bag":"Brown paper bags","paper-plates":"Paper plates","newspaper":"Newspaper","white-tshirt":"White t-shirt","tshirt":"T-shirt (any color)","black-clothes":"Black clothes","sweatsuit":"Sweatsuit","bedsheet":"Old bedsheet","pillowcase":"Pillowcase","socks":"Socks","stuffing":"Stuffing / cotton balls","headband":"Headband (any color)","red-headband":"Red headband","sunglasses":"Sunglasses","yarn":"String / yarn / ribbon","hat":"Hat (any kind)","paint-red":"Red face paint / lipstick","paint-black":"Black face paint","paint-white":"White face paint","paint-green":"Green face paint","paint-brown":"Brown face paint","paint-blue":"Blue face paint","paint-pink":"Pink face paint / blush","paint-gold":"Gold face paint","paint-purple":"Purple face paint","paint-yellow":"Yellow face paint","paint-gray":"Gray face paint","felt":"Felt (multi-color stash)","pipe-cleaners":"Pipe cleaners (multi-color pack)","hoodie":"Hoodie (any color)"}; /* id -> label, ported from pantry.html DATA.pantry */
+/* 2026-09-30: supply emoji ported from pantry.html SUPPLY_EMOJI for the
+   detail-page tile grid. black-clothes uses the shirt (Billy's correction). */
+var PANTRY_EMOJI = {
+  "scissors": "\u2702\uFE0F",
+  "tape": "🩹",
+  "paper-pen": "📝",
+  "tape-white": "\u2B1C",
+  "tape-silver": "\u26AA",
+  "tape-gray": "🔘",
+  "tape-red": "🟥",
+  "tape-yellow": "🟨",
+  "tape-black": "\u2B1B",
+  "glue": "🧴",
+  "safety-pins": "📎",
+  "markers": "🖊\uFE0F",
+  "stickers": "\u2B50",
+  "foil": "\u2728",
+  "balloons": "🎈",
+  "paper-red": "🟥",
+  "paper-yellow": "🟨",
+  "paper-green": "🟩",
+  "paper-blue": "🟦",
+  "paper-black": "\u2B1B",
+  "paper-white": "\u2B1C",
+  "paper-orange": "🟧",
+  "paper-pink": "🩷",
+  "paper-brown": "🟫",
+  "paper-gray": "🔘",
+  "cardboard": "📦",
+  "paper-bag": "🛍\uFE0F",
+  "paper-plates": "🍽\uFE0F",
+  "newspaper": "📰",
+  "white-tshirt": "👕",
+  "tshirt": "🎽",
+  "black-clothes": "👕",
+  "sweatsuit": "🧥",
+  "bedsheet": "🛏\uFE0F",
+  "pillowcase": "💤",
+  "socks": "🧦",
+  "stuffing": "\u2601\uFE0F",
+  "headband": "🎀",
+  "red-headband": "🔴",
+  "sunglasses": "😎",
+  "yarn": "🧶",
+  "hat": "🧢",
+  "paint-red": "💄",
+  "paint-black": "\u26AB",
+  "paint-white": "\u26AA",
+  "paint-green": "🟢",
+  "paint-brown": "🟤",
+  "paint-blue": "🔵",
+  "paint-pink": "🩷",
+  "paint-gold": "🌟",
+  "paint-purple": "🟣",
+  "paint-yellow": "🟡",
+  "paint-gray": "🔘",
+  "felt": "🧣",
+  "pipe-cleaners": "🖍\uFE0F"
+};
 function pantrySaved(){
   /* Empty state must bypass the staples fallback: a new user with nothing
      saved gets the nudge, never a fake partial count. */
@@ -4589,43 +4675,119 @@ function closetBadgeState(ideaId, saved, ticked){
   if (sc.have >= sc.total) return {state: "full", have: sc.have, total: sc.total, names: null};
   return {state: "partial", have: sc.have, total: sc.total, names: sc.missingNames};
 }
+/* pantryMatOk: per-material version of pantryScore's AND-across-groups
+   walk (mirrors pantry.html reqOk). */
+function pantryMatOk(mat, tk){
+  for (var g = 0; g < mat.length; g++){
+    var grp = mat[g], gok = false;
+    for (var k = 0; k < grp.length; k++){
+      var id = grp[k];
+      if (!id) continue;
+      if (tk.has(id)){ gok = true; break; }
+    }
+    if (!gok) return false;
+  }
+  return true;
+}
+/* pantryTileBits: one emoji + short label per material, mirroring
+   pantry.html's matBits. Buy-only materials (no pantry id) fall back to the
+   shortened instruction text with a cart emoji. */
+function pantryTileBits(mat, texts, i){
+  var reps = [];
+  for (var g = 0; g < mat.length; g++){
+    var grp = mat[g];
+    for (var k = 0; k < grp.length; k++){
+      var id = grp[k];
+      if (id && PANTRY_EMOJI[id]){ if (reps.indexOf(id) < 0) reps.push(id); break; }
+    }
+  }
+  if (reps.length){
+    var label = PANTRY_LABELS[reps[0]] || reps[0];
+    if (mat.length > 1) label += " +" + (mat.length - 1);
+    return {e: PANTRY_EMOJI[reps[0]], label: label, rep: reps[0]};
+  }
+  return {e: "🛒", label: shortMaterialName(texts[i]) || "Supply", rep: null};
+}
+/* 2026-09-30: the closet badge is now the pantry tile-grid (ported from
+   pantry.html renderFocus) as the default materials presentation on the
+   detail page. Same states/copy/analytics as the old strip; tiles link to
+   the pantry deep-link so pantry stays the single editing route. */
 function buildClosetBadge(idea){
   var saved = pantrySaved();
   var ticked = saved ? pantryTicked() : new Set();
   var st = closetBadgeState(idea.id, saved, ticked);
   if (!st) return null;
-  var strip = document.createElement("div");
-  strip.className = "closet-badge";
-  var line = document.createElement("p"); line.className = "closet-line";
+  var panel = document.createElement("div");
+  panel.className = "closet-badge";
+  panel.id = "detail-mats";
+  var viaS = (typeof VIA_SHARE !== "undefined" && VIA_SHARE) ? "&s=" + VIA_SHARE : "";
+  var pantryHref = "/pantry?for=" + encodeURIComponent(idea.id) + viaS;
+  function pantryLink(text, itemId, fromState){
+    var a = document.createElement("a");
+    a.className = "closet-link"; a.href = pantryHref; a.textContent = text;
+    a.setAttribute("data-item-id", itemId);
+    a.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: fromState}); };
+    return a;
+  }
+  function line(text, cls){
+    var p = document.createElement("p"); p.className = cls || "closet-line";
+    p.textContent = text; return p;
+  }
   if (st.state === "empty"){
-    line.textContent = "We can check your closet for this one.";
-    var sub = document.createElement("p"); sub.className = "closet-sub";
-    sub.textContent = "Tell us what is already in your house. Takes about a minute, and then every costume shows what you have.";
-    var cta = document.createElement("a"); cta.className = "closet-link"; cta.href = "/pantry?for=" + encodeURIComponent(idea.id) + (VIA_SHARE ? "&s=" + VIA_SHARE : "");
-    cta.textContent = "Check my pantry";
-    cta.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: "empty"}); };
-    strip.appendChild(line); strip.appendChild(sub); strip.appendChild(cta);
-  } else if (st.state === "full"){
-    line.textContent = "You have everything for this one. Nothing to buy.";
-    strip.appendChild(line);
+    panel.appendChild(line("We can check your closet for this one."));
+    var sub = line("Tell us what is already in your house. Takes about a minute, and then every costume shows what you have.", "closet-sub");
+    panel.appendChild(sub);
+    panel.appendChild(pantryLink("Check my pantry", "pantry-link", "empty"));
   } else {
-    line.textContent = (st.have === 0)
-      ? "None of this one is in your pantry yet."
-      : "You already have " + st.have + " of " + st.total + " things for this.";
-    strip.appendChild(line);
-    if (st.names){
-      var need = document.createElement("p"); need.className = "closet-need";
-      need.textContent = "Still need: " + st.names.join(", ") + ".";
-      strip.appendChild(need);
+    var mats = PANTRY_MATS.mats[idea.id] || [];
+    var texts = pantryMaterialTexts(idea.id);
+    panel.appendChild(line(
+      st.state === "full" ? "You have everything for this one. Nothing to buy."
+      : (st.have === 0 ? "None of this one is in your pantry yet."
+         : "You already have " + st.have + " of " + st.total + " things for this.")));
+    if (st.state === "partial"){
+      panel.appendChild(line("Tap a supply to open your pantry and tick what you own.", "ptiles-sub"));
     }
-    var upd = document.createElement("a"); upd.className = "closet-link"; upd.href = "/pantry?for=" + encodeURIComponent(idea.id) + (VIA_SHARE ? "&s=" + VIA_SHARE : "");
-    upd.textContent = "Update my pantry";
-    upd.onclick = function(){ Analytics.track("closet_badge_pantry_tap", {idea_id: idea.id, from_state: "partial"}); };
-    strip.appendChild(upd);
+    var grid = document.createElement("div"); grid.className = "ptiles";
+    var missBits = [];
+    for (var i = 0; i < mats.length; i++){
+      (function(mat, idx){
+        var ok = pantryMatOk(mat, ticked);
+        var bits = pantryTileBits(mat, texts, idx);
+        var a = document.createElement("a");
+        a.className = "ptile " + (ok ? "have" : "miss");
+        a.href = pantryHref;
+        a.setAttribute("data-item-id", "tile:" + (bits.rep || "buy"));
+        a.setAttribute("aria-label", bits.label + ": " + (ok ? "you have this" : "missing") + ". Open pantry to update.");
+        var badge = document.createElement("span"); badge.className = "ptbadge";
+        badge.setAttribute("aria-hidden", "true"); badge.textContent = ok ? "\u2713" : "\u25CB";
+        var emo = document.createElement("span"); emo.className = "ptemo";
+        emo.setAttribute("aria-hidden", "true"); emo.textContent = bits.e;
+        var lab = document.createElement("span"); lab.className = "ptlabel";
+        lab.textContent = bits.label;
+        a.appendChild(badge); a.appendChild(emo); a.appendChild(lab);
+        grid.appendChild(a);
+        if (!ok) missBits.push(bits);
+      })(mats[i], i);
+    }
+    panel.appendChild(grid);
+    if (missBits.length){
+      panel.appendChild(line("Still need:", "closet-need"));
+      var chips = document.createElement("div"); chips.className = "pchips";
+      missBits.forEach(function(b){
+        var c = document.createElement("span"); c.className = "pchip";
+        var me = document.createElement("span"); me.className = "pmemo";
+        me.setAttribute("aria-hidden", "true"); me.textContent = b.e;
+        c.appendChild(me); c.appendChild(document.createTextNode(b.label));
+        chips.appendChild(c);
+      });
+      panel.appendChild(chips);
+    }
+    panel.appendChild(pantryLink("Update my pantry", "pantry-link", st.state));
   }
   /* Counts and state only. idea_id is public catalog data. */
   Analytics.track("closet_badge_viewed", {idea_id: idea.id, state: st.state, have_count: st.have, total_count: st.total});
-  return strip;
+  return panel;
 }
 /* ---- end 2026-09-26 closet-coverage badge ---- */
 /* 2026-09-25: share-message A/B/C/D test. Arm persists per session in
@@ -10515,7 +10677,16 @@ function buildBrowseDetailCard(idea, whyHead){
   bPick.onclick = doPick;
   /* Already picked earlier (e.g. from the quiz): show its sections at once. */
   if (pick && pick.ideaId === idea.id) mountPickSections();
-  row.appendChild(bPick); /* pick stands alone full-width; the post-pick "Text this to a friend" section is the single share path */
+  /* 2026-09-30 (Billy): prominent Share button in the primary action row.
+     Plan stays the primary CTA (flex-grow); Share sits alongside it instead
+     of living only inside the post-pick panel. */
+  row.id = "detail-actions";
+  bPick.style.flex = "1";
+  var bShare = document.createElement("button");
+  bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
+  bShare.setAttribute("data-item-id", "share");
+  bShare.onclick = function(){ sendShare(idea, "detail", {button: bShare, statusEl: status}); };
+  row.appendChild(bPick); row.appendChild(bShare);
   right.appendChild(h); right.appendChild(bl); right.appendChild(wh);
   /* 2026-09-26 closet-coverage badge: decision input, so it sits with the
      decision inputs under the why-line, above the build steps. Renders even
@@ -10624,6 +10795,9 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   var box = $("d-card");
   box.innerHTML = "";
   box.appendChild(buildBrowseDetailCard(idea, whyHead));
+  /* 2026-09-30: instrument the dynamic detail units (tile panel + action row). */
+  try { UnitTrack.instrumentUnit("detail-materials"); } catch(_du1){}
+  try { UnitTrack.instrumentUnit("detail-actions"); } catch(_du2){}
   /* 2026-09-28: the planner / closet / email CTAs moved INTO the
      "Plan this costume" panel (mountPlanFirstPanel), one consistent flow:
      pick the costume, then build it. No more scattered buttons below the card. */
@@ -15373,9 +15547,8 @@ function shareLandingHeadline(idea, search){
     if (!el) return;
     var now = new Date();
     var hw = new Date(now.getFullYear(), 9, 31);
-    /* 2026-09-27: name the weekday. "34 days until Halloween (Saturday)"
-       helps parents plan around the weekend. */
-    var hwDay = hw.toLocaleDateString(undefined, {weekday: "long"});
+    /* 2026-09-30: weekday dropped per Billy ("kill the (Saturday)").
+       Just "N days until Halloween". */
     var days = Math.ceil((hw.getTime() - now.getTime()) / 86400000);
     /* 2026-09-26 red-team D11: the clock hid ON Halloween (days <= 0 at midnight).
        Halloween day deserves its own line, not silence. Hides only after Oct 31. */
@@ -15383,8 +15556,8 @@ function shareLandingHeadline(idea, search){
     var msg;
     if (days === 0) msg = "🎃 Halloween is today: pick a costume you can build tonight";
     else if (days === 1) msg = "🎃 Halloween is tomorrow: pick a costume you can build tonight";
-    else if (days <= 7) msg = "🎃 " + days + " days until Halloween (" + hwDay + "): every idea here builds from your closet";
-    else msg = "🎃 " + days + " days until Halloween (" + hwDay + ")";
+    else if (days <= 7) msg = "🎃 " + days + " days until Halloween: every idea here builds from your closet";
+    else msg = "🎃 " + days + " days until Halloween";
     el.textContent = msg;
     el.style.display = "";
   })();
