@@ -476,6 +476,9 @@ function matBits(m){
        .replace(/^\d+\s+/, '').replace(/\s+/g, ' ').trim();
   s = s.split(',')[0].trim();
   if (s.length > 26 && /\sor\s/i.test(s)) s = s.split(/\sor\s/i)[0].trim();
+  /* 2026-09-30: never an empty label and never the literal "Supply" -- fall
+     back to the raw text's comma-head, truncated. */
+  if (!s) s = String((m && m.t) || '').split(',')[0].replace(/\s+/g, ' ').trim().slice(0, 26);
   return { e: '🛒', label: s, buy: true, id: null };
 }
 /* 2026-09-28: emoji audit -- every tile emoji must read as the actual
@@ -657,22 +660,35 @@ function repId(m){
   for (const g of (m.g || [])) for (const id of (g || [])) if (id && SUPPLY_EMOJI[id]) return id;
   return null;
 }
-/* 2026-09-26 red-team: focus-card tap target. repId() returns the FIRST
-   group's representative, so tapping a multi-group (AND) material either
-   dead-taps (first group already ticked) or ticks one group and leaves the
-   row missing with no further progress. nextTapId() returns the
-   representative of the first UNSATISFIED group, so every tap makes progress.
-   Returns null when the first unsatisfied group is buy-only (nothing to tick). */
-function nextTapId(m){
+/* 2026-09-30 focus dead-tap fix (P0): nextTickId() scans ALL unsatisfied
+   groups for a tickable pantry id. It replaces nextTapId(), which only looked
+   at the FIRST unsatisfied group and returned null when that group was
+   buy-only -- but a mixed material like [[null],['scissors']] still has
+   scissors to tick, and the null left its tile dead (19 such materials in the
+   bank). Returns null only when no unsatisfied group has a tickable id, so
+   every tap still makes progress. */
+function nextTickId(m){
   for (const g of (m.g || [])){
     if ((g || []).some(id => id && ticked.has(id))) continue;
     for (const id of (g || [])) if (id && SUPPLY_EMOJI[id]) return id;
-    return null;
   }
   return null;
 }
 function groupOk(g){ return g.some(id => id && ticked.has(id)); }
-function reqOk(m){ return m.g.every(groupOk); }
+/* 2026-09-30 focus dead-tap fix (P0): buy-only requirements have no pantry
+   id, so a ticked buy persists in the pantry2 set under a synthetic key shared
+   with the detail page: 'buy:' + ideaId + '#' + material index. */
+function pantryBuyKey(ideaId, mi){ return 'buy:' + ideaId + '#' + mi; }
+/* 2026-09-30 focus dead-tap fix (P0): a material is satisfied when every
+   group is satisfied -- a buy-only group ([null]) counts when its buy key is
+   ticked. Callers pass the idea id and material index. */
+function reqOk(m, ideaId, mi){ return m.g.every((g) => groupOk(g) || (g.every((id) => !id) && ticked.has(pantryBuyKey(ideaId, mi)))); }
+/* 2026-09-30 focus dead-tap fix (P0): true when the material has an
+   unsatisfied group with no pantry ids at all -- the tap falls back to
+   toggling the buy key instead of ticking a supply. */
+function hasBuyGap(m){
+  return (m.g || []).some(g => !(g || []).some(id => id && ticked.has(id)) && (g || []).every(id => !id));
+}
 /* 2026-09-27 cold-user QA: finger-bounce guard for supply ticks. A double-tap
    on a checkbox tile fires two native toggles (tick then untick) -- a silent
    net no-op that eats the user's tick. Same 400ms tapGuard class as the
@@ -1408,7 +1424,10 @@ function renderGroups(){
          which materials (that's what's in their house). Debounced. */
       if (window._phT) clearTimeout(window._phT);
       window._phT = setTimeout(function(){ track('pantry_materials_changed', { ticked_count: ticked.size }); }, 1500);
-      render();
+      /* 2026-09-30 Tab 6 fix 3 (tap lag): the checkbox tile's own class
+         flipped synchronously above -- defer the full render() a frame so the
+         164-card rebuild can't block the tick's paint. */
+      requestAnimationFrame(() => setTimeout(() => { render(); }, 0));
     });
   });
   applySearch();
@@ -1417,7 +1436,7 @@ function renderGroups(){
 function score(it){
   const missing = [];
   const missingIds = [];
-  it.mats.forEach(m => { if (!reqOk(m)) { missing.push(m.t); missingIds.push(repId(m)); } });
+  it.mats.forEach((m, i) => { if (!reqOk(m, it.id, i)) { missing.push(m.t); missingIds.push(repId(m)); } });
   return { it: it, have: it.mats.length - missing.length, total: it.mats.length, missing: missing, missingIds: missingIds };
 }
 /* 2026-09-26 challenge rematch: score one idea against an arbitrary kit
@@ -1518,23 +1537,36 @@ function renderFocus(){
   it.mats.forEach((m, i) => {
     const b = matBits(m);
     const key = b.buy ? 'buy:' + b.label : 'id:' + b.id;
-    const ok = reqOk(m);
-    if (seenTiles[key]){ if (!ok) seenTiles[key].ok = false; return; }
-    seenTiles[key] = { m: m, i: i, b: b, ok: ok };
+    const ok = reqOk(m, it.id, i);
+    /* 2026-09-30 focus dead-tap fix (P0): keep EVERY material sharing the
+       stash key, not just the first -- the tap target is the first entry
+       still missing (root cause b). */
+    if (seenTiles[key]){ seenTiles[key].mats.push({ m: m, i: i, ok: ok }); if (!ok) seenTiles[key].ok = false; return; }
+    seenTiles[key] = { b: b, ok: ok, mats: [{ m: m, i: i, ok: ok }] };
     tileOrder.push(key);
   });
   const rows = tileOrder.map((key) => {
     const t = seenTiles[key];
-    const m = t.m, i = t.i;
+    /* 2026-09-30 focus dead-tap fix (P0): the tap target is the FIRST material
+       sharing this tile's stash key that is still missing. The old code used
+       only the first material's nextTapId: when that material was satisfied
+       but a later-sharing one wasn't, the tile showed missing with no tap
+       handler (root cause b). nextTickId() scans every unsatisfied group; the
+       hasBuyGap() fallback covers buy-only tiles and mixed materials whose
+       stash groups are already covered (root cause a). */
+    const target = t.mats.find(e => !e.ok) || t.mats[0];
+    const m = target.m, i = target.i;
     const ok = t.ok;
-    const rid = nextTapId(m);
-    const tappable = !ok && !!rid;
+    const tickId = nextTickId(m);
+    const tappable = !ok && (!!tickId || hasBuyGap(m));
     const cls = ok ? 'have' : 'missing';
     const b = t.b;
     const label = b.label;
-    const e = b.e;
+    /* 2026-09-30: a ticked buy tile drops the cart -- the checkmark alone
+       says "handled". Missing buy tiles keep cart + "buy it". */
+    const e = (b.buy && ok) ? '' : b.e;
     const buyNote = (!ok && b.buy) ? '<span class="vh">buy it</span>' : '';
-    return '<div class="mtile ' + cls + '" data-i="' + i + '"' +
+    return '<div class="mtile ' + cls + '" data-key="' + esc(key) + '"' +
       (tappable ? ' role="button" tabindex="0" aria-label="Tick ' + esc(label) + '"' : '') + '>' +
       '<span class="mtbadge" aria-hidden="true">' + (ok ? '\u2713' : '\u25CB') + '</span>' +
       '<span class="mtemo" aria-hidden="true">' + e + '</span>' +
@@ -1544,8 +1576,8 @@ function renderFocus(){
     '<p class="fsub">You have <b>' + r.have + ' of ' + r.total + '</b>.' +
     (r.missing.length ? ' Tap a missing supply to tick it below.' : '') + '</p>';
   const needSeen = {};
-  const needMats = it.mats.filter(mm => {
-    if (reqOk(mm)) return false;
+  const needMats = it.mats.filter((mm, mi) => {
+    if (reqOk(mm, it.id, mi)) return false;
     const nb = matBits(mm);
     const nk = nb.buy ? 'buy:' + nb.label : 'id:' + nb.id;
     if (needSeen[nk]) return false;
@@ -1564,11 +1596,53 @@ function renderFocus(){
     '<a class="fgo" href="index.html?pick=' + encodeURIComponent(it.id) + viaS + '">See the full build guide &rarr;</a>';
   host.hidden = false;
   host.querySelectorAll('.mtile.missing[role="button"]').forEach(row => {
+    const keyOf = (mm) => { const mb = matBits(mm); return mb.buy ? 'buy:' + mb.label : 'id:' + mb.id; };
+    const tileEntries = () => {
+      const out = [];
+      for (let mi = 0; mi < it.mats.length; mi++){
+        if (keyOf(it.mats[mi]) === row.dataset.key) out.push({ m: it.mats[mi], i: mi });
+      }
+      return out;
+    };
     const tap = () => {
-      const m = it.mats[+row.dataset.i];
-      const rid = m && nextTapId(m);
-      if (!rid || ticked.has(rid)) return;
-      ticked.add(rid);
+      /* 2026-09-30 focus dead-tap fix (P0): the tap target is the FIRST
+         material sharing this tile's stash that is still missing, recomputed
+         against the live ticked set (root cause b). */
+      const entries = tileEntries();
+      const target = entries.find(e => !reqOk(e.m, it.id, e.i));
+      if (!target) return;
+      /* 2026-09-27 cold-user QA: 400ms finger-bounce guard (same class as the
+         checkbox tiles). A bounce on a buy tile would toggle twice and eat
+         the tick. */
+      if (!pantryTapGuard('ftap-' + row.dataset.key, 400)) return;
+      const tickId = nextTickId(target.m);
+      if (tickId) ticked.add(tickId);
+      else {
+        /* No tickable supply left: a buy-only tile, or a mixed material whose
+           stash groups are already covered -- toggle the shared buy key. */
+        const bk = pantryBuyKey(it.id, target.i);
+        if (ticked.has(bk)) ticked.delete(bk); else ticked.add(bk);
+      }
+      /* 2026-09-30 Tab 6 fix 3 (tap lag): paint the tapped tile synchronously
+         FIRST -- class, badge, emoji -- then defer the renderGroups()/render()
+         rebuild a frame so the 164-card rebuild can't block the tile's own
+         paint. One change covers the dead-tap fix and the tap-lag fix. */
+      let tileOkNow = true;
+      for (const e of tileEntries()){ if (!reqOk(e.m, it.id, e.i)){ tileOkNow = false; break; } }
+      const badge = row.querySelector('.mtbadge');
+      const emo = row.querySelector('.mtemo');
+      const tb = matBits(target.m);
+      row.classList.toggle('have', tileOkNow);
+      row.classList.toggle('missing', !tileOkNow);
+      if (badge) badge.textContent = tileOkNow ? '\u2713' : '\u25CB';
+      if (emo) emo.textContent = (tb.buy && tileOkNow) ? '' : tb.e;
+      if (tileOkNow){
+        row.removeAttribute('role'); row.removeAttribute('tabindex'); row.removeAttribute('aria-label');
+      } else {
+        row.setAttribute('role', 'button'); row.setAttribute('tabindex', '0');
+        const lbl = row.querySelector('.mtlabel');
+        row.setAttribute('aria-label', 'Tick ' + (lbl ? lbl.textContent : 'supply'));
+      }
       /* 2026-09-26 pm3 red-team P1: same challenge-arrival guard as the
          checkbox handler -- never persist the challenger's kit over the
          recipient's saved pantry. */
@@ -1576,8 +1650,7 @@ function renderFocus(){
         try { localStorage.setItem(LS_KEY, JSON.stringify([...ticked])); } catch (e) {}
       }
       track('pantry_focus_tick', { idea_id: it.id });
-      renderGroups();
-      render();
+      requestAnimationFrame(() => setTimeout(() => { renderGroups(); render(); }, 0));
     };
     row.addEventListener('click', tap);
     row.addEventListener('keydown', (ev) => {

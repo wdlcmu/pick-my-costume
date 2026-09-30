@@ -289,7 +289,7 @@ body{
 .ptiles-sub{margin:0 0 10px;color:var(--muted);font-size:14px}
 .ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
 .ptile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:4px;min-height:96px;padding:10px 6px;text-align:center;text-decoration:none;
+  gap:4px;min-height:96px;padding:10px 6px;text-align:center;text-decoration:none;font:inherit;cursor:pointer;
   border:2px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18);color:var(--ink)}
 .ptile .ptemo{font-size:36px;line-height:1.1}
 .ptile .ptlabel{font-size:11px;line-height:1.25;overflow-wrap:anywhere}
@@ -4601,7 +4601,8 @@ var PANTRY_EMOJI = {
   "paint-yellow": "🟡",
   "paint-gray": "🔘",
   "felt": "🧣",
-  "pipe-cleaners": "🖍\uFE0F"
+  "pipe-cleaners": "🖍\uFE0F",
+  "hoodie": "🧥" /* 2026-09-30: hoodie is a real tickable stash (pantry.html DATA.pantry) but had no emoji, so pure-hoodie materials (baby-dino, crowd-camouflage, little-shark, web-slinger-crew) misclassified as buy tiles and the inline toggle could never satisfy them (their group is not all-null, so no buy key applies). Coat follows the black-clothes/shirt duplication precedent. Companion one-liner needed in pantry.html SUPPLY_EMOJI for visual parity. */
 };
 function pantrySaved(){
   /* Empty state must bypass the staples fallback: a new user with nothing
@@ -4632,6 +4633,27 @@ function shortMaterialName(t){
   s = s.replace(/\s+per\s+person\s*$/i, ""); /* trailing "per person" */
   s = s.replace(/^\s*(a|an|the)\s+/i, "");
   s = s.replace(/^\d+\s+(pair\s+|set\s+)?/i, ""); /* "1 pair " -> "" */
+  s = s.replace(/\s+/g, " ").trim();
+  /* 2026-09-30 "Supply" hardening: keep the noun phrase before the first
+     comma (mirrors pantry.html matBits -- block-game-crew's "Acrylic paint
+     in each hero's colors, 1 small bottle per color (buy: ...)" is 58 chars
+     and returned null, so the tile fell back to the literal "Supply").
+     Then shorten "X or Y" / "X and Y" / "Role: item" the way a shopper
+     reads the label. The " or " split mirrors pantry.html matBits; the
+     " and " and ":" splits only fire while the label is still over the
+     tile budget, so short labels never get chopped. null only when truly
+     nothing usable remains. */
+  s = s.split(",")[0].trim();
+  if (/\sor\s/i.test(s)) s = s.split(/\sor\s/i)[0].trim();
+  if (s.length > 42 && /\sand\s/i.test(s)) s = s.split(/\sand\s/i)[0].trim();
+  if (s.length > 42 && s.indexOf(":") > 0){
+    var sides = s.split(":");
+    var longest = sides[0];
+    for (var si = 1; si < sides.length; si++){ if (sides[si].length > longest.length) longest = sides[si]; }
+    s = longest.trim();
+  }
+  s = s.replace(/^\s*(a|an|the)\s+/i, "");
+  s = s.replace(/^\d+\s+(pair\s+|set\s+)?/i, "");
   s = s.replace(/\s+/g, " ").trim();
   if (!s || s.length > 42) return null; /* shortening failed: count-only */
   return s;
@@ -4667,6 +4689,16 @@ function pantryScore(ideaId, ticked){
         if (tk.has(id)){ gok = true; break; }
       }
       if (!gok){
+        /* buy-key (2026-09-30 detail-badge inline toggle): an all-null group
+           is satisfied when the material's buy key is ticked. pantryBuyKey
+           is index-stable ("buy:"+ideaId+"#"+mi) -- labels change, indices
+           don't. The rep walk below only sees genuinely unsatisfied groups,
+           so "Still need" never names a bought item. */
+        var allNull = true;
+        for (var k3 = 0; k3 < grp.length; k3++){ if (grp[k3]){ allNull = false; break; } }
+        if (allNull && tk.has(pantryBuyKey(ideaId, i))) gok = true;
+      }
+      if (!gok){
         ok = false;
         for (var k2 = 0; k2 < grp.length; k2++){
           var id2 = grp[k2];
@@ -4694,15 +4726,60 @@ function closetBadgeState(ideaId, saved, ticked){
   if (sc.have >= sc.total) return {state: "full", have: sc.have, total: sc.total, names: null};
   return {state: "partial", have: sc.have, total: sc.total, names: sc.missingNames};
 }
+/* pantryBuyKey: ticked-set key recording that the viewer bought a buy-only
+   material outright ("I bought this"). "buy:"+ideaId+"#"+mi -- index-stable:
+   labels change, indices don't. Pantry ids never contain ":", so this can
+   never collide with a stash tick. */
+function pantryBuyKey(ideaId, mi){ return "buy:" + ideaId + "#" + mi; }
+/* pantryNextTapId: index.html port of pantry.html's nextTapId -- the first
+   pantry id of the first UNSATISFIED group, so every tap makes progress on
+   multi-group materials. Tick-only: null when the material is satisfied or
+   the first unsatisfied group is buy-only (nothing to tick). Uses
+   PANTRY_EMOJI, the port of pantry.html's SUPPLY_EMOJI. */
+function pantryNextTapId(mat, tk){
+  for (var g = 0; g < mat.length; g++){
+    var grp = mat[g], gsat = false;
+    for (var k = 0; k < grp.length; k++){
+      var id = grp[k];
+      if (id && tk.has(id)){ gsat = true; break; }
+    }
+    if (gsat) continue;
+    for (var k2 = 0; k2 < grp.length; k2++){
+      var id2 = grp[k2];
+      if (id2 && PANTRY_EMOJI[id2]) return id2;
+    }
+    return null;
+  }
+  return null;
+}
+/* pantrySaveTicked: persist the ticked set under pantry2 (LS_KEY), mirroring
+   pantry.html's save. No challenge guard here: index.html never imports a
+   challenger's ?kit= (the only "kit=" hit in this file is the pantryTicked
+   comment), so the badge always reads and writes the viewer's own pantry. */
+function pantrySaveTicked(set){
+  try {
+    var arr = [];
+    set.forEach(function(v){ arr.push(v); });
+    localStorage.setItem("pantry2", JSON.stringify(arr));
+  } catch(_){}
+}
 /* pantryMatOk: per-material version of pantryScore's AND-across-groups
-   walk (mirrors pantry.html reqOk). */
-function pantryMatOk(mat, tk){
+   walk (mirrors pantry.html reqOk). ideaId/mi enable the buy-key clause:
+   an all-null group counts satisfied when pantryBuyKey(ideaId, mi) is
+   ticked (detail-badge inline toggle, 2026-09-30). */
+function pantryMatOk(mat, tk, ideaId, mi){
   for (var g = 0; g < mat.length; g++){
     var grp = mat[g], gok = false;
     for (var k = 0; k < grp.length; k++){
       var id = grp[k];
       if (!id) continue;
       if (tk.has(id)){ gok = true; break; }
+    }
+    if (!gok){
+      /* buy-key: an all-null group is satisfied by the material's buy key. */
+      var allNull = true;
+      for (var k2 = 0; k2 < grp.length; k2++){ if (grp[k2]){ allNull = false; break; } }
+      if (allNull && tk.has(pantryBuyKey(ideaId, mi))) gok = true;
     }
     if (!gok) return false;
   }
@@ -4731,7 +4808,9 @@ function pantryTileBits(mat, texts, i){
    pantry.html renderFocus) as the default materials presentation on the
    detail page. Same states/copy/analytics as the old strip; tiles link to
    the pantry deep-link so pantry stays the single editing route. */
-function buildClosetBadge(idea){
+/* skipTrack: synchronous re-renders after an inline tile toggle must not
+   double-fire closet_badge_viewed. */
+function buildClosetBadge(idea, skipTrack){
   var saved = pantrySaved();
   var ticked = saved ? pantryTicked() : new Set();
   var st = closetBadgeState(idea.id, saved, ticked);
@@ -4765,7 +4844,44 @@ function buildClosetBadge(idea){
       : (st.have === 0 ? "None of this one is in your pantry yet."
          : "You already have " + st.have + " of " + st.total + " things for this.")));
     if (st.state === "partial"){
-      panel.appendChild(line("Tap a supply to open your pantry and tick what you own.", "ptiles-sub"));
+      panel.appendChild(line("Tap a supply to tick what you own.", "ptiles-sub"));
+    }
+    /* 2026-09-30 (Billy P0): supply tiles toggle inline instead of
+       navigating to /pantry. Stash-backed tiles tick the next unsatisfied
+       requirement (pantry.html nextTapId semantics: first unsatisfied
+       group's first pantry id); tick-only, so an already-satisfied or
+       buy-only requirement is a no-op, same as the /pantry panel.
+       Buy-only tiles toggle their buy key ("buy:"+ideaId+"#"+matIndex) --
+       there is no other untick path for buy items. Merged (dup-tile) tiles
+       track every material index: a stash tap targets the first unsatisfied
+       material's requirement; a buy tap toggles all merged buy keys at
+       once. Taps never bubble to the pick card's doPick handler (E17). */
+    function onTileTap(t){
+      var tk = pantryTicked();
+      if (t.bits.rep){
+        var target = null;
+        for (var mI = 0; mI < t.mats.length; mI++){
+          var mm = t.mats[mI];
+          if (!pantryMatOk(mm.mat, tk, idea.id, mm.idx)){ target = pantryNextTapId(mm.mat, tk); break; }
+        }
+        if (!target || tk.has(target)) return; /* tick-only: no-op when none */
+        tk.add(target);
+      } else {
+        var keys = [];
+        for (var mI2 = 0; mI2 < t.mats.length; mI2++){ keys.push(pantryBuyKey(idea.id, t.mats[mI2].idx)); }
+        var anyUnticked = false;
+        for (var kI = 0; kI < keys.length; kI++){ if (!tk.has(keys[kI])){ anyUnticked = true; break; } }
+        for (var kJ = 0; kJ < keys.length; kJ++){
+          if (anyUnticked) tk.add(keys[kJ]); else tk.delete(keys[kJ]);
+        }
+      }
+      pantrySaveTicked(tk);
+      /* Immediate feedback: synchronously re-render the badge. The badge is
+         small; no rAF needed. skipTrack keeps closet_badge_viewed from
+         double-firing on the re-render. */
+      var old = document.getElementById("detail-mats");
+      var fresh = buildClosetBadge(idea, true);
+      if (old && fresh) old.replaceWith(fresh);
     }
     var grid = document.createElement("div"); grid.className = "ptiles";
     var missBits = [];
@@ -4777,9 +4893,12 @@ function buildClosetBadge(idea){
       (function(mat, idx){
         var bits = pantryTileBits(mat, texts, idx);
         var key = bits.rep ? "id:" + bits.rep : "buy:" + bits.label;
-        var mok = pantryMatOk(mat, ticked);
-        if (tileSeen[key]){ if (!mok) tileSeen[key].ok = false; return; }
-        tileSeen[key] = { ok: mok, bits: bits };
+        var mok = pantryMatOk(mat, ticked, idea.id, idx);
+        /* dup-tiles: track every material index merged into this tile. A
+           stash tap targets the first unsatisfied material's requirement; a
+           buy tap toggles all merged buy keys. */
+        if (tileSeen[key]){ var t0 = tileSeen[key]; if (!mok) t0.ok = false; t0.mats.push({mat: mat, idx: idx}); return; }
+        tileSeen[key] = { ok: mok, bits: bits, mats: [{mat: mat, idx: idx}] };
         tileKeys.push(key);
       })(mats[i], i);
     }
@@ -4788,19 +4907,27 @@ function buildClosetBadge(idea){
         var t = tileSeen[key];
         var ok = t.ok;
         var bits = t.bits;
-        var a = document.createElement("a");
-        a.className = "ptile " + (ok ? "have" : "miss");
-        a.href = pantryHref;
-        a.setAttribute("data-item-id", "tile:" + (bits.rep || "buy"));
-        a.setAttribute("aria-label", bits.label + ": " + (ok ? "you have this" : "missing") + ". Open pantry to update.");
+        /* 2026-09-30 (Billy P0): tiles are buttons that toggle inline --
+           no more navigating to /pantry. pantryHref stays for the
+           "Update my pantry" / "Check my pantry" links only. */
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ptile " + (ok ? "have" : "miss");
+        btn.setAttribute("data-item-id", "tile:" + (bits.rep || "buy"));
+        btn.setAttribute("aria-label", bits.label + ": " + (ok ? "you have this" : "missing") + ". Tap to update.");
         var badge = document.createElement("span"); badge.className = "ptbadge";
         badge.setAttribute("aria-hidden", "true"); badge.textContent = ok ? "\u2713" : "\u25CB";
         var emo = document.createElement("span"); emo.className = "ptemo";
-        emo.setAttribute("aria-hidden", "true"); emo.textContent = bits.e;
+        /* Ticked buy tile: the ptbadge already shows the check; keeping the
+           cart would wrongly imply something is still left to buy. */
+        emo.setAttribute("aria-hidden", "true"); emo.textContent = (ok && !bits.rep) ? "" : bits.e;
         var lab = document.createElement("span"); lab.className = "ptlabel";
         lab.textContent = bits.label;
-        a.appendChild(badge); a.appendChild(emo); a.appendChild(lab);
-        grid.appendChild(a);
+        btn.appendChild(badge); btn.appendChild(emo); btn.appendChild(lab);
+        /* E17 lesson: the badge sits inside a pick card whose whole-card
+           click handler re-runs doPick -- tile taps must never bubble. */
+        btn.addEventListener("click", function(e){ e.stopPropagation(); e.preventDefault(); onTileTap(t); });
+        grid.appendChild(btn);
         if (!ok) missBits.push(bits);
       })();
     });
@@ -4824,7 +4951,7 @@ function buildClosetBadge(idea){
     panel.appendChild(pantryLink("Update my pantry", "pantry-link", st.state));
   }
   /* Counts and state only. idea_id is public catalog data. */
-  Analytics.track("closet_badge_viewed", {idea_id: idea.id, state: st.state, have_count: st.have, total_count: st.total});
+  if (!skipTrack) Analytics.track("closet_badge_viewed", {idea_id: idea.id, state: st.state, have_count: st.have, total_count: st.total});
   return panel;
 }
 /* ---- end 2026-09-26 closet-coverage badge ---- */
