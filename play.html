@@ -58,13 +58,13 @@
     .stage:before{content:"";position:absolute;inset:auto 0 0;height:25%;background:#e6b872;border-top:3px solid var(--ink)}
     .stage:after{content:"";position:absolute;left:50%;bottom:9%;width:65%;height:10%;transform:translateX(-50%);background:rgba(79,49,27,.17);border-radius:50%;filter:blur(5px)}
     .costume{position:absolute;inset:5% 10% 13%;width:80%;height:82%;z-index:1;display:none;filter:drop-shadow(0 8px 3px rgba(70,45,20,.15))}.costume.show{display:block}.costume *{vector-effect:non-scaling-stroke}
-    .stage{--open:60%;overflow:hidden}/* 2026-09-28 Peekaboo rebuild (Billy: the curtain mechanic did not work). No curtains. The costume hides BEHIND the title card and PEEKS out around its edges. --open (per round) sets how much peeks: the hider card covers (100% - open) of the stage width, min 230px so the big PLAY button always fits. rv-center/side/top shift the costume so features peek from different edges. */.hider{position:absolute;left:50%;top:50%;z-index:3;width:max(calc(100% - var(--open)),230px);max-height:94%;aspect-ratio:.94;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px 12px;overflow:hidden;background:var(--surface);border:3px solid var(--ink);border-radius:26px;box-shadow:var(--shadow);transform:translate(-50%,-50%);transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s}.hider-eyes{font-size:2.1rem;line-height:1}.hider-title{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:clamp(1.25rem,4.5vw,1.7rem);text-align:center;line-height:1.05}.peekbtn{font-size:1.45rem!important;padding:15px 32px!important;min-height:62px}.stage.peeked .hider{transform:translate(-50%,-50%) scale(.8) rotate(-2deg)}.stage.peeked .peekbtn{opacity:0;pointer-events:none}.stage.solved .hider{opacity:0;transform:translate(-50%,46%) scale(.55);pointer-events:none}.stage.peeked .costume.show{animation:peekWiggle .55s ease}@keyframes peekWiggle{0%{rotate:0deg}25%{rotate:-5deg}55%{rotate:4deg}80%{rotate:-2deg}}.stage.rv-side .costume.show{transform:translateX(30%)}.stage.rv-top .costume.show{transform:translateY(-24%)}.stage.level-super.rv-center .costume.show{transform:scale(1.38);transform-origin:50% 43%}.stage.level-super.rv-side .costume.show{transform:translateX(30%) scale(1.35);transform-origin:50% 43%}.stage.solved .costume.show{transform:none}
+    .stage{--open:60%;overflow:hidden}/* 2026-09-28 Peekaboo rebuild (the curtain mechanic did not work). No curtains. The costume hides BEHIND the title card and PEEKS out around its edges. --open (per round) sets how much peeks: the hider card covers (100% - open) of the stage width, min 230px so the big PLAY button always fits. rv-center/side/top shift the costume so features peek from different edges. */.hider{position:absolute;left:50%;top:50%;z-index:3;width:max(calc(100% - var(--open)),230px);max-height:94%;aspect-ratio:.94;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px 12px;overflow:hidden;background:var(--surface);border:3px solid var(--ink);border-radius:26px;box-shadow:var(--shadow);transform:translate(-50%,-50%);transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s}.hider-eyes{font-size:2.1rem;line-height:1}.hider-title{font-family:"Baloo 2",sans-serif;font-weight:800;font-size:clamp(1.25rem,4.5vw,1.7rem);text-align:center;line-height:1.05}.peekbtn{font-size:1.45rem!important;padding:15px 32px!important;min-height:62px}.stage.peeked .hider{transform:translate(-50%,-50%) scale(.8) rotate(-2deg)}.stage.peeked .peekbtn{opacity:0;pointer-events:none}.stage.solved .hider{opacity:0;transform:translate(-50%,46%) scale(.55);pointer-events:none}.stage.peeked .costume.show{animation:peekWiggle .55s ease}@keyframes peekWiggle{0%{rotate:0deg}25%{rotate:-5deg}55%{rotate:4deg}80%{rotate:-2deg}}.stage.rv-side .costume.show{transform:translateX(30%)}.stage.rv-top .costume.show{transform:translateY(-24%)}.stage.level-super.rv-center .costume.show{transform:scale(1.38);transform-origin:50% 43%}.stage.level-super.rv-side .costume.show{transform:translateX(30%) scale(1.35);transform-origin:50% 43%}.stage.solved .costume.show{transform:none}
 
     .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(100%,650px);margin:0 auto}
     .answer{min-height:66px;border:2px solid var(--ink);border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);font-family:"Baloo 2",sans-serif;font-size:clamp(1rem,3vw,1.2rem);font-weight:800;padding:10px 8px;cursor:pointer;transition:transform .12s,background .15s}.answer:not(:disabled):hover{background:var(--soft)}.answer:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}.answer:disabled{cursor:default}.answer.correct{background:color-mix(in srgb,var(--good) 18%,var(--surface));border-color:var(--good);box-shadow:0 4px 0 var(--good);color:var(--good)}.answer.wrong{background:color-mix(in srgb,var(--bad) 14%,var(--surface));border-color:var(--bad);color:var(--bad);box-shadow:0 4px 0 var(--bad)}
     .feedback{min-height:80px;margin-top:20px;text-align:center}.feedback strong{display:block;font-family:"Baloo 2";font-size:1.65rem;line-height:1}.feedback span{color:var(--muted)}
     .next{display:none;margin:14px auto 0}.next.show{display:block}
-    /* Billy 2026-09-29: the Next button sat below the phone fold after a
+    /* 2026-09-29: the Next button sat below the phone fold after a
        correct guess. It now scrolls itself into view on reveal (see
        bringIntoView), with safe-area room so it never lands under the
        Safari home bar. */
@@ -228,7 +228,7 @@
      a round. Standing rule: every multi-step flow gets tapGuard at build time. */
   var _tapLast={};
   function tapGuard(key,ms){var n=Date.now(),l=_tapLast[key]||0;if(n-l<(ms||400))return false;_tapLast[key]=n;return true}
-  /* Billy 2026-09-29: keep the advance button reachable without scrolling.
+  /* 2026-09-29: keep the advance button reachable without scrolling.
      Called the moment Next / the match-done block is revealed, and when a new
      round or the finish screen renders (scrolls back up to the section top).
      block:'nearest' only moves the page when the target is actually off-screen;
@@ -254,7 +254,7 @@
   function startMaterials(){mode='match';resetRun();setScreen(materials);syncSwitchLabel();renderMatch()}
   function renderPeek(){
     answered=false;var item=peekRounds[round];
-    /* 2026-09-28 spoiler-guard (Billy: half-second glimpse of the costume
+    /* 2026-09-28 spoiler-guard (half-second glimpse of the costume
        before the hider card covers it). The solved round's hider sits at
        opacity 0; resetting the stage class lets it fade/slide back in over
        .35-.45s while the new costume is already display:block. Snap the
@@ -328,7 +328,7 @@
   function drawLink(piece,costume){
     var board=document.getElementById('matchBoard'),br=board.getBoundingClientRect(),pr=piece.getBoundingClientRect(),cr=costume.getBoundingClientRect();matchLines.setAttribute('viewBox','0 0 '+br.width+' '+br.height);var line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',pr.left-br.left+pr.width/2);line.setAttribute('y1',pr.bottom-br.top-4);line.setAttribute('x2',cr.left-br.left+cr.width/2);line.setAttribute('y2',cr.top-br.top+4);matchLines.appendChild(line);
   }
-  /* 2026-09-29: Chopped — mystery-basket game (Billy: the /pantry link did not
+  /* 2026-09-29: Chopped — mystery-basket game (the /pantry link did not
      feel like a game). 5 rounds, 30 seconds each. Each round shows a basket
      of 4 household items and 3 costume options; exactly one option is fully
      buildable from the basket. Key materials are curated from
@@ -463,7 +463,7 @@
   document.getElementById('next').addEventListener('click',function(){if(tapGuard('gnext',500))next()});
   document.getElementById('materialNext').addEventListener('click',function(){if(tapGuard('gnext',500))next()});
   document.getElementById('again').addEventListener('click',function(){mode==='match'?startMaterials():(mode==='chopped'?startChopped():start())});
-  /* 2026-09-28: "Share my score" (Billy-approved one-tap). The distribution
+  /* 2026-09-28: "Share my score" (approved one-tap). The distribution
      loop: kid plays -> parent shares the score dare -> recipient lands on
      /play?s=<sid> and plays too. The button lives ONLY on the finish screen,
      never mid-game. Native sheet on phones, clipboard fallback on desktop.
