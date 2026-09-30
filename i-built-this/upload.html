@@ -1,0 +1,374 @@
+<!-- STAGED BUILD 2026-09-27. Not deployed. Launch is gated on Billy's Nov 1, 2026
+     decision (reminder scheduled); see README.md "Launch gate". -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share your build - Pick My Costume</title>
+<meta name="description" content="Show us your finished Halloween costume. Real photos, reviewed before they appear.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="./i-built-this.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="/">pick<span>my</span>costume</a>
+    <a href="./index.html" style="font-size:14px;">Gallery</a>
+</div>
+
+  <div class="steps" aria-hidden="true">
+    <div class="stepdot on" data-dot="1"></div>
+    <div class="stepdot" data-dot="2"></div>
+    <div class="stepdot" data-dot="3"></div>
+    <div class="stepdot" data-dot="4"></div>
+</div>
+  <p class="steplabel" id="step-label">Step 1 of 4</p>
+  <div class="err" id="err" role="alert"></div>
+
+  <!-- STEP 1: which costume -->
+  <section data-step="1">
+    <h2 class="q">Which costume did you build?</h2>
+    <input class="searchbox" id="idea-search" type="search" placeholder="Type to search, e.g. ghost"
+      autocomplete="off" aria-label="Search costumes">
+    <ul class="picklist" id="picklist"></ul>
+    <div class="btnrow">
+      <button class="btn ghost" data-back="hub">Back</button>
+      <button class="btn primary" data-next="2" disabled id="s1-next">Continue</button>
+</div>
+  </section>
+
+  <!-- STEP 2: photo -->
+  <section data-step="2" hidden>
+    <h2 class="q">Add your photo</h2>
+    <label class="photodrop" id="photodrop">
+      <span class="emoji" aria-hidden="true">&#128247;</span>
+      <span id="photodrop-text">Tap to choose a photo<br><span style="font-weight:400;font-size:14px;">Camera or photo library</span></span>
+      <input type="file" id="photo-input" accept="image/*" aria-label="Choose a costume photo">
+    </label>
+    <figure class="preview" id="preview-wrap" hidden>
+      <img id="preview-img" alt="Your costume photo preview">
+      <figcaption><button class="repick" id="repick" type="button">Use a different photo</button></figcaption>
+    </figure>
+    <p class="fineprint">We shrink photos for the web and strip location data automatically.
+      One photo per build, please, the one that shows it off best.</p>
+    <div class="btnrow">
+      <button class="btn ghost" data-back="1">Back</button>
+      <button class="btn primary" data-next="3" disabled id="s2-next">Continue</button>
+</div>
+  </section>
+
+  <!-- STEP 3: details + consent -->
+  <section data-step="3" hidden>
+    <h2 class="q">A few details</h2>
+    <div class="field">
+      <label for="f-name">Your name <span class="hint">First name or nickname only. This shows with your photo.</span></label>
+      <input class="textin" id="f-name" maxlength="30" placeholder="e.g. Sam" autocomplete="off">
+</div>
+    <div class="field">
+      <label for="f-caption">Caption <span class="hint">Optional. One line about the build.</span></label>
+      <textarea class="textin" id="f-caption" maxlength="140"
+        placeholder="e.g. Cardboard, hot glue, and one very patient toddler."></textarea>
+      <div class="count"><span id="cap-count">0</span>/140</div>
+</div>
+    <div class="field">
+      <label class="consent">
+        <input type="checkbox" id="c-age">
+        <span>I am 18 or older, <strong>or</strong> I am the parent or legal guardian of the child in this photo
+          and I am submitting it for them. Kids: please have a grown-up submit for you.</span>
+      </label>
+</div>
+    <div class="field">
+      <label class="consent">
+        <input type="checkbox" id="c-photo">
+        <span>I took this photo, or the photographer said I can share it. Everyone recognizable
+          in it is OK with being shown on this site.</span>
+      </label>
+</div>
+    <div class="field">
+      <label class="consent">
+        <input type="checkbox" id="c-show">
+        <span>I give pickmycostume.com permission to show this photo alongside the costume idea.
+          I can ask for it to be taken down at any time.</span>
+      </label>
+</div>
+    <p class="fineprint">Please keep last names, addresses, school names, and license plates out of
+      photos and captions. Every photo is reviewed by a human before it appears.</p>
+    <div class="btnrow">
+      <button class="btn ghost" data-back="2">Back</button>
+      <button class="btn primary" data-next="4" disabled id="s3-next">Review</button>
+</div>
+  </section>
+
+  <!-- STEP 4: review -->
+  <section data-step="4" hidden>
+    <h2 class="q">Look right?</h2>
+    <div class="card">
+      <div class="reviewrow">
+        <img id="r-img" alt="Your costume photo">
+        <div>
+          <div class="t" id="r-idea"></div>
+          <div class="m" id="r-name"></div>
+          <div class="m" id="r-cap"></div>
+</div>
+</div>
+</div>
+    <div class="btnrow">
+      <button class="btn ghost" data-back="3">Back</button>
+      <button class="btn primary" id="submit">Submit my build</button>
+</div>
+    <p class="fineprint">Submitting sends your photo for review. Nothing appears publicly until a human approves it.</p>
+  </section>
+
+  <!-- SUCCESS -->
+  <section data-step="5" hidden>
+    <div class="success">
+      <div class="big" aria-hidden="true">&#127881;</div>
+      <h2 class="q" style="text-align:center;">You are in the gallery queue.</h2>
+      <p class="sub">We will take a look and your build will appear with the costume idea,
+        usually within a day or two.</p>
+      <div class="sharebox">
+        <p class="t">Brag a little while you wait:</p>
+        <p class="sharetext" id="share-text"></p>
+</div>
+      <div class="btnrow">
+        <button class="btn primary" id="share-btn">Share my build</button>
+        <a class="btn ghost" href="./index.html">See the gallery</a>
+</div>
+</div>
+  </section>
+
+  <p class="foot">Free, no signup. Built with Muse.<br>
+    <a href="/">pickmycostume.com</a></p>
+</div>
+<script src="./ideas.js"></script>
+<script src="./i-built-this.js"></script>
+<script>
+/* I built this - upload flow (2026-09-27, staged, not deployed).
+   Four steps with tapGuard on every advance; state survives Back. */
+(function () {
+  var draft = { idea_id: null, idea_title: null, photo: null, name: "", caption: "" };
+  var step = 1;
+
+  IBuiltAnalytics.track("ibuilt_upload_started", {});
+
+  /* Preselect from ?idea= (the return-visit nudge deep link). */
+  try {
+    var q = new URLSearchParams(location.search);
+    var pre = q.get("idea");
+    if (pre) {
+      var hit = (IBUILT_IDEAS || []).filter(function (i) { return i.id === pre; })[0];
+      if (hit) { draft.idea_id = hit.id; draft.idea_title = hit.title; }
+    }
+  } catch (e) {}
+
+  function err(msg) {
+    var el = document.getElementById("err");
+    if (!msg) { el.classList.remove("show"); el.textContent = ""; return; }
+    el.textContent = msg;
+    el.classList.add("show");
+    el.scrollIntoView({ block: "nearest" });
+  }
+
+  function show(n) {
+    step = n;
+    err(null);
+    document.querySelectorAll("[data-step]").forEach(function (s) {
+      s.hidden = s.getAttribute("data-step") !== String(n);
+    });
+    document.querySelectorAll(".stepdot").forEach(function (d) {
+      d.classList.toggle("on", Number(d.getAttribute("data-dot")) <= Math.min(n, 4));
+    });
+    document.getElementById("step-label").textContent =
+      n >= 5 ? "Done" : "Step " + n + " of 4";
+    window.scrollTo(0, 0);
+  }
+
+  /* ---- Step 1: search-first picker ---- */
+  var search = document.getElementById("idea-search");
+  var list = document.getElementById("picklist");
+  var s1next = document.getElementById("s1-next");
+
+  function titleFor(id) {
+    var h = (IBUILT_IDEAS || []).filter(function (i) { return i.id === id; })[0];
+    return h ? h.title : id;
+  }
+
+  function renderList(filter) {
+    list.innerHTML = "";
+    var f = (filter || "").trim().toLowerCase();
+    var items = (IBUILT_IDEAS || []).filter(function (i) {
+      return !f || i.title.toLowerCase().indexOf(f) !== -1 || i.id.indexOf(f) !== -1;
+    }).slice(0, 12);
+    if (!items.length) {
+      var li = document.createElement("li");
+      li.className = "nores";
+      li.textContent = "No match. You can still continue and name it on the next screens.";
+      list.appendChild(li);
+    }
+    items.forEach(function (i) {
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = i.title;
+      b.setAttribute("data-idea", i.id);
+      b.addEventListener("click", function () {
+        if (!ibuiltTapGuard("idea_pick", 400)) return;
+        draft.idea_id = i.id;
+        draft.idea_title = i.title;
+        search.value = i.title;
+        s1next.disabled = false;
+        IBuiltAnalytics.track("ibuilt_idea_selected", { idea_id: i.id });
+      });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    /* Free-text escape hatch, always last. */
+    var li2 = document.createElement("li");
+    var other = document.createElement("button");
+    other.type = "button";
+    other.textContent = "Something else (I will name it)";
+    other.addEventListener("click", function () {
+      if (!ibuiltTapGuard("idea_pick", 400)) return;
+      var name = prompt("What did you build? (short name)");
+      if (name && name.trim()) {
+        draft.idea_id = "custom";
+        draft.idea_title = name.trim().slice(0, 60);
+        search.value = draft.idea_title;
+        s1next.disabled = false;
+        IBuiltAnalytics.track("ibuilt_idea_selected", { idea_id: "custom" });
+      }
+    });
+    li2.appendChild(other);
+    list.appendChild(li2);
+  }
+  var searchT = null;
+  search.addEventListener("input", function () {
+    clearTimeout(searchT);
+    searchT = setTimeout(function () { renderList(search.value); }, 120);
+  });
+  renderList("");
+  if (draft.idea_id) {
+    search.value = draft.idea_title;
+    s1next.disabled = false;
+  }
+
+  /* ---- Step 2: photo ---- */
+  var photoInput = document.getElementById("photo-input");
+  var s2next = document.getElementById("s2-next");
+  photoInput.addEventListener("change", function () {
+    err(null);
+    var f = photoInput.files && photoInput.files[0];
+    var v = IBuiltPhoto.validate(f);
+    if (v) { err(v); photoInput.value = ""; return; }
+    document.getElementById("photodrop-text").textContent = "Working on your photo...";
+    IBuiltPhoto.process(f).then(function (dataUrl) {
+      draft.photo = dataUrl;
+      document.getElementById("preview-img").src = dataUrl;
+      document.getElementById("preview-wrap").hidden = false;
+      document.getElementById("photodrop").style.display = "none";
+      s2next.disabled = false;
+      IBuiltAnalytics.track("ibuilt_photo_added", {});
+    }).catch(function (e2) {
+      err(e2.message || "Could not use that photo. Try another.");
+      document.getElementById("photodrop-text").innerHTML =
+        'Tap to choose a photo<br><span style="font-weight:400;font-size:14px;">Camera or photo library</span>';
+      photoInput.value = "";
+    });
+  });
+  document.getElementById("repick").addEventListener("click", function () {
+    if (!ibuiltTapGuard("repick", 400)) return;
+    draft.photo = null;
+    photoInput.value = "";
+    document.getElementById("preview-wrap").hidden = true;
+    document.getElementById("photodrop").style.display = "";
+    s2next.disabled = true;
+  });
+
+  /* ---- Step 3: details + consent ---- */
+  var fName = document.getElementById("f-name");
+  var fCap = document.getElementById("f-caption");
+  var cAge = document.getElementById("c-age");
+  var cPhoto = document.getElementById("c-photo");
+  var cShow = document.getElementById("c-show");
+  var s3next = document.getElementById("s3-next");
+  fCap.addEventListener("input", function () {
+    document.getElementById("cap-count").textContent = String(fCap.value.length);
+  });
+  function checkS3() {
+    s3next.disabled = !(cAge.checked && cPhoto.checked && cShow.checked);
+  }
+  [cAge, cPhoto, cShow].forEach(function (c) { c.addEventListener("change", checkS3); });
+  checkS3();
+
+  /* ---- Navigation ---- */
+  document.querySelectorAll("[data-next]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (!ibuiltTapGuard("step_next", 400)) return;
+      if (b.disabled) return;
+      err(null);
+      if (step === 3) {
+        draft.name = fName.value.trim().slice(0, 30);
+        draft.caption = fCap.value.trim().slice(0, 140);
+        if (!draft.name) draft.name = "A costume builder";
+        IBuiltAnalytics.track("ibuilt_details_completed", { has_caption: !!draft.caption });
+        /* Fill review */
+        document.getElementById("r-img").src = draft.photo;
+        document.getElementById("r-idea").textContent = draft.idea_title || "Your build";
+        document.getElementById("r-name").textContent = draft.name;
+        document.getElementById("r-cap").textContent = draft.caption;
+      }
+      show(step + 1);
+    });
+  });
+  document.querySelectorAll("[data-back]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (!ibuiltTapGuard("step_back", 400)) return;
+      var to = b.getAttribute("data-back");
+      if (to === "hub") { location.href = "./index.html"; return; }
+      show(Number(to));
+    });
+  });
+
+  /* ---- Submit ---- */
+  document.getElementById("submit").addEventListener("click", function () {
+    if (!ibuiltTapGuard("ibuilt_submit", 1500)) return; /* double-tap = one submission */
+    err(null);
+    try {
+      var sub = IBuiltStore.add({
+        idea_id: draft.idea_id || "custom",
+        idea_title: draft.idea_title || "My build",
+        name: draft.name,
+        caption: draft.caption,
+        photo: draft.photo,
+      });
+      IBuiltAnalytics.track("ibuilt_submitted", {
+        idea_id: sub.idea_id, has_caption: !!sub.caption,
+      });
+      document.getElementById("share-text").textContent =
+        "I built the " + sub.idea_title + " costume. Show us yours: pickmycostume.com/i-built-this/";
+      show(5);
+    } catch (e2) {
+      err("Something went wrong saving your build. Please try again.");
+    }
+  });
+
+  /* ---- Share (success) ---- */
+  document.getElementById("share-btn").addEventListener("click", function () {
+    if (!ibuiltTapGuard("ibuilt_share", 800)) return;
+    var text = document.getElementById("share-text").textContent;
+    IBuiltAnalytics.track("ibuilt_share_created", {});
+    if (navigator.share) {
+      navigator.share({ title: "I built this", text: text, url: ibuiltShareUrl() }).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        document.getElementById("share-btn").textContent = "Copied!";
+      }).catch(function () {});
+    }
+  });
+
+  show(1);
+})();
+</script>
+</body>
+</html>

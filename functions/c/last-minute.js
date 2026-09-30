@@ -87,7 +87,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/lost-tourist">Lost Tourist</a><span>Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder.</span></li>
       <li><a href="/c/mermaid-crew">Mermaid Crew</a><span>The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.</span></li>
       <li><a href="/c/mystery-crew">Mystery Crew</a><span>Assign the leader, the style icon, the brains, the goofball, and one very good dog.</span></li>
-      <li><a href="/c/neon-demon-hunter">Neon Demon Hunter</a><span>Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.</span></li>
+      <li><a href="/c/neon-demon-hunter">Neon Demon Hunter</a><span>Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.</span></li>
       <li><a href="/c/ninja">Ninja</a><span>All black with a belt sash and a slit headband.</span></li>
       <li><a href="/c/office-couple">Office Couple</a><span>White shirts, name tags, and a teapot. The office&#x27;s finest.</span></li>
       <li><a href="/c/pbj">Peanut Butter &amp; Jelly</a><span>One in brown with a PB label, one in purple with a J label.</span></li>
@@ -115,7 +115,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/zombie-coworker">Zombie Coworker</a><span>Torn button-down, loosened tie, pale makeup, coffee mug.</span></li>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/family">Family Halloween costume ideas</a> &middot; <a href="/c/couples">Couples Halloween costume ideas</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
-<footer>Built with Muse. Made by Billy Litner.</footer>
+<footer>Built with Muse.</footer>
 </main></body></html>
 `;
 

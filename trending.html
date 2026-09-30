@@ -11,6 +11,10 @@
 <meta property="og:description" content="The most-searched Halloween costumes in America right now, from Google's Frightgeist, plus what's trending on Pick My Costume.">
 <meta property="og:url" content="https://pickmycostume.com/trending">
 <meta property="og:image" content="https://pickmycostume.com/images/og/snow-sisters.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 2026-09-27 red-team discover: X falls back to a small summary card without
+     twitter:card. Kept outside the weekly-regen touch zones (grid, datelines,
+     og:image), which only regex-replace the og:image line. -->
 <style>
 :root{
   --bg:#160d28; --bg2:#211540; --card:#2a1c52; --ink:#fdf3e3;
@@ -23,7 +27,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Bl
 header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
 .brand{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none}
 .brand span{color:var(--accent)}
-.home-link{color:var(--muted);text-decoration:none;font-size:14px}
+.home-link{color:var(--muted);text-decoration:none;font-size:14px;display:inline-block;padding:12px 8px;margin:-12px -8px}
+/* 2026-09-27 red-team hubs: header "Take the quiz" was ~21px tall; now ~45px
+   hit area with zero layout change (padding/negative-margin trick). */
 h1{font-size:32px;margin:8px 0 4px;line-height:1.2}
 .sub{color:var(--muted);margin:0 0 24px}
 h2{font-size:22px;margin:32px 0 4px}
@@ -33,17 +39,25 @@ ol.trend li{background:var(--card);border:1px solid var(--line);border-radius:va
 .rank{flex:0 0 40px;height:40px;border-radius:50%;background:var(--bg2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:18px}
 .trend-name{font-weight:700}
 .trend-src{color:var(--muted);font-size:13px}
-.trend-link{margin-left:auto;flex:0 0 auto;color:var(--accent);font-size:14px;text-decoration:none;white-space:nowrap}
+.trend-link{margin-left:auto;flex:0 0 auto;color:var(--accent);font-size:14px;text-decoration:none;white-space:nowrap;padding:12px 4px;margin-top:-12px;margin-bottom:-12px}
+/* 2026-09-27 red-team hubs: row links were ~21px tall inline text; now ~45px
+   tall. Negative vertical margin keeps the row height almost unchanged. */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:var(--ink)}
 .card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
 .card .n{padding:10px 12px;font-weight:700;font-size:15px}
 .card .n .fire{margin-right:4px}
+/* 2026-09-26 pm3 red-team: evidence line under the card title, matching the
+   homepage trendStatEl ("Trending · lane: stat"). Only rendered by the weekly
+   regen when the bank carries trend data for the idea -- never invented. */
+.card .tstat{display:block;padding:0 12px 12px;font-size:12.5px;color:var(--muted);font-weight:400}
 .cta{display:block;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:18px;padding:16px;border-radius:var(--radius);text-decoration:none;margin:36px 0 8px}
 .fine{color:var(--muted);font-size:13px}
 .method{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:32px}
 .yeartoggle{display:flex;gap:8px;margin:0 0 16px}
-.yeartoggle .chip{background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 20px;font-size:15px;font-weight:700;cursor:pointer}
+.yeartoggle .chip{background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer}
+/* 2026-09-27 red-team hubs: chips were ~38px tall; 12px vertical padding makes
+   them ~46px, clearing the 44px minimum tap target. */
 .yeartoggle .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .method h3{margin:0 0 8px;font-size:16px}
 .method p{margin:0 0 8px;font-size:14px;color:var(--muted)}
@@ -66,7 +80,7 @@ footer{margin-top:40px;text-align:center}
   <div class="yeartoggle" role="tablist" aria-label="Frightgeist year">
     <button class="chip on" role="tab" aria-selected="true" data-fy="2025" type="button">2025</button>
     <button class="chip" role="tab" aria-selected="false" data-fy="2024" type="button">2024</button>
-  </div>
+</div>
   <ol class="trend" id="trend-2025">
     <li><span class="rank">1</span><span><span class="trend-name">Rumi</span><br><span class="trend-src">KPop Demon Hunters</span></span><a class="trend-link" href="/c/demon-boy-band">Find your version →</a></li>
     <li><span class="rank">2</span><span><span class="trend-name">Zoey</span><br><span class="trend-src">KPop Demon Hunters</span></span><a class="trend-link" href="/c/demon-boy-band">Find your version →</a></li>
@@ -93,7 +107,7 @@ footer{margin-top:40px;text-align:center}
   </ol>
 
   <h2>🔥 Trending on Pick My Costume</h2>
-  <p class="section-note">Most saved and picked on this site. Updated September 26, 2026. Every one has a free step-by-step DIY guide.</p>
+  <p class="section-note">Most saved and picked on this site. Updated September 2026. Every one has a free step-by-step DIY guide.</p>
   <div class="grid">
     <a class="card" href="/c/snow-sisters"><img src="/photos/snow-sisters.webp" alt="Snow Sisters costume" loading="lazy"><span class="n"><span class="fire">🔥</span>#1 Snow Sisters</span></a>
     <a class="card" href="/c/blue-dog-family"><img src="/photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span class="n"><span class="fire">🔥</span>#2 Aussie Dog Family</span></a>
@@ -103,7 +117,7 @@ footer{margin-top:40px;text-align:center}
     <a class="card" href="/c/breakfast-buffet"><img src="/photos/breakfast-buffet.webp" alt="Breakfast Buffet costume" loading="lazy"><span class="n">#6 Breakfast Buffet</span></a>
     <a class="card" href="/c/little-pig-family"><img src="/photos/little-pig-family.webp" alt="Little Pig Family costume" loading="lazy"><span class="n">#7 Little Pig Family</span></a>
     <a class="card" href="/c/tin-hero"><img src="/photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span class="n">#8 The Tin Hero</span></a>
-  </div>
+</div>
 
   <a class="cta" href="/">Find my costume →</a>
   <p class="fine" style="text-align:center">5 questions · 2 minutes · free forever</p>
@@ -111,13 +125,17 @@ footer{margin-top:40px;text-align:center}
   <div class="method">
     <h3>Where this comes from</h3>
     <p><strong>National trends:</strong> Google's <a href="https://frightgeist.withgoogle.com/">Frightgeist</a>, which ranks costumes from Google Search data. The top 10 above is Frightgeist's latest published ranking (October 2025). We update this page when Google publishes new rankings.</p>
-    <p><strong>On-site trends:</strong> the 8 costumes our visitors saved and picked most in the week ending September 26, 2026. No fake counts, no made-up names.</p>
+    <p><strong>On-site trends:</strong> the 8 costumes our visitors saved and picked most in recent weeks. No fake counts, no made-up names.</p>
     <p style="margin:0">See a trending costume you like? Take the 2-minute quiz and we will match you with the one that fits your group, budget, and how much effort you want to spend.</p>
-  </div>
+</div>
 
   <footer>
-    <p class="fine">Built with Muse. Made by Billy Litner.</p>
-  </footer>
+    <!-- 2026-09-26 red-team distro: hub cross-links. A search visitor landing
+         on /trending had no path to the other hubs. Placed in the footer,
+         outside the weekly-regen touch zones (card grid, datelines, og:image). -->
+    <p class="fine" style="text-align:center">Explore: <a href="/costumes" style="color:var(--accent)">All costume guides</a> &middot; <a href="/compare" style="color:var(--accent)">Compare easy costumes</a> &middot; <a href="/group-costumes" style="color:var(--accent)">Group packs</a> &middot; <a href="/pantry" style="color:var(--accent)">What do you have?</a></p>
+    <p class="fine">Built with Muse.</p>
+</footer>
 </div>
 <script>
 (function(){
@@ -141,6 +159,154 @@ footer{margin-top:40px;text-align:center}
       });
     })(btns[i]);
   }
+})();
+</script><!-- 2026-09-26 trending-map integration: "What America is picking for Halloween 2026"
+     tile-grid map (distribution asset — the earned-media linkbait format from the
+     2026-09-26j scouting find). FLAG-GATED, OFF by default.
+     Flag-off behavior: the script below returns before doing anything — no DOM
+     changes, no fetch, no console output; the rendered page is byte-identical to
+     before (asserted by hour-session/trending-map-integrate-2026-09-26/verify.js).
+     To enable: (1) ship a REAL weekly trending-map-data.json via the PostHog export
+     job (sample:false, no SAMPLE note, exactly 51 state entries, every slug present
+     in ideas); (2) set TRENDING_MAP_ENABLED=true below; (3) re-run the verifier;
+     (4) deploy trending.html + trending-map-data.json together (batched, main agent).
+     Honesty guard: placeholder/sample data NEVER renders, even with the flag on. --><script>
+var TRENDING_MAP_ENABLED = false; // FLAG: flip to true only with real weekly data shipped
+(function(){
+  if (!TRENDING_MAP_ENABLED) return; // flag off: page unchanged, zero network
+
+  // Tile positions: [col, row] on a 12x8 grid. All 50 states + DC, each exactly once.
+  var POS = {AK:[0,0],ME:[11,0],WI:[6,1],VT:[10,1],NH:[11,1],
+    WA:[1,2],OR:[2,2],CA:[3,2],MN:[5,2],IA:[6,2],MI:[8,2],MA:[10,2],NY:[11,2],
+    NV:[1,3],ID:[2,3],MT:[3,3],ND:[4,3],WY:[5,3],NE:[6,3],SD:[7,3],IL:[8,3],IN:[9,3],OH:[10,3],PA:[11,3],
+    CO:[2,4],UT:[3,4],KS:[5,4],MO:[6,4],KY:[7,4],WV:[8,4],VA:[9,4],NJ:[11,4],
+    NM:[2,5],TX:[3,5],OK:[4,5],AR:[5,5],TN:[6,5],MS:[7,5],AL:[8,5],GA:[9,5],SC:[10,5],NC:[11,5],
+    AZ:[2,6],LA:[4,6],CT:[9,6],RI:[10,6],
+    HI:[0,7],MD:[7,7],DC:[8,7],DE:[9,7],FL:[10,7]};
+
+  function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  // Honesty guard: refuse to render unless the data is real weekly data.
+  // Sample/placeholder exports (sample:true or a SAMPLE note), partial coverage,
+  // or unknown slugs all render nothing — the page simply has no map section.
+  function isRealData(d){
+    if (!d || typeof d !== 'object') return false;
+    if (d.sample !== false) return false;
+    if (typeof d._note === 'string' && /sample/i.test(d._note)) return false;
+    var states = d.states || {}, ideas = d.ideas || {};
+    var abbrs = Object.keys(states);
+    if (abbrs.length !== 51) return false;
+    for (var i = 0; i < abbrs.length; i++){
+      var slug = states[abbrs[i]];
+      if (!ideas[slug] || !ideas[slug].name || !ideas[slug].color) return false;
+    }
+    return true;
+  }
+
+  function injectCSS(){
+    var css = '#trend-map{margin:32px 0 0}' +
+      '.tmap-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;max-width:560px}' +
+      '.tmap-tile{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;' +
+      'font-size:10px;font-weight:700;color:#1a1030;cursor:pointer;border:0;padding:0;font-family:inherit}' +
+      '.tmap-tile.empty{background:transparent;cursor:default}' +
+      '.tmap-tile.sel{outline:3px solid #fff}' +
+      '.tmap-detail{margin-top:16px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:14px;max-width:560px}' +
+      '.tmap-detail .st{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}' +
+      '.tmap-detail .pk{font-size:20px;font-weight:800;margin:4px 0}' +
+      '.tmap-detail .go{color:var(--accent);font-size:14px;text-decoration:none}' +
+      '.tmap-legend{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:560px}' +
+      '.tmap-leg{display:flex;align-items:center;gap:8px;font-size:12px}' +
+      '.tmap-dot{width:14px;height:14px;border-radius:50%;flex:none}';
+    var s = el('style');
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  function render(d){
+    var sec = el('section', null);
+    sec.id = 'trend-map';
+    sec.setAttribute('aria-labelledby', 'trend-map-h');
+    var h = el('h2', null, '🗺️ What America is picking for Halloween 2026');
+    h.id = 'trend-map-h';
+    sec.appendChild(h);
+    var note = el('p', 'section-note',
+      'Top quiz pick in each state, from real quiz picks' +
+      (d.week ? ', week of ' + d.week : '') +
+      (d.total_picks ? ' (' + d.total_picks + ' picks)' : '') + '. Tap a state.');
+    sec.appendChild(note);
+
+    var grid = el('div', 'tmap-grid');
+    grid.setAttribute('role', 'img');
+    grid.setAttribute('aria-label', 'US map of top-picked costumes by state');
+    var cells = {};
+    Object.keys(POS).forEach(function(abbr){ cells[POS[abbr][1] * 12 + POS[abbr][0]] = abbr; });
+
+    var detail = el('div', 'tmap-detail');
+    var dst = el('div', 'st', 'Pick a state');
+    var dpk = el('div', 'pk', 'Tap any tile above');
+    detail.appendChild(dst); detail.appendChild(dpk);
+
+    for (var i = 0; i < 96; i++){
+      (function(idx){
+        var abbr = cells[idx];
+        if (!abbr){ grid.appendChild(el('div', 'tmap-tile empty')); return; }
+        var slug0 = d.states[abbr];
+        var idea0 = d.ideas[slug0];
+        var b = el('button', 'tmap-tile', abbr);
+        b.type = 'button';
+        b.style.background = idea0.color;
+        b.setAttribute('data-abbr', abbr);
+        b.setAttribute('aria-label', abbr + ': ' + idea0.name);
+        b.addEventListener('click', function(){
+          var sels = grid.querySelectorAll('.tmap-tile.sel');
+          for (var j = 0; j < sels.length; j++) sels[j].classList.remove('sel');
+          b.classList.add('sel');
+          var slug = d.states[abbr];
+          var idea = d.ideas[slug];
+          dst.textContent = abbr + ' is picking';
+          dpk.textContent = idea.name;
+          var old = detail.querySelector('.go');
+          if (old) old.parentNode.removeChild(old);
+          var go = el('a', 'go', 'Find your version →');
+          go.href = '/c/' + slug;
+          detail.appendChild(go);
+        });
+        grid.appendChild(b);
+      })(i);
+    }
+    sec.appendChild(grid);
+    sec.appendChild(detail);
+
+    var legend = el('div', 'tmap-legend');
+    Object.keys(d.ideas).forEach(function(slug){
+      var idea = d.ideas[slug];
+      var row = el('div', 'tmap-leg');
+      var dot = el('span', 'tmap-dot');
+      dot.style.background = idea.color;
+      row.appendChild(dot);
+      row.appendChild(el('span', null, idea.name));
+      legend.appendChild(row);
+    });
+    sec.appendChild(legend);
+
+    var anchor = document.querySelector('.cta');
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(sec, anchor);
+    else { var wrap = document.querySelector('.wrap'); if (wrap) wrap.appendChild(sec); }
+  }
+
+  fetch('trending-map-data.json').then(function(r){
+    if (!r.ok) throw new Error('no data');
+    return r.json();
+  }).then(function(d){
+    if (!isRealData(d)) return; // placeholder or malformed: render nothing
+    injectCSS();
+    render(d);
+  }).catch(function(){ /* no data: map stays out, page unchanged */ });
 })();
 </script>
 </body>

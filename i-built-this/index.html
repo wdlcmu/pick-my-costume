@@ -1,0 +1,139 @@
+<!-- STAGED BUILD 2026-09-27. Not deployed. Launch is gated on Billy's Nov 1, 2026
+     decision (reminder scheduled); see README.md "Launch gate". Do not ship
+     this before that decision, even if the build is complete. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I built this - real costumes from real people - Pick My Costume</title>
+<meta name="description" content="Built your Halloween costume? Show us how it turned out. Real photos from real builders, reviewed before they appear.">
+<meta property="og:title" content="I built this - Pick My Costume">
+<meta property="og:description" content="Built your costume? Come back and show us. Real photos from real people.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/i-built-this/">
+<link rel="stylesheet" href="./i-built-this.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="/">pick<span>my</span>costume</a>
+</div>
+
+  <header class="hero">
+    <div class="big" aria-hidden="true">&#127875;</div>
+    <h1>Did you build it? Show us.</h1>
+    <p class="sub">The quiz picks the costume. You do the glorious cardboard-and-glue part.
+      Come back after and show the world how it turned out.</p>
+  </header>
+
+  <div class="nudge" id="nudge" role="status">
+    <p class="t" id="nudge-title">Welcome back, builder.</p>
+    <p class="s" id="nudge-sub">Did you build your costume? Show us how it turned out.</p>
+    <a class="btn primary" id="nudge-cta" href="./upload.html">Show us your build</a>
+</div>
+
+  <div class="card">
+    <ol class="how">
+      <li><span class="n">1</span><span><span class="t">Pick what you built.</span><br>
+        <span class="s">Find your costume from the quiz, or tell us what you made.</span></span></li>
+      <li><span class="n">2</span><span><span class="t">Add a photo.</span><br>
+        <span class="s">Snap it on your phone. We strip location data automatically.</span></span></li>
+      <li><span class="n">3</span><span><span class="t">Inspire the next builder.</span><br>
+        <span class="s">Your photo appears with the costume idea after a quick review.</span></span></li>
+    </ol>
+    <div class="btnrow">
+      <a class="btn primary" id="cta-upload" href="./upload.html">Share my build</a>
+</div>
+    <p class="fineprint">Real photos only, reviewed by a human before they appear.
+      No last names, no addresses, no school names in captions please.</p>
+</div>
+
+  <div class="galhead">
+    <h2>Fresh from the workbench</h2>
+    <span class="n" id="gal-count"></span>
+</div>
+  <div class="grid" id="gallery"></div>
+  <div class="empty" id="gal-empty" hidden>
+    <div class="big" aria-hidden="true">&#128247;</div>
+    <p><strong>No builds yet. Yours could be first.</strong></p>
+    <p>Every photo here is a real costume built by a real visitor.</p>
+</div>
+
+  <p class="foot">Free, no signup. Built with Muse.<br>
+    <a href="/">pickmycostume.com</a></p>
+</div>
+<script src="./ideas.js"></script>
+<script src="./i-built-this.js"></script>
+<script>
+/* I built this - hub (2026-09-27, staged, not deployed).
+   Gallery renders approved + your own pending submissions. Nothing here
+   is faked: with zero submissions the honest empty state shows. */
+(function () {
+  IBuiltAnalytics.track("ibuilt_hub_viewed", {});
+
+  /* Return-visit nudge: the site remembers your pick under pmc_pick_v1. */
+  try {
+    var pick = IBuiltNudge.getPick();
+    if (pick && IBuiltNudge.shouldShow(pick)) {
+      var title = IBuiltNudge.ideaTitle(pick.ideaId);
+      var nudge = document.getElementById("nudge");
+      if (title) {
+        document.getElementById("nudge-sub").textContent =
+          "Did you build your " + title + "? Show us how it turned out.";
+        document.getElementById("nudge-cta").href = "./upload.html?idea=" + encodeURIComponent(pick.ideaId);
+      }
+      nudge.classList.add("show");
+      IBuiltAnalytics.track("ibuilt_invite_viewed", { location: "hub_nudge", idea_id: pick.ideaId });
+    }
+  } catch (e) {}
+
+  document.getElementById("cta-upload").addEventListener("click", function () {
+    if (!ibuiltTapGuard("hub_cta", 400)) return;
+    IBuiltAnalytics.track("ibuilt_upload_cta_tapped", { from: "hub" });
+  });
+
+  function card(sub) {
+    var el = document.createElement("article");
+    el.className = "gcard";
+    el.setAttribute("data-sub", sub.id);
+    var badge = sub.status === "pending"
+      ? '<span class="badge">In review</span>' : "";
+    el.innerHTML =
+      badge +
+      '<button class="report" aria-label="Report this photo" data-report="' + ibuiltEsc(sub.id) + '">&#9873;</button>' +
+      '<img src="' + sub.photo + '" alt="' + ibuiltEsc("Finished " + sub.idea_title + " costume") + '" loading="lazy">' +
+      '<div class="b"><div class="t">' + ibuiltEsc(sub.idea_title) + '</div>' +
+      (sub.caption ? '<div class="c">' + ibuiltEsc(sub.caption) + '</div>' : "") +
+      '<div class="who">' + ibuiltEsc(sub.name || "A costume builder") + " - " + ibuiltEsc(ibuiltTimeAgo(sub.ts)) + "</div></div>";
+    el.querySelector("img").addEventListener("click", function () {
+      IBuiltAnalytics.track("ibuilt_gallery_photo_tapped", { submission_id: sub.id, idea_id: sub.idea_id });
+    });
+    el.querySelector("[data-report]").addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      if (!ibuiltTapGuard("report", 800)) return;
+      IBuiltStore.hide(sub.id);
+      el.remove();
+      IBuiltAnalytics.track("ibuilt_report_tapped", { submission_id: sub.id });
+      render();
+    });
+    return el;
+  }
+
+  function render() {
+    var subs = IBuiltStore.list().filter(function (s) {
+      return s.status === "approved" || s.mine;
+    });
+    var gal = document.getElementById("gallery");
+    gal.innerHTML = "";
+    subs.forEach(function (s) { gal.appendChild(card(s)); });
+    document.getElementById("gal-empty").hidden = subs.length > 0;
+    document.getElementById("gal-count").textContent =
+      subs.length ? subs.length + (subs.length === 1 ? " build" : " builds") : "";
+  }
+  render();
+  IBuiltAnalytics.track("ibuilt_gallery_viewed", { count: IBuiltStore.list().length });
+})();
+</script>
+</body>
+</html>

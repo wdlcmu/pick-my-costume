@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 12-Day Costume Countdown - Pick My Costume</title>
+<meta name="description" content="One costume idea a day, Oct 20 through Halloween. Share the day, dare a friend to beat your pick. Free, no signup.">
+<meta property="og:title" content="The 12-Day Costume Countdown">
+<meta property="og:description" content="One costume idea a day, Oct 20 through Halloween. Day 1 is live. Can your closet beat it?">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/countdown.html">
+<meta property="og:image" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<meta property="og:image:secure_url" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{ --bg:#14092b; --card:#1f1140; --ink:#f5efff; --muted:#c9bce8; --acc:#ffb020; --acc2:#7ef0c1; --line:#3a2568; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap{ max-width:920px; margin:0 auto; padding:20px 16px 64px; }
+  header.hero{ text-align:center; padding:28px 8px 8px; }
+  header.hero .moon{ font-size:44px; }
+  h1{ font-size:30px; margin:10px 0 6px; letter-spacing:-0.5px; }
+  .sub{ color:var(--muted); font-size:16px; margin:0 0 6px; }
+  .dateline{ display:inline-block; margin-top:10px; padding:6px 14px; border:1px solid var(--line); border-radius:999px; color:var(--acc); font-weight:700; font-size:14px; }
+  .quizcta{ display:inline-block; margin:14px 0 0; padding:12px 26px; border-radius:999px; background:var(--acc); color:#241300; font-weight:800; font-size:16px; text-decoration:none; }
+  .quizcta:active{ transform:scale(0.97); }
+  h2.sec{ font-size:20px; margin:34px 0 12px; }
+  .today{ background:linear-gradient(160deg,#2c1657,#1a0e38); border:2px solid var(--acc); border-radius:18px; overflow:hidden; }
+  .today img{ width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
+  .today .body{ padding:18px 18px 20px; }
+  .daytag{ display:inline-block; font-size:12px; font-weight:800; letter-spacing:1.5px; color:#241300; background:var(--acc); border-radius:6px; padding:3px 10px; margin-bottom:8px; }
+  .today h2{ margin:0 0 6px; font-size:26px; }
+  .blurb{ color:var(--muted); font-size:15px; margin:0 0 12px; line-height:1.5; }
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .chip{ font-size:13px; padding:5px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink); }
+  .btnrow{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{ flex:1 1 160px; text-align:center; padding:12px 16px; border-radius:12px; font-weight:700; font-size:15px; text-decoration:none; border:1px solid var(--line); background:#2a1750; color:var(--ink); cursor:pointer; }
+  .btn.primary{ background:var(--acc2); border-color:var(--acc2); color:#0b2b1d; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .mini{ background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  .mini img{ width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+  .mini .b{ padding:10px 10px 12px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .mini .d{ font-size:11px; font-weight:800; letter-spacing:1px; color:var(--acc); }
+  .mini .t{ font-size:14px; font-weight:700; line-height:1.25; }
+  .mini .m{ font-size:12px; color:var(--muted); }
+  .mini .s{ margin-top:auto; display:flex; gap:6px; }
+  .mini .s button, .mini .s a{ flex:1; font-size:12px; font-weight:700; padding:8px 4px; border-radius:8px; border:1px solid var(--line); background:#2a1750; color:var(--ink); text-decoration:none; text-align:center; cursor:pointer; }
+  .mini.locked{ opacity:0.55; }
+  .mini.locked .lockbox{ aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; background:#170b30; font-size:30px; }
+  .mini.locked .when{ font-size:12px; color:var(--muted); }
+  .foot{ text-align:center; color:var(--muted); font-size:13px; margin-top:48px; line-height:1.8; }
+  .foot a{ color:var(--acc2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="moon" aria-hidden="true">&#127769;</div>
+    <h1>The 12-Day Costume Countdown</h1>
+    <p class="sub">One costume idea a day, Oct 20 through Halloween. Share the day, dare a friend to beat your pick.</p>
+    <div><span class="dateline" id="dateline">Oct 20 - Oct 31</span></div>
+    <div><a class="quizcta" href="/">Take the 2-minute quiz</a></div>
+  </header>
+  <div id="today-slot"></div>
+  <h2 class="sec" id="grid-title">All 12 days</h2>
+  <div class="grid" id="grid"></div>
+  <p class="foot">Every costume has a free step-by-step build guide with materials, time, and cost.<br>
+  Free, no signup. Built with Muse.<br>
+  <a href="/">pickmycostume.com</a></p>
+</div>
+<script>
+/* The 12-Day Costume Countdown (2026-09-26, code only, not deployed).
+   One featured idea per day, Oct 20-31. Each day is shareable with
+   ?s=<sid>&o=countdown so recipient opens are measurable per day. */
+var COUNTDOWN_DAYS = [
+  {slug:"neon-demon-hunter",  title:"Neon Demon Hunter",  blurb:"Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.", time:"25 min + drying", cost:"$5-12",  tag:"Trending"},
+  {slug:"astronaut",          title:"Astronaut",          blurb:"White sweats, a paper-bag helmet, and a flag patch.", time:"25 min", cost:"$3-10",  tag:"Kid classic"},
+  {slug:"baby-dino",          title:"Baby Dinosaur",      blurb:"Green hoodie, felt spikes down the back, stuffed tail.", time:"20 min", cost:"$3-8",   tag:"Toddler"},
+  {slug:"glow-skeleton",      title:"Glow Skeleton",      blurb:"Black sweats with glow-in-the-dark bone tape, plus glow bracelets.", time:"20 min", cost:"$5-10", tag:"Trending"},
+  {slug:"mermaid-crew",       title:"Mermaid Crew",       blurb:"The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.", time:"20 min", cost:"$5-10", tag:"Group"},
+  {slug:"burger-joint-couple",title:"Burger Joint Couple",blurb:"White apron plus fake mustache, curly red wig plus glasses. Burger shop owners.", time:"10 min", cost:"$8-15", tag:"Couple"},
+  {slug:"fuzzy-monster",      title:"Fuzzy Monster",      blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", time:"15 min + drying", cost:"$8-15", tag:"Kid favorite"},
+  {slug:"emerald-witch",      title:"Emerald Witch",      blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.", time:"45 min + drying", cost:"$8-15", tag:"Trending"},
+  {slug:"backyard-hero",      title:"Backyard Superhero", blurb:"Short cape plus a first initial on the chest, mask optional.", time:"15 min", cost:"$3-8",  tag:"Family"},
+  {slug:"the-olympians",      title:"The Olympians",      blurb:"Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.", time:"45 min", cost:"$8-15", tag:"Group"},
+  {slug:"crowd-camouflage",   title:"Crowd Camouflage",   blurb:"Gray hoodie, dark pants, blank expression. Vanish into any crowd.", time:"5 min", cost:"$2-5", tag:"Last minute"},
+  {slug:"black-cat",          title:"Black Cat Burglar",  blurb:"Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.", time:"20 min", cost:"$3-8", tag:"Last minute"}
+];
+var COUNTDOWN_START = {month:10, day:20, year:2026};
+var COUNTDOWN_END = {month:10, day:31, year:2026};
+
+/* Pure: maps a local calendar date to countdown state. Testable. */
+function countdownState(y, m, d){
+  var s = COUNTDOWN_START, e = COUNTDOWN_END;
+  var before = (y < s.year) || (y === s.year && (m < s.month || (m === s.month && d < s.day)));
+  if (before) return {mode:"before", today:-1};
+  var after = (y > e.year) || (y === e.year && (m > e.month || (m === e.month && d > e.day)));
+  if (after) return {mode:"after", today:-1};
+  if (y === s.year && m === s.month) return {mode:"live", today: d - s.day};
+  return {mode:"after", today:-1};
+}
+function unlockLabel(i){
+  return "Oct " + (COUNTDOWN_START.day + i);
+}
+function newShareId(){
+  var c = "abcdefghijklmnopqrstuvwxyz0123456789", s = "";
+  for (var i = 0; i < 8; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
+}
+function dayShareText(i, sid){
+  var d = COUNTDOWN_DAYS[i];
+  sid = sid || newShareId();
+  return {text: "Day " + (i + 1) + " of 12: " + d.title + " (" + d.time + ", " + d.cost + "). "
+    + "Can your closet beat this one? Take the 2-minute quiz and send me your pick: "
+    + "https://pickmycostume.com/c/" + d.slug + "?s=" + sid + "&o=countdown", sid: sid};
+}
+
+/* PostHog: anonymous usage stats only. Queued until the library loads. */
+var _phq = [];
+function track(name, props){
+  try {
+    if (window.posthog && posthog.capture) posthog.capture(name, props || {});
+    else _phq.push([name, props || {}]);
+  } catch (e) {}
+}
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com", autocapture: false,
+          capture_pageview: true, disable_session_recording: true
+        });
+        _phq.splice(0).forEach(function(e){ try { posthog.capture(e[0], e[1]); } catch (x) {} });
+      }
+    } catch (e) {}
+  };
+  try { document.head.appendChild(s); } catch (e) {}
+})();
+
+function shareDay(i){
+  var share = dayShareText(i, newShareId());
+  var text = share.text;
+  var done = function(via){
+    track("countdown_shared", {day: i + 1, idea: COUNTDOWN_DAYS[i].slug, via: via, share_id: share.sid, share_origin: "countdown"});
+  };
+  if (navigator.share) {
+    navigator.share({title: "The 12-Day Costume Countdown", text: text})
+      .then(function(){ done("native"); })
+      .catch(function(){ /* dismissed: not a share */ });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){
+      done("clipboard");
+      alert("Copied. Paste it into any chat to dare a friend.");
+    });
+  } else {
+    window.prompt("Copy this dare:", text);
+    done("prompt");
+  }
+}
+
+(function render(){
+  var now = new Date();
+  var st = countdownState(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  var viaShare = /[?&]s=[a-z0-9]{8,}/.test(location.search || "");
+  track("countdown_viewed", {mode: st.mode, today: st.today, via_share: viaShare});
+
+  var slot = document.getElementById("today-slot");
+  var grid = document.getElementById("grid");
+  var dl = document.getElementById("dateline");
+
+  function openCard(i, featured){
+    var d = COUNTDOWN_DAYS[i];
+    if (featured) {
+      slot.innerHTML =
+        '<h2 class="sec">Today: Day ' + (i + 1) + " of 12</h2>" +
+        '<div class="today">' +
+          '<img src="photos/' + d.slug + '.webp" alt="' + d.title + '" loading="eager">' +
+          '<div class="body"><span class="daytag">DAY ' + (i + 1) + " OF 12</span>" +
+          "<h2>" + d.title + "</h2>" +
+          '<p class="blurb">' + d.blurb + "</p>" +
+          '<div class="chips"><span class="chip">' + d.time + '</span><span class="chip">' + d.cost + '</span><span class="chip">' + d.tag + "</span></div>" +
+          '<div class="btnrow">' +
+            '<a class="btn primary" href="/c/' + d.slug + '">Get the build guide</a>' +
+            '<button class="btn" data-share="' + i + '">Dare a friend: share Day ' + (i + 1) + "</button>" +
+          "</div></div></div>";
+    }
+    var card = document.createElement("div");
+    card.className = "mini";
+    card.innerHTML =
+      '<img src="photos/' + d.slug + '.webp" alt="' + d.title + '" loading="lazy">' +
+      '<div class="b"><div class="d">DAY ' + (i + 1) + " OF 12</div>" +
+      '<div class="t">' + d.title + "</div>" +
+      '<div class="m">' + d.time + " - " + d.cost + "</div>" +
+      '<div class="s"><a href="/c/' + d.slug + '">Guide</a>' +
+      '<button data-share="' + i + '">Share</button></div></div>';
+    grid.appendChild(card);
+  }
+  function lockedCard(i){
+    var card = document.createElement("div");
+    card.className = "mini locked";
+    card.innerHTML =
+      '<div class="lockbox"><span aria-hidden="true">&#128274;</span><span class="when">Unlocks ' + unlockLabel(i) + "</span></div>" +
+      '<div class="b"><div class="d">DAY ' + (i + 1) + " OF 12</div>" +
+      '<div class="t">Locked</div><div class="m">Come back ' + unlockLabel(i) + ".</div></div>";
+    grid.appendChild(card);
+  }
+
+  if (st.mode === "before") {
+    dl.textContent = "Starts Oct 20";
+    slot.innerHTML =
+      '<h2 class="sec">The countdown starts Oct 20</h2>' +
+      '<div class="today"><div class="body">' +
+      '<p class="blurb" style="margin:0">Twelve days, twelve costumes, one shared dare a day. ' +
+      "Come back Oct 20 for Day 1, or take the quiz now and get your pick today.</p>" +
+      "</div></div>";
+    document.getElementById("grid-title").textContent = "The 12 days (locked until Oct 20)";
+    for (var i = 0; i < 12; i++) lockedCard(i);
+  } else if (st.mode === "live") {
+    var daysLeft = 12 - st.today;
+    dl.textContent = daysLeft === 1 ? "Last day: Halloween" : daysLeft + " days to Halloween";
+    openCard(st.today, true);
+    document.getElementById("grid-title").textContent = "Every day so far";
+    for (var j = 0; j <= st.today; j++) { if (j !== st.today) openCard(j, false); }
+    for (var k = st.today + 1; k < 12; k++) lockedCard(k);
+  } else {
+    dl.textContent = "Halloween 2026: the full dozen";
+    document.getElementById("grid-title").textContent = "All 12 days";
+    for (var a = 0; a < 12; a++) openCard(a, false);
+  }
+
+  grid.addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-share]");
+    if (b) shareDay(+b.getAttribute("data-share"));
+  });
+  slot.addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-share]");
+    if (b) shareDay(+b.getAttribute("data-share"));
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PROTOTYPE E32 - Complete the Look finishers (Pick My Costume)</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>
+/* PostHog: anonymous usage stats only. Quiz answers are never sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<style>
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --radius: 14px;
+}
+*{box-sizing:border-box}
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+.proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+.card{
+  background:var(--card);border:2px solid var(--line);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+.card h3{margin:0 0 6px;font-size:24px}
+.card .blurb{margin:0 0 10px;font-size:17px}
+.card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
+.factrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px}
+.fact{flex:1 1 0;min-width:70px;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 8px;text-align:center}
+.fact b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fact span{font-size:13px;font-weight:700}
+button.cta{
+  display:inline-block;min-height:56px;padding:14px 28px;font-size:18px;font-weight:700;
+  background:var(--accent);color:var(--accent-ink);
+  border:0;border-radius:var(--radius);cursor:pointer;width:100%;
+}
+button.cta:hover{filter:brightness(1.08)}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card .picked-note{color:var(--accent);font-weight:700;margin-top:10px;display:none}
+.howto{margin:16px 0;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
+.howto summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:16px;list-style:none}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::before{content:"+";color:var(--accent);font-weight:700;margin-right:8px}
+.howto[open] summary::before{content:"\2212"}
+.howto[open] summary{border-bottom:1px solid var(--line)}
+.howto-body{padding:12px 14px 14px}
+.howto-body h4{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.howto-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.howto-chip{display:inline-block;padding:6px 12px;background:var(--card);border:2px solid var(--line);border-radius:999px;font-size:14px;line-height:1.3}
+.howto-body ol{margin:0;padding-left:20px;font-size:15px;line-height:1.55}
+.howto-body ol li{margin-bottom:8px}
+.howto-body ol li:last-child{margin-bottom:0}
+/* ---- E32: Complete the Look finishers ---- */
+.finishers{
+  margin:16px 0 0;padding:16px;background:var(--bg2);
+  border:2px dashed var(--accent);border-radius:var(--radius);
+}
+.finishers h4{margin:0 0 4px;font-size:19px}
+.fin-hint{margin:0 0 12px;color:var(--muted);font-size:14px}
+.fin{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--card);border:2px solid var(--line);border-radius:10px;
+  padding:12px;margin:0 0 10px;cursor:pointer;
+}
+.fin input{
+  flex:0 0 auto;width:24px;height:24px;margin:2px 0 0;accent-color:var(--accent);
+}
+.fin .fin-body{font-size:15px;line-height:1.5}
+.fin .fin-body b{font-size:16px}
+.fin .fin-recipe{margin:6px 0;color:var(--muted);font-size:14px}
+.fin .fin-link{font-size:14px}
+.fin.done{border-color:var(--accent);background:var(--sel-bg)}
+.fin.done .fin-body b{text-decoration:line-through;text-decoration-thickness:2px}
+.fin-count{margin:4px 0 0;color:var(--muted);font-size:14px;font-weight:700}
+footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="proto-banner">Prototype E32: "Complete the Look" finishers on the Classic Ghost card. Tap-test build, not the live site.</p>
+  <div id="ghost-slot"></div>
+  <footer>
+    <p class="fine">Built with Muse.</p>
+</footer>
+</div>
+<script>
+/* ================= E32 MAIN =================
+   Renders ONE real bank idea (Classic Ghost, verbatim INSTRUCTIONS data)
+   plus the Complete the Look finisher checklist. The card keeps the
+   production whole-card click-to-pick behavior, so this page doubles as the
+   regression test for the click-propagation trap. */
+var E32_PICKS = 0;
+
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, text){
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined && text !== null) e.textContent = text;
+  return e;
+}
+
+/* Verbatim bank data for classic-ghost (index.html IDEAS + INSTRUCTIONS). */
+var GHOST = {
+  id: "classic-ghost",
+  title: "Classic Ghost",
+  blurb: "A white sheet with cut-out eyes.",
+  why: "Top five for kids and adults alike -- the most universal costume there is.",
+  time: "10 min", cost: "$0-3", effort: "Easy",
+  materials: [
+    "1 white flat sheet: twin size for kids under 8, full size for tweens and adults (make: use an old sheet; buy: thrift store for a dollar or two)",
+    "Black marker, thick tip, 1 (buy: dollar store)",
+    "Scissors, 1 pair",
+    "2 small squares of black tulle or sheer fabric, about 4 inches each (optional, for see-through eyes; buy: craft store)"
+  ],
+  steps: [
+    "Pick the sheet size first: twin flat for a small kid, full for a bigger kid or adult. Bigger than you need is fine; smaller is not.",
+    "Drape the sheet over the wearer and have them stand still. Mark both eye spots with the black marker while the sheet is on, marking blind never lines up.",
+    "Take the sheet off. Cut the eye holes SMALL first, about the size of a quarter. You can always widen them; you cannot shrink them.",
+    "Hold the sheet up and check: the wearer should see clearly through both holes. Widen a little at a time until they can.",
+    "Optional pro finish: tape a square of black tulle behind each hole. From outside the eyes look dark and hollow; from inside you see straight through the mesh.",
+    "Safety: trim the bottom so the hem clears the ground by several inches, a dragging hem is what trips a kid on a dark sidewalk. Keep nothing tight around the neck.",
+    "Draw a wavy or smiling mouth below the eyes with the black marker. Drape it back on and go."
+  ]
+};
+
+/* E32 finisher content: authored for this experiment. Each finisher is a
+   short DIY recipe using household items, with an internal link to a real
+   /c/ guide on the site. No stores, no commerce. */
+var FINISHERS = [
+  {
+    name: "Glow-star eyes",
+    kind: "the detail",
+    recipe: "Peel 6 to 8 glow-in-the-dark stars off a kid's bedroom ceiling and press them in a ring around each eye hole. Tape any loose edges with clear tape, then hold the sheet under a lamp for 5 minutes before heading out.",
+    linkText: "Steal the full glow treatment from the Glow Skeleton guide",
+    linkHref: "https://pickmycostume.com/c/glow-skeleton"
+  },
+  {
+    name: "Ghost-pale face",
+    kind: "the makeup",
+    recipe: "Dab a thin layer of white face paint or light foundation on the skin the eye holes frame. Keep it sheer so the skin breathes, and keep paint clear of the eye holes themselves.",
+    linkText: "The pale-face recipe lives in the Deadpan Diva guide",
+    linkHref: "https://pickmycostume.com/c/deadpan-diva"
+  },
+  {
+    name: "Yard tombstone",
+    kind: "the prop",
+    recipe: "Cut a tombstone shape from any cardboard box, write RIP with a thick marker, and tape it to a yardstick or broom handle. Plant it in the front yard or carry it like a sign.",
+    linkText: "More cardboard builds in the Block Game Crew guide",
+    linkHref: "https://pickmycostume.com/c/block-game-crew"
+  }
+];
+
+function doPick(){
+  E32_PICKS++;
+  var note = $("picked-note");
+  if (note) note.style.display = "block";
+}
+
+function updateFinCount(){
+  var boxes = $("finishers").querySelectorAll("input");
+  var done = 0, i;
+  for (i = 0; i < boxes.length; i++){ if (boxes[i].checked) done++; }
+  $("fin-count").textContent = done + " of " + boxes.length + " done";
+}
+
+function renderCard(){
+  var card = el("section", "card");
+  card.setAttribute("id", "ghost-card");
+  card.setAttribute("data-idea", GHOST.id);
+
+  card.appendChild(el("h3", null, GHOST.title));
+  card.appendChild(el("p", "blurb", GHOST.blurb));
+  card.appendChild(el("p", "why", GHOST.why));
+
+  var facts = el("div", "factrow");
+  [["Time", GHOST.time], ["Cost", GHOST.cost], ["Effort", GHOST.effort]].forEach(function(pair){
+    var f = el("div", "fact");
+    f.appendChild(el("b", null, pair[0]));
+    var s = el("span", null, pair[1]);
+    f.appendChild(s);
+    facts.appendChild(f);
+  });
+  card.appendChild(facts);
+
+  /* How-to, same component shape as production. Production guards its
+     summary against the whole-card pick trap; this page mirrors that. */
+  var how = el("details", "howto");
+  var sum = el("summary", null, "How to make it");
+  how.appendChild(sum);
+  var body = el("div", "howto-body");
+  body.appendChild(el("h4", null, "What you need"));
+  var chips = el("div", "howto-chips");
+  GHOST.materials.forEach(function(m){ chips.appendChild(el("span", "howto-chip", m)); });
+  body.appendChild(chips);
+  body.appendChild(el("h4", null, "Steps"));
+  var ol = el("ol", null);
+  GHOST.steps.forEach(function(s){ ol.appendChild(el("li", null, s)); });
+  body.appendChild(ol);
+  how.appendChild(body);
+  how.addEventListener("click", function(e){ e.stopPropagation(); });
+  card.appendChild(how);
+
+  var pickBtn = el("button", "cta", "This is my pick");
+  pickBtn.setAttribute("type", "button");
+  pickBtn.setAttribute("id", "btn-pick");
+  pickBtn.addEventListener("click", function(){ doPick(); });
+  card.appendChild(pickBtn);
+  var note = el("p", "picked-note", "Picked. Sweet dreams, little ghost.");
+  note.setAttribute("id", "picked-note");
+  card.appendChild(note);
+
+  /* ---- E32: the finisher checklist. Its root stops click AND change
+     propagation so checking a box never re-triggers the card's doPick. ---- */
+  var fin = el("section", "finishers");
+  fin.setAttribute("id", "finishers");
+  fin.appendChild(el("h4", null, "Complete the Look"));
+  fin.appendChild(el("p", "fin-hint", "The sheet is the costume. These optional finishers make it a ghost. Everything below uses stuff from around the house."));
+
+  FINISHERS.forEach(function(f, i){
+    var label = el("label", "fin");
+    var box = el("input", null);
+    box.setAttribute("type", "checkbox");
+    box.setAttribute("id", "fin" + (i + 1));
+    label.appendChild(box);
+    var fb = el("span", "fin-body");
+    fb.appendChild(el("b", null, f.name + " "));
+    var kind = el("span", null, "(" + f.kind + ")");
+    kind.style.color = "#cdbcf0";
+    kind.style.fontSize = "13px";
+    fb.appendChild(kind);
+    fb.appendChild(el("p", "fin-recipe", f.recipe));
+    var linkP = el("p", "fin-link");
+    var a = el("a", null, f.linkText);
+    a.setAttribute("href", f.linkHref);
+    linkP.appendChild(a);
+    fb.appendChild(linkP);
+    label.appendChild(fb);
+    box.addEventListener("change", function(){
+      if (box.checked) label.classList.add("done"); else label.classList.remove("done");
+    });
+    fin.appendChild(label);
+  });
+  var counter = el("p", "fin-count", "0 of 3 done");
+  counter.setAttribute("id", "fin-count");
+  fin.appendChild(counter);
+
+  fin.addEventListener("click", function(e){ e.stopPropagation(); });
+  fin.addEventListener("change", function(e){ e.stopPropagation(); updateFinCount(); });
+  card.appendChild(fin);
+
+  /* Production whole-card click-to-pick: anything that is not a button or
+     a link re-runs doPick. (Inputs included: that is the trap.) */
+  card.addEventListener("click", function(e){
+    if (e.target.closest("button") || e.target.closest("a")) return;
+    doPick();
+  });
+
+  $("ghost-slot").appendChild(card);
+}
+
+renderCard();
+</script>
+</body>
+</html>

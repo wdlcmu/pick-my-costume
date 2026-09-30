@@ -51,7 +51,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/web-hero-duo">Web Hero Duo</a><span>Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.</span></li>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/family">Family Halloween costume ideas</a> &middot; <a href="/c/last-minute">Last-minute Halloween costumes</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
-<footer>Built with Muse. Made by Billy Litner.</footer>
+<footer>Built with Muse.</footer>
 </main></body></html>
 `;
 

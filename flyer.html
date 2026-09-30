@@ -16,7 +16,7 @@
 <meta name="twitter:description" content="Print a one-page flyer for your classroom, waiting room, or party. A free 2-minute costume quiz: no signup, no app, no ads.">
 <meta name="twitter:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Free Halloween Flyers - Pick My Costume","url":"https://pickmycostume.com/flyer","description":"Printable one-page Halloween flyers for teachers, waiting rooms, libraries, and party hosts.","author":{"@type":"Person","name":"Billy Litner"}}
+{"@context":"https://schema.org","@type":"WebPage","name":"Free Halloween Flyers - Pick My Costume","url":"https://pickmycostume.com/flyer","description":"Printable one-page Halloween flyers for teachers, waiting rooms, libraries, and party hosts.","author":{"@type":"Organization","name":"Pick My Costume"}}
 </script>
 <script>
 /* PostHog: anonymous usage stats only. No answers or names are sent. Session replay is off. */
@@ -100,7 +100,7 @@ body{background:#fff}
     <button type="button" role="tab" data-role="waiting" aria-selected="false">Waiting room</button>
     <button type="button" role="tab" data-role="library" aria-selected="false">Library / community board</button>
     <button type="button" role="tab" data-role="host" aria-selected="false">Party host</button>
-  </div>
+</div>
 
   <section class="flyer active" data-role="teacher" aria-label="Teacher flyer">
     <p class="flyer-kicker">Pick My Costume &middot; free Halloween quiz</p>
@@ -108,11 +108,11 @@ body{background:#fff}
     <ul class="flyer-points">
       <li>A free 2-minute quiz: answer 5 questions, get 3 costume ideas.</li>
       <li>Every idea has a how-to: what you need, what it costs, how long it takes.</li>
-      <li>No signup, no app, no ads. Made by a dad in Redmond.</li>
+      <li>No signup, no app, no ads.</li>
     </ul>
     <p class="flyer-url">pickmycostume.com</p>
     <p class="flyer-sub">Free &middot; 2 minutes &middot; No signup</p>
-    <p class="flyer-credit">Built with Muse. Made by Billy Litner.</p>
+    <p class="flyer-credit">Built with Muse.</p>
   </section>
 
   <section class="flyer" data-role="waiting" aria-label="Waiting room flyer">
@@ -125,7 +125,7 @@ body{background:#fff}
     </ul>
     <p class="flyer-url">pickmycostume.com</p>
     <p class="flyer-sub">Free &middot; 2 minutes &middot; No signup</p>
-    <p class="flyer-credit">Built with Muse. Made by Billy Litner.</p>
+    <p class="flyer-credit">Built with Muse.</p>
   </section>
 
   <section class="flyer" data-role="library" aria-label="Library flyer">
@@ -138,7 +138,7 @@ body{background:#fff}
     </ul>
     <p class="flyer-url">pickmycostume.com</p>
     <p class="flyer-sub">Free &middot; 2 minutes &middot; No signup</p>
-    <p class="flyer-credit">Built with Muse. Made by Billy Litner.</p>
+    <p class="flyer-credit">Built with Muse.</p>
   </section>
 
   <section class="flyer" data-role="host" aria-label="Party host flyer">
@@ -151,46 +151,46 @@ body{background:#fff}
     </ul>
     <p class="flyer-url">pickmycostume.com</p>
     <p class="flyer-sub">Free &middot; 2 minutes &middot; No signup</p>
-    <p class="flyer-credit">Built with Muse. Made by Billy Litner.</p>
+    <p class="flyer-credit">Built with Muse.</p>
   </section>
 
   <div class="printrow screen-only">
     <button class="printbtn" id="printbtn" type="button">Print this flyer</button>
     <p class="printhint">Prints one page, black and white. Tape it up, send it home, tuck it in an invitation.</p>
-  </div>
+</div>
 
   <div class="news screen-only" data-role="teacher">
     <h3>Newsletter text for teachers</h3>
     <p>For the class newsletter or an email to parents. Edit the last line to sign it.</p>
-    <textarea readonly id="news-teacher">Free Halloween help for families: Pick My Costume (pickmycostume.com) is a 2-minute quiz that turns what's already in your child's closet into a costume idea. Every idea comes with a step-by-step how-to: what you need, what it costs, how long it takes. No signup, no app, no ads. Made by a dad in Redmond. Shared by your child's teacher.</textarea>
+    <textarea readonly id="news-teacher">Free Halloween help for families: Pick My Costume (pickmycostume.com) is a 2-minute quiz that turns what's already in your child's closet into a costume idea. Every idea comes with a step-by-step how-to: what you need, what it costs, how long it takes. No signup, no app, no ads. Shared by your child's teacher.</textarea>
     <button class="copybtn" type="button" data-copy="news-teacher">Copy text</button>
-  </div>
+</div>
 
   <div class="news screen-only" data-role="waiting" hidden>
     <h3>Note text for waiting rooms</h3>
     <p>For a table tent next to the flyer, or the office's family email.</p>
     <textarea readonly id="news-waiting">For families in our waiting room: if Halloween costumes are still on the to-do list, try Pick My Costume (pickmycostume.com). It is a free 2-minute quiz that builds a costume idea from clothes you already own, with a how-to for each one. No signup, no app, no ads.</textarea>
     <button class="copybtn" type="button" data-copy="news-waiting">Copy text</button>
-  </div>
+</div>
 
   <div class="news screen-only" data-role="library" hidden>
     <h3>Note text for libraries</h3>
     <p>For the library newsletter or the board next to the flyer.</p>
     <textarea readonly id="news-library">Free Halloween costumes start in your closet. Pick My Costume (pickmycostume.com) is a 2-minute quiz with 138 costume ideas, each with a step-by-step guide: what you need, what it costs, how long it takes. No signup, no app, no ads. Take a flyer from our community board.</textarea>
     <button class="copybtn" type="button" data-copy="news-library">Copy text</button>
-  </div>
+</div>
 
   <div class="news screen-only" data-role="host" hidden>
     <h3>Invite text for party hosts</h3>
     <p>For the invitation, the group chat, or the evite details.</p>
     <textarea readonly id="news-host">Costume needed? Take the 2-minute quiz at pickmycostume.com and get 3 costume ideas from your own closet, each with a how-to. Free, no signup. Coming with friends? Compare picks and show up matching. See you at the party.</textarea>
     <button class="copybtn" type="button" data-copy="news-host">Copy text</button>
-  </div>
+</div>
 
   <footer class="screen-only">
-    Built with Muse. Made by Billy Litner.<br>
+    Built with Muse.<br>
     <a href="/">Pick My Costume</a> &middot; <a href="/classroom">Classroom costumes</a> &middot; <a href="/pantry">What do you have?</a>
-  </footer>
+</footer>
 </div>
 
 <script>

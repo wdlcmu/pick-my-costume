@@ -59,7 +59,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/under-the-sea">Under the Sea</a><span>Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.</span></li>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/couples">Couples Halloween costume ideas</a> &middot; <a href="/c/last-minute">Last-minute Halloween costumes</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
-<footer>Built with Muse. Made by Billy Litner.</footer>
+<footer>Built with Muse.</footer>
 </main></body></html>
 `;
 

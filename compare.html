@@ -10,7 +10,9 @@
 <meta property="og:title" content="Easy Halloween Costumes Compared | Pick My Costume">
 <meta property="og:description" content="Ghost vs vampire vs black cat vs zombie: build time, cost, and materials compared from our costume bank.">
 <meta property="og:url" content="https://pickmycostume.com/compare">
-<meta property="og:image" content="https://pickmycostume.com/images/og/blue-dog-family.jpg">
+<meta property="og:image" content="https://pickmycostume.com/images/og/compare.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!-- 2026-09-27 red-team discover: X falls back to a small summary card without twitter:card. -->
 <style>
 :root{
   --bg:#160d28; --bg2:#211540; --card:#2a1c52; --ink:#fdf3e3;
@@ -23,19 +25,29 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Bl
 header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
 .brand{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none}
 .brand span{color:var(--accent)}
-.home-link{color:var(--muted);text-decoration:none;font-size:14px}
+.home-link{color:var(--muted);text-decoration:none;font-size:14px;display:inline-block;padding:12px 8px;margin:-12px -8px}
+/* 2026-09-27 red-team hubs: the header "Take the quiz" link was ~21px tall,
+   well under the 44px minimum tap target. Padding + negative margin expands
+   the hit area to ~45px with zero layout change. */
 h1{font-size:32px;margin:8px 0 4px;line-height:1.2}
 .sub{color:var(--muted);margin:0 0 24px}
 h2{font-size:24px;margin:36px 0 8px}
 h3{font-size:19px;margin:28px 0 8px}
 .bluf{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;font-size:15px}
-.table-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:var(--radius)}
+.table-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:var(--radius);-webkit-overflow-scrolling:touch}
 table{border-collapse:collapse;width:100%;min-width:640px;background:var(--card)}
 caption{text-align:left;padding:12px 14px;color:var(--muted);font-size:13px}
 th,td{padding:12px 14px;text-align:left;vertical-align:top;border-top:1px solid var(--line);font-size:14px}
 thead th{border-top:0;background:var(--bg2);font-size:15px;white-space:nowrap}
 tbody th{white-space:nowrap;color:var(--muted);font-weight:600;font-size:13px;width:130px}
-td a,th a{color:var(--accent);text-decoration:none}
+/* 2026-09-27 red-team: on a phone the 4-column table scrolls horizontally;
+   without a sticky row label the scrolled columns lose all meaning. */
+tbody th{position:sticky;left:0;background:var(--card);z-index:1;box-shadow:1px 0 0 var(--line)}
+thead th:first-child{position:sticky;left:0;background:var(--bg2);z-index:2}
+td a,th a{color:var(--accent);text-decoration:none;display:inline-block;padding:12px 4px;margin:-12px -4px}
+/* 2026-09-27 red-team hubs: table header/body links were ~22px tall inline
+   text -- near-impossible to tap on a phone inside the horizontally scrolling
+   table. Same padding/negative-margin trick: ~45px hit area, no layout change. */
 .takeaways{margin:8px 0 0;padding-left:20px}
 .takeaways li{margin:0 0 10px}
 .cta{display:block;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:18px;padding:16px;border-radius:var(--radius);text-decoration:none;margin:36px 0 8px}
@@ -75,14 +87,14 @@ footer{margin-top:40px;text-align:center}
 <tr><th scope="row">Buy or make</th><td>1 white flat sheet: twin size for kids under 8, full size for tweens and adults</td><td>Black cape or black bedsheet, 1</td><td>None</td><td>None</td></tr>
 <tr><th scope="row">Bank does not say</th><td>Scissors, 1 pair (unmarked in the bank; likely already at home)</td><td>None</td><td>Scissors, 1 pair; Tape, 1 roll (unmarked in the bank; likely already at home)</td><td>None</td></tr>
 <tr><th scope="row">Who it is for</th><td>Kids and adults</td><td>Teens and adults</td><td>Teens and adults</td><td>Teens and adults</td></tr>
-<tr><th scope="row">The one-line take</th><td>Top five for kids and adults alike -- the most universal costume there is.</td><td>Scary with 25 minutes of effort and it photographs great.</td><td>Warm, cheap, and the ears do all the work.</td><td>Scary with zero shopping: it's just your work clothes, ruined.</td></tr>
+<tr><th scope="row">The one-line take</th><td>Top five for kids and adults alike. The most universal costume there is.</td><td>Scary with 25 minutes of effort and it photographs great.</td><td>Warm, cheap, and the ears do all the work.</td><td>Scary with zero shopping: it's just your work clothes, ruined.</td></tr>
 <tr><th scope="row">Full guide</th><td><a href="/c/classic-ghost">Step-by-step for the classic ghost →</a></td><td><a href="/c/vampire">Step-by-step for the classic vampire →</a></td><td><a href="/c/black-cat">Step-by-step for the black cat burglar →</a></td><td><a href="/c/zombie-coworker">Step-by-step for the zombie coworker →</a></td></tr>
     </tbody>
   </table>
-  </div>
+</div>
   <h3>The trade-offs, in plain English</h3>
   <ul class="takeaways">
-<li><strong>Classic Ghost:</strong> 10 min, $3-8, needs 2 store items, plus scissors, 1 pair (unmarked in the bank). Top five for kids and adults alike -- the most universal costume there is.</li>
+<li><strong>Classic Ghost:</strong> 10 min, $3-8, needs 2 store items, plus scissors, 1 pair (unmarked in the bank). Top five for kids and adults alike. The most universal costume there is.</li>
 <li><strong>Classic Vampire:</strong> 25 min, $5-10, needs 3 store items. Scary with 25 minutes of effort and it photographs great.</li>
 <li><strong>Black Cat Burglar:</strong> 20 min, $3-8, needs 3 store items, plus scissors, 1 pair and tape, 1 roll (unmarked in the bank). Warm, cheap, and the ears do all the work.</li>
 <li><strong>Zombie Coworker:</strong> 20 min, $3-8, needs 2 store items. Scary with zero shopping: it's just your work clothes, ruined.</li>
@@ -97,11 +109,47 @@ footer{margin-top:40px;text-align:center}
     <h3>Where this comes from</h3>
     <p>Every number and material list on this page is generated from the same costume bank that powers the Pick My Costume quiz (the live data in index.html: build time, cost range, difficulty, and per-idea materials). The generator is <code>gen_compare.js</code>. Rerun it after any bank change and the table updates itself. Last generated 2026-09-26.</p>
     <p style="margin:0">We show all four side by side and recommend nothing in particular: the right costume is the one you will actually finish before the party.</p>
-  </div>
+</div>
 
   <footer>
-    <p class="fine">Built with Muse. Made by Billy Litner.</p>
-  </footer>
+    <!-- 2026-09-26 red-team distro: hub cross-links. /compare was an orphan:
+         no inbound links from any deployed page. Folded into the generator
+         2026-09-27 (red-team): a regen used to drop this nav. Pantry label
+         matches the page's real title (Billy's rename). -->
+    <p class="fine" style="text-align:center">Explore: <a href="/costumes" style="color:var(--accent)">All costume guides</a> &middot; <a href="/trending" style="color:var(--accent)">Trending costumes</a> &middot; <a href="/group-costumes" style="color:var(--accent)">Group packs</a> &middot; <a href="/pantry" style="color:var(--accent)">What you already own</a></p>
+    <p class="fine">Built with Muse.</p>
+</footer>
 </div>
+<!-- 2026-09-27 red-team: /compare had zero analytics, so SEO/recipient visits
+     and the quiz CTA funnel were invisible to PostHog. Same anonymous beacon
+     pantry.html uses; autocapture off, no session recording. -->
+<script>
+var _phq = [];
+function trackCmp(name, props){
+  try {
+    if (window.posthog && posthog.capture) posthog.capture(name, props || {});
+    else _phq.push([name, props || {}]);
+  } catch (e) {}
+}
+(function(){
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://us.i.posthog.com/static/array.js';
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7', {
+          api_host: 'https://us.i.posthog.com', autocapture: false,
+          capture_pageview: true, disable_session_recording: true
+        });
+        _phq.splice(0).forEach(function(e){ try { posthog.capture(e[0], e[1]); } catch (x) {} });
+      }
+    } catch (e) {}
+  };
+  try { document.head.appendChild(s); } catch (e) {}
+})();
+var cmpCta = document.querySelector('.cta');
+if (cmpCta) cmpCta.addEventListener('click', function(){ trackCmp('compare_quiz_cta', {page: 'compare'}); });
+</script>
 </body>
 </html>

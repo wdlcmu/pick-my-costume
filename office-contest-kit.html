@@ -150,7 +150,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
   <div class="topbar">
     <a class="brand" href="/">Pick My <span>Costume</span></a>
     <span class="proto">office tool</span>
-  </div>
+</div>
 
   <h1>Run your office costume contest</h1>
   <p class="sub">Four steps: pick categories, print ballots, tally votes, announce winners. Free, no account. The whole thing fits on one printout.</p>
@@ -163,11 +163,11 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     <div class="fieldrow">
       <label class="field" for="contestname">Contest name</label>
       <input type="text" id="contestname" value="Office Halloween Costume Contest" maxlength="60">
-    </div>
+</div>
     <div class="fieldrow">
       <label class="field" for="contestdate">Contest date</label>
       <input type="text" id="contestdate" value="Saturday, October 31" maxlength="40">
-    </div>
+</div>
     <div class="fieldrow">
       <label class="field">Categories (tap to toggle, pick 2 or more)</label>
       <div class="chips" id="cats" role="group" aria-label="Contest categories">
@@ -177,13 +177,13 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
         <button type="button" class="chip" data-cat="Best Duo or Team"><span class="emo">🤝</span>Best Duo or Team</button>
         <button type="button" class="chip" data-cat="Best Homemade"><span class="emo">✂️</span>Best Homemade</button>
         <button type="button" class="chip" data-cat="Crowd Favorite"><span class="emo">🏆</span>Crowd Favorite</button>
-      </div>
-    </div>
+</div>
+</div>
     <div class="notice">
       <strong>One week out:</strong> post the contest in the team channel.
       <strong>Day before:</strong> pin the ballot sign-up. <strong>Contest day:</strong>
       hand out ballots, vote by 3pm, announce winners before everyone leaves.
-    </div>
+</div>
   </section>
 
   <section class="card" aria-label="Step 2">
@@ -195,16 +195,16 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
         <input type="text" id="newname" placeholder="Name (e.g. Priya)" maxlength="40" style="flex:1">
         <input type="text" id="newas" placeholder="Going as (e.g. Sushi Roll)" maxlength="40" style="flex:1">
         <button type="button" class="btn-ghost" id="addname" style="flex:0 0 auto">Add</button>
-      </div>
-    </div>
+</div>
+</div>
     <ul class="names" id="names"></ul>
     <div class="fieldrow">
       <label class="field" for="nballots">Number of ballots to print</label>
       <input type="text" id="nballots" value="20" inputmode="numeric" maxlength="4" style="max-width:120px">
-    </div>
+</div>
     <div class="btnrow">
       <button type="button" class="btn" id="printballots">Print ballots</button>
-    </div>
+</div>
     <p class="hint" style="margin-bottom:0">The printed ballot lists every contestant with a checkbox per category, so a voter just checks one name in each category and drops it in a box.</p>
   </section>
 
@@ -216,7 +216,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     <div class="btnrow">
       <button type="button" class="btn-ghost" id="resettally">Reset tally</button>
       <button type="button" class="btn" id="printwinners">Print winner sheet</button>
-    </div>
+</div>
     <div id="winnerline"></div>
   </section>
 
@@ -226,7 +226,7 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     <div class="btnrow">
       <a class="btn" href="/">Take the quiz</a>
       <button type="button" class="btn-ghost" id="copyshack" style="color:var(--ink);border-color:var(--accent)">Copy the Slack message</button>
-    </div>
+</div>
     <p class="copied" id="shackok">Copied. Paste it in #general and watch the sign-ups roll in.</p>
     <p class="hint" style="font-size:13px;color:var(--muted);margin:12px 0 0">The printed ballot footer includes the quiz link, so every voter sees it.</p>
   </section>
@@ -237,17 +237,17 @@ footer{margin-top:28px;font-size:13px;color:var(--muted);text-align:center;line-
     <p class="hint">Steal this message. Winners are filled in from your tally.</p>
     <div class="copy">
       <textarea id="announce" readonly></textarea>
-    </div>
+</div>
     <div class="btnrow">
       <button type="button" class="btn" id="refreshannounce">Refresh from tally</button>
       <button type="button" class="btn-ghost" id="copyannounce">Copy announcement</button>
-    </div>
+</div>
     <p class="copied" id="announceok">Copied.</p>
   </section>
 
   <footer>
-    <p>Built with Muse. Made by Billy Litner.<br>Free for offices, teams, and clubs. Print as many ballots as you like.</p>
-  </footer>
+    <p>Built with Muse.<br>Free for offices, teams, and clubs. Print as many ballots as you like.</p>
+</footer>
 </div>
 
 <div id="printarea" aria-hidden="true"></div>

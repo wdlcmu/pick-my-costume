@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PROTOTYPE E33 - Coordinated family set view (Pick My Costume)</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="A free Halloween costume picker. A few quick questions, three ideas, no email, no account.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* Theme copied from the live site (E31 prototype) so the tap-test reads true. */
+:root{
+  --bg: #160d28;
+  --bg2: #211540;
+  --card: #2a1c52;
+  --ink: #fdf3e3;
+  --muted: #cdbcf0;
+  --line: #4b3486;
+  --accent: #ff8c1a;
+  --accent-ink: #2a1500;
+  --sel-border: #ff8c1a;
+  --sel-bg: #3a2566;
+  --btn-bg: #ff8c1a;
+  --btn-ink: #2a1500;
+  --radius: 14px;
+}
+*{box-sizing:border-box}
+a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  line-height:1.5; min-height:100vh;
+}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+.proto-banner{background:#3a2b00;color:#ffd97a;border:2px dashed #ffd97a;border-radius:10px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+h1{font-size:32px;margin:12px 0 8px;letter-spacing:-0.5px}
+.tagline{font-size:17px;color:var(--muted);margin:0 0 20px}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.cta:hover{filter:brightness(1.08)}
+button.cta{
+  display:inline-block;min-height:56px;padding:14px 28px;font-size:18px;font-weight:700;
+  background:var(--btn-bg);color:var(--btn-ink);
+  border:0;border-radius:var(--radius);cursor:pointer;
+}
+button.ghost{
+  min-height:56px;padding:14px 20px;font-size:17px;
+  background:rgba(255,255,255,.05);color:var(--ink);
+  border:2px solid #7a5fc4;border-radius:var(--radius);cursor:pointer;
+}
+.card{
+  background:var(--card);border:2px solid var(--line);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+.card h3{margin:0 0 6px;font-size:24px}
+.card .blurb{margin:0 0 10px;font-size:17px}
+.card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
+.card .why b{color:var(--ink)}
+.setcard{border:3px solid var(--accent)}
+.rkicker{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:0 0 8px}
+.factrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.fact{flex:1 1 0;min-width:70px;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 8px;text-align:center}
+.fact b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fact span{font-size:13px;font-weight:700}
+/* Coordinated set: one row per person in the family. */
+.roles{display:grid;gap:12px;margin:16px 0}
+.role{background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);padding:14px}
+.role-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.role-emoji{font-size:28px}
+.role-name{font-size:20px;font-weight:800}
+.role-wear{font-size:16px;margin:0 0 8px}
+.role-wear b{color:var(--accent)}
+.role-mats{margin:0 0 8px;padding-left:20px;font-size:14px;color:var(--muted)}
+.role-mats li{margin:2px 0}
+.role-note{font-size:13px;color:var(--muted);margin:0}
+.role-note b{color:var(--ink)}
+.settotal{background:var(--bg);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:16px 0}
+.settotal h3{margin:0 0 8px;font-size:20px}
+.settotal ul{margin:0;padding-left:20px;font-size:15px}
+.settotal li{margin:4px 0}
+.sharebox{background:rgba(255,140,26,.10);border-radius:var(--radius);padding:14px 16px;margin-top:12px}
+.promptbox{width:100%;min-height:150px;margin-top:8px;padding:12px;font-size:15px;color:var(--ink);background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);font-family:inherit;line-height:1.5}
+.howto{margin-top:12px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
+.howto summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:16px;list-style:none}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::before{content:"+";color:var(--accent);font-weight:700;margin-right:8px}
+.howto[open] summary::before{content:"\2212"}
+.howto[open] summary{border-bottom:1px solid var(--line)}
+.howto-body{padding:12px 14px 14px;font-size:15px}
+.howto-body ol{margin:0;padding-left:20px;line-height:1.55}
+.howto-body ol li{margin-bottom:8px}
+.howto-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.howto-chip{display:inline-block;padding:6px 12px;background:var(--card);border:2px solid var(--line);border-radius:999px;font-size:14px;line-height:1.3}
+button.linkbtn{background:none;border:0;color:var(--accent);font-weight:700;font-size:15px;cursor:pointer;padding:0;text-decoration:underline;font-family:inherit}
+.status{min-height:22px;color:var(--muted);font-size:14px;margin-top:8px}
+.honesty{background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:16px 0;font-size:14px;color:var(--muted)}
+.honesty b{color:var(--ink)}
+.fine{font-size:13px;color:var(--muted)}
+footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="proto-banner">Prototype E33: family/group picks shown as a coordinated set, not a single card. Per-person roles, the real bank data, honest cost math. Tap-test build, not the live site.</p>
+
+  <h1>Your costume: the Aussie Dog Family</h1>
+  <p class="tagline">One set, four roles. This is what each person wears and what the whole thing costs.</p>
+
+  <!-- The set card. Same whole-card click-to-pick trap as production (doPick
+       re-runs on any tap that is not on a button, link, input, select, or
+       textarea), so interactive roots below stop propagation. -->
+  <div class="card setcard" id="set-card">
+    <p class="rkicker">Your 2026 Halloween costume, as a set</p>
+    <h3>Aussie Dog Family</h3>
+    <p class="blurb">Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.</p>
+    <p class="why"><b>Why it fits:</b> Blue and orange shirts, paper ears, and your kid completely loses it.</p>
+
+    <div class="factrow">
+      <div class="fact"><b>Build time</b><span>25 min</span></div>
+      <div class="fact"><b>Set cost</b><span>$5-10</span></div>
+      <div class="fact"><b>Effort</b><span>Easy</span></div>
+      <div class="fact"><b>Size</b><span>4 people</span></div>
+</div>
+
+    <h3 style="margin:18px 0 4px;font-size:20px">Who wears what</h3>
+    <p class="fine" style="margin:0 0 4px">Roles come from the bank's own FAQ: blue shirt for the dad dog, orange for the mom dog, mix for the pups. Reassign them however fits your family.</p>
+    <div class="roles" id="roles"></div>
+
+    <div class="settotal" id="set-total">
+      <h3>The set total</h3>
+      <ul>
+        <li><b>25 min</b> to build the whole set, not per person (the bank gives one build time for all four).</li>
+        <li><b>$5-10 for the whole family</b>, not per person. The bank prices the set, not the roles: most of it is shirts from your closets, and the buy list is one headband each plus shared felt and pins.</li>
+        <li><b>Easy.</b> Cut ears, pin ears on, pin on a white belly spot, done.</li>
+      </ul>
+</div>
+
+    <div class="sharebox" id="share-box">
+      <h3 style="margin:0 0 8px;font-size:20px">Text the family</h3>
+      <p class="fine" style="margin:0 0 4px">Every role named, so nobody asks "so what am I?"</p>
+      <textarea class="promptbox" id="share-text" readonly aria-label="Group share text">We are going as the Aussie Dog Family!
+- Dad Dog: blue shirt, floppy ears, optional tail
+- Mom Dog: orange shirt, floppy ears, optional tail
+- The pups: blue or orange shirts with a white belly spot, floppy ears
+About 25 minutes to build and $5-10 for all of us. Most of it is from our closets.</textarea>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        <button class="cta" id="btn-copy-share" type="button" style="font-size:16px;min-height:52px">Copy family text</button>
+        <button class="ghost" id="btn-copy-list" type="button" style="min-height:52px">Copy set build list</button>
+</div>
+      <p class="status" id="copy-status" role="status"></p>
+</div>
+
+    <details class="howto" id="howto-faq">
+      <summary id="faq-summary">Questions from other families</summary>
+      <div class="howto-body">
+        <p><b>How do you tell the family members apart?</b><br>Match the show: blue shirt for the dad dog, orange for the mom dog, mix for the pups. Add a white belly spot to the pups only, the audience reads it instantly.</p>
+        <p><b>Ears keep sliding off the headband. Fix?</b><br>Pin the ears to the headband with two safety pins each instead of tape. Pins survive hugs; tape gives up by the second photo.</p>
+</div>
+    </details>
+
+    <details class="howto" id="howto-steps">
+      <summary id="steps-summary">Full build steps</summary>
+      <div class="howto-body">
+        <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:0 0 6px">Build list (whole set)</h4>
+        <div class="howto-chips">
+          <span class="howto-chip">Blue or orange t-shirt, 1 each</span>
+          <span class="howto-chip">Headband, 1 each</span>
+          <span class="howto-chip">Blue, orange, white craft felt, 1 sheet each</span>
+          <span class="howto-chip">Safety pins, 4 per person</span>
+          <span class="howto-chip">Scissors, 1 pair</span>
+          <span class="howto-chip">Old sock + tissue (tail, optional)</span>
+</div>
+        <ol>
+          <li>Cut one paper ear template and check it against the headband before cutting felt.</li>
+          <li>Cut two floppy dog ears from the craft felt for each person, about 5 inches long. Match ear color to shirt color.</li>
+          <li>Pin the ears to each headband with the safety pins.</li>
+          <li>Pin a white craft felt belly spot to the front of each blue or orange t-shirt.</li>
+          <li>Pull on the blue or orange t-shirts.</li>
+          <li>Put on the headbands and decide who is mama, dad, and the pups.</li>
+          <li>Optional pro finish: stuff an old sock with tissue, pin it to the back waistband as a tail, and let it wag. Every dog family photo is better with a tail.</li>
+        </ol>
+</div>
+    </details>
+</div>
+
+  <div class="honesty">
+    <b>What the bank says (and what it does not):</b> every role, material count,
+    the 25 min build time, the $5-10 set cost, and both FAQs come straight from
+    the bank entry for <b>Aussie Dog Family</b>. The bank gives per-person counts
+    for shirts, headbands, and pins, so the rows above are faithful. The bank
+    does <b>not</b> give a per-person cost or a per-person build time, so this
+    page does not invent one: the cost and time live on the set, where the bank
+    put them.
+</div>
+
+  <footer>
+    <p class="fine">Built with Muse. Prototype only, not linked from the site.</p>
+</footer>
+</div>
+<script>
+/* Prototype E33 logic. Bank-faithful: roles derived from the INSTRUCTIONS FAQ
+   for blue-dog-family; materials from its m[] list; cost/time/effort/FAQs
+   quoted verbatim. No invented per-person prices. */
+var ROLES = [
+  {name:"Dad Dog", emoji:"\uD83D\uDC36", wear:"Blue t-shirt, headband with two blue floppy ears, optional sock tail.",
+   mats:["Blue t-shirt, 1 (own closet, or buy one)","Headband, 1","2 blue felt ears + 4 safety pins"]},
+  {name:"Mom Dog", emoji:"\uD83D\uDC29", wear:"Orange t-shirt, headband with two orange floppy ears, optional sock tail.",
+   mats:["Orange t-shirt, 1 (own closet, or buy one)","Headband, 1","2 orange felt ears + 4 safety pins"]},
+  {name:"Pup", emoji:"\uD83D\uDC36", wear:"Blue or orange t-shirt with a white felt belly spot, headband with two floppy ears.",
+   mats:["Blue or orange t-shirt, 1 (own closet, or buy one)","Headband, 1","2 felt ears + white belly spot + 4 safety pins"]},
+  {name:"Pup", emoji:"\uD83D\uDC29", wear:"Blue or orange t-shirt with a white felt belly spot, headband with two floppy ears.",
+   mats:["Blue or orange t-shirt, 1 (own closet, or buy one)","Headband, 1","2 felt ears + white belly spot + 4 safety pins"]}
+];
+
+function $(id){ return document.getElementById(id); }
+
+/* Render the per-person rows. */
+(function renderRoles(){
+  var host = $("roles");
+  ROLES.forEach(function(r, i){
+    var div = document.createElement("div");
+    div.className = "role";
+    div.setAttribute("data-role-index", i);
+    var mats = r.mats.map(function(m){ return "<li>" + m + "</li>"; }).join("");
+    div.innerHTML =
+      '<div class="role-head"><span class="role-emoji" aria-hidden="true">' + r.emoji + '</span>' +
+      '<span class="role-name">' + r.name + '</span></div>' +
+      '<p class="role-wear">' + r.wear + '</p>' +
+      '<ul class="role-mats">' + mats + '</ul>' +
+      '<p class="role-note"><b>Their share of the set:</b> one of the 25 minutes and a share of the build list below. The bank does not price or time roles separately, so this page does not invent numbers for them.</p>';
+    host.appendChild(div);
+  });
+})();
+
+/* Production card-click trap (mirrors the live site): tapping anywhere on the
+   set card that is not on a button, link, input, select, or textarea re-runs
+   the pick. Interactive roots below MUST stop propagation, or taps on them
+   re-pick and wipe state. doPick is a no-op stand-in here; the QA harness
+   asserts it was (or was not) called. */
+var doPickCalls = 0;
+function doPick(){ doPickCalls++; }
+$("set-card").addEventListener("click", function(e){
+  var t = e.target;
+  var tag = (t && t.tagName || "").toLowerCase();
+  if (tag === "button" || tag === "a" || tag === "input" || tag === "select" || tag === "textarea") return;
+  doPick();
+});
+
+/* Click-stop-propagation guards on every interactive root inside the card.
+   Bubble phase (not capture): the element's own handlers (copy, details
+   toggle) run first at target phase, then propagation stops before the card
+   trap sees the click. A capture-phase guard here would swallow the click
+   before the button's own handler runs. */
+function guard(el){
+  if (!el) return;
+  ["click","mousedown","touchstart"].forEach(function(ev){
+    el.addEventListener(ev, function(e){ e.stopPropagation(); }, false);
+  });
+}
+guard($("share-box"));
+guard($("howto-faq"));
+guard($("howto-steps"));
+
+/* Copy actions (clipboard write with a fallback, same as production). */
+function copyText(text, done){
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch(e){}
+    document.body.removeChild(ta);
+    done();
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else { fallback(); }
+}
+function status(msg){ $("copy-status").textContent = msg; }
+$("btn-copy-share").addEventListener("click", function(){
+  copyText($("share-text").value, function(){ status("Copied. Paste it in the family chat."); });
+});
+$("btn-copy-list").addEventListener("click", function(){
+  var lines = ["Aussie Dog Family: set build list (4 people)"];
+  ROLES.forEach(function(r){
+    lines.push("", r.name + ":", "  " + r.wear);
+    r.mats.forEach(function(m){ lines.push("  - " + m); });
+  });
+  lines.push("", "Whole set: blue, orange, white craft felt (1 sheet each), scissors.",
+             "Set total: 25 min, $5-10 for all four.");
+  copyText(lines.join("\n"), function(){ status("Build list copied."); });
+});
+</script>
+</body>
+</html>

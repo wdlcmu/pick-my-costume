@@ -305,7 +305,7 @@ export function onRequest(context) {
       "name": idea.t + " Halloween costume",
       "description": idea.b,
       "image": img,
-      "author": {"@type": "Person", "name": "Billy Litner"},
+      "author": {"@type": "Organization", "name": "Pick My Costume"},
       /* Entity anchor: link guide markup to the site's Organization,
          declared as an @id on the homepage (checklist item 15). */
       "publisher": {"@id": "https://pickmycostume.com/#organization"},
@@ -810,7 +810,7 @@ export function onRequest(context) {
     "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
     "<link rel=\\"canonical\\" href=\\"https://pickmycostume.com/c/" + slug + "\\">" +
     "<meta name=\\"description\\" content=\\"" + _tripleText + blurb + "\\">" +
-    "<meta name=\\"author\\" content=\\"Billy Litner\\">" +
+    "<meta name=\\"author\\" content=\\"Pick My Costume\\">" +
     "<meta property=\\"og:type\\" content=\\"website\\">" +
     "<meta property=\\"og:url\\" content=\\"https://pickmycostume.com/c/" + slug + "\\">" +
     "<meta property=\\"og:title\\" content=\\"" + title + " - Pick My Costume\\">" +
@@ -923,7 +923,7 @@ export function onRequest(context) {
     "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a></p>" +
     "<p class=\\"quizline\\">Want one picked for you? <a href=\\"" + quizTargetAttr + "\\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\\"pinline\\">Saving this idea? <a target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\\">Pin it on Pinterest</a></p>" +
-    "<footer class=\\"foot\\"><a href=\\"/\\">Pick My Costume</a> - Built with Muse. Made by Billy Litner.</footer>" +
+    "<footer class=\\"foot\\"><a href=\\"/\\">Pick My Costume</a> - Built with Muse.</footer>" +
     _bannerScript +
     _splitScript +
     "</main></body></html>";
