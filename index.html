@@ -30,20 +30,15 @@
 </script>
 <!-- 2026-09-28: the visible FAQ section was cut for simplicity, so its
      FAQPage JSON-LD went with it. Structured data never describes content
-     visitors cannot read. The HowTo (quiz flow) below stays: it still
-     describes the product. -->
-<!-- HowTo for the quiz flow (AI-citation onsite checklist: answer-shape).
-     Honest data only: "2 minutes" and "free forever" are the landing's own
-     claims; 164 is the real bank count; every step describes the quiz flow
-     itself, which is the product. Costume build times and prices
-     live on each /c/ guide's own HowTo, not here.
-     2026-09-28: step 3 rewritten for the plan-first flow.
-     2026-09-29 (Victory Lap): the plan panel leads with the share
-     block ("Share my costume", the one filled CTA); build actions, email
-     instructions, the AI plan, and save-image/pin-it collapse into one
-     "Keep building your costume" disclosure below it. -->
+     visitors cannot read. 2026-09-30: the FAQ is restored as a visible
+     section above the footer; its FAQPage JSON-LD is below. -->
+<!-- FAQPage for the visible FAQ section (AI-citation onsite checklist: answer-shape).
+     2026-09-30: HowTo for the quiz flow replaced by this FAQPage. The visible
+     FAQ section (above the footer) carries these exact Q&As; the schema
+     mirrors them verbatim.
+     Costume build times and prices live on each /c/ guide's own HowTo. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HowTo","publisher":{"@id":"https://pickmycostume.com/#organization"},"name":"How to pick your Halloween costume","description":"Answer a few quick questions and get a costume picked for you from 164 hand-picked ideas, each with a one-line how-to. About 2 minutes, free forever.","totalTime":"PT2M","estimatedCost":{"@type":"MonetaryAmount","currency":"USD","minValue":0,"maxValue":0},"tool":[{"@type":"HowToTool","name":"A web browser"}],"step":[{"@type":"HowToStep","name":"Answer a few quick questions","text":"A few quick questions about who the costume is for and the vibe you want. About 2 minutes, free forever."},{"@type":"HowToStep","name":"Get your pick","text":"Your answers are scored against 164 hand-picked costume ideas. Each idea comes with a one-line how-to."},{"@type":"HowToStep","name":"Plan it and make it","text":"Tap \"Plan this costume\" to save your pick. Tell your people you are going as this costume first, then keep building it: add to your calendar, check materials against your closet, email yourself the instructions, and copy a step-by-step AI plan."}]}
+{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe, budget, and timeline. Every pick comes with a free DIY build guide that shows the real cost and build time up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"Open the pantry page and tick off what you already own. It ranks all 164 ideas by what you can make tonight with zero shopping, what needs one purchase, and what needs two."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Every build guide lists the estimated cost before you start, and the ideas are designed around thrift-store and closet basics."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}}]}
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -97,7 +92,7 @@
    Every link now gets the accent-orange treatment (bold, underlined) so no
    surface can silently regress to browser-default blue. */
 a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overflow-x:clip} /* 2026-09-30: belt-and-suspenders with #s-hero clip for the 118vw hero bats */
 body{
   margin:0; color:var(--ink);
   background:
@@ -116,7 +111,7 @@ body{
   border-bottom:1px solid var(--line);margin:0 -16px 4px;padding:0 16px}
 .sitehead-link{display:flex;align-items:center;gap:10px;min-height:54px;
   color:var(--ink);text-decoration:none;font-weight:800;font-size:18px}
-.sitehead-link:hover{color:var(--ink);text-decoration:none}
+@media (hover:hover){.sitehead-link:hover{color:var(--ink);text-decoration:none}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 .sitehead-mark{font-size:22px;line-height:1}
 @media (min-width:900px){.sitehead{margin:0 -32px 4px;padding:0 32px}}
 /* 2026-09-27: desktop was a 640px phone column floating in dead space.
@@ -169,8 +164,7 @@ body{
    centered block pushing the headline down. */
 .hero .moonwrap{position:absolute;top:8px;right:10px;width:54px;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center;z-index:20}
 .hero .moonwrap:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
-.hero .moon,.hero .sun{width:52px;height:52px;display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(245,238,210,.35))}
-.hero .sun{filter:drop-shadow(0 0 12px rgba(255,200,90,.5))}
+.hero .moon{width:52px;height:52px;display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(245,238,210,.35))} /* 2026-09-30: sun swap removed, moon-only */
 .hero .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;line-height:1.35}
 /* 2026-09-26 (returning-hero QA): the caption wraps to two lines inside
    the 54px wrap so it never slides left under the countdown at phone width. */
@@ -207,10 +201,17 @@ body{
 .herosub{margin:8px 0 0;font-size:15px;color:var(--text)}
 /* 2026-09-26 (landing refresh): hero copy lines. */
 .honestline{margin:10px 0 0}
+/* 2026-09-30: visible FAQ. Questions are full-width left-aligned toggles;
+   answers are expanded by default (visible for readers and crawlers). */
+.faq-item{margin:0;border-top:1px solid var(--line);padding:12px 0}
+.faq-item:last-child{border-bottom:1px solid var(--line)}
+.faq-q{font-size:16px;text-align:left;width:100%;cursor:pointer;display:block;font-weight:700}
+.faq-a{margin:6px 0 0;font-size:15px}
+.faq-a p{margin:0}
 /* 2026-09-28: Play tab entry. Visual card next to the quiz CTA in the
    hero: the game is a third way to pick (the kid picks by playing). */
 .playcard{display:flex;align-items:center;gap:14px;margin:16px auto 0;max-width:430px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;text-decoration:none;color:var(--ink)}
-.playcard:hover{border-color:var(--accent)}
+@media (hover:hover){.playcard:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 .playcard-art{flex:0 0 64px}
 .playcard-art svg{width:64px;height:64px;display:block}
 .playcard-text{flex:1;text-align:left;min-width:0}
@@ -223,7 +224,7 @@ body{
 .kidbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px auto 0;max-width:430px}
 .kidbar .fine{margin:0}
 .kidbar a{display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap}
-.kidbar a:hover{border-color:var(--accent)}
+@media (hover:hover){.kidbar a:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 /* 2026-09-29: desktop hero mosaic. Real costume photos beside the
    headline at >=1024px kill the dead-space column; phone stays single-column
    (mosaic hidden). Tiles link to their /c/ guides. Unit: hero-mosaic. */
@@ -250,7 +251,7 @@ body{
 .tooltabrow{display:flex;gap:8px;margin:12px -16px 0;padding:2px 16px 8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tooltabrow::-webkit-scrollbar{display:none}
 .tooltab{flex:0 0 auto;display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:none;font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;white-space:nowrap;cursor:pointer}
-.tooltab:hover{border-color:var(--accent)}
+@media (hover:hover){.tooltab:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 .tooltab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .tooltab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .toolpanel{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:10px;background:var(--card)}
@@ -258,7 +259,7 @@ body{
 /* 2026-09-28: Play nudge on the results screen. Quiet visual card for
    the stuck parent: hand the phone to the kid. */
 .playnudge{display:flex;align-items:center;gap:12px;margin:14px 0 4px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;text-decoration:none;color:var(--ink)}
-.playnudge:hover{border-color:var(--accent)}
+@media (hover:hover){.playnudge:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 .playnudge-art{flex:0 0 48px}
 .playnudge-art svg{width:48px;height:48px;display:block}
 .playnudge-text{flex:1;min-width:0;font-size:14px;line-height:1.4}
@@ -404,6 +405,9 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 .tagline{font-size:19px;color:var(--muted);margin:0 0 28px}
 .screen{display:none}
+/* 2026-09-30: the results column had only the .wrap 16px on mobile while
+   the hero totals 24px (wrap 16 + .hero 8). Match it. */
+#s-results{padding-left:8px;padding-right:8px}
 .screen.on{display:block;animation:fadein .22s ease-out}
 /* 2026-09-28: the quiz opens as a bottom sheet over the homepage
    (house rule: keep the homepage and the moon visible while taking the quiz).
@@ -463,6 +467,7 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
   @keyframes heroshoot{0%{opacity:0;transform:rotate(-24deg) translateX(0)}1.5%{opacity:.9}7%{opacity:0;transform:rotate(-24deg) translateX(-52vw)}100%{opacity:0;transform:rotate(-24deg) translateX(-52vw)}}
 }
 @media (prefers-reduced-motion:reduce){.herofly,.heroleaf,.herostar,.herocloud,.heroshoot{display:none}}
+#s-hero{overflow-x:clip} /* 2026-09-30: the hero bats fly to 118vw; clip their overflow (clip, not hidden, preserves sticky) */
 #s-hero.on{display:flex;flex-direction:column;justify-content:flex-start;min-height:85svh}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .progress{color:var(--muted);font-size:14px;margin:4px 0 12px}
@@ -486,7 +491,7 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 /* 2026-09-30 delight: hover stays strictly weaker than selected. The old
    rule painted the full selected orange on hover, so an unpicked option
    looked picked. */
-.opt:hover{border-color:#b2691f}
+@media (hover:hover){.opt:hover{border-color:#b2691f}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 /* 2026-09-28: visual-first quiz. The main quiz's options are
    emoji-led tiles: big emoji + short label in a 2-col grid (3 cols for
    the 9-option interest question). The selected tile shows the check
@@ -502,10 +507,10 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 #q-opts.tiles.many .opt-emoji{font-size:30px}
 .opt-lab{line-height:1.35}
 .opt.tile .tick{position:absolute;top:8px;right:8px;flex:none;width:22px;height:22px;font-size:14px}
-.opt.tile:hover{border-color:#b2691f}
+@media (hover:hover){.opt.tile:hover{border-color:#b2691f}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 button:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-button.cta:hover{filter:brightness(1.08)}
-button.ghost:hover{border-color:var(--accent)}
+@media (hover:hover){button.cta:hover{filter:brightness(1.08)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
+@media (hover:hover){button.ghost:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 .navrow{display:flex;gap:12px;flex-wrap:wrap}
 button.cta{
   display:inline-block;min-height:56px;padding:14px 28px;font-size:18px;font-weight:700;
@@ -563,7 +568,7 @@ button.lightsheet{color:#241a38;}
 .makeplan .mp-buy{font-size:14px;margin:0 0 8px}
 .makeplan ol{margin:8px 0 0;padding-left:20px;font-size:14px}
 .makeplan ol li{margin-bottom:6px}
-.pantrybadge{display:inline-block;font-size:12px;font-weight:600;line-height:1;color:#5b6467;background:transparent;border:1px solid #c9cfd1;border-radius:999px;padding:5px 10px;margin:6px 0 0}
+.pantrybadge{display:inline-block;font-size:12px;font-weight:600;line-height:1;color:#a8b0b2;background:transparent;border:1px solid #c9cfd1;border-radius:999px;padding:5px 10px;margin:6px 0 0} /* 2026-09-30: #5b6467 was 2.5:1 on the card bg; #a8b0b2 is 6.9:1, passes 4.5 */
 .trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 .castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
 .castbox h3{margin:0 0 4px;font-size:20px}
@@ -730,7 +735,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .fine{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 /* 2026-09-24: T-minus clock. One factual day-count line under the hero
    tagline, never a ticking widget. Hides itself after Oct 31. */
-.tminus{margin:10px 0 0;font-size:15px;font-weight:700;color:var(--accent)}
+.tminus{margin:10px 0 16px;font-size:15px;font-weight:700;color:var(--accent)} /* 2026-09-30: breathing room before the CTA, which carries no top margin */
 /* 2026-09-26 (returning-hero QA): at phone width the centered countdown
    ran under the moon's halo; give it right clearance on narrow screens.
    The moon's caption hides there too: at 390px it collided with the countdown
@@ -846,7 +851,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .pinpoint input:focus{outline:none;border-color:var(--accent)}
 .pinpoint-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .pinpoint-chips button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
-.pinpoint-chips button:hover{border-color:var(--accent);color:var(--accent)}
+@media (hover:hover){.pinpoint-chips button:hover{border-color:var(--accent);color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 /* Z5 tap targets: pinpoint chip buttons must clear 44x44px on touch. */
 .pinpoint-chips button{min-height:44px;min-width:44px;padding:10px 18px;box-sizing:border-box}
 .pinpoint-note{font-size:13px;color:var(--muted);margin:6px 0 0;min-height:18px}
@@ -963,7 +968,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .st-channels p{color:var(--muted);margin:0 0 10px;font-size:15px;text-align:center;max-width:26em}
 .st-chan{width:min(320px,84vw);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-weight:700;cursor:pointer;text-align:left}
 .st-chan small{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
-.st-chan:hover{border-color:var(--accent)}
+@media (hover:hover){.st-chan:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 @media (min-width:900px){.st-title{font-size:40px}.st-bottom{padding:28px 48px calc(28px + env(safe-area-inset-bottom))}.st-tale{font-size:18px}}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
@@ -1031,7 +1036,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="mp-fun" id="moon-fun"></p>
         <!-- 2026-09-27: honesty caveat. The sun is a 6am-6pm clock
              heuristic; the moon phase is genuinely computed. -->
-        <p class="fine" id="moon-caveat" style="margin:8px 0 0">The sun is a rough guess from your phone's clock, shown 6am to 6pm, not a sunrise lookup. We never ask for your location. The moon phase is astronomically computed.</p>
+        <p class="fine" id="moon-caveat" style="margin:8px 0 0">The moon phase is astronomically computed, new every night. We never ask for your location.</p>
 </div>
       <div class="herotext">
       <h1 class="firstonly">A Halloween costume picked for you.</h1>
@@ -1040,7 +1045,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <p class="tminus" id="tminus" style="display:none"></p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <!-- 2026-09-30 delight: hero promise, plain. -->
-      <p class="fine honestline firstonly">A 2-minute quiz to costume ideas with cost and time.</p>
+      <p class="fine honestline firstonly">Answer 5 quick questions. Get your costume pick with cost and build time.</p>
       <p class="fine firstonly" style="margin:6px 0 0">No signup · 2 minutes · free</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
@@ -1067,7 +1072,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <img class="returnhero-photo" id="returnhero-photo" alt="">
           <div>
             <p class="returnhero-kicker">Welcome back</p>
-            <h1 id="returnhero-title">Still going as Pickle?</h1>
+            <h2 id="returnhero-title">Still going as Pickle?</h2> <!-- 2026-09-30: page H1 is the hero headline; this is an H2 -->
             <div class="returnhero-actions">
               <button class="cta" id="btn-return" type="button">See my ideas again</button>
               <button class="ghost" id="btn-retake" type="button">Retake the quiz</button>
@@ -1088,10 +1093,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <!-- 2026-09-29: mosaic tiles rotate to photos NOT in the trending
              rail below (snow-sisters, tin-hero, lost-tourist, blue-dog-family).
              neon-demon-hunter stays out: permanent photo-quality blocklist. -->
-        <a href="/c/baby-dino" aria-label="Baby Dinosaur costume guide"><img src="photos/baby-dino.webp" alt="Baby Dinosaur costume" loading="lazy"><span>Baby Dinosaur</span></a>
-        <a href="/c/bumble-bee" aria-label="Bumble Bee costume guide"><img src="photos/bumble-bee.webp" alt="Bumble Bee costume" loading="lazy"><span>Bumble Bee</span></a>
-        <a href="/c/emerald-witch" aria-label="Emerald Witch costume guide"><img src="photos/emerald-witch.webp" alt="Emerald Witch costume" loading="lazy"><span>Emerald Witch</span></a>
-        <a href="/c/walking-taco" aria-label="Walking Taco costume guide"><img src="photos/walking-taco.webp" alt="Walking Taco costume" loading="lazy"><span>Walking Taco</span></a>
+        <a href="/c/baby-dino" aria-label="Baby Dinosaur costume guide"><img src="photos/baby-dino.webp" srcset="photos/baby-dino-256.webp 256w, photos/baby-dino-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Baby Dinosaur costume" loading="lazy"><span>Baby Dinosaur</span></a>
+        <a href="/c/bumble-bee" aria-label="Bumble Bee costume guide"><img src="photos/bumble-bee.webp" srcset="photos/bumble-bee-256.webp 256w, photos/bumble-bee-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Bumble Bee costume" loading="lazy"><span>Bumble Bee</span></a>
+        <a href="/c/emerald-witch" aria-label="Emerald Witch costume guide"><img src="photos/emerald-witch.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Emerald Witch costume" loading="lazy"><span>Emerald Witch</span></a>
+        <a href="/c/walking-taco" aria-label="Walking Taco costume guide"><img src="photos/walking-taco.webp" srcset="photos/walking-taco-256.webp 256w, photos/walking-taco-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Walking Taco costume" loading="lazy"><span>Walking Taco</span></a>
 </div>
 </div>
       <!-- 2026-09-29: Kids zone. The games chips and the kid-favorites
@@ -1123,14 +1128,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <!-- 2026-09-30 delight: no invented numeric ranks. The rail shows
                  popular costumes; the #1/#2/#3 marks implied a measured
                  ranking we don't publish, so they're gone. -->
-            <a href="/?idea=snow-sisters&from=rail"><img src="photos/snow-sisters.webp" alt="Ice Kingdom Crew costume" loading="lazy"><span>Ice Kingdom Crew</span></a>
-            <a href="/?idea=tin-hero&from=rail"><img src="photos/tin-hero.webp" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
-            <a href="/?idea=lost-tourist&from=rail"><img src="photos/lost-tourist.webp" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-            <a href="/?idea=blue-dog-family&from=rail"><img src="photos/blue-dog-family.webp" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
-            <a href="/?idea=mermaid-crew&from=rail"><img src="photos/mermaid-crew.webp" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
-            <a href="/?idea=ghost-hunters&from=rail"><img src="photos/ghost-hunters.webp" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
-            <a href="/?idea=little-pig-family&from=rail"><img src="photos/little-pig-family.webp" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
-            <a href="/?idea=breakfast-buffet&from=rail"><img src="photos/breakfast-buffet.webp" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
+            <a href="/?idea=snow-sisters&from=rail"><img src="photos/snow-sisters.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w, photos/snow-sisters-960.webp 960w" sizes="128px" alt="Ice Kingdom Crew costume" loading="lazy"><span>Ice Kingdom Crew</span></a>
+            <a href="/?idea=tin-hero&from=rail"><img src="photos/tin-hero.webp" srcset="photos/tin-hero-256.webp 256w, photos/tin-hero-480.webp 480w, photos/tin-hero-960.webp 960w" sizes="128px" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
+            <a href="/?idea=lost-tourist&from=rail"><img src="photos/lost-tourist.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="128px" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
+            <a href="/?idea=blue-dog-family&from=rail"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w, photos/blue-dog-family-960.webp 960w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+            <a href="/?idea=mermaid-crew&from=rail"><img src="photos/mermaid-crew.webp" srcset="photos/mermaid-crew-256.webp 256w, photos/mermaid-crew-480.webp 480w, photos/mermaid-crew-960.webp 960w" sizes="128px" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
+            <a href="/?idea=ghost-hunters&from=rail"><img src="photos/ghost-hunters.webp" srcset="photos/ghost-hunters-256.webp 256w, photos/ghost-hunters-480.webp 480w" sizes="128px" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
+            <a href="/?idea=little-pig-family&from=rail"><img src="photos/little-pig-family.webp" srcset="photos/little-pig-family-256.webp 256w, photos/little-pig-family-480.webp 480w" sizes="128px" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
+            <a href="/?idea=breakfast-buffet&from=rail"><img src="photos/breakfast-buffet.webp" srcset="photos/breakfast-buffet-256.webp 256w, photos/breakfast-buffet-480.webp 480w" sizes="128px" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
 </div>
           <!-- 2026-09-27 honest "Make tonight" rail: JS-rendered by
                renderTonightRail() from the live PANTRY_MATS data. An idea
@@ -1141,11 +1146,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <div class="proofrow" id="row-tonight" role="tabpanel" aria-label="Costumes you can make tonight" hidden></div>
           <p class="fine" id="row-tonight-status" style="margin:8px 0 0" hidden></p>
           <div class="proofrow" id="row-new" role="tabpanel" aria-label="New costumes this week" hidden>
-            <a href="/?idea=beekeeper-bee&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/beekeeper-bee.webp" alt="Beekeeper and Bee costume" loading="lazy"><span>Beekeeper &amp; Bee</span></a>
-            <a href="/?idea=little-prince&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-prince.webp" alt="Little Prince costume" loading="lazy"><span>Little Prince</span></a>
-            <a href="/?idea=tetris-duo&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/tetris-duo.webp" alt="Tetris Duo costume" loading="lazy"><span>Tetris Duo</span></a>
-            <a href="/?idea=little-lifeguard&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-lifeguard.webp" alt="Little Lifeguard costume" loading="lazy"><span>Little Lifeguard</span></a>
-            <a href="/?idea=fossil-hunter&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
+            <a href="/?idea=beekeeper-bee&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/beekeeper-bee.webp" srcset="photos/beekeeper-bee-256.webp 256w, photos/beekeeper-bee-480.webp 480w, photos/beekeeper-bee-960.webp 960w" sizes="128px" alt="Beekeeper and Bee costume" loading="lazy"><span>Beekeeper &amp; Bee</span></a>
+            <a href="/?idea=little-prince&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-prince.webp" srcset="photos/little-prince-256.webp 256w, photos/little-prince-480.webp 480w, photos/little-prince-960.webp 960w" sizes="128px" alt="Little Prince costume" loading="lazy"><span>Little Prince</span></a>
+            <a href="/?idea=tetris-duo&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/tetris-duo.webp" srcset="photos/tetris-duo-256.webp 256w, photos/tetris-duo-480.webp 480w, photos/tetris-duo-960.webp 960w" sizes="128px" alt="Tetris Duo costume" loading="lazy"><span>Tetris Duo</span></a>
+            <a href="/?idea=little-lifeguard&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-lifeguard.webp" srcset="photos/little-lifeguard-256.webp 256w, photos/little-lifeguard-480.webp 480w, photos/little-lifeguard-960.webp 960w" sizes="128px" alt="Little Lifeguard costume" loading="lazy"><span>Little Lifeguard</span></a>
+            <a href="/?idea=fossil-hunter&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" srcset="photos/fossil-hunter-256.webp 256w, photos/fossil-hunter-480.webp 480w, photos/fossil-hunter-960.webp 960w" sizes="128px" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
 </div>
 </div>
         <!-- 2026-09-26 (landing refresh, proof-strip v2): the planned
@@ -1172,16 +1177,16 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="fine" style="margin:14px 0 0">🌙 Bedtime stories</p>
         <p class="fine" style="margin:2px 0 0">Short tales for the night before Halloween.</p>
         <div class="proofrow" id="row-storytime" role="list" aria-label="Storytime tales">
-          <a href="/?storytime&costume=little-witch" role="listitem"><img src="photos/little-witch.webp" alt="Little Witch costume" loading="lazy"><span>Little Witch</span></a>
-          <a href="/?storytime&costume=classic-ghost" role="listitem"><img src="photos/classic-ghost.webp" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
-          <a href="/?storytime&costume=glow-skeleton" role="listitem"><img src="photos/glow-skeleton.webp" alt="Glow Skeleton costume" loading="lazy"><span>Glow Skeleton</span></a>
-          <a href="/?storytime&costume=fuzzy-monster" role="listitem"><img src="photos/fuzzy-monster.webp" alt="Fuzzy Monster costume" loading="lazy"><span>Fuzzy Monster</span></a>
-          <a href="/?storytime&costume=neon-demon-hunter" role="listitem"><img src="photos/neon-demon-hunter.webp" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
-          <a href="/?storytime&costume=baby-dino" role="listitem"><img src="photos/baby-dino.webp" alt="Baby Dinosaur costume" loading="lazy"><span>Baby Dinosaur</span></a>
-          <a href="/?storytime&costume=bumble-bee" role="listitem"><img src="photos/bumble-bee.webp" alt="Bumble Bee costume" loading="lazy"><span>Bumble Bee</span></a>
-          <a href="/?storytime&costume=walking-taco" role="listitem"><img src="photos/walking-taco.webp" alt="Walking Taco costume" loading="lazy"><span>Walking Taco</span></a>
-          <a href="/?storytime&costume=blue-alien-ohana" role="listitem"><img src="photos/blue-alien-ohana.webp" alt="Blue Alien Ohana costume" loading="lazy"><span>Blue Alien Ohana</span></a>
-          <a href="/?storytime&costume=emerald-witch" role="listitem"><img src="photos/emerald-witch.webp" alt="Emerald Witch costume" loading="lazy"><span>Emerald Witch</span></a>
+          <a href="/?storytime&costume=little-witch" role="listitem"><img src="photos/little-witch.webp" srcset="photos/little-witch-256.webp 256w, photos/little-witch-480.webp 480w" sizes="128px" alt="Little Witch costume" loading="lazy"><span>Little Witch</span></a>
+          <a href="/?storytime&costume=classic-ghost" role="listitem"><img src="photos/classic-ghost.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w, photos/classic-ghost-960.webp 960w" sizes="128px" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
+          <a href="/?storytime&costume=glow-skeleton" role="listitem"><img src="photos/glow-skeleton.webp" srcset="photos/glow-skeleton-256.webp 256w, photos/glow-skeleton-480.webp 480w" sizes="128px" alt="Glow Skeleton costume" loading="lazy"><span>Glow Skeleton</span></a>
+          <a href="/?storytime&costume=fuzzy-monster" role="listitem"><img src="photos/fuzzy-monster.webp" srcset="photos/fuzzy-monster-256.webp 256w, photos/fuzzy-monster-480.webp 480w" sizes="128px" alt="Fuzzy Monster costume" loading="lazy"><span>Fuzzy Monster</span></a>
+          <a href="/?storytime&costume=neon-demon-hunter" role="listitem"><img src="photos/neon-demon-hunter.webp" srcset="photos/neon-demon-hunter-256.webp 256w, photos/neon-demon-hunter-480.webp 480w" sizes="128px" alt="Neon Demon Hunter costume" loading="lazy"><span>Neon Demon Hunter</span></a>
+          <a href="/?storytime&costume=baby-dino" role="listitem"><img src="photos/baby-dino.webp" srcset="photos/baby-dino-256.webp 256w, photos/baby-dino-480.webp 480w" sizes="128px" alt="Baby Dinosaur costume" loading="lazy"><span>Baby Dinosaur</span></a>
+          <a href="/?storytime&costume=bumble-bee" role="listitem"><img src="photos/bumble-bee.webp" srcset="photos/bumble-bee-256.webp 256w, photos/bumble-bee-480.webp 480w" sizes="128px" alt="Bumble Bee costume" loading="lazy"><span>Bumble Bee</span></a>
+          <a href="/?storytime&costume=walking-taco" role="listitem"><img src="photos/walking-taco.webp" srcset="photos/walking-taco-256.webp 256w, photos/walking-taco-480.webp 480w" sizes="128px" alt="Walking Taco costume" loading="lazy"><span>Walking Taco</span></a>
+          <a href="/?storytime&costume=blue-alien-ohana" role="listitem"><img src="photos/blue-alien-ohana.webp" srcset="photos/blue-alien-ohana-256.webp 256w, photos/blue-alien-ohana-480.webp 480w, photos/blue-alien-ohana-960.webp 960w" sizes="128px" alt="Blue Alien Ohana costume" loading="lazy"><span>Blue Alien Ohana</span></a>
+          <a href="/?storytime&costume=emerald-witch" role="listitem"><img src="photos/emerald-witch.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="128px" alt="Emerald Witch costume" loading="lazy"><span>Emerald Witch</span></a>
 </div>
 </div>
       <!-- 2026-09-26 "Most wanted by kids" merchandising rail: perennial kid
@@ -1573,8 +1578,53 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 
   <!-- 2026-09-28: cut the "How it works" strip and FAQ. The flow is
        self-evident (one CTA, one quiz), and the answers live where they are
-       needed: retry affordance on results, privacy on /privacy. The HowTo
-       JSON-LD in <head> stays; it still accurately describes the service. -->
+       needed: retry affordance on results, privacy on /privacy.
+       2026-09-30: FAQ restored as a visible section below (reversing the cut)
+       to carry FAQPage schema; the HowTo JSON-LD in <head> is replaced. -->
+  <!-- 2026-09-30: visible FAQ. Answers are expanded by default so the
+       content is on the page for readers and crawlers alike; each question
+       toggles its answer. Unit: faq (questions are button[data-item-id]
+       toggles, instrumented like every other content unit). -->
+  <section id="faq" aria-label="Frequently asked questions" style="margin-top:28px">
+    <h2 class="q-title">Good questions</h2>
+    <div class="faq-item">
+      <button type="button" class="textlink faq-q" data-item-id="faq-1" aria-expanded="true">What should I be for Halloween?</button>
+      <div class="faq-a"><p>Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe, budget, and timeline. Every pick comes with a free DIY build guide that shows the real cost and build time up front.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="textlink faq-q" data-item-id="faq-2" aria-expanded="true">I need a costume for tonight. What is actually last-minute?</button>
+      <div class="faq-a"><p>Open the pantry page and tick off what you already own. It ranks all 164 ideas by what you can make tonight with zero shopping, what needs one purchase, and what needs two.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="textlink faq-q" data-item-id="faq-3" aria-expanded="true">What are some cheap couples costumes?</button>
+      <div class="faq-a"><p>Take the quiz as a couple. Every build guide lists the estimated cost before you start, and the ideas are designed around thrift-store and closet basics.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="textlink faq-q" data-item-id="faq-4" aria-expanded="true">Do you have costume ideas for kids?</button>
+      <div class="faq-a"><p>Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="textlink faq-q" data-item-id="faq-5" aria-expanded="true">Is it really free?</button>
+      <div class="faq-a"><p>Yes. No account, no ads, no checkout. It is a hobby project, free forever.</p></div>
+    </div>
+  </section>
+  <script>
+  /* 2026-09-30: FAQ toggles. Answers start expanded (visible content for
+     the FAQPage schema); each question collapses or reopens its answer. */
+  (function(){
+    var faq = document.getElementById("faq");
+    if (!faq) return;
+    faq.addEventListener("click", function(e){
+      var b = e.target && e.target.closest ? e.target.closest(".faq-q") : null;
+      if (!b || !faq.contains(b)) return;
+      var a = b.parentNode.querySelector(".faq-a");
+      if (!a) return;
+      var open = b.getAttribute("aria-expanded") === "true";
+      b.setAttribute("aria-expanded", String(!open));
+      a.style.display = open ? "none" : "";
+    });
+  })();
+  </script>
 
   <!-- 2026-09-29: the maker credit lives on About only (about.html
        line 70); the homepage footer keeps just the nav links. -->
@@ -1684,7 +1734,13 @@ var UNIT_REGISTRY = {
   /* 2026-09-29: desktop hero mosaic (tiles link to /c/ guides) and the
      horizontal tool tabs (buttons carry explicit data-item-id). */
   "hero-mosaic":       {type: "mosaic", container: "hero-mosaic"},
-  "tools-bar":         {type: "bar",  container: "tool-tabs"}
+  "tools-bar":         {type: "bar",  container: "tool-tabs"},
+  /* 2026-09-30: results-page "More options" toggle (group vote, AI prompt,
+     Refine). The container is built dynamically by renderResults, so it is
+     instrumented via UnitTrack.instrumentUnit, not instrumentAll. */
+  "more-options":      {type: "toggle", container: "more-opts"},
+  /* 2026-09-30: visible FAQ section (static markup, instrumented on load). */
+  "faq":               {type: "section", container: "faq"}
 };
 var UnitTrack = (function(){
   "use strict";
@@ -1759,7 +1815,16 @@ var UnitTrack = (function(){
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", instrumentAll);
   else instrumentAll();
-  return {instrumentAll: instrumentAll, registry: UNIT_REGISTRY};
+  /* 2026-09-30: dynamic units (built after DOMContentLoaded, e.g. the
+     results "More options" toggle) instrument one unit by id. Re-running
+     instrumentAll would double-bind click listeners on the static units. */
+  function instrumentUnit(unitId){
+    var def = UNIT_REGISTRY[unitId];
+    if (def && Object.prototype.hasOwnProperty.call(UNIT_REGISTRY, unitId)){
+      try { instrument(unitId, def); } catch(e){}
+    }
+  }
+  return {instrumentAll: instrumentAll, instrumentUnit: instrumentUnit, registry: UNIT_REGISTRY};
 })();
 /* 2026-09-26 (proof-strip step-6 grade): tap->quiz-start within-session
    attribution. When a quiz_started fires and the same tab session recorded a
@@ -3437,15 +3502,20 @@ function show(id){
 
 
 function renderQ(){
+  /* 2026-09-30: a tapped option keeps :focus, and on touch devices the
+     browser paints it stuck-highlighted; clear it on question change. */
+  try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(_blur){}
   var order = flowOrder();
   var qid = order[state.qi];
   var q = qById(qid);
   $("q-progress").textContent = "Question " + (state.qi + 1) + " of " + flowOrder().length;
   /* 2026-09-27: name the one-question edit so the detour is explicit. */
   if (state.editQid) $("q-progress").textContent = "Changing one answer \u00B7 Question " + (state.qi + 1) + " of " + flowOrder().length;
-  /* 2026-09-26: goal-gradient bar. 15% on Q1, never 0%. */
+  /* 2026-09-30: honest progress. The bar shows how much of the quiz is
+     ANSWERED, so Q1 reads 0% and the last question reads 80%; 100% is set
+     in the answer handler after the final answer (below), never here. */
   var _qn = flowOrder().length;
-  var _qpct = _qn > 1 ? 15 + (state.qi / (_qn - 1)) * 85 : 100;
+  var _qpct = _qn > 0 ? Math.round((state.qi / _qn) * 100) : 100;
   var _qbf = $("qbar-fill");
   if (_qbf) _qbf.style.width = _qpct + "%";
   $("q-title").textContent = qTitle(qid);
@@ -3584,7 +3654,9 @@ function renderQ(){
         return;
       }
       if (state.qi < order2.length - 1) { state.qi++; renderQ(); }
-      else { finishQuiz(); }
+      /* 2026-09-30: the final answer completes the quiz, so the bar
+         may reach 100% only here, after the last answer is recorded. */
+      else { var _qbf2 = $("qbar-fill"); if (_qbf2) _qbf2.style.width = "100%"; finishQuiz(); }
     };
     box.appendChild(b);
   });
@@ -3607,6 +3679,18 @@ function finishQuiz(){
    Rule: tapping a card shows the single photo, no "See it in motion"
    animated-loop block on detail/share views. No cartoon sketches, no
    secondary illustrations. */
+var PMC_SRCSET_960 = {"beekeeper-bee":1,"blue-alien-ohana":1,"blue-dog-family":1,"bowling-pins":1,"cardboard-knight":1,"chipmunk-trio":1,"classic-ghost":1,"demon-boy-band":1,"dragon-rider-duo":1,"emotion-crew":1,"enchanted-castle-crew":1,"fossil-hunter":1,"galaxy-knights":1,"haunted-portraits":1,"headless-horsemen":1,"kart-racers":1,"little-lifeguard":1,"little-prince":1,"media-generation-block-game-crew-0-714cf59b-a494-4827-a15d-b0de300cfe64":1,"media-generation-blue-alien-ohana-0-5fb5b27d-bed8-4c3f-a851-0a8fddf11ecc":1,"media-generation-blue-dog-family-0-9781d872-2ccc-4ad9-bf63-737c5e082a0c":1,"media-generation-blue-dog-family-0-c2dacb48-3da2-4fe4-9201-d1ace938df48":1,"media-generation-bowling-pins-0-eb41f22a-6e25-4188-a78c-9d613227998c":1,"media-generation-ghost-hunters-0-f247b83c-8820-413c-87af-b0df60264220":1,"media-generation-robot-crew-0-56397e70-2952-4d1f-9c65-af7ef7f762d4":1,"media-generation-safari-zoo-crew-0-e08e84d9-c66a-4378-9765-e8c9a1fc503a":1,"media-generation-soccer-squad-0-62dae7ff-bd00-45fb-abb2-5c7eb1fd9ca4":1,"media-generation-the-olympians-0-649cd90e-53c4-4fa2-aff3-48962d548a72":1,"media-generation-under-the-sea-0-46d2383a-c831-45bb-b6dd-5066bca3bdf2":1,"mermaid-crew":1,"numbered-players":1,"plastic-dream-crew":1,"plumber-duo":1,"robot-crew":1,"safari-zoo-crew":1,"snow-sisters":1,"spider":1,"tall-hat-crew":1,"tetris-duo":1,"the-olympians":1,"tin-hero":1,"toy-box-crew":1,"web-slinger-kid":1,"wizard":1}; /* 2026-09-30: slugs with a -960.webp variant (wide sources only) */
+/* 2026-09-30: responsive photos. Every slug has -256/-480 variants; -960
+   exists only for wide sources (see PMC_SRCSET_960). The browser picks the
+   smallest sufficient file; plain src stays as the fallback. */
+function pmcSrcset(img, slug, sizes){
+  try {
+    var ss = "photos/" + slug + "-256.webp 256w, photos/" + slug + "-480.webp 480w";
+    if (PMC_SRCSET_960[slug]) ss += ", photos/" + slug + "-960.webp 960w";
+    img.setAttribute("srcset", ss);
+    if (sizes) img.setAttribute("sizes", sizes);
+  } catch(_){}
+}
 function ideaMedia(idea, photoOnly){
   var wrap = document.createElement("div");
   /* 2026-09-27: AI loop videos left out on purpose. Motion magnifies AI
@@ -3615,6 +3699,7 @@ function ideaMedia(idea, photoOnly){
      if we ever reverse this. */
   var photo = document.createElement("img");
   photo.src = "photos/" + idea.id + ".webp";
+  pmcSrcset(photo, idea.id, "(min-width:900px) 600px, 94vw");
   photo.alt = "";
   photo.style.width = "100%";
   photo.style.borderRadius = "10px";
@@ -4372,7 +4457,7 @@ function shareCaptionFor(idea){
    (hour-session/port_pantry_inline.py); never hand-edit it, re-run the port.
    Optional bank materials are dropped by the generator before they reach
    either surface, so both surfaces agree on the make-tonight boundary. */
-var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","foil","cardboard","socks"],"mats":{"astronaut":[[["sweatsuit"]],[["paper-bag"]],[["tape-silver"]],[["stickers"]],[["scissors"]]],"baby-dino":[[["hoodie"]],[["felt","paper-green"]],[["stuffing","socks"]],[["safety-pins"]],[["tape"]],[["scissors"]]],"backyard-hero":[[["pillowcase","tshirt"]],[["tshirt"]],[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["safety-pins"]],[["scissors"]]],"bacon-eggs":[[[null]],[["white-tshirt"]],[["paper-red"]],[["felt","paper-white"],["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"bamboo-demon":[[[null]],[[null]],[["cardboard"]],[["yarn"]],[["paint-red"]],[["scissors"]],[["tape"]]],"basketball-star":[[[null]],[[null]],[["paint-black"]],[[null]]],"black-cat":[[["black-clothes","sweatsuit"]],[["headband"]],[["felt","paper-black"]],[["paper-black"]],[["paint-black"]],[[null,"pillowcase"]],[["scissors"]],[["tape"]]],"block-game-crew":[[["cardboard"]],[[null]],[[null]],[["markers"]],[["scissors"]]],"block-monster":[[["sweatsuit"]],[["cardboard"]],[["tape"]],[["scissors"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"blue-alien-ohana":[[["hoodie"]],[["pipe-cleaners"]],[["headband"]],[[null]],[["felt","paper-white"]],[["safety-pins"]],[["scissors"]],[["tape"]]],"blue-dog-family":[[[null]],[["headband"]],[["felt","paper-blue"],["felt","paper-orange"],["felt","paper-white"]],[["safety-pins"]],[["scissors"]]],"board-game-pieces":[[["black-clothes"]],[["cardboard"]],[[null]],[[null]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"bowling-pins":[[[null]],[["tape-red"]],[["black-clothes"]],[[null]],[["scissors"]]],"boxer":[[[null]],[[null]],[["paint-purple"],["paint-yellow"]],[[null]],[[null]]],"breakfast-buffet":[[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]]],"bumble-bee":[[["black-clothes"]],[["tape-yellow"]],[["headband"]],[["pipe-cleaners"]],[[null,"stuffing"]],[["glue"]]],"burger-joint-couple":[[[null]],[[null]],[[null]],[[null]],[["paper-pen"]]],"caped-duo":[[["bedsheet"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["glue"]],[["paper-pen"]],[["scissors"]]],"cardboard-knight":[[["cardboard"]],[[null]],[[null]],[[null]],[["tape-gray"]],[["markers"]],[["scissors"]]],"cat-mouse":[[["headband"]],[["felt","paper-black"]],[["felt","paper-gray"]],[["paint-black"]],[["scissors"]],[["tape"]]],"cereal-crew":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"cheerleader":[[[null]],[[null]],[["yarn"]],[["tape"]],[["scissors"]]],"classic-ghost":[[["bedsheet"]],[["markers"]],[["scissors"]]],"crowd-camouflage":[[["hoodie"]],[["black-clothes"]],[["hat"]],[[null]],[["paper-pen"]]],"deadpan-diva":[[[null]],[["paint-white"]],[["paint-black","paint-brown"],["paint-red"]],[[null]]],"decades-crew":[[[null]],[["paper-pen"]],[["scissors"]],[["tape","safety-pins"]],[[null]]],"deviled-egg":[[["white-tshirt"]],[["felt","paper-yellow"]],[["felt"]],[["red-headband"]],[["pipe-cleaners","paper-red"]],[["scissors"],["tape","glue"]],[["paint-red"]]],"dino-herd":[[[null]],[["felt","paper-green"]],[["socks"]],[[null,"stuffing"]],[["glue","safety-pins"]],[["scissors"]]],"dino-rangers":[[[null]],[["hoodie"]],[["paper-white"]],[[null]],[["yarn"]],[["tape"],["scissors"]]],"dinosaur-family":[[["sweatsuit"]],[["felt","paper-green"]],[["scissors"]],[["glue","safety-pins"]],[["paint-green"]]],"doctor-bride":[[[null]],[["paint-green"]],[[null]],[[null,"bedsheet"]],[[null]],[["tape","glue"]],[["scissors"]],[["paint-black","paint-brown"]]],"emerald-witch":[[[null]],[["cardboard"]],[["paint-green"]],[["paint-black"],["paint-green"]],[[null],["scissors"]],[[null]]],"emoji-crew":[[[null]],[["paper-plates","cardboard"]],[["markers"]],[["scissors"],["tape"]]],"enchanted-castle-crew":[[[null]],[[null]],[["paint-gold"],[null]],[["cardboard"]],[[null,"cardboard"]],[[null],["scissors"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"error-404":[[["black-clothes"]],[["black-clothes"]],[[null,"paper-white"]],[[null]],[["scissors"]],[["tape"]]],"fairy-tale-princesses":[[[null]],[["cardboard"]],[[null,"markers"]],[["scissors"],["tape"]],[["yarn"]]],"fuzzy-monster":[[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["felt","paper-white"]],[["scissors"]],[["glue","safety-pins"]]],"garden-gnome":[[[null]],[["cardboard"]],[[null]],[["paint-white"]],[[null]],[["scissors"]],[["tape"]]],"ghost-hunters":[[[null]],[["cardboard"]],[["paper-white"],["markers"]],[["cardboard"]],[["tape","glue"],["scissors"]]],"gloom-bloom":[[["black-clothes"]],[[null]],[["paint-black"],["paint-white"]],[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]],"glow-skeleton":[[["sweatsuit"]],[[null]],[[null]],[["scissors"]],[["paint-black"]]],"goggle-crew":[[[null]],[[null]],[[null]],[[null]]],"good-witch-bad-witch":[[[null,"black-clothes"]],[[null]],[["paint-green"]],[["cardboard"]],[[null]],[[null],["scissors"],["markers"],["tape"]]],"haunted-animatronics":[[["cardboard"]],[[null]],[[null]],[[null]],[[null],["scissors"]]],"haunted-portraits":[[[null]],[["paint-gray"],["paint-white"]],[[null,"cardboard"]],[[null]]],"headless-horsemen":[[[null]],[[null]],[[null]],[["tape"]],[[null]]],"hero-squad":[[[null]],[[null]],[[null]],[[null]],[["safety-pins"]]],"ice-cream-cone":[[[null]],[["white-tshirt"]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["markers"]],[["tape"]]],"ketchup-mustard":[[[null]],[["felt","paper-red"]],[["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"little-lion":[[[null]],[[null]],[["scissors"]],[["safety-pins","glue"]],[["paint-brown"]]],"little-pig-family":[[[null]],[["headband"]],[[null]],[[null,"paper-pink"]],[[null,"yarn"]],[["scissors"],["tape"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"little-shark":[[["hoodie"]],[["felt","paper-gray"]],[["felt","paper-white"]],[["glue"]],[["scissors"]]],"little-witch":[[[null,"black-clothes"]],[[null]],[[null]],[["paint-green"]],[["safety-pins","yarn"]]],"lost-tourist":[[[null]],[["sunglasses"],[null]],[["paper-pen"]],[[null]],[["tape"]]],"mermaid-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null,"cardboard"]],[[null]],[["scissors"],["tape"]]],"moth-porch-light":[[[null]],[["cardboard"]],[["markers"]],[["pipe-cleaners","yarn"]],[["headband"]],[[null]],[[null]],[["tape"],["scissors"]]],"mystery-crew":[[[null]],[[null]],[[null]],[["headband"]],[["paint-brown"]]],"neon-demon-hunter":[[[null]],[[null]],[[null]],[[null]],[[null]]],"ninja":[[["black-clothes"]],[[null]],[[null,"black-clothes"]],[["scissors"],["tape"]]],"office-couple":[[[null]],[[null]],[[null]],[["black-clothes"]],[["markers"]]],"pbj":[[[null]],[[null]],[["paper-white"]],[["markers"]],[["scissors"],["tape","yarn"]]],"peas-pod":[[[null]],[["felt"]],[[null]],[[null,"glue"]],[["paint-green"]],[["scissors"]]],"penguin-huddle":[[["black-clothes"]],[["felt","paper-white"]],[["felt","paper-orange"]],[["headband"]],[["glue"]],[["scissors"]]],"pickle":[[[null]],[[null]],[["glue"]],[["paint-green"]]],"pixel-ghost":[[["bedsheet"]],[["felt","paper-black"]],[["glue"]],[["scissors"]],[["markers"],[null]]],"pizza-slice":[[["cardboard"]],[[null]],[["felt","paper-red"]],[[null,"paper-bag"]],[[null],["scissors"],["tape"]],[["glue"]]],"plague-doctor":[[[null]],[["hat"]],[[null,"sunglasses"]],[["cardboard"]],[[null]],[[null]],[["markers"]]],"player-one-two":[[["tshirt"]],[[null,"markers"]],[[null]],[[null]]],"plug-socket":[[["cardboard"]],[[null]],[["markers"]],[[null,"cardboard"]],[["tape"],["yarn"]],[["scissors"]]],"plumber-duo":[[[null]],[[null]],[[null]],[["paint-brown"]],[["stickers","paper-white"]],[["markers"]]],"pocket-plush":[[[null,"sweatsuit"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["glue"]],[["felt","paper-black"],["felt","paper-white"]],[[null,"paper-pen"]],[["markers"]]],"popcorn-bucket":[[["cardboard"]],[[null]],[["balloons"]],[["tape"],["yarn"],["scissors"]],[["markers"]]],"prince-princess":[[["paper-yellow"]],[[null]],[[null]],[[null]],[[null]]],"rain-cloud-rainbow":[[[null]],[["stuffing"]],[["paper-blue"]],[["yarn"],["tape"]],[["glue"]],[[null]]],"ramen-bowl":[[["cardboard"]],[[null]],[["yarn"]],[[null,"paper-white"]],[[null]],[["tape"],["yarn"]],[["scissors"]]],"raptor-ranger":[[[null],["hat"]],[[null]],[["felt","paper-green"]],[[null]],[["paint-green"],["paint-black"]],[["scissors"],["tape"]]],"referee":[[["black-clothes"]],[["black-clothes"]],[["tape-white"]],[[null]],[[null]]],"robot-crew":[[["cardboard"]],[["cardboard"]],[["foil"]],[[null]],[["tape"]],[["markers"]],[["yarn"]],[[null]]],"robot-ranger":[[["cardboard"]],[["foil"]],[[null]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["tape"]],[[null]],[["markers"]],[["scissors"]]],"safari-photographer":[[[null]],[[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"],["tape"],["markers"]]],"safari-zoo-crew":[[[null]],[["headband"]],[["paper-brown"],["paper-black"],["paper-pink"]],[["paint-brown"],["paint-black"]],[["scissors"],["tape"]]],"salt-pepper":[[["white-tshirt"],[null],["hat"]],[["black-clothes"],["hat"]],[["cardboard"]],[[null,"markers"]],[["markers"]],[["tape","glue"]]],"snow-sisters":[[[null]],[[null]],[["white-tshirt"],[null],["felt"]],[[null],["pipe-cleaners"],[null]],[["headband"]],[["tape"],["scissors"]]],"soccer-squad":[[[null]],[["black-clothes"]],[[null]],[["paper-red"]],[["markers"]],[["tape-white"]],[["scissors"]]],"space-crewmate":[[["sweatsuit"]],[["cardboard"]],[["foil"]],[["yarn"]],[["markers"]],[["tape"]],[["scissors"]]],"spider":[[["black-clothes"]],[["socks"]],[["newspaper"]],[["yarn"]],[["glue"]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["paint-white"]]],"sun-moon":[[[null]],[[null,"black-clothes"]],[[null,"paper-yellow"]],[["paper-gray"]],[["paper-white"],["paper-yellow"]],[["tape"],["scissors"]]],"superhero-family":[[["sweatsuit"]],[["felt","paper-black"]],[["felt"]],[["headband"]],[["safety-pins","tape"]],[["scissors"]]],"sushi-roll":[[["bedsheet","white-tshirt"]],[["paper-green"]],[["felt"]],[[null,"stuffing"]],[[null,"paper-pen"]],[["glue"]],[["scissors"]]],"tennis-duo":[[["white-tshirt"],[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"]]],"tin-hero":[[[null]],[["tape"]],[[null]],[["cardboard"]],[["tape"]],[["safety-pins"]]],"tiny-firefighter":[[[null]],[[null]],[[null]],[[null]],[["markers"]]],"tiny-snail":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["headband"]],[[null,"stuffing"]],[["tape"]],[["scissors"]]],"tooth-fairy":[[[null]],[[null]],[["paper-white"]],[["felt"]],[[null]],[[null]],[[null],["foil"]],[["tape"],["scissors"]]],"under-the-sea":[[[null]],[["yarn"]],[[null]],[[null],["cardboard"]],[[null]],[[null]],[["tape"],["scissors"]]],"vampire":[[[null,"black-clothes"]],[["black-clothes"]],[[null]],[[null]],[["paint-red"]],[["paint-white"]]],"walking-taco":[[["tshirt"]],[["felt","paper-brown"],["felt","paper-red"],["felt","paper-green"],["felt","paper-yellow"]],[["glue"]],[["headband"]],[["scissors"]]],"web-hero-duo":[[["sweatsuit"]],[["black-clothes"]],[["paint-black"]],[["stickers","paint-white"]],[["socks"]],[["tape"]]],"web-slinger-crew":[[["hoodie"]],[["paint-black"]],[["stickers","tape-white"]],[["sunglasses"]],[["tape"]]],"web-slinger-kid":[[[null]],[["felt","paper-blue"]],[["tape-black"]],[["paper-white"]],[["headband"]],[["scissors"]]],"zombie-coworker":[[[null]],[[null]],[["paint-white"]],[["paint-black"]],[[null]],[["scissors"]]],"the-olympians":[[["bedsheet"]],[[null]],[[null]],[["paint-gold"]],[["cardboard"]],[[null,"markers"]],[["safety-pins"],["scissors"],["tape"]]],"spaghetti-meatball":[[["white-tshirt",null]],[["yarn"]],[[null]],[[null,"glue"]],[["scissors"]]],"cupcake":[[[null]],[["pillowcase"]],[[null]],[["glue"]]],"banana":[[["sweatsuit"]],[["felt"]],[["headband"]],[["glue"]]],"hot-dog":[[[null]],[[null]],[[null]],[["safety-pins","glue"]]],"donut":[[["cardboard"]],[[null]],[["felt","stickers"]],[["yarn"]],[["scissors"],["glue"]]],"coffee-cup":[[[null,"bedsheet"]],[["cardboard"]],[["paper-brown","felt"]],[["markers"]]],"fruit-salad":[[[null]],[["felt","paper-green"]],[["headband"]],[["glue"]]],"wizard":[[[null]],[[null]],[[null]],[[null]]],"toy-box-crew":[[[null]],[["white-tshirt"],[null],["felt"]],[["cardboard"],[null]],[[null]],[[null]],[["paper-pen"]],[["markers"],["scissors"],["glue"],["tape"]]],"demon-boy-band":[[["white-tshirt","black-clothes"]],[[null]],[[null]],[[null,"paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null]],[["sunglasses"]]],"dragon-rider-duo":[[[null]],[[null]],[["cardboard"]],[[null,"cardboard"]],[[null]],[["headband"]],[["tape"],["yarn"],["scissors"]]],"numbered-players":[[[null]],[["white-tshirt"]],[[null],["paper-white","markers"]],[[null]],[[null]]],"emotion-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["paper-white"]],[["markers"]],[[null]]],"kart-racers":[[["cardboard"]],[[null]],[["paper-plates"]],[[null]],[["scissors"],["tape"],["yarn"]],[["yarn"]]],"tall-hat-crew":[[[null]],[[null]],[["black-clothes"]],[[null]],[[null]],[[null,"markers"]],[[null],["scissors"]]],"chipmunk-trio":[[[null]],[[null,"markers"]],[["felt"]],[["headband"]],[["paint-brown"]],[["glue"]]],"galaxy-knights":[[[null]],[[null]],[[null]],[[null]],[["paint-brown"]]],"plastic-dream-crew":[[[null]],[["sunglasses"]],[[null]]],"extinct-party-animal":[[[null]],[["felt","paper-green"]],[[null]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"dino-tourist":[[[null]],[[null]],[[null]],[[null]],[["sunglasses"]]],"raptor-barista":[[["hoodie"]],[[null]],[[null]]],"emotional-support-dinosaur":[[[null]],[["felt","paper-green"]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"garden-fairy":[[[null]],[["cardboard"]],[[null]],[["headband"]],[[null]],[["cardboard"]],[[null]],[[null]],[["tape"]],[["glue"]],[["scissors"]]],"ballerina":[[[null]],[[null]],[[null]],[[null]],[[null]],[["scissors"]]],"butterfly":[[["cardboard"]],[[null]],[["sweatsuit"]],[[null]],[["headband"]],[["pipe-cleaners"]],[["tape"]],[["scissors"]]],"pop-star":[[[null]],[[null]],[[null]],[["sunglasses"]],[[null]]],"ice-skater":[[[null]],[[null]],[[null]],[["paint-pink"]],[[null]]],"ladybug":[[[null]],[["black-clothes"]],[["felt","paper-black"]],[["headband"]],[["pipe-cleaners"]],[[null]],[["scissors"]],[["glue"]]],"daisy":[[[null]],[[null]],[[null]],[["headband"]],[["glue"]],[["scissors"]]],"little-baker":[[["paper-white"]],[[null]],[[null]],[["tape"]],[["scissors"]]],"little-artist":[[["hat"]],[["cardboard"]],[[null]],[["tshirt"]],[[null]],[["scissors"]]],"beekeeper-bee":[[[null]],[[null]],[["hat"]],[[null]],[["tape-black"]],[["pipe-cleaners"]],[["headband"]],[["paint-yellow"],["paint-black"]],[["scissors"]]],"tetris-duo":[[["cardboard"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["yarn"]],[["tape"]],[["scissors"]],[[null]]],"little-lifeguard":[[[null]],[[null]],[[null]],[["tape-white"]],[[null]],[["paint-white"]],[["scissors"]]],"little-prince":[[["paper-yellow"]],[[null]],[["yarn"]],[[null]],[["safety-pins"]],[["scissors"]],[["glue"]]],"fossil-hunter":[[[null]],[[null]],[[null]],[["cardboard"]],[[null]],[["paper-bag"]],[["scissors"]],[["paper-pen"]]]}};
+var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","foil","cardboard","socks"],"mats":{"astronaut":[[["sweatsuit"]],[["paper-bag"]],[["tape-silver"]],[["stickers"]],[["scissors"]]],"baby-dino":[[["hoodie"]],[["felt","paper-green"]],[["stuffing","socks"]],[["safety-pins"]],[["tape"]],[["scissors"]]],"backyard-hero":[[["pillowcase","tshirt"]],[["tshirt"]],[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["safety-pins"]],[["scissors"]]],"bacon-eggs":[[[null]],[["white-tshirt"]],[["paper-red"]],[["felt","paper-white"],["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"bamboo-demon":[[[null]],[[null]],[["cardboard"]],[["yarn"]],[["paint-red"]],[["scissors"]],[["tape"]]],"basketball-star":[[[null]],[[null]],[["paint-black"]],[[null]]],"black-cat":[[["black-clothes","sweatsuit"]],[["headband"]],[["felt","paper-black"]],[["paper-black"]],[["paint-black"]],[[null,"pillowcase"]],[["scissors"]],[["tape"]]],"block-game-crew":[[["cardboard"]],[[null]],[[null]],[["markers"]],[["scissors"]]],"block-monster":[[["sweatsuit"]],[["cardboard"]],[["tape"]],[["scissors"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"blue-alien-ohana":[[["hoodie"]],[["pipe-cleaners"]],[[null,"stuffing"]],[["headband"]],[[null]],[["felt","paper-white"]],[["safety-pins"]],[["scissors"]],[["tape"]]],"blue-dog-family":[[[null]],[["headband"]],[["felt","paper-blue"],["felt","paper-orange"],["felt","paper-white"]],[["safety-pins"]],[["scissors"]]],"board-game-pieces":[[["black-clothes"]],[["cardboard"]],[[null]],[[null]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"bowling-pins":[[[null]],[["tape-red"]],[["black-clothes"]],[[null]],[["scissors"]]],"boxer":[[[null]],[[null]],[["paint-purple"],["paint-yellow"]],[[null]],[[null]]],"breakfast-buffet":[[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]]],"bumble-bee":[[["black-clothes"]],[["tape-yellow"]],[["headband"]],[["pipe-cleaners"]],[[null,"stuffing"]],[["glue"]]],"burger-joint-couple":[[[null]],[[null]],[[null]],[[null]],[["paper-pen"]]],"caped-duo":[[["bedsheet"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["yarn"]],[["glue"]],[["paper-pen"]],[["scissors"]]],"cardboard-knight":[[["cardboard"]],[[null]],[[null]],[[null]],[["tape-gray"]],[["markers"]],[["scissors"]]],"cat-mouse":[[["headband"]],[["felt","paper-black"]],[["felt","paper-gray"]],[["paint-black"]],[["scissors"]],[["tape"]]],"cereal-crew":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["scissors"]],[["tape"]]],"cheerleader":[[[null]],[[null]],[["yarn"]],[["tape"]],[["scissors"]]],"classic-ghost":[[["bedsheet"]],[["markers"]],[["scissors"]]],"crowd-camouflage":[[["hoodie"]],[["black-clothes"]],[["hat"]],[[null]],[["paper-pen"]]],"deadpan-diva":[[[null]],[["paint-white"]],[["paint-black","paint-brown"],["paint-red"]],[[null]]],"decades-crew":[[[null]],[["paper-pen"]],[["scissors"]],[["tape","safety-pins"]],[[null]]],"deviled-egg":[[["white-tshirt"]],[["felt","paper-yellow"]],[["felt"]],[["red-headband"]],[["pipe-cleaners","paper-red"]],[["scissors"],["tape","glue"]],[["paint-red"]]],"dino-herd":[[[null]],[["felt","paper-green"]],[["socks"]],[[null,"stuffing"]],[["glue","safety-pins"]],[["scissors"]]],"dino-rangers":[[[null]],[["hoodie"]],[["paper-white"]],[[null]],[["yarn"]],[["tape"],["scissors"]]],"dinosaur-family":[[["sweatsuit"]],[["felt","paper-green"]],[["scissors"]],[["glue","safety-pins"]],[["paint-green"]]],"doctor-bride":[[[null]],[["paint-green"]],[[null]],[[null,"bedsheet"]],[[null]],[["tape","glue"]],[["scissors"]],[["paint-black","paint-brown"]]],"emerald-witch":[[[null]],[["cardboard"]],[["paint-green"]],[["paint-black"],["paint-green"]],[[null],["scissors"]],[[null]]],"emoji-crew":[[[null]],[["paper-plates","cardboard"]],[["markers"]],[["scissors"],["tape"]]],"enchanted-castle-crew":[[[null]],[[null]],[["paint-gold"],[null]],[["cardboard"]],[[null,"cardboard"]],[[null],["scissors"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"error-404":[[[null]],[["black-clothes"]],[["paper-white"]],[[null]],[["tape"]]],"fairy-tale-princesses":[[[null]],[["cardboard"]],[[null,"markers"]],[["scissors"],["tape"]],[["yarn"]]],"fuzzy-monster":[[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["felt","paper-white"]],[["scissors"]],[["glue","safety-pins"]]],"garden-gnome":[[[null]],[["cardboard"]],[[null]],[["paint-white"]],[[null]],[["scissors"]],[["tape"]]],"ghost-hunters":[[[null]],[["cardboard"]],[["paper-white"],["markers"]],[["cardboard"]],[["tape","glue"],["scissors"]]],"gloom-bloom":[[["black-clothes"]],[[null]],[["paint-black"],["paint-white"]],[[null]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]],"glow-skeleton":[[["sweatsuit"]],[[null]],[[null]],[["scissors"]],[["paint-black"]]],"goggle-crew":[[[null]],[[null]],[[null]],[[null]]],"good-witch-bad-witch":[[[null,"black-clothes"]],[[null]],[["paint-green"]],[["cardboard"]],[[null]],[[null],["scissors"],["markers"],["tape"]]],"haunted-animatronics":[[["cardboard"]],[[null]],[[null]],[[null]],[[null],["scissors"]]],"haunted-portraits":[[[null]],[["paint-gray"],["paint-white"]],[[null,"cardboard"]],[[null]]],"headless-horsemen":[[[null]],[[null]],[[null]],[["tape"]],[[null]]],"hero-squad":[[[null]],[[null]],[[null]],[[null]],[["safety-pins"]]],"ice-cream-cone":[[[null]],[["white-tshirt"]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["markers"]],[["tape"]]],"ketchup-mustard":[[[null]],[["felt","paper-red"]],[["felt","paper-yellow"]],[["safety-pins"]],[["scissors"]]],"little-lion":[[[null]],[[null]],[["scissors"]],[["safety-pins","glue"]],[["paint-brown"]]],"little-pig-family":[[[null]],[["headband"]],[[null]],[[null,"paper-pink"]],[[null,"yarn"]],[["scissors"],["tape"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"little-shark":[[["hoodie"]],[["felt","paper-gray"]],[["felt","paper-white"]],[["glue"]],[["scissors"]]],"little-witch":[[[null,"black-clothes"]],[[null]],[[null]],[["paint-green"]],[["safety-pins","yarn"]]],"lost-tourist":[[[null]],[["sunglasses"],[null]],[["paper-pen"]],[[null]],[["tape"]]],"mermaid-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null,"cardboard"]],[[null]],[["scissors"],["tape"]]],"moth-porch-light":[[[null]],[["cardboard"]],[["markers"]],[["pipe-cleaners","yarn"]],[["headband"]],[[null]],[[null]],[["tape"],["scissors"]]],"mystery-crew":[[[null]],[[null]],[[null]],[["headband"]],[["paint-brown"]]],"neon-demon-hunter":[[[null]],[[null]],[[null]],[[null]],[[null]]],"ninja":[[["black-clothes"]],[[null]],[[null,"black-clothes"]],[["scissors"],["tape"]]],"office-couple":[[[null]],[[null]],[[null]],[["black-clothes"]],[["markers"]]],"pbj":[[[null]],[[null]],[["paper-white"]],[["markers"]],[["scissors"],["tape","yarn"]]],"peas-pod":[[[null]],[["felt"]],[[null]],[[null,"glue"]],[["paint-green"]],[["scissors"]]],"penguin-huddle":[[["black-clothes"]],[["felt","paper-white"]],[["felt","paper-orange"]],[["headband"]],[["glue"]],[["scissors"]]],"pickle":[[[null]],[[null]],[["glue"]],[["paint-green"]]],"pixel-ghost":[[["bedsheet"]],[["felt","paper-black"]],[["glue"]],[["scissors"]],[["markers"],[null]]],"pizza-slice":[[["cardboard"]],[[null]],[["felt","paper-red"]],[[null,"paper-bag"]],[[null],["scissors"],["tape"]],[["glue"]]],"plague-doctor":[[[null]],[["hat"]],[[null,"sunglasses"]],[["cardboard"]],[[null]],[[null]],[["markers"]]],"player-one-two":[[["tshirt"]],[[null,"markers"]],[[null]],[[null]]],"plug-socket":[[["cardboard"]],[[null]],[["markers"]],[[null,"cardboard"]],[["tape"],["yarn"]],[["scissors"]]],"plumber-duo":[[[null]],[[null]],[[null]],[["paint-brown"]],[["stickers","paper-white"]],[["markers"]]],"pocket-plush":[[[null,"sweatsuit"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["glue"]],[["felt","paper-black"],["felt","paper-white"]],[[null,"paper-pen"]],[["markers"]]],"popcorn-bucket":[[["cardboard"]],[[null]],[["balloons"]],[["tape"],["yarn"],["scissors"]],[["markers"]]],"prince-princess":[[["paper-yellow"]],[[null]],[[null]],[[null]],[[null]]],"rain-cloud-rainbow":[[[null]],[["stuffing"]],[["paper-blue"]],[["yarn"],["tape"]],[["glue"]],[[null]]],"ramen-bowl":[[["cardboard"]],[[null]],[["yarn"]],[[null,"paper-white"]],[[null]],[["tape"],["yarn"]],[["scissors"]]],"raptor-ranger":[[[null],["hat"]],[[null]],[["felt","paper-green"]],[[null]],[["paint-green"],["paint-black"]],[["scissors"],["tape"]]],"referee":[[["black-clothes"]],[["black-clothes"]],[["tape-white"]],[[null]],[[null]]],"robot-crew":[[["cardboard"]],[["cardboard"]],[["foil"]],[[null]],[["tape"]],[["markers"]],[["yarn"]],[[null]]],"robot-ranger":[[["cardboard"]],[["foil"]],[[null]],[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["tape"]],[[null]],[["markers"]],[["scissors"]]],"safari-photographer":[[[null]],[[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"],["tape"],["markers"]]],"safari-zoo-crew":[[[null]],[["headband"]],[["paper-brown"],["paper-black"],["paper-pink"]],[["paint-brown"],["paint-black"]],[["scissors"],["tape"]]],"salt-pepper":[[["white-tshirt"],[null],["hat"]],[["black-clothes"],["hat"]],[["cardboard"]],[[null,"markers"]],[["markers"]],[["tape","glue"]]],"snow-sisters":[[[null]],[[null]],[["white-tshirt"],[null],["felt"]],[[null],["pipe-cleaners"],[null]],[["headband"]],[["tape"],["scissors"]]],"soccer-squad":[[[null]],[["black-clothes"]],[[null]],[["paper-red"]],[["markers"]],[["tape-white"]],[["scissors"]]],"space-crewmate":[[["sweatsuit"]],[["cardboard"]],[["foil"]],[["yarn"]],[["markers"]],[["tape"]],[["scissors"]]],"spider":[[["black-clothes"]],[["socks"]],[["newspaper"]],[["yarn"]],[["glue"]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["paint-white"]]],"sun-moon":[[[null]],[[null,"black-clothes"]],[[null,"paper-yellow"]],[["paper-gray"]],[["paper-white"],["paper-yellow"]],[["tape"],["scissors"]]],"superhero-family":[[["sweatsuit"]],[["felt","paper-black"]],[["felt"]],[["headband"]],[["safety-pins","tape"]],[["scissors"]]],"sushi-roll":[[["bedsheet","white-tshirt"]],[["paper-green"]],[["felt"]],[[null,"stuffing"]],[[null,"paper-pen"]],[["glue"]],[["scissors"]]],"tennis-duo":[[["white-tshirt"],[null]],[[null]],[[null,"cardboard"]],[[null]],[[null]],[["scissors"]]],"tin-hero":[[[null]],[["tape"]],[[null]],[["cardboard"]],[["tape"]],[["safety-pins"]]],"tiny-firefighter":[[[null]],[[null]],[[null]],[[null]],[["markers"]]],"tiny-snail":[[[null]],[["cardboard"]],[["markers"]],[["yarn"]],[["headband"]],[[null,"stuffing"]],[["tape"]],[["scissors"]]],"tooth-fairy":[[[null]],[[null]],[["paper-white"]],[["felt"]],[[null]],[[null]],[[null],["foil"]],[["tape"],["scissors"]]],"under-the-sea":[[[null]],[["yarn"]],[[null]],[[null],["cardboard"]],[[null]],[[null]],[["tape"],["scissors"]]],"vampire":[[[null,"black-clothes"]],[["black-clothes"]],[[null]],[[null]],[["paint-red"]],[["paint-white"]]],"walking-taco":[[["tshirt"]],[["felt","paper-brown"],["felt","paper-red"],["felt","paper-green"],["felt","paper-yellow"]],[["glue"]],[["headband"]],[["scissors"]]],"web-hero-duo":[[["sweatsuit"]],[["black-clothes"]],[["paint-black"]],[["stickers","paint-white"]],[["socks"]],[["tape"]]],"web-slinger-crew":[[["hoodie"]],[["paint-black"]],[["stickers","tape-white"]],[["sunglasses"]],[["tape"]]],"web-slinger-kid":[[[null]],[["felt","paper-blue"]],[["tape-black"]],[["paper-white"]],[["headband"]],[["scissors"]]],"zombie-coworker":[[[null]],[[null]],[["paint-white"]],[["paint-black"]],[[null]],[["scissors"]]],"the-olympians":[[["bedsheet"]],[[null]],[[null]],[["paint-gold"]],[["cardboard"]],[[null,"markers"]],[["safety-pins"],["scissors"],["tape"]]],"spaghetti-meatball":[[["white-tshirt",null]],[["yarn"]],[[null]],[[null,"glue"]],[["scissors"]]],"cupcake":[[[null]],[["pillowcase"]],[[null]],[["glue"]]],"banana":[[["sweatsuit"]],[["felt"]],[["headband"]],[["glue"]]],"hot-dog":[[[null]],[[null]],[[null]],[["safety-pins","glue"]]],"donut":[[["cardboard"]],[[null]],[["felt","stickers"]],[["yarn"]],[["scissors"],["glue"]]],"coffee-cup":[[[null,"bedsheet"]],[["cardboard"]],[["paper-brown","felt"]],[["markers"]]],"fruit-salad":[[[null]],[["felt","paper-green"]],[["headband"]],[["glue"]]],"wizard":[[[null]],[[null]],[[null]],[[null]]],"toy-box-crew":[[[null]],[["white-tshirt"],[null],["felt"]],[["cardboard"],[null]],[[null]],[[null]],[["paper-pen"]],[["markers"],["scissors"],["glue"],["tape"]]],"demon-boy-band":[[["white-tshirt","black-clothes"]],[[null]],[[null]],[[null,"paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null]],[["sunglasses"]]],"dragon-rider-duo":[[[null]],[[null]],[["cardboard"]],[[null,"cardboard"]],[[null]],[["headband"]],[["tape"],["yarn"],["scissors"]]],"numbered-players":[[[null]],[["white-tshirt"]],[[null],["paper-white","markers"]],[[null]],[[null]]],"emotion-crew":[[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["paper-white"]],[["markers"]],[[null]]],"kart-racers":[[["cardboard"]],[[null]],[["paper-plates"]],[[null]],[["scissors"],["tape"],["yarn"]],[["yarn"]]],"tall-hat-crew":[[[null]],[[null]],[["black-clothes"]],[[null]],[[null]],[[null,"markers"]],[[null],["scissors"]]],"chipmunk-trio":[[[null]],[[null,"markers"]],[["felt"]],[["headband"]],[["paint-brown"]],[["glue"]]],"galaxy-knights":[[[null]],[[null]],[[null]],[[null]],[["paint-brown"]]],"plastic-dream-crew":[[[null]],[["sunglasses"]],[[null]]],"extinct-party-animal":[[[null]],[["felt","paper-green"]],[[null]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"dino-tourist":[[[null]],[[null]],[[null]],[[null]],[["sunglasses"]]],"raptor-barista":[[["hoodie"]],[[null]],[[null]]],"emotional-support-dinosaur":[[[null]],[["felt","paper-green"]],[[null]],[["glue"]],[["markers"]],[["scissors"]]],"garden-fairy":[[[null]],[["cardboard"]],[[null]],[["headband"]],[[null]],[["cardboard"]],[[null]],[[null]],[["tape"]],[["glue"]],[["scissors"]]],"ballerina":[[[null]],[[null]],[[null]],[[null]],[[null]],[["scissors"]]],"butterfly":[[["cardboard"]],[[null]],[["sweatsuit"]],[[null]],[["headband"]],[["pipe-cleaners"]],[["tape"]],[["scissors"]]],"pop-star":[[[null]],[[null]],[[null]],[["sunglasses"]],[[null]]],"ice-skater":[[[null]],[[null]],[[null]],[["paint-pink"]],[[null]]],"ladybug":[[[null]],[["black-clothes"]],[["felt","paper-black"]],[["headband"]],[["pipe-cleaners"]],[[null]],[["scissors"]],[["glue"]]],"daisy":[[[null]],[[null]],[[null]],[["headband"]],[["glue"]],[["scissors"]]],"little-baker":[[["paper-white"]],[[null]],[[null]],[["tape"]],[["scissors"]]],"little-artist":[[["hat"]],[["cardboard"]],[[null]],[["tshirt"]],[[null]],[["scissors"]]],"beekeeper-bee":[[[null]],[[null]],[["hat"]],[[null]],[["tape-black"]],[["pipe-cleaners"]],[["headband"]],[["paint-yellow"],["paint-black"]],[["scissors"]]],"tetris-duo":[[["cardboard"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["yarn"]],[["tape"]],[["scissors"]],[[null]]],"little-lifeguard":[[[null]],[[null]],[[null]],[["tape-white"]],[[null]],[["paint-white"]],[["scissors"]]],"little-prince":[[["paper-yellow"]],[[null]],[["yarn"]],[[null]],[["safety-pins"]],[["scissors"]],[["glue"]]],"fossil-hunter":[[[null]],[[null]],[[null]],[["cardboard"]],[[null]],[["paper-bag"]],[["scissors"]],[["paper-pen"]]],"milk-cookies":[[["white-tshirt"]],[[null]],[["felt","paper-white"]],[["felt","paper-brown"]],[["markers"]],[["glue"]],[["safety-pins"]],[["scissors"]]],"chips-guac":[[[null]],[["tshirt"]],[["felt","paper-red"]],[["felt","paper-yellow"]],[["felt","paper-brown"]],[["headband"]],[["glue"]],[["scissors"]]],"sushi-soy":[[["white-tshirt"]],[[null]],[["felt","paper-orange"]],[["felt","paper-black"]],[["cardboard"]],[[null]],[["paper-red"]],[["yarn"]],[["tape"]],[["scissors"]]],"burger-fries":[[["tshirt"]],[[null]],[["felt","paper-green"],["felt","paper-red"],["felt","paper-yellow"]],[["felt","paper-brown"]],[[null]],[["cardboard"]],[[null,"paper-red"]],[["paper-yellow"]],[["tape"]],[["scissors"]]],"donut-coffee":[[["white-tshirt"]],[[null]],[["felt","paper-pink"]],[["cardboard"]],[[null,"paper-brown"]],[["cardboard"]],[[null]],[["paper-white"]],[["tape"]],[["scissors"]],[["yarn"]]],"wine-cheese":[[[null]],[[null]],[["felt","paper-white"]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["glue"]],[["scissors"]]],"kpop-demon-huntresses":[[["black-clothes"]],[[null]],[[null]],[["cardboard"]],[["tape-silver"]],[["paint-purple"],["paint-black"]],[[null]],[["scissors"]]],"goth-braids":[[[null]],[[null]],[[null]],[["paint-black"]],[["paint-white"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]],"juke-joint-vampires":[[[null]],[[null]],[[null]],[[null]],[[null]],[[null]],[[null]]],"blue-heeler-pup":[[[null]],[[null]],[["felt","paper-blue"],["felt","paper-gray"]],[["paint-black"]],[["safety-pins"]],[["glue"]],[["scissors"]]],"baby-pumpkin":[[[null]],[["felt","paper-green"]],[[null,"stuffing"]],[["felt","paper-brown"]],[["safety-pins"]],[["scissors"]]],"pirate-captain":[[[null]],[["black-clothes"]],[["cardboard"]],[[null]],[[null,"cardboard"]],[["paper-brown"]],[["markers"]],[[null]],[["scissors"]]],"cowboy-duo":[[[null]],[[null]],[["cardboard"]],[[null]],[["paper-bag"]],[["yarn"]],[["scissors"]],[["tape"]]],"smores-duo":[[["tshirt"]],[["white-tshirt"]],[["felt","paper-brown"]],[["stuffing"]],[["glue"]],[["markers"]],[["safety-pins"]],[["scissors"]]],"scarecrow":[[[null]],[[null]],[[null,"yarn"]],[[null]],[["paint-black"],["paint-red"]],[["yarn"]],[["safety-pins"]],[["scissors"]]],"yellow-henchmen":[[[null]],[[null]],[[null]],[[null]],[["markers"]],[[null]]],"mystery-teens":[[["tshirt"]],[[null]],[[null]],[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[[null]],[[null]]],"pumpkin-king-bride":[[[null]],[["cardboard"]],[[null]],[[null]],[["yarn"]],[[null]],[["scissors"]]],"moonwalk-star":[[[null]],[["black-clothes"]],[[null]],[[null]],[[null]],[["socks"]],[[null]]],"witchy-sisters":[[[null]],[[null]],[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]]],"macabre-couple":[[[null]],[[null]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]],[[null]],[[null]],[[null]]],"party-pinata":[[["cardboard"]],[[null]],[[null]],[["yarn"]],[["tape"]],[["scissors"]]],"fuzzy-gremlin":[[[null]],[["felt","paper-brown"]],[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["felt","paper-white"]],[["glue"]],[["safety-pins"]],[["scissors"]]],"rescue-pups":[[[null]],[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]],[["headband"]],[["felt","paper-brown"]],[["glue"]],[["safety-pins"]],[["scissors"]]],"wayfinder-princess":[[[null]],[[null]],[["cardboard"]],[[null]],[[null]],[["glue"]],[["scissors"]]],"chill-painter":[[[null]],[[null]],[[null]],[["cardboard"]],[[null]],[[null]],[["scissors"]]]}};
 function pantryTicked(){
   try {
     /* pantry.html saves under 'pantry2' (LS_KEY); 'pantry3' is a legacy key
@@ -7132,34 +7217,9 @@ function buildVoteBox(results){
   };
   vrow.appendChild(vbtn);
   vbox.appendChild(vh); vbox.appendChild(vp); vbox.appendChild(vrow); vbox.appendChild(vpanel);
-  /* Roulette entry experiment (2026-09-26, staged): a subordinate entry point
-     to the homepage shuffle for the indecisive moment the vote box serves.
-     One tap returns to the home screen and picks, mirroring the recipient
-     spin-banner pattern (startSpin + scrollIntoView). A real <button>, so
-     keyboard and screen-reader users can activate it too. */
-  if (EXPERIMENT_ROULETTE_ENTRY){
-    var rrow = document.createElement("p");
-    rrow.style.margin = "10px 0 0";
-    var ror = document.createElement("span");
-    ror.className = "fine";
-    ror.textContent = "Or ";
-    var rbtn = document.createElement("button");
-    rbtn.type = "button"; rbtn.className = "textlink"; rbtn.id = "btn-roulette-entry";
-    rbtn.textContent = "Can't decide? Let me pick for you";
-    rbtn.onclick = function(){
-      /* 2026-09-26 pm3 red-team D9: the entry event fired before startSpin's
-         debounce, so a double-tap double-counted roulette_entry_tapped while
-         spinning once. One deliberate tap = one entry, one spin. */
-      if (!tapGuard("roulette-entry", 1500)) return;
-      Analytics.track("roulette_entry_tapped", {from: "results-vote-box"});
-      show("s-hero");
-      startSpin("results-entry");
-      var _rp = $("spin-panel");
-      if (_rp && _rp.scrollIntoView) _rp.scrollIntoView({block: "start"});
-    };
-    rrow.appendChild(ror); rrow.appendChild(rbtn);
-    vbox.appendChild(rrow);
-  }
+  /* 2026-09-30: the subordinate roulette entry ("Can't decide? Let me pick
+     for you") is gone from the results page. We just picked; the escape
+     hatch made no sense here. (The home-page shuffle entry is untouched.) */
   return vbox;
 }
 /* NOCLONE-START (2026-09-27 no-clone pact experiment): class-parade
@@ -7926,6 +7986,7 @@ function startDuelFlow(){
   });
   var fimg = $("duel-friend-photo");
   fimg.src = "photos/" + theirs.id + ".webp";
+  pmcSrcset(fimg, theirs.id, "(min-width:700px) 300px, 45vw");
   fimg.alt = theirs.title + " costume";
   var q1box = $("duel-q1");
   q1box.innerHTML = "";
@@ -7962,6 +8023,7 @@ function finishDuelFlow(theirs, mineOverride){
   var verdict = duelVerdictV2(mine, theirs);
   var matched = verdict.type === "same";
   $("duel-v-friend-img").src = "photos/" + theirs.id + ".webp";
+  pmcSrcset($("duel-v-friend-img"), theirs.id, "(min-width:700px) 300px, 45vw");
   $("duel-v-friend-img").alt = theirs.title + " costume";
   var fnameEl = $("duel-v-friend-name");
   var mnameEl = $("duel-v-my-name");
@@ -7971,6 +8033,7 @@ function finishDuelFlow(theirs, mineOverride){
   if (verdict.winner === "mine") mnameEl.textContent = "\uD83D\uDC51 " + mine.title;
   else if (verdict.winner === "theirs") fnameEl.textContent = "\uD83D\uDC51 " + theirs.title;
   $("duel-v-my-img").src = "photos/" + mine.id + ".webp";
+  pmcSrcset($("duel-v-my-img"), mine.id, "(min-width:700px) 300px, 45vw");
   $("duel-v-my-img").alt = mine.title + " costume";
   $("duel-verdict-text").textContent = verdict.text;
   var fstats = duelScoreLine(theirs), mstats = duelScoreLine(mine);
@@ -8127,7 +8190,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     _rs.appendChild(_ul);
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "Plan this costume";
-    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
+    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Tap \"Plan this costume\" above to see the build guide."; /* 2026-09-30: instruction, not an error-style nudge */
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
     /* 2026-09-26: "You're going as X" read as a joke for family/group
@@ -9123,11 +9186,14 @@ function renderResults(results){
   box.appendChild(hero);
   /* 2026-09-28: answer chips and refinement rows live one tap behind
      this collapsed disclosure, below the hero. Tapping a chip re-renders
-     results (the disclosure re-collapses); the new #1 is the feedback. */
+     results (the disclosure re-collapses); the new #1 is the feedback.
+     2026-09-30: the disclosure itself moved into the "More options" toggle
+     (built below, after the runners-up); rdet is stashed, not appended. */
   var refinements = [buildAnswerChips(), buildFitRefinement(), buildAgeRefinement(),
     buildConstraintRefinement(), buildPartyThemeChip()].filter(function(x){ return !!x; });
+  var rdet = null;
   if (refinements.length){
-    var rdet = document.createElement("details");
+    rdet = document.createElement("details");
     rdet.style.margin = "16px 0 14px";
     var rsum = document.createElement("summary");
     rsum.className = "textlink";
@@ -9135,7 +9201,6 @@ function renderResults(results){
     rsum.textContent = "Refine your picks";
     rdet.appendChild(rsum);
     refinements.forEach(function(el){ rdet.appendChild(el); });
-    box.appendChild(rdet);
   }
   /* 2026-09-26 reveal-moment share prompt: one calm line at the
      peak-delight second, one tap to share, never buried in the pick panel. */
@@ -9378,9 +9443,35 @@ function renderResults(results){
     if (rIdx >= 0) ruToggles[rIdx]();
   }
   box.appendChild(ru);
-  /* 2026-09-26 family-vote experiment: the vote box sits between the
-     runners-up and the "Still stuck?" escape hatch. */
-  box.appendChild(buildVoteBox(results));
+  /* 2026-09-30: results simplification. After the top pick the page keeps
+     the hero card (Plan this costume), the two runner-ups, the one reveal
+     share prompt, and Browse all 164 ideas. Group vote, the "Still stuck?"
+     AI prompt, and Refine collapse behind one "More options" toggle,
+     instrumented as a content unit (UNIT_REGISTRY "more-options"). */
+  var moreWrap = document.createElement("div");
+  moreWrap.id = "more-opts";
+  moreWrap.style.margin = "16px 0 14px";
+  var moreBtn = document.createElement("button");
+  moreBtn.type = "button"; moreBtn.className = "textlink";
+  moreBtn.style.cssText = "cursor:pointer;display:inline-block;font-weight:700;font-size:16px";
+  moreBtn.setAttribute("data-item-id", "more-options");
+  moreBtn.setAttribute("aria-expanded", "false");
+  moreBtn.textContent = "More options";
+  var morePanel = document.createElement("div");
+  morePanel.hidden = true;
+  morePanel.style.marginTop = "10px";
+  moreBtn.onclick = function(){
+    morePanel.hidden = !morePanel.hidden;
+    moreBtn.setAttribute("aria-expanded", String(!morePanel.hidden));
+    try { Analytics.track("more_options_toggled", {open: !morePanel.hidden}); } catch(_mo){}
+  };
+  moreWrap.appendChild(moreBtn);
+  moreWrap.appendChild(morePanel);
+  /* 2026-09-26 family-vote experiment: the vote box now lives inside the
+     More options toggle, after the runners-up. */
+  morePanel.appendChild(buildVoteBox(results));
+  box.appendChild(moreWrap);
+  if (typeof UnitTrack !== "undefined" && UnitTrack.instrumentUnit) UnitTrack.instrumentUnit("more-options");
   /* 2026-09-27 no-clone pact experiment: class-chat coordination share.
      Sits with the vote box, clear of Experiment 1's share card and the
      running share-message arms. */
@@ -9421,7 +9512,10 @@ function renderResults(results){
   bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(results, true), "stuck_prompt_copied"); };
   stuckRow.appendChild(bStuck);
   stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(stuckBox);
-  box.appendChild(stuck);
+  /* 2026-09-30: the "Still stuck?" AI prompt lives inside More options now
+     (after Group vote), with Refine after it. Strings untouched. */
+  morePanel.appendChild(stuck);
+  if (rdet) morePanel.appendChild(rdet);
   /* The now-what for "none of these fit" lives in the navrow below
      ("Browse all N ideas"), so no second browse button is rendered here. */
   /* Restore panels that were open before a results re-render (fit refinement):
@@ -10355,6 +10449,7 @@ function buildMoreLikeThisRail(idea){
     a.onclick = function(ev){ ev.preventDefault(); openIdeaDetail(o.id, "Why it's great", detailReturnTo); };
     var img = document.createElement("img");
     img.src = "photos/" + o.id + ".webp";
+    pmcSrcset(img, o.id, "128px");
     img.alt = o.title + " costume";
     img.loading = "lazy";
     img.setAttribute("onerror", "this.style.display='none'");
@@ -10387,7 +10482,7 @@ function buildBrowseDetailCard(idea, whyHead){
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
   var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "Plan this costume";
-  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Pick one to plan your costume.";
+  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Tap \"Plan this costume\" above to see the build guide."; /* 2026-09-30: instruction, not an error-style nudge */
   var note = document.createElement("p"); note.className = "picked-note";
   note.textContent = "\u2713 You\u2019re going as " + idea.title;
   var planBox = document.createElement("div");
@@ -12542,6 +12637,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     var groupImg = document.createElement("img");
     groupImg.className = "pcard-img pcard-group-img";
     groupImg.src = "photos/" + idea.id + ".webp";
+    pmcSrcset(groupImg, idea.id, "128px");
     groupImg.alt = idea.title;
     groupImg.setAttribute("onerror", "this.style.display='none'");
     pcList.appendChild(groupImg);
@@ -13475,6 +13571,7 @@ var KIDS_RAIL_IDS = ["little-witch","web-slinger-kid","garden-fairy","classic-gh
     card.setAttribute("aria-label", idea.title + ", see the costume plan");
     var img = document.createElement("img");
     img.src = "photos/" + idea.id + ".webp";
+    pmcSrcset(img, idea.id, "128px");
     img.alt = idea.title + " costume";
     img.loading = "lazy";
     var label = document.createElement("span");
@@ -13539,6 +13636,7 @@ function renderTonightRail(){
     card.href = "/?idea=" + idea.id + "&from=rail-tonight";
     var img = document.createElement("img");
     img.src = "photos/" + idea.id + ".webp";
+    pmcSrcset(img, idea.id, "128px");
     img.alt = idea.title + " costume";
     img.loading = "lazy";
     var label = document.createElement("span");
@@ -14042,6 +14140,7 @@ function shareLandingHeadline(idea, search){
     if (!idea) return;
     var tale = taleFor(idea);
     $("st-photo").src = "photos/" + idea.id + ".webp";
+    pmcSrcset($("st-photo"), idea.id, "100vw");
     $("st-photo").alt = idea.title + " costume";
     $("st-kicker").textContent = currentLabel;
     $("st-title").textContent = idea.title;
@@ -15047,20 +15146,9 @@ function shareLandingHeadline(idea, search){
     return {elong: elong, phase: elong / 360,
       illum: (1 - Math.cos(elong * rad)) / 2, name: moonPhaseName(elong)};
   }
-  /* 2026-09-26: time-aware sky. The visitor's local hour decides, no
-     geolocation: sun from 6:00 to 17:59, the real computed moon phase at
-     night. The hero celestial, the detail celestial, and the tap panel all
-     follow the same rule. */
-  var SUN_SVG = '<svg class="sun" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
-    + '<defs><radialGradient id="sunglow" cx="50%" cy="50%" r="50%">'
-    + '<stop offset="0%" stop-color="#fff7d6"/><stop offset="60%" stop-color="#ffd76e"/><stop offset="100%" stop-color="#ff9d3c"/>'
-    + '</radialGradient></defs>'
-    + '<g stroke="#ffd76e" stroke-width="5" stroke-linecap="round">'
-    + '<line x1="84" y1="50" x2="94" y2="50"/><line x1="74" y1="74" x2="81" y2="81"/>'
-    + '<line x1="50" y1="84" x2="50" y2="94"/><line x1="26" y1="74" x2="19" y2="81"/>'
-    + '<line x1="16" y1="50" x2="6" y2="50"/><line x1="26" y1="26" x2="19" y2="19"/>'
-    + '<line x1="50" y1="16" x2="50" y2="6"/><line x1="74" y1="26" x2="81" y2="19"/>'
-    + '</g><circle cx="50" cy="50" r="26" fill="url(#sunglow)"/></svg>';
+  /* 2026-09-30: moon-only sky. The day sun swap is gone; the hero, the
+     detail view, and the tap panel all show the real computed moon phase.
+     window._pmcIsDay survives only to gate the night shooting star. */
   function moonSVG(pathId){
     return '<svg class="moon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">'
       + '<defs><radialGradient id="moonlit-' + pathId + '" cx="38%" cy="35%" r="75%">'
@@ -15085,34 +15173,23 @@ function shareLandingHeadline(idea, search){
   window._pmcIsDay = (function(){ var h = new Date().getHours(); return h >= 6 && h < 18; })();
   /* 2026-09-29: night class gates the shooting star (day sky gets none). */
   try { document.getElementById("s-hero").classList.toggle("night", !window._pmcIsDay); } catch(_night){}
-  (function paintHeroSky(){
+  /* 2026-09-30: the day branch that swapped the moon for a sun is gone.
+     The widget is moon-only now: the real computed phase, day and night. */
+  function paintHeroSky(){
     var cap0 = document.getElementById("mooncap");
-    /* 2026-09-26 (landing refresh): the moon caption's tooltip says the
-       moon is real and changes nightly. Night-only: the day branch shows the
-       sun, so the tooltip must not leak onto it. */
-    if (!window._pmcIsDay){
-      if (cap0) cap0.setAttribute("title", "The real moon phase, new every night");
-      return; /* night: the static hero moon stays */
-    }
-    var icon = document.getElementById("sky-icon");
-    var halo = document.getElementById("moon-halo");
-    var btn = document.getElementById("moon-btn");
-    if (icon) icon.innerHTML = SUN_SVG;
-    if (cap0){ cap0.textContent = "today's sun"; cap0.removeAttribute("title"); }
-    if (halo) halo.classList.add("day");
-    if (btn) btn.setAttribute("title", "Today's sun: tap for details");
-  })();
+    if (cap0) cap0.setAttribute("title", "The real moon phase, new every night");
+    setMoonPath("moon-lit", moonPhaseInfo(Date.now()).phase); /* 0 = new, 0.25 = first quarter, 0.5 = full */
+  }
+  paintHeroSky();
   function paintDetailSky(){
     var el = document.getElementById("detail-sky");
     if (!el || el.getAttribute("data-done")) return;
     el.setAttribute("data-done", "1");
-    var isDay = !!window._pmcIsDay;
-    el.innerHTML = '<div class="halo' + (isDay ? " day" : "") + '" aria-hidden="true"></div>'
-      + (isDay ? SUN_SVG : moonSVG("d-moon-lit"));
-    if (!isDay) setMoonPath("d-moon-lit", moonPhaseInfo(Date.now()).phase);
+    /* 2026-09-30: moon-only, like the hero. No day sun swap. */
+    el.innerHTML = '<div class="halo" aria-hidden="true"></div>' + moonSVG("d-moon-lit");
+    setMoonPath("d-moon-lit", moonPhaseInfo(Date.now()).phase);
   }
   (function(){
-    if (!window._pmcIsDay) setMoonPath("moon-lit", moonPhaseInfo(Date.now()).phase); /* 0 = new, 0.25 = first quarter, 0.5 = full */
     paintDetailSky();
     /* 2026-09-26: tappable moon. The panel shows tonight's phase,
        Halloween night's moon (computed, never hardcoded), and days to go. */
@@ -15135,8 +15212,7 @@ function shareLandingHeadline(idea, search){
         var tpct = Math.round(tn.illum * 100), hpct = Math.round(hw.illum * 100);
         var daybit = days > 1 ? " (" + days + " days away)" : days === 1 ? " (tomorrow night)" : days === 0 ? " (tonight!)" : "";
         var hwLabel = rolled ? "Next Halloween night" : "Halloween night";
-        if (window._pmcIsDay) $("moon-tonight").textContent = "Today: the sun is up. Tonight's moon: " + tn.name + ", " + tpct + "% lit.";
-        else $("moon-tonight").textContent = "Tonight: " + tn.name + ", " + tpct + "% lit.";
+        $("moon-tonight").textContent = "Tonight's moon: " + tn.name + ", " + tpct + "% lit."; /* 2026-09-30: moon-only widget, no day sun branch */
         $("moon-halloween").textContent = hwLabel + ": " + hw.name + ", " + hpct + "% lit" + daybit + ".";
         var fun;
         if (hw.illum >= 0.85) fun = "Full moon on Halloween. Spooky season is cooperating.";
@@ -15420,7 +15496,7 @@ function refreshReturnBox(){
     for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === pick.ideaId){ idea = IDEAS[i]; break; }
     if (idea) {
       var photo = $("returnhero-photo");
-      if (photo){ photo.src = "photos/" + idea.id + ".webp"; photo.alt = idea.title + " costume"; }
+      if (photo){ photo.src = "photos/" + idea.id + ".webp"; pmcSrcset(photo, idea.id, "52px"); photo.alt = idea.title + " costume"; }
       $("returnhero-title").textContent = "Still going as " + idea.title + "?";
       var st = $("returnhero-share-status");
       if (st) st.textContent = "";
