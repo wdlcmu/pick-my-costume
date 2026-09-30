@@ -2407,7 +2407,7 @@ var MAKE_PLANS = {
   "gloom-bloom": {buy: ["Black clothes (closet)", "Bright accessories", "Face paint"], cost: "~$5 each", time: "~45 min", steps: ["Gloom: braid hair tight, wear all black, paint a frown.", "Bloom: wear your brightest colors and add flower clips.", "Pose back to back for the full contrast."]},
   "deadpan-diva": {buy: ["Pale foundation", "Black lipstick"], cost: "~$7", time: "~40 min", steps: ["Part hair down the middle and braid two tight braids.", "Apply foundation a few shades lighter than your skin.", "Finish with black lipstick and heavy eyeliner.", "Practice the stare that ends conversations."]},
   "safari-zoo-crew": {buy: ["Felt sheets in animal colors", "Headbands", "Face paint"], cost: "~$3 each", time: "~1 hr", steps: ["Each person picks an animal and a matching closet outfit.", "Cut ears from felt and glue to headbands.", "Paint noses and whiskers.", "Do a group animal parade."]},
-  "fairy-tale-princesses": {buy: ["Gold poster board", "Plastic gems"], cost: "~$10", time: "~30 min", steps: ["Cut a crown band from gold poster board and tape to fit.", "Glue on the plastic gems.", "Pair with the fanciest dress in the closet.", "Royal wave is mandatory."]},
+  "fairy-tale-princesses": {buy: ["Gold poster board", "Plastic gems"], cost: "~$10", time: "15 min + drying", steps: ["Cut a crown band from gold poster board and tape to fit.", "Glue on the plastic gems.", "Pair with the fanciest dress in the closet.", "Royal wave is mandatory."]},
   "tin-hero": {buy: ["Red shirt and pants", "Gold duct tape", "Battery tea light"], cost: "~$8", time: "~45 min", steps: ["Stripe the shirt and pants with the tape.", "Cover a cardboard circle in tape and fix a tea light behind it.", "Pin the glowing circle to your chest.", "Walk like the suit does the talking."]},
   "good-witch-bad-witch": {buy: ["Green face paint", "Pink dress (thrifted)", "Gold poster board", "Black clothes"], cost: "~$5 each", time: "~1 hr", steps: ["Bad witch: paint face green and wear all black with a pointy hat.", "Good witch: wear the pink gown and a poster-board crown.", "Arrive together for maximum effect."]},
   "fuzzy-monster": {buy: ["Pastel sweatsuit", "Jumbo googly eyes", "Black felt"], cost: "~$21", time: "~45 min", steps: ["Glue jumbo googly eyes to the hood.", "Cut a big smile from black felt and glue it below.", "Add felt stitches around the smile with a white paint pen."]},
@@ -8509,7 +8509,15 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     var card = document.createElement("div");
     card.className = "card";
     var im = ideaMedia(idea);
-    var h = document.createElement("h3"); h.textContent = idea.title;
+    var h = document.createElement("h3");
+    /* 2026-09-30 (P1-7): the result title links to the /c/ guide. The card's
+       own tap handler already exempts links, so this never re-runs doPick.
+       Inherits the title styling so the card looks unchanged. */
+    var _ht = document.createElement("a");
+    _ht.href = "/c/" + idea.id;
+    _ht.style.cssText = "color:inherit;text-decoration:none";
+    _ht.textContent = idea.title;
+    h.appendChild(_ht);
     /* STREAM 3: pantry-aware badge, computed from live pantry state at render
        time (pantryTicked() reads localStorage fresh; nothing is cached). A span,
        not a button/link: taps on it behave like taps anywhere else on the card
@@ -9907,6 +9915,20 @@ function renderResults(results){
     });
     Analytics.track("make_tonight_viewed", {make_count: _mtc});
   }
+  /* 2026-09-30 (P1-7): addressable result URLs. When quiz results show, the
+     address bar carries ?pick=<top-slug> via replaceState (Back still exits
+     to where the user came from; a refresh opens the top pick's full detail
+     through the untouched ?pick= direct-open handler). A stale ?idea= from a
+     rail tap is dropped so the two handlers never fight on refresh; ?s=,
+     ?probe= and other params are preserved. */
+  try {
+    if (window.history && history.replaceState && results && results[0] && results[0].idea){
+      var _u7 = new URL(location.href);
+      _u7.searchParams.set("pick", results[0].idea.id);
+      _u7.searchParams.delete("idea");
+      history.replaceState(null, "", _u7.pathname + "?" + _u7.searchParams.toString() + _u7.hash);
+    }
+  } catch(_){}
   show("s-results");
 }
 
@@ -12791,7 +12813,7 @@ function buildPersonPlans(idea, list){
   var guide = document.createElement("div");
   guide.className = "personplan personplan-guide";
   var gh = document.createElement("h4");
-  gh.textContent = "Everyone does this";
+  gh.textContent = "How to make it";
   guide.appendChild(gh);
   /* Buy option */
   var buyH = document.createElement("p"); buyH.className = "pp-opt";
@@ -12800,12 +12822,12 @@ function buildPersonPlans(idea, list){
   var buyP = document.createElement("p"); buyP.className = "pp-buy";
   var costLine = mp.cost;
   var perPersonCost = /each/.test(costLine) ? costLine :
-    costLine.replace(" total", "") + " for the whole group";
+    costLine.replace(" total", "") + " for one costume";
   /* 2026-09-26 (copy audit fix): head-comfort advice only when the
      costume actually uses headwear. Detected from the guide materials. */
   var hwWord = headwearWord(idea.id);
   var buyText = "Search for \u201C" + buySearchFor(list[0].role, idea) + "\u201D. " +
-    "Expect about " + perPersonCost + ". Check the size chart, not just your normal size.";
+    "Expect about " + perPersonCost.replace(/^~/, "") + ". Check the size chart, not just your normal size.";
   if (hwWord) buyText += " If the " + hwWord + " feels tight after five minutes, it will not survive Halloween night.";
   buyP.textContent = buyText;
   guide.appendChild(buyP);
