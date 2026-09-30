@@ -70,6 +70,21 @@ export function onRequest(context) {
      it ever is not. esc()d: these land inside a meta content attribute. */
   var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     esc(_hw.time) + " · " + esc(_hw.cost) + " · " + esc(_hw.effort) + ". " : "";
+  /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
+     ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
+     for every idea (asserted at generation time in Python below): the article
+     agrees with the title ("an" before vowels, none before "The ..."), and
+     "full" drops out if a long title would push past 155. Falls back to the
+     blurb when guide data is missing so the tag is never empty. title/blurb
+     are already esc()d above; _hw fields are esc()d here like _tripleText. */
+  var _desc = blurb;
+  if (_hw && _hw.time && _hw.cost && _hw.effort) {
+    var _art = /^the /i.test(title) ? "" : (/^[aeiou]/i.test(title) ? "an " : "a ");
+    _desc = "How to make " + _art + title + " costume in " + esc(_hw.time) +
+      " for about " + esc(_hw.cost) + ". " + esc(_hw.effort) +
+      " DIY project with a full supplies list and step-by-step guide.";
+    if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
+  }
   var _ld = "";
   if (_hw) {
     /* Total hands-on time: bank stores "25 min" (also "25 min + drying").
@@ -596,7 +611,7 @@ export function onRequest(context) {
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
     "<link rel=\"canonical\" href=\"https://pickmycostume.com/c/" + slug + "\">" +
-    "<meta name=\"description\" content=\"" + _tripleText + blurb + "\">" +
+    "<meta name=\"description\" content=\"" + _desc + "\">" +
     "<meta name=\"author\" content=\"Pick My Costume\">" +
     "<meta property=\"og:type\" content=\"website\">" +
     "<meta property=\"og:url\" content=\"https://pickmycostume.com/c/" + slug + "\">" +

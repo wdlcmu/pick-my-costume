@@ -125,6 +125,26 @@ def _parse_instructions(src):
 _instructions = _parse_instructions(src)
 _missing_ins = [s for s in data if s not in _instructions]
 assert not _missing_ins, "ideas missing instructions: %s" % _missing_ins
+
+# SEO meta descriptions (fix list P2-11, 2026-09-30): the /c/ meta description
+# template must land 120-155 chars for every idea. This mirrors the _desc JS
+# built in the function template below (same article rule, same >155 trim,
+# same esc() entity expansion on the title); fail loudly so a bank edit can
+# never silently ship a thin or search-truncated description again.
+def _esc_len(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+def _meta_desc(title, hw):
+    t = _esc_len(title)
+    art = "" if t.lower().startswith("the ") else ("an " if t[0].lower() in "aeiou" else "a ")
+    d = ("How to make %s%s costume in %s for about %s. %s DIY project "
+         "with a full supplies list and step-by-step guide."
+         % (art, t, _esc_len(hw["time"]), _esc_len(hw["cost"]), _esc_len(hw["effort"])))
+    if len(d) > 155:
+        d = d.replace("a full supplies list", "a supplies list")
+    return d
+_bad_desc = [(s, len(_meta_desc(data[s]["t"], _instructions[s]))) for s in data
+             if not 120 <= len(_meta_desc(data[s]["t"], _instructions[s])) <= 155]
+assert not _bad_desc, "meta description outside 120-155 chars: %s" % (_bad_desc[:10],)
 # Sourced-facts layer (AI-citation checklist item #10, audited 2026-09-26):
 # one audited external citation per guide, on safety-relevant steps only.
 # The mapping lives in hour-session/safety-links.json and is audited by
@@ -294,6 +314,21 @@ export function onRequest(context) {
      it ever is not. esc()d: these land inside a meta content attribute. */
   var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     esc(_hw.time) + " · " + esc(_hw.cost) + " · " + esc(_hw.effort) + ". " : "";
+  /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
+     ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
+     for every idea (asserted at generation time in Python below): the article
+     agrees with the title ("an" before vowels, none before "The ..."), and
+     "full" drops out if a long title would push past 155. Falls back to the
+     blurb when guide data is missing so the tag is never empty. title/blurb
+     are already esc()d above; _hw fields are esc()d here like _tripleText. */
+  var _desc = blurb;
+  if (_hw && _hw.time && _hw.cost && _hw.effort) {
+    var _art = /^the /i.test(title) ? "" : (/^[aeiou]/i.test(title) ? "an " : "a ");
+    _desc = "How to make " + _art + title + " costume in " + esc(_hw.time) +
+      " for about " + esc(_hw.cost) + ". " + esc(_hw.effort) +
+      " DIY project with a full supplies list and step-by-step guide.";
+    if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
+  }
   var _ld = "";
   if (_hw) {
     /* Total hands-on time: bank stores "25 min" (also "25 min + drying").
@@ -820,7 +855,7 @@ export function onRequest(context) {
     "<html lang=\\"en\\"><head><meta charset=\\"utf-8\\">" +
     "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
     "<link rel=\\"canonical\\" href=\\"https://pickmycostume.com/c/" + slug + "\\">" +
-    "<meta name=\\"description\\" content=\\"" + _tripleText + blurb + "\\">" +
+    "<meta name=\\"description\\" content=\\"" + _desc + "\\">" +
     "<meta name=\\"author\\" content=\\"Pick My Costume\\">" +
     "<meta property=\\"og:type\\" content=\\"website\\">" +
     "<meta property=\\"og:url\\" content=\\"https://pickmycostume.com/c/" + slug + "\\">" +
