@@ -31,7 +31,7 @@
           capture_pageview: true,
           disable_session_recording: true
         });
-        /* Internal devices (Billy's own phone/laptop, flagged via ?internal=1)
+        /* Internal devices (the internal test phone/laptop, flagged via ?internal=1)
            tag even the automatic pageview as internal. */
         try { if (typeof pmcInternal === "function" && pmcInternal() && posthog.register) posthog.register({internal: true}); } catch(e){}
         if (window.Analytics && Analytics._flush) Analytics._flush();
@@ -43,7 +43,7 @@
 </script>
 <style>
 /* ============ HALLOWEEN VISUAL IDENTITY ============
-   The site's seasonal skin, confirmed by Billy. All theme colors
+   The site's seasonal skin, confirmed. All theme colors
    live in these variables: to re-skin later, swap this block only.
    Selection state never relies on color alone (checkmark + border). */
 :root{
@@ -62,7 +62,7 @@
   --radius: 14px;
 }
 *{box-sizing:border-box}
-/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
+/* Reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
    rendered as dark browser-default blue on the dark background -- unreadable.
    Every link now gets the accent-orange treatment (bold, underlined) so no
    surface can silently regress to browser-default blue. */
@@ -116,13 +116,13 @@ button.ghost{
   min-height:56px;padding:14px 20px;font-size:17px;
   background:rgba(255,255,255,.05);color:var(--ink);
   border:2px solid #7a5fc4;border-radius:var(--radius);cursor:pointer;
-} /* Billy 2026-09-24: lifted border from var(--line) for contrast; washes out on dark cards */
+} /* 2026-09-24: lifted border from var(--line) for contrast; washes out on dark cards */
 .card{
   background:var(--card);border:2px solid var(--line);
   border-radius:var(--radius);padding:20px;margin-bottom:16px;
 }
 #r-cards .card img{width:100%;height:auto;display:block}
-/* Billy-reported 2026-09-23: the old 230px fixed height + object-fit:cover
+/* Reported 2026-09-23: the old 230px fixed height + object-fit:cover
    cropped nearly every card image (73 of 75 bank illustrations are square,
    so cover cut ~105px vertically at phone width — e.g. Walking Taco's legs).
    Natural aspect ratio shows the full illustration on every card. */
@@ -159,7 +159,7 @@ button.ghost{
    reads as the immediate next step (added by revealAiPlan). */
 .ai-flash{animation:aiFlash 1.6s ease-out}
 @keyframes aiFlash{0%{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}100%{outline:2px solid transparent;outline-offset:4px}}
-/* Billy 2026-09-24: "get a color behind the AI plan". The AI plan reads as one
+/* 2026-09-24: "get a color behind the AI plan". The AI plan reads as one
    distinct block: a soft orange wash drawn from the accent (no new hue),
    comfortable padding, rounded corners. Applied by showPromptPreview to the
    plan container, so every surface that renders the block gets the tint. */
@@ -181,7 +181,7 @@ button.ghost{
 .howto-open{padding:14px 16px}
 .howto-open h3{margin:0 0 10px;font-size:18px}
 .howto-open .howto-body{padding:0}
-/* Billy 2026-09-24: materials read as chips, not a wall of bullets. The
+/* 2026-09-24: materials read as chips, not a wall of bullets. The
    build list gets a copy button: parents take it to the store. */
 .howto-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .howto-chip{display:inline-block;padding:6px 12px;background:var(--card);border:2px solid var(--line);border-radius:999px;font-size:14px;line-height:1.3}
@@ -195,7 +195,7 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}
 .returnbox{background:var(--card);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 24px;text-align:center}
 .fine{font-size:13px;color:var(--muted)}
-/* Billy 2026-09-24: T-minus clock. One factual day-count line under the hero
+/* 2026-09-24: T-minus clock. One factual day-count line under the hero
    tagline, never a ticking widget. Hides itself after Oct 31. */
 .tminus{margin:10px 0 0;font-size:15px;font-weight:700;color:var(--accent)}
 .about-body p{margin:0 0 14px;line-height:1.55}
@@ -416,7 +416,7 @@ footer a{color:var(--accent)}
 /* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
 /* Internal-traffic marking (analytics only, no UX change). Visiting any page
    with ?internal=1 once sets localStorage pmc_internal=1 on that device
-   (Billy's own phone/laptop); ?internal=0 clears it. Every tracked event from
+   (the internal test phone/laptop); ?internal=0 clears it. Every tracked event from
    a flagged device carries internal:true. ?probe=/ ?sim= QA runs are marked
    internal for that pageview without persisting the flag. The Monday digest
    filters internal:true out, so the funnel counts genuine visitors only.
@@ -496,7 +496,7 @@ var QUESTIONS = [
     {label:"Mixed ages", tags:{kidunder3:2}}
   ]},
   /* qfit retired 2026-09-24: the conditional fit follow-up ("Which look feels
-     more like you?") could make a rare 6th quiz question, breaking Billy's
+     more like you?") could make a rare 6th quiz question, breaking the
      5-max. It now lives on the results screen as an optional refinement chip
      row, shown only when the answer can change the top 3. Same scoring
      effect, zero question tax. */
@@ -520,7 +520,7 @@ var QUESTIONS = [
 ];
 
 /* ================= CONFIG: PINPOINT =================
-   Billy 2026-09-25: kids don't think in categories ("superheroes"), they think
+   2026-09-25: kids don't think in categories ("superheroes"), they think
    in characters ("Spider-Man", "Ariel"). This optional hero-screen input maps
    a typed or tapped name to a trademark-safe site idea, which is pinned to #1.
    Normalized key (lowercase, alphanumerics only) -> {idea, label}.
@@ -541,7 +541,7 @@ function pinpointMatch(raw){
 /* ================= CONFIG: IDEAS =================
    rank = editorial order: browse-all sorting AND quiz tiebreak (lower wins).
    Rubric: (1) 2026 trend heat, (2) fit for the core audience (parents/kids/family),
-   (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
+   (3) thumbnail readability, (4) DIY ease and budget-friendliness. final call. */
 var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, fit:"U", rank:1},
   {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,dinos:2,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"top 5 for kids and adults", fit:"U", rank:2},
@@ -673,7 +673,7 @@ function trendStatEl(idea){
 
 var SHARE = {
   url: "pickmycostume.com",
-  /* E29 share-origin experiment (Billy 2026-09-24): every share link carries
+  /* E29 share-origin experiment (2026-09-24): every share link carries
      its origin in ?o= -- "card" for personal-card sends, "generic" for
      "Share this idea"/"Share" buttons. The /c/<slug> Pages function preserves
      extra query params across the redirect, so the origin survives to the
@@ -740,7 +740,7 @@ function kidAgeNeeded(){
    to the results screen (fitRefinement in renderResults); the quiz never
    exceeds 5 questions now. */
 /* The age question retired from the quiz 2026-09-25 (same pattern as qfit
-   2026-09-24): as a conditional 6th question it broke Billy's 5-max on
+   2026-09-24): as a conditional 6th question it broke the 5-max on
    204/384 kid paths. It now lives on the results screen as an optional
    refinement chip row, shown only when the answer can change the top 3.
    Same scoring effect, zero question tax. */
@@ -862,10 +862,10 @@ function scoreIdeas(full){
 
 /* E15: the "Why this fits you" line is composed from the user's actual answers,
    then the idea's own static line. The header promises the line is about YOU;
-   a static line breaks that promise (Billy: "the 'why this fits' isn't curated
+   a static line breaks that promise ("the 'why this fits' isn't curated
    to my picks"). Every dynamic line references at least one real answer; if
    composition fails, fall back to the static line. No em dashes.
-   E15b (Billy: "clearly duplicate not contextual"): the line LEADS with the
+   E15b ("clearly duplicate not contextual"): the line LEADS with the
    idea-specific reason, and each fragment has synonym variants picked by
    result index, so identical answers still read differently on #1/#2/#3. */
 var FIT_FRAGMENTS = {
@@ -1214,7 +1214,7 @@ function fitReasons(scored, idx){
   if (aud && AUDIENCE_PHRASE[aud]) out.push("Built for " + AUDIENCE_PHRASE[aud] + ".");
   return out.slice(0, 4);
 }
-/* Punchy, group-chat-ready share captions, one per top idea. Billy's voice:
+/* Punchy, group-chat-ready share captions, one per top idea. House voice:
    plainspoken, specific, funny. The loop question is appended by the share
    builder, not baked in here. */
 var SHARE_CAPTIONS = {
@@ -1530,7 +1530,7 @@ function renderResults(results){
     var card = document.createElement("div");
     card.className = "bcard";
     card.style.cursor = "pointer";
-    /* Billy 2026-09-24: runners-up play their animation loops right on the
+    /* 2026-09-24: runners-up play their animation loops right on the
        card (ideaMedia), same as the hero. Previously a static PNG here and
        the expanded detail skipped art entirely, so #2/#3 never animated. */
     var im = ideaMedia(idea);
@@ -1707,7 +1707,7 @@ function openBrowse(){
 }
 
 /* ================= BROWSE DETAIL: E20 PARITY =================
-   Billy's product call: tapping a browse card opens the SAME full pick flow
+   Product call: tapping a browse card opens the SAME full pick flow
    as a quiz result card. Reuses the result card's components (trendStatEl,
    addCopyShareRow, showPromptPreview, buildIdeaPrompt, shareText, ideaMedia)
    and the E17 cast-panel hook point. The why-line is the STATIC bank line:
@@ -1837,7 +1837,7 @@ function doCopy(text, done){
 }
 function showPromptPreview(container, text, eventName, noScroll, xprops){
   container.innerHTML = "";
-  /* Billy 2026-09-24: tinted block behind the AI plan. This is the single
+  /* 2026-09-24: tinted block behind the AI plan. This is the single
      choke point for every AI-plan block (quiz pick panels, browse detail,
      cast panel, results-level, browse cards, recipient landing), so the tint
      lands everywhere the block renders. */
@@ -1845,13 +1845,13 @@ function showPromptPreview(container, text, eventName, noScroll, xprops){
   var curText = text;
   function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
   var label = document.createElement("p"); label.className = "status";
-  /* Billy 2026-09-24: "Plan my costume" + helper, not "Get your AI costume plan". */
+  /* 2026-09-24: "Plan my costume" + helper, not "Get your AI costume plan". */
   label.textContent = "Plan my costume";
   var helper = document.createElement("p"); helper.className = "status";
   helper.textContent = "Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.";
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", ""); ta.value = text;
-  /* Billy 2026-09-24: the prompt text is a wall that buries the CTA. Buttons
+  /* 2026-09-24: the prompt text is a wall that buries the CTA. Buttons
      lead; the text sits one tap behind a preview toggle. Copy still works
      without opening it (doCopy reads curText, not the textarea). */
   ta.style.display = "none";
@@ -2019,7 +2019,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", "");
   ta.style.minHeight = "76px";
-  /* Billy 2026-09-24: buttons lead, text hides behind a preview toggle. */
+  /* 2026-09-24: buttons lead, text hides behind a preview toggle. */
   ta.style.display = "none";
   var toggle = document.createElement("button"); toggle.type = "button";
   toggle.textContent = "Preview text";
@@ -2031,7 +2031,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
   };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
   var b = document.createElement("button"); b.type = "button";
-  /* Billy 2026-09-24: in the cast panel the personal cards are the primary
+  /* 2026-09-24: in the cast panel the personal cards are the primary
      share path, so the generic share sits quiet (ghost) below them. Solo
      ideas keep the orange CTA. */
   b.className = quiet ? "ghost" : "cta"; b.textContent = "Share this idea";
@@ -2097,7 +2097,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
 
 /* ================= GROUP CAST MAPPING (shipped E23) =================
    Cast mapping: name the people in your group and the site assigns each a coordinated costume role.
-   Billy's observation: his family was assigning "you are Ursula, you are Scuttle" by hand  --  the site should do it.
+   Observation: his family was assigning "you are Ursula, you are Scuttle" by hand  --  the site should do it.
    Hard rule (E7): NEVER trademarked character names. Roles are generic: sea witch, seagull, clownfish.
    Data-driven and scalable: each group/family idea carries a cast list  --  roles with kid/adult sizing  --  and
    assignCast() fits ANY group size automatically (kids take kid-sized roles first; overflow repeats the filler
@@ -2105,7 +2105,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet){
    the user picks from per person. Start: 20 ideas; expand by demand data.
    Privacy: typed names live in JS memory only. They NEVER enter analytics events or logs  --  only the share
    text the user explicitly sends. Analytics carries counts (group_size, kid_count) only.
-   State rule (Billy's bug 2026-09-23): NO control wipes any other state. Counts, names, kid/adult toggles and
+   State rule (the bug 2026-09-23): NO control wipes any other state. Counts, names, kid/adult toggles and
    role dropdowns all preserve each other. Growing/shrinking the group keeps every surviving person's name,
    kid/adult flag and explicit role pick; only removed rows lose state (they're visibly gone). */
 var CASTS = {
@@ -2301,7 +2301,7 @@ function castRoleOptions(ideaId){
   var out = [];
   opts.forEach(function(o){ if (out.indexOf(o) < 0) out.push(o); });
   /* Filler doubles as a generic overflow role; don't list it twice when it
-     already appears as a named role (Billy saw the dup in the pup dropdown). */
+     already appears as a named role (caught the dup in the pup dropdown). */
   if (out.indexOf(cast.filler) < 0) out.push(cast.filler);
   return out;
 }
@@ -2309,7 +2309,7 @@ function castLine(list){
   return list.map(function(a){ return a.name + " is the " + a.role; }).join(", ");
 }
 function buildCastShareText(idea, list, sid){
-  /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
+  /* Solo cast reads as "I'm", not "We're" (the proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
     ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic";
@@ -2344,7 +2344,7 @@ function getCastState(ideaId, n){
 }
 function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var box = document.createElement("div"); box.className = "castbox";
-  /* Billy's bug, round 2 (2026-09-23): the result card has a click-to-pick
+  /* The bug, round 2 (2026-09-23): the result card has a click-to-pick
      handler that re-runs doPick() on ANY tap that is not on a button or link --
      including taps on our name inputs and role selects. doPick() clears the
      panel and rebuilds it from scratch, which read as "tapping to type resets
@@ -2376,8 +2376,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   box.appendChild(q2); box.appendChild(q2r);
   box.appendChild(rows); box.appendChild(line);
   /* The cast share row, personal cards, and the per-person AI plan live INSIDE
-     the panel -- personal cards first, share next, AI plan last (Billy
-     2026-09-24: the share comes after the personal card, one flow).
+     the panel -- personal cards first, share next, AI plan last (2026-09-24: the share comes after the personal card, one flow).
      Without this they were populated but never attached, so the cast
      share text was invisible. */
   box.appendChild(aiPlanBox);
@@ -2513,7 +2512,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var pcList = document.createElement("div");
   pcList.className = "pclist";
   pcBtn.onclick = function(){
-    /* Billy 2026-09-24: every cast member gets a card, named or not. The send
+    /* 2026-09-24: every cast member gets a card, named or not. The send
        button reads "Send this card to <name>" with a typed name, plain
        "Send this card" without one -- never "Send this card to Person 1". */
     var list = currentList();
@@ -2583,7 +2582,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   };
   pcWrap.appendChild(pcBtn);
   pcWrap.appendChild(pcList);
-  /* Billy 2026-09-24: one flow -- cast, personal cards, share, AI plan.
+  /* 2026-09-24: one flow -- cast, personal cards, share, AI plan.
      The share used to lead the panel; it now comes after the personal
      cards so there is a single share path instead of two competing ones. */
   box.insertBefore(pcWrap, aiPlanBox);
@@ -2644,7 +2643,7 @@ function fallbackCopy(text, done){
 }
 
 /* ================= WIRING ================= */
-/* Pinpoint capture (Billy 2026-09-25): the optional "who exactly?" input.
+/* Pinpoint capture (2026-09-25): the optional "who exactly?" input.
    A matched name pins its trademark-safe idea to #1; an unmatched name gets
    an honest note and the quiz proceeds normally. Chips fill the input. */
 function renderPinpointChips(){
@@ -2804,7 +2803,7 @@ $("btn-about-back").onclick = function(){ show("s-hero"); };
     if (VIA_SHARE_ORIGIN) _rlv.share_origin = VIA_SHARE_ORIGIN;
     Analytics.track("recipient_landing_viewed", _rlv);
   })();
-  /* Billy 2026-09-24: T-minus clock. Days until Halloween under the hero
+  /* 2026-09-24: T-minus clock. Days until Halloween under the hero
      tagline. Copy escalates on its own in the final week; hides after Oct 31. */
   (function(){
     var el = $("tminus");
