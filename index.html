@@ -1034,13 +1034,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="fine" id="moon-caveat" style="margin:8px 0 0">The sun is a rough guess from your phone's clock, shown 6am to 6pm, not a sunrise lookup. We never ask for your location. The moon phase is astronomically computed.</p>
 </div>
       <div class="herotext">
-      <h1 class="firstonly">We know your Halloween costume.</h1>
+      <h1 class="firstonly">A Halloween costume picked for you.</h1>
       <!-- 2026-09-29: countdown sits directly under the tagline, above
            the CTA. Populated by the tminus renderer; keep the id. -->
       <p class="tminus" id="tminus" style="display:none"></p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <!-- 2026-09-30 delight: hero promise, plain. -->
-      <p class="fine honestline firstonly">A 60-second quiz to costume ideas with cost and time.</p>
+      <p class="fine honestline firstonly">A 2-minute quiz to costume ideas with cost and time.</p>
       <p class="fine firstonly" style="margin:6px 0 0">No signup · 2 minutes · free</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
@@ -1278,8 +1278,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <div class="navrow" style="margin:0 0 10px">
       <button class="ghost" id="btn-rtop" type="button">&larr; Back to questions</button>
 </div>
-    <h2 class="q-title">&#127875; Here is what you got</h2>
-    <p class="q-hint">This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below.</p>
+    <h2 class="q-title">&#127875; Here's what we picked for you</h2>
+    <p class="q-hint">This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.</p>
     <div id="r-cards"></div>
     <!-- 2026-09-28: Play nudge. Shown for kid/family results only:
          the stuck parent hands the phone to the kid. -->
@@ -2842,6 +2842,13 @@ var FIT_FRAGMENTS = {
   occcandy:["easy to wear while handing out candy","comfortable for candy duty","great for greeting trick-or-treaters"],
   occlowkey:["made for a low-key night in","perfect for a quiet night in","built for staying in"]
 };
+/* The reader is the parent, even in kid mode: the header names whose fit
+   it is. Kid answers keep the parent's perspective ("Why this fits your
+   kid"), never the kid's. */
+function whyHeader(){
+  var a = (typeof state !== "undefined" && state.answers && state.answers.q1) ? state.answers.q1.value : null;
+  return (a === "kid") ? "Why this fits your kid" : "Why this fits you";
+}
 function whyLine(scored, idx){
   var idea = scored.idea, dyn = [], v = ((idx||0)%3+3)%3;
   function firstTag(qid){
@@ -2862,14 +2869,17 @@ function whyLine(scored, idx){
   var tail = dyn.length ? " " + dyn.join(", ") + "." : "";
   /* 2026-09-26 red-team P1: the line never cited the two double-weighted
      answers (vibe + interest), so it felt generic. Folded into tail so the
-     return stays `idea.why + tail` (why-lint check 5). */
+     return stays `idea.why + tail` (why-lint check 5). 2026-09-29 copy fix:
+     noun-phrase fragments ("a funny vibe", "your interest in food & snacks")
+     joined with "and" under "Picked for", so the composed line is
+     grammatical and never stutters "picked because you picked". */
   var personal = [];
   var vibe = answerLabel("q2");
-  if (vibe) personal.push("you picked " + vibe.toLowerCase());
+  if (vibe) personal.push("a " + vibe.toLowerCase() + " vibe");
   var interest = answerLabel("qinterest");
-  if (interest && interest !== "Surprise me") personal.push("into " + interest.toLowerCase());
-  if (personal.length) tail += " Picked because " + personal.join(" and ") + ".";
-  return "Why this fits you: " + idea.why + tail;
+  if (interest && interest !== "Surprise me") personal.push("your interest in " + interest.toLowerCase());
+  if (personal.length) tail += " Picked for " + personal.join(" and ") + ".";
+  return whyHeader() + ": " + idea.why + tail;
 }
 
 /* Recipient-channel inference for recipient_landing_viewed. Open-time UA
@@ -4163,7 +4173,7 @@ function fitReasons(scored, idx){
     out.push("You asked for " + state.pinpoint.label + ": this is our DIY take on it.");
   }
   out.push(idea.why);
-  var wl = whyLine(scored, idx).replace(/^Why this fits you: /, "");
+  var wl = whyLine(scored, idx).replace(/^Why this fits (you|your kid): /, "");
   var tail = wl.slice(idea.why.length).trim();
   if (tail) out.push(tail.charAt(0).toUpperCase() + tail.slice(1));
   function ansLabel(qid){
@@ -4566,7 +4576,7 @@ function shareAskLine(){
      ("take the 2-minute quiz and tell me what you get"). The new one asks
      the four-word human question and names the quiz as where the
      costume came from, nothing more. */
-  return "What are you going as? Found mine with this 2-min quiz: ";
+  return "What are you going as? Found mine with this 2-minute quiz: ";
 }
 /* The one canonical share action (2026-09-28 simplification): the native
    share sheet on phones, clipboard copy on desktop. Replaces the bespoke
@@ -8022,7 +8032,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
       _pb = document.createElement("span");
       _pb.className = "pantrybadge";
       _pb.textContent = _pm === 0 ? "Make tonight" : ("Needs " + _pm + (_pm === 1 ? " thing" : " things"));
-      _pb.title = "Based on your pantry";
+      _pb.title = "Made from your pantry";
     }
     if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your "+new Date().getFullYear()+" Halloween costume";card.appendChild(kc);}
     if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent=role||"Top pick for you";card.appendChild(tp);}
@@ -8049,7 +8059,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     /* Fit reasons: a grounded list (idea why, effort/occasion fragments, the
        user's own answers reflected back) replaces the single why paragraph. */
     var _rs = document.createElement("div"); _rs.className = "fitreasons";
-    var _rb = document.createElement("b"); _rb.textContent = hasQuizAnswers() ? "Why this fits you" : "Why it's a great pick"; _rs.appendChild(_rb);
+    var _rb = document.createElement("b"); _rb.textContent = hasQuizAnswers() ? whyHeader() : "Why it's a great pick"; _rs.appendChild(_rb);
     var _ul = document.createElement("ul");
     fitReasons(scored, idx).forEach(function(r){
       var _li = document.createElement("li"); _li.textContent = r; _ul.appendChild(_li);
@@ -8337,7 +8347,7 @@ function buildConstraintRefinement(){
   wrap.appendChild(row);
   return wrap;
 }
-/* One-hero results: the #1 idea is the answer ("Here is what you got"); the
+/* One-hero results: the #1 idea is the answer ("Here's what we picked for you"); the
    other two render as compact cards over a single shared full-width detail.
    Tapping a runner-up opens its full card inline below the pair; only one is
    open at a time. A browse-all button (not a 100-card tail) closes the page. */
@@ -8970,6 +8980,9 @@ function openWrapped(results){
   wrShowSlide(0);
 }
 function buildWrappedButton(results){
+  /* 2026-09-29 copy fix: the Wrapped is an October thing. Before October the
+     entry button does not render at all. */
+  if (new Date().getMonth() < 9) return null;
   var btn = document.createElement("button");
   btn.type = "button";
   btn.className = "ghost";
@@ -8984,8 +8997,8 @@ function renderResults(results){
   /* 2026-09-27: the s-results shell is shared with the warm path, which
      rewrites this header and hides nav buttons. Reset for the cold path. */
   document.querySelector("#s-results .progress").textContent = "Your costume";
-  document.querySelector("#s-results h2.q-title").innerHTML = "&#127875; Here is what you got";
-  document.querySelector("#s-results p.q-hint").innerHTML = "This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below.";
+  document.querySelector("#s-results h2.q-title").innerHTML = "&#127875; Here's what we picked for you";
+  document.querySelector("#s-results p.q-hint").innerHTML = "This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.";
   $("btn-rtop").style.display = "";
   $("btn-rback").style.display = "";
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
@@ -9046,8 +9059,9 @@ function renderResults(results){
   box.appendChild(buildRevealSharePrompt(results[0].idea));
   /* 2026-09-26 Halloween Wrapped: one calm entry to the 4-slide recap
      (pick, answers, numbers, share) rendered from the live bank and the
-     actual answers. */
-  box.appendChild(buildWrappedButton(results));
+     actual answers. Null before October (see buildWrappedButton). */
+  var _wb = buildWrappedButton(results);
+  if (_wb) box.appendChild(_wb);
   /* 2026-09-26 evening block-map experiment: additive, flag-gated; the
      builder returns null with the flag off so nothing renders. */
   var bmBox = buildBlockMapBox(results[0].idea);
@@ -9235,7 +9249,10 @@ function renderResults(results){
     h.textContent = idea.title;
     var rbadge = document.createElement("span");
     rbadge.className = "rolebadge";
-    rbadge.textContent = roleLabel(i + 1);
+    /* 2026-09-29 copy fix: the compact runner-up pair always numbers, so the
+       badges read "No. 2" / "No. 3" even when a card also earned a role like
+       Tonight-Ready (the role still shows on the full-screen detail). */
+    rbadge.textContent = "No. " + (i + 2);
     var hint = document.createElement("p");
     hint.className = "status";
     hint.textContent = "Tap to view full screen";
@@ -9247,7 +9264,7 @@ function renderResults(results){
       _pb2 = document.createElement("span");
       _pb2.className = "pantrybadge";
       _pb2.textContent = _pm2 === 0 ? "Make tonight" : ("Needs " + _pm2 + (_pm2 === 1 ? " thing" : " things"));
-      _pb2.title = "Based on your pantry";
+      _pb2.title = "Made from your pantry";
     }
     card.appendChild(rbadge); card.appendChild(im); card.appendChild(h);
     if (_pb2) card.appendChild(_pb2);
@@ -10282,7 +10299,7 @@ function buildBrowseDetailCard(idea, whyHead){
   var _tse = trendStatEl(idea); if (_tse) right.appendChild(_tse);
   var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
   var wh = document.createElement("p"); wh.className = "why";
-  var wb = document.createElement("b"); wb.textContent = whyHead || (hasQuizAnswers() ? "Why this fits you" : "Why it's great");
+  var wb = document.createElement("b"); wb.textContent = whyHead || (hasQuizAnswers() ? whyHeader() : "Why it's great");
   wh.appendChild(wb);
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
@@ -10505,7 +10522,7 @@ var _lastZeroQuery = ""; /* last dead query already logged */
 function buildResultsPrompt(results, beyond){
   var lines = results.map(function(scored, i){
     var idea = scored.idea;
-    return (i+1) + ". " + idea.title + " - " + idea.blurb + " Why it fits: " + whyLine(scored, i).replace(/^Why this fits you: /, "");
+    return (i+1) + ". " + idea.title + " - " + idea.blurb + " Why it fits: " + whyLine(scored, i).replace(/^Why this fits (you|your kid): /, "");
   });
   var ans = flowOrder().map(function(qid){
     var a = state.answers[qid];
@@ -10831,7 +10848,7 @@ function buildMediaShareRows(idea){
   imgRow.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:8px 0 4px";
   var imgBtn = document.createElement("button");
   imgBtn.type = "button"; imgBtn.className = "ghost";
-  imgBtn.textContent = "Save the image";
+  imgBtn.textContent = "Download the photo";
   imgBtn.onclick = function(){
     var rearmShare = armShareOnce(imgBtn);
     if (!rearmShare) return; /* double-tap: a share is already in flight */
@@ -10872,7 +10889,7 @@ function addCopyShareRow(container, idea, makeText, xprops, onShared, quiet, noP
          form already shows the text)
        - Pick for a friend (secondary)
        - the approved Partner Split (secondary)
-       - Save the image + Pin it (via noMedia=false; the plan-first panel
+       - Download the photo + Pin it (via noMedia=false; the plan-first panel
          renders them inside its "Keep building your costume" disclosure
          instead, so the share block stays one loud action)
      2026-09-29 (Victory Lap): "Want a second opinion?" asked the
