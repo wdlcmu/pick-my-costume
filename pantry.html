@@ -101,7 +101,7 @@
   .pvvote{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:18px 0 6px}
   .pvvote h3{font-size:17px;margin:0 0 4px}
   .pvvote p{font-size:13.5px;color:var(--muted);margin:0 0 10px;line-height:1.45}
-  /* Chopped game (Billy 2026-09-29): the 5-supply pantry game. No animation
+  /* Chopped game (2026-09-29): the 5-supply pantry game. No animation
      anywhere in this block, so there is nothing to disable for
      prefers-reduced-motion. */
   .chop-note{font-size:13px;color:var(--muted);line-height:1.5;margin:10px 2px 0}
@@ -139,7 +139,7 @@
   .reshead h2{font-size:20px;margin:0}
   .reshead span{font-size:13px;color:var(--muted)}
   .tier-sub{font-size:13.5px;color:var(--muted);margin:-6px 0 10px;line-height:1.45}
-  /* 2026-09-28 (Billy): visual-first cards -- the costume photo leads as a
+  /* 2026-09-28: visual-first cards -- the costume photo leads as a
      full-bleed banner, text collapses beneath it. Was a 76px floated thumb. */
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0;margin:0 0 12px;cursor:pointer;overflow:hidden}
   .card.zero{border-color:var(--green)}
@@ -161,7 +161,7 @@
     border-radius:20px;padding:5px 10px;overflow-wrap:anywhere}
   .chip-label{font-size:12.5px;color:var(--muted);align-self:center}
   .ready{font-size:14px;color:var(--green);margin:0 0 10px;font-weight:600}
-  /* 2026-09-27 (Billy): recipe-first card rows -- the full build, each
+  /* 2026-09-27: recipe-first card rows -- the full build, each
      requirement marked have (green check) vs still-need (open circle). */
   .mrows{margin:0 0 10px}
   .mrow{display:flex;align-items:baseline;gap:8px;font-size:13.5px;padding:3px 0;color:var(--ink);overflow-wrap:anywhere}
@@ -172,7 +172,7 @@
   .mrow .memo{font-size:14px;flex:0 0 auto}
   .go{display:block;text-align:center;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:15px;
     text-decoration:none;border-radius:10px;padding:12px 16px;min-height:48px;line-height:1.4;margin-top:10px}
-  /* 2026-09-28 (Billy): the full materials checklist collapses behind one
+  /* 2026-09-28: the full materials checklist collapses behind one
      tap -- the card leads with photo + title + the likely-have line. */
   .needs{margin:8px 0 4px;border:1px solid var(--line);border-radius:10px}
   .needs summary{cursor:pointer;padding:12px;font-size:13.5px;font-weight:700;color:var(--ink);
@@ -213,7 +213,7 @@
   .fneed b{color:var(--accent)}
   .fready{font-size:14px;margin:12px 0 0;color:var(--green);font-weight:600}
   .fgo{display:inline-block;margin-top:12px;color:var(--accent);font-size:14px;font-weight:700;text-decoration:none}
-  /* 2026-09-28 (Billy): materials go visual -- big emoji tiles with 1-3 word
+  /* 2026-09-28: materials go visual -- big emoji tiles with 1-3 word
      labels instead of long text rows. Used by the focus card, the result-card
      "What you need" details, and the assumed-basics chips. */
   .mtiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
@@ -250,18 +250,18 @@
   <p class="sub">We assume your home has the basics, so these costumes lead. Tick anything else you own below and the list reshuffles around your stuff.</p>
   <p class="fresh">Updated September 2026</p>
 
-  <!-- 2026-09-26 pantry deep-link (Billy): arriving from a costume detail's
+  <!-- 2026-09-26 pantry deep-link: arriving from a costume detail's
        "Check my pantry" (?for=<idea-id>) renders a focused checklist card
        here at the top: everything that costume needs, marked have vs
        missing. Tapping a missing row ticks it in the main list below. -->
   <div class="focus" id="focus" hidden></div>
 
-  <!-- 2026-09-28 (Billy): the assumed-basics list collapses behind one tap --
+  <!-- 2026-09-28: the assumed-basics list collapses behind one tap --
        the page leads with costumes, not a wall of text. -->
   <details class="staple-fold"><summary>What we assume you have</summary>
   <p class="staple-note">Untick any you don't actually have. Everything else only counts if you tick it.</p>
   <div class="mchips" id="staplechips"></div></details>
-  <!-- Billy 2026-09-25: the opening leads with the alive number, not a dead
+  <!-- 2026-09-25: the opening leads with the alive number, not a dead
        "0 you can make tonight". With just the assumed basics, the count is
        already real the moment the page loads. -->
   <div class="stat" id="stat" role="status" aria-live="polite" style="margin:12px 0"></div>
@@ -288,7 +288,7 @@
   <div class="actions">
     <button class="btn btn-ghost" id="reset" type="button">Start over</button>
 </div>
-  <!-- 2026-09-27 (Billy): the "Challenge a friend" CTA felt out of place on
+  <!-- 2026-09-27: the "Challenge a friend" CTA felt out of place on
        this page. Removed. Experiment data backed it: 1 challenge started,
        0 completed in 7 days. The ?kit= rematch arrival still renders its
        own "Send the rematch" button on demand (see applyChallenge). -->
@@ -305,7 +305,7 @@
   <p class="tier-sub">Worth it if you love the idea, but plan a real shopping trip.</p>
   <div id="tier2"></div>
 
-  <!-- Chopped (Billy 2026-09-29): the pantry's 5-supply game. We deal 5 real
+  <!-- Chopped (2026-09-29): the pantry's 5-supply game. We deal 5 real
        supplies from actual costume builds; the player picks the ONE costume
        they could honestly build with just the basket plus the household
        basics, then we reveal what each option was really missing. -->
@@ -347,7 +347,7 @@ function track(name, props){
 })();
 const STAPLES = DATA.pantry.filter(p => p.staple).map(p => p.id);
 let ticked;
-/* 2026-09-28 (Billy): the assumed-basics render as emoji chips instead of a
+/* 2026-09-28: the assumed-basics render as emoji chips instead of a
    text paragraph. Runs at parse time; emoChar/supplyLabel are hoisted. */
 try {
   const sc = document.getElementById('staplechips');
@@ -373,7 +373,7 @@ try {
 var VIA_S = (function(){ try {
   var m = /[?&]s=([a-z0-9]+)/.exec(location.search || ''); return m ? m[1] : '';
 } catch (e){ return ''; } })();
-/* 2026-09-26 pantry deep-link (Billy): arriving from a costume detail's
+/* 2026-09-26 pantry deep-link: arriving from a costume detail's
    "Check my pantry" carries ?for=<idea-id>. renderFocus() then shows a
    focused checklist card for that costume at the top. Idea ids are public
    catalog data; the param is validated against DATA.ideas, never trusted. */
@@ -447,13 +447,13 @@ function emo(id){
   const e = id && SUPPLY_EMOJI[id];
   return e ? '<span class="emo" aria-hidden="true">' + e + '</span> ' : '';
 }
-/* 2026-09-28 (Billy): visual materials -- raw emoji char for the big tiles,
+/* 2026-09-28: visual materials -- raw emoji char for the big tiles,
    and a 1-3 word label (bank label) instead of the full requirement sentence. */
 function emoChar(id){
   const e = id && SUPPLY_EMOJI[id];
   return e || '';
 }
-/* 2026-09-28 (Billy): visual materials -- one primary emoji plus a 1-3 word
+/* 2026-09-28: visual materials -- one primary emoji plus a 1-3 word
    label per requirement. Multi-group requirements show the first group's
    label with a +N. Unmapped (buy-only) requirements fall back to a shortened
    noun phrase from the raw text. */
@@ -478,7 +478,7 @@ function matBits(m){
   if (s.length > 26 && /\sor\s/i.test(s)) s = s.split(/\sor\s/i)[0].trim();
   return { e: '🛒', label: s, buy: true };
 }
-/* 2026-09-28 (Billy): emoji audit -- every tile emoji must read as the actual
+/* 2026-09-28: emoji audit -- every tile emoji must read as the actual
    material. felt was a rainbow (reads as a rainbow costume, not felt) -> scarf
    (textile); pipe-cleaners was an artist palette -> crayon (colorful stick).
    Audit the rest the same way before adding new supplies. */
@@ -831,7 +831,7 @@ function challengeLink(){
    tonight with stuff already in my house", naming the fewest-missing idea
    even when it still needed supplies (the default staples-only state names
    an idea 2 supplies short). Name a fully-makeable idea when one exists;
-   otherwise tell the truth about the gap. No em dashes, Billy's voice. */
+   otherwise tell the truth about the gap. No em dashes, house voice. */
 function challengeClaim(){
   const rows = DATA.ideas.map(score);
   rows.sort((a, b) => (a.missing.length - b.missing.length) || (a.total - b.total));
@@ -965,7 +965,7 @@ function applyChallenge(){
      edit) left CH.sid null, so the next rematch minted vs= empty and the
      attribution chain died. Falling back to ?vs= keeps the chain rooted. */
   /* The recipient answers the dare, so the button offers the rematch.
-     2026-09-27 (Billy): the challenge CTA was removed from the pantry page,
+     2026-09-27: the challenge CTA was removed from the pantry page,
      so on a ?kit= arrival the rematch button is rendered on demand here. */
   let cbtn = document.getElementById('challenge');
   if (!cbtn) {
@@ -1404,7 +1404,7 @@ function renderGroups(){
       if (!(typeof CH !== 'undefined' && CH)) {
         try { localStorage.setItem(LS_KEY, JSON.stringify([...ticked])); } catch (e) {}
       }
-      /* Billy 2026-09-26: engagement instrumentation. Counts only -- never
+      /* 2026-09-26: engagement instrumentation. Counts only -- never
          which materials (that's what's in their house). Debounced. */
       if (window._phT) clearTimeout(window._phT);
       window._phT = setTimeout(function(){ track('pantry_materials_changed', { ticked_count: ticked.size }); }, 1500);
@@ -1445,7 +1445,7 @@ function cardHtml(r, i){
   /* typeof-guard: some test harnesses eval this function in isolation. */
   const viaS = (typeof VIA_S !== 'undefined' && VIA_S) ? '&s=' + VIA_S : '';
   const cls = r.missing.length === 0 ? ' zero' : (r.missing.length <= 2 ? ' almost' : '');
-  /* 2026-09-27 (Billy): work the cards backwards -- lead with the costume's
+  /* 2026-09-27: work the cards backwards -- lead with the costume's
      full build ("here is how you make this with X"), every requirement
      marked have vs still-need, instead of the coverage-stats framing
      ("based on XYZ you can be this"). Replaces the old Still-need chips. */
@@ -1460,7 +1460,7 @@ function cardHtml(r, i){
       '<span class="mtemo" aria-hidden="true">' + e + '</span>' +
       '<span class="mtlabel">' + esc(lbl) + '</span>' + buyNote + '</div>';
   }).join('');
-  /* 2026-09-27 (Billy): lead with what they likely have -- the
+  /* 2026-09-27: lead with what they likely have -- the
      requirements satisfied by the assumed basics -- so each card reads
      "here's what you likely have" instead of coverage stats. */
   const _staples = (typeof STAPLES !== 'undefined') ? STAPLES : [];
@@ -1475,7 +1475,7 @@ function cardHtml(r, i){
   }).filter((v, i, a) => a.indexOf(v) === i);
   const likelyHtml = likely.length
     ? '<p class="likely">You likely have: <b>' + esc(likely.join(', ')) + '</b></p>' : '';
-  /* 2026-09-28 (Billy): visual-first -- the full have/miss checklist
+  /* 2026-09-28: visual-first -- the full have/miss checklist
      collapses into one tap so the card leads with the costume photo. */
   const needsHtml = rows
     ? '<details class="needs"><summary>What you need (' + r.it.mats.length + ')</summary>' +
@@ -1488,7 +1488,7 @@ function cardHtml(r, i){
     '<a class="go" href="index.html?pick=' + r.it.id + viaS + '">How to make it</a></div></div>';
 }
 
-/* 2026-09-26 pantry deep-link (Billy): focused checklist for one costume.
+/* 2026-09-26 pantry deep-link: focused checklist for one costume.
    Arriving from a costume detail's "Check my pantry" (?for=<idea-id>) shows
    this card at the top: every requirement for that costume, each marked have
    vs missing against the live ticked set. Tapping a missing row ticks its
@@ -1507,7 +1507,7 @@ function renderFocus(){
   const it = focusIdea();
   if (!it){ host.hidden = true; host.innerHTML = ''; return; }
   const r = score(it);
-  /* 2026-09-28 (Billy): visual materials -- tappable emoji tiles instead of
+  /* 2026-09-28: visual materials -- tappable emoji tiles instead of
      text rows. Same tick behavior, same data-i hooks. */
   const rows = it.mats.map((m, i) => {
     const ok = reqOk(m);
@@ -1574,7 +1574,7 @@ function render(){
   const t2 = rows.filter(r => r.missing.length >= 3).sort(byMissing);
 
   const stat = document.getElementById('stat');
-  /* Billy 2026-09-25: alive opening. The count is real on first paint because
+  /* 2026-09-25: alive opening. The count is real on first paint because
      the assumed basics (scissors, tape, paper+pen) are pre-ticked.
      2026-09-26 red-team: the lead must match the actual ticked set ("just the
      basics" is wrong once the user ticks more), the almost-bucket is 1-or-2
@@ -1617,7 +1617,7 @@ function render(){
       ).join('');
     lastUnlocks = unlocks;
     document.getElementById('copylist').addEventListener('click', copyUnlocks);
-    /* 2026-09-27 (Billy): removed the "Dare 3 friends to beat me" experiment
+    /* 2026-09-27: removed the "Dare 3 friends to beat me" experiment
        CTA (Experiment 2, stream B 2026-09-26). It felt out of place on this
        page, and the data backed the cut: 1 challenge started, 0 completed
        in 7 days. The underlying ?kit= challenge/rematch flow is untouched. */
@@ -1631,14 +1631,14 @@ function render(){
   put('tier0', t0, 'Nothing fully covered yet. Tick what you own, or grab one item below.');
   put('tier1', t1, 'Nothing is just 1 or 2 things away right now.');
   put('tier2', t2, '');
-  /* Billy 2026-09-26: engagement instrumentation. Counts only, once per
+  /* 2026-09-26: engagement instrumentation. Counts only, once per
      page load: did the ranked list actually render for them. */
   if (!window._phRv) { window._phRv = 1; track('pantry_results_viewed', { ready_count: t0.length, almost_count: t1.length, ticked_count: ticked.size }); }
   /* 2026-09-26: Make tonight instrumentation (traffic-pulse night2 finding:
      the Make tonight surface fired no analytics event at all). Once per
      page load, same shape as pantry_results_viewed. Purely additive. */
   if (!window._phMt) { window._phMt = 1; track('make_tonight_viewed', { ready_count: t0.length, ticked_count: ticked.size }); }
-  /* Billy 2026-09-26: the whole result card opens the full detail screen,
+  /* 2026-09-26: the whole result card opens the full detail screen,
      not just the "How to make it" link. Taps on links/buttons/inputs keep
      their own behavior. */
   ['tier0','tier1','tier2'].forEach(function(tid){
@@ -1707,7 +1707,7 @@ document.getElementById('reset').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-/* ================= Chopped: the 5-supply pantry game (Billy 2026-09-29) ==
+/* ================= Chopped: the 5-supply pantry game (2026-09-29) ==
    We deal 5 real pantry supplies pulled from actual costume builds. The
    player picks the ONE costume they could honestly build with just the
    basket plus the household basics, then we reveal what each option was
