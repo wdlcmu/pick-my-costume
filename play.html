@@ -198,7 +198,7 @@
         <h2 id="finishTitle">Costume star!</h2>
         <div class="result" id="result">You found 3 out of 3</div>
         <p id="finishCopy">Those costumes couldn’t fool you.</p>
-        <div class="found-list" id="foundList"></div><div class="actions"><button class="primary" id="again">Play again</button><button class="primary" id="shareScore">Share my score</button><button class="quiet" id="switchGameEnd" type="button">Try the other game</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
+        <div class="found-list" id="foundList"></div><div class="actions"><button class="primary" id="again">Play again</button><button class="primary" id="shareScore">Share my score</button><button class="quiet" id="switchGameEnd" type="button">Try another game</button><button class="quiet" id="sound" aria-pressed="true">Sound on</button></div>
         <!-- 2026-09-28: distribution. The game is top of funnel: kid plays,
              parent takes the quiz, quiz feeds the share loop. Quiet link,
              never a popup, never mid-game. -->
@@ -338,7 +338,7 @@
      solvable and never ambiguous. */
   var choppedIdeas=[
     {slug:'baby-dino',name:'Baby Dino',img:'photos/baby-dino.webp',guide:'https://pickmycostume.com/c/baby-dino',keys:[['paper-green','🟩','Green paper'],['stuffing','☁️','Cotton balls'],['safety-pins','📎','Safety pins'],['socks','🧦','Socks']]},
-    {slug:'bumble-bee',name:'Bumble Bee',img:'photos/bumble-bee.webp',guide:'https://pickmycostume.com/c/bumble-bee',keys:[['black-clothes','🖤','Black clothes'],['tape-yellow','🟨','Yellow tape'],['headband','🎀','Headband'],['pipe-cleaners','🖍️','Pipe cleaners']]},
+    {slug:'bumble-bee',name:'Bumble Bee',img:'photos/bumble-bee.webp',guide:'https://pickmycostume.com/c/bumble-bee',keys:[['black-clothes','👕','Black clothes'],['tape-yellow','🟨','Yellow tape'],['headband','🎀','Headband'],['pipe-cleaners','🖍️','Pipe cleaners']]},
     {slug:'astronaut',name:'Astronaut',img:'photos/astronaut.webp',guide:'https://pickmycostume.com/c/astronaut',keys:[['sweatsuit','🧥','Sweatsuit'],['paper-bag','🛍️','Paper bag'],['tape-silver','⚪','Silver tape'],['stickers','⭐','Stickers']]},
     {slug:'black-cat',name:'Black Cat',img:'photos/black-cat.webp',guide:'https://pickmycostume.com/c/black-cat',keys:[['paper-black','⬛','Black paper'],['paint-black','⚫','Black face paint'],['pillowcase','💤','Pillowcase'],['headband','🎀','Headband']]},
     {slug:'backyard-hero',name:'Backyard Hero',img:'photos/backyard-hero.webp',guide:'https://pickmycostume.com/c/backyard-hero',keys:[['paper-red','🟥','Red paper'],['yarn','🧶','Yarn'],['tshirt','🎽','T-shirt'],['pillowcase','💤','Pillowcase']]},
@@ -580,7 +580,7 @@ function renderFoundList(){
    active play and silently reset the current game to round 1 (confirmed by
    playtest: 5 finished Match rounds lost to one tap). Switching still lives
    where it is safe: the intro "Pick a way to play" buttons and the finish
-   screen's "Try the other game". syncSwitchLabel/switchToOther stay
+   screen's "Try another game". syncSwitchLabel/switchToOther stay
    null-safe below in case the button ever returns. */
 var switchGame=document.getElementById('switchGame'),switchGameEnd=document.getElementById('switchGameEnd');
 function syncSwitchLabel(){if(!switchGame)return;if(mode==='peek')switchGame.textContent='Try: Match the pieces';else if(mode==='match')switchGame.textContent='Try: Chopped';else switchGame.textContent='Try: Peekaboo';}
