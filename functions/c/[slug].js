@@ -321,8 +321,14 @@ export function onRequest(context) {
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing) _fit = "<p class=\"fit\">Fit: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
-       og meta only (never card pixels). Defaults to "Your friend". */
-    _sharerLine = "<p class=\"sharerline\">" + _sharerEsc + " picked <strong>" + title + "</strong>.</p>";
+       og meta only (never card pixels). Defaults to "Your friend".
+       2026-09-29 QA cycle 1 arrival gate: emit ONLY on genuine share arrivals
+       (8+ char share id, the standing red-team rule a forged ?s=x must not
+       render a fake friend claim). Direct visits get no sharer line -- the
+       unconditional line read as fabricated social proof. */
+    if ((_s || "").length >= 8) {
+      _sharerLine = "<p class=\"sharerline\">" + _sharerEsc + " picked <strong>" + title + "</strong>.</p>";
+    }
     /* Parent FAQs: visible static HTML so AI assistants can quote them. */
     if (_hw.faqs && _hw.faqs.length) {
       _faqs = "<h2>Common questions</h2>" + _hw.faqs.map(function(f){
@@ -575,6 +581,13 @@ export function onRequest(context) {
       "<p class='splitpartner-line'>Going as a duo? Claim your half and draft your partner into theirs.</p>" +
       "<p class='ctawrap'><a class='cta' href='/split.html?idea=" + slug + "'>Split it with your partner</a></p>";
   }
+  /* 2026-09-29 QA cycle 1 arrival gate: og/twitter titles keep the friend
+     voice ONLY on genuine share arrivals (8+ char share id; the ?nm= named
+     variant already requires ?s= in practice). Direct visits and crawlers get
+     the honest guide title, mirroring the <title> tag. */
+  var _ogTitle = ((_s || "").length >= 8)
+    ? _sharerEsc + " picked " + title + " - Pick My Costume"
+    : title + " Costume: DIY Guide | Pick My Costume";
   var html = "<!DOCTYPE html>" +
     "<html lang=\"en\"><head><meta charset=\"utf-8\">" +
     "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
@@ -583,7 +596,7 @@ export function onRequest(context) {
     "<meta name=\"author\" content=\"Pick My Costume\">" +
     "<meta property=\"og:type\" content=\"website\">" +
     "<meta property=\"og:url\" content=\"https://pickmycostume.com/c/" + slug + "\">" +
-    "<meta property=\"og:title\" content=\"" + _sharerEsc + " picked " + title + " - Pick My Costume\">" +
+    "<meta property=\"og:title\" content=\"" + _ogTitle + "\">" +
     "<meta property=\"og:description\" content=\"" + _tripleText + blurb + "\">" +
     "<meta property=\"og:image\" content=\"" + img + "\">" +
     "<meta property=\"og:image:secure_url\" content=\"" + img + "\">" +
@@ -592,7 +605,7 @@ export function onRequest(context) {
     "<meta property=\"og:image:height\" content=\"630\">" +
     "<meta property=\"og:image:alt\" content=\"" + title + " costume idea\">" +
     "<meta name=\"twitter:card\" content=\"summary_large_image\">" +
-    "<meta name=\"twitter:title\" content=\"" + _sharerEsc + " picked " + title + " - Pick My Costume\">" +
+    "<meta name=\"twitter:title\" content=\"" + _ogTitle + "\">" +
     "<meta name=\"twitter:description\" content=\"" + blurb + "\">" +
     "<meta name=\"twitter:image\" content=\"" + img + "\">" +
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
