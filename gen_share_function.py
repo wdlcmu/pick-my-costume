@@ -18,7 +18,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 # ship). True = /c/ pages show the warm recipient banner to visitors arriving
 # through a share link (?s= present). False = the current no-banner control
 # page. Flips RECIPIENT_BANNER in the generated JS (also a one-line flip
-# directly in functions/c/[slug].js). Code only, no deploy: Billy's taste
+# directly in functions/c/[slug].js). Code only, no deploy: house taste
 # call in the morning.
 RECIPIENT_BANNER = True
 
@@ -26,7 +26,7 @@ RECIPIENT_BANNER = True
 # 2026-09-26i, MakerWorld steal). True = /c/ guides render a "Wore this?
 # Show us" block inviting builders to share a costume photo; the CTA deep
 # link carries ?madeit=1 so a later stream can wire a submission flow.
-# False = today's control (no block). Code only, no deploy: Billy's taste
+# False = today's control (no block). Code only, no deploy: house taste
 # call in the morning.
 IMADEIT = False
 
@@ -374,6 +374,16 @@ export function onRequest(context) {
      rendered; the quiz-bound links never carried for/partner. */
   _qp.delete("for");
   _qp.delete("partner");
+  /* 2026-09-29 named-share variant (index.html NAMED_RESULT_ENABLED): the
+     sharer name arrives as ?nm= (URL shape ?s=<sid>&o=named&named=<id>&nm=<name>).
+     Sanitized to letters/spaces/hyphens, 20 chars max; rendered in page HTML
+     and og meta only -- never into card pixels (the ROLE_CARDS invariant).
+     Scrubbed from the top CTA target like probe=/for=/partner=: the name must
+     not leak into homepage URLs or PostHog pageviews. */
+  var _nm = (_qp.get("nm") || "").replace(/[^A-Za-z \\-]/g, "").trim().slice(0, 20);
+  var _sharer = _nm || "Your friend";
+  var _sharerEsc = esc(_sharer);
+  _qp.delete("nm");
   /* 2026-09-27 role share cards (MagicShot.ai novel-scout steal): the family
      cast share mints one unfurl link per family member role
      (?o=role&role=<role-slug>). The role is allowlist-validated against
@@ -499,7 +509,7 @@ export function onRequest(context) {
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
      the meta tags in the head, so they cannot regress. */
-  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "";
+  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     _steps = _hw.s.map(function(x, i){
@@ -509,51 +519,40 @@ export function onRequest(context) {
          step only. The (step_idx, url, label) triple is computed at
          generation time from hour-session/safety-links.json; every URL was
          fetched and its page verified to support the claim before
-         embedding. No em dashes in the link text (Billy's voice rule). */
+         embedding. No em dashes in the link text (the voice rule). */
       if (_hw.safelink && i === _hw.safelink.step_idx) {
         _tx += " (<a class=\\"safesrc\\" href=\\"" + esc(_hw.safelink.url) +
           "\\" rel=\\"noopener\\" target=\\"_blank\\">" + esc(_hw.safelink.label) + "</a>)";
       }
       return "<li>" + _tx + "</li>";
     }).join("");
-    /* Billy 2026-09-25: quick version leads. ChatGPT-style: punchy header,
-       5 short steps (first sentence), one closing tip. Full guide follows.
-       2026-09-27 red-team: quote-aware split; a naive indexOf(". ") lands
-       inside quoted phrases ('No. 001', 'Emotional Support Dinosaur. Do not
-       pet.') and renders a dangling mid-sentence fragment. */
-    var _qs = [], _qtip = null, _qn = 0;
-    function _delimOutsideQuotes(_s, _d){
-      var _spans = [], _m, _re = /'[^'\\s][^']*'|"[^"\\s][^"]*"/g, _k = 0;
-      while ((_m = _re.exec(_s))) _spans.push([_m.index, _m.index + _m[0].length]);
-      for (;;){
-        _k = _s.indexOf(_d, _k);
-        if (_k < 0) return -1;
-        var _in = false;
-        for (var _j = 0; _j < _spans.length; _j++){
-          if (_k > _spans[_j][0] && _k < _spans[_j][1]){ _in = true; break; }
-        }
-        if (!_in) return _k;
-        _k += 1;
-      }
-    }
-    function _sentenceEnd(_s){ return _delimOutsideQuotes(_s, ". "); }
+    /* 2026-09-25: quick version leads. 2026-09-29 (#31): the quickcard
+       used to render first-sentences of the same 5 steps the full ordered
+       list repeats below -- structural duplication. The quickcard is now a
+       materials summary (the "can I make this tonight?" scan); the numbered
+       steps live only in the Steps section, and the standalone "You need"
+       block is folded in here for the same reason. */
+    var _qtip = null;
     _hw.s.forEach(function(x){
-      if (/^Optional pro finish:\\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\\s*/i, ""); return; }
-      if (/^Safety:\\s*/i.test(x)) return;
-      if (_qn >= 5) return; _qn++;
-      var _dot = _sentenceEnd(x);
-      var _fs = _dot > 0 ? x.slice(0, _dot + 1) : x;
-      if (_fs.length > 110){ var _c = _delimOutsideQuotes(_fs, ", "); if (_c > 40) _fs = _fs.slice(0, _c) + "."; }
-      _qs.push("<li>" + esc(_fs) + "</li>");
+      if (/^Optional pro finish:\\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\\s*/i, ""); }
     });
     _quick = "<p class=\\"qtriple\\">DIY this week: ~" + esc(_hw.cost) + ", " + esc(_hw.time) + "</p>" +
-      "<ul class=\\"qsteps\\">" + _qs.join("") + "</ul>" +
+      "<ul class=\\"mats qmats\\">" + _mats + "</ul>" +
       (_qtip ? "<p class=\\"qtip\\">Tip: " + esc(_qtip) + "</p>" : "");
     /* Decision triple: the most quotable line of the guide, first under h1. */
     var _t = [_hw.time, _hw.cost, _hw.effort].filter(function(x){ return x; });
     if (_t.length) _triple = "<p class=\\"triple\\">" + _t.map(function(x){ return "<span class=\\"pill\\">" + esc(x) + "</span>"; }).join("") + "</p>";
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing) _fit = "<p class=\\"fit\\">Fit: " + esc(_hw.sizing) + "</p>";
+    /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
+       og meta only (never card pixels). Defaults to "Your friend".
+       2026-09-29 QA cycle 1 arrival gate: emit ONLY on genuine share arrivals
+       (8+ char share id, the standing red-team rule a forged ?s=x must not
+       render a fake friend claim). Direct visits get no sharer line -- the
+       unconditional line read as fabricated social proof. */
+    if ((_s || "").length >= 8) {
+      _sharerLine = "<p class=\\"sharerline\\">" + _sharerEsc + " picked <strong>" + title + "</strong>.</p>";
+    }
     /* Parent FAQs: visible static HTML so AI assistants can quote them. */
     if (_hw.faqs && _hw.faqs.length) {
       _faqs = "<h2>Common questions</h2>" + _hw.faqs.map(function(f){
@@ -578,6 +577,7 @@ export function onRequest(context) {
      X. What would you pick?" -- no em dashes, phone-first. */
   var _bannerScript = "<script>var RECIPIENT_BANNER = " + (RECIPIENT_BANNER ? "true" : "false") + ";" +
     "var GIFT_FROM = " + _gfromJs + ";" +
+    "var SHARER_NAME=JSON.stringify(_sharerEsc);" +
     "var DRAFTH = " + JSON.stringify(DRAFT_HALVES[slug] || null) + ";" +
     "(function(){" +
     "var q = new URLSearchParams(location.search || \\\"\\\");" +
@@ -696,7 +696,7 @@ export function onRequest(context) {
     "}" +
     "var b = document.createElement(\\\"div\\\");" +
     "b.className = \\\"rbanner\\\";" +
-    "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">Your friend picked <strong>" + title + "</strong>. What would you pick?</p>\\\" +" +
+    "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">\\\" + SHARER_NAME + \\\" picked <strong>" + title + "</strong>. What would you pick?</p>\\\" +" +
     " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">Take the 2-minute quiz to get your own costume.</p>\\\" +" +
     " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
     "main.insertBefore(b, main.firstChild);" +
@@ -805,6 +805,13 @@ export function onRequest(context) {
       "<p class='splitpartner-line'>Going as a duo? Claim your half and draft your partner into theirs.</p>" +
       "<p class='ctawrap'><a class='cta' href='/split.html?idea=" + slug + "'>Split it with your partner</a></p>";
   }
+  /* 2026-09-29 QA cycle 1 arrival gate: og/twitter titles keep the friend
+     voice ONLY on genuine share arrivals (8+ char share id; the ?nm= named
+     variant already requires ?s= in practice). Direct visits and crawlers get
+     the honest guide title, mirroring the <title> tag. */
+  var _ogTitle = ((_s || "").length >= 8)
+    ? _sharerEsc + " picked " + title + " - Pick My Costume"
+    : title + " Costume: DIY Guide | Pick My Costume";
   var html = "<!DOCTYPE html>" +
     "<html lang=\\"en\\"><head><meta charset=\\"utf-8\\">" +
     "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
@@ -813,7 +820,7 @@ export function onRequest(context) {
     "<meta name=\\"author\\" content=\\"Pick My Costume\\">" +
     "<meta property=\\"og:type\\" content=\\"website\\">" +
     "<meta property=\\"og:url\\" content=\\"https://pickmycostume.com/c/" + slug + "\\">" +
-    "<meta property=\\"og:title\\" content=\\"" + title + " - Pick My Costume\\">" +
+    "<meta property=\\"og:title\\" content=\\"" + _ogTitle + "\\">" +
     "<meta property=\\"og:description\\" content=\\"" + _tripleText + blurb + "\\">" +
     "<meta property=\\"og:image\\" content=\\"" + img + "\\">" +
     "<meta property=\\"og:image:secure_url\\" content=\\"" + img + "\\">" +
@@ -822,7 +829,7 @@ export function onRequest(context) {
     "<meta property=\\"og:image:height\\" content=\\"630\\">" +
     "<meta property=\\"og:image:alt\\" content=\\"" + title + " costume idea\\">" +
     "<meta name=\\"twitter:card\\" content=\\"summary_large_image\\">" +
-    "<meta name=\\"twitter:title\\" content=\\"" + title + " - Pick My Costume\\">" +
+    "<meta name=\\"twitter:title\\" content=\\"" + _ogTitle + "\\">" +
     "<meta name=\\"twitter:description\\" content=\\"" + blurb + "\\">" +
     "<meta name=\\"twitter:image\\" content=\\"" + img + "\\">" +
     "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">" +
@@ -866,6 +873,9 @@ export function onRequest(context) {
     ".quizline{font-size:15px;color:#555;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
     ".pinline{font-size:14px;color:#555;margin:10px 0 0;}" +
+    ".sharerline{font-size:16px;color:#555;margin:2px 0 12px;}" +
+    ".ctasub{display:block;font-size:14px;color:#777;margin-top:10px;}" +
+    ".quickcard .qmats{margin:12px 0;}" +
     ".pinline a{color:#b3541e;font-weight:700;}" +
     ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
     ".safesrc{font-size:14px;color:#777;}" +
@@ -902,13 +912,13 @@ export function onRequest(context) {
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + title + "</h1>" +
     _triple +
+    _sharerLine +
     _fit +
     "<p class=\\"lede\\">" + blurb + "</p>" +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
-    "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a></p>" +
+    "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
     "<img src=\\"" + img + "\\" alt=\\"" + title + " costume idea\\">" +
     (_quick ? "<div class=\\"quickcard\\">" + _quick + "</div>" : "") +
-    "<h2>You need</h2><ul class=\\"mats\\">" + _mats + "</ul>" +
     _splitHtml +
     "<h2>Steps</h2><ol class=\\"steps\\">" + _steps + "</ol>" +
     _faqs +
