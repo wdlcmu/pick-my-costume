@@ -40,7 +40,7 @@
 </script>
 <style>
 /* ============ HALLOWEEN VISUAL IDENTITY ============
-   The site's seasonal skin, confirmed by Billy. All theme colors
+   The site's seasonal skin, confirmed. All theme colors
    live in these variables: to re-skin later, swap this block only.
    Selection state never relies on color alone (checkmark + border). */
 :root{
@@ -59,7 +59,7 @@
   --radius: 14px;
 }
 *{box-sizing:border-box}
-/* Billy-reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
+/* Reported 2026-09-23: inline links (About page mailto/NRF/Frightgeist)
    rendered as dark browser-default blue on the dark background -- unreadable.
    Every link now gets the accent-orange treatment (bold, underlined) so no
    surface can silently regress to browser-default blue. */
@@ -119,7 +119,7 @@ button.ghost{
   border-radius:var(--radius);padding:20px;margin-bottom:16px;
 }
 #r-cards .card img{width:100%;height:auto;display:block}
-/* Billy-reported 2026-09-23: the old 230px fixed height + object-fit:cover
+/* Reported 2026-09-23: the old 230px fixed height + object-fit:cover
    cropped nearly every card image (73 of 75 bank illustrations are square,
    so cover cut ~105px vertically at phone width — e.g. Walking Taco's legs).
    Natural aspect ratio shows the full illustration on every card. */
@@ -369,7 +369,7 @@ var QUESTIONS = [
     {label:"7+", tags:{kid7plus:2}}
   ]},
   /* qfit retired 2026-09-24: the conditional fit follow-up ("Which look feels
-     more like you?") could make a rare 6th quiz question, breaking Billy's
+     more like you?") could make a rare 6th quiz question, breaking the
      5-max. It now lives on the results screen as an optional refinement chip
      row, shown only when the answer can change the top 3. Same scoring
      effect, zero question tax. */
@@ -395,7 +395,7 @@ var QUESTIONS = [
 /* ================= CONFIG: IDEAS =================
    rank = editorial order: browse-all sorting AND quiz tiebreak (lower wins).
    Rubric: (1) 2026 trend heat, (2) fit for the core audience (parents/kids/family),
-   (3) thumbnail readability, (4) DIY ease and budget-friendliness. Billy finalizes. */
+   (3) thumbnail readability, (4) DIY ease and budget-friendliness. final call. */
 var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a toy sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, fit:"U", rank:1},
   {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes. The easiest costume ever made.", why:"Top five for kids and adults alike -- the most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,dinos:2,kid36:2,kid7plus:2,kidunder3:1,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"top 5 for kids and adults", fit:"U", rank:2},
@@ -640,10 +640,10 @@ function scoreIdeas(full){
 
 /* E15: the "Why this fits you" line is composed from the user's actual answers,
    then the idea's own static line. The header promises the line is about YOU;
-   a static line breaks that promise (Billy: "the 'why this fits' isn't curated
+   a static line breaks that promise ("the 'why this fits' isn't curated
    to my picks"). Every dynamic line references at least one real answer; if
    composition fails, fall back to the static line. No em dashes.
-   E15b (Billy: "clearly duplicate not contextual"): the line LEADS with the
+   E15b ("clearly duplicate not contextual"): the line LEADS with the
    idea-specific reason, and each fragment has synonym variants picked by
    result index, so identical answers still read differently on #1/#2/#3. */
 var FIT_FRAGMENTS = {
@@ -1105,7 +1105,7 @@ function openBrowse(){
 }
 
 /* ================= BROWSE DETAIL: E20 PARITY =================
-   Billy's product call: tapping a browse card opens the SAME full pick flow
+   Product call: tapping a browse card opens the SAME full pick flow
    as a quiz result card. Reuses the result card's components (trendStatEl,
    addCopyShareRow, showPromptPreview, buildIdeaPrompt, shareText, ideaMedia)
    and the E17 cast-panel hook point. The why-line is the STATIC bank line:
@@ -1334,7 +1334,7 @@ function addCopyShareRow(container, idea, makeText, xprops){
 
 /* ================= GROUP CAST MAPPING (shipped E23) =================
    Cast mapping: name the people in your group and the site assigns each a coordinated costume role.
-   Billy's observation: his family was assigning "you are Ursula, you are Scuttle" by hand  --  the site should do it.
+   Observation: his family was assigning "you are Ursula, you are Scuttle" by hand  --  the site should do it.
    Hard rule (E7): NEVER trademarked character names. Roles are generic: sea witch, seagull, clownfish.
    Data-driven and scalable: each group/family idea carries a cast list  --  roles with kid/adult sizing  --  and
    assignCast() fits ANY group size automatically (kids take kid-sized roles first; overflow repeats the filler
@@ -1342,7 +1342,7 @@ function addCopyShareRow(container, idea, makeText, xprops){
    the user picks from per person. Start: 20 ideas; expand by demand data.
    Privacy: typed names live in JS memory only. They NEVER enter analytics events or logs  --  only the share
    text the user explicitly sends. Analytics carries counts (group_size, kid_count) only.
-   State rule (Billy's bug 2026-09-23): NO control wipes any other state. Counts, names, kid/adult toggles and
+   State rule (the bug 2026-09-23): NO control wipes any other state. Counts, names, kid/adult toggles and
    role dropdowns all preserve each other. Growing/shrinking the group keeps every surviving person's name,
    kid/adult flag and explicit role pick; only removed rows lose state (they're visibly gone). */
 var CASTS = {
@@ -1460,7 +1460,7 @@ function castRoleOptions(ideaId){
   var out = [];
   opts.forEach(function(o){ if (out.indexOf(o) < 0) out.push(o); });
   /* Filler doubles as a generic overflow role; don't list it twice when it
-     already appears as a named role (Billy saw the dup in the pup dropdown). */
+     already appears as a named role (caught the dup in the pup dropdown). */
   if (out.indexOf(cast.filler) < 0) out.push(cast.filler);
   return out;
 }
@@ -1468,7 +1468,7 @@ function castLine(list){
   return list.map(function(a){ return a.name + " is the " + a.role; }).join(", ");
 }
 function buildCastShareText(idea, list, sid){
-  /* Solo cast reads as "I'm", not "We're" (Billy's proven solo share pattern). */
+  /* Solo cast reads as "I'm", not "We're" (the proven solo share pattern). */
   var lead = (list.length === 1) ? "I\u2019m going as " : "We\u2019re going as ";
   return lead + idea.title + " this Halloween: " + castLine(list) +
     ". What are you going as? pickmycostume.com/c/" + idea.id + "?s=" + sid;
@@ -1503,7 +1503,7 @@ function getCastState(ideaId, n){
 }
 function buildCastPanel(idea, cast, shareBox, aiPlanBox){
   var box = document.createElement("div"); box.className = "castbox";
-  /* Billy's bug, round 2 (2026-09-23): the result card has a click-to-pick
+  /* The bug, round 2 (2026-09-23): the result card has a click-to-pick
      handler that re-runs doPick() on ANY tap that is not on a button or link --
      including taps on our name inputs and role selects. doPick() clears the
      panel and rebuilds it from scratch, which read as "tapping to type resets
