@@ -107,6 +107,18 @@ body{
   line-height:1.5; min-height:100vh;
 }
 .wrap{max-width:640px;margin:0 auto;padding:20px 16px 64px}
+/* Billy 2026-09-29: persistent site header. Logo + name on every screen, links
+   home. Sticky (not fixed) so no layout compensation is needed; z-index 100
+   keeps it under the quiz backdrop/sheet (950/960) so it dims with the page
+   when the sheet opens. Negative margins bleed it to the wrap edges. */
+.sitehead{position:sticky;top:0;z-index:100;background:rgba(22,13,40,.94);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin:0 -16px 4px;padding:0 16px}
+.sitehead-link{display:flex;align-items:center;gap:10px;min-height:54px;
+  color:var(--ink);text-decoration:none;font-weight:800;font-size:18px}
+.sitehead-link:hover{color:var(--ink);text-decoration:none}
+.sitehead-mark{font-size:22px;line-height:1}
+@media (min-width:900px){.sitehead{margin:0 -32px 4px;padding:0 32px}}
 /* Billy 2026-09-27: desktop was a 640px phone column floating in dead space.
    On wide screens let the page breathe: wider content well, matching FAQ/how. */
 @media (min-width:900px){
@@ -921,6 +933,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </head>
 <body>
 <div class="wrap">
+
+  <!-- Billy 2026-09-29: persistent site header — logo + name on every screen, links home. -->
+  <header class="sitehead">
+    <a class="sitehead-link" href="/" aria-label="Pick My Costume — home">
+      <span class="sitehead-mark" aria-hidden="true">&#127875;</span>
+      <span class="sitehead-name">Pick My Costume</span>
+    </a>
+  </header>
 
   <!-- HERO -->
   <section class="screen on" id="s-hero">
