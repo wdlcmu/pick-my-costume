@@ -70,7 +70,14 @@ below starts from a sheet you already own, lists exactly what else you need, and
 guide with real hands-on time and honest cost. No costume-shop run required."""),
       match=lambda i, d: any(re.search(r'\b(bed\s?sheet|twin sheets?|flat sheet|old sheets?|white sheets?|black sheets?)\b', x, re.I) for x in d.get('m', [])),
       rank=lambda iid: (next((n for n, x in enumerate(instr[iid]['m']) if re.search(r'sheet', x, re.I)), 9), minutes(instr[iid].get('time'))),
-      limit=10),
+      limit=10,
+      faqs=[
+        ('What size sheet should I use?', 'Twin for kids under eight, full or queen for teens and adults. A sheet that is too big drags on the ground and trips the wearer. You can always trim a sheet, you cannot add fabric back.'),
+        ('How do I keep a sheet ghost costume from slipping?', 'Cut eye holes smaller than you think first; you can widen them but not shrink them. A tied sash or belt at the waist holds the sheet in place, and safety pins at the shoulders stop it sliding on kids.'),
+        ('Do I need to sew anything?', 'No. Every costume on this page is no-sew. Cut sheet edges do not fray enough to matter for one night, and tape or pins handle the rest.'),
+        ('Can my child actually see through the eye holes?', 'Yes, if you place them right. Have the wearer put the sheet on first, mark the eye spots with a washable marker while they look straight ahead, then cut. Cut small, test, then widen.'),
+      ],
+),
  dict(slug='cardboard-box-costumes', kw='cardboard box',
       title='Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes',
       desc='Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, dinosaurs and more. Real times, real costs, step-by-step guides.',
@@ -85,7 +92,14 @@ real hands-on time and cost. The box is free. The costume is not far behind.""")
       rank=lambda iid: (0 if re.search(r'box per (person|racer)|box, 1 (large|medium)', ' '.join(instr[iid]['m']), re.I) else 1, minutes(instr[iid].get('time'))),
       limit=12,
       exclude={'plastic-dream-crew', 'little-artist', 'space-crewmate'},
-      force_in=['pizza-slice', 'donut', 'kart-racers']),
+      force_in=['pizza-slice', 'donut', 'kart-racers'],
+      faqs=[
+        ('Where do I get big cardboard boxes for free?', 'Ask grocery or liquor stores in the morning; they give away sturdy boxes free most days. Appliance boxes from a buy-nothing group are the best fit for kid torsos.'),
+        ('How do I stop the cardboard tearing at the arm holes?', 'Reinforce every cut edge on the inside with packing tape before the costume goes on. Cut holes smaller than you think and widen slowly; cardboard cut away cannot go back.'),
+        ('What paint works on cardboard?', 'Acrylic craft paint or spray paint, one or two thin coats. Thick coats add weight and make the box sag by the end of the night.'),
+        ('Is a cardboard box costume safe for little kids?', 'Have an adult do all box-cutter work and tape every inside edge so raw cardboard never scratches skin. Keep the costume away from open flames; cardboard is flammable.'),
+      ],
+),
  dict(slug='no-sew-costumes', kw='no-sew',
       title='No-Sew Costume Ideas: 12 DIY Costumes Without a Needle',
       desc='Twelve Halloween costumes with zero sewing: closet clothes, safety pins, tape, and glue. Real times, real costs, step-by-step guides.',
@@ -97,7 +111,13 @@ never going to do. Every costume below needs no needle, lists exactly what to pu
 links to a full build guide with real hands-on time and honest cost. Thread not required."""),
       match=lambda i, d: d.get('effort') == 'Easy' and not any(re.search(r'\bsew\w*|stitch|needle', x, re.I) for x in d.get('m', [])) and any('(own' in x for x in d.get('m', [])),
       rank=lambda iid: (cost_lo(instr[iid].get('cost')), minutes(instr[iid].get('time'))),
-      limit=12),
+      limit=12,
+      faqs=[
+        ('What holds a no-sew costume together best?', 'Double-sided fabric tape for hems that need to look clean, safety pins from the inside so the backs never touch skin, and a hot glue gun for anything rigid. Hot glue sets in under a minute.'),
+        ('Will safety pins show?', 'Not if you pin from the inside of the garment. Pin through a seam or hem where the fabric is doubled so the pin has something to bite.'),
+        ('Can I wash clothes after using fabric tape or hot glue?', 'Fabric tape usually survives a gentle wash. Hot glue peels off most fabrics if you pick at an edge. Test a hidden spot first on clothes you care about.'),
+      ],
+),
  dict(slug='last-minute-costumes', kw='last-minute',
       title='Last-Minute Costume Ideas: 12 Costumes in 30 Minutes or Less',
       desc='Twelve Halloween costumes you can build in 30 minutes or less, tonight, from stuff at home. Real times, real costs, step-by-step guides.',
@@ -109,7 +129,13 @@ costume below clocks in at thirty minutes of hands-on work or less, lists exactl
 to a full build guide with honest cost. Set a timer. You will make it."""),
       match=lambda i, d: minutes(d.get('time')) <= 30,
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
-      limit=12),
+      limit=12,
+      faqs=[
+        ('What is the one rule for last-minute costumes?', 'One hero piece. A ghost needs only the sheet, a tourist needs only the camera and socks-with-sandals. Build around a single recognizable item and let closet clothes do the rest.'),
+        ('What should I skip when time is short?', 'Anything with drying time: paint, glue-heavy builds, papier-mache. A hair dryer buys you minutes, not miracles.'),
+        ('How do I not look like I gave up?', 'Commit to the bit. A name tag, a prop, or a one-line character voice sells a simple costume more than extra accessories do.'),
+      ],
+),
  dict(slug='family-costumes', kw='family',
       title='Family Halloween Costume Ideas: 12 Group Costumes for the Whole Crew',
       desc='Twelve family Halloween costumes, from toddler-safe to teen-approved. Real times, real costs, step-by-step guides for every group size.',
@@ -122,7 +148,13 @@ links to full build guides with real hands-on time and honest cost per person, s
 day-of surprises."""),
       match=lambda i, d: '"family"' in i['audience'],
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
-      limit=12),
+      limit=12,
+      faqs=[
+        ("Which family member's costume should we build first?", 'The smallest. Fit the toddler or baby while they are still in a good mood, then scale the adult versions off the same simple base.'),
+        ('Do we all have to match exactly?', 'No. One repeated color, hat, or prop reads as a group in photos. Matching exactly multiplies the work; a shared element is enough.'),
+        ('How do we keep total build time sane?', 'Repeat one simple base across the group instead of building six different costumes. Assembly-line the repeated piece, then add one distinguishing detail per person.'),
+      ],
+),
  dict(slug='couples-costumes', kw='couples',
       title='Couples Halloween Costume Ideas: 12 Duo Costumes',
       desc='Twelve couples Halloween costumes, from cute to funny to low-effort. Real times, real costs, step-by-step guides.',
@@ -134,7 +166,13 @@ pair below links to full build guides with real hands-on time and honest cost, s
 evening is going to take."""),
       match=lambda i, d: '"couple"' in i['audience'],
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
-      limit=12),
+      limit=12,
+      faqs=[
+        ('What makes a couples costume actually work?', 'A joke a stranger gets in three seconds: ketchup and mustard, plug and socket, sun and moon. If you have to explain it, pick a different pair.'),
+        ('How do we avoid one person being the boring half?', 'Pick the pair where both halves are equally recognizable, and agree on the effort level in advance. One elaborate half next to a thrown-together half reads as a mistake, not a duo.'),
+        ('We waited until the last minute. What still works?', 'Pairs built from closet clothes: office couple, salt and pepper, a tourist pair. Build both halves side by side so the colors and sizes match.'),
+      ],
+),
  dict(slug='toddler-costumes', kw='toddler',
       title='Toddler Halloween Costume Ideas: 12 Easy Costumes for Ages 1-3',
       desc='Twelve toddler Halloween costumes that are soft, simple, and stroller-friendly. Real times, real costs, step-by-step guides.',
@@ -146,7 +184,13 @@ before you leave. Every costume below links to a full build guide with real hand
 sizing notes for little bodies."""),
       match=lambda i, d: 'kid36' in i['tags'] or re.search(r'toddler|ages? 1 (to|-) ?[38]', d.get('sizing', ''), re.I),
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
-      limit=12),
+      limit=12,
+      faqs=[
+        ('What should a toddler costume never include?', 'Nothing itchy, nothing that covers the face, nothing with small parts, and nothing they cannot sit in. If it fails the car-seat test, redesign it.'),
+        ('How do I get a toddler into costume without a meltdown?', 'Do the fiddly bits while they nap and save dress-up for five minutes before you leave. Build the costume over normal warm clothes so there is no bare-skin battle.'),
+        ('Will it survive the stroller?', 'Keep the silhouette soft and compact: no wide wings, no trailing fabric, no tall hats. Bulky extras come off in the first ten minutes, so plan the costume to look finished without them.'),
+      ],
+),
  dict(slug='face-paint-costumes', kw='face paint',
       title='Face Paint Costume Ideas: 10 Costumes With Makeup as the Star',
       desc='Ten Halloween costumes where face paint does the heavy lifting: skeletons, witches, animals and more. Real times, real costs, step-by-step guides.',
@@ -158,6 +202,11 @@ deal. Every costume below leans on the paint job, lists the rest honestly, and l
 with real hands-on time and cost. The brush is the costume."""),
       match=lambda i, d: any(re.search(r'face paint|makeup', x, re.I) for x in d.get('m', [])),
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
+      faqs=[
+        ('Can I use craft paint or markers on skin?', 'No. Use proper face paint or makeup, and do a small patch test on the jaw an hour before in case of sensitive skin. Craft paint can irritate and stain.'),
+        ('What order do I paint in?', 'Base first, let it set, then details. Details painted onto wet base bleed; details painted onto set base stay crisp.'),
+        ('How do I keep it from smearing all night?', 'Keep makeup wipes in your pocket because touch-ups are part of the deal, and set the finished paint with a light dusting of translucent powder.'),
+      ],
       limit=10),
 ]
 
@@ -204,6 +253,7 @@ TEMPLATE = """<!DOCTYPE html>
 "datePublished":"2026-09-30","mainEntityOfPage":{{"@type":"WebPage","@id":"https://pickmycostume.com/{slug}"}},
 "image":"https://pickmycostume.com/images/og/{og}.jpg"}}
 </script>
+{faq_json}
 {ph}
 <style>
 :root{{--acc:#e8632c;--ink:#1d1a16;--mut:#6b6259;--bg:#fffaf3}}
@@ -225,6 +275,11 @@ h1{{font-size:32px;margin:10px 0 4px}}.byline{{color:var(--mut);font-size:14px;m
 .cta a{{color:#ffb020;font-weight:700}}
 footer{{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}}
 footer a{{color:var(--mut);margin:0 10px}}
+.faqsec{{margin:32px 0}}.faqsec h2{{font-size:22px;margin:0 0 12px}}
+.faqsec details{{background:#fff;border:1px solid #eadfc9;border-radius:10px;margin:0 0 10px;padding:12px 16px}}
+.faqsec summary{{font-weight:700;cursor:pointer;font-size:16px}}
+.faqsec summary::-webkit-details-marker{{color:var(--acc)}}
+.faqsec details p{{margin:8px 0 4px;font-size:15px;color:var(--ink)}}
 .remindbox{{margin:26px auto;padding:20px;border:2px solid #ff8c1a;border-radius:14px;text-align:center;background:#fff8f0;max-width:640px}}
 .remindbox h2{{margin:0 0 6px;font-size:20px}}
 .remindsub{{margin:0 0 12px;color:#6b6259;font-size:15px}}
@@ -274,6 +329,7 @@ if(j&&j.ok){{try{{localStorage.setItem('pmc_reminded','1');}}catch(_){{}}note.te
 else if(j&&j.reason==='unconfigured'){{note.textContent='Reminders are being connected \u2014 check back soon.';}}
 else{{note.textContent='Hmm, that didn\u2019t save. Try again?';}}
 }},function(){{note.textContent='Hmm, that didn\u2019t save. Try again?';}});}});}})();</script>
+{faq_html}
 <div class="cta">
 <p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 164 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
 </div>
@@ -293,6 +349,14 @@ else{{note.textContent='Hmm, that didn\u2019t save. Try again?';}}
   if('IntersectionObserver' in window){{ var o=new IntersectionObserver(function(es){{ es.forEach(function(en){{ if(en.isIntersecting){{ o.disconnect(); fire(); }} }}); }}); o.observe(grid); }}
   else {{ fire(); }}
 }})();
+(function(){{
+  var f=document.querySelector('.faqsec'); if(!f||f._fq) return; f._fq=true;
+  f.addEventListener('toggle',function(e){{ var d=e.target&&e.target.closest?e.target.closest('details'):null;
+    if(!d||!f.contains(d)||!d.open) return;
+    var q=d.querySelector('summary');
+    track('unit_click',{{unit_id:f.getAttribute('data-unit-id'),unit_type:'intent-faq',page:location.pathname,
+      item_id:(q?q.textContent:'').slice(0,60),position:Array.prototype.indexOf.call(f.querySelectorAll('details'),d)}}); }},true);
+}})();
 </script>
 </body>
 </html>
@@ -310,8 +374,19 @@ for p in PAGES:
     assert 80 <= wc <= 150, f"{p['slug']}: intro {wc} words"
     assert len(set(picked)) == len(picked)
     cards = '\n'.join(card(i) for i in picked)
+    faq_items = ''.join(
+        '<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), html.escape(a))
+        for q, a in p['faqs'])
+    faq_html = ('<section class="faqsec" id="faq" data-unit-id="%s" data-unit-type="intent-faq">'
+                '<h2>Questions, answered</h2>%s</section>' % (p['slug'], faq_items))
+    faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q,
+         "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p['faqs']]}
+    faq_json = '<script type="application/ld+json">\n' + json.dumps(faq_ld, ensure_ascii=False) + '\n</script>'
+    assert len(p['faqs']) >= 3, p['slug']
     intro_html = html.escape(' '.join(p['intro'].split()))
     page = TEMPLATE.format(title=p['title'], desc=p['desc'], slug=p['slug'], og=picked[0],
+                           faq_html=faq_html, faq_json=faq_json,
                            h1=p['title'].split(':')[0], intro=intro_html, cards=cards, ph=PH_SNIPPET)
     assert 'Pumpkin King and Stitched Bride' not in page
     out = os.path.join(ROOT, p['slug'] + '.html')
@@ -324,7 +399,8 @@ sm = os.path.join(ROOT, 'sitemap.xml')
 s = open(sm, encoding='utf-8').read()
 for slug, _ in built:
     url = f'https://pickmycostume.com/{slug}'
-    assert url not in s, f'{url} already in sitemap'
+    if url in s:
+        continue  # idempotent regen
     s = s.replace('</urlset>', f'  <url><loc>{url}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>\n</urlset>')
 open(sm, 'w', encoding='utf-8').write(s)
 import xml.dom.minidom; xml.dom.minidom.parseString(s.encode('utf-8'))

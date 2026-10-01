@@ -45,6 +45,12 @@ GUIDE_MAP = {
     "rumi costume": ("kpop-demon-huntresses", False),
     "vampire costume": ("vampire", False),
     "pirate costume": ("pirate-captain", False),
+    # 2026-09-30: silent hill nurse -> zombie-coworker is an honest adjacent
+    # (undead face-paint + distressed ordinary clothes are the same build
+    # techniques). donnie darko (creepy rabbit; no rabbit guide in the bank)
+    # and hamilton (colonial; no colonial guide) stay honest gaps rather
+    # than force a misleading adjacent.
+    "silent hill nurse costume": ("zombie-coworker", True),
 }
 
 # Static historical data: Google Frightgeist 2025 national top 10.
