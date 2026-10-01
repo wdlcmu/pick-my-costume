@@ -1622,15 +1622,25 @@ function show(id){
     h += '<a class="pcal" data-cal="dress" href="' + plannerCalUrl("\uD83C\uDF83 Dress-up day: " + idea.title, p.hw, "\uD83C\uDF83 Dress-up day: " + idea.title + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\nFinal check: " + lastStep + "\n\nHave a great Halloween night.\n-- Pick My Costume") + '" target="_blank" rel="noopener">Add dress-up day to calendar</a></div>';
     h += '</div>';
     box.innerHTML = h;
-    /* Calendar taps: track which milestone, counts only. */
+    /* 2026-10-01 (§6 measurement): calendar taps carry source. calendar_add
+       is the funnel event; planner_cal_added keeps its name (continuity)
+       and gains source too. */
     var cals = box.querySelectorAll("a.pcal");
     for (var i = 0; i < cals.length; i++){
       cals[i].addEventListener("click", function(){
-        Analytics.track("planner_cal_added", {milestone: this.getAttribute("data-cal"), idea_id: ideaId});
+        var _cms = this.getAttribute("data-cal");
+        var _csrc = (typeof resolvePlanSource === "function") ? resolvePlanSource(plannerSourceHint || "browse") : (plannerSourceHint || "browse");
+        try { Analytics.track("planner_cal_added", {milestone: _cms, idea_id: ideaId, source: _csrc}); } catch(_e1){}
+        try { Analytics.track("calendar_add", {idea_id: ideaId, milestone: _cms, source: _csrc}); } catch(_e2){}
       });
     }
   }
-  window.openPlanner = function(ideaId, returnTo){
+  /* 2026-10-01 (§6 measurement): the plan panel's "Add to my calendar"
+     button passes its resolved funnel source through, so calendar taps are
+     attributed (quiz / browse / c_page / galaxy / connector). */
+  var plannerSourceHint = null;
+  window.openPlanner = function(ideaId, returnTo, srcHint){
+    plannerSourceHint = srcHint || null;
     var sel = $("planner-costume");
     if (!plannerPopulated){
       plannerIdeas().forEach(function(idea){
@@ -8401,7 +8411,7 @@ function buildResultsNextBlock(results){
   /* Email me this plan + the Oct 27 reminder checkbox (ticked by default,
      explicit and honest: one email, then you're off the list). */
   if (typeof renderEmailCapture === "function")
-    renderEmailCapture(wrap, idea, "quiz", {label: "Email me this plan", reminder: true, secondary: true});
+    renderEmailCapture(wrap, idea, resolvePlanSource("quiz"), {label: "Email me this plan", reminder: true, secondary: true});
   /* Share my result: one tap, every tap gives visible feedback. The button
      carries its own label -- the old label div above it rendered "Share my
      result" twice (2026-10-01). */
@@ -8414,7 +8424,7 @@ function buildResultsNextBlock(results){
   var sst = document.createElement("p");
   sst.className = "status";
   sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px";
-  sbtn.onclick = function(){ planShare(idea, "quiz", sbtn, sst); };
+  sbtn.onclick = function(){ planShare(idea, resolvePlanSource("quiz"), sbtn, sst); };
   srow.appendChild(sbtn); srow.appendChild(sst);
   wrap.appendChild(srow);
   /* 2026-10-01 (Claude fix 1a): share plays live inside the plan's share
@@ -10223,18 +10233,40 @@ function doCopy(text, done){
    results pick panel and the browse detail pick panel; returnTo is the
    screen the planner/closet return to ("s-results" vs "s-detail").
    Cast-enabled ideas keep their own panel via buildCastPanel. */
+/* 2026-10-01 (§6 measurement): the entry utm_source, captured at boot before
+   any URL scrubbing. Connector arrivals (Claude connector / ChatGPT app)
+   attribute funnel events with source "connector", which takes precedence
+   over the plan=1 / referrer path rules in resolvePlanSource below. */
+var ENTRY_UTM_SOURCE = null;
 /* STEP 1 (2026-10-01): source mapping for plan_commit / email_submit /
-   share_click / share_complete. Entry paths compare against the existing
-   guide_viewed -> guide_cta_clicked funnel on /c/ pages.
+   calendar_add / share_click / share_complete. Entry paths compare against
+   the existing guide_viewed -> guide_cta_clicked funnel on /c/ pages.
+     connector = arrived via a connector (utm_source=claude-connector or
+                 chatgpt-app). Checked first: an explicit channel signal
+                 beats the inferred path. A lazy location.search read backs
+                 up the boot capture in case the URL was scrubbed later
+                 (e.g. the detail screen's Home tap clears all params).
      quiz   = committed from the quiz results screen (the s-results pick card)
      browse = committed from a browse/detail card (the s-detail pick card)
      c_page = arrived from a /c/ guide: document.referrer contains "/c/", or
-              the plan=1 deep link is present (step 2's /c/ CTA lands here)
+              the plan=1 deep link is present (step 2's /c/ CTA lands here).
+              Note: galaxy -> /c/ guide -> plan=1 also lands here, since the
+              /c/ page is the last hop before the commit. Direct galaxy ->
+              homepage arrivals keep source=galaxy.
      galaxy = arrived from the galaxy map (document.referrer contains "/map/")
-   The explicit plan=1 param wins, then referrer, then the caller's hint. */
+   The connector UTM wins, then the plan=1 param, then referrer, then the
+   caller's hint. */
 function resolvePlanSource(hint){
   var q = "";
   try { q = location.search || ""; } catch(_){}
+  var _utm = ENTRY_UTM_SOURCE;
+  if (!_utm){
+    try {
+      var _um = /[?&]utm_source=([^&]+)/.exec(q);
+      if (_um){ try { _utm = decodeURIComponent(_um[1]); } catch(_ud){ _utm = _um[1]; } }
+    } catch(_ue){}
+  }
+  if (_utm === "claude-connector" || _utm === "chatgpt-app") return "connector";
   if (/[?&]plan=1(?:&|$)/.test(q)) return "c_page";
   var ref = "";
   try { ref = document.referrer || ""; } catch(_){}
@@ -10373,7 +10405,7 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
     var cal = document.createElement("button");
     cal.type = "button"; cal.className = "ghost"; cal.textContent = "Add to my calendar";
     cal.addEventListener("click", function(e){ e.stopPropagation(); });
-    cal.onclick = function(){ openPlanner(idea.id, returnTo); };
+    cal.onclick = function(){ openPlanner(idea.id, returnTo, source); };
     next.appendChild(cal);
   }
   /* (c) ONE share card with ONE Share button. 2026-10-01 (Claude fix 1a):
@@ -14259,6 +14291,10 @@ function shareLandingHeadline(idea, search){
        friend banner, exactly as before the experiment existed. */
     CHALLENGE_PICK_ID = challengeDecodePick(location.search || "");
     CHALLENGE_RESULT = challengeDecodeResult(location.search || "");
+    /* 2026-10-01 (§6 measurement): capture the entry utm_source before any
+       URL scrubbing, so connector arrivals (Claude connector / ChatGPT app)
+       attribute funnel events with source "connector". */
+    try { var _eum = /[?&]utm_source=([^&]+)/.exec(location.search || ""); ENTRY_UTM_SOURCE = _eum ? decodeURIComponent(_eum[1]) : null; } catch(_eue){}
     var m = /[?&]idea=([a-z0-9-]+)/.exec(location.search || "");
     if (!m) return;
     var idea = null;
