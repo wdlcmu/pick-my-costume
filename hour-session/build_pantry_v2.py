@@ -1,14 +1,1513 @@
-<!DOCTYPE html>
+#!/usr/bin/env python3
+"""Build pantry.html v2 — accuracy-first 'what do you have' prototype.
+Reads costume build instructions, applies the hand-audited requirement mapping,
+and emits a standalone HTML page. No deploy, no nav changes.
+
+TEMPLATE IS THE SOURCE OF TRUTH (2026-09-26): it now carries everything that
+was previously maintained by direct pantry.html edits — photo thumbnails,
+IDEA_EMOJI emoji-tile map + ideaEmoji() + cardHtml tile markup, search-first
+supply picker, supply emoji, the "Beat my pantry" challenge flow (?kit= links,
+dare banner, recipient pre-tick), and the 2026-09-26 challenge honesty fixes
+D1-D6 (honest challengeClaim(), stable supply-ID kit encoding, track() analytics
+fix, challengeLink kit+pick+sid), and the 2026-09-27 cold-user QA fixes
+(pantryTapGuard 400ms bounce guard on supply ticks, .frow min-height:44px) --
+ported from direct pantry.html edits into TEMPLATE on 2026-09-27 so the next
+regen no longer wipes them. NEVER edit pantry.html directly; change
+TEMPLATE and regenerate.
+"""
+import json, re, collections, html as htmllib, os
+
+BANK_HTML = '/home/hatch/workspace/builds/pick-my-costume/index.html'
+OUT = '/home/hatch/workspace/builds/pick-my-costume/pantry.html'
+# Harness override for the output path (the store-run tier gate runs the
+# generator to a temp file and byte-compares). Never set on real runs.
+OUT = os.environ.get('PMC_OUT', OUT)
+
+N = None
+def o(*ids): return [list(ids)]            # one requirement, one OR-group
+def a(*gs):  return [list(g) for g in gs]  # AND of groups
+X = [[N]]                                   # unmapped: honestly "still need"
+
+# ---------------------------------------------------------------- pantry
+PANTRY = [
+    {'id':'scissors','label':'Scissors','group':'staples','staple':True},
+    {'id':'tape','label':'Tape (any kind)','group':'staples','staple':True},
+    {'id':'paper-pen','label':'Paper and pen','group':'staples','staple':True},
+    {'id':'cardboard','label':'Cardboard box','group':'paper'},
+    {'id':'construction-paper','label':'Construction paper','group':'paper'},
+    {'id':'paper-bag','label':'Brown paper bag','group':'paper'},
+    {'id':'paper-plates','label':'Paper plates','group':'paper'},
+    {'id':'newspaper','label':'Newspaper','group':'paper'},
+    {'id':'white-tshirt','label':'White t-shirt','group':'clothes','staple':True},
+    {'id':'tshirt','label':'T-shirt (any color)','group':'clothes','staple':True},
+    {'id':'black-clothes','label':'Black clothes','group':'clothes','staple':True},
+    {'id':'hoodie','label':'Hoodie','group':'clothes'},
+    {'id':'sweatsuit','label':'Sweatshirt + sweatpants','group':'clothes'},
+    {'id':'bedsheet','label':'Old bedsheet','group':'clothes','staple':True},
+    {'id':'pillowcase','label':'Pillowcase','group':'clothes','staple':True},
+    {'id':'socks','label':'Old socks','group':'clothes'},
+    {'id':'hat','label':'Hat or cap','group':'clothes'},
+    {'id':'sunglasses','label':'Sunglasses','group':'clothes'},
+    {'id':'headband','label':'Headband (any color)','group':'clothes'},
+    {'id':'red-headband','label':'Red headband','group':'clothes'},
+    {'id':'glue','label':'Craft glue','group':'craft'},
+    {'id':'markers','label':'Markers','group':'craft','staple':True},
+    {'id':'yarn','label':'Yarn, string, or ribbon','group':'craft'},
+    {'id':'felt','label':'Felt sheets','group':'craft'},
+    {'id':'pipe-cleaners','label':'Pipe cleaners','group':'craft'},
+    {'id':'safety-pins','label':'Safety pins','group':'craft'},
+    {'id':'stickers','label':'Stickers','group':'craft'},
+    {'id':'balloons','label':'Balloons','group':'craft'},
+    {'id':'foil','label':'Aluminum foil','group':'craft'},
+    {'id':'stuffing','label':'Pillow stuffing / cotton balls','group':'craft'},
+    {'id':'face-paint','label':'Face paint or makeup','group':'face'},
+]
+GROUPS = [
+    {'id':'staples','label':'Household staples'},
+    {'id':'paper','label':'Paper and boxes'},
+    {'id':'clothes','label':'Clothes and linens'},
+    {'id':'craft','label':'Craft drawer'},
+    {'id':'face','label':'Face and makeup'},
+]
+VALID_IDS = {p['id'] for p in PANTRY}
+
+# ---------------------------------------------------------------- audit
+# Every material text -> (requirement groups, confidence tag).
+# Tags: exact   = text names the pantry item (or a true subtype of it)
+#       blessed = substitution explicitly permitted by that costume's own instructions
+#       lenient = deliberate documented leniency (craft consumables are multi-variant;
+#                 tape label says "any kind"; garments are NOT lenient on color)
+AUDIT = {}
+def put(text, groups, tag):
+    # id validity is checked once, after the color-qualification pass
+    AUDIT[text] = (groups, tag)
+
+E='exact'; B='blessed'; L='lenient'
+# -- staples & tools
+put("Scissors", o('scissors'), E)
+put("Scissors (make: household tools)", o('scissors'), E)
+put("Scissors (make: from home)", o('scissors'), E)
+put("Tape", o('tape'), E)
+put("Tape (make: from home)", o('tape'), E)
+put("Tape (make: use what you own)", o('tape'), E)
+put("Clear tape (make: household tools)", o('tape'), E)
+put("Masking tape", o('tape'), L)
+put("Packing tape", o('tape'), L)
+put("Duct tape, 1 roll", o('tape'), L)
+put("Silver duct tape", o('tape'), L)
+put("Gray duct tape", o('tape'), L)
+put("Yellow duct or electrical tape", o('tape'), L)
+put("Red duct or electrical tape", o('tape'), L)
+put("White athletic tape, 1 roll", o('tape'), L)
+# 2026-09-27 red-team: web-slinger-kid (bank 138). Black tape checkbox exists
+# (tape-black); TAPE_HINTS refines the generic 'tape' group to it.
+put("Black electrical tape for web lines, 1 roll", o('tape'), B)
+put("Yellow reflective tape, 1 roll", o('tape'), L)
+put("Tape and scissors (make: from home)", a(['tape'],['scissors']), E)
+put("Tape and scissors (make: household tools)", a(['tape'],['scissors']), E)
+put("Scissors and tape (make: household tools)", a(['scissors'],['tape']), E)
+put("Scissors and tape (make: from home)", a(['scissors'],['tape']), E)
+put("Scissors, tape", a(['scissors'],['tape']), E)
+put("Tape, scissors", a(['tape'],['scissors']), E)
+put("Scissors and clear tape (make: household tools)", a(['scissors'],['tape']), E)
+put("Tape, string, scissors (make: household tools)", a(['tape'],['yarn'],['scissors']), E)
+put("String and tape (make: household tools)", a(['yarn'],['tape']), E)
+put("Tape and string (make: household tools)", a(['tape'],['yarn']), E)
+put("Tape and string for wearing (make: household tools)", a(['tape'],['yarn']), E)
+put("Scissors and tape or string (make: household tools)", a(['scissors'],['tape','yarn']), E)
+put("Paintbrush, scissors, tape (make: household tools)", a([N],['scissors'],['tape']), E)
+put("Packing tape or glue, scissors", a(['tape','glue'],['scissors']), E)
+put("Scissors, tape or glue", o('scissors','tape','glue'), E)
+put("Tape or glue", o('tape','glue'), E)
+put("Hot glue and scissors", a([N],['scissors']), E)
+put("Hot glue, scissors, face paint", a([N],['scissors'],['face-paint']), E)
+put("Hot glue, scissors, pink marker, tape", a([N],['scissors'],['markers'],['tape']), E)
+put("Hot glue, scissors, a utility knife (adults only)", a([N],['scissors']), E)
+put("Hot glue gun", X, E)
+put("Hot glue gun or fabric glue", o(N,'glue'), E)
+put("Fabric glue", o('glue'), E)
+put("Craft glue", o('glue'), E)
+put("Fabric glue or safety pins", o('glue','safety-pins'), E)
+put("Safety pins or fabric glue", o('safety-pins','glue'), E)
+put("Scissors, fabric glue or safety pins", a(['scissors'],['glue','safety-pins']), E)
+put("Black fabric glue or a needle and black thread", o('glue'), L)
+put("Glitter glue, 1 tube", X, E)
+put("Silver glitter glue, 1 tube", X, E)
+put("Safety pins", o('safety-pins'), E)
+put("Safety pins (make: use what you own)", o('safety-pins'), E)
+put("Safety pins, 4", o('safety-pins'), E)
+put("Safety pins, 6", o('safety-pins'), E)
+put("Safety pins, 4 per kid", o('safety-pins'), E)
+put("Tan or brown tank top, 1 (own, or buy: thrift store)", X, E)
+put("Plaid flannel shirt, 1 (own, or buy: thrift store)", X, E)
+put("Old hat, 1 (own, or buy: thrift store)", X, E)
+put("Black fedora or hat, 1", X, E)
+put("Black witch hats, 3", X, E)
+put("Safety pins or tape (make: from home)", o('safety-pins','tape'), E)
+put("Tape or safety pins", o('tape','safety-pins'), E)
+put("Safety pin or ribbon, 1 (make: from sewing kit)", o('safety-pins','yarn'), E)
+put("Rubber bands or tape (own)", o('tape'), E)
+put("Pen (own)", o('paper-pen'), E)
+put("Paper and pencil for sketching (own)", o('paper-pen'), E)
+put("Order pad and pencil (own, or buy: dollar store)", o('paper-pen'), E)
+put("Paper map, 1", o('paper-pen'), L)
+put("1 printed decade card per person, e.g. 70s, 80s, 90s (make: hand-letter on paper)", o('paper-pen'), E)
+put("Large shipping tag or big index card", o(N,'paper-pen'), L)
+put("Marker (make: household)", o('markers'), E)
+put("Marker for writing names (make: household)", o('markers'), E)
+put("Markers (own, or buy: dollar store)", o('markers'), E)
+put("Markers (make: household)", o('markers'), E)
+put("Markers, several colors (make: from home)", o('markers'), E)
+put("Markers or crayons (own)", o('markers'), L)
+put("Markers in black, red, blue (make: use what you own)", o('markers'), L)
+put("Black marker", o('markers'), E)
+put("Black marker, 1 (make: from home)", o('markers'), E)
+put("Black permanent marker, 1 (make: from home)", o('markers'), E)
+put("Black markers (make: household)", o('markers'), E)
+put("Black marker, 1 (own)", o('markers'), E)
+put("Black spray paint or black markers", o('markers'), E)
+put("Brown and tan markers or crayons (make: from home)", o('markers'), L)
+put("Brown and tan markers or paint", o('markers'), E)
+put("Brown paint or marker for the cone crosshatch", o('markers'), E)
+put("Red marker for the label (make: household)", o('markers'), E)
+put("Marker and ruler (make: household)", a(['markers'],[N]), E)
+put("Gold or silver paint or markers", o(N,'markers'), E)
+put("Iron-on letters or fabric markers, spelling 1 and 2", o(N,'markers'), E)
+put("White paper and markers for name patches (make: use what you own)", a(['construction-paper'],['markers']), E)
+put("Paintbrushes", X, E)
+put("Toy paintbrush, 1", X, E)
+put("Foam brush or paintbrush (own, or buy: craft store)", X, E)
+put("Acrylic paint in each hero's colors", X, E)
+put("White and black acrylic paint", X, E)
+put("Silver acrylic paint", X, E)
+put("Yellow and orange acrylic paint", X, E)
+put("Gray and white acrylic paint", X, E)
+put("Dark brown acrylic paint, 1 bottle", X, E)
+put("Brown acrylic paint, 1 bottle", X, E)
+put("Blue paint for the hat", X, E)
+put("White and red paint for the bowl", X, E)
+put("White fabric paint for the labels", X, E)
+put("White fabric paint or white paper", o(N,'construction-paper'), B)
+put("Green fabric paint", X, E)
+put("Fabric paint for the team emblem", X, E)
+put("Neon fabric paint in 2 to 3 colors", X, E)
+put("Black fabric paint or black face paint, 1 tube", o('face-paint'), E)
+put("Paint in gray, black, and one accent color", X, E)
+put("Orange and black paint, 1 set", X, E)
+put("Brown paint, 1 bottle", X, E)
+put("Acrylic paints in bright colors, 1 set", X, E)
+put("Patchwork-style dress, 1", X, E)
+put("Black boots or shoes, 1 pair (own)", X, E)
+put("Black loafers or dress shoes, 1 pair (own)", X, E)
+put("Dresses in green, purple, and orange, 3", X, E)
+put("Long black dress or gown, 1", X, E)
+
+# -- paper & boxes
+put("Large cardboard boxes (make: collect spares)", o('cardboard'), E)
+put("1 large cardboard box per person (make: ask a grocery store for spares)", o('cardboard'), E)
+put("1 large cardboard box (make: cut it into square blocks)", o('cardboard'), E)
+put("Large cardboard box, 1 (make: cut two wing shapes from it)", o('cardboard'), E)
+put("Large cardboard box, 1 (make: cut a big triangle, about 3 feet tall)", o('cardboard'), E)
+put("Large cardboard circle or shallow bowl shape, 1 (make: cut from a big box, about 2 feet wide)", o('cardboard'), E)
+put("1 large cardboard box per person, big enough to cover the head (make: use what you own)", o('cardboard'), E)
+put("1 medium cardboard box per person, big enough to fit over the torso (make: from home or moving boxes)", o('cardboard'), E)
+put("1 small cardboard box per person, for the head (make: from cereal or shoe boxes)", o('cardboard'), E)
+put("1 medium cardboard box for the torso (make: from home)", o('cardboard'), E)
+put("Cardboard box, 1 large (make: cut two flat panels, one per person)", o('cardboard'), E)
+put("Cardboard box, 1 medium (make: tall enough to cover the torso)", o('cardboard'), E)
+put("Cardboard box, 1 large (make: from a shipping box)", o('cardboard'), E)
+put("Crepe paper in rainbow colors, 6 rolls", X, E)
+put("Crepe paper or raffia for the skirt, 2 rolls", X, E)
+put("Wrapped candy, 2 bags", X, E)
+put("1 small cardboard box per person (make: use what you own)", o('cardboard'), E)
+put("Cardboard sheets, 1 per person (make: cut from boxes)", o('cardboard'), E)
+put("1 large cardboard sheet or a flattened box (make: from home)", o('cardboard'), E)
+put("Cardboard, 1 sheet about 12x16 inches (make: from a box flap)", o('cardboard'), E)
+put("Empty cereal boxes, 1 per person (make: save from home)", o('cardboard'), E)
+put("1 cardboard crown per person (make: from a cereal box)", o('cardboard'), E)
+put("1 cardboard crown (make: from a cereal box)", o('cardboard'), E)
+put("1 sheet cardboard for the hat (make: from a box)", o('cardboard'), E)
+put("1 cardboard tube from wrapping paper or paper towels (make: save from home)", o('cardboard'), L)
+put("1 sheet black cardboard for the hat", o('cardboard'), E)
+put("1 sheet black cardboard per person (make: from a box)", o('cardboard'), E)
+put("Clock: brown cardboard circle and hands (make: from a box)", o('cardboard'), E)
+put("Teapot: white pot or cardboard pot body (make: from a box)", o(N,'cardboard'), E)
+put("Fish: silver or blue clothes and 1 large cardboard fish cutout (make: from home)", a([N],['cardboard']), E)
+put("Toy crab or cardboard crab (make: cut one from red paper, or buy: toy store)", o(N,'cardboard'), E)
+put("Cardboard or craft foam for the beak, 1 sheet", o('cardboard','construction-paper'), B)
+put("Black gloves, 1 pair", X, E)
+put("Black sweatshirt and black sweatpants (make: from closet)", o('black-clothes'), E)
+put("Green bubble wrap or green pom-poms, about 20", X, E)
+put("Jellyfish: 1 clear umbrella and pastel ribbons (buy umbrella: dollar store; buy ribbons: craft store; crepe paper strips work too)", X, E)
+put("White craft foam or a foam ball, 1", o(N,'paper-white'), B)
+put("White stickers or white electrical tape, 1 roll", o('stickers','tape'), B)
+put("Pink paper cup, 1 per snout (make: from kitchen drawer)", X, E)
+put("Craft foam, 1 sheet", o(N,'cardboard'), B)
+put("1 large picture frame or cardboard frame per person", o(N,'cardboard'), E)
+put("Toy binoculars", o(N,'cardboard'), B)
+put("2 toy tennis rackets", o(N,'cardboard'), B)
+put("Toy game controllers, 2", X, E)
+put("Toy camera", X, E)
+put("1 large brown paper bag", o('paper-bag'), E)
+put("Brown felt scraps for crust, or a brown paper bag", o(N,'paper-bag'), E)
+put("1 large white paper plate or cardboard circle per person (make: use what you own)", o('paper-plates','cardboard'), E)
+put("2 white paper plates for the caps (make: use what you own)", o('paper-plates'), E)
+put("2 white paper plates or cardstock sheets (make: from home)", o('paper-plates','construction-paper'), E)
+put("Paper plate, 1 (make: from home)", o('paper-plates'), E)
+put("Newspaper or tissue paper for stuffing (make: from home)", o('newspaper'), E)
+put("White cardstock, 1 large sheet", o('construction-paper'), E)
+put("White poster board, 2 sheets", o('construction-paper'), L)
+put("Cardstock or foam letter for the first initial (make: cut from cardstock, or buy: craft store)", o('construction-paper'), E)
+put("White paper or card for the eye spots (make: use what you own)", o('construction-paper'), L)
+# 2026-09-27 red-team: web-slinger-kid (bank 138). "White" auto-qualifies the
+# construction-paper group to paper-white via _qualify_groups.
+put("White paper or cardstock for eye lenses, 1 sheet (make: cut from paper)", o('construction-paper'), E)
+put("Blue paper raindrops, about 15 (make: cut from blue construction paper)", o('construction-paper'), B)
+put("White and yellow paper for the crescent (make: from home)", o('construction-paper'), L)
+put("Paper for the sandwich prop, 1 sheet (own)", o('construction-paper'), L)
+put("Red paper for the bottle cap, 1 sheet", o('paper-red'), E)
+put("Red acrylic paint or red paper, 1", o(N,'paper-red'), B)
+put("Yellow paper for fry sticks", o('paper-yellow'), E)
+put("Yellow cardstock, 2 sheets", o(N,'construction-paper'), B)
+put("Red cardstock rectangle, 3x4 inches (make: cut from a folder or colored paper)", o('construction-paper'), E)
+put("Black construction paper (make: cut a mask from it)", o('construction-paper'), E)
+put("2 large googly eyes, 3 inches or bigger", o(N,'construction-paper'), B)
+put("2 googly eyes, large", o(N,'construction-paper'), B)
+put("Sticker dots or round stickers, 1 sheet", o('stickers','construction-paper'), B)
+put("Silver star stickers, 1 sheet", o('stickers','construction-paper'), B)
+put("Colored dot stickers or pom-poms for sprinkles", o('stickers','construction-paper'), B)
+put("White circle stickers or white paper, 2", o('stickers','construction-paper'), L)
+put("Flag sticker or iron-on patch", o('stickers'), E)
+put("Fake flowers", o(N,'construction-paper'), B)
+put("Fake magnifying glass", X, E)
+put("4 to 6 white plastic grocery bags (make: save from home)", X, E)
+put("1 tan paper party hat or cone", X, E)
+put("Gold paper crown or plastic crown", X, E)
+put("Luggage tag, 1", X, E)
+put("Blank adhesive name tag", X, E)
+put("Name tags, 2", X, E)
+put("Large shipping tag or big index card", o(N,'paper-pen'), L)
+put("Red and white striped wrapping paper or paint", X, E)
+# -- clothes & linens
+put("1 white t-shirt", o('white-tshirt'), E)
+put("White t-shirt, 1 (own, or buy: thrift store)", o('white-tshirt'), E)
+put("White t-shirt for the marshmallow, 1 (own)", o('white-tshirt'), E)
+put("White shirt for the egg (own)", o('white-tshirt'), L)
+put("1 white bedsheet or large white t-shirt to wear (make: from closet)", o('bedsheet','white-tshirt'), E)
+put("White t-shirts and white shorts or skirts, one set each (make: from closet)", a(['white-tshirt'],[N]), E)
+put("White t-shirt or tunic, 1 (own, or buy: thrift store)", o('white-tshirt'), E)
+put("Brown t-shirt or tunic, 1 (own, or buy: thrift store)", X, E)
+put("Brown t-shirt, 1 (own, or buy: thrift store)", X, E)
+put("Burgundy or maroon t-shirt, 1 (own, or buy: thrift store)", X, E)
+put("Yellow t-shirt, 1 (own, or buy: thrift store)", X, E)
+put("Yellow t-shirts, 1 per person (own, or buy: thrift store)", X, E)
+put("T-shirts in assigned colors, 1 per kid (own, or buy: thrift store)", X, E)
+put("Green t-shirt or tunic, 1 (own, or buy: thrift store)", X, E)
+put("Tan t-shirt or tunic, 1 (own, or buy: thrift store)", o('tshirt'), E)
+put("Tan t-shirt, 1 (own, or buy: thrift store)", o('tshirt'), E)
+put("Tan t-shirts or tunics, 2 (own, or buy: thrift store)", o('tshirt'), E)
+put("Dark brown or black t-shirt, 1 (own, or buy: thrift store)", X, E)
+put("Snowman: white shirt, white pants, 3 large black felt circles (buy felt: craft store; construction paper works too)", a(['white-tshirt'],[N],['felt','construction-paper']), B)
+put("All-white outfit for the Salt: white shirt, pants, and hat (make: from closet)", a(['white-tshirt'],[N],['hat']), E)
+put("Tooth: all-white outfit (make: from closet)", X, E)
+put("Solid-color t-shirt to wear (own)", o('tshirt'), E)
+put("Solid-color tops in assigned colors, 1 per person (own: from closets)", o('tshirt'), E)
+put("Matching t-shirts, 2, any color", o('tshirt'), E)
+put("Old pillowcase or t-shirt for the cape (make: cut up)", o('pillowcase','tshirt'), E)
+put("Black shirt and pants or sweatsuit (own)", o('black-clothes','sweatsuit'), E)
+put("Vintage-style suits, 2", X, E)
+put("White dress shirts, 2 (own, or buy: thrift store)", X, E)
+put("Black t-shirt and black pants (make: use your closet)", o('black-clothes'), E)
+put("Black shirt and pants (make: from closet)", o('black-clothes'), E)
+put("Black shirt and pants for the bowler (own)", o('black-clothes'), E)
+put("Black leggings or pants, 3 (own, or buy: thrift store)", o('black-clothes'), E)
+put("Metallic or shiny tops, 3", X, E)
+put("Black shirt and black shorts for the referee (make: from closet)", o('black-clothes'), E)
+put("Black pants or skirts, 2 (make: from closet)", o('black-clothes'), E)
+put("Black pants or shorts (make: from closet)", o('black-clothes'), E)
+put("Plain black t-shirt or long-sleeve shirt (make: from closet)", o('black-clothes'), E)
+put("Black long-sleeve shirts, 1 per person", o('black-clothes'), E)
+put("All-black outfit: t-shirt, pants, and a black beanie (make: from closet)", o('black-clothes'), E)
+put("Black or white monochrome clothes (own)", o('black-clothes'), L)
+put("Gloom: black clothes from your closet (make: use what you own)", o('black-clothes'), E)
+put("Navy or black shirt and pants for the Moon (make: from closet)", o(N,'black-clothes'), E)
+put("Bad witch: black dress or black clothes (make: use your closet)", o(N,'black-clothes'), E)
+put("Partner: black jacket and black pants (make: from closet)", o('black-clothes'), E)
+put("Black headband or strip of black t-shirt, 1 (make: cut from an old shirt)", o(N,'black-clothes'), E)
+put("Black cape or black bedsheet, 1", X, E)
+put("All-black outfit for the Pepper: black shirt, pants, and hat (make: from closet)", a(['black-clothes'],['hat']), E)
+put("Dark pants (own)", o('black-clothes'), L)
+put("Dark pants, 1 (own)", o('black-clothes'), L)
+put("Solid-color sweatsuit, any color (own)", o('sweatsuit'), E)
+put("Fuzzy one-piece pajamas or sweatsuit, 1", o(N,'sweatsuit'), E)
+put("Plain sweatsuit in one solid color, red recommended (make: from closet)", o('sweatsuit'), E)
+put("White sweatshirt and sweatpants", o('sweatsuit'), E)
+put("Black sweatshirt and sweatpants (own, or buy: clothing store)", o('black-clothes'), E)
+put("Black sweatshirt and sweatpants (make: from closet)", o('black-clothes'), E)
+put("1 black sweatsuit", o('sweatsuit'), E)
+put("Red sweatsuit (make: from closet)", X, E)
+put("1 tan or brown sweatsuit", X, E)
+put("1 green sweatsuit per person", o('sweatsuit'), E)
+put("Matching red sweatsuits, one per person (make: from closet, or buy a set at a discount store)", X, E)
+put("Blue or gray sweatsuit to wear underneath (make: from closet)", X, E)
+put("Hero: red and blue sweatsuit or red shirt with blue pants (make: from closet)", o('sweatsuit'), E)
+put("1 pastel fuzzy sweatsuit", X, E)
+put("Green hoodie", X, E)
+put("Blue hoodie per alien-role person (own, or buy: clothing store)", X, E)
+put("Gray hoodie (own)", X, E)
+put("Gray hoodie, 1", X, E)
+put("1 black hoodie (make: use your closet)", X, E)
+put("Blue-gray hoodie, 1 (own, or buy: thrift store)", X, E)
+put("Blue-gray sweatpants, 1 (own, or buy: thrift store)", X, E)
+put("Kids: green hoodie per child", X, E)
+put("Green hoodie or green t-shirt for the raptor (make: from closet)", X, E)
+put("Hoodies in red, black, and pink, one per person (make: from closet)", X, E)
+put("Streetwear outfit: black hoodie, black pants, chunky sneakers (make: from closet)", X, E)
+put("Old white sheet or white fabric (make: use an old sheet)", o('bedsheet'), E)
+put("White bedsheet or white fabric, 1 twin-size", o('bedsheet'), E)
+put("2 old twin sheets or large fabric rectangles (make: cut from old sheets)", o('bedsheet'), E)
+put("The Bride: white dress or old white sheet (make: use what you own)", o(N,'bedsheet'), E)
+put("Small drawstring bag or pillowcase (own)", o(N,'pillowcase'), E)
+put("1 old white or colored sock per person (make: use one you own)", o('socks'), E)
+put("Pillow stuffing or 2 old socks (make: stuff from home)", o('stuffing','socks'), E)
+put("4 pairs of black socks (make: from the sock drawer)", o('socks'), E)
+put("White socks, 1 pair (own)", o('socks'), E)
+put("Red web gloves or red socks for hands (make: from closet)", o('socks'), E)
+put("White socks and sneakers (make: from closet)", X, E)
+put("Athletic shorts and sneakers (own)", X, E)
+put("1 headband", o('headband'), E)
+put("2 headbands", o('headband'), E)
+put("Plain headband", o('headband'), E)
+put("Headbands, 1 per kid", o('headband'), E)
+put("Headband per person", o('headband'), E)
+put("Headband per alien-role person", o('headband'), E)
+put("Headbands, 1 per person", o('headband'), E)
+put("Headband, 1 (make: from the drawer)", o('headband'), E)
+put("1 plain headband per person", o('headband'), E)
+put("1 plastic headband per person", o('headband'), E)
+put("Red headband", o('red-headband'), E)
+put("Black headband", o('headband'), E)
+put("Silver headband", o('headband'), E)
+put("Pink headband, one per person", o('headband'), E)
+put("Headband or scarf in a matching color, 1 per person (make: from the drawer)", o('headband'), E)
+put("Dog ears headband or a brown dog costume piece", X, E)
+put("Khaki shirt and hat for the ranger (make: from closet, or buy at a thrift store)", a([N],['hat']), E)
+put("Safari hat", X, E)
+put("Gray beanie (own, or buy: dollar store)", o('hat'), E)
+put("Wide-brim black hat", o('hat'), E)
+put("Pointy witch hat", X, E)
+put("1 black cone hat", X, E)
+put("Red cap and green cap, 1 each", X, E)
+put("Black half mask or sunglasses", o(N,'sunglasses'), E)
+put("Sunglasses or swim goggles, one per person", o('sunglasses'), E)
+put("Tourist accessories: sunglasses, camera or phone on a strap (make: from around the house)", a(['sunglasses'],[N]), E)
+
+# -- more clothes (color-specific garments stay unmapped: the checkbox must be
+#    same-or-narrower than the requirement, read plainly)
+put("Dark red or brown shirt for the bacon (own)", X, E)
+put("1 yellow t-shirt per person", X, E)
+put("Blue or orange t-shirt per person (own, or buy: clothing store)", X, E)
+put("Team-color t-shirt and skirt or shorts (own)", X, E)
+put("Brown t-shirt", X, E)
+put("Purple t-shirt", X, E)
+put("Green t-shirts, 1 per person, 3 to 5 people", X, E)
+put("Red t-shirt and green t-shirt, 1 each", X, E)
+put("Ketchup: 1 red tunic or oversized red t-shirt", X, E)
+# 2026-09-27 red-team: web-slinger-kid (bank 138). Red is required, so the
+# color-garment rule applies: stays X (honestly still need), like the red
+# shirts above. Unblocks regen for the 138-idea bank.
+put("Red sweatsuit or red shirt and pants, 1 set (own, or buy: clothing store)", X, E)
+put("Mustard: 1 yellow tunic or oversized yellow t-shirt", X, E)
+put("Pink t-shirts or pajamas, one per person", X, E)
+put("Gray t-shirt or sweatshirt", X, E)
+put("Tan vest or tan t-shirt (make: from closet)", o('tshirt'), E)
+put("Orange, purple, blue, and red t-shirts, 1 each", X, E)
+put("Yellow t-shirt and yellow pants", X, E)
+put("Yellow shirt and pants for the Sun (make: from closet)", X, E)
+put("Green tunic or oversized green t-shirt, 1", X, E)
+put("1 t-shirt per person in the cape color", X, E)
+put("Matching jerseys or same-color t-shirts, one per player (make: from closet, or buy a multi-pack at a sports store)", X, E)
+put("T-shirt or dress in a sea color (teal, purple, red, white), 1 per person", X, E)
+put("Rainbow-striped shirt or a white shirt plus rainbow fabric markers", X, E)
+put("White shirt and pants per pin person (own)", X, E)
+put("Crab: red shirt and pants plus red mittens or red socks for hands (make: from closet)", X, E)
+put("Black dress (own)", X, E)
+put("Black dress, 1 (own, or buy: thrift store)", X, E)
+put("Good witch: pink dress or pink clothes (make: use your closet)", X, E)
+put("Each person: a dress from their closet (make: use what you own)", X, E)
+put("1 long green dress or green fabric, 3 yards", X, E)
+put("Princess: yellow dress or fabric, 2 yards", X, E)
+put("Snow princess: pink or lavender dress (make: from closet)", X, E)
+put("Ice queen: icy-blue dress or blue dress plus silver glitter glue (buy glitter glue: craft store)", X, E)
+put("Thrifted gown or long dress, 1", X, E)
+put("Tooth fairy: white dress or white shirt with a white skirt (make: from closet)", X, E)
+put("Wrinkled button-down shirt (make: from closet, slept on or stuffed in a bag)", X, E)
+put("White button-down shirts, 2 (make: from closet)", X, E)
+put("Old button-down shirt you can cut up (make: from closet)", X, E)
+put("Khaki vest with pockets", X, E)
+put("Khaki pants or shorts (make: from closet)", X, E)
+put("Grown-ups: khaki shirt and pants from your closet (make: use what you own)", X, E)
+put("The Doctor: old dark suit or jacket from your closet (make: use what you own)", X, E)
+put("Long black coat or black robe, 1", X, E)
+put("Black leather-look jacket or vest", X, E)
+put("Prince: blue jacket and dark pants (make: use your closet)", X, E)
+put("Red jacket, 1", X, E)
+put("Pink bathrobe or kimono-style robe (own, or buy: clothing store)", X, E)
+put("Bathrobe (own)", X, E)
+put("Blue overalls, 2", X, E)
+put("1 pair denim overalls per person", X, E)
+put("1 pair swim or safety goggles per person", X, E)
+put("Swim goggles, 1 per person", X, E)
+put("1 pair black gloves per person", X, E)
+put("Black gloves, 1 pair per person", X, E)
+put("White glove, 1", X, E)
+put("Bananas, 1 bunch", X, E)
+put("Black belt or sash, 1 (make: an old tie or scarf)", X, E)
+put("Old tie (make: from closet)", X, E)
+put("1 cape per person in squad colors", X, E)
+put("1 mask per person, matching the cape color", X, E)
+put("Cape or long piece of fabric, 1", X, E)
+put("Black cape or black bedsheet (buy cape: costume aisle; or make: from a black sheet from home)", X, E)
+put("Each person: 1 black cape or black sheet", X, E)
+put("2 white aprons", X, E)
+put("2 white sweatbands or strips of white fabric", X, E)
+put("Black-and-white striped tights", X, E)
+put("1 pair black gloves per person", X, E)
+put("Solid-color shirt and pants per person (own)", X, E)
+put("Neutral shirt and pants in gray, brown, or tan (make: from closet)", X, E)
+put("Earth-tone shirt and pants (make: use your closet)", X, E)
+put("Neutral beige or tan clothes (make: from closet)", X, E)
+put("Solid-color clothes in animal colors from each person's closet (make: from closet)", X, E)
+put("Bloom: colorful clothes from your closet (make: use what you own)", X, E)
+put("Each person's own closet clothes (make: use what you own)", X, E)
+put("Old clothes with holes or tears (make: use what you own)", X, E)
+put("Each person: old-fashioned dark clothes, e.g. a vest, long skirt, or button-up (make: use your closet)", X, E)
+put("Basketball jersey or numbered tank top (own, or buy: sporting goods store)", X, E)
+put("Basketball shorts (own)", X, E)
+put("1 khaki or tan jumpsuit or matching shirt and pants per person", X, E)
+put("1 green poncho or green bedsheet per person", X, E)
+put("Seaweed: green clothes and long green streamers", X, E)
+put("Waves: blue sheet or blue blanket to drape (make: from home)", X, E)
+put("Reindeer: brown clothes, 2 brown pipe cleaners, 1 red pom-pom (buy pipe cleaners and pom-pom: craft store)", a([N],['pipe-cleaners'],[N]), E)
+put("1 brown fuzzy fabric strip or old brown towel for the mane", X, E)
+put("2 hair ties (own)", X, E)
+put("Hair ties for braids (make: use what you own)", X, E)
+put("Hair ribbon in a team color", o('yarn'), E)
+put("Red yarn for hair, 1 skein", o('yarn'), E)
+put("Hair ribbon", o('yarn'), E)
+put("Hair gel or spray", X, E)
+put("Hair gel or pomade (make: from home)", X, E)
+put("Hair gel or temporary neon hair spray", X, E)
+put("Hair gel, 1 (own)", X, E)
+put("Hair spray or powder for a grayed look", X, E)
+put("Long dark wig", X, E)
+put("Curly red wig", X, E)
+put("Black wig or black hair dye, 1", X, E)
+put("Big brown afro wig, 1", X, E)
+# -- craft drawer
+put("1 sheet black craft felt", o('felt','construction-paper'), B)
+put("1 sheet gray craft felt", o('felt','construction-paper'), B)
+put("2 sheets green craft felt", o('felt','construction-paper'), B)
+put("1 sheet green felt per person", o('felt','construction-paper'), B)
+put("1 sheet red-brown craft felt", o('felt','construction-paper'), B)
+put("1 sheet each white and yellow craft felt", o('felt','construction-paper'), B)
+put("1 sheet yellow felt", o('felt','construction-paper'), B)
+put("2 red felt sheets or red fabric for the tail", o('felt','construction-paper'), B)
+put("Blue craft felt, 1 sheet per alien", o('felt','construction-paper'), B)
+# 2026-09-27 red-team: web-slinger-kid (bank 138). Same craft-felt convention.
+put("Blue craft felt for sleeve and boot accents, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Blue, orange, and white craft felt", o('felt','construction-paper'), B)
+put("Craft felt for masks and emblems", o('felt','construction-paper'), B)
+put("Felt sheets in brown, black, pink, and tan, 1 pack", o('felt','construction-paper'), B)
+put("Felt ears: two big circles of felt", o('felt','construction-paper'), B)
+put("Black and white felt for eyes and smile", o('felt','construction-paper'), B)
+put("White felt for the smile", o('felt','construction-paper'), B)
+put("Gray felt, 1 sheet", o('felt','construction-paper'), B)
+put("White felt, 1 small sheet", o('felt','construction-paper'), B)
+put("White felt, 1 sheet per person", o('felt','construction-paper'), B)
+put("Orange felt, 1 sheet per person", o('felt','construction-paper'), B)
+put("Black felt, 1 sheet", o('felt','construction-paper'), B)
+put("White craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Brown craft felt, 2 sheets 9x12 inches", o('felt','construction-paper'), B)
+put("Red craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Yellow craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Tan craft felt, 2 sheets 9x12 inches", o('felt','construction-paper'), B)
+put("Orange craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Black craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Green, red, and yellow craft felt, 1 sheet each 9x12 inches", o('felt','construction-paper'), B)
+put("Tan felt for the bun top, 1 sheet", o('felt','construction-paper'), B)
+put("Pink craft felt, 2 sheets 9x12 inches", o('felt','construction-paper'), B)
+put("Tan fabric or paper to cover the ring (own, or buy: craft store)", o(N,'construction-paper'), B)
+put("Burgundy craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Blue and dark gray craft felt, 1 sheet each 9x12 inches", o('felt','construction-paper'), B)
+put("Green craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Brown felt for the stem, 1 small piece", o('felt','construction-paper'), B)
+put("White felt for teeth, 1 small piece", o('felt','construction-paper'), B)
+put("Felt for pup badges, 1 sheet per color", o('felt','construction-paper'), B)
+put("Brown felt for ears, 1 sheet per kid", o('felt','construction-paper'), B)
+put("Brown craft felt, 1 sheet 9x12 inches", o('felt','construction-paper'), B)
+put("Paper bowl for the bun, 1 large", X, E)
+put("Black felt sheet, 1 pack", o('felt','construction-paper'), B)
+put("Red felt, 1 sheet", o('felt','construction-paper'), B)
+put("Gold felt sheet, 1 large", o('felt','construction-paper'), B)
+put("Yellow felt sheet, 1 sheet", o('felt'), E)
+put("Green felt, 1 yard", o('felt'), E)
+put("Dark green felt sheet, 1 large", o('felt','construction-paper'), B)
+put("Pink or orange felt sheet, 1 large", o('felt'), E)
+put("Pink felt or construction paper, 2 triangles per ear", o(N,'construction-paper'), B)
+put("Green felt sheet for the tail (make: cut and tape; construction paper works too)", o('felt','construction-paper'), B)
+put("Brown, red, green, and yellow felt sheets, 1 pack", o('felt','construction-paper'), B)
+put("White felt wings or a wire coat hanger with white pantyhose", o('felt'), E)
+put("2 red pipe cleaners", o('pipe-cleaners','construction-paper'), B)
+put("2 yellow pipe cleaners", o('pipe-cleaners'), E)
+put("Blue pipe cleaners, 2 per alien", o('pipe-cleaners'), E)
+put("Brown craft pipe cleaners, 2", o('pipe-cleaners','yarn'), B)
+put("Ribbon or string (own, or buy: craft store)", o('yarn'), E)
+put("Ribbon or string for cape ties (own, or buy: craft store)", o('yarn'), E)
+put("Ribbon or string for straps (own)", o('yarn'), E)
+put("Ribbon for straps, about 2 yards", o('yarn'), E)
+put("Ribbon or cord for cape ties (own, or buy: craft store)", o('yarn'), E)
+put("String or yarn (own)", o('yarn'), E)
+put("String for hanging strips, 1 roll (own)", o('yarn'), E)
+put("String (own)", o('yarn'), E)
+put("Elastic string or yarn, 6 ft", o('yarn'), E)
+put("1 short ribbon or string leash (make: use what you own)", o('yarn'), E)
+put("Yellow yarn, 1 skein", o('yarn'), E)
+put("Pink string or yarn, 1 arm length per snout (make: from craft drawer)", o(N,'yarn'), E)
+put("2 backpack straps or 2 long shoelaces (make: from home)", o('yarn'), L)
+put("2 backpack straps or 2 long ribbons (make: from home)", o('yarn'), E)
+put("3 ft rope or a toy dog leash", X, E)
+put("4 feet of thin black rope or black yarn", o('yarn'), E)
+put("Aluminum foil, 1 large roll", o('foil'), E)
+put("Aluminum foil, 1 roll", o('foil'), E)
+put("Aluminum foil, enough to cover the cardboard (make: from the kitchen)", o('foil'), E)
+put("1 stick and aluminum foil for the wand (make: from home)", a([N],['foil']), E)
+put("White cotton balls or polyester stuffing, 1 bag", o('stuffing'), E)
+put("Scrap fabric or cotton balls for stuffing (make: use what you own)", o(N,'stuffing'), E)
+put("Soft stuffing or an old pillow, 1 (own)", o(N,'stuffing'), E)
+put("White pillow stuffing, 1 bag", o('stuffing'), E)
+put("2 black pom-poms", o(N,'stuffing'), B)
+put("Blue pom-poms, 2 per alien", o(N,'stuffing'), B)
+put("White pom-poms, 4 large, plus 1 green pom-pom", o(N,'stuffing'), B)
+put("Yellow or white balloons, 8 to 10", o('balloons'), E)
+put("1 pool noodle", X, E)
+put("Glow sticks, 1 per person", X, E)
+put("Glow bracelets", X, E)
+put("1 pack glow bracelets", X, E)
+put("Glow stick, 1 blue or white", X, E)
+put("1 roll glow-in-the-dark bone tape or white tape", o(N,'tape'), E)
+put("2 red LED tea lights per person", X, E)
+put("Plastic bottle caps, about 20 total (make: save from drinks)", X, E)
+put("Dryer vent hose, 1 flexible aluminum section", X, E)
+put("Chopsticks, 1 pair (make: from the kitchen drawer)", X, E)
+put("1 pair of toy chopsticks or 2 wooden sticks", X, E)
+put("Plastic whistle", X, E)
+put("Yellow fabric square, 6 inches (make: cut from an old cloth or napkin)", X, E)
+put("Iron (make: household)", X, E)
+put("Phone for entrance music (own)", X, E)
+put("Basketball (own, or buy: toy store)", X, E)
+put("1 soccer ball, any size", X, E)
+put("1 tube of tennis balls", X, E)
+put("Toy bowling ball or black playground ball", X, E)
+put("Toy boxing gloves", X, E)
+put("Toy sword prop", X, E)
+put("Toy microphones, 3", X, E)
+# 2026-09-27 pantry sync: neon-demon-hunter bank material (buy: toy store) --
+# a purchased prop, so it honestly maps to "still need" (X), same as Toy sword.
+put("Foam sword prop, 1", X, E)
+put("Toy firefighter helmet", X, E)
+put("Toy fire hose or coiled garden hose", X, E)
+put("Toy camera", X, E)
+put("Toy binoculars", o(N,'cardboard'), B)
+put("Toy crab or cardboard crab (make: cut one from red paper, or buy: toy store)", o(N,'cardboard'), E)
+put("Toy teapot or a small real teapot (make: from the kitchen)", X, E)
+put("1 toy dinosaur or plush per kid", X, E)
+put("Dog plush or toy, 1 (own, or borrow one)", X, E)
+put("Scarves or ascots in matching colors (own, or buy: thrift store)", X, E)
+put("Pinstripe or black suit, 1", X, E)
+put("Black pinstripe or plain suit, 1", X, E)
+put("White shirt, 1 (own)", X, E)
+put("Black tie or cravat, 1", X, E)
+put("Stuffed lion or lion cub toy", X, E)
+put("Plastic vampire fangs", X, E)
+put("Plastic vampire fangs, 2 sets", X, E)
+put("Fake blood, 1 bottle", X, E)
+put("Toy trumpet, 1", X, E)
+put("Red pocket squares, 2", X, E)
+put("Plastic trident prop", X, E)
+put("Fake mustache", X, E)
+put("Costume glasses", X, E)
+put("Tiara", X, E)
+put("Toy scepter or wand", X, E)
+put("Shell necklace", X, E)
+put("Cone lampshade, 1", X, E)
+put("1 small envelope and play money or a coin (make: from home)", X, E)
+put("Coffee mug (make: from home)", X, E)
+put("Old phone case or a cracked-screen phone protector prop (make: use an old case)", X, E)
+put("The Doctor: 2 plastic bolts, e.g. costume bolts", X, E)
+put("The Bride: white hair spray", X, E)
+put("1 toy fishing rod or small garden shovel", X, E)
+put("Each person: 1 small jack-o-lantern bucket or foam pumpkin", X, E)
+put("Each person: 1 broom or stick horse substitute (make: use a broom from home)", X, E)
+put("1 broom from home for a prop (make: use what you own)", X, E)
+put("Broomsticks, 3", X, E)
+# -- face & makeup (multi-variant consumable: color qualifiers are lenient)
+put("Red face paint or lipstick", o('face-paint'), E)
+put("Red lipstick or red face paint", o('face-paint'), E)
+put("Black non-toxic face paint or eyeliner pencil", o('face-paint'), E)
+put("Black eyeliner pencil or non-toxic face paint", o('face-paint'), E)
+put("Black non-toxic face paint", o('face-paint'), L)
+put("Black face paint, non-toxic", o('face-paint'), L)
+put("Black face paint or a black eye mask", o('face-paint'), E)
+put("Black face paint for a mask stripe", o('face-paint'), L)
+put("White face paint or white stickers", o('face-paint','stickers'), E)
+put("White face paint", o('face-paint'), L)
+put("White face paint for the beard, non-toxic", o('face-paint'), L)
+put("White face powder or pale face paint", o('face-paint'), E)
+put("Pale face paint or white face powder", o('face-paint'), E)
+put("Very pale foundation or white non-toxic face paint", o('face-paint'), E)
+put("Non-toxic face paint", o('face-paint'), E)
+put("Red non-toxic face paint", o('face-paint'), L)
+put("Green face paint, non-toxic", o('face-paint'), L)
+put("Green face paint", o('face-paint'), L)
+put("Brown face paint, non-toxic", o('face-paint'), L)
+put("Brown face paint for mustaches", o('face-paint'), L)
+put("Brown face paint for the dog's nose", o('face-paint'), L)
+put("Purple and yellow non-toxic face paint", o('face-paint'), L)
+put("Face paint, green and black", o('face-paint'), L)
+put("Face paint, brown and black", o('face-paint'), L)
+put("Face paint in a matching accent color", o('face-paint'), L)
+put("Face paint in purple and black, 1 set", o('face-paint'), L)
+put("Pale foundation or white face paint, 1", o('face-paint'), L)
+put("Face paint in black and red, 1 set", o('face-paint'), L)
+put("Face paint in matching colors, 1 set", o('face-paint'), L)
+put("Pale foundation, 1", o('paint-white'), E)
+put("Black and white face paint, non-toxic", o('face-paint'), L)
+put("Gray and white face paint, non-toxic", o('face-paint'), L)
+put("Blue face paint for one rain streak", o('face-paint'), L)
+put("Pink blush or face paint for cheeks", o('face-paint'), E)
+put("Dark eyeliner and lipstick (own, or buy: dollar store)", o('face-paint'), E)
+put("Dark lipstick, 1 (own)", o('paint-red'), E)
+put("Dark eye makeup or black eyeshadow", o('face-paint'), E)
+put("Dark eye shadow (make: use what you own)", o('face-paint'), E)
+put("Black eyeliner and dark green eye shadow", o('face-paint'), E)
+put("Black eyeliner, 1 (own, or buy: drugstore)", o('face-paint'), E)
+put("Black face paint or eyeliner, 1 (own)", o('face-paint'), E)
+put("Orange onesie or footed pajamas, 1 (own, or buy: thrift store)", X, E)
+put("Brown fuzzy onesie or footed pajamas, 1", X, E)
+put("Striped shirt, 1 (own, or buy: thrift store)", X, E)
+put("Black eye patch, 1", X, E)
+put("Toy sword or cardboard cutlass, 1", o(N,'cardboard'), B)
+put("Brown paper for the treasure map, 1 sheet (own)", o('paper-brown'), E)
+put("Gold plastic coins, 1 bag", X, E)
+put("Denim shirts, 2 (own, or buy: thrift store)", X, E)
+put("Denim shirt, 1 (own, or buy: thrift store)", X, E)
+put("Jeans, 2 (own)", X, E)
+put("Jeans, 1 (own)", X, E)
+put("Jeans with patches, 1 (own, or buy: thrift store)", X, E)
+put("Blue overalls or blue jeans, 1 per person (own, or buy: thrift store)", X, E)
+put("Jeans or skirts, 1 per person (own)", X, E)
+put("Bandanas, 2", X, E)
+put("Brown paper bags for chaps, 2 (own)", o('paper-bag'), E)
+put("Rope or twine, 1 coil", o('yarn'), E)
+put("Straw, raffia, or yellow yarn, 1 bag", o(N,'yarn'), B)
+put("Glow-in-the-dark temporary tattoos or neon eyeliner", o(N,'face-paint'), E)
+put("The Doctor: green face paint, non-toxic", o('face-paint'), L)
+put("Candelabra: gold face paint and a gold headband", a(['face-paint'],[N]), L)
+
+# -- bank expansion: ranks 124-132 (Sept 2026 enrichment; quantified materials)
+# Buy-only / specialty materials stay honestly unmapped (X = still need).
+# Garments are not lenient on color; color-qualified garments stay X per audit.
+put("Pink tulle, 1 yard", X, E)
+put("Pink tulle, 2 to 3 yards", X, E)
+put("Fake flowers, 1 bunch", X, E)
+put("Wooden dowel or stick for the wand, about 12 inches (make: from the yard)", X, E)
+put("Elastic for wing straps, about 2 feet", X, E)
+put("Wide elastic, 1 inch wide, cut to the waist size plus 1 inch overlap", X, E)
+put("Pink leotard or fitted shirt, 1 (own, or buy: clothing store)", X, E)
+put("Pink tights, 1 pair (own, or buy: clothing store)", X, E)
+put("Hair ties and bobby pins, 1 pack (own)", X, E)
+put("Hair ties, 2 (own)", X, E)
+put("Bobby pins, 1 pack (own)", X, E)
+put("Acrylic paint set, 1", X, E)
+put("Washable paint set, 1", X, E)
+put("Black sweatsuit, 1 set (own, or buy: clothing store)", o('sweatsuit'), E)
+put("Sparkly or sequin jacket, 1", X, E)
+put("Toy microphone, 1", X, E)
+put("Toy whisk, 1", X, E)
+put("Hair teasing comb, 1 (own, or buy: drugstore)", X, E)
+put("Dark jeans and a dark top, 1 set (own)", X, E)
+put("White dress, 1", X, E)
+put("White tights, 1 pair (own, or buy: clothing store)", X, E)
+put("Black tights, 1 pair (own, or buy: dollar store)", X, E)
+put("Striped tights, 3 pairs", X, E)
+put("Hair donut for the bun, 1", X, E)
+put("Red shirt, 1 (own)", X, E)
+put("Black pants, 1 pair (own)", o('black-clothes'), E)
+put("Black pants, 1 (own)", o('black-clothes'), E)
+put("Black pom-poms, 2 small", X, E)
+put("Yellow craft foam sheets, 2", X, E)
+put("Brown craft foam for the flower center, 1 sheet", X, E)
+put("Green dress, 1 (own, or buy: thrift store)", X, E)
+put("Apron, 1 (own, or buy: dollar store)", X, E)
+put("Flour from the kitchen, 1 pinch (optional, for the effect)", X, E)
+put("Paintbrush, 1 (own, or buy: craft store)", X, E)
+put("Cardboard for wings, 1 large piece about 2x3 feet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard star for the wand tip, 1 (make: from scraps)", o('cardboard'), E)
+put("Cardboard for the palette, 1 piece (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for the palette, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for the soy bottle, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for the fry carton, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard ring for the donut, 1 large (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for the coffee cup, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for swords, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for the hat, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for two hats, 2 sheets (make: from shipping boxes)", o('cardboard'), E)
+put("Cardboard for the pumpkin mask, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Cardboard for the hook, 1 sheet (make: from a shipping box)", o('cardboard'), E)
+put("Large cardboard for wings, 1 sheet about 3x2 feet (make: from a shipping box)", o('cardboard'), E)
+put("Headband, 1", o('headband'), E)
+put("Pipe cleaners for antennae, 2", o('pipe-cleaners'), E)
+put("Black pipe cleaners for antennae, 2", o('pipe-cleaners'), E)
+put("Black felt for dots, 1 sheet 9x12 inches", o('felt','paper-black'), E)
+put("Tape, 1 roll", o('tape'), E)
+put("Scissors, 1 pair", o('scissors'), E)
+put("Scissors, 1", o('scissors'), E)
+put("Scissors, 1 (own)", o('scissors'), E)
+put("Glue, 1 bottle", o('glue'), E)
+put("Glue, 1 tube craft glue", o('glue'), E)
+put("Fabric glue, 1 tube", o('glue'), E)
+put("Blush, 1 (own, or buy: drugstore)", o('paint-pink'), E)
+put("Sunglasses, 1 pair (own, or buy: dollar store)", o('sunglasses'), E)
+put("Beret or flat cap, 1", o('hat'), E)
+put("Old smock or oversized t-shirt, 1 (own)", o('tshirt'), E)
+put("White paper or poster board for the hat, 2 sheets", o('paper-white'), E)
+put("1 sheet white paper, blank (make: use what you own)", o('paper-white'), E)
+put("White paper for the cup lid, 1 sheet", o('paper-white'), E)
+
+# -- enriched-bank audit (Sept 2026): 526 rephrased material strings --------
+# build_pantry_v2 fails loudly on any unmapped string; the Sept 2026 guide
+# enrichment rephrased/quantified materials bank-wide, so the new strings are
+# audited in pantry_audit_enriched.py (pure data: 282 inherited verbatim from
+# audited sources + 244 hand-audited). Applied here so the color-qualification
+# pass and the id-validity asserts below cover the new entries too.
+_sys_path0 = os.path.dirname(os.path.abspath(__file__))
+if _sys_path0 not in __import__('sys').path:
+    __import__('sys').path.insert(0, _sys_path0)
+from pantry_audit_enriched import NEW_AUDIT as _NEW_AUDIT
+for _text, _groups, _tag in _NEW_AUDIT:
+    if _text in AUDIT:
+        raise SystemExit('AUDIT COLLISION: %r already mapped' % _text)
+    AUDIT[_text] = (_groups, _tag)
+del _NEW_AUDIT, _text, _groups, _tag, _sys_path0
+
+# ================= COLOR QUALIFICATION PASS =================
+# The coarse 'construction-paper' and 'face-paint' slots over-claimed: a user
+# with only red+yellow paper would wrongly "own" black felt. Color-specific
+# requirements now need the matching color checkbox. Required colors must match.
+PAPER_IDS = ['paper-'+c for c in ['red','yellow','green','blue','black','white','orange','pink','brown','gray']]
+PAINT_IDS = ['paint-'+c for c in ['red','black','white','green','brown','blue','pink','gold','purple','yellow','gray']]
+TAPE_COLOR_IDS = ['tape-'+c for c in ['white','silver','gray','red','yellow','black']]
+
+_COLOR_WORDS = [
+    ('red-brown','red'), ('dark green','green'), ('tan','brown'), ('grey','gray'),
+    ('red','red'), ('yellow','yellow'), ('green','green'), ('blue','blue'),
+    ('black','black'), ('white','white'), ('orange','orange'), ('pink','pink'),
+    ('brown','brown'), ('gray','gray'), ('silver','silver'), ('gold','gold'),
+    ('purple','purple'),
+]
+_PAPER_CANON = {'silver':'gray', 'gold':'yellow'}  # closest paper stock
+_PAPER_COLORS = ['red','yellow','green','blue','black','white','orange','pink','brown','gray']
+_PAINT_COLORS = ['red','black','white','green','brown','blue','pink','gold','purple','yellow','gray']
+def _colors_in(text, palette):
+    pal = _PAPER_COLORS if palette == 'paper' else _PAINT_COLORS
+    low = text.lower(); found = []
+    for word, canon in _COLOR_WORDS:
+        c = _PAPER_CANON.get(canon, canon) if palette == 'paper' else canon
+        if c in pal and c not in [x[1] for x in found] and re.search(r'\b'+re.escape(word)+r'\b', low):
+            m = re.search(r'\b'+re.escape(word)+r'\b', low)
+            found.append((m.start(), c))
+    found.sort()
+    return [c for _, c in found]
+
+# Full group replacements for texts the auto-rule would get wrong.
+QHINTS = {
+    "1 roll glow-in-the-dark bone tape or white tape": (o(N,'tape-white'), L),
+    "White stickers or white electrical tape": (o('stickers','tape-white'), B),
+    "White stickers or white electrical tape, 1 roll": (o('stickers','tape-white'), B),
+    "Snowman: white shirt, white pants, 3 large black felt circles (buy felt: craft store; construction paper works too)":
+        (a(['white-tshirt'],[N],['paper-black']), B),
+    "Cardboard or craft foam for the beak, 1 sheet": (o('cardboard'), B),
+    "Dark eyeliner and lipstick (own, or buy: dollar store)": (a(['paint-black','paint-brown'],['paint-red']), L),
+    "Dark eye makeup or black eyeshadow": (o('paint-black'), L),
+    "Dark eye shadow (make: use what you own)": (o('paint-black','paint-brown'), L),
+    "Black eyeliner and dark green eye shadow": (a(['paint-black'],['paint-green']), L),
+    "Pink blush or face paint for cheeks": (o(*PAINT_IDS), L),
+    "Glow-in-the-dark temporary tattoos or neon eyeliner": (o(N,*PAINT_IDS), L),
+    "Face paint in a matching accent color": (o(*PAINT_IDS), L),
+    "Candelabra: gold face paint and a gold headband": (a(['paint-gold'],[N]), L),
+    "1 sheet red-brown craft felt": (o('paper-red'), B),
+    "Gold felt sheet, 1 large": (o('felt'), E),
+    "Glow-in-the-dark temporary tattoos or neon eyeliner": (X, E),
+    "Yellow reflective tape, 1 roll": (X, E),
+    "Silver star stickers, 1 sheet": (o('paper-gray'), B),
+    "Dark green felt sheet, 1 large": (o('paper-green'), B),
+    "White poster board, 2 sheets": (o('paper-white'), L),
+    "Felt sheets in brown, black, pink, and tan, 1 pack": (a(['paper-brown'],['paper-black'],['paper-pink']), B),
+}
+TAPE_HINTS = {
+    "Silver duct tape": 'tape-silver',
+    "Gray duct tape": 'tape-gray',
+    "White athletic tape, 1 roll": 'tape-white',
+    "Red duct or electrical tape": 'tape-red',
+    "Yellow duct or electrical tape": 'tape-yellow',
+    "Black electrical tape, 1 roll": 'tape-black',
+    "Black electrical tape for web lines, 1 roll": 'tape-black',
+    "Reflective tape strips": 'tape-silver',
+}
+
+def _qualify_groups(text, groups):
+    out = []
+    for g in groups:
+        if 'construction-paper' in g:
+            rest = [i for i in g if i != 'construction-paper']
+            cols = _colors_in(text, 'paper')
+            if cols:
+                for c in cols:
+                    out.append(rest + ['paper-'+c])   # AND: each color needed
+            else:
+                out.append(rest + PAPER_IDS)          # OR: any color works
+        elif 'face-paint' in g:
+            rest = [i for i in g if i != 'face-paint']
+            cols = _colors_in(text, 'paint')
+            if cols:
+                for c in cols:
+                    out.append(rest + ['paint-'+c])
+            else:
+                out.append(rest + PAINT_IDS)
+        elif 'tape' in g and text in TAPE_HINTS:
+            out.append([TAPE_HINTS[text] if i == 'tape' else i for i in g])
+        else:
+            out.append(g)
+    return out
+
+for _t in list(AUDIT.keys()):
+    if _t in QHINTS:
+        AUDIT[_t] = QHINTS[_t]
+        continue
+    _groups, _tag = AUDIT[_t]
+    if any('construction-paper' in (i or '') or 'face-paint' in (i or '') for _g in _groups for i in _g) \
+       or _t in TAPE_HINTS:
+        AUDIT[_t] = (_qualify_groups(_t, _groups), _tag)
+
+# ================= STORE-RUN TIER (flag-gated, 2026-09-26) =================
+# Four-state pantry badge: make-tonight / store-run / needs-things /
+# shop-for-this. house taste calls (store-run wording A/B/C, garment-color
+# leniency, the hoodie pantry id) are still open, so every piece of this
+# section is behind flags that default OFF. With all flags OFF this section
+# changes NOTHING: no new pantry ids, no AUDIT edits, no template bytes.
+#
+# Flags are env vars (never a committed constant) so a stray edit can never
+# land them "on":
+#   PMC_STORE_RUN_WORDING=OFF|A|B|C  WORDING_SELECTOR for the store-run tier
+#                                    copy. OFF (default) = tier fully dormant.
+#   PMC_GARMENT_COLOR_LENIENT=1      Tag-L mappings: color-specific garments
+#                                    satisfy the generic clothing checkbox.
+#   PMC_HOODIE_PANTRY_ID=1           Add the 'hoodie' checkbox to the pantry.
+#   PMC_PANTRY_GROUP_AND=1           Stage the index.html ANY->AND alignment
+#                                    snippet (AND_ALIGN_JS). OFF (default) =
+#                                    snippet dormant (empty string).
+STORE_RUN_WORDING = os.environ.get('PMC_STORE_RUN_WORDING', 'OFF').upper()
+assert STORE_RUN_WORDING in ('OFF', 'A', 'B', 'C'), \
+    'PMC_STORE_RUN_WORDING must be OFF, A, B, or C'
+GARMENT_COLOR_LENIENT = os.environ.get('PMC_GARMENT_COLOR_LENIENT', '') == '1'
+# The hoodie checkbox was approved 2026-09-26 (decision brief #9).
+# Default ON; the env var can still force it off.
+HOODIE_PANTRY_ID = os.environ.get('PMC_HOODIE_PANTRY_ID', '1') == '1'
+_PANTRY_GROUP_AND_RAW = os.environ.get('PMC_PANTRY_GROUP_AND', '')
+assert _PANTRY_GROUP_AND_RAW in ('', '0', '1'), \
+    'PMC_PANTRY_GROUP_AND must be 0/empty (off) or 1 (on)'
+PANTRY_GROUP_AND = _PANTRY_GROUP_AND_RAW == '1'
+
+# Exact public copy for the store-run tier, per
+# hour-session/store-run-copy-2026-09-26.md. Option A is the analysis pick;
+# House wording ships verbatim if edited. No em dashes anywhere.
+STORE_RUN_COPY = {
+    'A': {'badge1': 'One store run',
+          'badgeN': 'A store run',
+          'detail': 'Your closet is done. What is left needs a store trip.',
+          'head': 'One store run away',
+          'headSub': 'You own everything else for these. A quick trip finishes the costume.'},
+    'B': {'badge1': 'Buy the rest',
+          'badgeN': 'Buy the rest',
+          'detail': 'Your closet is done. The rest you would buy.',
+          'head': 'Buy the rest',
+          'headSub': 'Everything in your closet is checked off. These only need store items.'},
+    'C': {'badge1': 'Closet complete',
+          'badgeN': 'Closet complete',
+          'detail': 'Everything you own is checked. What is left needs a store trip.',
+          'head': 'Closet complete',
+          'headSub': 'You have ticked all you can for these. A store trip finishes the costume.'},
+}
+# State 4 ("shop-for-this"): ideas whose every material is buy-only. No tick
+# can ever move these, so the badge is a pure shopping list, not a summit.
+SHOP_FOR_THIS_COPY = {'badge': 'Shop for this',
+                      'detail': 'Everything for this one comes from a store.'}
+
+def badge_tier(mats, ticked, wording=STORE_RUN_WORDING):
+    """Four-state badge tier for one idea's materials.
+
+    mats: [{'t': text, 'g': [[pantry ids or None]...]}] (generator format).
+    ticked: set of pantry ids.
+    Returns (state, label). States:
+      make-tonight  missing == 0 (unchanged, still literal)
+      shop-for-this every material is buy-only (no tick can ever help)
+      store-run     missing > 0 but nothing left to tick: every non-null id
+                    of every missing material is already ticked, so the only
+                    way forward is a store trip
+      needs-things  missing > 0 with unticked tickable ids (ticking helps)
+
+    Group semantics are AND across groups (a() means AND), matching
+    pantry.html's reqOk (m.g.every(groupOk)) and this module's house-sim.
+    NOTE: index.html's pantryMissing / pantryBuyOnlyMissing use an ANY-group
+    early-exit walk, so the live quiz badges can disagree with this tier on
+    multi-group materials. That divergence predates this tier and is NOT
+    changed here (flag-off byte-identity); it is recorded as a finding for
+    the main agent. The tier's own walk is self-contained and literal, so
+    "Make tonight" can never over-claim.
+    label is None for store-run when wording is OFF (tier dormant).
+    """
+    def _ok(g):
+        return any(i in ticked for i in g if i is not None)
+    total = len(mats)
+    missing = [m for m in mats if not all(_ok(g) for g in m['g'])]
+    if not missing:
+        return ('make-tonight', 'Make tonight')
+    buy_only = [m for m in missing
+                if not any(i is not None for g in m['g'] for i in g)]
+    if len(buy_only) == total:
+        return ('shop-for-this', SHOP_FOR_THIS_COPY['badge'])
+    # Nothing left to tick: every tickable id of every missing material is
+    # already ticked. The remaining gaps are store-only.
+    if all(all(i in ticked for g in m['g'] for i in g if i is not None)
+           for m in missing):
+        # store items ~= missing materials with an untickable ([None]) group
+        n = sum(1 for m in missing
+                if any(all(i is None for i in g) for g in m['g']))
+        label = None
+        if wording != 'OFF':
+            c = STORE_RUN_COPY[wording]
+            label = c['badge1'] if n <= 1 else c['badgeN']
+        return ('store-run', label)
+    n = len(missing)
+    return ('needs-things', 'Needs %d thing%s' % (n, '' if n == 1 else 's'))
+
+def _tier_js(wording=STORE_RUN_WORDING):
+    """Reference port snippet for index.html (NOT spliced into the pantry
+    template: the quiz/detail badges live in index.html, which this generator
+    does not emit). Self-contained: its own AND-across-groups walk, because
+    index.html's pantryMissing / pantryBuyOnlyMissing use an ANY-group
+    early-exit that can over-claim "Make tonight" on multi-group materials
+    (see badge_tier docstring). Syntax-checked by node --check in the
+    store-run tier gate."""
+    if wording == 'OFF':
+        return ''
+    a1, aN = STORE_RUN_COPY['A']['badge1'], STORE_RUN_COPY['A']['badgeN']
+    b = STORE_RUN_COPY['B']['badge1']
+    c = STORE_RUN_COPY['C']['badge1']
+    shop = SHOP_FOR_THIS_COPY['badge']
+    return (
+"""/* ===== 2026-09-26 store-run tier (PORT SNIPPET - spec lives in
+   hour-session/build_pantry_v2.py badge_tier(); WORDING_SELECTOR picked "%s") =====
+   Four-state pantry badge. Paste next to pantryMissing/pantryBuyOnlyMissing.
+   Self-contained AND-across-groups walk (a material needs ALL its groups),
+   matching pantry.html's reqOk - deliberately NOT reusing pantryMissing,
+   whose ANY-group early-exit can over-claim on multi-group materials.
+   States: make-tonight | store-run | needs-things | shop-for-this.
+   make-tonight keeps its literal meaning; nothing redefined. */
+var STORE_RUN_WORDING = "%s"; /* A | B | C - house pick */
+function storeRunBadgeLabel(n){
+  if (STORE_RUN_WORDING === "B") return "%s";
+  if (STORE_RUN_WORDING === "C") return "%s";
+  return n <= 1 ? "%s" : "%s";
+}
+/* pantryBadgeState: the four-state tier. Reads the viewer's pantry the same
+   way pantryMissing does (pantryTicked), walks PANTRY_MATS with AND
+   semantics. Unknown idea -> "unknown" so callers keep today's guards. */
+function pantryBadgeState(ideaId){
+  var list = (typeof PANTRY_MATS !== "undefined" && PANTRY_MATS.mats[ideaId]) || [];
+  if (!list.length) return {state: "unknown", label: ""};
+  var ticked = (typeof pantryTicked === "function") ? pantryTicked() : new Set();
+  function grpOk(g){ for (var k = 0; k < g.length; k++){ if (g[k] && ticked.has(g[k])) return true; } return false; }
+  var missing = [], m, g;
+  for (m = 0; m < list.length; m++){
+    var okAll = true;
+    for (g = 0; g < list[m].length; g++){ if (!grpOk(list[m][g])){ okAll = false; break; } }
+    if (!okAll) missing.push(list[m]);
+  }
+  if (!missing.length) return {state: "make-tonight", label: "Make tonight"};
+  function hasId(mat){ for (var gg = 0; gg < mat.length; gg++) for (var kk = 0; kk < mat[gg].length; kk++) if (mat[gg][kk]) return true; return false; }
+  var buyOnly = missing.filter(function(mt){ return !hasId(mt); });
+  if (buyOnly.length === list.length) return {state: "shop-for-this", label: "%s"};
+  var nothingLeftToTick = missing.every(function(mt){
+    return mt.every(function(gg){ return gg.every(function(id){ return !id || ticked.has(id); }); });
+  });
+  if (nothingLeftToTick){
+    var n = missing.filter(function(mt){
+      return mt.some(function(gg){ return gg.length && gg.every(function(id){ return !id; }); });
+    }).length;
+    return {state: "store-run", label: storeRunBadgeLabel(n)};
+  }
+  return {state: "needs-things",
+    label: "Needs " + missing.length + " thing" + (missing.length === 1 ? "" : "s")};
+}
+/* ===== end store-run tier snippet ===== */
+""" % (wording, wording, b, c, a1, aN, shop))
+TIER_JS = _tier_js()
+
+def _and_align_js(on=PANTRY_GROUP_AND):
+    """Port snippet aligning index.html's pantry walks to AND group semantics
+    (STAGED, flag-gated; NOT spliced into the pantry template: the quiz/detail
+    badges live in index.html, which this generator does not emit).
+
+    Canonical semantics: pantry.html's reqOk (m.g.every(groupOk)), this
+    module's badge_tier(), and the audit's literal English ("Marker and ruler,
+    1 each" needs BOTH). index.html's pantryMissing / pantryScore /
+    pantryBuyOnlyMissing use an ANY-group early-exit that over-claims
+    "Make tonight" on multi-group materials. This snippet is the drop-in
+    replacement: same function names, signatures, and edge behaviors
+    (pantryMissing -1 / pantryBuyOnlyMissing 0 / pantryScore null for unknown
+    ideas); only the group walk changes from ANY-early-exit to ALL-groups.
+
+    Flag OFF (default) -> '' so the generator output stays byte-identical.
+    Flip: PMC_PANTRY_GROUP_AND=1, take AND_ALIGN_JS, paste over the three
+    functions in index.html, run pantry-group-semantics-gate.py, then deploy
+    only on the house tap. pantryStoreRunTier() needs no change (it reuses
+    pantryMissing)."""
+    if not on:
+        return ''
+    return """/* ===== 2026-09-26 pantry group-semantics alignment (PORT SNIPPET - spec
+   lives in hour-session/build_pantry_v2.py _and_align_js(); staged behind
+   PMC_PANTRY_GROUP_AND, the call to flip) =====
+   Drop-in AND replacements for pantryMissing / pantryScore /
+   pantryBuyOnlyMissing. Same names, signatures, and edge behaviors as today;
+   only the group walk changed: a material is satisfied when EVERY group has
+   a ticked pantry id (AND), matching pantry.html's reqOk. The old
+   ANY-early-exit counted a material satisfied when ANY single group had a
+   tick, which over-claimed "Make tonight" on multi-group materials
+   (e.g. "Marker and ruler, 1 each" counted as owned from the marker alone).
+   Paste over the existing three function definitions in index.html. */
+function __pmcGrpOk(g, ticked){
+  for (var k = 0; k < g.length; k++){ if (g[k] && ticked.has(g[k])) return true; }
+  return false;
+}
+function __pmcMatOk(mat, ticked){
+  for (var g = 0; g < mat.length; g++){ if (!__pmcGrpOk(mat[g], ticked)) return false; }
+  return true;
+}
+function pantryMissing(ideaId){
+  var list = PANTRY_MATS.mats[ideaId];
+  if (!list) return -1;
+  var ticked = pantryTicked();
+  var n = 0;
+  for (var i = 0; i < list.length; i++){ if (!__pmcMatOk(list[i], ticked)) n++; }
+  return n;
+}
+function pantryScore(ideaId, ticked){
+  var list = PANTRY_MATS.mats[ideaId];
+  if (!list || !list.length) return null;
+  var tk = (ticked instanceof Set) ? ticked : pantryTicked();
+  var texts = pantryMaterialTexts(ideaId);
+  var total = list.length, missing = 0, names = [];
+  for (var i = 0; i < list.length; i++){
+    var mat = list[i], rep = null;
+    for (var g = 0; g < mat.length; g++){
+      var grp = mat[g];
+      for (var k = 0; k < grp.length; k++){
+        var id = grp[k];
+        if (!id) continue;
+        if (!rep && PANTRY_LABELS[id]) rep = PANTRY_LABELS[id];
+      }
+    }
+    if (!__pmcMatOk(mat, tk)){
+      missing++;
+      if (names.length < 2){
+        var nm = rep || shortMaterialName(texts[i]);
+        if (nm) names.push(nm);
+      }
+    }
+  }
+  return {have: total - missing, total: total, missing: missing,
+    missingNames: (missing >= 1 && missing <= 2 && names.length === missing) ? names : null};
+}
+function pantryBuyOnlyMissing(ideaId){
+  var list = PANTRY_MATS.mats[ideaId];
+  if (!list) return 0;
+  var ticked = pantryTicked();
+  var n = 0;
+  for (var i = 0; i < list.length; i++){
+    var mat = list[i], hasId = false;
+    for (var g = 0; g < mat.length; g++){
+      var grp = mat[g];
+      for (var k = 0; k < grp.length; k++){ if (grp[k]){ hasId = true; break; } }
+      if (hasId) break;
+    }
+    if (!__pmcMatOk(mat, ticked) && !hasId) n++;
+  }
+  return n;
+}
+/* ===== end pantry group-semantics alignment snippet ===== */
+"""
+AND_ALIGN_JS = _and_align_js()
+
+# new pantry: color-qualified paper / paint / tape
+def _P(pid, label, group, staple=False):
+    return {'id': pid, 'label': label, 'group': group, 'staple': staple}
+_NEW = []
+_NEW += [_P('scissors','Scissors','tools',True), _P('tape','Tape (any kind)','tools',True),
+         _P('paper-pen','Paper and pen','tools',True)]
+_NEW += [_P('tape-white','White tape','tools'), _P('tape-silver','Silver tape','tools'),
+         _P('tape-gray','Gray tape','tools'), _P('tape-red','Red tape','tools'),
+         _P('tape-yellow','Yellow tape','tools'), _P('tape-black','Black tape','tools')]
+_NEW += [_P('glue','Glue (any kind)','tools'), _P('safety-pins','Safety pins','tools'),
+         _P('markers','Markers','tools',True), _P('stickers','Stickers','tools'),
+         _P('foil','Aluminum foil','tools',True), _P('balloons','Balloons','tools')]
+_NEW += [_P('paper-red','Red paper','paper'), _P('paper-yellow','Yellow paper','paper'),
+         _P('paper-green','Green paper','paper'), _P('paper-blue','Blue paper','paper'),
+         _P('paper-black','Black paper','paper'), _P('paper-white','White paper','paper'),
+         _P('paper-orange','Orange paper','paper'), _P('paper-pink','Pink paper','paper'),
+         _P('paper-brown','Brown paper','paper'), _P('paper-gray','Gray paper','paper')]
+_NEW += [_P('cardboard','Cardboard / boxes','paper',True), _P('paper-bag','Brown paper bags','paper'),
+         _P('paper-plates','Paper plates','paper'), _P('newspaper','Newspaper','paper')]
+_NEW += [_P('white-tshirt','White t-shirt','clothes',True), _P('tshirt','T-shirt (any color)','clothes',True),
+         _P('black-clothes','Black clothes','clothes',True), _P('sweatsuit','Sweatsuit','clothes'),
+         _P('bedsheet','Old bedsheet','clothes',True), _P('pillowcase','Pillowcase','clothes',True),
+         _P('socks','Socks','clothes',True), _P('stuffing','Stuffing / cotton balls','clothes'),
+         _P('headband','Headband (any color)','clothes'), _P('red-headband','Red headband','clothes'),
+         _P('sunglasses','Sunglasses','clothes'), _P('yarn','String / yarn / ribbon','clothes'),
+         _P('hat','Hat (any kind)','clothes')]
+_NEW += [_P('paint-red','Red face paint / lipstick','paint'), _P('paint-black','Black face paint','paint'),
+         _P('paint-white','White face paint','paint'), _P('paint-green','Green face paint','paint'),
+         _P('paint-brown','Brown face paint','paint'), _P('paint-blue','Blue face paint','paint'),
+         _P('paint-pink','Pink face paint / blush','paint'), _P('paint-gold','Gold face paint','paint'),
+         _P('paint-purple','Purple face paint','paint'), _P('paint-yellow','Yellow face paint','paint'),
+         _P('paint-gray','Gray face paint','paint')]
+_NEW += [_P('felt','Felt (multi-color stash)','craft'), _P('pipe-cleaners','Pipe cleaners (multi-color pack)','craft')]
+PANTRY = _NEW
+GROUPS = [
+    {'id':'tools','label':'Tools & tape'},
+    {'id':'paper','label':'Paper (which colors?)'},
+    {'id':'clothes','label':'Clothes & linens'},
+    {'id':'paint','label':'Face paint & makeup (which colors?)'},
+    {'id':'craft','label':'Craft drawer'},
+]
+# ---- flag-gated data changes (all OFF by default; see STORE-RUN TIER above)
+# Starter set only: exact AUDIT keys (the enriched audit rephrased the raw
+# texts, so raw-text keys would silently miss). Single-kind color-specific
+# garments only; multi-kind texts ("black hoodie, black pants, chunky
+# sneakers", "t-shirt and skirt or shorts", cross-kind ORs like "t-shirt or
+# dress", and multi-count lists like "red t-shirt and green t-shirt, 1 each")
+# stay X per the never-partial-mapping rule. Hoodie lines need the 'hoodie'
+# checkbox, itself behind HOODIE_PANTRY_ID. Only ever flips X -> id: the
+# assert below refuses to clobber an existing real mapping. The full audit
+# of remaining color-specific garments is the Phase-2 stream's job after
+# House rules on leniency.
+_LENIENT_GARMENTS = [
+    ("Blue hoodie per alien-role person (own, or buy: clothing store)", 'hoodie'),
+    ("Blue hoodie per alien-role person, 1 each (own, or buy: clothing store)", 'hoodie'),
+    ("Gray hoodie (own)", 'hoodie'),
+    ("Gray hoodie, 1", 'hoodie'),
+    ("Gray hoodie, 1 (own)", 'hoodie'),
+    ("Green hoodie", 'hoodie'),
+    ("Green hoodie, 1", 'hoodie'),
+    ("Green hoodie per child, 1 each", 'hoodie'),
+    ("Hoodies in red, black, and pink, 1 per person (own: from closet)", 'hoodie'),
+    ("Hoodies in red, black, and pink, one per person (make: from closet)", 'hoodie'),
+    ("Kids: green hoodie per child", 'hoodie'),
+    ("1 pastel fuzzy sweatsuit", 'sweatsuit'),
+    ("1 tan or brown sweatsuit", 'sweatsuit'),
+    ("Blue or gray sweatsuit to wear underneath (make: from closet)", 'sweatsuit'),
+    ("Blue or gray sweatsuit to wear underneath, 1 set (own: from closet)", 'sweatsuit'),
+    ("Green sweatsuit per person, 1 each", 'sweatsuit'),
+    ("Matching red sweatsuits, one per person (make: from closet, or buy a set at a discount store)", 'sweatsuit'),
+    ("Red sweatsuit (make: from closet)", 'sweatsuit'),
+    ("Red sweatsuit, 1 (own)", 'sweatsuit'),
+    ("Red sweatsuit, 1 (own: from closet)", 'sweatsuit'),
+    ("Tan or brown sweatsuit, 1", 'sweatsuit'),
+    ("1 t-shirt per person in the cape color", 'tshirt'),
+    # 2026-09-30: ("1 yellow t-shirt per person", 'tshirt') removed -- it now
+    # maps via the Billy phone-QA block below, so the lenient loop's X-assert
+    # would trip on it if the flag were ever flipped.
+    ("Blue or orange t-shirt per person (own, or buy: clothing store)", 'tshirt'),
+    ("Blue or orange t-shirt per person, 1 each (own, or buy: clothing store)", 'tshirt'),
+    ("Brown t-shirt", 'tshirt'),
+    ("Brown t-shirt, 1", 'tshirt'),
+    ("Purple t-shirt", 'tshirt'),
+    ("Purple t-shirt, 1", 'tshirt'),
+    ("Red t-shirt, 1 (own)", 'tshirt'),
+    ("Red t-shirt, 1 (own, or buy: thrift store)", 'tshirt'),
+    ("T-shirt per person in the cape color, 1 each", 'tshirt'),
+]
+if HOODIE_PANTRY_ID:
+    PANTRY.append(_P('hoodie', 'Hoodie (any color)', 'clothes'))
+# Hoodie mappings: The hoodie checkbox was approved 2026-09-26 (decision
+# brief #9), so these apply whenever the checkbox exists, independent of
+# GARMENT_COLOR_LENIENT (STRICT was chosen for the general garment rule,
+# decision brief #8, but the hoodie was approved separately). Only flips
+# X -> hoodie; the assert refuses to clobber an existing real mapping.
+_HOODIE_MAPPINGS = [
+    "Blue hoodie per alien-role person (own, or buy: clothing store)",
+    "Blue hoodie per alien-role person, 1 each (own, or buy: clothing store)",
+    "Gray hoodie (own)",
+    "Gray hoodie, 1",
+    "Gray hoodie, 1 (own)",
+    "Green hoodie",
+    "Green hoodie, 1",
+    "Green hoodie per child, 1 each",
+    "Hoodies in red, black, and pink, 1 per person (own: from closet)",
+    "Hoodies in red, black, and pink, one per person (make: from closet)",
+    "Kids: green hoodie per child",
+]
+if HOODIE_PANTRY_ID:
+    for _text in _HOODIE_MAPPINGS:
+        if _text in AUDIT and AUDIT[_text][0] == X:
+            AUDIT[_text] = (o('hoodie'), L)
+    del _text
+if GARMENT_COLOR_LENIENT:
+    for _text, _pid in _LENIENT_GARMENTS:
+        assert _text in AUDIT, ('lenient text missing from AUDIT', _text)
+        assert AUDIT[_text][0] == X, ('lenient text not buy-only', _text)
+        if _pid == 'hoodie' and not HOODIE_PANTRY_ID:
+            continue  # the hoodie checkbox is the house call too; skip without it
+        AUDIT[_text] = (o(_pid), L)
+    del _text, _pid
+# ================= BILLY PHONE-QA MAPPINGS (2026-09-30) =================
+# House ruling from Billy's 2026-09-30 phone QA: ownable materials sitting in
+# all-null groups map to their real stashes; genuinely buy-only items (foam
+# sword, glow tattoos, hair gel, toy trumpet, fangs) stay X. This is a
+# deliberate, named exception to the never-partial-mapping rule for multi-kind
+# (own) texts: the OR-group means ticking ANY listed stash satisfies the
+# material, matching the black-cat precedent ("Black shirt and pants or
+# sweatsuit (own)" -> o('black-clothes','sweatsuit')). Only ever flips
+# X -> ids; the assert refuses to clobber a real mapping.
+_BILLY_MAPPINGS = [
+    ("Black hoodie, black pants, chunky sneakers, 1 set (own)", o('hoodie', 'black-clothes')),
+    ("Neon fabric paint in 2 to 3 colors, 1 tube each", o(*PAINT_IDS)),
+    ("1 yellow t-shirt per person", o('tshirt')),
+]
+for _text, _groups in _BILLY_MAPPINGS:
+    assert _text in AUDIT, ('billy mapping text missing from AUDIT', _text)
+    assert AUDIT[_text][0] == X, ('billy mapping text not buy-only', _text)
+    AUDIT[_text] = (_groups, L)
+del _text, _groups
+# validate: every referenced id exists
+_pids = {p['id'] for p in PANTRY}
+for _t, (_groups, _tag) in AUDIT.items():
+    for _g in _groups:
+        for _i in _g:
+            if _i is not None:
+                assert _i in _pids, ('dangling pantry id', _i, _t)
+assert not any('construction-paper' in (i or '') or 'face-paint' in (i or '')
+               for _t, (_g2, _tag2) in AUDIT.items() for _gg in _g2 for i in _gg), 'coarse slot left'
+print('pantry items:', len(PANTRY))
+
+# ---------------------------------------------------------------- live bank
+def _extract_balanced(html, marker, open_c, close_c):
+    """Extract a balanced {...} or [...] JS literal starting after marker."""
+    s = html.index(marker)
+    i = html.index(open_c, s)
+    depth = 0
+    j = i
+    instr = False
+    q = ''
+    while j < len(html):
+        c = html[j]
+        if instr:
+            if c == '\\':
+                j += 2
+                continue
+            if c == q:
+                instr = False
+            j += 1
+            continue
+        if c == '"' or c == "'":
+            instr = True
+            q = c
+        elif c == open_c:
+            depth += 1
+        elif c == close_c:
+            depth -= 1
+            if depth == 0:
+                return html[i:j + 1]
+        j += 1
+    raise SystemExit('LIVE BANK READ FAILED: unbalanced literal after %r' % marker)
+
+def read_live_bank():
+    """Read the live bank from index.html.
+
+    Returns [{id, title, materials}] in bank order, with materials from the
+    enriched INSTRUCTIONS entries. Fails loudly if IDEAS and INSTRUCTIONS
+    disagree or the bank cannot be parsed -- never silently use stale or
+    partial data.
+    """
+    html = open(BANK_HTML).read()
+    s = html.index('var IDEAS =')
+    e = html.index('var INSTRUCTIONS =')
+    ideas_region = html[s:e]
+    titles = dict(re.findall(r'\{id:"([^"]+)",\s*title:"((?:[^"\\]|\\.)*)"',
+                             ideas_region))
+    ins_src = _extract_balanced(html, 'var INSTRUCTIONS =', '{', '}')
+    ins_src = re.sub(r',\s*([}\]])', r'\1', ins_src)  # tolerate JS trailing commas
+    try:
+        ins = json.loads(ins_src)
+    except ValueError as ex:
+        raise SystemExit('LIVE BANK READ FAILED: INSTRUCTIONS parse: %s' % ex)
+    if set(titles) != set(ins):
+        raise SystemExit(
+            'BANK DIVERGENCE: IDEAS has %d ids, INSTRUCTIONS has %d ids; '
+            'only-in-IDEAS=%s only-in-INSTRUCTIONS=%s'
+            % (len(titles), len(ins),
+               sorted(set(titles) - set(ins))[:10],
+               sorted(set(ins) - set(titles))[:10]))
+    bank = []
+    for iid, entry in ins.items():
+        if 'm' not in entry or not entry['m']:
+            raise SystemExit('BANK DIVERGENCE: INSTRUCTIONS id %r has no materials' % iid)
+        bank.append({'id': iid, 'title': titles[iid], 'materials': entry['m']})
+    print('live bank: %d ideas' % len(bank))
+    return bank
+
+# ---------------------------------------------------------------- build
+def parse_materials(mats):
+    out = []
+    for mat in mats:
+        mm = re.match(r'^(.*?)\s*\((buy:[^)]*)\)\s*$', mat)
+        if mm:
+            out.append((mm.group(1).strip(), mm.group(2).strip()))
+        else:
+            out.append((mat.strip(), ''))
+    return out
+
+def main():
+    bank = read_live_bank()
+    ideas = []
+    total_mats = 0
+    tag_counts = collections.Counter()
+    unmapped_texts = []
+    for it in bank:
+        mats = []
+        for raw in it['materials']:
+            # 2026-09-26 P5-5: optional materials never gate the badge. They
+            # stay in the instructions for users who want them, but
+            # PANTRY_MATS drops them so "Make tonight" stays reachable.
+            # index.html's inline PANTRY_MATS tests the FULL text (paren
+            # intact), so the skip must too -- testing post-split text/note
+            # can never match (the paren is stripped by the split). A future
+            # regen keeps the two in sync. "optional" may sit anywhere
+            # inside the paren, e.g. "(buy: thrift store, optional)".
+            # 2026-09-26 pm3 red-team D1: moved the test to the raw string.
+            if re.search(r'\([^)]*optional', raw, re.I):
+                continue
+            text, note = parse_materials([raw])[0]
+            total_mats += 1
+            if text not in AUDIT:
+                raise SystemExit('UNMAPPED MATERIAL: %r (idea %s)' % (text, it['id']))
+            groups, tag = AUDIT[text]
+            tag_counts[tag] += 1
+            if groups == X:
+                unmapped_texts.append(text)
+            mats.append({'t': text, 'g': groups})
+        ideas.append({'id': it['id'], 'title': it['title'], 'mats': mats})
+    # ---- divergence guard: the pantry must cover the whole live bank ----
+    # Never silently permit missing ideas again.
+    bank_ids = [it['id'] for it in bank]
+    out_ids = set(it['id'] for it in ideas)
+    missing = [i for i in bank_ids if i not in out_ids]
+    if missing:
+        raise SystemExit('PANTRY/BANK DIVERGENCE: %d bank ideas missing from pantry output: %s'
+                         % (len(missing), missing))
+    if len(ideas) != len(bank_ids):
+        raise SystemExit('PANTRY/BANK COUNT DIVERGENCE: bank=%d pantry=%d'
+                         % (len(bank_ids), len(ideas)))
+    print('divergence guard: pantry covers all %d live-bank ideas' % len(bank_ids))
+    print('ideas:', len(ideas), '| material strings:', total_mats, '| audit entries:', len(AUDIT))
+    print('confidence tags:', dict(tag_counts))
+    print('unmapped (honest still-need):', len(unmapped_texts))
+
+    # sanity: every pantry id referenced exists; every idea has >=1 requirement
+    for it in ideas:
+        assert it['mats'], it['id']
+
+    data = {'pantry': PANTRY, 'groups': GROUPS, 'ideas': ideas}
+    data_json = json.dumps(data, separators=(',', ':'))
+    html_out = TEMPLATE.replace('__DATA__', data_json).replace('__COUNT__', str(len(ideas)))
+    # Chopped preservation guard (2026-09-29): the game must survive
+    # every regen. Refuse to write output that dropped it.
+    for _marker in ('id="chopped"', 'function chopNewRound', 'function chopReveal',
+                    'chopped_started', 'chopped_revealed'):
+        assert _marker in html_out, ('chopped game missing from generated output', _marker)
+    open(OUT, 'w').write(html_out)
+    print('wrote', OUT, len(html_out), 'bytes')
+
+    # Exposed for the store-run tier gate: the harness imports this module,
+    # calls main(), and cross-checks badge_tier against the emitted DATA.
+    global _LAST_BUILD
+    _LAST_BUILD = {'ideas': ideas, 'pantry': PANTRY}
+
+    # ---- House simulation ----
+    # inventory: white t-shirt, yellow+red construction paper, tape, scissors,
+    # lipstick/makeup; staples default ticked (scissors, tape, paper-pen,
+    # cardboard, socks, foil).
+    # NOT owned: red headband.
+    # Enriched bank (Sept 2026): deviled-egg's materials now name felt and pipe
+    # cleaners explicitly, so the assumed craft-drawer inventory includes them.
+    # The scenario is unchanged: everything covered except the red headband.
+    ticked = {'white-tshirt', 'paper-yellow', 'paper-red', 'paint-red', 'scissors', 'tape', 'paper-pen',
+              'felt', 'pipe-cleaners'}
+    # clearer: group ok if any option ticked
+    def group_ok(g): return any(i in ticked for i in g if i is not None)
+    # 2026-09-30 focus dead-tap fix (P0): Python mirror of the template's
+    # reqOk -- a buy-only group ([None]) counts when its synthetic buy key is
+    # ticked. The house sim's ticked set holds no buy keys, so its assertions
+    # are unchanged; the mirror keeps future sims honest.
+    def pantry_buy_key(idea_id, mi): return 'buy:%s#%s' % (idea_id, mi)
+    def req_ok(m, idea_id, mi):
+        _key = pantry_buy_key(idea_id, mi)
+        return all(group_ok(g) or (all(i is None for i in g) and _key in ticked)
+                   for g in m['g'])
+    for it in ideas:
+        if it['id'] == 'deviled-egg':
+            missing = [mm['t'] for mi_, mm in enumerate(it['mats']) if not req_ok(mm, it['id'], mi_)]
+            have = len(it['mats']) - len(missing)
+            print('HOUSE-SIM deviled-egg: have %d/%d, missing=%s' % (have, len(it['mats']), missing))
+            assert missing == ['1 red headband'], missing
+            print('HOUSE-SIM PASS: Almost - missing 1: Red headband')
+    # tier distribution under test inventory
+    tiers = collections.Counter()
+    for it in ideas:
+        m = sum(1 for xi, x in enumerate(it['mats']) if not req_ok(x, it['id'], xi))
+        tiers[0 if m == 0 else (1 if m <= 2 else 2)] += 1
+    print('tier distribution (test inventory): make-tonight=%d almost=%d bigger=%d' % (tiers[0], tiers[1], tiers[2]))
+    if STORE_RUN_WORDING != 'OFF':
+        # Four-state distribution under the same inventory, for the tier gate.
+        four = collections.Counter()
+        for it in ideas:
+            s, _ = badge_tier(it['mats'], ticked)
+            four[s] += 1
+        print('four-state tiers (test inventory): ' +
+              ' '.join('%s=%d' % kv for kv in sorted(four.items())))
+
+TEMPLATE = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Costumes From Clothes You Already Have | Pick My Costume</title>
-<meta name="description" content="Costumes from clothes you already have. Tick what is in your house and we rank all 164 costume ideas by how little you still need. Updated for Halloween 2026.">
+<meta name="description" content="Costumes from clothes you already have. Tick what is in your house and we rank all __COUNT__ costume ideas by how little you still need. Updated for Halloween 2026.">
 <link rel="canonical" href="https://pickmycostume.com/pantry">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Costumes From Clothes You Already Have | Pick My Costume">
-<meta property="og:description" content="Tick what is already in your house and we will rank all 164 costume ideas by how little you still need.">
+<meta property="og:description" content="Tick what is already in your house and we will rank all __COUNT__ costume ideas by how little you still need.">
 <meta property="og:url" content="https://pickmycostume.com/pantry">
 <meta property="og:image" content="https://pickmycostume.com/images/og/classic-ghost.jpg">
 <meta property="og:image:secure_url" content="https://pickmycostume.com/images/og/classic-ghost.jpg">
@@ -328,7 +1827,7 @@
 </div>
 
 <script>
-const DATA = {"pantry":[{"id":"scissors","label":"Scissors","group":"tools","staple":true},{"id":"tape","label":"Tape (any kind)","group":"tools","staple":true},{"id":"paper-pen","label":"Paper and pen","group":"tools","staple":true},{"id":"tape-white","label":"White tape","group":"tools","staple":false},{"id":"tape-silver","label":"Silver tape","group":"tools","staple":false},{"id":"tape-gray","label":"Gray tape","group":"tools","staple":false},{"id":"tape-red","label":"Red tape","group":"tools","staple":false},{"id":"tape-yellow","label":"Yellow tape","group":"tools","staple":false},{"id":"tape-black","label":"Black tape","group":"tools","staple":false},{"id":"glue","label":"Glue (any kind)","group":"tools","staple":false},{"id":"safety-pins","label":"Safety pins","group":"tools","staple":false},{"id":"markers","label":"Markers","group":"tools","staple":true},{"id":"stickers","label":"Stickers","group":"tools","staple":false},{"id":"foil","label":"Aluminum foil","group":"tools","staple":true},{"id":"balloons","label":"Balloons","group":"tools","staple":false},{"id":"paper-red","label":"Red paper","group":"paper","staple":false},{"id":"paper-yellow","label":"Yellow paper","group":"paper","staple":false},{"id":"paper-green","label":"Green paper","group":"paper","staple":false},{"id":"paper-blue","label":"Blue paper","group":"paper","staple":false},{"id":"paper-black","label":"Black paper","group":"paper","staple":false},{"id":"paper-white","label":"White paper","group":"paper","staple":false},{"id":"paper-orange","label":"Orange paper","group":"paper","staple":false},{"id":"paper-pink","label":"Pink paper","group":"paper","staple":false},{"id":"paper-brown","label":"Brown paper","group":"paper","staple":false},{"id":"paper-gray","label":"Gray paper","group":"paper","staple":false},{"id":"cardboard","label":"Cardboard / boxes","group":"paper","staple":true},{"id":"paper-bag","label":"Brown paper bags","group":"paper","staple":false},{"id":"paper-plates","label":"Paper plates","group":"paper","staple":false},{"id":"newspaper","label":"Newspaper","group":"paper","staple":false},{"id":"white-tshirt","label":"White t-shirt","group":"clothes","staple":true},{"id":"tshirt","label":"T-shirt (any color)","group":"clothes","staple":true},{"id":"black-clothes","label":"Black clothes","group":"clothes","staple":true},{"id":"sweatsuit","label":"Sweatsuit","group":"clothes","staple":false},{"id":"bedsheet","label":"Old bedsheet","group":"clothes","staple":true},{"id":"pillowcase","label":"Pillowcase","group":"clothes","staple":true},{"id":"socks","label":"Socks","group":"clothes","staple":true},{"id":"stuffing","label":"Stuffing / cotton balls","group":"clothes","staple":false},{"id":"headband","label":"Headband (any color)","group":"clothes","staple":false},{"id":"red-headband","label":"Red headband","group":"clothes","staple":false},{"id":"sunglasses","label":"Sunglasses","group":"clothes","staple":false},{"id":"yarn","label":"String / yarn / ribbon","group":"clothes","staple":false},{"id":"hat","label":"Hat (any kind)","group":"clothes","staple":false},{"id":"paint-red","label":"Red face paint / lipstick","group":"paint","staple":false},{"id":"paint-black","label":"Black face paint","group":"paint","staple":false},{"id":"paint-white","label":"White face paint","group":"paint","staple":false},{"id":"paint-green","label":"Green face paint","group":"paint","staple":false},{"id":"paint-brown","label":"Brown face paint","group":"paint","staple":false},{"id":"paint-blue","label":"Blue face paint","group":"paint","staple":false},{"id":"paint-pink","label":"Pink face paint / blush","group":"paint","staple":false},{"id":"paint-gold","label":"Gold face paint","group":"paint","staple":false},{"id":"paint-purple","label":"Purple face paint","group":"paint","staple":false},{"id":"paint-yellow","label":"Yellow face paint","group":"paint","staple":false},{"id":"paint-gray","label":"Gray face paint","group":"paint","staple":false},{"id":"felt","label":"Felt (multi-color stash)","group":"craft","staple":false},{"id":"pipe-cleaners","label":"Pipe cleaners (multi-color pack)","group":"craft","staple":false},{"id":"hoodie","label":"Hoodie (any color)","group":"clothes","staple":false}],"groups":[{"id":"tools","label":"Tools & tape"},{"id":"paper","label":"Paper (which colors?)"},{"id":"clothes","label":"Clothes & linens"},{"id":"paint","label":"Face paint & makeup (which colors?)"},{"id":"craft","label":"Craft drawer"}],"ideas":[{"id":"astronaut","title":"Astronaut","mats":[{"t":"White sweatshirt and sweatpants, 1 set","g":[["sweatsuit"]]},{"t":"1 large brown paper grocery bag","g":[["paper-bag"]]},{"t":"Silver duct tape, 1 roll","g":[["tape-silver"]]},{"t":"Flag sticker or iron-on patch, 1","g":[["stickers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"baby-dino","title":"Baby Dinosaur","mats":[{"t":"Green hoodie, 1","g":[["hoodie"]]},{"t":"2 sheets green craft felt, 9x12 inches each","g":[["felt","paper-green"]]},{"t":"Pillow stuffing or 2 old socks (make: stuff from home)","g":[["stuffing","socks"]]},{"t":"Safety pins, 6 to 8","g":[["safety-pins"]]},{"t":"Masking tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"backyard-hero","title":"Backyard Superhero","mats":[{"t":"Old pillowcase or t-shirt for the cape, 1 (make: cut up)","g":[["pillowcase","tshirt"]]},{"t":"Solid-color t-shirt to wear, 1 (own)","g":[["tshirt"]]},{"t":"Cardstock or foam letter for the first initial, 1 sheet (make: cut from cardstock, or buy: craft store)","g":[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Ribbon or string for cape ties, about 2 feet (own, or buy: craft store)","g":[["yarn"]]},{"t":"Safety pins, 2","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"bacon-eggs","title":"Bacon & Eggs","mats":[{"t":"Dark red or brown shirt for the bacon, 1 (own)","g":[[null]]},{"t":"White shirt for the egg, 1 (own)","g":[["white-tshirt"]]},{"t":"1 sheet red-brown craft felt, 9x12 inches","g":[["paper-red"]]},{"t":"1 sheet each white and yellow craft felt, 9x12 inches","g":[["felt","paper-white"],["felt","paper-yellow"]]},{"t":"Safety pins, 6 to 8","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"bamboo-demon","title":"Bamboo-Muzzle Demon","mats":[{"t":"Pink bathrobe or kimono-style robe, 1 (own, or buy: clothing store)","g":[[null]]},{"t":"Long dark wig, 1","g":[[null]]},{"t":"1 cardboard tube from wrapping paper or paper towels (make: save from home)","g":[["cardboard"]]},{"t":"Ribbon or string, about 3 feet (own, or buy: craft store)","g":[["yarn"]]},{"t":"Red non-toxic face paint, 1 tube","g":[["paint-red"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"basketball-star","title":"Basketball Star","mats":[{"t":"Basketball jersey or numbered tank top, 1 (own, or buy: sporting goods store)","g":[[null]]},{"t":"Basketball shorts, 1 pair (own)","g":[[null]]},{"t":"Black non-toxic face paint or 1 eyeliner pencil","g":[["paint-black"]]},{"t":"Basketball, 1 (own, or buy: toy store)","g":[[null]]}]},{"id":"black-cat","title":"Black Cat Burglar","mats":[{"t":"Black shirt and pants or sweatsuit, 1 set (own)","g":[["black-clothes","sweatsuit"]]},{"t":"Plain headband, 1","g":[["headband"]]},{"t":"1 sheet black craft felt, 9x12 inches","g":[["felt","paper-black"]]},{"t":"Black construction paper, 1 sheet (make: cut a mask from it)","g":[["paper-black"]]},{"t":"Black non-toxic face paint, 1 tube","g":[["paint-black"]]},{"t":"Small drawstring bag or pillowcase, 1 (own)","g":[[null,"pillowcase"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"block-game-crew","title":"Block Game Crew","mats":[{"t":"1 large cardboard box per person, big enough to fit over the torso (make: ask a grocery store for spares)","g":[["cardboard"]]},{"t":"Acrylic paint in each hero's colors, 1 small bottle per color","g":[[null]]},{"t":"Paintbrushes, 1 wide and 1 detail per person","g":[[null]]},{"t":"Black marker, 1","g":[["markers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"block-monster","title":"Block Monster","mats":[{"t":"Solid-color sweatsuit, any color, 1 set (own)","g":[["sweatsuit"]]},{"t":"1 large cardboard box (make: cut it into square blocks)","g":[["cardboard"]]},{"t":"Packing tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Non-toxic face paint, 1 tube","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]}]},{"id":"blue-alien-ohana","title":"Blue Alien Ohana","mats":[{"t":"Blue hoodie per alien-role person, 1 each (own, or buy: clothing store)","g":[["hoodie"]]},{"t":"Blue pipe cleaners, 2 per alien","g":[["pipe-cleaners"]]},{"t":"Blue pom-poms, 2 per alien","g":[[null,"stuffing"]]},{"t":"Headband per alien-role person, 1 each","g":[["headband"]]},{"t":"Red t-shirt or dress per Lilo-role person, 1 each (make: from closet, or buy: thrift store)","g":[[null]]},{"t":"White craft felt or paper, 1 sheet","g":[["felt","paper-white"]]},{"t":"Safety pins, 4 to 6","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"blue-dog-family","title":"Aussie Dog Family","mats":[{"t":"Blue or orange t-shirt per person, 1 each (own, or buy: clothing store)","g":[[null]]},{"t":"Headband per person, 1 each","g":[["headband"]]},{"t":"Blue, orange, and white craft felt, 1 sheet of each color 9x12 inches","g":[["felt","paper-blue"],["felt","paper-orange"],["felt","paper-white"]]},{"t":"Safety pins, 4 per person","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"board-game-pieces","title":"Board Game Pieces","mats":[{"t":"Black or white monochrome clothes, 1 set per person (own)","g":[["black-clothes"]]},{"t":"Large cardboard boxes, 2 to 3 (make: collect spares)","g":[["cardboard"]]},{"t":"White and black acrylic paint, 1 small bottle each","g":[[null]]},{"t":"Paintbrushes, 1 wide and 1 detail","g":[[null]]},{"t":"Black marker, 1","g":[["markers"]]},{"t":"Ribbon or string for straps, about 4 feet per board (own)","g":[["yarn"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"bowling-pins","title":"Bowling Pins","mats":[{"t":"White shirt and pants per pin person, 1 set each (own)","g":[[null]]},{"t":"Red duct or electrical tape, 1 roll","g":[["tape-red"]]},{"t":"Black shirt and pants for the bowler, 1 set (own)","g":[["black-clothes"]]},{"t":"Toy bowling ball or black playground ball, 1","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"boxer","title":"Boxer","mats":[{"t":"Bathrobe, 1 (own)","g":[[null]]},{"t":"Toy boxing gloves, 1 pair","g":[[null]]},{"t":"Purple and yellow non-toxic face paint, 1 tube each","g":[["paint-purple"],["paint-yellow"]]},{"t":"Athletic shorts and sneakers, 1 set (own)","g":[[null]]},{"t":"Phone for entrance music, 1 (own)","g":[[null]]}]},{"id":"breakfast-buffet","title":"Breakfast Buffet","mats":[{"t":"Cardboard sheets, 1 per person about 2x2 feet (make: cut from boxes)","g":[["cardboard"]]},{"t":"Markers in assorted colors, 1 pack (own, or buy: dollar store)","g":[["markers"]]},{"t":"String or yarn, about 4 feet per person (own)","g":[["yarn"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"bumble-bee","title":"Bumble Bee","mats":[{"t":"Black sweatshirt and sweatpants, 1 set (own, or buy: clothing store)","g":[["black-clothes"]]},{"t":"Yellow duct or electrical tape, 1 roll","g":[["tape-yellow"]]},{"t":"Black headband, 1","g":[["headband"]]},{"t":"2 yellow pipe cleaners, 12 inches each","g":[["pipe-cleaners"]]},{"t":"2 black pom-poms, 1 inch","g":[[null,"stuffing"]]},{"t":"Craft glue, 1 tube","g":[["glue"]]}]},{"id":"burger-joint-couple","title":"Burger Joint Couple","mats":[{"t":"2 white aprons","g":[[null]]},{"t":"Fake mustache, 1","g":[[null]]},{"t":"Curly red wig, 1","g":[[null]]},{"t":"Costume glasses, 1 pair","g":[[null]]},{"t":"Order pad and pencil, 1 set (own, or buy: dollar store)","g":[["paper-pen"]]}]},{"id":"caped-duo","title":"Caped Duo","mats":[{"t":"2 old twin sheets or large fabric rectangles, about 4x5 feet each (make: cut from old sheets)","g":[["bedsheet"]]},{"t":"Craft felt for masks and emblems, 2 sheets 9x12 inches","g":[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Ribbon or cord for cape ties, about 3 feet per cape (own, or buy: craft store)","g":[["yarn"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Paper and pencil for sketching, 1 set (own)","g":[["paper-pen"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"cardboard-knight","title":"Cardboard Knight","mats":[{"t":"Large cardboard boxes, 2 to 3 (make: collect spares)","g":[["cardboard"]]},{"t":"Silver acrylic paint, 1 bottle","g":[[null]]},{"t":"Foam brush or paintbrush, 1 wide (own, or buy: craft store)","g":[[null]]},{"t":"1 pool noodle","g":[[null]]},{"t":"Gray duct tape, 1 roll","g":[["tape-gray"]]},{"t":"Black marker, 1","g":[["markers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"cat-mouse","title":"Cat & Mouse","mats":[{"t":"2 headbands","g":[["headband"]]},{"t":"1 sheet black craft felt, 9x12 inches","g":[["felt","paper-black"]]},{"t":"1 sheet gray craft felt, 9x12 inches","g":[["felt","paper-gray"]]},{"t":"Black eyeliner pencil or non-toxic face paint, 1","g":[["paint-black"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"cereal-crew","title":"Cereal Crew","mats":[{"t":"Solid-color shirt and pants per person, 1 set each (own)","g":[[null]]},{"t":"Empty cereal boxes, 1 per person (make: save from home)","g":[["cardboard"]]},{"t":"Markers or crayons in assorted colors, 1 pack (own)","g":[["markers"]]},{"t":"String, about 4 feet per person (own)","g":[["yarn"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"cheerleader","title":"Cheerleader","mats":[{"t":"Team-color t-shirt and skirt or shorts, 1 set (own)","g":[[null]]},{"t":"4 to 6 white plastic grocery bags (make: save from home)","g":[[null]]},{"t":"Hair ribbon in a team color, 1","g":[["yarn"]]},{"t":"Rubber bands or tape, 1 pack (own)","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"classic-ghost","title":"Classic Ghost","mats":[{"t":"1 white flat sheet: twin size for kids under 8, full size for tweens and adults (make: use an old sheet; buy: thrift store for a dollar or two)","g":[["bedsheet"]]},{"t":"Black marker, thick tip, 1","g":[["markers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"crowd-camouflage","title":"Crowd Camouflage","mats":[{"t":"Gray hoodie, 1 (own)","g":[["hoodie"]]},{"t":"Dark pants, 1 pair (own)","g":[["black-clothes"]]},{"t":"Gray beanie, 1 (own, or buy: dollar store)","g":[["hat"]]},{"t":"Blank adhesive name tag, 1","g":[[null]]},{"t":"Pen, 1 (own)","g":[["paper-pen"]]}]},{"id":"deadpan-diva","title":"Deadpan Diva","mats":[{"t":"Black dress, 1 (own)","g":[[null]]},{"t":"Very pale foundation or white non-toxic face paint, 1","g":[["paint-white"]]},{"t":"Dark eyeliner and lipstick, 1 set (own, or buy: dollar store)","g":[["paint-black","paint-brown"],["paint-red"]]},{"t":"2 hair ties (own)","g":[[null]]}]},{"id":"decades-crew","title":"Decades Crew","mats":[{"t":"Each person's own closet clothes (make: use what you own)","g":[[null]]},{"t":"1 printed decade card per person, e.g. 70s, 80s, 90s, cardstock or paper (make: hand-letter on paper)","g":[["paper-pen"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll or safety pins, 1 pack","g":[["tape","safety-pins"]]},{"t":"Hair gel or spray, 1","g":[[null]]}]},{"id":"deviled-egg","title":"Deviled Egg","mats":[{"t":"1 white t-shirt","g":[["white-tshirt"]]},{"t":"1 sheet yellow felt, 9x12 inches","g":[["felt","paper-yellow"]]},{"t":"2 sheets red felt, 9x12 inches each","g":[["felt"]]},{"t":"1 red headband","g":[["red-headband"]]},{"t":"2 red pipe cleaners, 12 inches each","g":[["pipe-cleaners","paper-red"]]},{"t":"Scissors, 1 pair; tape, 1 roll or glue, 1 bottle","g":[["scissors"],["tape","glue"]]},{"t":"Red face paint or lipstick, 1","g":[["paint-red"]]}]},{"id":"dino-herd","title":"Dino Herd","mats":[{"t":"1 green poncho or green bedsheet per person, about 50x60 inches","g":[[null]]},{"t":"1 sheet green felt per person, 9x12 inches","g":[["felt","paper-green"]]},{"t":"1 old sock per person, white or colored (make: use one you own)","g":[["socks"]]},{"t":"Scrap fabric or cotton balls for stuffing, about 1 cup per person (make: use what you own)","g":[[null,"stuffing"]]},{"t":"Fabric glue, 1 tube, or 6 safety pins per person","g":[["glue","safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"dino-rangers","title":"Dino Rangers","mats":[{"t":"Khaki shirt, 1, and khaki pants, 1 pair, per grown-up (make: use what you own)","g":[[null]]},{"t":"Green hoodie per child, 1 each","g":[["hoodie"]]},{"t":"White paper or card, 2 sheets (make: use what you own)","g":[["paper-white"]]},{"t":"1 toy dinosaur or plush per kid","g":[[null]]},{"t":"Ribbon or string, 18 inches per kid (make: use what you own)","g":[["yarn"]]},{"t":"Tape, 1 roll and scissors, 1 pair","g":[["tape"],["scissors"]]}]},{"id":"dinosaur-family","title":"Dinosaur Family","mats":[{"t":"1 green sweatsuit per person","g":[["sweatsuit"]]},{"t":"1 sheet green felt per person, 9x12 inches","g":[["felt","paper-green"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Fabric glue, 1 tube, or 6 safety pins per person","g":[["glue","safety-pins"]]},{"t":"Green face paint, non-toxic, 1 tube","g":[["paint-green"]]}]},{"id":"doctor-bride","title":"The Doctor & the Bride","mats":[{"t":"1 old dark suit or jacket (make: use what you own)","g":[[null]]},{"t":"Green face paint, non-toxic, 1 tube","g":[["paint-green"]]},{"t":"2 plastic neck bolts, costume style","g":[[null]]},{"t":"1 white dress or old white sheet (make: use what you own)","g":[[null,"bedsheet"]]},{"t":"White hair spray, 1 can","g":[[null]]},{"t":"Tape, 1 roll or glue, 1 bottle","g":[["tape","glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Dark eye shadow, 1 (make: use what you own)","g":[["paint-black","paint-brown"]]}]},{"id":"emerald-witch","title":"Emerald Witch","mats":[{"t":"1 long green dress, or green fabric, 3 yards","g":[[null]]},{"t":"1 sheet black cardboard, 22x28 inches, for the hat","g":[["cardboard"]]},{"t":"Green face paint, non-toxic, 1 tube","g":[["paint-green"]]},{"t":"Black eyeliner, 1, and dark green eye shadow, 1","g":[["paint-black"],["paint-green"]]},{"t":"Hot glue gun with glue sticks, 1 set and scissors, 1 pair","g":[[null],["scissors"]]},{"t":"1 broom from home for a prop (make: use what you own)","g":[[null]]}]},{"id":"emoji-crew","title":"Emoji Crew","mats":[{"t":"1 yellow t-shirt per person","g":[["tshirt"]]},{"t":"1 large white paper plate, 10-inch, or cardboard circle per person (make: use what you own)","g":[["paper-plates","cardboard"]]},{"t":"Markers in black, red, and blue, 1 set (make: use what you own)","g":[["markers"]]},{"t":"Scissors, 1 pair and tape, 1 roll","g":[["scissors"],["tape"]]}]},{"id":"enchanted-castle-crew","title":"Enchanted Castle Crew","mats":[{"t":"Princess: yellow fabric, 2 yards","g":[[null]]},{"t":"Prince: 1 blue jacket and 1 pair dark pants (make: use your closet)","g":[[null]]},{"t":"Candelabra: gold face paint, 1 tube, and 1 gold headband","g":[["paint-gold"],[null]]},{"t":"Clock: 1 brown cardboard circle, about 12 inches, and painted hands (make: from a box)","g":[["cardboard"]]},{"t":"Teapot: 1 white pot or cardboard pot body (make: from a box)","g":[[null,"cardboard"]]},{"t":"Hot glue gun, 1; scissors, 1 pair; face paint, 1 set","g":[[null],["scissors"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]}]},{"id":"error-404","title":"Error 404","mats":[{"t":"1 black hoodie (make: use your closet)","g":[[null]]},{"t":"1 pair black pants (make: use your closet)","g":[["black-clothes"]]},{"t":"1 sheet white paper, blank (make: use what you own)","g":[["paper-white"]]},{"t":"1 old phone case or cracked-screen phone protector prop (make: use an old case)","g":[[null]]},{"t":"Tape, 1 roll (make: use what you own)","g":[["tape"]]}]},{"id":"fairy-tale-princesses","title":"Fairy Tale Princesses","mats":[{"t":"1 dress from the closet per person (make: use what you own)","g":[[null]]},{"t":"1 cereal box per crown (make: from a cereal box)","g":[["cardboard"]]},{"t":"Gold or silver paint or markers, 1 set","g":[[null,"markers"]]},{"t":"Scissors, 1 pair and tape, 1 roll","g":[["scissors"],["tape"]]},{"t":"1 hair ribbon per person","g":[["yarn"]]}]},{"id":"fuzzy-monster","title":"Fuzzy Monster","mats":[{"t":"1 pastel fuzzy sweatsuit","g":[[null]]},{"t":"2 large googly eyes, 3 inches or bigger","g":[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"1 sheet white felt, 9x12 inches, for the smile","g":[["felt","paper-white"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Fabric glue, 1 tube, or 4 safety pins","g":[["glue","safety-pins"]]}]},{"id":"garden-gnome","title":"Garden Gnome","mats":[{"t":"Earth-tone shirt and pants, 1 set (own)","g":[[null]]},{"t":"Cardboard for the hat, 1 sheet (make: from a box)","g":[["cardboard"]]},{"t":"Blue paint for the hat, 1 small bottle","g":[[null]]},{"t":"White face paint for the beard, non-toxic, 1 tube","g":[["paint-white"]]},{"t":"Toy fishing rod or small garden shovel, 1","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"ghost-hunters","title":"Ghost Hunters","mats":[{"t":"1 khaki or tan jumpsuit, or matching shirt and pants, per person","g":[[null]]},{"t":"1 small cardboard box per person, shoebox size (make: use what you own)","g":[["cardboard"]]},{"t":"White paper, 2 sheets, and markers for name patches (make: use what you own)","g":[["paper-white"],["markers"]]},{"t":"1 sheet black cardboard per person (make: from a box)","g":[["cardboard"]]},{"t":"Packing tape or glue, scissors","g":[["tape","glue"],["scissors"]]}]},{"id":"gloom-bloom","title":"Gloom & Bloom","mats":[{"t":"1 set black clothes from the closet (make: use what you own)","g":[["black-clothes"]]},{"t":"1 set colorful clothes from the closet (make: use what you own)","g":[[null]]},{"t":"Black and white face paint, non-toxic, 1 set","g":[["paint-black"],["paint-white"]]},{"t":"2 hair ties for braids (make: use what you own)","g":[[null]]},{"t":"3 to 5 fake flowers","g":[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]}]},{"id":"glow-skeleton","title":"Glow Skeleton","mats":[{"t":"Black sweatsuit, 1","g":[["sweatsuit"]]},{"t":"Glow-in-the-dark bone tape, 1 roll","g":[[null]]},{"t":"Glow bracelets, 1 pack","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Black face paint, non-toxic, 1 tube","g":[["paint-black"]]}]},{"id":"goggle-crew","title":"Goggle Crew","mats":[{"t":"1 yellow t-shirt per person","g":[["tshirt"]]},{"t":"1 pair denim overalls per person","g":[[null]]},{"t":"1 pair swim or safety goggles per person","g":[[null]]},{"t":"1 pair black gloves per person","g":[[null]]}]},{"id":"good-witch-bad-witch","title":"Good Witch, Bad Witch","mats":[{"t":"1 black dress or set of black clothes for the bad witch (make: use your closet)","g":[[null,"black-clothes"]]},{"t":"1 pink dress or set of pink clothes for the good witch (make: use your closet)","g":[[null]]},{"t":"Green face paint, non-toxic, 1 tube","g":[["paint-green"]]},{"t":"1 cardboard crown (make: from a cereal box)","g":[["cardboard"]]},{"t":"1 black cone hat","g":[[null]]},{"t":"Hot glue gun, scissors, 1 pink marker, tape","g":[[null],["scissors"],["markers"],["tape"]]}]},{"id":"haunted-animatronics","title":"Haunted Animatronics","mats":[{"t":"1 large cardboard box per person, big enough to cover the head (make: use what you own)","g":[["cardboard"]]},{"t":"2 red LED tea lights per person","g":[[null]]},{"t":"Paint in gray, black, and one accent color, 1 small bottle each","g":[[null]]},{"t":"1 set old clothes with holes or tears (make: use what you own)","g":[[null]]},{"t":"Hot glue gun, 1; scissors, 1 pair; utility knife, 1 (adults only)","g":[[null],["scissors"]]}]},{"id":"haunted-portraits","title":"Haunted Portraits","mats":[{"t":"1 set old-fashioned dark clothes per person, e.g. a vest, long skirt, or button-up (make: use your closet)","g":[[null]]},{"t":"Gray and white face paint, non-toxic, 1 set","g":[["paint-gray"],["paint-white"]]},{"t":"1 large picture frame or cardboard frame per person","g":[[null,"cardboard"]]},{"t":"Hair spray or powder for a grayed look, 1","g":[[null]]}]},{"id":"headless-horsemen","title":"Headless Horsemen","mats":[{"t":"Black cape or black sheet, 1 per person","g":[[null]]},{"t":"Small jack-o-lantern bucket or foam pumpkin, 1 per person","g":[[null]]},{"t":"Broom or stick-horse substitute, 1 per person (own: broom from home)","g":[[null]]},{"t":"Tape, 1 roll (own)","g":[["tape"]]},{"t":"Glow bracelets, 1 pack","g":[[null]]}]},{"id":"hero-squad","title":"Hero Squad","mats":[{"t":"Cape per person in squad colors, 1 each","g":[[null]]},{"t":"Mask per person matching the cape color, 1 each","g":[[null]]},{"t":"T-shirt per person in the cape color, 1 each","g":[[null]]},{"t":"Fabric paint for the team emblem, 1 bottle","g":[[null]]},{"t":"Safety pins, 2 per person (own)","g":[["safety-pins"]]}]},{"id":"ice-cream-cone","title":"Ice Cream Cone","mats":[{"t":"Tan paper party hat or cone, 1","g":[[null]]},{"t":"White t-shirt, 1","g":[["white-tshirt"]]},{"t":"Colored dot stickers or pom-poms for sprinkles, 1 pack","g":[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Brown paint or marker for the cone crosshatch, 1","g":[["markers"]]},{"t":"Tape, 1 roll (own)","g":[["tape"]]}]},{"id":"ketchup-mustard","title":"Ketchup & Mustard","mats":[{"t":"1 red t-shirt, 1 yellow t-shirt (make: raid the closet)","g":[[null]]},{"t":"Red felt or construction paper, 1 sheet 9x12 inches","g":[["felt","paper-red"]]},{"t":"Yellow felt or construction paper, 1 sheet 9x12 inches","g":[["felt","paper-yellow"]]},{"t":"Safety pins, 8","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"little-lion","title":"Little Lion","mats":[{"t":"Tan or brown sweatsuit, 1","g":[[null]]},{"t":"Brown fuzzy fabric strip or old brown towel for the mane, about 24 inches long","g":[[null]]},{"t":"Scissors, 1 pair (own)","g":[["scissors"]]},{"t":"Safety pins or fabric glue, 6 to 8 pins or 1 tube glue","g":[["safety-pins","glue"]]},{"t":"Brown non-toxic face paint, 1 tube","g":[["paint-brown"]]}]},{"id":"little-pig-family","title":"Little Pig Family","mats":[{"t":"Pink t-shirts or pajamas, 1 per person","g":[[null]]},{"t":"Pink headband, 1 per person","g":[["headband"]]},{"t":"Pink paper cup, 1 per snout (own: from the kitchen drawer)","g":[[null]]},{"t":"Pink felt or construction paper, 2 triangles per ear","g":[[null,"paper-pink"]]},{"t":"Pink string or yarn, 1 arm length per snout (own: from the craft drawer)","g":[[null,"yarn"]]},{"t":"Scissors, 1 pair, and clear tape, 1 roll (own: household tools)","g":[["scissors"],["tape"]]},{"t":"Pink blush or face paint for cheeks, 1","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]}]},{"id":"little-shark","title":"Little Shark","mats":[{"t":"Gray hoodie, 1","g":[["hoodie"]]},{"t":"Gray felt, 1 sheet 9x12 inches","g":[["felt","paper-gray"]]},{"t":"White felt, 1 small sheet","g":[["felt","paper-white"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Scissors, 1 pair (own: household tools)","g":[["scissors"]]}]},{"id":"little-witch","title":"Little Witch","mats":[{"t":"Black cape or black bedsheet, 1","g":[[null]]},{"t":"Pointy witch hat, 1","g":[[null]]},{"t":"Black-and-white striped tights, 1 pair","g":[[null]]},{"t":"Green non-toxic face paint, 1 tube","g":[["paint-green"]]},{"t":"Safety pin or ribbon, 1 (own: from the sewing kit)","g":[["safety-pins","yarn"]]}]},{"id":"lost-tourist","title":"Lost Tourist","mats":[{"t":"Button-down shirt, 1 (own, to wrinkle on purpose)","g":[[null]]},{"t":"Sunglasses and camera or phone on a strap, 1 set (own)","g":[["sunglasses"],[null]]},{"t":"Paper map, 1 (make: print one at home, or draw a fake map on printer paper)","g":[["paper-pen"]]},{"t":"Luggage tag, 1","g":[[null]]},{"t":"Clear tape, 1 roll (own)","g":[["tape"]]}]},{"id":"mermaid-crew","title":"Mermaid Crew","mats":[{"t":"T-shirt or dress in a sea color (teal, purple, red, white), 1 per person","g":[[null]]},{"t":"Face paint in a matching accent color, 1 tube","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]},{"t":"Plastic trident prop, 1","g":[[null]]},{"t":"Toy crab or red paper for a cardboard crab, 1 (make: cut from red paper, or buy: toy store)","g":[[null,"cardboard"]]},{"t":"Shell necklace, 1","g":[[null]]},{"t":"Scissors and tape, 1 set (own)","g":[["scissors"],["tape"]]}]},{"id":"moth-porch-light","title":"Moth and Porch Light","mats":[{"t":"Neutral shirt and pants in gray, brown, or tan, 1 set (own: from closet)","g":[[null]]},{"t":"Large cardboard box, 1 (own: cut two wing shapes from it)","g":[["cardboard"]]},{"t":"Brown and tan markers or paint, 1 set","g":[["markers"]]},{"t":"Brown craft pipe cleaners, 2","g":[["pipe-cleaners","yarn"]]},{"t":"Headband, 1 (own: from the drawer)","g":[["headband"]]},{"t":"Yellow t-shirt and yellow pants, 1 set","g":[[null]]},{"t":"Cone lampshade, 1","g":[[null]]},{"t":"Tape, 1 roll, and scissors, 1 pair (own: household tools)","g":[["tape"],["scissors"]]}]},{"id":"mystery-crew","title":"Mystery Crew","mats":[{"t":"Orange, purple, blue, and red t-shirts, 1 each","g":[[null]]},{"t":"Dog ears headband or a brown dog costume piece, 1","g":[[null]]},{"t":"Fake magnifying glass, 1","g":[[null]]},{"t":"Headband or scarf in a matching color, 1 per person (own: from the drawer)","g":[["headband"]]},{"t":"Brown non-toxic face paint for the dog's nose, 1 tube","g":[["paint-brown"]]}]},{"id":"neon-demon-hunter","title":"Neon Demon Hunter","mats":[{"t":"Black hoodie, black pants, chunky sneakers, 1 set (own)","g":[["hoodie","black-clothes"]]},{"t":"Neon fabric paint in 2 to 3 colors, 1 tube each","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]},{"t":"Glow-in-the-dark temporary tattoos or neon eyeliner, 1 pack","g":[[null]]},{"t":"Foam sword prop, 1","g":[[null]]},{"t":"Hair gel or temporary neon hair spray, 1","g":[[null]]}]},{"id":"ninja","title":"Ninja","mats":[{"t":"All-black outfit: t-shirt, pants, and a black beanie, 1 set (own: from closet)","g":[["black-clothes"]]},{"t":"Black belt or sash, 1 (own: an old tie or scarf)","g":[[null]]},{"t":"Black headband or strip of black t-shirt, 1 strip about 3 inches wide (own: cut from an old shirt)","g":[[null,"black-clothes"]]},{"t":"Scissors, 1 pair, and tape, 1 roll (own: household tools)","g":[["scissors"],["tape"]]}]},{"id":"office-couple","title":"Office Couple","mats":[{"t":"White button-down shirts, 2 (own: from closet)","g":[[null]]},{"t":"Name tags, 2","g":[[null]]},{"t":"Toy teapot or a small real teapot, 1 (own: from the kitchen)","g":[[null]]},{"t":"Black pants or skirts, 2 (own: from closet)","g":[["black-clothes"]]},{"t":"Marker for writing names, 1 (own: household)","g":[["markers"]]}]},{"id":"pbj","title":"Peanut Butter & Jelly","mats":[{"t":"Brown t-shirt, 1","g":[[null]]},{"t":"Purple t-shirt, 1","g":[[null]]},{"t":"White poster board, 2 sheets","g":[["paper-white"]]},{"t":"Markers, 1 set (own: household)","g":[["markers"]]},{"t":"Scissors, 1 pair, and tape or string, 1 roll or spool (own: household tools)","g":[["scissors"],["tape","yarn"]]}]},{"id":"peas-pod","title":"Peas in a Pod","mats":[{"t":"Green t-shirts, 1 per person for 3 to 5 people","g":[[null]]},{"t":"Green felt, 1 yard","g":[["felt"]]},{"t":"Green fabric paint, 1 bottle","g":[[null]]},{"t":"Hot glue gun or fabric glue, 1","g":[[null,"glue"]]},{"t":"Green non-toxic face paint, 1 tube","g":[["paint-green"]]},{"t":"Scissors, 1 pair (own: household tools)","g":[["scissors"]]}]},{"id":"penguin-huddle","title":"Penguin Huddle","mats":[{"t":"Black long-sleeve shirts, 1 per person","g":[["black-clothes"]]},{"t":"White felt, 1 sheet 9x12 inches per person","g":[["felt","paper-white"]]},{"t":"Orange felt, 1 sheet 9x12 inches per person","g":[["felt","paper-orange"]]},{"t":"Headbands, 1 per person","g":[["headband"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Scissors, 1 pair (own: household tools)","g":[["scissors"]]}]},{"id":"pickle","title":"Pickle","mats":[{"t":"Green tunic or oversized green t-shirt, 1","g":[[null]]},{"t":"Green bubble wrap or green pom-poms, about 20 bumps","g":[[null]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Green non-toxic face paint, 1 tube","g":[["paint-green"]]}]},{"id":"pixel-ghost","title":"Pixel Ghost","mats":[{"t":"White bedsheet or white fabric, 1 twin-size","g":[["bedsheet"]]},{"t":"Black felt, 1 sheet 9x12 inches","g":[["felt","paper-black"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Scissors, 1 pair (own: household tools)","g":[["scissors"]]},{"t":"Marker and ruler, 1 each (own: household)","g":[["markers"],[null]]}]},{"id":"pizza-slice","title":"Pizza Slice","mats":[{"t":"Large cardboard box, 1 (make: cut a big triangle, about 3 feet tall)","g":[["cardboard"]]},{"t":"Yellow and orange acrylic paint, 1 bottle each","g":[[null]]},{"t":"Red felt, 1 sheet","g":[["felt","paper-red"]]},{"t":"Brown felt scraps for crust, or 1 brown paper bag","g":[[null,"paper-bag"]]},{"t":"Paintbrush, scissors, tape, 1 set (own)","g":[[null],["scissors"],["tape"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]}]},{"id":"plague-doctor","title":"Plague Doctor","mats":[{"t":"Long black coat or black robe, 1","g":[[null]]},{"t":"Wide-brim black hat, 1","g":[["hat"]]},{"t":"Black half mask or sunglasses, 1","g":[[null,"sunglasses"]]},{"t":"Cardboard or craft foam for the beak, 1 sheet 9x12 inches","g":[["cardboard"]]},{"t":"Black gloves, 1 pair","g":[[null]]},{"t":"Hot glue gun, 1","g":[[null]]},{"t":"Black spray paint or black markers, 1 can or set","g":[["markers"]]}]},{"id":"player-one-two","title":"Player One & Two","mats":[{"t":"Matching t-shirts, 2, any color","g":[["tshirt"]]},{"t":"Iron-on letters or fabric markers, spelling 1 and 2","g":[[null,"markers"]]},{"t":"Toy game controllers, 2","g":[[null]]},{"t":"Iron, 1 (own: household)","g":[[null]]}]},{"id":"plug-socket","title":"Plug and Socket","mats":[{"t":"Cardboard box, 1 large (own: cut two flat panels, one per person)","g":[["cardboard"]]},{"t":"Gray and white acrylic paint, 1 small bottle each","g":[[null]]},{"t":"Black markers, 1 set (own: household)","g":[["markers"]]},{"t":"Craft foam, 1 sheet 9x12 inches","g":[[null,"cardboard"]]},{"t":"Tape, 1 roll, and string, 1 spool, for wearing (own: household tools)","g":[["tape"],["yarn"]]},{"t":"Scissors, 1 pair (own: household tools)","g":[["scissors"]]}]},{"id":"plumber-duo","title":"Plumber Duo","mats":[{"t":"Blue overalls, 2","g":[[null]]},{"t":"Red t-shirt and green t-shirt, 1 each","g":[[null]]},{"t":"Red cap and green cap, 1 each","g":[[null]]},{"t":"Brown non-toxic face paint for mustaches, 1 tube","g":[["paint-brown"]]},{"t":"White circle stickers or white paper, 2 about 2 inches across","g":[["stickers","paper-white"]]},{"t":"Marker, 1 (own: household)","g":[["markers"]]}]},{"id":"pocket-plush","title":"Pocket Plush Monster","mats":[{"t":"Fuzzy one-piece pajamas or sweatsuit, 1","g":[[null,"sweatsuit"]]},{"t":"Felt ears: two big felt circles, about 4 inches across","g":[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Black and white felt for eyes and smile, 1 small sheet each","g":[["felt","paper-black"],["felt","paper-white"]]},{"t":"Large shipping tag or big index card, 1","g":[[null,"paper-pen"]]},{"t":"Marker, 1 (own: household)","g":[["markers"]]}]},{"id":"popcorn-bucket","title":"Popcorn Bucket","mats":[{"t":"Cardboard box, 1 medium (make: tall enough to cover the torso)","g":[["cardboard"]]},{"t":"Red and white striped wrapping paper or paint, 1 roll","g":[[null]]},{"t":"Yellow or white balloons, 8 to 10","g":[["balloons"]]},{"t":"Tape, string, scissors, 1 set (own)","g":[["tape"],["yarn"],["scissors"]]},{"t":"Red marker for the label, 1 (own)","g":[["markers"]]}]},{"id":"prince-princess","title":"Prince & Princess","mats":[{"t":"Gold paper crown or plastic crown, 1","g":[["paper-yellow"]]},{"t":"Cape or long piece of fabric, 1 about 3 feet long","g":[[null]]},{"t":"Thrifted gown or long dress, 1","g":[[null]]},{"t":"Tiara, 1","g":[[null]]},{"t":"Toy scepter or wand, 1","g":[[null]]}]},{"id":"rain-cloud-rainbow","title":"Rain Cloud and Rainbow","mats":[{"t":"Gray t-shirt or sweatshirt, 1","g":[[null]]},{"t":"White cotton balls or polyester stuffing, 1 bag","g":[["stuffing"]]},{"t":"Blue paper raindrops, about 15 (own: cut from blue construction paper)","g":[["paper-blue"]]},{"t":"String, 1 spool, and tape, 1 roll (own: household tools)","g":[["yarn"],["tape"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Rainbow-striped shirt, 1, or a white shirt, 1, plus rainbow fabric markers, 1 set","g":[[null]]}]},{"id":"ramen-bowl","title":"Ramen Bowl","mats":[{"t":"Large cardboard circle, about 2 feet wide (make: cut from a big box)","g":[["cardboard"]]},{"t":"White and red acrylic paint, 2 small bottles","g":[[null]]},{"t":"Yellow yarn, 1 skein","g":[["yarn"]]},{"t":"White craft foam or 1 foam ball","g":[[null,"paper-white"]]},{"t":"Chopsticks, 1 pair (own: kitchen drawer)","g":[[null]]},{"t":"Tape and string, 1 roll and about 2 feet (own: household)","g":[["tape"],["yarn"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"raptor-ranger","title":"Raptor & Ranger","mats":[{"t":"Khaki shirt and hat for the ranger, 1 set (own: from closet, or buy at a thrift store)","g":[[null],["hat"]]},{"t":"Green hoodie or green t-shirt for the raptor, 1 (own: from closet)","g":[[null]]},{"t":"Green felt sheet, 9x12 inches, 1","g":[["felt","paper-green"]]},{"t":"Rope, 3 feet, or 1 toy dog leash","g":[[null]]},{"t":"Face paint, green and black, 1 set","g":[["paint-green"],["paint-black"]]},{"t":"Scissors, 1 pair, and tape, 1 roll (own: household)","g":[["scissors"],["tape"]]}]},{"id":"referee","title":"Referee","mats":[{"t":"Plain black t-shirt or long-sleeve shirt, 1 (own: from closet)","g":[["black-clothes"]]},{"t":"Black pants or shorts, 1 pair (own: from closet)","g":[["black-clothes"]]},{"t":"White athletic tape, 1 roll","g":[["tape-white"]]},{"t":"Plastic whistle, 1","g":[[null]]},{"t":"Yellow fabric square, 6x6 inches (own: cut from an old cloth or napkin)","g":[[null]]}]},{"id":"robot-crew","title":"Cardboard Robot Crew","mats":[{"t":"Medium cardboard box per person, 1 each (make: from home or moving boxes)","g":[["cardboard"]]},{"t":"Small cardboard box per person for the head, 1 each (make: from cereal or shoe boxes)","g":[["cardboard"]]},{"t":"Aluminum foil, 1 large roll","g":[["foil"]]},{"t":"Plastic bottle caps, about 20 total (own)","g":[[null]]},{"t":"Duct tape, 1 roll","g":[["tape"]]},{"t":"Black permanent marker, 1 (own)","g":[["markers"]]},{"t":"Elastic string or yarn, 6 feet","g":[["yarn"]]},{"t":"Glow sticks, 1 per person","g":[[null]]}]},{"id":"robot-ranger","title":"Robot Ranger","mats":[{"t":"Medium cardboard box for the torso, 1 (own: from home)","g":[["cardboard"]]},{"t":"Aluminum foil, 1 roll","g":[["foil"]]},{"t":"Flexible aluminum dryer vent hose, 1 section about 3 feet","g":[[null]]},{"t":"Sticker dots or round stickers, 1 sheet","g":[["stickers","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Duct tape, 1 roll","g":[["tape"]]},{"t":"Blue or gray sweatsuit to wear underneath, 1 set (own: from closet)","g":[[null]]},{"t":"Black marker, 1 (own: from home)","g":[["markers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"safari-photographer","title":"Safari Photographer","mats":[{"t":"Khaki vest with pockets, 1","g":[[null]]},{"t":"Khaki pants or shorts, 1 pair (own: from closet)","g":[[null]]},{"t":"Toy camera, 1","g":[[null]]},{"t":"Toy binoculars, 1","g":[[null,"cardboard"]]},{"t":"Stuffed lion or lion cub toy, 1","g":[[null]]},{"t":"Safari hat, 1","g":[[null]]},{"t":"Scissors, 1 pair; tape, 1 roll; marker, 1 (own: household)","g":[["scissors"],["tape"],["markers"]]}]},{"id":"safari-zoo-crew","title":"Safari / Zoo Crew","mats":[{"t":"Solid-color clothes in animal colors, 1 set per person (own)","g":[[null]]},{"t":"Plastic headbands, 1 per person","g":[["headband"]]},{"t":"Felt sheets in brown, black, pink, tan, 1 pack","g":[["paper-brown"],["paper-black"],["paper-pink"]]},{"t":"Face paint in brown and black, 1 tube each","g":[["paint-brown"],["paint-black"]]},{"t":"Scissors and tape, 1 set (own)","g":[["scissors"],["tape"]]}]},{"id":"salt-pepper","title":"Salt & Pepper","mats":[{"t":"White shirt, pants, and hat for Salt, 1 set (own)","g":[["white-tshirt"],[null],["hat"]]},{"t":"Black shirt, pants, and hat for Pepper, 1 set (own)","g":[["black-clothes"],["hat"]]},{"t":"Cardboard for 2 shaker tops (make: from home)","g":[["cardboard"]]},{"t":"Gray paint or gray marker, 1","g":[[null,"markers"]]},{"t":"Black marker for the S and P, 1 (own)","g":[["markers"]]},{"t":"Tape or glue, 1 (own)","g":[["tape","glue"]]}]},{"id":"snow-sisters","title":"Ice Kingdom Crew","mats":[{"t":"Icy-blue dress or blue dress plus silver glitter glue, 1 set (buy glitter glue: craft store)","g":[[null]]},{"t":"Pink or lavender dress, 1 (own)","g":[[null]]},{"t":"White shirt, white pants, 3 large black felt circles (buy felt: craft store)","g":[["white-tshirt"],[null],["felt"]]},{"t":"Brown clothes, 2 brown pipe cleaners, 1 red pom-pom","g":[[null],["pipe-cleaners"],[null]]},{"t":"Silver headband, 1","g":[["headband"]]},{"t":"Tape and scissors, 1 set (own)","g":[["tape"],["scissors"]]}]},{"id":"soccer-squad","title":"Soccer Squad","mats":[{"t":"Matching jerseys or same-color t-shirts, 1 per player (own: from closet, or buy a multi-pack at a sports store)","g":[[null]]},{"t":"Black shirt and black shorts for the referee, 1 set (own: from closet)","g":[["black-clothes"]]},{"t":"Soccer ball, 1 any size","g":[[null]]},{"t":"Red cardstock rectangle, 3x4 inches, 1 (own: cut from a folder or colored paper)","g":[["paper-red"]]},{"t":"Black marker, 1 (own: from home)","g":[["markers"]]},{"t":"White athletic tape, 1 roll","g":[["tape-white"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"space-crewmate","title":"Space Crewmate","mats":[{"t":"Plain sweatsuit in one solid color, red recommended, 1 set (own: from closet)","g":[["sweatsuit"]]},{"t":"Cardboard, 1 sheet about 12x16 inches (own: from a box flap)","g":[["cardboard"]]},{"t":"Aluminum foil, about 2 feet (own: from the kitchen)","g":[["foil"]]},{"t":"Backpack straps, 2, or 2 long shoelaces (own: from home)","g":[["yarn"]]},{"t":"Markers, 3 to 4 colors (own: from home)","g":[["markers"]]},{"t":"Tape, 1 roll (own: from home)","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"spider","title":"Eight-Legged Spider","mats":[{"t":"Black sweatshirt and black sweatpants, 1 set (own: from closet)","g":[["black-clothes"]]},{"t":"Black socks, 8 (4 pairs, own: from the sock drawer)","g":[["socks"]]},{"t":"Newspaper or tissue paper, 3 to 4 sheets, for stuffing (own: from home)","g":[["newspaper"]]},{"t":"Thin black rope or black yarn, 4 feet","g":[["yarn"]]},{"t":"Black fabric glue, 1 bottle, or a needle and black thread","g":[["glue"]]},{"t":"Large googly eyes, 2","g":[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"White face paint, 1 tube","g":[["paint-white"]]}]},{"id":"sun-moon","title":"Sun and Moon","mats":[{"t":"Yellow shirt and pants for the Sun, 1 set (own: from closet)","g":[[null]]},{"t":"Navy or black shirt and pants for the Moon, 1 set (own: from closet)","g":[[null,"black-clothes"]]},{"t":"Yellow cardstock, 2 sheets","g":[[null,"paper-yellow"]]},{"t":"Silver star stickers, 1 sheet","g":[["paper-gray"]]},{"t":"White and yellow paper, 1 sheet each, for the crescent (own: from home)","g":[["paper-white"],["paper-yellow"]]},{"t":"Tape, 1 roll, and scissors, 1 pair (own: from home)","g":[["tape"],["scissors"]]}]},{"id":"superhero-family","title":"Superhero Family","mats":[{"t":"Matching red sweatsuits, 1 per person (own: from closet, or buy a set at a discount store)","g":[["sweatsuit"]]},{"t":"Black felt, 1 pack","g":[["felt","paper-black"]]},{"t":"Yellow felt, 1 sheet","g":[["felt"]]},{"t":"Plain headbands, 1 per person","g":[["headband"]]},{"t":"Safety pins, 6 to 8, or tape, 1 roll (own: from home)","g":[["safety-pins","tape"]]},{"t":"Scissors, 1 pair (own: from home)","g":[["scissors"]]}]},{"id":"sushi-roll","title":"Sushi Roll","mats":[{"t":"White bedsheet or large white t-shirt to wear, 1 (own: from closet)","g":[["bedsheet","white-tshirt"]]},{"t":"Dark green felt, 1 large sheet","g":[["paper-green"]]},{"t":"Pink or orange felt, 1 large sheet","g":[["felt"]]},{"t":"White pom-poms, 4 large, plus 1 green pom-pom","g":[[null,"stuffing"]]},{"t":"Toy chopsticks, 1 pair, or 2 wooden sticks","g":[[null,"paper-pen"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"tennis-duo","title":"Tennis Duo","mats":[{"t":"White t-shirts and white shorts or skirts, 1 set each (own: from closet)","g":[["white-tshirt"],[null]]},{"t":"White sweatbands, 2, or strips of white fabric","g":[[null]]},{"t":"Toy tennis rackets, 2","g":[[null,"cardboard"]]},{"t":"Tennis balls, 1 tube of 3","g":[[null]]},{"t":"White socks and sneakers, 1 pair each (own: from closet)","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"tin-hero","title":"The Tin Hero","mats":[{"t":"Red sweatsuit, 1 (own)","g":[[null]]},{"t":"Gold duct tape, 1 roll","g":[["tape"]]},{"t":"Battery tea light, 1","g":[[null]]},{"t":"Cardboard, 1 piece (own)","g":[["cardboard"]]},{"t":"Tape, 1 roll (own)","g":[["tape"]]},{"t":"Safety pin, 1 (own)","g":[["safety-pins"]]}]},{"id":"tiny-firefighter","title":"Tiny Firefighter","mats":[{"t":"Red sweatsuit, 1 (own: from closet)","g":[[null]]},{"t":"Toy firefighter helmet, 1","g":[[null]]},{"t":"Toy fire hose or coiled garden hose, 1","g":[[null]]},{"t":"Yellow reflective tape, 1 roll","g":[[null]]},{"t":"Black marker, 1 (own: from home)","g":[["markers"]]}]},{"id":"tiny-snail","title":"Tiny Snail","mats":[{"t":"Neutral beige or tan clothes, 1 set (own: from closet)","g":[[null]]},{"t":"Large cardboard sheet or 1 flattened box (own: from home)","g":[["cardboard"]]},{"t":"Brown and tan markers or crayons, 1 set (own: from home)","g":[["markers"]]},{"t":"Backpack straps, 2, or 2 long ribbons (own: from home)","g":[["yarn"]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Black pom-poms, 2","g":[[null,"stuffing"]]},{"t":"Tape, 1 roll (own: from home)","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"tooth-fairy","title":"Tooth and Tooth Fairy","mats":[{"t":"Tooth: all-white outfit, 1 set (own: from closet)","g":[[null]]},{"t":"Tooth fairy: white dress or white shirt with a white skirt, 1 (own: from closet)","g":[[null]]},{"t":"White cardstock, 1 large sheet","g":[["paper-white"]]},{"t":"White felt wings, 1 pair, or 1 wire coat hanger with white pantyhose","g":[["felt"]]},{"t":"Small envelope and play money or a coin, 1 (own: from home)","g":[[null]]},{"t":"Glitter glue, 1 tube","g":[[null]]},{"t":"Stick and aluminum foil for the wand, 1 (own: from home)","g":[[null],["foil"]]},{"t":"Tape, 1 roll, and scissors, 1 pair (own: from home)","g":[["tape"],["scissors"]]}]},{"id":"under-the-sea","title":"Under the Sea","mats":[{"t":"Jellyfish: 1 clear umbrella","g":[[null]]},{"t":"Jellyfish: pastel ribbons, 1 spool","g":[["yarn"]]},{"t":"Crab: red shirt and pants, 1 set, plus red mittens or red socks, 1 pair, for hands (own: from closet)","g":[[null]]},{"t":"Fish: silver or blue clothes, 1 set, and 1 large cardboard fish cutout (own: from home)","g":[[null],["cardboard"]]},{"t":"Seaweed: green clothes, 1 set, and long green streamers, 1 pack","g":[[null]]},{"t":"Waves: blue sheet or blue blanket, 1 (own: from home)","g":[[null]]},{"t":"Tape, 1 roll, and scissors, 1 pair (own: from home)","g":[["tape"],["scissors"]]}]},{"id":"vampire","title":"Classic Vampire","mats":[{"t":"Black cape or black bedsheet, 1 (buy cape: costume aisle; or make: from a black sheet from home)","g":[[null]]},{"t":"Black shirt and pants, 1 set (own: from closet)","g":[["black-clothes"]]},{"t":"Plastic vampire fangs, 1 pair","g":[[null]]},{"t":"Hair gel or pomade, 1 (own: from home)","g":[[null]]},{"t":"Red lipstick or red face paint, 1","g":[["paint-red"]]},{"t":"White face powder or pale face paint, 1","g":[["paint-white"]]}]},{"id":"walking-taco","title":"Walking Taco","mats":[{"t":"Tan vest or tan t-shirt, 1 (own: from closet)","g":[["tshirt"]]},{"t":"Brown, red, green, and yellow felt sheets, 1 pack","g":[["felt","paper-brown"],["felt","paper-red"],["felt","paper-green"],["felt","paper-yellow"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Scissors, 1 pair (own: from home)","g":[["scissors"]]}]},{"id":"web-hero-duo","title":"Web Hero Duo","mats":[{"t":"Hero: red and blue sweatsuit, or red shirt with blue pants, 1 set (own: from closet)","g":[["sweatsuit"]]},{"t":"Partner: black jacket and black pants, 1 set (own: from closet)","g":[["black-clothes"]]},{"t":"Black face paint or black eye mask, 1","g":[["paint-black"]]},{"t":"White face paint or white stickers, 1","g":[["stickers","paint-white"]]},{"t":"Red web gloves or red socks for hands, 1 pair (own: from closet)","g":[["socks"]]},{"t":"Tape, 1 roll (own: from home)","g":[["tape"]]}]},{"id":"web-slinger-crew","title":"Web Hero Crew","mats":[{"t":"Hoodies in red, black, and pink, 1 per person (own: from closet)","g":[["hoodie"]]},{"t":"Black fabric paint or black face paint, 1 tube","g":[["paint-black"]]},{"t":"White stickers or white electrical tape, 1 roll","g":[["stickers","tape-white"]]},{"t":"Sunglasses or swim goggles, 1 per person","g":[["sunglasses"]]},{"t":"Tape, 1 roll (own: from home)","g":[["tape"]]}]},{"id":"web-slinger-kid","title":"Web Hero","mats":[{"t":"Red sweatsuit or red shirt and pants, 1 set (own, or buy: clothing store)","g":[[null]]},{"t":"Blue craft felt for sleeve and boot accents, 1 sheet 9x12 inches","g":[["felt","paper-blue"]]},{"t":"Black electrical tape for web lines, 1 roll","g":[["tape-black"]]},{"t":"White paper or cardstock for eye lenses, 1 sheet (make: cut from paper)","g":[["paper-white"]]},{"t":"Plain headband, 1","g":[["headband"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"zombie-coworker","title":"Zombie Coworker","mats":[{"t":"Old button-down shirt you can cut up, 1 (own: from closet)","g":[[null]]},{"t":"Old tie, 1 (own: from closet)","g":[[null]]},{"t":"Pale face paint or white face powder, 1","g":[["paint-white"]]},{"t":"Dark eye makeup or black eyeshadow, 1","g":[["paint-black"]]},{"t":"Coffee mug, 1 (own: from home)","g":[[null]]},{"t":"Scissors, 1 pair (own: from home)","g":[["scissors"]]}]},{"id":"the-olympians","title":"The Olympians","mats":[{"t":"White bedsheets or large white fabric, 1 per person (own: raid the linen closet)","g":[["bedsheet"]]},{"t":"Gold rope or gold cord, 2 yards per person","g":[[null]]},{"t":"Gold paper or gold craft leaves for laurel crowns, 1 pack","g":[[null]]},{"t":"Gold face paint or gold eyeliner, 1","g":[["paint-gold"]]},{"t":"Cardboard for the props, 3 pieces: lightning bolt, trident, owl (own: from boxes)","g":[["cardboard"]]},{"t":"Gold markers or gold paint pen, 1","g":[[null,"markers"]]},{"t":"Safety pins, 6 to 8; scissors, 1 pair; tape, 1 roll (own: household)","g":[["safety-pins"],["scissors"],["tape"]]}]},{"id":"spaghetti-meatball","title":"Spaghetti & Meatball","mats":[{"t":"White t-shirt or sweatshirt, 1 (own: from closet)","g":[["white-tshirt",null]]},{"t":"Yellow or cream yarn, 1 skein","g":[["yarn"]]},{"t":"Brown pom-poms, 2 inch, 3 to 4","g":[[null]]},{"t":"Fabric glue or hot glue gun, 1","g":[[null,"glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"cupcake","title":"Cupcake","mats":[{"t":"Brown t-shirt or tunic for the wrapper, 1 (make: from closet)","g":[[null]]},{"t":"White pillowcase for the frosting, 1 (make: from home)","g":[["pillowcase"]]},{"t":"Red pom-pom or ball for the cherry, 1 about 2 inches","g":[[null]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]}]},{"id":"banana","title":"Banana","mats":[{"t":"Yellow sweatshirt and sweatpants, 1 set (make: from closet, or buy: clothing store)","g":[["sweatsuit"]]},{"t":"Green felt, 1 sheet 9x12 inches","g":[["felt"]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]}]},{"id":"hot-dog","title":"Hot Dog","mats":[{"t":"Red t-shirt, 1 (own)","g":[[null]]},{"t":"Tan or beige foam pool noodle, 1","g":[[null]]},{"t":"Yellow fabric paint for mustard, 1 bottle","g":[[null]]},{"t":"Safety pins or fabric glue, 1 pack","g":[["safety-pins","glue"]]}]},{"id":"donut","title":"Donut","mats":[{"t":"1 large cardboard box, about 24x24 inches flat (make: from home)","g":[["cardboard"]]},{"t":"Pink paint, 1 small bottle","g":[[null]]},{"t":"Felt sprinkles, 12 to 15 small pieces, or sticker sprinkles","g":[["felt","stickers"]]},{"t":"Ribbon or string, 4 feet (make: from home)","g":[["yarn"]]},{"t":"Scissors, 1 pair and glue, 1 bottle","g":[["scissors"],["glue"]]}]},{"id":"coffee-cup","title":"Coffee Cup","mats":[{"t":"White trash bag or white sheet, 1 large (make: from home)","g":[[null,"bedsheet"]]},{"t":"Cardboard tube or large cylinder, 1 (make: from home)","g":[["cardboard"]]},{"t":"Brown paper or felt for the lid, 1 sheet","g":[["paper-brown","felt"]]},{"t":"Brown marker, 1 thick","g":[["markers"]]}]},{"id":"fruit-salad","title":"Fruit Salad Crew","mats":[{"t":"Solid-color outfits in fruit colors (red, yellow, green, orange), 1 set per person (own)","g":[[null]]},{"t":"Green felt for leaf hats, 1 sheet 9x12 inches per person","g":[["felt","paper-green"]]},{"t":"Headbands, 1 per person","g":[["headband"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]}]},{"id":"wizard","title":"Classic Wizard","mats":[{"t":"Tall black pointy wizard hat, 1","g":[[null]]},{"t":"Long plain black robe or graduation gown, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Tall straight wooden staff, about 5 feet (make: from a dowel or sturdy branch, or buy: craft store)","g":[[null]]},{"t":"Belt or rope sash, 1 (own)","g":[[null]]}]},{"id":"toy-box-crew","title":"Toy Box Crew","mats":[{"t":"Cowboy hat, 1, and cow-print vest, 1, for the sheriff","g":[[null]]},{"t":"White shirt and pants, 1 set, with purple felt accents for the space ranger (own: from closet)","g":[["white-tshirt"],[null],["felt"]]},{"t":"Cardboard wings and 1 clear plastic dome for the space ranger helmet (own: from craft supplies)","g":[["cardboard"],[null]]},{"t":"Brown boots or boot covers, 1 pair, for the sheriff (own: from closet)","g":[[null]]},{"t":"Yellow shirt, 1, with a hand-drawn star badge for extra toy-box friends (own: from closet)","g":[[null]]},{"t":"Toy pull-string name tags, 1 per person (own: index cards)","g":[["paper-pen"]]},{"t":"Marker, 1; scissors, 1 pair; glue, 1 bottle; tape, 1 roll (own: household)","g":[["markers"],["scissors"],["glue"],["tape"]]}]},{"id":"demon-boy-band","title":"Demon Boy Band","mats":[{"t":"Oversized black or white t-shirt per person, 1 each (make: from closet)","g":[["white-tshirt","black-clothes"]]},{"t":"Baggy pants per person, 1 pair each (make: from closet)","g":[[null]]},{"t":"Neon fabric paint, 1 small bottle each in 2 colors","g":[[null]]},{"t":"Temporary tattoos or 1 neon eyeliner pencil","g":[[null,"paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]},{"t":"Toy microphone per person, 1 each","g":[[null]]},{"t":"Hair gel, 1 travel-size tube (make: from the bathroom)","g":[[null]]},{"t":"Sunglasses per person, 1 each, optional (make: from the drawer)","g":[["sunglasses"]]}]},{"id":"dragon-rider-duo","title":"Dragon Rider Duo","mats":[{"t":"1 brown t-shirt and 1 pair dark pants for the rider (make: from closet)","g":[[null]]},{"t":"Gray felt, 2 yards, or 1 old gray blanket for the dragon tunic","g":[[null]]},{"t":"1 large cardboard box for wings and tail (make: collect spares)","g":[["cardboard"]]},{"t":"Black and yellow craft foam, 1 sheet each for the dragon eyes","g":[[null,"cardboard"]]},{"t":"1 faux-fur vest or brown scarf for the rider (make: from closet)","g":[[null]]},{"t":"1 headband for the dragon eyes","g":[["headband"]]},{"t":"Scissors, tape, and string, 6 feet (make: household tools)","g":[["tape"],["yarn"],["scissors"]]}]},{"id":"numbered-players","title":"Numbered Players","mats":[{"t":"Green sweatsuit per person, 1 each","g":[[null]]},{"t":"White t-shirt per person, 1 each (own: from closet)","g":[["white-tshirt"]]},{"t":"Iron-on number patches or white paper numbers, 1 per person","g":[[null],["paper-white","markers"]]},{"t":"White sneakers, 1 pair per person (own: from closet)","g":[[null]]},{"t":"Iron, 1 (own: household)","g":[[null]]}]},{"id":"emotion-crew","title":"Emotion Crew","mats":[{"t":"1 solid bright color outfit per person: yellow, blue, red, green, purple, or orange (make: from closet)","g":[[null]]},{"t":"Face paint matching each outfit color, 1 per person","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]},{"t":"1 white poster board per person","g":[["paper-white"]]},{"t":"Markers, 1 set (make: from the house)","g":[["markers"]]},{"t":"Colored hair spray matching each outfit, 1 can per person, optional","g":[[null]]}]},{"id":"kart-racers","title":"Kart Racers","mats":[{"t":"Large cardboard box, 1 per racer, big enough to fit around the torso (make: collect spares)","g":[["cardboard"]]},{"t":"Red, blue, green, and yellow paint or wrapping paper, 1 bottle or roll per color","g":[[null]]},{"t":"Paper plates for wheels, 4 per kart","g":[["paper-plates"]]},{"t":"Racing cap or helmet, 1 per person (own: from closet)","g":[[null]]},{"t":"Scissors, 1 pair, tape, 1 roll, and string, 1 spool (own: household tools)","g":[["scissors"],["tape"],["yarn"]]},{"t":"Ribbon for kart straps, about 3 feet per kart (own: from closet)","g":[["yarn"]]}]},{"id":"tall-hat-crew","title":"Tall Hat Crew","mats":[{"t":"Tall red-and-white striped stovepipe hat, 1","g":[[null]]},{"t":"Red bow tie, 1","g":[[null]]},{"t":"Black shirt and pants for the cat, 1 set (own: from closet)","g":[["black-clothes"]]},{"t":"Red jumpsuits or red shirts and pants for the Things, 2 sets (own: from closet)","g":[[null]]},{"t":"Blue wigs, 2","g":[[null]]},{"t":"Iron-on letters or paper that says Thing 1 and Thing 2, 1 set","g":[[null,"markers"]]},{"t":"Iron, 1, and scissors, 1 pair (own: household)","g":[[null],["scissors"]]}]},{"id":"chipmunk-trio","title":"Chipmunk Trio","mats":[{"t":"Red, blue, and green sweaters or sweatshirts, 1 each","g":[[null]]},{"t":"Iron-on letters A, S, T, 1 set","g":[[null,"markers"]]},{"t":"Brown felt for ears, 3 pairs worth, 1 sheet 9x12 inches","g":[["felt"]]},{"t":"Headbands, 3","g":[["headband"]]},{"t":"Brown eyeliner for whiskers and a nose, 1","g":[["paint-brown"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]}]},{"id":"galaxy-knights","title":"Galaxy Knights","mats":[{"t":"1 brown or beige bathrobe or long coat per knight (make: from closet)","g":[[null]]},{"t":"1 toy energy-blade prop per knight","g":[[null]]},{"t":"1 wide belt or rope sash per knight (make: from closet)","g":[[null]]},{"t":"1 pair dark pants and boots per knight (make: from closet)","g":[[null]]},{"t":"Brown face paint for a hood shadow, 1 tube, optional","g":[["paint-brown"]]}]},{"id":"plastic-dream-crew","title":"Plastic Dream Crew","mats":[{"t":"All-pink outfit per person: dress, suit, or sweatsuit, 1 set each (own)","g":[[null]]},{"t":"Pink sunglasses, 1 per person","g":[["sunglasses"]]},{"t":"Plastic play accessories: phone, tiara, handbag, 1 per person (own)","g":[[null]]}]},{"id":"extinct-party-animal","title":"Extinct Party Animal","mats":[{"t":"1 jacket or blazer you own (own)","g":[[null]]},{"t":"1 sheet green craft felt, 9x12 inches","g":[["felt","paper-green"]]},{"t":"1 party hat","g":[[null]]},{"t":"1 blank name badge","g":[[null]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Marker, 1","g":[["markers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"dino-tourist","title":"Dino Tourist","mats":[{"t":"1 Hawaiian shirt","g":[[null]]},{"t":"1 fanny pack (own, or buy: thrift store)","g":[[null]]},{"t":"1 plush dinosaur tail","g":[[null]]},{"t":"1 toy camera, optional (own)","g":[[null]]},{"t":"1 pair sunglasses, optional (own)","g":[["sunglasses"]]}]},{"id":"raptor-barista","title":"Raptor Barista","mats":[{"t":"Green hoodie, 1","g":[["hoodie"]]},{"t":"Toy T. rex arms, 1 pair","g":[[null]]},{"t":"Paper coffee cup, 1 (own: from home)","g":[[null]]}]},{"id":"emotional-support-dinosaur","title":"Emotional Support Dinosaur","mats":[{"t":"1 vest or sleeveless jacket you own (own)","g":[[null]]},{"t":"1 sheet green craft felt, 9x12 inches","g":[["felt","paper-green"]]},{"t":"1 blank badge or pin","g":[[null]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]},{"t":"Marker, 1","g":[["markers"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"garden-fairy","title":"Garden Fairy","mats":[{"t":"Pink tulle, 1 yard","g":[[null]]},{"t":"Cardboard for wings, 1 large piece about 2x3 feet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Fake flowers, 1 bunch","g":[[null]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Wooden dowel or stick for the wand, about 12 inches (make: from the yard)","g":[[null]]},{"t":"Cardboard star for the wand tip, 1 (make: from scraps)","g":[["cardboard"]]},{"t":"Elastic for wing straps, about 2 feet","g":[[null]]},{"t":"Glitter glue, 1 tube","g":[[null]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Glue, 1 bottle","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"ballerina","title":"Ballerina","mats":[{"t":"Pink tulle, 2 to 3 yards","g":[[null]]},{"t":"Wide elastic, 1 inch wide, cut to the waist size plus 1 inch overlap","g":[[null]]},{"t":"Pink leotard or fitted shirt, 1 (own, or buy: clothing store)","g":[[null]]},{"t":"Pink tights, 1 pair (own, or buy: clothing store)","g":[[null]]},{"t":"Hair ties and bobby pins, 1 pack (own)","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"butterfly","title":"Butterfly","mats":[{"t":"Large cardboard for wings, 1 sheet about 3x2 feet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Acrylic paint set, 1","g":[[null]]},{"t":"Black sweatsuit, 1 set (own, or buy: clothing store)","g":[["sweatsuit"]]},{"t":"Elastic for wing straps, about 2 feet","g":[[null]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Pipe cleaners for antennae, 2","g":[["pipe-cleaners"]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"pop-star","title":"Pop Star","mats":[{"t":"Sparkly or sequin jacket, 1","g":[[null]]},{"t":"Toy microphone, 1","g":[[null]]},{"t":"Hair teasing comb, 1 (own, or buy: drugstore)","g":[[null]]},{"t":"Sunglasses, 1 pair (own, or buy: dollar store)","g":[["sunglasses"]]},{"t":"Dark jeans and a dark top, 1 set (own)","g":[[null]]}]},{"id":"ice-skater","title":"Ice Skater","mats":[{"t":"White dress, 1","g":[[null]]},{"t":"White tights, 1 pair (own, or buy: clothing store)","g":[[null]]},{"t":"Hair donut for the bun, 1","g":[[null]]},{"t":"Blush, 1 (own, or buy: drugstore)","g":[["paint-pink"]]},{"t":"Bobby pins, 1 pack (own)","g":[[null]]}]},{"id":"ladybug","title":"Ladybug","mats":[{"t":"Red shirt, 1 (own)","g":[[null]]},{"t":"Black pants, 1 pair (own)","g":[["black-clothes"]]},{"t":"Black felt for dots, 1 sheet 9x12 inches","g":[["felt","paper-black"]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Black pipe cleaners for antennae, 2","g":[["pipe-cleaners"]]},{"t":"Black pom-poms, 2 small","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Fabric glue, 1 tube","g":[["glue"]]}]},{"id":"daisy","title":"Daisy","mats":[{"t":"Yellow craft foam sheets, 2","g":[[null]]},{"t":"Brown craft foam for the flower center, 1 sheet","g":[[null]]},{"t":"Green dress, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Glue, 1 tube craft glue","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"little-baker","title":"Little Baker","mats":[{"t":"White paper or poster board for the hat, 2 sheets","g":[["paper-white"]]},{"t":"Apron, 1 (own, or buy: dollar store)","g":[[null]]},{"t":"Toy whisk, 1","g":[[null]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1","g":[["scissors"]]}]},{"id":"little-artist","title":"Little Artist","mats":[{"t":"Beret or flat cap, 1","g":[["hat"]]},{"t":"Cardboard for the palette, 1 piece (make: from a shipping box)","g":[["cardboard"]]},{"t":"Washable paint set, 1","g":[[null]]},{"t":"Old smock or oversized t-shirt, 1 (own)","g":[["tshirt"]]},{"t":"Paintbrush, 1 (own, or buy: craft store)","g":[[null]]},{"t":"Scissors, 1 (own)","g":[["scissors"]]}]},{"id":"beekeeper-bee","title":"Beekeeper & Bee","mats":[{"t":"White long-sleeve shirt and white pants, 1 set (own, or buy: thrift store)","g":[[null]]},{"t":"Fine mesh fabric or a mosquito head net, 1","g":[[null]]},{"t":"Wide-brim hat, 1 (own, or buy: dollar store)","g":[["hat"]]},{"t":"Yellow shirt and yellow pants, 1 set (own, or buy: thrift store)","g":[[null]]},{"t":"Black electrical tape, 1 roll","g":[["tape-black"]]},{"t":"Black pipe cleaners for antennae, 2","g":[["pipe-cleaners"]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Yellow and black face paint sticks, 1 set","g":[["paint-yellow"],["paint-black"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"tetris-duo","title":"Tetris Duo","mats":[{"t":"Two large cardboard boxes, flattened (make: from shipping boxes)","g":[["cardboard"]]},{"t":"Acrylic paint in two bright colors, 1 set","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"],["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]},{"t":"Wide ribbon or webbing for shoulder straps, about 4 yards","g":[["yarn"]]},{"t":"Painter's tape, 1 roll","g":[["tape"]]},{"t":"Scissors or a box cutter, 1","g":[["scissors"]]},{"t":"Ruler or yardstick, 1 (own)","g":[[null]]}]},{"id":"little-lifeguard","title":"Little Lifeguard","mats":[{"t":"Red t-shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Plastic whistle on a lanyard, 1","g":[[null]]},{"t":"Pool noodle, 1","g":[[null]]},{"t":"White duct tape, 1 roll","g":[["tape-white"]]},{"t":"Red shorts or swim trunks, 1 pair (own)","g":[[null]]},{"t":"White face paint stick for the nose stripe, 1","g":[["paint-white"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"little-prince","title":"Little Prince","mats":[{"t":"Gold cardstock or a paper crown, 1","g":[["paper-yellow"]]},{"t":"Red or purple fabric for the cape, about 1 yard (own, or buy: craft store)","g":[[null]]},{"t":"Wide ribbon for the sash, about 2 yards","g":[["yarn"]]},{"t":"Stick-on plastic gems, 1 pack","g":[[null]]},{"t":"Safety pins, 2","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Glue stick, 1","g":[["glue"]]}]},{"id":"fossil-hunter","title":"Fossil Hunter","mats":[{"t":"Khaki or tan vest with pockets, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Toy paintbrush or makeup brush, 1 (own, or buy: dollar store)","g":[[null]]},{"t":"Toy magnifying glass, 1","g":[[null]]},{"t":"Cardboard for fossil bones, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Small canvas pouch or fanny pack, 1 (own, or buy: dollar store)","g":[[null]]},{"t":"Brown paper lunch bag, 1 (own)","g":[["paper-bag"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Pencil, 1","g":[["paper-pen"]]}]},{"id":"milk-cookies","title":"Milk & Cookies","mats":[{"t":"White t-shirt or tunic, 1 (own, or buy: thrift store)","g":[["white-tshirt"]]},{"t":"Brown t-shirt or tunic, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"White craft felt, 1 sheet 9x12 inches","g":[["felt","paper-white"]]},{"t":"Brown craft felt, 2 sheets 9x12 inches","g":[["felt","paper-brown"]]},{"t":"Black marker, 1 (own)","g":[["markers"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Safety pins, 4","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"chips-guac","title":"Chips & Guac","mats":[{"t":"Green t-shirt or tunic, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Tan t-shirt or tunic, 1 (own, or buy: thrift store)","g":[["tshirt"]]},{"t":"Red craft felt, 1 sheet 9x12 inches","g":[["felt","paper-red"]]},{"t":"Yellow craft felt, 1 sheet 9x12 inches","g":[["felt","paper-yellow"]]},{"t":"Tan craft felt, 2 sheets 9x12 inches","g":[["felt","paper-brown"]]},{"t":"Headband, 1","g":[["headband"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"sushi-soy","title":"Sushi & Soy Sauce","mats":[{"t":"White t-shirt or tunic, 1 (own, or buy: thrift store)","g":[["white-tshirt"]]},{"t":"Dark brown or black t-shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Orange craft felt, 1 sheet 9x12 inches","g":[["felt","paper-orange"]]},{"t":"Black craft felt, 1 sheet 9x12 inches","g":[["felt","paper-black"]]},{"t":"Cardboard for the soy bottle, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Dark brown acrylic paint, 1 bottle","g":[[null]]},{"t":"Red paper for the bottle cap, 1 sheet","g":[["paper-red"]]},{"t":"Ribbon for straps, about 2 yards","g":[["yarn"]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"burger-fries","title":"Burger & Fries","mats":[{"t":"Tan t-shirt, 1 (own, or buy: thrift store)","g":[["tshirt"]]},{"t":"Red t-shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Green, red, and yellow craft felt, 1 sheet each 9x12 inches","g":[["felt","paper-green"],["felt","paper-red"],["felt","paper-yellow"]]},{"t":"Tan felt for the bun top, 1 sheet","g":[["felt","paper-brown"]]},{"t":"Paper bowl for the bun, 1 large","g":[[null]]},{"t":"Cardboard for the fry carton, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Red acrylic paint or red paper, 1","g":[[null,"paper-red"]]},{"t":"Yellow paper for fry sticks","g":[["paper-yellow"]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"donut-coffee","title":"Donut & Coffee","mats":[{"t":"White t-shirt, 1 (own, or buy: thrift store)","g":[["white-tshirt"]]},{"t":"Brown t-shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Pink craft felt, 2 sheets 9x12 inches","g":[["felt","paper-pink"]]},{"t":"Cardboard ring for the donut, 1 large (make: from a shipping box)","g":[["cardboard"]]},{"t":"Tan fabric or paper to cover the ring (own, or buy: craft store)","g":[[null,"paper-brown"]]},{"t":"Cardboard for the coffee cup, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Brown acrylic paint, 1 bottle","g":[[null]]},{"t":"White paper for the cup lid, 1 sheet","g":[["paper-white"]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Ribbon for straps, about 2 yards","g":[["yarn"]]}]},{"id":"wine-cheese","title":"Wine & Cheese","mats":[{"t":"Burgundy or maroon t-shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Yellow t-shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"White craft felt, 1 sheet 9x12 inches","g":[["felt","paper-white"]]},{"t":"Burgundy craft felt, 1 sheet 9x12 inches","g":[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"kpop-demon-huntresses","title":"KPop Demon Huntresses","mats":[{"t":"Black leggings or pants, 3 (own, or buy: thrift store)","g":[["black-clothes"]]},{"t":"Metallic or shiny tops, 3","g":[[null]]},{"t":"Toy microphones, 3","g":[[null]]},{"t":"Cardboard for swords, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Silver duct tape, 1 roll","g":[["tape-silver"]]},{"t":"Face paint in purple and black, 1 set","g":[["paint-purple"],["paint-black"]]},{"t":"Hair gel, 1 (own)","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"goth-braids","title":"Goth Girl with Braids","mats":[{"t":"Black dress, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Black tights, 1 pair (own, or buy: dollar store)","g":[[null]]},{"t":"Hair ties, 2 (own)","g":[[null]]},{"t":"Black eyeliner, 1 (own, or buy: drugstore)","g":[["paint-black"]]},{"t":"Pale foundation or white face paint, 1","g":[["paint-white"]]},{"t":"Dark lipstick, 1 (own)","g":[["paint-red"]]}]},{"id":"juke-joint-vampires","title":"Juke-Joint Vampires","mats":[{"t":"Vintage-style suits, 2","g":[[null]]},{"t":"White dress shirts, 2 (own, or buy: thrift store)","g":[[null]]},{"t":"Plastic vampire fangs, 2 sets","g":[[null]]},{"t":"Fake blood, 1 bottle","g":[[null]]},{"t":"Hair gel, 1 (own)","g":[[null]]},{"t":"Toy trumpet, 1","g":[[null]]},{"t":"Red pocket squares, 2","g":[[null]]}]},{"id":"blue-heeler-pup","title":"Blue Heeler Pup","mats":[{"t":"Blue-gray hoodie, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Blue-gray sweatpants, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Blue and dark gray craft felt, 1 sheet each 9x12 inches","g":[["felt","paper-blue"],["felt","paper-gray"]]},{"t":"Black face paint or eyeliner, 1 (own)","g":[["paint-black"]]},{"t":"Safety pins, 4","g":[["safety-pins"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"baby-pumpkin","title":"Baby Pumpkin","mats":[{"t":"Orange onesie or footed pajamas, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Green craft felt, 1 sheet 9x12 inches","g":[["felt","paper-green"]]},{"t":"Soft stuffing or an old pillow, 1 (own)","g":[[null,"stuffing"]]},{"t":"Brown felt for the stem, 1 small piece","g":[["felt","paper-brown"]]},{"t":"Safety pins, 4","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"pirate-captain","title":"Pirate Captain","mats":[{"t":"Striped shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Dark pants, 1 (own)","g":[["black-clothes"]]},{"t":"Cardboard for the hat, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Black eye patch, 1","g":[[null]]},{"t":"Toy sword or cardboard cutlass, 1","g":[[null,"cardboard"]]},{"t":"Brown paper for the treasure map, 1 sheet (own)","g":[["paper-brown"]]},{"t":"Black marker, 1 (own)","g":[["markers"]]},{"t":"Gold plastic coins, 1 bag","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"cowboy-duo","title":"Cowboy and Cowgirl","mats":[{"t":"Denim shirts, 2 (own, or buy: thrift store)","g":[[null]]},{"t":"Jeans, 2 (own)","g":[[null]]},{"t":"Cardboard for two hats, 2 sheets (make: from shipping boxes)","g":[["cardboard"]]},{"t":"Bandanas, 2","g":[[null]]},{"t":"Brown paper bags for chaps, 2 (own)","g":[["paper-bag"]]},{"t":"Rope or twine, 1 coil","g":[["yarn"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]},{"t":"Tape, 1 roll","g":[["tape"]]}]},{"id":"smores-duo","title":"S'mores Duo","mats":[{"t":"Tan t-shirts or tunics, 2 (own, or buy: thrift store)","g":[["tshirt"]]},{"t":"White t-shirt for the marshmallow, 1 (own)","g":[["white-tshirt"]]},{"t":"Brown craft felt, 1 sheet 9x12 inches","g":[["felt","paper-brown"]]},{"t":"White pillow stuffing, 1 bag","g":[["stuffing"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Black marker, 1 (own)","g":[["markers"]]},{"t":"Safety pins, 6","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"scarecrow","title":"Friendly Scarecrow","mats":[{"t":"Plaid flannel shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Jeans with patches, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Straw, raffia, or yellow yarn, 1 bag","g":[[null,"yarn"]]},{"t":"Old hat, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Face paint in black and red, 1 set","g":[["paint-black"],["paint-red"]]},{"t":"Rope or twine, 1 coil","g":[["yarn"]]},{"t":"Safety pins, 4","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"yellow-henchmen","title":"Yellow Henchmen Crew","mats":[{"t":"Yellow t-shirts, 1 per person (own, or buy: thrift store)","g":[[null]]},{"t":"Blue overalls or blue jeans, 1 per person (own, or buy: thrift store)","g":[[null]]},{"t":"Swim goggles, 1 per person","g":[[null]]},{"t":"Black gloves, 1 pair per person","g":[[null]]},{"t":"Black marker, 1 (own)","g":[["markers"]]},{"t":"Bananas, 1 bunch","g":[[null]]}]},{"id":"mystery-teens","title":"Mystery-Solving Teens","mats":[{"t":"Solid-color tops in assigned colors, 1 per person (own: from closets)","g":[["tshirt"]]},{"t":"Jeans or skirts, 1 per person (own)","g":[[null]]},{"t":"Toy magnifying glass, 1","g":[[null]]},{"t":"Paper for the sandwich prop, 1 sheet (own)","g":[["paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Dog plush or toy, 1 (own, or borrow one)","g":[[null]]},{"t":"Scarves or ascots in matching colors (own, or buy: thrift store)","g":[[null]]}]},{"id":"pumpkin-king-bride","title":"Pumpkin King and Ragdoll Bride","mats":[{"t":"Pinstripe or black suit, 1","g":[[null]]},{"t":"Cardboard for the pumpkin mask, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Orange and black paint, 1 set","g":[[null]]},{"t":"Patchwork-style dress, 1","g":[[null]]},{"t":"Red yarn for hair, 1 skein","g":[["yarn"]]},{"t":"Black boots or shoes, 1 pair (own)","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"moonwalk-star","title":"Moonwalking Pop Star","mats":[{"t":"Red jacket, 1","g":[[null]]},{"t":"Black pants, 1 (own)","g":[["black-clothes"]]},{"t":"White glove, 1","g":[[null]]},{"t":"Silver glitter glue, 1 tube","g":[[null]]},{"t":"Black fedora or hat, 1","g":[[null]]},{"t":"White socks, 1 pair (own)","g":[["socks"]]},{"t":"Black loafers or dress shoes, 1 pair (own)","g":[[null]]}]},{"id":"witchy-sisters","title":"Witchy Sister Trio","mats":[{"t":"Dresses in green, purple, and orange, 3","g":[[null]]},{"t":"Black witch hats, 3","g":[[null]]},{"t":"Broomsticks, 3","g":[[null]]},{"t":"Face paint in matching colors, 1 set","g":[["paint-red","paint-black","paint-white","paint-green","paint-brown","paint-blue","paint-pink","paint-gold","paint-purple","paint-yellow","paint-gray"]]},{"t":"Striped tights, 3 pairs","g":[[null]]}]},{"id":"macabre-couple","title":"Macabre Goth Couple","mats":[{"t":"Long black dress or gown, 1","g":[[null]]},{"t":"Black wig or black hair dye, 1","g":[[null]]},{"t":"Pale foundation, 1","g":[["paint-white"]]},{"t":"Dark lipstick, 1 (own)","g":[["paint-red"]]},{"t":"Black pinstripe or plain suit, 1","g":[[null]]},{"t":"White shirt, 1 (own)","g":[[null]]},{"t":"Black tie or cravat, 1","g":[[null]]}]},{"id":"party-pinata","title":"Party Pinata","mats":[{"t":"Cardboard box, 1 large (make: from a shipping box)","g":[["cardboard"]]},{"t":"Crepe paper in rainbow colors, 6 rolls","g":[[null]]},{"t":"Wrapped candy, 2 bags","g":[[null]]},{"t":"String for hanging strips, 1 roll (own)","g":[["yarn"]]},{"t":"Tape, 1 roll","g":[["tape"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"fuzzy-gremlin","title":"Fuzzy Gremlin Plush","mats":[{"t":"Brown fuzzy onesie or footed pajamas, 1","g":[[null]]},{"t":"Brown craft felt, 2 sheets 9x12 inches","g":[["felt","paper-brown"]]},{"t":"Large googly eyes, 2","g":[[null,"paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"White felt for teeth, 1 small piece","g":[["felt","paper-white"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Safety pins, 4","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"rescue-pups","title":"Rescue Pup Team","mats":[{"t":"T-shirts in assigned colors, 1 per kid (own, or buy: thrift store)","g":[[null]]},{"t":"Felt for pup badges, 1 sheet per color","g":[["felt","paper-red","paper-yellow","paper-green","paper-blue","paper-black","paper-white","paper-orange","paper-pink","paper-brown","paper-gray"]]},{"t":"Headbands, 1 per kid","g":[["headband"]]},{"t":"Brown felt for ears, 1 sheet per kid","g":[["felt","paper-brown"]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Safety pins, 4 per kid","g":[["safety-pins"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"wayfinder-princess","title":"Wayfinder Princess","mats":[{"t":"Tan or brown tank top, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Crepe paper or raffia for the skirt, 2 rolls","g":[[null]]},{"t":"Cardboard for the hook, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Brown paint, 1 bottle","g":[[null]]},{"t":"Shell necklace, 1","g":[[null]]},{"t":"Fabric glue, 1 bottle","g":[["glue"]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]},{"id":"chill-painter","title":"Chill Painter with Fro","mats":[{"t":"Big brown afro wig, 1","g":[[null]]},{"t":"Denim shirt, 1 (own, or buy: thrift store)","g":[[null]]},{"t":"Jeans, 1 (own)","g":[[null]]},{"t":"Cardboard for the palette, 1 sheet (make: from a shipping box)","g":[["cardboard"]]},{"t":"Acrylic paints in bright colors, 1 set","g":[[null]]},{"t":"Toy paintbrush, 1","g":[[null]]},{"t":"Scissors, 1 pair","g":[["scissors"]]}]}]};
+const DATA = __DATA__;
 const LS_KEY = 'pantry2';
 /* PostHog: anonymous usage stats only. Queued until the library loads. */
 const _phq = [];
@@ -2069,3 +3568,7 @@ if (_chInit) _chInit.addEventListener('click', onChallenge);
 </body>
 </html>
 
+"""
+
+if __name__ == "__main__":
+    main()
