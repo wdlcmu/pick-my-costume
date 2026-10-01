@@ -247,6 +247,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      duel frame like pair/vote. */
   var _oNoDuel = ["gift", "pair", "vote", "grandparent", "role", "split"].indexOf(_qp.get("o") || "") >= 0;
   if ((_qp.get("s") || "") && _qp.get("gift") !== "1" && !_oNoDuel) _qp.set("duel", slug);
+  _qp.set("plan", "1");
   var target = "/?" + _qp.toString();
     /* 2026-09-27 Billy: arrivals from the app's own rails (from=rail /
      from=hero) were invited to "Open this costume in Pick My Costume" --
@@ -256,7 +257,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      a site they have never seen. One clear label for every arrival now.
      Reversible: restore the /^(rail|hero)/ branch with the old cold string
      above to re-split. */
-  var _ctaLabel = "Make this costume";
+  var _ctaLabel = "Plan this costume \u2192";
   var targetAttr = target.replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
      RECIPIENT_BANNER = false returns the page to the no-banner control.
@@ -690,87 +691,82 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
     _ld +
     "<style>" +
-    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#1f1f1f;background:#fff;line-height:1.55;}" +
-    ".topbar{background:#fff;border-bottom:1px solid #eee2d3;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
-    ".topbar a{color:#1f1f1f;text-decoration:none;font-weight:800;font-size:16px;}" +
+    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#fdf3e3;background:#160d28;line-height:1.55;}" +
+    ".topbar{background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
+    ".topbar a{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;}" +
     ".topbar a span{color:#ff8c1a;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
     ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
-    ".pill{display:inline-block;background:#fff4e5;border:1px solid #ffd9a3;color:#8a4a0c;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
+    ".pill{display:inline-block;background:#2a1c52;border:1px solid #4b3486;color:#fdf3e3;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
     /* 2026-09-30 traffic-operator: the small-caps unit labels inside the
        decision pills (Time / Cost / Effort). */
     ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
-    ".fit{font-size:15px;color:#444;margin:0 0 8px;}" +
-    ".lede{font-size:17px;color:#444;margin:0;}" +
-    ".intro{font-size:17px;color:#333;margin:0 0 12px;}" +
+    ".fit{font-size:15px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".lede{font-size:17px;color:#fdf3e3;margin:0;}" +
+    ".intro{font-size:17px;color:#fdf3e3;margin:0 0 12px;}" +
     "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
-    ".quickcard{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
-    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#222;margin:0 0 8px;}" +
+    ".quickcard{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
+    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#fdf3e3;margin:0 0 8px;}" +
     ".quickcard .qsteps{font-size:16px;line-height:1.5;padding-left:22px;margin:0;}" +
     ".quickcard .qsteps li{margin:8px 0;}" +
-    ".quickcard .qtip{font-size:15px;color:#555;font-style:italic;margin:10px 0 0;}" +
-    "details.faq{border:1px solid #e3ddd2;border-radius:10px;margin:8px 0;background:#faf8f4;}" +
+    ".quickcard .qtip{font-size:15px;color:#cdbcf0;font-style:italic;margin:10px 0 0;}" +
+    "details.faq{border:1px solid #4b3486;border-radius:10px;margin:8px 0;background:#211540;}" +
     "details.faq summary{font-weight:700;font-size:16px;padding:12px 14px;cursor:pointer;list-style:none;}" +
     "details.faq summary::-webkit-details-marker{display:none;}" +
-    "details.faq summary::before{content:'+ ';color:#b3540c;font-weight:700;}" +
-    "details.faq[open] summary::before{content:'\u2212 ';}" +
+    "details.faq summary::before{content:'+ ';color:#ff8c1a;font-weight:700;}" +
+    "details.faq[open] summary::before{content:'− ';}" +
     "details.faq p{margin:0;padding:0 14px 12px;font-size:16px;line-height:1.55;}" +
-    ".mats{list-style:none;padding:0;margin:0;background:#faf8f4;border:1px solid #eee2d3;border-radius:14px;padding:6px 18px;}" +
-    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #f0e8da;position:relative;font-size:16px;}" +
+    ".mats{list-style:none;padding:0;margin:0;background:#211540;border:1px solid #4b3486;border-radius:14px;padding:6px 18px;}" +
+    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #4b3486;position:relative;font-size:16px;}" +
     ".mats li:last-child{border-bottom:none;}" +
-    ".mats li::before{content:'✓';position:absolute;left:2px;color:#b3540c;font-weight:700;}" +
+    ".mats li::before{content:'✓';position:absolute;left:2px;color:#ff8c1a;font-weight:700;}" +
     "ol.steps{list-style:none;counter-reset:step;padding:0;margin:0;}" +
     "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
     "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
     ".ctawrap{margin:20px 0;}" +
-    ".storyline{font-size:16px;margin:0 0 14px;color:#444;}" +
-    ".storyline a{color:#b3541e;font-weight:700;text-decoration:none;}" +
+    ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
+    ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
     ".guide img{max-width:100%;height:auto;border-radius:12px;margin:6px 0;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
-    ".quizline{font-size:15px;color:#555;margin-top:26px;}" +
+    ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
-    ".pinline{font-size:14px;color:#555;margin:10px 0 0;}" +
-    ".sharerline{font-size:16px;color:#555;margin:2px 0 12px;}" +
-    ".ctasub{display:block;font-size:14px;color:#777;margin-top:10px;}" +
+    ".pinline{font-size:14px;color:#cdbcf0;margin:10px 0 0;}" +
+    ".sharerline{font-size:16px;color:#cdbcf0;margin:2px 0 12px;}" +
+    ".ctasub{display:block;font-size:14px;color:#cdbcf0;margin-top:10px;}" +
     ".quickcard .qmats{margin:12px 0;}" +
-    ".pinline a{color:#b3541e;font-weight:700;}" +
-    ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
-    ".safesrc{font-size:14px;color:#777;}" +
-    ".rbanner{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
-    ".rbanner-line{font-size:17px;font-weight:700;color:#333;margin:0 0 6px;line-height:1.4;}" +
-    ".rbanner-sub{font-size:15px;color:#666;margin:0 0 14px;line-height:1.45;}" +
+    ".pinline a{color:#ff8c1a;font-weight:700;}" +
+    ".splitpartner-line{font-size:15px;color:#cdbcf0;margin:6px 0 0;}" +
+    ".safesrc{font-size:14px;color:#cdbcf0;}" +
+    ".rbanner{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
+    ".rbanner-line{font-size:17px;font-weight:700;color:#fdf3e3;margin:0 0 6px;line-height:1.4;}" +
+    ".rbanner-sub{font-size:15px;color:#cdbcf0;margin:0 0 14px;line-height:1.45;}" +
     ".rbanner .cta{margin:0;}" +
-    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #e0a33e;border-radius:14px;background:#fffdf6;}" +
+    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #4b3486;border-radius:14px;background:#211540;}" +
     ".splitwrap .splitopen{width:100%;}" +
     ".splitq{font-size:16px;font-weight:700;margin:0 0 8px;}" +
     ".splitstepper{display:flex;align-items:center;gap:14px;margin:0 0 12px;}" +
     ".splitstepper .ghost{margin:0;}" +
     ".splitcount{font-size:20px;font-weight:700;min-width:24px;text-align:center;}" +
-    ".splitnamein{display:block;width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #ddd;border-radius:10px;}" +
+    ".splitnamein{display:block;width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #4b3486;border-radius:10px;background:#160d28;color:#fdf3e3;}" +
     ".splitresult{margin-top:12px;}" +
     ".splitres-head{font-size:16px;font-weight:700;margin:0 0 8px;}" +
     ".splitres-list{font-size:15px;}" +
-    ".splitnote{font-size:14px;color:#777;}" +
+    ".splitnote{font-size:14px;color:#cdbcf0;}" +
     ".splitnames{margin:10px 0;}" +
-    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#fff;color:#ff8c1a;cursor:pointer;}" +
+    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#2a1c52;color:#ff8c1a;cursor:pointer;}" +
     ".splitmine-head{font-size:16px;font-weight:700;margin:12px 0 6px;}" +
     ".splititems{font-size:16px;}" +
-    ".splititems-empty{font-size:15px;color:#777;}" +
-    ".madeit-line{font-size:16px;color:#444;margin:0 0 14px;line-height:1.55;}" +
+    ".splititems-empty{font-size:15px;color:#cdbcf0;}" +
+    ".madeit-line{font-size:16px;color:#cdbcf0;margin:0 0 14px;line-height:1.55;}" +
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
-    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
-    ".crumb{font-size:13px;color:#777;margin:0 0 8px;}" +
-    ".crumb a{color:#b3541e;text-decoration:none;}" +
-    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
-    ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
-    /* AI honesty label (2026-09-30): the quiz-results page tags concept
-       photos "AI-generated concept photo"; the guide page shows the same AI
-       photo (og card rendered from photos/<slug>.webp), so it carries the
-       same tag with the same styling. */
-    ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
+    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #4b3486;border-radius:999px;color:#ff8c1a;text-decoration:none;font-size:15px;font-weight:600;}" +
+    ".crumb{font-size:13px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".crumb a{color:#ff8c1a;text-decoration:none;}" +
+    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
+    ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
     "</style>" +
     "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
@@ -798,7 +794,6 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     (IMADEIT ? "<h2>Wore this? Show us</h2>" +
     "<p class=\"madeit-line\">Made this costume? Your photo helps the next person see the real thing.</p>" +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
-    "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\"pinline\">Saving this idea? <a target=\"_blank\" rel=\"noopener\" href=\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\">Pin it on Pinterest</a></p>" +
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +
@@ -808,7 +803,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   return new Response(html, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
-      "Cache-Control": "public, max-age=3600"
+      "Cache-Control": "max-age=0, must-revalidate"
     }
   });
 }
