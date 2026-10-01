@@ -2759,8 +2759,7 @@ function planFacts(idea){
    brief): the top 3 earn their labels; labels are computed, never hardcoded.
    #1 is always "Best Match". Runner-up candidates, most defensible first:
    "Easiest" (unique lowest build difficulty, margin >= 2, never #1),
-   "Closet Build" (the make-plan cost is genuinely $0 -- a range like
-   $0-10 is not zero), "Tonight-Ready" (make-plan time of 30 min or less),
+   "Tonight-Ready" (make-plan time of 30 min or less),
    "Plot Twist" (its top interest differs from the user's picked interest
    while its vibe matches the user's picked vibe), "Wildcard" (clearly the
    largest tag distance from #1, margin >= 3). One role per result: the most
@@ -2786,14 +2785,6 @@ function tagDistance(a, b){
 }
 /* Evidence gates for the newer roles. Each returns a hard yes/no from real
    data; a role renders only when its gate passes. */
-function planCostIsZero(idea){
-  /* "Closet Build": the MAKE_PLANS cost is genuinely $0. A range like
-     "~$0-10 total" is NOT zero -- it can cost money. Only an exact $0 parses. */
-  if (typeof MAKE_PLANS === "undefined") return false;
-  var p = MAKE_PLANS[idea.id];
-  if (!p || !p.cost) return false;
-  return /^\~?\$0(\.00)?$/.test(p.cost.trim());
-}
 function planMinutes(idea){
   /* Parses "~20 min" / "~1.5 hrs" to minutes; null when unparseable. */
   if (typeof MAKE_PLANS === "undefined") return null;
@@ -2809,23 +2800,11 @@ function planIsTonightReady(idea){
   var mins = planMinutes(idea);
   return mins !== null && mins <= 30;
 }
-function planCostMax(idea){
-  /* Parses "~$8" / "~$10 total" / "~$10 each" / "~$0-10 total" to the max
-     dollar figure; null when unparseable. "each" is taken at face value
-     (per costume); group headcounts are unknown to the quiz. */
-  if (typeof MAKE_PLANS === "undefined") return null;
-  var p = MAKE_PLANS[idea.id];
-  if (!p || !p.cost) return null;
-  var m = String(p.cost).match(/~?\$(\d+(?:\.\d+)?)(?:-(\d+(?:\.\d+)?))?/);
-  if (!m) return null;
-  return m[2] ? parseFloat(m[2]) : parseFloat(m[1]);
-}
 /* 2026-09-26 constraint refinement (CHC Costume Wizard steal, adapted): the
    Wizard asks time and money budget as first-class questions and then ignores
    them in results; we ask time as results-screen chips (the 5-max keeps them
-   out of the quiz; the q3 budget question was cut 2026-09-23 after moving
-   outcomes on only 4.5% of kid paths, and the budget chip was cut 2026-10-01
-   per the no-dollar-figures call) and hard-filter on them honestly.
+   out of the quiz) and hard-filter honestly. Budget filtering was cut
+   2026-10-01 per the no-dollar-figures call.
    Same <3 relaxation as the interest/vibe filters: a constraint that would
    leave fewer than 3 ideas does not apply. */
 var CONSTRAINT_CHIPS = [
@@ -2837,10 +2816,6 @@ function constraintOk(idea, c){
   if (c.timeMax != null){
     var mins = planMinutes(idea);
     if (mins !== null && mins > c.timeMax) return false;
-  }
-  if (c.budgetMax != null){
-    var cost = planCostMax(idea);
-    if (cost !== null && cost > c.budgetMax) return false;
   }
   return true;
 }
@@ -2870,7 +2845,6 @@ function planIsPlotTwist(idea){
 var ROLE_NOTES = {
   "Best Match": "The highest-scoring pick for your answers.",
   "Easiest": "The simplest build of your top 3, by a clear margin.",
-  "Closet Build": "Made entirely from things you already own.",
   "Tonight-Ready": "Builds in 30 minutes or less.",
   "Plot Twist": "A different interest than the one you picked, but the same vibe. Worth a look.",
   "Wildcard": "The most different pick from your best match. A curveball."
@@ -2889,7 +2863,6 @@ function resultRoles(results){
   [1, 2].forEach(function(i){
     var idea = results[i].idea, c = [];
     if (minCount === 1 && minIdx === i && (nextD - minD) >= 2) c.push("Easiest");
-    if (planCostIsZero(idea)) c.push("Closet Build");
     if (planIsTonightReady(idea)) c.push("Tonight-Ready");
     if (planIsPlotTwist(idea)) c.push("Plot Twist");
     if (wildIdx === i) c.push("Wildcard");
@@ -12882,7 +12855,7 @@ function fallbackCopy(text, done){
    shelf search box. The typed hero input keeps pinpoint name resolution.
    2026-09-30 (Billy): chip labels use the site's own words ("couple" is the
    quiz wearer label, not "couples") and lowercase, matching the shelf. */
-var HERO_SEARCH_CHIPS = ["vampire","couple","cheap","dinosaur","tonight"];
+var HERO_SEARCH_CHIPS = ["vampire","couple","dinosaur","tonight"];
 function renderPinpointChips(){
   var box = $("pinpoint-chips");
   if (!box || box.children.length) return;
