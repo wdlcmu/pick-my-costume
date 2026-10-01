@@ -398,7 +398,7 @@ footer a{color:var(--accent)}
 </div>
       <p>Your answers are scored against 100 hand-picked ideas. No randomness, no account, no email. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
-      <p><b>Halloween by the numbers:</b> Americans are expected to spend $13.5 billion on Halloween in 2026, and half of everyone celebrating dresses in costume. Nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
+      <p><b>Halloween by the numbers:</b> Half of everyone celebrating dresses in costume, and nearly half of shoppers use AI to brainstorm costume ideas. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October. Ideas marked <b>Trending</b> ride a top-ranked costume lane in NRF&apos;s 2026 survey; each card shows its stat and source.</p>
       <p class="fine">Built with Muse.</p>
 </div>
     <div class="navrow" style="margin-top:16px">
@@ -1171,7 +1171,6 @@ var EFFORT_FACTS = {
   crafty: {build: "1 to 2 hours", difficulty: "Medium"},
   allout: {build: "A weekend project", difficulty: "Ambitious"}
 };
-var BUDGET_FACTS = {diy: "From your closet", low: "Under $20", mid: "$20 to $50"};
 function ideaEffortKey(idea){
   var tags = idea.tags || {}, best = "crafty", bestV = 0;
   /* Ties resolve toward the higher effort: if an idea scores for both
@@ -1180,12 +1179,6 @@ function ideaEffortKey(idea){
     if ((tags[k] || 0) >= bestV){ bestV = tags[k] || 0; best = k; }
   });
   return bestV > 0 ? best : "crafty";
-}
-function ideaBudgetLabel(idea){
-  var b = idea.budget || [];
-  if (b.indexOf("diy") >= 0) return BUDGET_FACTS.diy;
-  if (b.indexOf("low") >= 0) return BUDGET_FACTS.low;
-  return BUDGET_FACTS.mid;
 }
 var AUDIENCE_PHRASE = {
   "Solo": "going solo", "My kid": "your kid", "My family": "the whole family",
@@ -1300,7 +1293,7 @@ function buildResultCard(scored, idx, pick, noArt){
     var _fr = document.createElement("div"); _fr.className = "factrow";
     var _ek = ideaEffortKey(idea);
     var _vibeA = (state.answers.q2 && state.answers.q2.label) ? state.answers.q2.label : "Any";
-    [["Vibe", _vibeA], ["Build", EFFORT_FACTS[_ek].build], ["Budget", ideaBudgetLabel(idea)], ["Difficulty", EFFORT_FACTS[_ek].difficulty]].forEach(function(f){
+    [["Vibe", _vibeA], ["Build", EFFORT_FACTS[_ek].build], ["Difficulty", EFFORT_FACTS[_ek].difficulty]].forEach(function(f){
       var _d = document.createElement("div"); _d.className = "fact";
       var _b = document.createElement("b"); _b.textContent = f[0];
       var _s = document.createElement("span"); _s.textContent = f[1];
