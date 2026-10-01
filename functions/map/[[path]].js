@@ -155,7 +155,10 @@ export async function onRequest(context) {
   return new Response(html, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
-      "Cache-Control": "public, max-age=3600"
+      "Cache-Control": "max-age=0, must-revalidate"
     }
   });
 }
+/* 2026-10-01: Cache-Control is max-age=0, must-revalidate (P0 fix 2026-10-01,
+   commit 1e29b9dd). Do NOT raise max-age here; the Galaxy page must never
+   serve stale. */
