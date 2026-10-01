@@ -1,0 +1,6 @@
+# Cloudflare Pages headers.
+# /app.js is the quiz bundle: always revalidate so a deploy reaches every
+# browser on the next load. New deploys change the ETag, so browsers fetch
+# fresh exactly once per deploy and get cheap 304s between deploys.
+/app.js
+  Cache-Control: no-cache
