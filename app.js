@@ -1112,6 +1112,10 @@ function scoreIdeas(full){
      applies it -- so we never show fewer than 3. */
   var _hIntAns = state.answers.qinterest;
   var _hIntTag = _hIntAns && _hIntAns.tags ? Object.keys(_hIntAns.tags)[0] : null;
+  /* 2026-10-01 bank-health pass: true when the interest pool held <3 ideas and
+     was relaxed to the -100 soft penalty. Downstream hard filters (vibe, funny
+     guard) must not evict the interest-matching ideas in that case. */
+  var _intRelaxed = !!(_hIntTag && pool.filter(function(i){ return i.tags[_hIntTag]; }).length < 3);
   if (_hIntTag) {
     var _intPool = pool.filter(function(i){ return i.tags[_hIntTag]; });
     if (_intPool.length >= 3) pool = _intPool;
@@ -1132,7 +1136,20 @@ function scoreIdeas(full){
   }
   if (_hVibeTag){
     var _vibePool = pool.filter(_vibeOk);
-    if (_vibePool.length >= 3) pool = _vibePool;
+    if (_vibePool.length >= 3){
+      /* 2026-10-01 bank-health pass: interest is the strongest promise. When the
+         interest pool was relaxed (<3 interest-matching ideas), the vibe hard
+         filter must not evict the interest-matching ideas it just let back in --
+         otherwise every survivor takes the same -100 missing-interest penalty and
+         a non-interest idea can win #1 (366 paths, e.g. solo/Scary/Animals ->
+         classic-ghost). Protect interest-tagged ideas here; the -24/-100
+         vibe-vs-interest resolution below still decides the ranking. When the
+         interest pool was NOT relaxed every idea already carries the tag, so the
+         plain vibe pool applies. */
+      pool = _intRelaxed
+        ? pool.filter(function(i){ return _vibeOk(i) || i.tags[_hIntTag]; })
+        : _vibePool;
+    }
   }
   /* Kid safety hard filter (2026-09-26: optimize for kid safety): for
      kid quizzes where the age answer carries the kidunder3 tag ("Under 3" or
@@ -1258,8 +1275,16 @@ function scoreIdeas(full){
   var _fVibeAns = state.answers.q2;
   var _fVibeTag = _fVibeAns && _fVibeAns.tags ? Object.keys(_fVibeAns.tags)[0] : null;
   if (_fVibeTag === "funny") {
-    var _fStrict = scored.filter(function(s){ var t = s.idea.tags; return (t.funny||0) >= 2 && (t.scary||0) <= (t.funny||0); });
-    var _fLoose = scored.filter(function(s){ return (s.idea.tags.funny||0) >= 2; });
+    /* 2026-10-01 bank-health pass: when the interest pool was relaxed (<3),
+       interest-tagged ideas are exempt from the funny requirement -- the same
+       protection as the vibe hard filter above. Interest outranks vibe when both
+       can't be satisfied; without this the guard evicted the interest-matching
+       #1 (96 remaining paths, e.g. group/Funny/Dinosaurs -> robot-crew). When
+       the interest pool was NOT relaxed every scored idea already carries the
+       tag, so the guard applies unmodified. */
+    var _fKeep = function(s){ return _intRelaxed && s.idea.tags[_hIntTag]; };
+    var _fStrict = scored.filter(function(s){ var t = s.idea.tags; return _fKeep(s) || ((t.funny||0) >= 2 && (t.scary||0) <= (t.funny||0)); });
+    var _fLoose = scored.filter(function(s){ return _fKeep(s) || (s.idea.tags.funny||0) >= 2; });
     if (_fStrict.length >= 3) scored = _fStrict;
     else if (_fLoose.length >= 3) scored = _fLoose;
   }
@@ -12868,6 +12893,73 @@ $("btn-browse-results").textContent = "🗺️ Wander the galaxy instead";
 $("browse-title").textContent = "All " + IDEAS.length + " ideas";
 /* Variant C hero: the search-block label carries the live bank count. */
 (function(){ var hsc = $("hero-search-count"); if (hsc) hsc.textContent = IDEAS.length; })();
+/* ================= HOMEPAGE RAIL SHARE =================
+   2026-10-01 (Billy): share affordance on homepage rail cards. Billy could
+   not find any way to share from the homepage; the rails had zero share
+   affordance. Each costume card in the homepage rails gets a share button
+   (top-right, over the photo corner, clear of the focal point) that fires
+   the canonical sendShare path with origin "rail". Generic (non-personalized)
+   share text via shareTextFor; no new share mechanism.
+   Scope: homepage costume rails only (trending, tonight, new, kids). The
+   storytime rail is story cards, not costume cards: out of scope.
+   NOTE: button:null is passed to sendShare on purpose. sendShare's btnFlash
+   sets btn.textContent, which would destroy the SVG icon. Visual feedback
+   comes from onShared instead (green flash). tapGuard covers double-tap. */
+var RAIL_SHARE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+function railIdeaById(id){
+  for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === id) return IDEAS[i];
+  return null;
+}
+function railShareBtn(ideaId, title){
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "railshare";
+  btn.setAttribute("aria-label", "Share " + title);
+  btn.innerHTML = RAIL_SHARE_SVG;
+  btn.addEventListener("click", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    if (!tapGuard("railshare", 800)) return;
+    var idea = railIdeaById(ideaId);
+    if (!idea) return;
+    try { Analytics.track("rail_share_tap", {idea_id: ideaId}); } catch(_){}
+    sendShare(idea, "rail", {button: null, statusEl: null, onShared: function(){
+      btn.classList.add("shared");
+      setTimeout(function(){ btn.classList.remove("shared"); }, 2000);
+    }});
+  });
+  return btn;
+}
+/* Wrap a rail card so the share button floats over it without nesting
+   interactive elements (a button inside an <a>, or inside the kids <button>).
+   Idempotent: re-running never double-wraps. */
+function wrapRailCard(card, ideaId, title){
+  if (!card || !card.parentNode) return;
+  if (card.parentNode.classList && card.parentNode.classList.contains("railcard")) return;
+  var wrap = document.createElement("div");
+  wrap.className = "railcard";
+  card.parentNode.insertBefore(wrap, card);
+  wrap.appendChild(card);
+  wrap.appendChild(railShareBtn(ideaId, title));
+}
+/* Static cards (trending + new rails in index.html): parse the idea id from
+   the href. Runs once at load; the JS-rendered rails hook in directly. */
+function enhanceStaticRailCards(){
+  var rows = ["row-trending", "row-new"];
+  for (var r = 0; r < rows.length; r++){
+    var row = document.getElementById(rows[r]);
+    if (!row) continue;
+    var cards = row.querySelectorAll("a[href*='idea=']");
+    for (var i = 0; i < cards.length; i++){
+      var m = (cards[i].getAttribute("href") || "").match(/[?&]idea=([^&]+)/);
+      if (!m) continue;
+      var idea = railIdeaById(m[1]);
+      if (!idea) continue;
+      wrapRailCard(cards[i], idea.id, idea.title);
+    }
+  }
+}
+enhanceStaticRailCards();
 /* 2026-09-26 "Most wanted by kids" rail: perennial kid favorites, generic
    names only (never licensed character names). Rendered into #row-kids;
    every card opens the full pick flow via openIdeaDetail, exactly like a
@@ -12904,6 +12996,7 @@ var KIDS_RAIL_IDS = ["little-witch","web-slinger-kid","garden-fairy","classic-gh
       };
     })(idea.id));
     row.appendChild(card);
+    wrapRailCard(card, idea.id, idea.title);
   });
 })();
 /* 2026-09-27 honest "Make tonight" Discover rail: rendered from the live
@@ -12967,6 +13060,7 @@ function renderTonightRail(){
     card.appendChild(label);
     card.appendChild(meta);
     row.appendChild(card);
+    wrapRailCard(card, idea.id, idea.title);
   });
   if (status){
     /* Honest lead: pantry.html's own convention ("With just the basics"
