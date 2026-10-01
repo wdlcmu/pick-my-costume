@@ -2,14 +2,13 @@
 
 > Complete Markdown text of pickmycostume.com's 164 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
-> Generated: 2026-09-30. Regenerate with gen_llms_full.py when the bank changes.
+> Generated: 2026-10-01. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
 - Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder.
 - 164 costume ideas. Every idea has a materials list and numbered step-by-step build instructions.
-- 16 of the 164 ideas are make-tonight or 1-2 supplies away from default household basics (pantry audit, Sep 2026).
-- Build costs are real materials prices, not guesses: the cheapest build costs $0 to $5, 15 ideas cost $5 or less, 118 cost $10 or less.
+- 16 of the 164 ideas are make-tonight or 1-2 supplies away from default household basics (pantry audit, Oct 2026).
 - Licensed characters are deliberately excluded from the bank.
 
 ## All 164 build guides
@@ -20,7 +19,7 @@ URL: https://pickmycostume.com/c/astronaut
 
 White sweats, a paper-bag helmet, and a flag patch.
 
-Build time, cost, effort: 25 min / $8-10 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - White sweatshirt and sweatpants, 1 set (buy: clothing store, or use your own)
@@ -33,7 +32,7 @@ Steps:
 1. Cut the face opening SMALLER than you think with the scissors, you can always widen it, but a too-big hole flops and ruins the bag.
 2. Hold the bag up to the face and trace the opening first.
 3. Wrap two silver duct tape stripes around each sleeve and pant leg. Press the flag sticker onto the chest of the sweatshirt.
-4. Safety: cut the face opening wide enough that vision and hearing stay clear.
+4. Safety: Cut the face opening wide enough that vision and hearing stay clear.
 5. Pull on the white sweatshirt and sweatpants.
 6. Slip the bag over your head so the face opening lines up. Crimp the top with a strip of duct tape so it holds its shape.
 7. Optional pro finish: print a mission patch from home (a circle with your name and 'EST. 2026') and tape it to the opposite chest from the flag. Real astronauts wear two patches.
@@ -52,7 +51,7 @@ URL: https://pickmycostume.com/c/baby-dino
 
 Green hoodie, felt spikes down the back, stuffed tail.
 
-Build time, cost, effort: 20 min / $6-8 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Green hoodie, 1 (buy: clothing store, or use your own)
@@ -67,7 +66,7 @@ Steps:
 2. Then cut 6 to 8 triangle spikes from the green craft felt with the scissors, spikes cut too small look lost on the back, so go palm-size.
 3. Tape the spikes in a row down the back of the green hoodie with the masking tape. Pin each spike from inside the hoodie with a safety pin.
 4. Stuff the old socks with the pillow stuffing and tape the open ends shut with the masking tape.
-5. Safety: pin everything from inside the green hoodie, so pin backs face the fabric and never the skin.
+5. Safety: Pin everything from inside the green hoodie, so pin backs face the fabric and never the skin.
 6. Pin the stuffed tail to the back waistband of the green hoodie.
 7. Optional pro finish: cut two small white felt triangles and pin them to the hoodie cuffs as claws. Claws sell the dinosaur more than the spikes do.
 
@@ -85,7 +84,7 @@ URL: https://pickmycostume.com/c/baby-pumpkin
 
 An orange onesie, green felt leaves, and the easiest first Halloween ever.
 
-Build time, cost, effort: 20 min / $3-4 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Orange onesie or footed pajamas, 1 (own, or buy: thrift store)
@@ -99,7 +98,7 @@ Steps:
 1. Lightly stuff the onesie arms and legs so the pumpkin looks plump, not tight.
 2. Cut leaf shapes from the green felt and pin them around the collar.
 3. Roll the brown felt into a stem and pin it to the top of the hood or a soft hat.
-4. Safety: keep all pins on the outside of the onesie where you can see them, and never pin near the baby's skin. Skip small parts a baby could pull off.
+4. Safety: Keep all pins on the outside of the onesie where you can see them, and never pin near the baby's skin. Skip small parts a baby could pull off.
 5. Optional pro finish: photograph the pumpkin in a laundry basket lined with a blanket. The basket is the patch.
 
 Q: How do you keep a baby warm in just a onesie?
@@ -116,7 +115,7 @@ URL: https://pickmycostume.com/c/backyard-hero
 
 Short cape plus a first initial on the chest, mask optional.
 
-Build time, cost, effort: 15 min / $2 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - Old pillowcase or t-shirt for the cape, 1 (make: cut up)
@@ -130,7 +129,7 @@ Steps:
 1. Measure first: hold the pillowcase against the back and mark waist length before cutting.
 2. Cut the cape with the scissors, a cape cut too short cannot be lengthened, so leave it long and trim after the first fitting.
 3. Cut the first initial from the cardstock with the scissors. Pin it to the chest of the solid-color t-shirt with a safety pin.
-4. Safety: keep the neck bow loose and easy to pull free. Never tie anything tight around the neck.
+4. Safety: Keep the neck bow loose and easy to pull free. Never tie anything tight around the neck.
 5. Thread the ribbon through the top corners of the cape. Tie it at the front of the neck in a loose quick-release bow. Trim the ribbon ends with the scissors.
 6. Optional pro finish: outline the felt initial with a fabric marker in a contrasting color. The outline makes the emblem readable from across the yard.
 
@@ -148,7 +147,7 @@ URL: https://pickmycostume.com/c/bacon-eggs
 
 Wavy bacon stripes and a sunny-side-up egg yolk.
 
-Build time, cost, effort: 20 min / $1-2 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Dark red or brown shirt for the bacon, 1 (own)
@@ -180,10 +179,10 @@ URL: https://pickmycostume.com/c/ballerina
 
 A tulle tutu tied onto elastic, a leotard, and a neat ballerina bun.
 
-Build time, cost, effort: 20 min / $10-11 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
-- Pink tulle, 2 to 3 yards (buy: craft store; about $1 a yard)
+- Pink tulle, 2 to 3 yards (buy: craft store)
 - Wide elastic, 1 inch wide, cut to the waist size plus 1 inch overlap (buy: craft store)
 - Pink leotard or fitted shirt, 1 (own, or buy: clothing store)
 - Pink tights, 1 pair (own, or buy: clothing store)
@@ -197,7 +196,7 @@ Steps:
 4. Fold one strip in half to make a loop at the top. Slip the loop under the elastic, pull the strip ends through the loop, and pull tight.
 5. Repeat side by side all the way around until the tutu looks full, usually 30 to 40 strips.
 6. Fluff the strips outward. Trim the bottom edge even while the tutu hangs.
-7. Safety: the elastic should sit snug on the waist, not the hips, so it stays up while twirling. Nothing tied around the neck.
+7. Safety: The elastic should sit snug on the waist, not the hips, so it stays up while twirling. Nothing tied around the neck.
 8. Wear the tutu over the leotard and tights. Pull the hair into a high bun with the hair ties and bobby pins.
 9. Optional pro finish: tie a short length of satin ribbon into a small bow and pin it at the back waistband. One bow is the difference between craft project and costume.
 
@@ -215,7 +214,7 @@ URL: https://pickmycostume.com/c/bamboo-demon
 
 Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.
 
-Build time, cost, effort: 20 min + drying / $20-26 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Pink bathrobe or kimono-style robe, 1 (own, or buy: clothing store)
@@ -229,7 +228,7 @@ Materials:
 Steps:
 1. Measure the tube against the face first and mark chin width.
 2. Cut the cardboard tube slightly LONG with the scissors, you can trim it down, but a tube cut too short cannot be fixed. Tape a length of ribbon to each end of the tube.
-3. Safety: keep the knot loose enough to talk and breathe easily. Never tie anything tight around the head or neck.
+3. Safety: Keep the knot loose enough to talk and breathe easily. Never tie anything tight around the head or neck.
 4. Tie the cardboard tube across the mouth with the ribbon, knotting loosely at the back of the head.
 5. Pull on the pink bathrobe. Put on the long dark wig.
 6. Dab a small red mouth mark on the cardboard tube with the red non-toxic face paint.
@@ -249,10 +248,10 @@ URL: https://pickmycostume.com/c/banana
 
 Yellow sweatsuit with a green felt stem hat.
 
-Build time, cost, effort: 10 min + drying / $6-8 / Easy
+Build time, effort: 10 min + drying / Easy
 
 Materials:
-- Yellow sweatshirt and sweatpants, 1 set (make: from closet, or buy: clothing store)
+- Yellow sweatshirt and sweatpants, 1 set (buy: at a clothing store, or own: from closet)
 - Green felt, 1 sheet 9x12 inches (buy: craft store)
 - Headband, 1 (buy: dollar store)
 - Fabric glue, 1 tube (buy: craft store)
@@ -278,7 +277,7 @@ URL: https://pickmycostume.com/c/basketball-star
 
 Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.
 
-Build time, cost, effort: 5 min + drying / $4-5 / Easy
+Build time, effort: 5 min + drying / Easy
 
 Materials:
 - Basketball jersey or numbered tank top, 1 (own, or buy: sporting goods store)
@@ -288,7 +287,7 @@ Materials:
 
 Steps:
 1. Pull on the basketball jersey and the basketball shorts.
-2. Safety: use only the black non-toxic face paint. Skip the eye black for very young kids who will rub their eyes.
+2. Safety: Use only the black non-toxic face paint. Skip the eye black for very young kids who will rub their eyes.
 3. Draw two short black stripes under each eye with the black non-toxic face paint. Keep the stripes short and below the eye, never on the eyelid, and skip them for kids who rub their eyes.
 4. Carry the basketball everywhere, tucked under one arm.
 5. Dribble it whenever you stand still.
@@ -308,7 +307,7 @@ URL: https://pickmycostume.com/c/beekeeper-bee
 
 One goes as the beekeeper in white with a mesh veil; the other wears yellow and black stripes with antennae.
 
-Build time, cost, effort: 25 min + drying / $8-11 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - White long-sleeve shirt and white pants, 1 set (own, or buy: thrift store)
@@ -326,7 +325,7 @@ Steps:
 2. Cut the face opening wide first, you can trim it neater after the first fitting.
 3. Bee: wrap 3 to 4 black tape stripes around the yellow shirt and pants, evenly spaced. Press the tape flat so the edges do not peel.
 4. Bend the pipe cleaners into a V and tape them to the headband for antennae. Add two black face-paint dots on the cheeks.
-5. Safety: cut the veil opening wide enough that vision stays clear, and tie nothing tight around the neck. Use tape, not string, for the stripes so nothing unravels.
+5. Safety: Cut the veil opening wide enough that vision stays clear, and tie nothing tight around the neck. Use tape, not string, for the stripes so nothing unravels.
 6. The adult is the beekeeper: white outfit with the veil hat, since the mesh limits vision. The smaller of the two is the bee: stripes with the antennae headband.
 7. Optional pro finish: the beekeeper carries a small cardboard sign that says HONEY, and the bee poses mid-buzz next to it. One shared prop is what makes a pair read as a pair.
 
@@ -344,7 +343,7 @@ URL: https://pickmycostume.com/c/black-cat
 
 Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.
 
-Build time, cost, effort: 20 min + drying / $13-18 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Black shirt and pants or sweatsuit, 1 set (own)
@@ -359,7 +358,7 @@ Materials:
 Steps:
 1. Cut two triangle ears from the black craft felt with the scissors, about 4 inches tall. Cut one eye mask shape from the black construction paper.
 2. Tape the ears upright to the plain headband.
-3. Safety: cut the eye holes wide in the mask so vision stays clear.
+3. Safety: Cut the eye holes wide in the mask so vision stays clear.
 4. Tape the mask on with long tape tabs at the temples. Or draw whiskers with the black non-toxic face paint.
 5. Pull on the black shirt and pants and put on the plain headband. Carry the small drawstring bag over one shoulder.
 6. Optional pro finish: tape three pipe cleaners to each cheek as whiskers instead of drawing them. Real whiskers catch the light and photograph ten times better.
@@ -378,7 +377,7 @@ URL: https://pickmycostume.com/c/block-game-crew
 
 Cardboard-box heads: pick your blocky hero.
 
-Build time, cost, effort: 45 min + drying / $8-11 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - 1 large cardboard box per person, big enough to fit over the torso (make: ask a grocery store for spares)
@@ -389,7 +388,7 @@ Materials:
 
 Steps:
 1. Each person picks a blocky video-game hero look.
-2. Safety: an adult should handle the heavy cutting, and cut the eye holes generously so everyone can see clearly.
+2. Safety: An adult should handle the heavy cutting, and cut the eye holes generously so everyone can see clearly.
 3. Measure each person's head and shoulders first, then cut a head opening and eye holes in each large cardboard box with the scissors.
 4. Cut the head opening smaller than you think, cardboard cut away cannot be put back. Cut the eye holes generously so everyone can see clearly.
 5. Paint each box in the hero's main colors with the acrylic paint and paintbrushes. Let it dry fully.
@@ -410,7 +409,7 @@ URL: https://pickmycostume.com/c/block-monster
 
 Wear all one solid color, square up your silhouette with foam or cardboard blocks on shoulders/limbs, draw a pixelated face.
 
-Build time, cost, effort: 30 min + drying / $12-14 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Solid-color sweatsuit, any color, 1 set (own)
@@ -425,7 +424,7 @@ Steps:
 3. Tape one large block to each shoulder with the packing tape.
 4. Tape one medium block to each forearm and shin with the packing tape.
 5. Pull on the solid-color sweatsuit under the blocks.
-6. Safety: keep the face paint clear of the eyes.
+6. Safety: Keep the face paint clear of the eyes.
 7. Draw a blocky square-toothed grin on the face with the non-toxic face paint.
 8. Optional pro finish: edge every block with silver duct tape. The metallic edge catches light and makes cardboard read as robot armor.
 
@@ -443,7 +442,7 @@ URL: https://pickmycostume.com/c/blue-alien-ohana
 
 A blue hoodie and an antenna headband turn the kid into the alien.
 
-Build time, cost, effort: 30 min + drying / $12-15 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Blue hoodie per alien-role person, 1 each (own, or buy: clothing store)
@@ -462,7 +461,7 @@ Steps:
 3. Tape one blue pom-pom to the tip of each pipe cleaner. The two bobbing balls are what read as antennae from ten feet away.
 4. Pull on the blue hoodies.
 5. Lilo: cut leaf shapes from the white felt or paper with the scissors. Pin or glue the leaves across the red t-shirt or dress.
-6. Safety: pin from the front of the red shirt, so pin backs face the fabric and never the skin.
+6. Safety: Pin from the front of the red shirt, so pin backs face the fabric and never the skin.
 7. Wear dark hair down for Lilo. Put the antenna headbands on the aliens last.
 8. Optional pro finish: twist each pipe cleaner into a loose zigzag before adding the pom-pom. The wobble makes the antennae bounce when the kid runs, and movement reads as alien better than any static shape.
 
@@ -480,7 +479,7 @@ URL: https://pickmycostume.com/c/blue-dog-family
 
 Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.
 
-Build time, cost, effort: 25 min / $4-6 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - Blue or orange t-shirt per person, 1 each (own, or buy: clothing store)
@@ -512,7 +511,7 @@ URL: https://pickmycostume.com/c/blue-heeler-pup
 
 Blue-gray hoodie, felt ears, and a painted nose for the littlest pup.
 
-Build time, cost, effort: 25 min + drying / $6-7 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Blue-gray hoodie, 1 (own, or buy: thrift store)
@@ -528,7 +527,7 @@ Steps:
 2. Glue dark gray felt spots onto the hoodie and one pant leg.
 3. Paint a black nose and a few whisker dots on the child's face with a fingertip.
 4. Pin a short felt tail to the back of the sweatpants, pinning from inside so pin backs face the fabric.
-5. Safety: use face paint, never a mask, on small kids so they can see and breathe easily, and keep pins inside the clothes.
+5. Safety: Use face paint, never a mask, on small kids so they can see and breathe easily, and keep pins inside the clothes.
 6. Optional pro finish: teach the pup one trick, like sitting for a treat. A trick makes the costume.
 
 Q: How do you keep the ears up on the hood?
@@ -545,7 +544,7 @@ URL: https://pickmycostume.com/c/board-game-pieces
 
 Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.
 
-Build time, cost, effort: 45 min + drying / $2-4 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Black or white monochrome clothes, 1 set per person (own)
@@ -564,7 +563,7 @@ Steps:
 4. Cut flat boards from another box for the playing card and the domino.
 5. Paint the die and card white and the domino black with the acrylic paint and paintbrushes. Let the paint dry fully.
 6. Add dots and card symbols with the black marker and the white acrylic paint once the base coats are dry.
-7. Safety: cut the die box eye holes generously so you can see clearly. Only wear the die box once all paint is fully dry.
+7. Safety: Cut the die box eye holes generously so you can see clearly. Only wear the die box once all paint is fully dry.
 8. Tape ribbon straps to the flat boards so they hang front and back over the black or white monochrome clothes. Wear the die box over the head with the eye holes lined up.
 9. Optional pro finish: paint a thin gold border around the card and domino edges. The border is what makes them read as game pieces instead of painted cardboard.
 
@@ -582,7 +581,7 @@ URL: https://pickmycostume.com/c/bowling-pins
 
 White outfits with red neck stripes, plus one bowler in black.
 
-Build time, cost, effort: 15 min / $1-3 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - White shirt and pants per pin person, 1 set each (own)
@@ -596,7 +595,7 @@ Steps:
 2. Each pin person cuts two 12-inch red tape stripes from the roll with the scissors, cut all stripes before sticking any, so they match.
 3. Wrap two red tape stripes around the collar of the white shirt and one around each wrist.
 4. The bowler pulls on the black shirt and pants.
-5. Safety: use a lightweight toy ball, never a real bowling ball.
+5. Safety: Use a lightweight toy ball, never a real bowling ball.
 6. Carry the toy bowling ball. Line the pins up in formation with the bowler at the end for photos.
 7. Optional pro finish: number the pins 1 through 10 with a black marker on the back. When the bowler 'knocks you down' you fall in number order, it gets the biggest laugh of the night.
 
@@ -614,7 +613,7 @@ URL: https://pickmycostume.com/c/boxer
 
 Bathrobe, toy gloves, bruise makeup, and entrance music.
 
-Build time, cost, effort: 10 min + drying / $11-15 / Easy
+Build time, effort: 10 min + drying / Easy
 
 Materials:
 - Bathrobe, 1 (own)
@@ -625,7 +624,7 @@ Materials:
 
 Steps:
 1. Pull on the athletic shorts, sneakers, and bathrobe with the hood up.
-2. Safety: keep the face paint clear of the eyes.
+2. Safety: Keep the face paint clear of the eyes.
 3. Dab the purple and yellow face paint on one cheekbone and around one eye for bruise makeup.
 4. Less is more, one bruise reads as boxer, five bruises reads as accident. Keep all paint clear of the eyes.
 5. Pull on the toy boxing gloves.
@@ -646,7 +645,7 @@ URL: https://pickmycostume.com/c/breakfast-buffet
 
 Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.
 
-Build time, cost, effort: 25 min / $0 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - Cardboard sheets, 1 per person about 2x2 feet (make: cut from boxes)
@@ -659,7 +658,7 @@ Steps:
 2. Draw the food on paper FIRST to plan the layout, then cut a large circle or rectangle from the cardboard sheets with the scissors.
 3. Draw big, the food must read from across the room, so fill the whole board.
 4. Draw the food big on the cardboard with the markers. Draw a fried egg, bacon strips, buttered toast, a pancake stack, a glass of OJ, or a coffee mug.
-5. Safety: an adult pokes the holes in the top corners with the tip of the scissors, since pushing through cardboard takes force.
+5. Safety: An adult pokes the holes in the top corners with the tip of the scissors, since pushing through cardboard takes force.
 6. Thread the string through the holes and wear the sign over normal clothes like a sandwich board.
 7. Optional pro finish: make one extra small sign that says 'BREAKFAST BUFFET, all you can eat' and have the tallest person carry it. The sign turns five food boards into one group costume.
 
@@ -677,7 +676,7 @@ URL: https://pickmycostume.com/c/bumble-bee
 
 Black sweats with yellow tape stripes and soft felt antennae.
 
-Build time, cost, effort: 20 min + drying / $18-20 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Black sweatshirt and sweatpants, 1 set (own, or buy: clothing store)
@@ -691,7 +690,7 @@ Steps:
 1. Mark stripe positions with chalk or a light pencil first so the spacing is even.
 2. Wrap three yellow duct tape stripes around the torso of the black sweatshirt and one around each arm, even spacing is what makes it read as bee instead of random tape.
 3. Twist the two yellow pipe cleaners into a V.
-4. Safety: use non-toxic craft glue, and keep the pom-poms out of reach of toddlers.
+4. Safety: Use non-toxic craft glue, and keep the pom-poms out of reach of toddlers.
 5. Glue a black pom-pom to each tip of the V with the craft glue. Glue the base of the V to the black headband.
 6. Let the glue dry fully, then pull on the black sweatshirt and sweatpants and the black headband.
 7. Optional pro finish: cut two white ovals from a plastic bag and tape them to the back as wings. Bees have wings; the ten seconds it takes doubles the recognition.
@@ -710,7 +709,7 @@ URL: https://pickmycostume.com/c/burger-fries
 
 Sesame-seed bun top for one, red fry carton with yellow fry sticks for the other.
 
-Build time, cost, effort: 35 min + drying / $2-4 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - Tan t-shirt, 1 (own, or buy: thrift store)
@@ -731,7 +730,7 @@ Steps:
 4. Fries: fold the cardboard into an open-top carton and paint it red, or cover it with red paper. Let it dry.
 5. Cut yellow paper into fry sticks and glue them poking out of the carton top.
 6. Wear the fry carton like a sandwich board over the red t-shirt, with ribbon straps over the shoulders.
-7. Safety: round the cardboard corners, and keep the fry sticks soft paper, never wood, so the carton is crowd-safe.
+7. Safety: Round the cardboard corners, and keep the fry sticks soft paper, never wood, so the carton is crowd-safe.
 8. Optional pro finish: drop real wrapped candy into the fry carton. A fry box that hands out candy wins every party.
 
 Q: How do you keep the bun bowl on your head?
@@ -748,7 +747,7 @@ URL: https://pickmycostume.com/c/burger-joint-couple
 
 White apron plus fake mustache, curly red wig plus glasses. Burger shop owners.
 
-Build time, cost, effort: 10 min / $12-18 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - 2 white aprons (buy: dollar store or online)
@@ -779,7 +778,7 @@ URL: https://pickmycostume.com/c/butterfly
 
 Painted cardboard wings on black sweats: the garden's prettiest visitor.
 
-Build time, cost, effort: 40 min + drying / $12-14 / Medium
+Build time, effort: 40 min + drying / Medium
 
 Materials:
 - Large cardboard for wings, 1 sheet about 3x2 feet (make: from a shipping box)
@@ -797,7 +796,7 @@ Steps:
 3. Paint both wings with bright patterns and let them dry flat.
 4. Tape elastic loops to the back of each wing for the arms.
 5. Bend pipe cleaners into antennae and tape them to the headband.
-6. Safety: keep wing edges away from doorways; turn sideways to pass through.
+6. Safety: Keep wing edges away from doorways; turn sideways to pass through.
 7. Wear the wings over the black sweats with the antennae headband.
 8. Optional pro finish: outline the wing patterns with glitter glue after the paint dries. The glitter edge catches light and photographs like real wing scales.
 
@@ -815,7 +814,7 @@ URL: https://pickmycostume.com/c/caped-duo
 
 Matching sheet capes, felt masks, and your own emblems.
 
-Build time, cost, effort: 30 min + drying / $2-3 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - 2 old twin sheets or large fabric rectangles, about 4x5 feet each (make: cut from old sheets)
@@ -831,7 +830,7 @@ Steps:
 3. Sketch and cut the emblems from paper first and hold them against the cape to check the size, emblems should cover a third of the cape width.
 4. Cut each sheet into a cape with the scissors, hem-side down. Glue a craft felt emblem to the back of each cape with the fabric glue.
 5. Cut two eye masks from the craft felt, cutting the eye holes wide. Glue ribbon ties to the ends with the fabric glue and let the glue dry.
-6. Safety: tie the cord in a loose bow that pulls free easily. Never tie anything tight around the neck. Keep the mask eye holes wide so vision stays clear.
+6. Safety: Tie the cord in a loose bow that pulls free easily. Never tie anything tight around the neck. Keep the mask eye holes wide so vision stays clear.
 7. Tie the capes at the neck with the cord in a loose bow and put on the masks.
 8. Optional pro finish: cut the emblem in two felt colors, a base shape plus a smaller top shape. Layered emblems look designed; single-color looks cut-out.
 
@@ -849,7 +848,7 @@ URL: https://pickmycostume.com/c/cardboard-knight
 
 Silver-painted cardboard armor and a pool-noodle sword.
 
-Build time, cost, effort: 60 min + drying / $11-15 / Medium
+Build time, effort: 60 min + drying / Medium
 
 Materials:
 - Large cardboard boxes, 2 to 3 (make: collect spares)
@@ -861,7 +860,7 @@ Materials:
 - Scissors, 1 pair
 
 Steps:
-1. Safety: an adult should handle the heavy cutting. Cut generous eye holes in the helmet so vision stays clear.
+1. Safety: An adult should handle the heavy cutting. Cut generous eye holes in the helmet so vision stays clear.
 2. Draw every piece on the cardboard with marker BEFORE cutting: chest plate, back plate, two shoulder pieces, helmet.
 3. Cut the helmet eye holes generously, cardboard cut away cannot be added back, and a knight who cannot see is a hazard. Cut all pieces with the scissors.
 4. Paint every armor piece silver with the silver acrylic paint and the foam brush. Let the paint dry fully.
@@ -884,7 +883,7 @@ URL: https://pickmycostume.com/c/cat-mouse
 
 Cat ears versus mouse ears. Spend the night chasing each other.
 
-Build time, cost, effort: 15 min + drying / $6-8 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - 2 headbands (buy: dollar store)
@@ -897,7 +896,7 @@ Materials:
 Steps:
 1. Cut one paper ear template first, triangles for the cat, rounds for the mouse, and check both against the headbands. Cut two triangle ears from the black craft felt with the scissors.
 2. Cut two round ears from the gray craft felt with the scissors, about 3 inches across.
-3. Safety: keep the eyeliner clear of the eyes.
+3. Safety: Keep the eyeliner clear of the eyes.
 4. Put on the headbands and draw whiskers on both faces with the black eyeliner pencil.
 5. Optional pro finish: glue a pink felt triangle inside each ear. Inner ears are the five-second detail that makes both animals read instantly.
 
@@ -915,7 +914,7 @@ URL: https://pickmycostume.com/c/cereal-crew
 
 Solid-color clothes plus a cereal-box front you decorate.
 
-Build time, cost, effort: 20 min / $0-1 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Solid-color shirt and pants per person, 1 set each (own)
@@ -948,7 +947,7 @@ URL: https://pickmycostume.com/c/cheerleader
 
 Team colors and pom-poms made from cut plastic bags.
 
-Build time, cost, effort: 15 min / $3 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - Team-color t-shirt and skirt or shorts, 1 set (own)
@@ -958,7 +957,7 @@ Materials:
 - Scissors, 1 pair
 
 Steps:
-1. Safety: cut the bags up right away. Keep whole bags away from very small children.
+1. Safety: Cut the bags up right away. Keep whole bags away from very small children.
 2. Stack 2 to 3 white plastic grocery bags.
 3. Cut them into long strips with the scissors, stopping 3 inches from one end, do NOT cut all the way through or the pom-pom falls apart. The uncut end becomes the handle.
 4. Roll the uncut end tightly and wrap it with a rubber band or tape to make a handle. Fluff the strips.
@@ -980,7 +979,7 @@ URL: https://pickmycostume.com/c/chill-painter
 
 A big brown afro wig, denim shirt, and a palette you painted yourself.
 
-Build time, cost, effort: 20 min + drying / $14-18 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Big brown afro wig, 1 (buy: costume aisle or online)
@@ -996,7 +995,7 @@ Steps:
 2. Dab the bright paints onto the palette and let it dry completely.
 3. Wear the denim shirt and jeans with the afro wig.
 4. Carry the palette and brush everywhere, and narrate happy little details about the party.
-5. Safety: let the palette dry fully before the party so wet paint never touches clothes or furniture.
+5. Safety: Let the palette dry fully before the party so wet paint never touches clothes or furniture.
 6. Optional pro finish: compliment one thing about every costume you see, in character. The kindness is the performance.
 
 Q: How do you keep the wig on all night?
@@ -1013,7 +1012,7 @@ URL: https://pickmycostume.com/c/chipmunk-trio
 
 Letter sweaters, felt ears, and whiskers for a singing trio of chipmunks.
 
-Build time, cost, effort: 25 min + drying / $7-12 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Red, blue, and green sweaters or sweatshirts, 1 each (buy: thrift store)
@@ -1045,7 +1044,7 @@ URL: https://pickmycostume.com/c/chips-guac
 
 Green guac tunic with red tomato dots for one, giant triangle chip hat for the other.
 
-Build time, cost, effort: 30 min + drying / $3-4 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Green t-shirt or tunic, 1 (own, or buy: thrift store)
@@ -1063,7 +1062,7 @@ Steps:
 3. Glue the dots scattered across the front of the green t-shirt. Let the glue dry flat for 20 minutes.
 4. Chip: cut a triangle from the tan felt about 2 feet tall with a wide base.
 5. Glue the base of the triangle to the headband so it stands upright. Add a second small triangle behind it for stiffness.
-6. Safety: keep the chip triangle light, felt only, so it cannot poke anyone in a crowd. Skip cardboard for the tall piece.
+6. Safety: Keep the chip triangle light, felt only, so it cannot poke anyone in a crowd. Skip cardboard for the tall piece.
 7. Optional pro finish: the guac person carries a small bowl. Serving the chip person from it in photos is the whole joke.
 
 Q: How do you keep the chip triangle standing up?
@@ -1080,10 +1079,10 @@ URL: https://pickmycostume.com/c/classic-ghost
 
 A white sheet with cut-out eyes.
 
-Build time, cost, effort: 10 min / $4-5 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
-- 1 white flat sheet: twin size for kids under 8, full size for tweens and adults (make: use an old sheet; buy: thrift store for a dollar or two)
+- 1 white flat sheet: twin size for kids under 8, full size for tweens and adults (make: use an old sheet; buy: thrift store)
 - Black marker, thick tip, 1 (buy: dollar store)
 - Scissors, 1 pair
 - 2 small squares of black tulle or sheer fabric, about 4 inches each (optional, for see-through eyes; buy: craft store)
@@ -1094,7 +1093,7 @@ Steps:
 3. Take the sheet off. Cut the eye holes SMALL first, about the size of a quarter. You can always widen them; you cannot shrink them.
 4. Hold the sheet up and check: the wearer should see clearly through both holes. Widen a little at a time until they can.
 5. Optional pro finish: tape a square of black tulle behind each hole. From outside the eyes look dark and hollow; from inside you see straight through the mesh.
-6. Safety: trim the bottom so the hem clears the ground by several inches, a dragging hem is what trips a kid on a dark sidewalk. Keep nothing tight around the neck.
+6. Safety: Trim the bottom so the hem clears the ground by several inches, a dragging hem is what trips a kid on a dark sidewalk. Keep nothing tight around the neck.
 7. Draw a wavy or smiling mouth below the eyes with the black marker. Drape it back on and go.
 
 Q: How do I make eye holes safely?
@@ -1111,7 +1110,7 @@ URL: https://pickmycostume.com/c/coffee-cup
 
 White trash bag over a cardboard tube, brown lid hat.
 
-Build time, cost, effort: 20 min / $4-6 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - White trash bag or white sheet, 1 large (make: from home)
@@ -1141,7 +1140,7 @@ URL: https://pickmycostume.com/c/cowboy-duo
 
 Denim, cardboard hats, and bandanas for the pair that rides together.
 
-Build time, cost, effort: 25 min / $4-7 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - Denim shirts, 2 (own, or buy: thrift store)
@@ -1157,7 +1156,7 @@ Steps:
 1. Cut two cowboy hats from cardboard: wide brims with folded-up sides, taped at the seam.
 2. Tie a bandana around each neck and coil the rope over one shoulder.
 3. Cut chaps from the paper bags and tape them over the jeans.
-4. Safety: round all cardboard edges, and keep the rope coiled, never looped around anyone.
+4. Safety: Round all cardboard edges, and keep the rope coiled, never looped around anyone.
 5. Tip your hats to everyone you greet. The hat tip is the whole personality.
 6. Optional pro finish: draw sheriff stars on paper and pin one on. The star upgrades the pair.
 
@@ -1175,7 +1174,7 @@ URL: https://pickmycostume.com/c/crowd-camouflage
 
 Gray hoodie, dark pants, blank expression. Vanish into any crowd.
 
-Build time, cost, effort: 5 min / $1-2 / Easy
+Build time, effort: 5 min / Easy
 
 Materials:
 - Gray hoodie, 1 (own)
@@ -1205,7 +1204,7 @@ URL: https://pickmycostume.com/c/cupcake
 
 Brown tunic for the wrapper, white pillowcase for frosting, cherry on top.
 
-Build time, cost, effort: 15 min + drying / $7 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Brown t-shirt or tunic for the wrapper, 1 (make: from closet)
@@ -1235,7 +1234,7 @@ URL: https://pickmycostume.com/c/daisy
 
 A yellow petal headband and a green dress: a walking flower.
 
-Build time, cost, effort: 30 min + drying / $7 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Yellow craft foam sheets, 2 (buy: craft store)
@@ -1249,7 +1248,7 @@ Steps:
 1. Cut 10 to 12 petal shapes from the yellow craft foam with the scissors.
 2. Arrange all 10 to 12 petals around the headband DRY before gluing, once craft glue sets, petals cannot be repositioned. Glue the petals in a ring around the headband, tips pointing out, overlapping slightly.
 3. Glue the brown foam circle in the center of the petals.
-4. Safety: let the glue dry fully before wearing.
+4. Safety: Let the glue dry fully before wearing.
 5. Wear the flower headband with the green dress.
 6. Optional pro finish: dot the brown center with yellow fabric paint dots for pollen texture. The textured center is what makes it read as a real flower up close.
 
@@ -1257,7 +1256,7 @@ Q: How many petals does a daisy need?
 A: Ten to twelve. Fewer looks sparse, more looks like a sunflower. Overlap them slightly so no headband shows through.
 
 Q: Foam or felt for the petals?
-A: Craft foam holds its shape and springs back; felt flops by hour two. Foam costs a little more and looks twice as good.
+A: Craft foam holds its shape and springs back; felt flops by hour two. Foam looks twice as good.
 
 ---
 
@@ -1267,7 +1266,7 @@ URL: https://pickmycostume.com/c/deadpan-diva
 
 Black dress, two braids, pale makeup, and a stare that ends conversations.
 
-Build time, cost, effort: 15 min + drying / $6-8 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Black dress, 1 (own)
@@ -1299,7 +1298,7 @@ URL: https://pickmycostume.com/c/decades-crew
 
 Each person picks a decade and dresses from their own closet.
 
-Build time, cost, effort: 20 min / $1-2 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Each person's own closet clothes (make: use what you own)
@@ -1310,7 +1309,7 @@ Materials:
 
 Steps:
 1. Everyone digs through their closet clothes and picks a different decade.
-2. Safety: adults handle the scissors when trimming the decade cards.
+2. Safety: Adults handle the scissors when trimming the decade cards.
 3. Letter the decade card BIG, 4-inch letters minimum, because the card is the costume's label.
 4. Hand-letter a decade card on paper, like '80s, and tape it to each chest. A small card nobody can read defeats the purpose.
 5. Build each look with closet props only: bell-bottoms and a headband for the 70s. Neon and high socks for the 80s. Flannel tied at the waist for the 90s.
@@ -1332,7 +1331,7 @@ URL: https://pickmycostume.com/c/demon-boy-band
 
 Matching streetwear-idol outfits with glowing patterns for your whole boy band.
 
-Build time, cost, effort: 40 min + drying / $2-3 / Easy
+Build time, effort: 40 min + drying / Easy
 
 Materials:
 - Oversized black or white t-shirt per person, 1 each (make: from closet)
@@ -1347,7 +1346,7 @@ Steps:
 1. Decide the pattern together first and sketch it on paper, then test the neon fabric paint on an inside seam so you know how it looks.
 2. Paint matching glowing patterns on everyone: lightning marks on the sleeves, circles on the chest. Keep all paint on the clothes, off faces and away from eyes. Let the paint dry flat for 2 hours.
 3. Apply neon eyeliner or temporary tattoos on cheeks and hands. Style hair up and forward with the gel.
-4. Safety: keep paint off faces and away from eyes.
+4. Safety: Keep paint off faces and away from eyes.
 5. Wear the matching streetwear, carry a toy microphone each, line up shoulder to shoulder, and strike the synchronized album-cover pose.
 6. Optional pro finish: give every member the same temporary tattoo on the same cheek. One matching detail is what turns matching shirts into a band.
 
@@ -1365,7 +1364,7 @@ URL: https://pickmycostume.com/c/deviled-egg
 
 White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.
 
-Build time, cost, effort: 20 min + drying / $14-19 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - 1 white t-shirt (buy: craft store, or use one you own)
@@ -1377,7 +1376,7 @@ Materials:
 - Red face paint or lipstick, 1 (buy: drugstore)
 
 Steps:
-1. Safety: adults handle the scissors when cutting the felt.
+1. Safety: Adults handle the scissors when cutting the felt.
 2. Draw the egg-yolk oval on paper first and hold it against the white t-shirt to check the size, about dinner-plate size.
 3. Cut it from the yellow felt with the scissors. Cut it bigger rather than smaller: a yolk that covers the chest reads instantly.
 4. Tape or glue the yellow felt oval to the chest of the white t-shirt.
@@ -1400,7 +1399,7 @@ URL: https://pickmycostume.com/c/dino-herd
 
 Green ponchos with felt spikes and stuffed-sock tails.
 
-Build time, cost, effort: 30 min / $2-4 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - 1 green poncho or green bedsheet per person, about 50x60 inches (buy: craft store or online)
@@ -1412,7 +1411,7 @@ Materials:
 
 Steps:
 1. Buy one green poncho and one green felt sheet per person, and raid the sock drawer for an old sock.
-2. Safety: adults handle the scissors when cutting the green felt.
+2. Safety: Adults handle the scissors when cutting the green felt.
 3. Cut one paper triangle first and hold it against the green poncho to check the size: palm-size works best.
 4. Cut 8 to 10 triangles from the green felt sheet per person with the scissors, all from the paper template so the row looks even.
 5. Pin the green felt triangles in a row down the back of the green poncho.
@@ -1434,7 +1433,7 @@ URL: https://pickmycostume.com/c/dino-rangers
 
 Khaki outfits for the grown-ups, dino hoods for the kids. Leash a toy raptor.
 
-Build time, cost, effort: 15 min / $1-3 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - Khaki shirt, 1, and khaki pants, 1 pair, per grown-up (make: use what you own)
@@ -1447,10 +1446,10 @@ Materials:
 Steps:
 1. Dress the grown-ups in the khaki shirt and pants, and roll the sleeves for the field-guide look.
 2. Buy or dig out the green hoodie for each kid, the toy dinosaur, and the ribbon.
-3. Safety: adults handle the scissors when cutting the white paper.
+3. Safety: Adults handle the scissors when cutting the white paper.
 4. Draw the eye spots on paper first and hold them against the hood to check the placement.
 5. Cut two oval eye spots from the white paper with the scissors, about 3 inches tall. Cut them smaller than you think: oversized eyes slide off the hood sides.
-6. Safety: skip small plastic dinosaur toys for kids under three, since they are a choking hazard.
+6. Safety: Skip small plastic dinosaur toys for kids under three, since they are a choking hazard.
 7. Loop the ribbon around the toy dinosaur like a leash, and tie the other end to the kid's wrist. Keep the leash short so the toy dinosaur does not drag.
 8. Optional pro finish: write each kid's dinosaur name on masking tape and stick it on the khaki shirt like a field badge. Ranger plus name tag sells the explorer story.
 
@@ -1468,7 +1467,7 @@ URL: https://pickmycostume.com/c/dino-tourist
 
 Hawaiian shirt, dino tail, camera around your neck, and a fanny pack. The meteor missed this one.
 
-Build time, cost, effort: 10 min / $5-6 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - 1 Hawaiian shirt (buy: thrift store, or use your own)
@@ -1498,7 +1497,7 @@ URL: https://pickmycostume.com/c/dinosaur-family
 
 Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.
 
-Build time, cost, effort: 25 min + drying / $2-4 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - 1 green sweatsuit per person (buy: discount store, or use one you own)
@@ -1509,7 +1508,7 @@ Materials:
 
 Steps:
 1. Buy one green sweatsuit and one sheet of green felt per person.
-2. Safety: adults handle the scissors when cutting the green felt.
+2. Safety: Adults handle the scissors when cutting the green felt.
 3. Trace your palm on paper first and use it as the triangle template: spikes about palm-size read best. Cut 8 to 10 triangles from the green felt per person with the scissors.
 4. Glue or pin the green felt triangles in a row from the hood down the back of the green sweatsuit.
 5. Paint green spots on each cheek with the green face paint, keeping it clear of the eyes.
@@ -1530,7 +1529,7 @@ URL: https://pickmycostume.com/c/doctor-bride
 
 Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.
 
-Build time, cost, effort: 25 min + drying / $10-14 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - 1 old dark suit or jacket (make: use what you own)
@@ -1543,7 +1542,7 @@ Materials:
 - Dark eye shadow, 1 (make: use what you own)
 
 Steps:
-1. Safety: keep face paint away from the eyes, and patch-test it first on sensitive skin. Wash it off the same night.
+1. Safety: Keep face paint away from the eyes, and patch-test it first on sensitive skin. Wash it off the same night.
 2. The Doctor: paint the face and neck green with the green face paint.
 3. Tape the two plastic bolts to the sides of the neck, and wear the dark suit with the collar up.
 4. Put the white dress or sheet on first and mark the tear line with tape: knee length for walking, longer for photos.
@@ -1565,7 +1564,7 @@ URL: https://pickmycostume.com/c/donut
 
 Pink cardboard ring with sprinkles, worn like a sandwich board.
 
-Build time, cost, effort: 35 min + drying / $5-8 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - 1 large cardboard box, about 24x24 inches flat (make: from home)
@@ -1596,7 +1595,7 @@ URL: https://pickmycostume.com/c/donut-coffee
 
 Pink frosted ring tunic for one, takeout coffee cup for the other.
 
-Build time, cost, effort: 35 min + drying / $5-7 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - White t-shirt, 1 (own, or buy: thrift store)
@@ -1618,7 +1617,7 @@ Steps:
 4. Tape ribbon loops to the ring and wear it over the white t-shirt like a sandwich board.
 5. Coffee: roll cardboard into a tall cup shape and tape the seam. Paint it brown and let it dry.
 6. Fold the white paper into a lid and tape it to the top of the cup. Wear the cup like a sandwich board over the brown t-shirt.
-7. Safety: round all cardboard edges, and keep the donut hole big enough that arms move freely.
+7. Safety: Round all cardboard edges, and keep the donut hole big enough that arms move freely.
 8. Optional pro finish: the coffee person links arms with the donut person. The breakfast-date pose photographs itself.
 
 Q: How do you cut a clean donut ring?
@@ -1635,7 +1634,7 @@ URL: https://pickmycostume.com/c/dragon-rider-duo
 
 A viking rider and a cardboard dragon, ready to fly over the neighborhood.
 
-Build time, cost, effort: 60 min + drying / $4-6 / Medium
+Build time, effort: 60 min + drying / Medium
 
 Materials:
 - 1 brown t-shirt and 1 pair dark pants for the rider (make: from closet)
@@ -1651,7 +1650,7 @@ Steps:
 2. Cut two wing shapes and a long tail from the cardboard box with the scissors.
 3. Cut the wings smaller than the paper test, not bigger: oversized cardboard wings hit every doorway. Tape all cut edges smooth before wearing.
 4. Glue the black and yellow foam eyes to a headband for the dragon head. The rider wears the faux-fur vest over the brown t-shirt.
-5. Safety: keep wing tips above waist height and tape all cardboard edges smooth so nobody gets scratched.
+5. Safety: Keep wing tips above waist height and tape all cardboard edges smooth so nobody gets scratched.
 6. Rider stands in front with arms out like steering; dragon crouches behind with wings spread. Take the flying photo.
 7. Optional pro finish: tape a row of small cardboard triangles along the dragon's shoulders as back ridges. Ridges plus wings read as dragon; wings alone read as bird.
 
@@ -1669,7 +1668,7 @@ URL: https://pickmycostume.com/c/emerald-witch
 
 An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.
 
-Build time, cost, effort: 45 min + drying / $24-34 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - 1 long green dress, or green fabric, 3 yards (buy: fabric store)
@@ -1680,7 +1679,7 @@ Materials:
 - 1 broom from home for a prop (make: use what you own)
 
 Steps:
-1. Safety: let an adult handle the hot glue, since the nozzle and glue get very hot.
+1. Safety: Let an adult handle the hot glue, since the nozzle and glue get very hot.
 2. Sew or hot glue the green fabric into a long gown, leaving the hem ragged.
 3. Measure the head first, then roll the black cardboard into a tall cone and tape it loosely to check the fit before gluing.
 4. Glue a wide cardboard brim to its base with the hot glue. Hot glue sets fast and cannot be repositioned, so test the cone shape dry first.
@@ -1702,7 +1701,7 @@ URL: https://pickmycostume.com/c/emoji-crew
 
 Everyone picks an emoji: a yellow tee plus a big printed face.
 
-Build time, cost, effort: 15 min / $0-1 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - 1 yellow t-shirt per person (buy: craft store, or use one you own)
@@ -1712,7 +1711,7 @@ Materials:
 
 Steps:
 1. Buy yellow t-shirts if the crew does not own them.
-2. Safety: adults handle the scissors when cutting the paper plates or cardboard circles.
+2. Safety: Adults handle the scissors when cutting the paper plates or cardboard circles.
 3. Draw the emoji on the paper plate first in pencil, then go over it with the markers.
 4. Trim the plate or cardboard circle only where it overhangs the design. Cut small: a plate trimmed too far looks like a scrap.
 5. Tape the paper plate to the chest of the yellow t-shirt, centered like a face.
@@ -1733,10 +1732,10 @@ URL: https://pickmycostume.com/c/emotion-crew
 
 One loud color per person: each of you is a different emotion.
 
-Build time, cost, effort: 25 min + drying / $2-3 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
-- 1 solid bright color outfit per person: yellow, blue, red, green, purple, or orange (make: from closet)
+- 1 solid bright color outfit per person: yellow, blue, red, green, purple, or orange (buy: a set at a thrift store, or own: from closet)
 - Face paint matching each outfit color, 1 per person (buy: drugstore)
 - 1 white poster board per person (buy: dollar store)
 - Markers, 1 set (make: from the house)
@@ -1763,7 +1762,7 @@ URL: https://pickmycostume.com/c/emotional-support-dinosaur
 
 Dino-spike vest over normal clothes with a badge that says Emotional Support Dinosaur. Do not pet.
 
-Build time, cost, effort: 25 min + drying / $10-12 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - 1 vest or sleeveless jacket you own (own)
@@ -1795,7 +1794,7 @@ URL: https://pickmycostume.com/c/enchanted-castle-crew
 
 The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role.
 
-Build time, cost, effort: 40 min + drying / $5-7 / Medium
+Build time, effort: 40 min + drying / Medium
 
 Materials:
 - Princess: yellow fabric, 2 yards (buy: fabric store)
@@ -1807,10 +1806,10 @@ Materials:
 
 Steps:
 1. Princess: wrap and pin the yellow fabric as a simple gown. Prince: wear the blue jacket and dark pants with a sash of torn fabric.
-2. Safety: let an adult handle the hot glue, and keep the face paint away from the eyes.
+2. Safety: Let an adult handle the hot glue, and keep the face paint away from the eyes.
 3. Cut three flame shapes from cardboard first and arrange them dry on the gold headband to check the spacing.
 4. Glue them with the hot glue. Hot glue sets in seconds and cannot be repositioned, so the dry layout is the whole step.
-5. Safety: adults handle the scissors when cutting the cardboard.
+5. Safety: Adults handle the scissors when cutting the cardboard.
 6. Clock: paint the brown cardboard circle cream and add painted hands. Teapot: cut a rounded cardboard pot body, add a handle and spout, and wear it over the shoulders.
 7. Optional pro finish: add a red fabric sash to the prince's blue jacket. The sash is the one detail that turns jacket-and-pants into royalty.
 
@@ -1828,7 +1827,7 @@ URL: https://pickmycostume.com/c/error-404
 
 Wear all black with a blank white page taped to your chest; carry a phone with a cracked-screen prop.
 
-Build time, cost, effort: 10 min / $0 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - 1 black hoodie (make: use your closet)
@@ -1859,7 +1858,7 @@ URL: https://pickmycostume.com/c/extinct-party-animal
 
 Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago.
 
-Build time, cost, effort: 20 min + drying / $11-14 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - 1 jacket or blazer you own (own)
@@ -1892,7 +1891,7 @@ URL: https://pickmycostume.com/c/fairy-tale-princesses
 
 A dress or a crown from the closet. Every princess works.
 
-Build time, cost, effort: 15 min + drying / $9-12 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - 1 dress from the closet per person (make: use what you own)
@@ -1903,7 +1902,7 @@ Materials:
 
 Steps:
 1. Each princess picks any dress from her own closet.
-2. Safety: adults handle the scissors when cutting the cardboard crowns.
+2. Safety: Adults handle the scissors when cutting the cardboard crowns.
 3. Draw the crown shape on the cereal box in pencil first and hold it against the head to check the fit.
 4. Cut the crown with the scissors, leaving a 1-inch tab to tape the ends together. Color it with the gold or silver paint or markers and let it dry.
 5. Tie the hair ribbon as a bow, and tape the cardboard crown on top of the head.
@@ -1924,7 +1923,7 @@ URL: https://pickmycostume.com/c/fossil-hunter
 
 Khaki vest, toy brush, magnifying glass, and cardboard fossil bones in a belt pouch.
 
-Build time, cost, effort: 25 min / $4-5 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - Khaki or tan vest with pockets, 1 (own, or buy: thrift store)
@@ -1940,7 +1939,7 @@ Steps:
 1. Draw bone shapes on the cardboard with the pencil: a femur, a rib, a skull. Keep them chunky, thin cardboard bones snap.
 2. Cut the bones out with the scissors and shade the edges with the pencil for the dug-up look.
 3. Tuck the cardboard bones into the pouch so the tops peek out.
-4. Safety: round all cardboard corners, and carry the brush bristles-down so nobody gets poked. Under 3: skip the bones and magnifying glass as carry props. Toddlers mouth everything and cardboard snaps. The vest and pouch alone carry the costume.
+4. Safety: Round all cardboard corners, and carry the brush bristles-down so nobody gets poked. Under 3: skip the bones and magnifying glass as carry props. Toddlers mouth everything and cardboard snaps. The vest and pouch alone carry the costume.
 5. Wear the khaki vest over a plain shirt, the pouch on the belt, the brush in one pocket. Ages 3+: add the magnifying glass to the other pocket.
 6. Optional pro finish: crumple the brown paper bag into a specimen bag and label it with the pencil. One labeled prop sells the whole expedition.
 
@@ -1958,10 +1957,10 @@ URL: https://pickmycostume.com/c/fruit-salad
 
 Each person picks a fruit color, wears it head to toe with a leaf hat.
 
-Build time, cost, effort: 20 min + drying / $1-2 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
-- Solid-color outfits in fruit colors (red, yellow, green, orange), 1 set per person (own)
+- Solid-color outfits in fruit colors (red, yellow, green, orange), 1 set per person (buy: a set at a thrift store, or own: from closet)
 - Green felt for leaf hats, 1 sheet 9x12 inches per person (buy: craft store)
 - Headbands, 1 per person (buy: dollar store)
 - Fabric glue, 1 tube (buy: craft store)
@@ -1987,7 +1986,7 @@ URL: https://pickmycostume.com/c/fuzzy-gremlin
 
 A furry brown onesie, big felt ears, and googly eyes.
 
-Build time, cost, effort: 25 min + drying / $22-31 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Brown fuzzy onesie or footed pajamas, 1 (buy: thrift store or online)
@@ -2002,7 +2001,7 @@ Steps:
 1. Cut two big round ears from the brown felt and glue them to the onesie hood.
 2. Glue the googly eyes to the forehead of the hood, above the face opening.
 3. Glue two small white felt triangles under the hood edge as teeth.
-4. Safety: glue the eyes to the hood, never near the child's face, and keep all small parts where little hands cannot pull them off.
+4. Safety: Glue the eyes to the hood, never near the child's face, and keep all small parts where little hands cannot pull them off.
 5. Optional pro finish: carry the gremlin in a laundry basket for arrivals. The unboxing gets the biggest reaction.
 
 Q: How do you keep the big ears from flopping?
@@ -2019,7 +2018,7 @@ URL: https://pickmycostume.com/c/fuzzy-monster
 
 A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.
 
-Build time, cost, effort: 15 min + drying / $14-27 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - 1 pastel fuzzy sweatsuit (buy: discount store)
@@ -2030,7 +2029,7 @@ Materials:
 
 Steps:
 1. Glue or pin the two googly eyes to the hood of the pastel fuzzy sweatsuit.
-2. Safety: adults handle the scissors when cutting the white felt.
+2. Safety: Adults handle the scissors when cutting the white felt.
 3. Draw the smile on paper first and hold it against the sweatsuit chest to check the size: it should span most of the chest.
 4. Cut the stitched-style smile from the white felt with the scissors. Cut it bigger than feels right: small smiles disappear into the fuzz.
 5. Let the fabric glue dry fully before wearing.
@@ -2038,7 +2037,7 @@ Steps:
 7. Optional pro finish: cut two small felt fangs and glue them at the smile's corners. Fangs turn a friendly monster into a funny one.
 
 Q: Googly eyes or paper circles for the eyes?
-A: Googly eyes photograph ten times better and cost a dollar more. Paper circles work if the budget is zero, but they curl in humidity.
+A: Googly eyes photograph ten times better. Paper circles work too, but they curl in humidity.
 
 Q: Will the eyes stay on the hood?
 A: Glue them the night before so the fabric glue cures, or pin them with two safety pins each. Same-day glue plus a bouncing kid equals lost eyes.
@@ -2051,7 +2050,7 @@ URL: https://pickmycostume.com/c/galaxy-knights
 
 Robes, belts, and toy energy blades for knights of a far-off galaxy.
 
-Build time, cost, effort: 10 min / $6-8 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - 1 brown or beige bathrobe or long coat per knight (make: from closet)
@@ -2063,7 +2062,7 @@ Materials:
 Steps:
 1. Wear the bathrobe over dark pants with the belt tied at the waist. Pull the hood up.
 2. Carry the energy blade unlit until the photo. Two stances: blade up ready, or blade down calm.
-3. Safety: keep the toy blades pointed up or down, never at faces. Sparring stays slow and pretend.
+3. Safety: Keep the toy blades pointed up or down, never at faces. Sparring stays slow and pretend.
 4. Line up the knights in a row, ignite the blades, and take the council photo.
 5. Optional pro finish: tie the belt over the robe at the natural waist and let the robe flare below it. Belted robes read as uniform; unbelted robes read as bath time.
 
@@ -2081,7 +2080,7 @@ URL: https://pickmycostume.com/c/garden-fairy
 
 Tulle wings, a flower crown, and a wand: the backyard turns into a fairy tale.
 
-Build time, cost, effort: 20 min + drying / $16-19 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Pink tulle, 1 yard (buy: craft store)
@@ -2101,7 +2100,7 @@ Steps:
 2. Cover each wing with pink tulle and tape the edges down.
 3. Glue fake flowers around the headband for the crown.
 4. Tape the cardboard star to the top of the dowel for the wand.
-5. Safety: keep the wand away from faces during photos.
+5. Safety: Keep the wand away from faces during photos.
 6. Tape elastic straps to the back of the wings and slip arms through.
 7. Optional pro finish: outline the wing edges with glitter glue and add three dots down the center. The glitter edge catches light in every photo.
 
@@ -2119,7 +2118,7 @@ URL: https://pickmycostume.com/c/garden-gnome
 
 Wear earth tones, make a pointy hat from cardboard, draw a white beard, carry a tiny fishing rod or garden shovel.
 
-Build time, cost, effort: 30 min + drying / $16-22 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Earth-tone shirt and pants, 1 set (own)
@@ -2131,7 +2130,7 @@ Materials:
 - Tape, 1 roll
 
 Steps:
-1. Safety: adults handle the scissors when cutting the cardboard.
+1. Safety: Adults handle the scissors when cutting the cardboard.
 2. Cut the sheet cardboard to size, roll it into a tall cone, and tape it shut.
 3. Paint the cone with the blue paint for the hat, and let it dry.
 4. Test the face paint on the inside of the wrist first and wait 10 minutes, kids' skin reacts more than you expect.
@@ -2153,7 +2152,7 @@ URL: https://pickmycostume.com/c/ghost-hunters
 
 Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.
 
-Build time, cost, effort: 30 min / $3-8 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - 1 khaki or tan jumpsuit, or matching shirt and pants, per person (buy: thrift store)
@@ -2164,7 +2163,7 @@ Materials:
 
 Steps:
 1. Tape the small cardboard box shut for the backpack.
-2. Safety: adults handle the scissors when cutting the black cardboard.
+2. Safety: Adults handle the scissors when cutting the black cardboard.
 3. Draw the straps, dial, and hose shapes on the black cardboard with marker first and hold them against the box to check the size.
 4. Cut them with the scissors. Cut the hose shape last and widest: it is the most visible piece.
 5. Mark each last name on the white paper with the markers. Tape it to the chest as a name patch.
@@ -2185,7 +2184,7 @@ URL: https://pickmycostume.com/c/gloom-bloom
 
 Braids and black for Gloom, color-pop and smiles for Bloom.
 
-Build time, cost, effort: 15 min + drying / $4-6 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - 1 set black clothes from the closet (make: use what you own)
@@ -2216,7 +2215,7 @@ URL: https://pickmycostume.com/c/glow-skeleton
 
 Black sweats with glow-in-the-dark bone tape, plus glow bracelets.
 
-Build time, cost, effort: 20 min + drying / $16-19 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Black sweatsuit, 1 (buy: discount store, or own)
@@ -2227,7 +2226,7 @@ Materials:
 
 Steps:
 1. Charge the bone tape under a lamp for 20 minutes for maximum glow.
-2. Safety: adults handle the scissors when cutting the bone tape.
+2. Safety: Adults handle the scissors when cutting the bone tape.
 3. Cut the bone tape into rib bones: lay strips horizontally across the chest and back. Add vertical spine segments down the center, and arm and leg bones down the limbs.
 4. Snap the glow bracelets onto both wrists and both ankles right before heading out.
 5. Test the face paint on the wrist first and wait 10 minutes for any reaction. Paint simple skull eye circles with the black face paint, keeping clear of the eyes so vision stays clear.
@@ -2247,7 +2246,7 @@ URL: https://pickmycostume.com/c/goggle-crew
 
 Yellow tees, denim overalls, goggles, black gloves.
 
-Build time, cost, effort: 10 min / $1-3 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - 1 yellow t-shirt per person (buy: craft store, or use one you own)
@@ -2276,7 +2275,7 @@ URL: https://pickmycostume.com/c/good-witch-bad-witch
 
 Green face paint and black for one, pink gown and crown for the other.
 
-Build time, cost, effort: 20 min + drying / $4-6 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - 1 black dress or set of black clothes for the bad witch (make: use your closet)
@@ -2288,7 +2287,7 @@ Materials:
 
 Steps:
 1. Bad witch: wear the black dress or black clothes.
-2. Safety: let an adult handle the hot glue, and keep the green face paint away from the eyes.
+2. Safety: Let an adult handle the hot glue, and keep the green face paint away from the eyes.
 3. Test the hat brim bend dry before gluing: fold the brim, check it in a mirror, then hot glue it. Hot glue sets in seconds and cannot be repositioned.
 4. Paint the bad witch's face and hands green with the green face paint, keeping paint away from the eyes and patch-testing sensitive skin first.
 5. Good witch: wear the pink dress or pink clothes. Color the cardboard crown with the pink marker, and tape it on the head.
@@ -2308,7 +2307,7 @@ URL: https://pickmycostume.com/c/goth-braids
 
 Black dress, two tight braids, and a stare that ends conversations.
 
-Build time, cost, effort: 20 min + drying / $6-8 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Black dress, 1 (own, or buy: thrift store)
@@ -2322,7 +2321,7 @@ Steps:
 1. Pull the hair into two tight braids, one behind each ear, and tie them off.
 2. Apply the pale foundation lightly, then heavy black eyeliner.
 3. Wear the black dress with black tights and dark lipstick.
-4. Safety: test the face paint on the inside of the wrist first and wash it off before bed so it never stains the pillow.
+4. Safety: Test the face paint on the inside of the wrist first and wash it off before bed so it never stains the pillow.
 5. Practice the stare in the mirror: calm, unimpressed, unblinking.
 6. Optional pro finish: carry a black umbrella even if it is not raining. The prop completes the silhouette.
 
@@ -2340,7 +2339,7 @@ URL: https://pickmycostume.com/c/haunted-animatronics
 
 Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves.
 
-Build time, cost, effort: 60 min + drying / $3-5 / Medium
+Build time, effort: 60 min + drying / Medium
 
 Materials:
 - 1 large cardboard box per person, big enough to cover the head (make: use what you own)
@@ -2350,11 +2349,11 @@ Materials:
 - Hot glue gun, 1; scissors, 1 pair; utility knife, 1 (adults only)
 
 Steps:
-1. Safety: an adult handles the utility knife and the hot glue for every cut and glue step.
+1. Safety: An adult handles the utility knife and the hot glue for every cut and glue step.
 2. Mark the eye holes and the wide jagged mouth on the OUTSIDE of the box first, then have the wearer hold the box up to check the eye placement before any cutting.
 3. Cut with the utility knife, adults only, cutting the eye holes generous and the mouth wide. Cardboard cut away cannot be put back, and small eye holes make a blind hazard.
 4. Paint the box gray with black scuffs and cracks. Glue one red LED tea light inside each eye hole.
-5. Safety: make the eye holes large, and never wear the box near stairs or traffic, since side vision is limited.
+5. Safety: Make the eye holes large, and never wear the box near stairs or traffic, since side vision is limited.
 6. Wear the box over the head with the eyes lined up to the holes. Wear the old clothes with holes underneath, and move in short jerky steps, freezing between moves.
 7. Optional pro finish: paint black scuffs and cracks around the eye holes before adding the lights. The damage detail is what reads as haunted instead of just boxy.
 
@@ -2372,7 +2371,7 @@ URL: https://pickmycostume.com/c/haunted-portraits
 
 Gray makeup, old-timey clothes, hold a gilt frame.
 
-Build time, cost, effort: 25 min + drying / $3-4 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - 1 set old-fashioned dark clothes per person, e.g. a vest, long skirt, or button-up (make: use your closet)
@@ -2402,7 +2401,7 @@ URL: https://pickmycostume.com/c/headless-horsemen
 
 Black capes, jack-o-lanterns held at shoulder height, group gallop.
 
-Build time, cost, effort: 20 min / $1-2 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Black cape or black sheet, 1 per person (buy: dollar store, or own: black sheet)
@@ -2413,7 +2412,7 @@ Materials:
 
 Steps:
 1. Drape the black cape or black sheet over the shoulders.
-2. Safety: keep your real head tucked low so you can see the ground.
+2. Safety: Keep your real head tucked low so you can see the ground.
 3. Tuck the chin into the chest, and hold the jack-o-lantern bucket up at shoulder height like a carried head.
 4. Add a glow bracelet to each wrist so drivers can see you in the dark.
 5. Hold the broom between the legs like a horse, and gallop in a group line.
@@ -2433,7 +2432,7 @@ URL: https://pickmycostume.com/c/hero-squad
 
 Color-coded capes and masks, one team pose for photos.
 
-Build time, cost, effort: 40 min + drying / $3-5 / Easy
+Build time, effort: 40 min + drying / Easy
 
 Materials:
 - Cape per person in squad colors, 1 each (buy: craft store, or make: cut from 1 yard of fabric each)
@@ -2446,7 +2445,7 @@ Steps:
 1. Sketch the team emblem on scrap paper and have the whole squad approve it BEFORE opening the paint, painted emblems cannot be unpainted.
 2. Then each hero paints the same emblem, like a lightning bolt, on the t-shirt with the fabric paint.
 3. Let the fabric paint dry fully before wearing.
-4. Safety: keep each cape short enough to clear the ground so nobody trips.
+4. Safety: Keep each cape short enough to clear the ground so nobody trips.
 5. Pin each cape at the shoulders with a safety pin, and wear the matching mask.
 6. End every appearance with the team pose: fists on hips, capes billowing.
 7. Optional pro finish: paint a matching emblem on each cape near the shoulder. Capes with emblems look designed; plain capes look borrowed.
@@ -2465,7 +2464,7 @@ URL: https://pickmycostume.com/c/hot-dog
 
 Tan foam pool noodle bun, red shirt for the dog, mustard squiggle.
 
-Build time, cost, effort: 15 min + drying / $7-8 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Red t-shirt, 1 (own)
@@ -2494,7 +2493,7 @@ URL: https://pickmycostume.com/c/ice-cream-cone
 
 A tan paper cone hat and a sprinkle-dotted scoop shirt.
 
-Build time, cost, effort: 20 min + drying / $6-8 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Tan paper party hat or cone, 1 (buy: dollar store)
@@ -2506,10 +2505,9 @@ Materials:
 Steps:
 1. Draw a waffle-cone crosshatch on the tan paper party hat with the brown marker.
 2. Set the tan paper party hat on the head like a hat, and tape the elastic so it sits snugly.
-3. Safety: keep small pom-poms away from kids under three, since they are a choking hazard.
-4. Cover the white t-shirt with the colored dot stickers or pom-poms, scattered like sprinkles.
-5. Keep the stickers off the skin.
-6. Optional pro finish: add a red pom-pom 'cherry' to the tip of the hat with a dot of glue. The cherry is what makes strangers say the flavor out loud.
+3. Safety: Keep small pom-poms away from kids under three, since they are a choking hazard.
+4. Cover the white t-shirt with the colored dot stickers or pom-poms, scattered like sprinkles. Keep the stickers off the skin.
+5. Optional pro finish: add a red pom-pom 'cherry' to the tip of the hat with a dot of glue. The cherry is what makes strangers say the flavor out loud.
 
 Q: How do you keep the cone hat on all night?
 A: Tape the hat's elastic strap so it fits snug under the chin, and add a second piece of tape inside the hat brim. Paper hats are light; they fall off because the elastic is loose, not because of wind.
@@ -2525,7 +2523,7 @@ URL: https://pickmycostume.com/c/ice-skater
 
 A white dress, tights, and a perfect bun: gold-medal energy, no ice required.
 
-Build time, cost, effort: 10 min / $3-4 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - White dress, 1 (buy: thrift store, or own)
@@ -2538,7 +2536,7 @@ Steps:
 1. Buy or pull the white dress, white tights, and hair donut.
 2. Twist the hair into a high bun around the hair donut and pin it.
 3. Dab a little blush on the cheeks for the cold-air glow.
-4. Safety: skip real skates; this costume is for dry land only.
+4. Safety: Skip real skates; this costume is for dry land only.
 5. Wear the white dress with the tights and strike the finishing pose.
 6. Optional pro finish: wrap white ribbon crisscrossed up the calves over the tights. The laced calves read as skates even in sneakers.
 
@@ -2556,7 +2554,7 @@ URL: https://pickmycostume.com/c/juke-joint-vampires
 
 Sharp vintage suits, fangs, and a trumpet one of you never puts down.
 
-Build time, cost, effort: 30 min / $19-41 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - Vintage-style suits, 2 (buy: thrift store)
@@ -2572,7 +2570,7 @@ Steps:
 2. Slick the hair back with gel and fit the fangs.
 3. Tuck a red pocket square into each jacket and dab fake blood at one corner of the mouth.
 4. One of you carries the toy trumpet everywhere and mimes a solo on cue.
-5. Safety: keep the fangs in a case when eating or drinking, and never share them between people.
+5. Safety: Keep the fangs in a case when eating or drinking, and never share them between people.
 6. Optional pro finish: learn one slow dance move together. A vampire couple that dances owns the room.
 
 Q: How do you talk with fangs in?
@@ -2589,7 +2587,7 @@ URL: https://pickmycostume.com/c/kart-racers
 
 Cardboard karts and racing caps for a full starting grid of friends.
 
-Build time, cost, effort: 45 min + drying / $1-2 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Large cardboard box, 1 per racer, big enough to fit around the torso (make: collect spares)
@@ -2603,7 +2601,7 @@ Steps:
 1. Have each racer step inside the box first and mark where the waist sits BEFORE cutting, an opening cut too big slides down, and cardboard cut away cannot be put back.
 2. Cut the top and bottom out of each box so it fits around the torso like a kart, starting with a smaller opening and widening. Paint each kart a different bright color.
 3. Tape two paper-plate wheels to each side. Tape ribbon straps inside so the kart hangs at waist height.
-4. Safety: keep the kart box at waist height so legs move freely, and tape all cut edges smooth.
+4. Safety: Keep the kart box at waist height so legs move freely, and tape all cut edges smooth.
 5. Wear the kart with the racing cap, line up side by side, and strike the starting-grid pose.
 6. Optional pro finish: number each kart with a big marker digit on the front. Numbered karts turn a row of boxes into a starting grid.
 
@@ -2621,7 +2619,7 @@ URL: https://pickmycostume.com/c/ketchup-mustard
 
 Red bottle tunic and cap for one, yellow for the other.
 
-Build time, cost, effort: 15 min / $1 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - 1 red t-shirt, 1 yellow t-shirt (make: raid the closet)
@@ -2636,7 +2634,7 @@ Steps:
 3. Cut a matching blob from the yellow paper.
 4. Pin the red blob to the yellow shirt and the yellow blob to the red shirt with 4 safety pins each, pinned from inside. Each person wears the OTHER condiment's color, that is the joke.
 5. Optional pro finish: write the nutrition facts on the back of each shirt with a marker ('Serving size: 1 awesome couple'). People will turn you around to read it.
-6. Safety: pin from inside the shirt so no pin backs touch skin, and keep the pins flat, nobody wants a poke during a hug.
+6. Safety: Pin from inside the shirt so no pin backs touch skin, and keep the pins flat, nobody wants a poke during a hug.
 7. Stand side by side and take the photo. The internet has decided this is a top-10 couples costume; you are now contractually obligated to look delighted.
 
 Q: How do you keep the paper blobs from tearing?
@@ -2647,13 +2645,13 @@ A: That is the joke, ketchup wears mustard's blob and mustard wears ketchup's. S
 
 ---
 
-### KPop Demon Huntresses
+### Pop Star Demon Huntresses
 
 URL: https://pickmycostume.com/c/kpop-demon-huntresses
 
 Matching stage outfits, toy microphones, and demon-hunter poses for three.
 
-Build time, cost, effort: 40 min + drying / $11-14 / Medium
+Build time, effort: 40 min + drying / Medium
 
 Materials:
 - Black leggings or pants, 3 (own, or buy: thrift store)
@@ -2669,7 +2667,7 @@ Steps:
 1. Agree on one accent color for all three outfits so the trio reads as a unit.
 2. Cut three sword shapes from the cardboard and wrap the blades in silver duct tape.
 3. Dress each hunter in black pants, a metallic top, and bold face paint stripes.
-4. Safety: keep the cardboard swords light and never swing them near faces in a crowd.
+4. Safety: Keep the cardboard swords light and never swing them near faces in a crowd.
 5. Practice one shared pose, microphones up, swords crossed, and hit it for every photo.
 6. Optional pro finish: paint matching symbols on the back of each hand. The matching marks sell the team.
 
@@ -2687,7 +2685,7 @@ URL: https://pickmycostume.com/c/ladybug
 
 Red sweats, black felt dots, and little spotted wings.
 
-Build time, cost, effort: 20 min + drying / $12-14 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Red shirt, 1 (own)
@@ -2705,7 +2703,7 @@ Steps:
 3. Cut 8 to 10 black felt circles with the scissors, arrange them spread across the red shirt, then glue.
 4. Cut two small wing shapes from the felt scraps, dot them, and pin them at the back.
 5. Bend pipe cleaners into antennae and attach them to the headband.
-6. Safety: pin the wings where little hands cannot reach the pins.
+6. Safety: Pin the wings where little hands cannot reach the pins.
 7. Wear the dotted sweats with the antennae headband.
 8. Optional pro finish: paint a black center line down the back of the shirt with fabric paint. The center line splits the wings, without it, the dots read as polka dots, not ladybug.
 
@@ -2723,7 +2721,7 @@ URL: https://pickmycostume.com/c/little-artist
 
 A beret, a cardboard paint palette, and a splatter-painted smock.
 
-Build time, cost, effort: 15 min + drying / $10-11 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Beret or flat cap, 1 (buy: thrift store)
@@ -2737,7 +2735,7 @@ Steps:
 1. Draw the kidney-bean palette shape on the cardboard and check the size against the forearm BEFORE cutting. A palette cut too small looks like a toy. Cut it out with the scissors.
 2. Paint dabs of bright color around the palette edge and let dry.
 3. Flick a little paint onto the smock for splatters and let dry.
-4. Safety: use washable paint only; cover the table before splattering.
+4. Safety: Use washable paint only; cover the table before splattering.
 5. Wear the smock and the tilted beret, and carry the palette and brush.
 6. Optional pro finish: squeeze real paint dabs onto the cardboard palette and carry it. A palette with actual paint on it is the prop that makes strangers say 'oh, an artist!' instead of 'nice beret.'
 
@@ -2755,7 +2753,7 @@ URL: https://pickmycostume.com/c/little-baker
 
 A paper chef hat, an apron, and a toy whisk.
 
-Build time, cost, effort: 15 min / $5-8 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - White paper or poster board for the hat, 2 sheets (buy: craft store, or use printer paper)
@@ -2768,7 +2766,7 @@ Materials:
 Steps:
 1. Roll the paper into a tall chef hat shape and tape the seam.
 2. Measure the head with a paper strip BEFORE cutting. The hat band must fit snug or it slides over the eyes. Trim the hat band to fit the head with the scissors.
-3. Safety: keep real flour away from eyes; a tiny pinch on the apron only.
+3. Safety: Keep real flour away from eyes; a tiny pinch on the apron only.
 4. Wear the hat and the apron.
 5. Carry the toy whisk and offer everyone imaginary cupcakes.
 6. Optional pro finish: dust the apron with a little flour before heading out. One flour smudge is the difference between 'dressed as a baker' and 'is a baker.'
@@ -2787,7 +2785,7 @@ URL: https://pickmycostume.com/c/little-lifeguard
 
 Red tee, whistle, and a rescue buoy made from a pool noodle ring: an everyday hero costume.
 
-Build time, cost, effort: 20 min + drying / $15-20 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Red t-shirt, 1 (own, or buy: thrift store)
@@ -2801,7 +2799,7 @@ Materials:
 Steps:
 1. Cut the pool noodle with the scissors and curve it into a ring, taping the ends together with the white duct tape. An adult should do the cutting: pool noodles need firm pressure.
 2. Wrap 4 white tape bands evenly around the ring so it reads as a rescue buoy.
-3. Safety: the whistle is a photo prop the parent holds and brings out for pictures, not a blow-all-night toy.
+3. Safety: The whistle is a photo prop the parent holds and brings out for pictures, not a blow-all-night toy.
 4. Safety: The buoy is a costume prop, not a flotation device. Keep the lanyard short so it cannot catch on anything.
 5. Wear the red tee and shorts and carry the buoy over one shoulder. The parent keeps the whistle and hands it over for photos.
 6. Dab the white face paint stripe across the nose.
@@ -2821,7 +2819,7 @@ URL: https://pickmycostume.com/c/little-lion
 
 Tan sweatsuit plus a fuzzy mane hood.
 
-Build time, cost, effort: 20 min + drying / $12-14 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Tan or brown sweatsuit, 1 (buy: discount store, or use one you own)
@@ -2831,11 +2829,11 @@ Materials:
 - Brown non-toxic face paint, 1 tube (buy: drugstore)
 
 Steps:
-1. Safety: adults handle the scissors when cutting the brown fuzzy fabric.
+1. Safety: Adults handle the scissors when cutting the brown fuzzy fabric.
 2. Cut a paper collar template first and test it around the sweatsuit hood, a mane cut too small looks like a bib, and fuzzy fabric cut away cannot be put back.
 3. Then cut the brown fuzzy fabric into a wide collar for the mane, cutting generous and trimming after the fitting.
 4. Pin the mane around the hood or neckline of the tan sweatsuit with the safety pins, fluffing it outward.
-5. Safety: pin the mane from inside the sweatsuit, so pin backs face the fabric and never the skin.
+5. Safety: Pin the mane from inside the sweatsuit, so pin backs face the fabric and never the skin.
 6. Paint a brown nose and whiskers with the brown face paint, keeping clear of the eyes. Skip it for under-twos and any kid who rubs their face.
 7. Pin the mane flat at the back so it does not slip over the eyes while the little lion runs.
 8. Optional pro finish: cut a small triangle tail from the leftover fuzzy fabric and pin it to the back waistband. The tail is what other kids point at.
@@ -2854,7 +2852,7 @@ URL: https://pickmycostume.com/c/little-pig-family
 
 Pink clothes and a snout headband; little brother brings the dinosaur.
 
-Build time, cost, effort: 25 min / $10-14 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - Pink t-shirts or pajamas, 1 per person (buy: thrift store, or own: from closet)
@@ -2889,7 +2887,7 @@ URL: https://pickmycostume.com/c/little-prince
 
 Crown, cape, and a royal sash from the dress-up box or the craft drawer.
 
-Build time, cost, effort: 20 min + drying / $13-14 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Gold cardstock or a paper crown, 1 (buy: party store, or make: from cardstock)
@@ -2906,7 +2904,7 @@ Steps:
 2. Press the stick-on gems around the crown band, one big gem centered on the front.
 3. Drape the fabric as a cape.
 4. For under-5s, skip the pins: tie the cape's top corners to the shirt shoulders with short ribbon ties, or glue the top edge to the back of the shirt. Nothing tied around the neck.
-5. Safety: no pins near little hands. Keep the cape above the knees so it cannot trip. Nothing tied around the neck.
+5. Safety: No pins near little hands. Keep the cape above the knees so it cannot trip. Nothing tied around the neck.
 6. Sash: drape the wide ribbon from one shoulder to the opposite hip and tape or glue it at the waist.
 7. Optional pro finish: tilt the crown slightly to one side. A crooked crown is the whole charm of a little prince.
 
@@ -2924,7 +2922,7 @@ URL: https://pickmycostume.com/c/little-shark
 
 Gray hoodie with a felt fin glued on the back.
 
-Build time, cost, effort: 25 min + drying / $5-6 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Gray hoodie, 1 (buy: thrift store, or own: from closet)
@@ -2956,7 +2954,7 @@ URL: https://pickmycostume.com/c/little-witch
 
 Black cape, pointy hat, striped tights, green face paint.
 
-Build time, cost, effort: 15 min + drying / $18-22 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Black cape or black bedsheet, 1 (buy: dollar store, or make: cut a cape from a black t-shirt)
@@ -2986,7 +2984,7 @@ URL: https://pickmycostume.com/c/lost-tourist
 
 Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder.
 
-Build time, cost, effort: 10 min / $0 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - Button-down shirt, 1 (own, to wrinkle on purpose)
@@ -3018,7 +3016,7 @@ URL: https://pickmycostume.com/c/macabre-couple
 
 Long black gown and calm stare for one, sharp suit for the other.
 
-Build time, cost, effort: 30 min / $15-28 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - Long black dress or gown, 1 (buy: thrift store)
@@ -3033,7 +3031,7 @@ Steps:
 1. She wears the long black gown with pale makeup and dark lips; he wears the suit with a stern expression.
 2. Style the hair severe: slicked back for him, straight and long for her.
 3. Walk arm in arm and speak as little as possible.
-4. Safety: test all makeup on a wrist first, and remove it fully before bed.
+4. Safety: Test all makeup on a wrist first, and remove it fully before bed.
 5. Never smile in photos. The unsmiling portrait is the entire aesthetic.
 6. Optional pro finish: one shared prop, a black rose. The rose gives your hands something to do.
 
@@ -3051,7 +3049,7 @@ URL: https://pickmycostume.com/c/mermaid-crew
 
 The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.
 
-Build time, cost, effort: 20 min + drying / $3-4 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - T-shirt or dress in a sea color (teal, purple, red, white), 1 per person (buy: thrift store, or own)
@@ -3081,7 +3079,7 @@ URL: https://pickmycostume.com/c/milk-cookies
 
 White carton tunic for one, brown cookie with felt chips for the other.
 
-Build time, cost, effort: 25 min + drying / $4-5 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - White t-shirt or tunic, 1 (own, or buy: thrift store)
@@ -3099,7 +3097,7 @@ Steps:
 3. Pin the carton front to the white t-shirt, pinning from inside the shirt so the pin backs face the fabric and never the skin.
 4. Cookie: cut the biggest circle you can from the brown felt and pin it centered on the brown t-shirt.
 5. Cut a dozen small chip shapes from the leftover brown felt and glue them onto the cookie circle. Uneven spacing looks more like a real cookie.
-6. Safety: check every pin from the inside before heading out, and keep glued felt flat so edges do not curl and catch.
+6. Safety: Check every pin from the inside before heading out, and keep glued felt flat so edges do not curl and catch.
 7. Optional pro finish: the milk person carries a paper straw. One shared prop is what makes a pair read as a pair.
 
 Q: How do you keep the felt pieces from flopping?
@@ -3116,7 +3114,7 @@ URL: https://pickmycostume.com/c/moonwalk-star
 
 Red jacket, one glitter glove, and the lean everyone attempts.
 
-Build time, cost, effort: 25 min + drying / $20-36 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Red jacket, 1 (buy: thrift store)
@@ -3132,7 +3130,7 @@ Steps:
 2. Wear the red jacket with black pants, white socks, and the fedora.
 3. Put the glitter glove on one hand only. One glove, never two.
 4. Practice the moonwalk and the toe-stand in socks on a smooth floor.
-5. Safety: practice the lean against a wall first, and never attempt it on a wet or crowded floor.
+5. Safety: Practice the lean against a wall first, and never attempt it on a wet or crowded floor.
 6. Optional pro finish: freeze mid-moonwalk when cameras appear. The frozen pose beats the dance.
 
 Q: How do you keep the glitter on the glove?
@@ -3149,7 +3147,7 @@ URL: https://pickmycostume.com/c/moth-porch-light
 
 One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.
 
-Build time, cost, effort: 40 min / $5-7 / Medium
+Build time, effort: 40 min / Medium
 
 Materials:
 - Neutral shirt and pants in gray, brown, or tan, 1 set (own: from closet)
@@ -3175,7 +3173,7 @@ Q: How do the wings stay on the arms?
 A: Tape one wing to each sleeve of the neutral shirt with two strips of tape per wing. Tape on fabric holds for an evening; tape the wings to the sleeves, not to skin.
 
 Q: What size lampshade for the porch light person?
-A: One that fits over the head like a hat without covering the eyes, a medium table-lamp shade works. Check thrift stores; they are a dollar or two.
+A: One that fits over the head like a hat without covering the eyes, a medium table-lamp shade works. Check thrift stores.
 
 ---
 
@@ -3185,7 +3183,7 @@ URL: https://pickmycostume.com/c/mystery-crew
 
 Assign the leader, the style icon, the brains, the goofball, and one very good dog.
 
-Build time, cost, effort: 15 min + drying / $2-4 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Orange, purple, blue, and red t-shirts, 1 each (buy: thrift store, or own: from closet)
@@ -3215,10 +3213,10 @@ URL: https://pickmycostume.com/c/mystery-teens
 
 Color-coded outfits, a toy magnifying glass, and one giant sandwich.
 
-Build time, cost, effort: 20 min / $0-1 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
-- Solid-color tops in assigned colors, 1 per person (own: from closets)
+- Solid-color tops in assigned colors, 1 per person (buy: at a thrift store, or own: from closets)
 - Jeans or skirts, 1 per person (own)
 - Toy magnifying glass, 1 (buy: dollar store)
 - Paper for the sandwich prop, 1 sheet (own)
@@ -3229,7 +3227,7 @@ Steps:
 1. Assign each person a color: orange, blue, purple, green, red.
 2. Everyone builds their outfit from their own closet in their assigned color.
 3. One person carries the magnifying glass, one carries the giant paper sandwich.
-4. Safety: the sandwich prop stays paper and light, and nothing gets swung in crowds.
+4. Safety: The sandwich prop stays paper and light, and nothing gets swung in crowds.
 5. Introduce yourselves in character when people ask. The names are the costume.
 6. Optional pro finish: bring the dog plush and let one person carry it everywhere. The dog gets more photos than the teens.
 
@@ -3247,7 +3245,7 @@ URL: https://pickmycostume.com/c/neon-demon-hunter
 
 Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.
 
-Build time, cost, effort: 25 min + drying / $18-20 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Black hoodie, black pants, chunky sneakers, 1 set (own)
@@ -3277,7 +3275,7 @@ URL: https://pickmycostume.com/c/ninja
 
 All black with a belt sash and a slit headband.
 
-Build time, cost, effort: 10 min + drying / $0 / Easy
+Build time, effort: 10 min + drying / Easy
 
 Materials:
 - All-black outfit: t-shirt, pants, and a black beanie, 1 set (own: from closet)
@@ -3290,7 +3288,7 @@ Steps:
 1. Measure the strip around the forehead first and mark 3 inches wide BEFORE cutting, a strip cut too narrow digs in, and fabric cut away cannot be put back.
 2. Cut the strip a little long from the old black t-shirt with the scissors; long can be trimmed, short cannot. Put on the black beanie.
 3. Tie the black sash around the waist with the knot at the back, and tuck the ends in.
-4. Safety: keep the eyes and mouth uncovered, and wrap the black headband above the eyes.
+4. Safety: Keep the eyes and mouth uncovered, and wrap the black headband above the eyes.
 5. Wrap the black headband around the forehead and tie it at the back, leaving the eyes clear.
 6. Paint a thin black stripe across the bridge of the nose with the black face paint. Practice the silent sneaky walk.
 7. Optional pro finish: tuck the headband ends in instead of letting them dangle. Clean lines read as trained ninja; loose ends read as pirate.
@@ -3309,7 +3307,7 @@ URL: https://pickmycostume.com/c/numbered-players
 
 Green tracksuits, numbered bibs, and a survival-game attitude.
 
-Build time, cost, effort: 30 min / $0-1 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - Green sweatsuit per person, 1 each (buy: thrift store, or own: from closet)
@@ -3324,7 +3322,7 @@ Steps:
 2. Iron or tape one number onto the front of each white t-shirt and the matching number on the back.
 3. Wear the white t-shirt under the green sweatsuit jacket with the number showing, plus the white sneakers.
 4. Hand each player a dalgona candy as the prop. Line up in number order for the photo.
-5. Safety: if using an iron, have an adult do the pressing. Keep numbers readable and identical front and back.
+5. Safety: If using an iron, have an adult do the pressing. Keep numbers readable and identical front and back.
 6. Optional pro finish: draw a thin triangle border around each number with a black fabric marker. The border is what makes the number read as a player badge instead of a sticker.
 
 Q: Iron-on numbers or taped paper numbers?
@@ -3341,7 +3339,7 @@ URL: https://pickmycostume.com/c/office-couple
 
 White shirts, name tags, and a teapot. The office's finest.
 
-Build time, cost, effort: 10 min / $0 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - White button-down shirts, 2 (own: from closet)
@@ -3371,7 +3369,7 @@ URL: https://pickmycostume.com/c/party-pinata
 
 A cardboard box wrapped in rainbow fringe, with real candy inside.
 
-Build time, cost, effort: 40 min + drying / $20-22 / Medium
+Build time, effort: 40 min + drying / Medium
 
 Materials:
 - Cardboard box, 1 large (make: from a shipping box)
@@ -3385,7 +3383,7 @@ Steps:
 1. Cut fringe strips from the crepe paper and glue them in overlapping rows over the whole box.
 2. Cut arm and head holes in the box, with the opening at the bottom for candy.
 3. Fill the box with wrapped candy before sealing the bottom flap loosely.
-4. Safety: keep the head hole generous so vision and breathing stay easy, and use only wrapped candy.
+4. Safety: Keep the head hole generous so vision and breathing stay easy, and use only wrapped candy.
 5. Hand out candy from inside the costume all night. The giving is the costume.
 6. Optional pro finish: let kids pull one candy each from the bottom flap. You become the party game.
 
@@ -3403,7 +3401,7 @@ URL: https://pickmycostume.com/c/pbj
 
 One in brown with a PB label, one in purple with a J label.
 
-Build time, cost, effort: 20 min / $1-2 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Brown t-shirt, 1 (buy: thrift store, or own: from closet)
@@ -3435,7 +3433,7 @@ URL: https://pickmycostume.com/c/peas-pod
 
 Green shirts in a row under one long felt pod sash.
 
-Build time, cost, effort: 60 min + drying / $4-6 / Medium
+Build time, effort: 60 min + drying / Medium
 
 Materials:
 - Green t-shirts, 1 per person for 3 to 5 people (buy: thrift store, or own: from closet)
@@ -3450,7 +3448,7 @@ Steps:
 2. Cut the green felt into one long pod shape with the scissors, about 6 feet long, with a pointed top, cutting long and trimming later.
 3. Buy the green felt, green fabric paint, and hot glue gun.
 4. Paint darker green stripes and a center seam line down the pod with the green fabric paint. Let the paint dry for 1 hour.
-5. Safety: let an adult handle the hot glue gun, and keep fingers away from the nozzle.
+5. Safety: Let an adult handle the hot glue gun, and keep fingers away from the nozzle.
 6. Glue the pod to the front of the green t-shirts so it stretches across all of them. Space the wearers evenly.
 7. Paint a small green circle on each person's cheek with the green face paint. Line everyone up in height order under the pod and walk together in a row.
 8. Optional pro finish: paint each person's name on the pod next to their spot. Named peas turn a group costume into a keepsake photo.
@@ -3469,7 +3467,7 @@ URL: https://pickmycostume.com/c/penguin-huddle
 
 Black shirts, felt bellies, beak headbands. Waddle together.
 
-Build time, cost, effort: 35 min + drying / $1-3 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - Black long-sleeve shirts, 1 per person (buy: thrift store, or own: from closet)
@@ -3501,7 +3499,7 @@ URL: https://pickmycostume.com/c/pickle
 
 Green tunic, bumpy texture, smug grin.
 
-Build time, cost, effort: 30 min + drying / $12-14 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Green tunic or oversized green t-shirt, 1 (buy: thrift store, or own: from closet)
@@ -3531,7 +3529,7 @@ URL: https://pickmycostume.com/c/pirate-captain
 
 Striped shirt, cardboard captain hat, and a treasure map you drew yourself.
 
-Build time, cost, effort: 30 min / $3-4 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - Striped shirt, 1 (own, or buy: thrift store)
@@ -3548,7 +3546,7 @@ Steps:
 1. Cut the captain hat from cardboard: a wide crescent with the front folded up, and tape the seam.
 2. Draw the treasure map on the brown paper with the black marker, with an X and a dotted route.
 3. Wear the striped shirt with the pants, the eye patch, and the hat.
-4. Safety: use a cardboard or foam sword, never a real blade, and keep the map rolled when walking in crowds.
+4. Safety: Use a cardboard or foam sword, never a real blade, and keep the map rolled when walking in crowds.
 5. Hand out gold coins to kids you meet. A pirate who shares treasure is remembered.
 6. Optional pro finish: learn one pirate phrase and commit to it all night. The voice is half the costume.
 
@@ -3566,7 +3564,7 @@ URL: https://pickmycostume.com/c/pixel-ghost
 
 A white sheet cut in chunky pixel squares with felt eyes.
 
-Build time, cost, effort: 30 min + drying / $7-9 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - White bedsheet or white fabric, 1 twin-size (buy: thrift store)
@@ -3581,7 +3579,7 @@ Steps:
 3. Cut the bottom edge into chunky square zigzags with the scissors, about 4 inches per square, cutting long and trimming later. Buy the white bedsheet and the black felt.
 4. Draw two square eyes and a square mouth on the black felt with the marker and ruler. Cut them out.
 5. Glue the felt eyes and mouth onto the top third of the white bedsheet. Let the fabric glue dry for 30 minutes.
-6. Safety: keep the eye area open so vision stays clear.
+6. Safety: Keep the eye area open so vision stays clear.
 7. Wear dark clothes underneath and drape the white bedsheet over the head with the eyes lined up. Cut two small arm slits if reaching through is hard.
 8. Optional pro finish: cut two small arm slits at the sides. Reaching through slits instead of lifting the whole sheet keeps the ghost shape intact all night.
 
@@ -3599,7 +3597,7 @@ URL: https://pickmycostume.com/c/pizza-slice
 
 A big cardboard triangle, painted golden with felt pepperoni.
 
-Build time, cost, effort: 45 min + drying / $6-7 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Large cardboard box, 1 (make: cut a big triangle, about 3 feet tall)
@@ -3630,7 +3628,7 @@ URL: https://pickmycostume.com/c/plague-doctor
 
 Long coat, wide hat, beaked mask.
 
-Build time, cost, effort: 60 min + drying / $25-44 / Medium
+Build time, effort: 60 min + drying / Medium
 
 Materials:
 - Long black coat or black robe, 1 (buy: thrift store)
@@ -3645,9 +3643,9 @@ Steps:
 1. Cut a paper beak template first and hold it against the mask to check the curve and length.
 2. A beak cut too long looks silly and one cut too short looks stubby, and neither can be fixed after cutting.
 3. Cut a long curved beak shape from the cardboard or craft foam with the scissors. Buy the coat, hat, mask, gloves, hot glue gun, and beak materials.
-4. Safety: let an adult handle the hot glue gun, and keep fingers away from the nozzle.
+4. Safety: Let an adult handle the hot glue gun, and keep fingers away from the nozzle.
 5. Paint the beak black with the black spray paint and let it dry. Hot-glue the beak to the front of the black half mask so it juts out.
-6. Safety: fit the black half mask so the eyes are fully open. Never wear a mask that blocks peripheral vision.
+6. Safety: Fit the black half mask so the eyes are fully open. Never wear a mask that blocks peripheral vision.
 7. Cut round eye holes in the black half mask and fit it so the eyes are fully open.
 8. Wear the long black coat, wide-brim black hat, black gloves, and the beaked mask together. Carry a wooden staff or walking stick for the full effect.
 9. Optional pro finish: paint the finished beak with a second light coat and let it dry fully. One thin coat looks gray in flash photos; two coats read as true black.
@@ -3666,12 +3664,12 @@ URL: https://pickmycostume.com/c/plastic-dream-crew
 
 Head-to-toe pink outfits with plastic accessories for the dream crew.
 
-Build time, cost, effort: 15 min / $0-2 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
-- All-pink outfit per person: dress, suit, or sweatsuit, 1 set each (own)
+- All-pink outfit per person: dress, suit, or sweatsuit, 1 set each (buy: a set at a thrift store, or own: from closet)
 - Pink sunglasses, 1 per person (buy: dollar store)
-- Plastic play accessories: phone, tiara, handbag, 1 per person (own)
+- Plastic play accessories: phone, tiara, handbag, 1 per person (buy: a set at a dollar store, or own: from the toy box)
 - Pink feather boa, 1 to share (buy: dollar store, optional)
 - Blonde wig, 1 per person (buy: costume aisle, optional)
 
@@ -3697,7 +3695,7 @@ URL: https://pickmycostume.com/c/player-one-two
 
 Matching tees with 1 and 2, toy controllers in hand, ready for co-op.
 
-Build time, cost, effort: 20 min / $2 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Matching t-shirts, 2, any color (buy: thrift store, or own: from closet)
@@ -3707,7 +3705,7 @@ Materials:
 
 Steps:
 1. Put a big '1' on the front and back of one t-shirt with the iron-on letters. Put a big '2' on the front and back of the other t-shirt.
-2. Safety: let an adult handle the hot iron on a hard surface.
+2. Safety: Let an adult handle the hot iron on a hard surface.
 3. Pin or tape the letters to the shirts and check the size and position in a mirror BEFORE heating the iron, ironed letters cannot be repositioned.
 4. Iron the letters onto the t-shirts on a hard surface with an adult handling the iron, or draw them with the fabric markers.
 5. Each player: wear their numbered t-shirt and carry a toy game controller.
@@ -3728,7 +3726,7 @@ URL: https://pickmycostume.com/c/plug-socket
 
 Cardboard plug and outlet worn front and back.
 
-Build time, cost, effort: 45 min + drying / $1-2 / Easy
+Build time, effort: 45 min + drying / Easy
 
 Materials:
 - Cardboard box, 1 large (own: cut two flat panels, one per person)
@@ -3760,7 +3758,7 @@ URL: https://pickmycostume.com/c/plumber-duo
 
 Overalls, red and green caps and shirts, drawn mustaches.
 
-Build time, cost, effort: 15 min + drying / $16-29 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - Blue overalls, 2 (buy: thrift store)
@@ -3791,7 +3789,7 @@ URL: https://pickmycostume.com/c/pocket-plush
 
 A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.
 
-Build time, cost, effort: 25 min + drying / $7-8 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Fuzzy one-piece pajamas or sweatsuit, 1 (buy: thrift store, or own: from closet)
@@ -3822,7 +3820,7 @@ URL: https://pickmycostume.com/c/pop-star
 
 A sparkly jacket, a toy microphone, and the biggest hair in the room.
 
-Build time, cost, effort: 15 min / $5-7 / Easy
+Build time, effort: 15 min / Easy
 
 Materials:
 - Sparkly or sequin jacket, 1 (buy: thrift store)
@@ -3833,7 +3831,7 @@ Materials:
 
 Steps:
 1. Tease the hair big with the comb.
-2. Safety: go easy teasing near the scalp; no pulling hard.
+2. Safety: Go easy teasing near the scalp; no pulling hard.
 3. Wear the sparkly jacket over the dark jeans and top.
 4. Put on the sunglasses.
 5. Carry the toy microphone everywhere and take requests.
@@ -3853,7 +3851,7 @@ URL: https://pickmycostume.com/c/popcorn-bucket
 
 A striped cardboard-box body with balloon popcorn on top.
 
-Build time, cost, effort: 30 min + drying / $5-6 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Cardboard box, 1 medium (make: tall enough to cover the torso)
@@ -3882,7 +3880,7 @@ URL: https://pickmycostume.com/c/prince-princess
 
 A crown and cape, a thrifted gown and tiara.
 
-Build time, cost, effort: 10 min / $8-14 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - Gold paper crown or plastic crown, 1 (buy: dollar store, or make: cut one from gold poster board)
@@ -3905,13 +3903,13 @@ A: Dark clothes, black pants and a dark shirt. The cape and crown are the costum
 
 ---
 
-### Pumpkin King and Ragdoll Bride
+### Pumpkin Groom and Patchwork Bride
 
 URL: https://pickmycostume.com/c/pumpkin-king-bride
 
 Pinstripe suit and pumpkin mask for one, patchwork dress and yarn hair for the other.
 
-Build time, cost, effort: 45 min + drying / $8-19 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Pinstripe or black suit, 1 (buy: thrift store)
@@ -3926,7 +3924,7 @@ Steps:
 1. Cut a pumpkin face mask from the cardboard with big eye holes, and paint it orange with black features.
 2. Wear the pinstripe suit with the pumpkin mask.
 3. For the bride: wear the patchwork dress and tie the red yarn into loose pigtails for hair.
-4. Safety: cut the mask eye holes generous and test vision before the party, and keep the yarn hair tied back from candles.
+4. Safety: Cut the mask eye holes generous and test vision before the party, and keep the yarn hair tied back from candles.
 5. Hold hands and walk slightly apart, like a royal procession.
 6. Optional pro finish: practice one dramatic bow together. The bow is the photo.
 
@@ -3944,7 +3942,7 @@ URL: https://pickmycostume.com/c/rain-cloud-rainbow
 
 One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.
 
-Build time, cost, effort: 30 min + drying / $5-6 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Gray t-shirt or sweatshirt, 1 (buy: thrift store, or own: from closet)
@@ -3978,7 +3976,7 @@ URL: https://pickmycostume.com/c/ramen-bowl
 
 Cardboard bowl rim, noodle-yarn hair, a foam egg on top.
 
-Build time, cost, effort: 50 min + drying / $6-7 / Easy
+Build time, effort: 50 min + drying / Easy
 
 Materials:
 - Large cardboard circle, about 2 feet wide (make: cut from a big box)
@@ -4013,7 +4011,7 @@ URL: https://pickmycostume.com/c/raptor-barista
 
 Green hoodie with a dino snout hood, tiny T. rex arms strapped on, and a coffee cup you can barely hold.
 
-Build time, cost, effort: 10 min / $4-5 / Easy
+Build time, effort: 10 min / Easy
 
 Materials:
 - Green hoodie, 1 (buy: clothing store, or use your own)
@@ -4041,7 +4039,7 @@ URL: https://pickmycostume.com/c/raptor-ranger
 
 One khaki ranger, one green dino hood. The ranger holds the leash.
 
-Build time, cost, effort: 25 min + drying / $5-8 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Khaki shirt and hat for the ranger, 1 set (own: from closet, or buy at a thrift store)
@@ -4053,11 +4051,11 @@ Materials:
 
 Steps:
 1. Decide who is the ranger and who is the raptor, then lay out both outfits. Buy the 3 ft rope or toy dog leash and the face paint if you do not have them.
-2. Safety: cut the green felt sheet slowly and keep fingers clear of the scissors.
+2. Safety: Cut the green felt sheet slowly and keep fingers clear of the scissors.
 3. Draw the tail shape on the felt first and hold it up to the raptor's back to check the length before cutting, since a too-short tail cannot be lengthened.
 4. Then cut one long triangle from the green felt sheet for the tail. Tape it to the back of the raptor's green shirt so it hangs behind them.
 5. The ranger wears the khaki shirt and hat with the toy dog leash in hand. The raptor wears the green shirt with the tail attached.
-6. Safety: use non-toxic kids face paint, and skip any mask so the raptor can see clearly.
+6. Safety: Use non-toxic kids face paint, and skip any mask so the raptor can see clearly.
 7. Paint the raptor's snout: use the green face paint to draw a snout and two black dots for nostrils. Then the ranger holds the toy dog leash out toward the raptor for photos.
 8. Optional pro finish: tie the rope as a belt around the ranger's waist and clip a toy walkie-talkie to it for the field-guide look.
 
@@ -4075,7 +4073,7 @@ URL: https://pickmycostume.com/c/referee
 
 A striped shirt, a whistle, and a yellow penalty flag.
 
-Build time, cost, effort: 20 min / $4-6 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Plain black t-shirt or long-sleeve shirt, 1 (own: from closet)
@@ -4104,7 +4102,7 @@ URL: https://pickmycostume.com/c/rescue-pups
 
 Color-coded pup vests and felt ears for the whole preschool crew.
 
-Build time, cost, effort: 30 min + drying / $9-11 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - T-shirts in assigned colors, 1 per kid (own, or buy: thrift store)
@@ -4119,7 +4117,7 @@ Steps:
 1. Assign each kid a color and a matching felt badge shape.
 2. Cut pup ears from the brown felt and glue them to each headband.
 3. Glue the badge to the front of each colored shirt.
-4. Safety: pin badges from inside the shirts, and keep headbands loose enough to slip two fingers underneath.
+4. Safety: Pin badges from inside the shirts, and keep headbands loose enough to slip two fingers underneath.
 5. Line the pups up by color for the team photo.
 6. Optional pro finish: give each pup a toy tool matching their badge. The props make the roles obvious.
 
@@ -4137,7 +4135,7 @@ URL: https://pickmycostume.com/c/robot-crew
 
 Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.
 
-Build time, cost, effort: 45 min / $3-4 / Medium
+Build time, effort: 45 min / Medium
 
 Materials:
 - Medium cardboard box per person, 1 each (make: from home or moving boxes)
@@ -4173,7 +4171,7 @@ URL: https://pickmycostume.com/c/robot-ranger
 
 Silver boxes, dryer-vent arms, and sticker dials.
 
-Build time, cost, effort: 60 min / $17-20 / Medium
+Build time, effort: 60 min / Medium
 
 Materials:
 - Medium cardboard box for the torso, 1 (own: from home)
@@ -4186,7 +4184,7 @@ Materials:
 - Scissors, 1 pair
 
 Steps:
-1. Safety: cut the cardboard box slowly and keep fingers clear of the scissors. The dryer vent hose has sharp wire edges, so cut carefully and tape the ends right away.
+1. Safety: Cut the cardboard box slowly and keep fingers clear of the scissors. The dryer vent hose has sharp wire edges, so cut carefully and tape the ends right away.
 2. Before cutting, wear the box over your head and trace circles for the head and arm holes a little bigger than you need.
 3. Cut the holes SMALLER than traced first, since you can widen them but cannot shrink them. Then wrap the box in aluminum foil like a gift, taping the foil flat.
 4. Draw two round gauges on the foil chest with the black marker. Stick the sticker dots on as dial needles and button lights.
@@ -4210,7 +4208,7 @@ URL: https://pickmycostume.com/c/safari-photographer
 
 Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.
 
-Build time, cost, effort: 20 min / $8-10 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Khaki vest with pockets, 1 (buy: thrift store, or wear a tan button-down from closet)
@@ -4224,7 +4222,7 @@ Materials:
 Steps:
 1. Buy or gather the toy camera, toy binoculars, stuffed lion or lion cub toy, and safari hat.
 2. Pull the khaki pants and khaki vest from the closet.
-3. Safety: cut the cardboard slowly and keep fingers clear of the scissors.
+3. Safety: Cut the cardboard slowly and keep fingers clear of the scissors.
 4. Sketch the camera shape on the cardboard first and cut one size up, then trim down after a test fitting.
 5. To make the camera: cut a camera shape from cardboard and draw a lens with a marker. Tape a ribbon or belt through it as a strap.
 6. Dress in the khaki pants, khaki vest, and safari hat. Hang the toy camera around your neck and the toy binoculars over the shoulder.
@@ -4245,7 +4243,7 @@ URL: https://pickmycostume.com/c/safari-zoo-crew
 
 Everyone picks an animal: closet clothes in matching colors plus an ear headband.
 
-Build time, cost, effort: 25 min + drying / $2-4 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Solid-color clothes in animal colors, 1 set per person (own)
@@ -4256,9 +4254,9 @@ Materials:
 
 Steps:
 1. Assign roles BEFORE building. One guide per three animals keeps the ratio fun. Each person picks one animal and pulls matching solid-color clothes from the closet.
-2. Safety: cut the felt slowly and keep fingers clear of the scissors.
+2. Safety: Cut the felt slowly and keep fingers clear of the scissors.
 3. Make each animal's ears from felt: cut two rounded ears and tape them to a plastic headband.
-4. Safety: use non-toxic kids face paint, and keep it away from the eyes.
+4. Safety: Use non-toxic kids face paint, and keep it away from the eyes.
 5. Paint faces: use the face paint to add each animal's nose, whiskers, or spots.
 6. Wear the colored outfit and put on the ear headband. Add one felt detail, like a felt tail taped to the back, to complete each animal.
 7. Optional pro finish: the guide 'discovers' each animal with the binoculars throughout the night, announcing the species dramatically. The discovery bit is the group performance.
@@ -4277,7 +4275,7 @@ URL: https://pickmycostume.com/c/salt-pepper
 
 White and black outfits with shaker tops made from cardboard.
 
-Build time, cost, effort: 15 min + drying / $1-2 / Easy
+Build time, effort: 15 min + drying / Easy
 
 Materials:
 - White shirt, pants, and hat for Salt, 1 set (own)
@@ -4309,7 +4307,7 @@ URL: https://pickmycostume.com/c/scarecrow
 
 Plaid shirt, straw poking out, and a stitched smile.
 
-Build time, cost, effort: 25 min + drying / $17-20 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Plaid flannel shirt, 1 (own, or buy: thrift store)
@@ -4326,7 +4324,7 @@ Steps:
 2. Tie straw bundles around the wrists and ankles with twine.
 3. Paint a stitched smile and triangle nose on the face.
 4. Wear the plaid shirt with patched jeans and the old hat.
-5. Safety: test the face paint on a wrist first, and keep straw away from open flames.
+5. Safety: Test the face paint on a wrist first, and keep straw away from open flames.
 6. Optional pro finish: stand perfectly still when trick-or-treaters approach, then wave. The stillness is the scare.
 
 Q: How do you keep the straw from falling out?
@@ -4343,7 +4341,7 @@ URL: https://pickmycostume.com/c/smores-duo
 
 Two graham-cracker tunics with a marshmallow and chocolate candy square between you.
 
-Build time, cost, effort: 30 min + drying / $5-7 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Tan t-shirts or tunics, 2 (own, or buy: thrift store)
@@ -4360,7 +4358,7 @@ Steps:
 2. Marshmallow: stuff the white t-shirt lightly and wear it between the two tan tunics.
 3. Chocolate: glue the brown felt square onto the front cracker's tunic.
 4. Write GRAHAM in block letters on both tan tunics with the black marker.
-5. Safety: keep the stuffing light so arms move freely, and pin from inside the shirts.
+5. Safety: Keep the stuffing light so arms move freely, and pin from inside the shirts.
 6. Optional pro finish: stand in cracker-marshmallow-cracker order for every photo. The sandwich order is the joke.
 
 Q: How do you keep the marshmallow puffy without overheating?
@@ -4377,7 +4375,7 @@ URL: https://pickmycostume.com/c/snow-sisters
 
 The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.
 
-Build time, cost, effort: 30 min + drying / $12-17 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - Icy-blue dress or blue dress plus silver glitter glue, 1 set (buy glitter glue: craft store)
@@ -4392,7 +4390,7 @@ Steps:
 2. Pull the dresses and the white and brown clothes from closets. The snow princess just wears her dress, no crafting needed.
 3. Test the glitter pattern on paper first. Glued glitter cannot be repositioned.
 4. Spread the silver glitter glue in thin lines along the neckline and sleeves, and let it dry FLAT for one hour. Glue dried on a hanger drips.
-5. Safety: cut slowly and keep fingers clear of the scissors.
+5. Safety: Cut slowly and keep fingers clear of the scissors.
 6. Snowman: tape the 3 black felt circles down the front of the white shirt as coal buttons.
 7. Reindeer: twist the 2 brown pipe cleaners into antler shapes and tape them to the silver headband. Tape the red pom-pom over the nose as a glowing nose.
 8. Wear each outfit with its accessories. The ice queen adds the silver headband as a tiara.
@@ -4412,7 +4410,7 @@ URL: https://pickmycostume.com/c/soccer-squad
 
 Jerseys for the players, black for the ref, one red card.
 
-Build time, cost, effort: 25 min / $0-1 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
 - Matching jerseys or same-color t-shirts, 1 per player (own: from closet, or buy a multi-pack at a sports store)
@@ -4426,7 +4424,7 @@ Materials:
 Steps:
 1. Assign roles: most of the family are players, one person is the referee.
 2. Players: wear matching jerseys or same-color shirts. Wrap a strip of white athletic tape around one upper arm as a captain's armband. Referee: wear all black.
-3. Safety: cut the cardstock slowly and keep fingers clear of the scissors.
+3. Safety: Cut the cardstock slowly and keep fingers clear of the scissors.
 4. Cut the red cardstock rectangle a little larger than 3x4 inches first, then trim to size after holding it up to check it reads at arm's length.
 5. Make the red card: cut the rectangle from the folder or colored paper. Draw a thick black border around it with the black marker so it reads as a card at a glance.
 6. Players carry or dribble the soccer ball. The referee practices holding the red card high in the air.
@@ -4446,10 +4444,10 @@ URL: https://pickmycostume.com/c/space-crewmate
 
 Colored sweatsuit plus a cardboard backpack.
 
-Build time, cost, effort: 20 min / $0 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
-- Plain sweatsuit in one solid color, red recommended, 1 set (own: from closet)
+- Plain sweatsuit in one solid color, red recommended, 1 set (buy: a set at a discount store, or own: from closet)
 - Cardboard, 1 sheet about 12x16 inches (own: from a box flap)
 - Aluminum foil, about 2 feet (own: from the kitchen)
 - Backpack straps, 2, or 2 long shoelaces (own: from home)
@@ -4479,7 +4477,7 @@ URL: https://pickmycostume.com/c/spaghetti-meatball
 
 White shirt with yarn spaghetti glued on, brown pom-pom meatballs.
 
-Build time, cost, effort: 40 min + drying / $11 / Easy
+Build time, effort: 40 min + drying / Easy
 
 Materials:
 - White t-shirt or sweatshirt, 1 (own: from closet)
@@ -4510,7 +4508,7 @@ URL: https://pickmycostume.com/c/spider
 
 Black sweats with stuffed sock legs attached at the sides.
 
-Build time, cost, effort: 45 min + drying / $21-24 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Black sweatshirt and black sweatpants, 1 set (own: from closet)
@@ -4527,7 +4525,7 @@ Steps:
 3. Then use the black fabric glue or a few stitches to attach 4 stuffed socks down each side of the sweatshirt, spaced so they stick out like legs, since glued legs cannot be moved.
 4. Poke the black yarn through the middle of each stuffed sock and tie it for a knee bend.
 5. Glue one googly eye on each shoulder of the sweatshirt. Dress in the black sweatshirt and black sweatpants, then put on the leg-covered sweatshirt.
-6. Safety: use non-toxic face paint, and keep the googly eyes on the shoulders, not near the face.
+6. Safety: Use non-toxic face paint, and keep the googly eyes on the shoulders, not near the face.
 7. Dot the white face paint around the eyes as spider markings.
 8. Optional pro finish: run one long strand of black yarn across the back of the sweatshirt like a web anchor line, and add small white face-paint dots down the outside of each leg.
 
@@ -4545,7 +4543,7 @@ URL: https://pickmycostume.com/c/sun-moon
 
 One in yellow with cardboard rays, one in navy with paper stars and a crescent.
 
-Build time, cost, effort: 40 min + drying / $5-6 / Easy
+Build time, effort: 40 min + drying / Easy
 
 Materials:
 - Yellow shirt and pants for the Sun, 1 set (own: from closet)
@@ -4558,7 +4556,7 @@ Materials:
 Steps:
 1. One person dresses head to toe in yellow, the other in navy or black.
 2. Buy the yellow cardstock and the silver star stickers.
-3. Safety: cut the cardstock slowly and keep fingers clear of the scissors.
+3. Safety: Cut the cardstock slowly and keep fingers clear of the scissors.
 4. Cut one ray first and tape it to the neckline to test the length before cutting the other nine, since cardstock cannot be lengthened.
 5. Make the sun rays: cut 10 long triangles from the yellow cardstock, then tape them around the neckline and sleeves of the yellow shirt so they point outward.
 6. Cut a large crescent from the white paper and tape it to the chest of the navy shirt. Scatter the silver star stickers across the shirt and arms.
@@ -4579,10 +4577,10 @@ URL: https://pickmycostume.com/c/superhero-family
 
 Red sweatsuits, black eye masks, felt logo. The whole family goes super.
 
-Build time, cost, effort: 30 min / $0-2 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
-- Matching red sweatsuits, 1 per person (own: from closet, or buy a set at a discount store)
+- Matching red sweatsuits, 1 per person (buy: a set at a discount store, or own: from closet)
 - Black felt, 1 pack (buy: craft store; construction paper works too)
 - Yellow felt, 1 sheet (buy: craft store)
 - Plain headbands, 1 per person (buy: dollar store multi-pack)
@@ -4591,7 +4589,7 @@ Materials:
 
 Steps:
 1. Have everyone dress in the red sweatsuits.
-2. Safety: cut the eye holes wide enough so everyone can see clearly.
+2. Safety: Cut the eye holes wide enough so everyone can see clearly.
 3. Trace the eye holes by holding the felt strip up to each face and marking the pupil spots.
 4. Cut the eye holes SMALLER than the marks first and widen as needed, since cut felt cannot be uncut.
 5. Make the eye masks: cut a mask strip from the black felt for each person with two eye holes. Attach it to the headband with the safety pins or tape.
@@ -4613,7 +4611,7 @@ URL: https://pickmycostume.com/c/sushi-roll
 
 A white-sheet wrap with felt salmon and pom-pom wasabi. Chopsticks optional.
 
-Build time, cost, effort: 40 min + drying / $10-12 / Easy
+Build time, effort: 40 min + drying / Easy
 
 Materials:
 - White bedsheet or large white t-shirt to wear, 1 (own: from closet)
@@ -4626,7 +4624,7 @@ Materials:
 
 Steps:
 1. Dress in the white bedsheet or large white t-shirt.
-2. Safety: cut the felt slowly and keep fingers clear of the scissors.
+2. Safety: Cut the felt slowly and keep fingers clear of the scissors.
 3. Wrap the felt band around the waist first and mark where it overlaps before cutting, since the band must meet around the body.
 4. Make the wrap: cut the dark green felt sheet into a wide band that goes around your waist. Glue or pin it there as the seaweed wrap.
 5. Make the toppings: cut the pink felt sheet into long strips and glue them across the white shirt as salmon.
@@ -4648,7 +4646,7 @@ URL: https://pickmycostume.com/c/sushi-soy
 
 White rice tunic with orange fish sash for one, dark soy bottle for the other.
 
-Build time, cost, effort: 30 min + drying / $6-7 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
 - White t-shirt or tunic, 1 (own, or buy: thrift store)
@@ -4669,7 +4667,7 @@ Steps:
 4. Soy sauce: cut a tall bottle shape from the cardboard, about 2 feet tall, with a narrow neck.
 5. Paint the bottle dark brown and let it dry flat. Fold red paper into a cap and tape it to the neck.
 6. Tape ribbon loops to the top of the bottle and wear it like a sandwich board over the dark t-shirt.
-7. Safety: round all cardboard corners with the scissors so nobody gets poked in a crowd.
+7. Safety: Round all cardboard corners with the scissors so nobody gets poked in a crowd.
 8. Optional pro finish: the sushi person leans toward the soy bottle in every photo. The dip is the pose.
 
 Q: How do you keep the cardboard bottle from folding?
@@ -4686,13 +4684,13 @@ URL: https://pickmycostume.com/c/tall-hat-crew
 
 A striped stovepipe hat, a bow tie, and two wild blue-haired Things.
 
-Build time, cost, effort: 20 min / $10-13 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - Tall red-and-white striped stovepipe hat, 1 (buy: costume aisle, or make: poster board)
 - Red bow tie, 1 (buy: dollar store, or make: paper)
 - Black shirt and pants for the cat, 1 set (own: from closet)
-- Red jumpsuits or red shirts and pants for the Things, 2 sets (own: from closet)
+- Red jumpsuits or red shirts and pants for the Things, 2 sets (buy: 2 sets at a thrift store, or own: from closet)
 - Blue wigs, 2 (buy: costume aisle)
 - Iron-on letters or paper that says Thing 1 and Thing 2, 1 set (buy: craft store)
 - Iron, 1, and scissors, 1 pair (own: household)
@@ -4718,7 +4716,7 @@ URL: https://pickmycostume.com/c/tennis-duo
 
 All-white outfits, headbands, toy rackets, and a tube of balls.
 
-Build time, cost, effort: 20 min / $7-9 / Easy
+Build time, effort: 20 min / Easy
 
 Materials:
 - White t-shirts and white shorts or skirts, 1 set each (own: from closet)
@@ -4731,7 +4729,7 @@ Materials:
 Steps:
 1. Pull the white outfits and sneakers from the closet.
 2. Dress head to toe in white and tie the sweatband across the forehead.
-3. Safety: cut the fabric slowly and keep fingers clear of the scissors.
+3. Safety: Cut the fabric slowly and keep fingers clear of the scissors.
 4. Measure the strip around the head with a finger's width of slack before cutting, then cut the 2-inch strip of white fabric.
 5. To make a sweatband: tie it around the head with a knot at the back, snug enough to stay but loose enough to be comfortable.
 6. Finishing touch: carry the toy tennis rackets and tuck the tube of balls under one arm for the courtside pose.
@@ -4745,13 +4743,13 @@ A: Tie it with a knot at the back rather than relying on stretch. A knot you can
 
 ---
 
-### Tetris Duo
+### Block Party Duo
 
 URL: https://pickmycostume.com/c/tetris-duo
 
 Two interlocking tetromino shapes built from painted cardboard boxes, worn like sandwich boards.
 
-Build time, cost, effort: 45 min + drying / $8-10 / Easy
+Build time, effort: 45 min + drying / Easy
 
 Materials:
 - Two large cardboard boxes, flattened (make: from shipping boxes)
@@ -4766,7 +4764,7 @@ Steps:
 2. Each block shape is 4 squares: cut an L shape for one person and a T or square shape for the other. Cut the squares oversized first and trim after a fitting.
 3. Paint each shape its color and let dry fully, flat, for at least 2 hours.
 4. Tape ribbon loops to the top of each shape for shoulder straps. Test the hang before the party: each shape should sit at chest height.
-5. Safety: cut on a protected surface with the blade pointed away from fingers, and round the cardboard corners so nobody gets poked in a crowd.
+5. Safety: Cut on a protected surface with the blade pointed away from fingers, and round the cardboard corners so nobody gets poked in a crowd.
 6. Each person wears one shape like a sandwich board, front and back panels tied with the ribbon straps.
 7. Optional pro finish: stand so the two shapes interlock for photos, and let strangers name your pieces. The click-together pose is the whole costume.
 
@@ -4784,7 +4782,7 @@ URL: https://pickmycostume.com/c/the-olympians
 
 Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.
 
-Build time, cost, effort: 45 min + drying / $2-4 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - White bedsheets or large white fabric, 1 per person (own: raid the linen closet)
@@ -4797,7 +4795,7 @@ Materials:
 
 Steps:
 1. Make the togas: wrap one sheet around each person over a plain t-shirt and shorts, pinning at the shoulder with a safety pin. Belt it with the gold rope.
-2. Safety: pin from the outside of the fabric so pin backs face the clothes, never the skin. Keep the toga above the ankles so nobody trips.
+2. Safety: Pin from the outside of the fabric so pin backs face the clothes, never the skin. Keep the toga above the ankles so nobody trips.
 3. Size the paper strip around each head and overlap it by an inch before taping, since tape cannot be repositioned cleanly.
 4. Make the laurel crowns: cut leaf shapes from the gold paper and tape them along a paper strip sized to each head.
 5. Make the god props: cut a lightning bolt, a trident, and an owl from the cardboard. Color them gold with the markers.
@@ -4818,10 +4816,10 @@ URL: https://pickmycostume.com/c/tin-hero
 
 Red and gold plus a glowing chest circle: the suit does the talking.
 
-Build time, cost, effort: 25 min / $7-9 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
-- Red sweatsuit, 1 (own)
+- Red sweatsuit, 1 (buy: at a discount store, or own: from closet)
 - Gold duct tape, 1 roll (buy: dollar store or hardware store)
 - Battery tea light, 1 (buy: dollar store)
 - Cardboard, 1 piece (own)
@@ -4832,7 +4830,7 @@ Steps:
 1. Dress in the red sweatsuit.
 2. Stripe the sweatsuit with the gold duct tape: strips across the chest, arms, and legs.
 3. Draw the reactor circle on the cardboard BEFORE cutting, and measure it against the chest first. Cover it in gold tape, then tape the tea light behind its center.
-4. Safety: pin from inside the sweatsuit, so the pin back faces the fabric and never the skin.
+4. Safety: Pin from inside the sweatsuit, so the pin back faces the fabric and never the skin.
 5. Pin the glowing circle to the chest of the sweatsuit.
 6. Walk like the suit does the talking.
 7. Optional pro finish: pin the reactor slightly off-center, like battle damage. Perfectly centered reads as costume; off-center reads as character.
@@ -4851,10 +4849,10 @@ URL: https://pickmycostume.com/c/tiny-firefighter
 
 Red sweats, a plastic helmet, and a toy hose.
 
-Build time, cost, effort: 25 min / $9-11 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
-- Red sweatsuit, 1 (own: from closet)
+- Red sweatsuit, 1 (buy: at a discount store, or own: from closet)
 - Toy firefighter helmet, 1 (buy: toy store)
 - Toy fire hose or coiled garden hose, 1 (buy: toy store, or borrow a real coil of rope from home)
 - Yellow reflective tape, 1 roll (buy: hardware store)
@@ -4862,7 +4860,7 @@ Materials:
 
 Steps:
 1. Make the turnout stripes: wrap two horizontal bands of the yellow reflective tape around each sleeve and each leg. Press the tape firmly so it sticks.
-2. Safety: keep the toy firefighter helmet snug so it does not slide over the eyes.
+2. Safety: Keep the toy firefighter helmet snug so it does not slide over the eyes.
 3. Put the toy firefighter helmet on and carry the toy fire hose coiled over one shoulder.
 4. Finishing touch: the kid holds the hose nozzle out front for the hero photo.
 5. Optional pro finish: wrap one band of reflective tape around the toy helmet too, so the whole uniform matches.
@@ -4881,7 +4879,7 @@ URL: https://pickmycostume.com/c/tiny-snail
 
 Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.
 
-Build time, cost, effort: 30 min / $8-9 / Easy
+Build time, effort: 30 min / Easy
 
 Materials:
 - Neutral beige or tan clothes, 1 set (own: from closet)
@@ -4896,7 +4894,7 @@ Materials:
 Steps:
 1. Dress the kid in the beige or tan clothes.
 2. Buy the headband and black pom-poms.
-3. Safety: cut the cardboard slowly and keep fingers clear of the scissors.
+3. Safety: Cut the cardboard slowly and keep fingers clear of the scissors.
 4. Draw the oval on the cardboard first and hold it against the kid's back to check the size before cutting, since a too-small shell cannot be fixed.
 5. Make the shell: cut the cardboard into a large oval. Draw a spiral from the center outward with the brown marker. Tape the two backpack straps to the back so it wears like a backpack.
 6. Make the eyestalks: tape two short cardboard strips to the headband so they point up. Tape a black pom-pom to the top of each strip.
@@ -4917,7 +4915,7 @@ URL: https://pickmycostume.com/c/tooth-fairy
 
 One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.
 
-Build time, cost, effort: 45 min + drying / $3-4 / Medium
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Tooth: all-white outfit, 1 set (own: from closet)
@@ -4933,7 +4931,7 @@ Steps:
 1. Pull the white clothes from the closet.
 2. Draw the tooth outline lightly in pencil first and hold it against the chest to check the size before cutting.
 3. Make the tooth: cut a large tooth shape with two roots from the white cardstock. Edge it with the glitter glue and let it dry. Tape it to the chest of the white outfit.
-4. Safety: tape down any sharp wire ends from the wire coat hanger, and keep fingers clear of the scissors.
+4. Safety: Tape down any sharp wire ends from the wire coat hanger, and keep fingers clear of the scissors.
 5. Make the wings: stretch the white pantyhose over a reshaped wire coat hanger to form two wing loops.
 6. Tape the hanger ends to a piece of cardboard worn at the back. Tuck the envelope with play money into a pocket or waistband.
 7. Tooth fairy: wear the white dress and strap on the wings. Carry the wand made from the stick with an aluminum foil star taped on top.
@@ -4953,7 +4951,7 @@ URL: https://pickmycostume.com/c/toy-box-crew
 
 A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite.
 
-Build time, cost, effort: 35 min + drying / $2-5 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - Cowboy hat, 1, and cow-print vest, 1, for the sheriff (buy: costume aisle or thrift store)
@@ -4968,7 +4966,7 @@ Steps:
 1. Sheriff: wear the cowboy hat, cow-print vest, and brown boots. Draw a star badge on the yellow shirt with a marker.
 2. Lay the felt fins and buttons on the white shirt first and check the placement in a mirror before gluing, since glued felt cannot be moved.
 3. Space ranger: cut purple felt fins and buttons and glue them to the white shirt. Tape the cardboard wings to the back and wear the clear plastic dome as a helmet.
-4. Safety: keep the plastic dome above the shoulders with the face fully open, and carry any toy props low so nobody gets poked.
+4. Safety: Keep the plastic dome above the shoulders with the face fully open, and carry any toy props low so nobody gets poked.
 5. Tie a pull-string name tag to each wrist. Strike the sheriff pose and the space-ranger landing pose for the group photo.
 6. Optional pro finish: draw a round speaker circle on the space ranger's chest and write PULL on it, so the pull-string joke lands without explanation.
 
@@ -4986,7 +4984,7 @@ URL: https://pickmycostume.com/c/under-the-sea
 
 Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.
 
-Build time, cost, effort: 40 min / $2-4 / Easy
+Build time, effort: 40 min / Easy
 
 Materials:
 - Jellyfish: 1 clear umbrella (buy: dollar store)
@@ -4999,7 +4997,7 @@ Materials:
 
 Steps:
 1. Assign one sea creature per person. Buy the clear umbrella, pastel ribbons, and green streamers. Pull the colored clothes from closets.
-2. Safety: cut the ribbons slowly and keep fingers clear of the scissors. Hold the clear umbrella high and keep the tentacle ribbons clear of faces.
+2. Safety: Cut the ribbons slowly and keep fingers clear of the scissors. Hold the clear umbrella high and keep the tentacle ribbons clear of faces.
 3. Cut one ribbon first and tape it to the umbrella edge to test the drape before cutting the rest.
 4. Jellyfish: cut the pastel ribbons into 3-foot lengths. Tape them to the edge of the clear umbrella so they dangle like tentacles. Hold the clear umbrella overhead.
 5. Crab: dress in red and slide the red mittens or red socks onto the hands.
@@ -5021,7 +5019,7 @@ URL: https://pickmycostume.com/c/vampire
 
 Black cape, fangs, slicked hair.
 
-Build time, cost, effort: 25 min + drying / $16-20 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Black cape or black bedsheet, 1 (buy cape: costume aisle; or make: from a black sheet from home)
@@ -5034,7 +5032,7 @@ Materials:
 Steps:
 1. Dress in the black shirt and pants.
 2. Make the hair: work the hair gel through the hair with your fingers. Press it straight back until it sits flat and slick.
-3. Safety: use non-toxic costume makeup, and skip the vampire fangs for small kids who might choke on them.
+3. Safety: Use non-toxic costume makeup, and skip the vampire fangs for small kids who might choke on them.
 4. Make the face: dust the pale face paint over the face and neck. Dab a thin line of red lipstick at each corner of the mouth like drips of blood.
 5. Wear the black cape over the shoulders and pop the vampire fangs in last before photos.
 6. Optional pro finish: paint the nails black and pop the cape collar up high, since the collar silhouette is what reads as vampire from across the room.
@@ -5053,7 +5051,7 @@ URL: https://pickmycostume.com/c/walking-taco
 
 Tan vest painted like a taco shell with felt toppings.
 
-Build time, cost, effort: 45 min + drying / $6-7 / Easy
+Build time, effort: 45 min + drying / Medium
 
 Materials:
 - Tan vest or tan t-shirt, 1 (own: from closet)
@@ -5064,7 +5062,7 @@ Materials:
 
 Steps:
 1. Dress the kid in the tan vest or tan t-shirt.
-2. Safety: cut the felt slowly and keep fingers clear of the scissors.
+2. Safety: Cut the felt slowly and keep fingers clear of the scissors.
 3. Pin or lay the brown felt strips on the vest first and check the fold placement in a mirror before gluing, since glued felt cannot be repositioned.
 4. Glue two curved strips of brown felt down the front of the tan vest to form the shell fold.
 5. Make the toppings: cut wavy strips of green felt for lettuce and red circles for tomatoes. Cut yellow rectangles for cheese and brown blobs for beef.
@@ -5086,7 +5084,7 @@ URL: https://pickmycostume.com/c/wayfinder-princess
 
 A printed sailcloth top, grass skirt, and a cardboard hook.
 
-Build time, cost, effort: 35 min + drying / $7-9 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - Tan or brown tank top, 1 (own, or buy: thrift store)
@@ -5102,7 +5100,7 @@ Steps:
 2. Paint a spiral design on the tank top with the brown paint.
 3. Cut the hook shape from cardboard and paint it brown.
 4. Wear the shell necklace and carry the cardboard hook.
-5. Safety: keep the hook cardboard and light, never swung near faces, and round all edges.
+5. Safety: Keep the hook cardboard and light, never swung near faces, and round all edges.
 6. Optional pro finish: practice one confident stance with the hook raised. The stance is the character.
 
 Q: How do you keep the paper skirt from tearing?
@@ -5119,10 +5117,10 @@ URL: https://pickmycostume.com/c/web-hero-duo
 
 Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.
 
-Build time, cost, effort: 25 min + drying / $3-4 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
-- Hero: red and blue sweatsuit, or red shirt with blue pants, 1 set (own: from closet)
+- Hero: red and blue sweatsuit, or red shirt with blue pants, 1 set (buy: a set at a discount store, or own: from closet)
 - Partner: black jacket and black pants, 1 set (own: from closet)
 - Black face paint or black eye mask, 1 (buy: costume aisle)
 - White face paint or white stickers, 1 (buy: craft store)
@@ -5131,7 +5129,7 @@ Materials:
 
 Steps:
 1. Pull the red and blue outfit and the black jacket and black pants from closets.
-2. Safety: use non-toxic face paint, and keep paint out of the eyes.
+2. Safety: Use non-toxic face paint, and keep paint out of the eyes.
 3. Test the white web pattern on a paper towel first to check the paint flow, since painted lines cannot be undone on fabric.
 4. Hero: paint a black eye mask with the black face paint across the eyes.
 5. Add white web lines over the red shirt using the white face paint.
@@ -5154,10 +5152,10 @@ URL: https://pickmycostume.com/c/web-slinger-crew
 
 Red, black, and pink hoodies plus masks. Pick your spider.
 
-Build time, cost, effort: 30 min + drying / $1-3 / Easy
+Build time, effort: 30 min + drying / Easy
 
 Materials:
-- Hoodies in red, black, and pink, 1 per person (own: from closet)
+- Hoodies in red, black, and pink, 1 per person (buy: at a thrift store, or own: from closet)
 - Black fabric paint or black face paint, 1 tube (buy: craft store)
 - White stickers or white electrical tape, 1 roll (buy: hardware store)
 - Sunglasses or swim goggles, 1 per person (buy: dollar store multi-pack)
@@ -5187,10 +5185,10 @@ URL: https://pickmycostume.com/c/web-slinger-kid
 
 Red sweatsuit, tape web lines, big white eye lenses.
 
-Build time, cost, effort: 25 min + drying / $5-8 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
-- Red sweatsuit or red shirt and pants, 1 set (own, or buy: clothing store)
+- Red sweatsuit or red shirt and pants, 1 set (buy: at a clothing store, or own: from closet)
 - Blue craft felt for sleeve and boot accents, 1 sheet 9x12 inches (buy: craft store, blue paper works too)
 - Black electrical tape for web lines, 1 roll (buy: hardware store)
 - White paper or cardstock for eye lenses, 1 sheet (make: cut from paper)
@@ -5201,7 +5199,7 @@ Steps:
 1. Lay the red sweatsuit flat and plan the web lines first: one center line down the chest, then fan lines out to each side.
 2. Stick short strips of black electrical tape across the chest in a web grid, pressing each strip flat so it survives the night.
 3. Cut two large white eye lenses from the white paper with the scissors. Hold them against the face to check the size before attaching.
-4. Safety: tape the paper eyes to the plain headband, never tape paper to skin around the eyes. Skip the eyes for very young kids and draw web lines with face paint instead.
+4. Safety: Tape the paper eyes to the plain headband, never tape paper to skin around the eyes. Skip the eyes for very young kids and draw web lines with face paint instead.
 5. Cut blue felt rectangles and tape them around the sleeves and pant cuffs as hero accents.
 6. Pull on the red sweatsuit, put on the eye headband, and strike the web-shooter pose: one hand up, fingers spread.
 7. Optional pro finish: run short black tape strips down the outside of each sleeve as web lines, so the arms match the chest.
@@ -5220,7 +5218,7 @@ URL: https://pickmycostume.com/c/wine-cheese
 
 Burgundy wine glass tunic for one, yellow cheese wedge with holes for the other.
 
-Build time, cost, effort: 25 min + drying / $2-3 / Easy
+Build time, effort: 25 min + drying / Easy
 
 Materials:
 - Burgundy or maroon t-shirt, 1 (own, or buy: thrift store)
@@ -5236,7 +5234,7 @@ Steps:
 3. Cut a smaller burgundy felt shape for the wine inside the glass and glue it onto the white glass.
 4. Glue the finished glass centered on the burgundy t-shirt.
 5. Cheese: cut round holes from a yellow felt triangle and pin it over the yellow t-shirt. Swiss reads instantly.
-6. Safety: if cutting holes in the shirt itself, keep them small and away from the seams so the shirt holds its shape.
+6. Safety: If cutting holes in the shirt itself, keep them small and away from the seams so the shirt holds its shape.
 7. Optional pro finish: raise your glasses together for every photo. The toast is the costume, so commit to it.
 
 Q: How do you cut clean holes in the cheese?
@@ -5253,7 +5251,7 @@ URL: https://pickmycostume.com/c/witchy-sisters
 
 Three color-coded witch dresses: green, purple, and orange.
 
-Build time, cost, effort: 35 min + drying / $13-25 / Easy
+Build time, effort: 35 min + drying / Easy
 
 Materials:
 - Dresses in green, purple, and orange, 3 (buy: thrift store)
@@ -5266,7 +5264,7 @@ Steps:
 1. Each sister claims a color: green, purple, or orange, and builds around it.
 2. Wear the colored dress with a black witch hat and striped tights.
 3. Paint a matching beauty mark or stripe in your color.
-4. Safety: keep broomsticks pointed down in crowds, and test face paint on a wrist first.
+4. Safety: Keep broomsticks pointed down in crowds, and test face paint on a wrist first.
 5. Cackle in unison when anyone takes your photo. The unison cackle is the act.
 6. Optional pro finish: the green sister stands in the middle. The middle placement matches the legend.
 
@@ -5284,7 +5282,7 @@ URL: https://pickmycostume.com/c/wizard
 
 Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional.
 
-Build time, cost, effort: 20 min + drying / $5-6 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Tall black pointy wizard hat, 1 (buy: costume aisle or craft store)
@@ -5296,7 +5294,7 @@ Materials:
 Steps:
 1. Size the hat to the head BEFORE decorating, a hat decorated then found too small is heartbreaking. Put on the robe.
 2. Roll the paper into a tall wizard hat or use the store-bought one; confirm it sits without covering the eyes. Stick the star stickers on the robe and hat.
-3. Safety: keep the hat brim above the eyes so vision stays clear, and carry the staff upright. Never swing it at anyone.
+3. Safety: Keep the hat brim above the eyes so vision stays clear, and carry the staff upright. Never swing it at anyone.
 4. Draw on a gray beard with the face paint, or stick on the fake beard.
 5. Tie the belt or rope sash around the waist over the robe.
 6. Put on the pointy hat last, tap the staff on the ground, and strike a pose.
@@ -5316,10 +5314,10 @@ URL: https://pickmycostume.com/c/yellow-henchmen
 
 Yellow shirts, blue overalls, and swim goggles for the whole crew.
 
-Build time, cost, effort: 25 min / $2-3 / Easy
+Build time, effort: 25 min / Easy
 
 Materials:
-- Yellow t-shirts, 1 per person (own, or buy: thrift store)
+- Yellow t-shirts, 1 per person (buy: at a thrift store, or own: from closet)
 - Blue overalls or blue jeans, 1 per person (own, or buy: thrift store)
 - Swim goggles, 1 per person (buy: dollar store)
 - Black gloves, 1 pair per person (buy: dollar store)
@@ -5330,7 +5328,7 @@ Steps:
 1. Everyone wears yellow on top and blue on the bottom. That is the whole uniform.
 2. Wear the swim goggles on the forehead and draw one big eye on paper to tape inside each lens.
 3. Carry the bananas everywhere and offer them to strangers.
-4. Safety: wear the goggles on the forehead, not over the eyes, so vision stays clear while walking.
+4. Safety: Wear the goggles on the forehead, not over the eyes, so vision stays clear while walking.
 5. Learn one shared gibberish phrase and say it in unison. The unison is the comedy.
 6. Optional pro finish: the tallest henchman stands in the middle for photos. The height lineup makes the crew.
 
@@ -5348,7 +5346,7 @@ URL: https://pickmycostume.com/c/zombie-coworker
 
 Torn button-down, loosened tie, pale makeup, coffee mug.
 
-Build time, cost, effort: 20 min + drying / $8-10 / Easy
+Build time, effort: 20 min + drying / Easy
 
 Materials:
 - Old button-down shirt you can cut up, 1 (own: from closet)
@@ -5360,7 +5358,7 @@ Materials:
 
 Steps:
 1. Pull the old button-down shirt, old tie, and coffee mug from home.
-2. Safety: cut away from your fingers, and keep the scissors away from small kids. Use non-toxic costume makeup.
+2. Safety: Cut away from your fingers, and keep the scissors away from small kids. Use non-toxic costume makeup.
 3. Decide where every slit goes and mark the spots with chalk before cutting, since cut fabric cannot be put back.
 4. Make the torn shirt: cut jagged slits along the hem of the old button-down shirt and one sleeve. Tie the old tie loosely and crookedly around the neck.
 5. Make the face: cover the face with the pale face paint. Ring the eyes with the dark eye makeup. Smudge a little down one cheek like a long night at the office.
@@ -5368,7 +5366,7 @@ Steps:
 7. Optional pro finish: add a lanyard with a blank ID badge worn backwards, the universal sign of someone who gave up at 3pm.
 
 Q: What if I do not want to ruin a real work shirt?
-A: Buy a thrift-store button-down for a few dollars and destroy that instead. It looks more authentically worn-out anyway.
+A: Buy a thrift-store button-down and destroy that instead. It looks more authentically worn-out anyway.
 
 Q: How do you get the zombie makeup off?
 A: Wash it off the same night with soap and warm water. Pale face paint stains pillowcases, so wash before bed, not in the morning.
