@@ -967,7 +967,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 #s-storytime.on{display:block;position:fixed;inset:0;z-index:80;background:#0b0616}
 .st-stage{position:absolute;inset:0;overflow:hidden}
 .st-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.st-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,6,22,.55) 0%,rgba(11,6,22,0) 30%,rgba(11,6,22,0) 55%,rgba(11,6,22,.9) 100%)}
+.st-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,6,22,.62) 0%,rgba(11,6,22,.08) 26%,rgba(11,6,22,.42) 52%,rgba(11,6,22,.93) 76%,rgba(11,6,22,.97) 100%)} /* 2026-09-30 (Billy phone QA): darker scrim so white story text stays readable over bright photos */
 .st-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;z-index:3}
 .st-x,.st-sound{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:20px;cursor:pointer;line-height:1}
 .st-sound[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
@@ -994,11 +994,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 @media (prefers-reduced-motion: reduce){.st-fireflies{display:none}}
 .st-bottom{position:absolute;left:0;right:0;bottom:0;padding:18px 20px calc(20px + env(safe-area-inset-bottom));color:#fdf3e3;z-index:3}
 .st-kicker{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
-.st-title{margin:0 0 8px;font-size:30px;line-height:1.15;color:#fdf3e3}
-.st-tale{margin:0 0 8px;font-size:20px;line-height:1.6;color:#fdf3e3;max-width:34em;white-space:pre-line;max-height:36vh;overflow-y:auto;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(#000 88%,transparent);mask-image:linear-gradient(#000 88%,transparent)}
+.st-title{margin:0 0 8px;font-size:30px;line-height:1.15;color:#fdf3e3;text-shadow:0 2px 14px rgba(11,6,22,.95),0 1px 3px rgba(11,6,22,.9)}
+.st-tale{margin:0 0 8px;font-size:20px;line-height:1.6;color:#fdf3e3;max-width:34em;white-space:pre-line;max-height:36vh;overflow-y:auto;overscroll-behavior:contain;-webkit-mask-image:linear-gradient(#000 88%,transparent);mask-image:linear-gradient(#000 88%,transparent);text-shadow:0 1px 10px rgba(11,6,22,.95),0 1px 3px rgba(11,6,22,.9)}
+.st-tale.fs1{font-size:24px}.st-tale.fs2{font-size:29px} /* 2026-09-30 (Billy phone QA): text-size toggle steps */
 .st-meta{margin:0 0 14px;font-size:14px;color:var(--muted)}
 .st-actions{display:flex;gap:10px;align-items:center;margin-bottom:14px}
 .st-prev,.st-next{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:22px;cursor:pointer;line-height:1}
+.st-font{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,6,22,.5);color:#fdf3e3;font-size:14px;font-weight:800;cursor:pointer;line-height:1;flex:none} /* 2026-09-30 (Billy phone QA): story text-size toggle */
 .st-play{flex:1;max-width:220px;height:52px;border-radius:999px;border:none;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;cursor:pointer}
 .st-build{display:inline-block;color:#fdf3e3;font-weight:700;font-size:16px;text-decoration:underline;text-underline-offset:4px}
 .st-channels{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,6,22,.94);padding:24px;z-index:4}
@@ -1008,7 +1010,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .st-chan{width:min(320px,84vw);padding:14px 18px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:17px;font-weight:700;cursor:pointer;text-align:left}
 .st-chan small{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
 @media (hover:hover){.st-chan:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
-@media (min-width:900px){.st-title{font-size:40px}.st-bottom{padding:28px 48px calc(28px + env(safe-area-inset-bottom))}.st-tale{font-size:22px;max-height:40vh}}
+@media (min-width:900px){.st-title{font-size:40px}.st-bottom{padding:28px 48px calc(28px + env(safe-area-inset-bottom))}.st-tale{font-size:22px;max-height:40vh}.st-tale.fs1{font-size:27px}.st-tale.fs2{font-size:33px}}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
@@ -1592,6 +1594,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <button class="st-prev" id="st-prev" type="button" aria-label="Previous costume">&larr;</button>
             <button class="st-play" id="st-play" type="button">Pause</button>
             <button class="st-next" id="st-next" type="button" aria-label="Next costume">&rarr;</button>
+            <button class="st-font" id="st-font" type="button" aria-label="Story text size: normal. Tap to change.">A</button>
 </div>
           <a class="st-build" id="st-build" href="#">Build this costume &rarr;</a>
 </div>

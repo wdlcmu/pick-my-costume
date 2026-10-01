@@ -13213,6 +13213,21 @@ function shareLandingHeadline(idea, search){
     else { narratedHold = false; speakSynth(text, fromGesture); }
   }
 
+  /* 2026-09-30 (Billy phone QA): story text-size toggle. Three steps
+     (normal/large/largest), persisted. Changing size never touches
+     narration or slideshow state. */
+  var stFontStep = 0;
+  try { stFontStep = Math.min(2, Math.max(0, load("pmc_story_font_v1") | 0)); } catch(e){ stFontStep = 0; }
+  function applyStFont(){
+    var t = $("st-tale");
+    if (t){ t.classList.remove("fs1","fs2"); if (stFontStep === 1) t.classList.add("fs1"); else if (stFontStep === 2) t.classList.add("fs2"); }
+    var b = $("st-font");
+    if (b){
+      b.textContent = stFontStep === 0 ? "A" : (stFontStep === 1 ? "A+" : "A++");
+      b.setAttribute("aria-label", "Story text size: " + ["normal","large","largest"][stFontStep] + ". Tap to change.");
+    }
+    try { save("pmc_story_font_v1", stFontStep); } catch(e){}
+  }
   function render(fromGesture){
     var idea = order[idx];
     if (!idea) return;
@@ -13223,6 +13238,7 @@ function shareLandingHeadline(idea, search){
     $("st-kicker").textContent = currentLabel;
     $("st-title").textContent = idea.title;
     $("st-tale").textContent = tale;
+    applyStFont();
     $("st-meta").textContent = metaFor(idea);
     $("st-count").textContent = (idx+1) + " of " + order.length;
     $("st-build").href = "/c/" + idea.id;
@@ -13351,10 +13367,28 @@ function shareLandingHeadline(idea, search){
     speakOn = !speakOn;
     this.setAttribute("aria-pressed", speakOn ? "true" : "false");
     /* Explicit play: the tap is a user gesture, so speech starts
-       synchronously (iOS drops deferred speechSynthesis.speak). */
-    if (speakOn && order.length) speakTale(taleFor(order[idx]), order[idx], true);
+       synchronously (iOS drops deferred speechSynthesis.speak).
+       2026-09-30: storytime opens at rest (playing=false), which made this
+       button silently do nothing on a cold open -- speakTale bails when
+       paused. The speaker is a "read aloud" affordance, so turning it on
+       also wakes the slideshow; the Play button label follows. */
+    if (speakOn && order.length){
+      if (!playing){
+        playing = true;
+        $("st-play").textContent = "Pause";
+        $("st-play").setAttribute("aria-label", "Pause slideshow");
+      }
+      speakTale(taleFor(order[idx]), order[idx], true);
+    }
     else stopSpeak();
     arm();
+  };
+  /* 2026-09-30 (Billy phone QA): text-size toggle. tapGuard against finger
+     bounce; cycles 3 steps and persists. No narration side effects. */
+  $("st-font").onclick = function(){
+    if (!tapGuard("stfont", 400)) return;
+    stFontStep = (stFontStep + 1) % 3;
+    applyStFont();
   };
   $("st-build").onclick = function(){
     var idea = order[idx];
