@@ -1,0 +1,36 @@
+# Cloudflare Pages redirects — Section 4 SEO consolidation.
+# Approved by Billy 2026-10-01 ("Ship all 15").
+# Each source is a duplicate/thin/retired landing page; targets are the canonicals.
+# NOTE: the zone's pretty-URL rule 308s *.html -> clean first, so these clean-path
+# rules cover both /foo and /foo.html (the latter chains 308 -> 301).
+
+# Last-minute cluster -> /last-minute-costumes
+/easy-last-minute-halloween-costumes /last-minute-costumes 301
+/last-minute-halloween-costumes-2026 /last-minute-costumes 301
+/make-it-tonight-costumes /last-minute-costumes 301
+/collections/last-minute-costumes /last-minute-costumes 301
+
+# Trending cluster -> /trending
+/trends-2026 /trending 301
+/whats-trending /trending 301
+
+# Toddler cluster -> /toddler-costumes
+/toddler-halloween-costumes-2026 /toddler-costumes 301
+/collections/toddler-costumes /toddler-costumes 301
+
+# Kids cluster -> /easy-diy-halloween-costumes-for-kids
+/collections/easy-diy-kids-costumes /easy-diy-halloween-costumes-for-kids 301
+
+# Family cluster -> /family-costumes
+/family-halloween-costumes-2026 /family-costumes 301
+/collections/family-group-costumes /family-costumes 301
+
+# Couples cluster -> /couples-costumes
+/couple-halloween-costumes-2026 /couples-costumes 301
+
+# Retired cost positioning -> /costumes-from-your-closet
+/cheap-halloween-costumes /costumes-from-your-closet 301
+/collections/cheap-homemade-costumes /costumes-from-your-closet 301
+
+# Orphaned materials page -> /costumes-from-your-closet
+/diy-costumes-by-materials /costumes-from-your-closet 301
