@@ -115,7 +115,7 @@ var UNIT_REGISTRY = {
      page -- curated same-theme solo/couple/family versions. Built dynamically
      by buildBrowseDetailCard, so instrumented via UnitTrack.instrumentUnit. */
   "pairs-well":        {type: "rail", container: "pairs-well"},
-  /* 2026-09-30: search-trends teaser card -> /whats-trending (real weekly
+  /* 2026-10-01: search-trends teaser card -> /trending (real weekly
      Pinterest Trends data). Static markup in index.html, instrumented on
      load via instrumentAll. */
   "trends-search-teaser": {type: "card", container: "row-search-trends"}
