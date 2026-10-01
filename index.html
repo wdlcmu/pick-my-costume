@@ -1202,7 +1202,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <img class="returnhero-photo" id="returnhero-photo" alt="">
           <div>
             <p class="returnhero-kicker">Welcome back</p>
-            <h2 id="returnhero-title">Still going as Pickle?</h2> <!-- 2026-09-30: page H1 is the hero headline; this is an H2 -->
+            <h2 id="returnhero-title"></h2> <!-- 2026-09-30: page H1 is the hero headline; this is an H2. 2026-10-01 hygiene: emptied — JS sets "Still going as X?" from the saved pick before unhiding; no state text in static HTML. -->
             <div class="returnhero-actions">
               <button class="cta" id="btn-return" type="button">See my ideas again</button>
               <button class="ghost" id="btn-retake" type="button">Retake the quiz</button>
@@ -1440,7 +1440,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <section class="screen" id="s-duel">
     <div class="duel-step on" id="duel-s1">
       <p class="progress">Costume duel</p>
-      <h2 class="q-title">Your friend picked <span id="duel-friend-name"></span></h2>
+      <h2 class="q-title" id="duel-s1-title"></h2> <!-- 2026-10-01 hygiene: emptied — JS sets "Your friend picked X" in startDuelFlow; no state text in static HTML. -->
       <img class="duel-hero-photo" id="duel-friend-photo" src="" alt="">
       <p class="q-hint">Two quick questions and we will pick yours, then see how you match up.</p>
       <p style="font-weight:700;margin:18px 0 8px">Who is the costume for?</p>
@@ -1457,7 +1457,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
     <div class="duel-step" id="duel-s3">
       <p class="progress">Costume duel</p>
-      <h2 class="q-title" id="duel-s3-title">You vs your friend</h2>
+      <h2 class="q-title" id="duel-s3-title"></h2> <!-- 2026-10-01 hygiene: emptied — JS sets "Side by side"/"You vs your friend" in startDuelFlow; no state text in static HTML. -->
       <div class="duel-vs">
         <div class="duel-fighter">
           <img id="duel-v-friend-img" src="" alt="">
