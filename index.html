@@ -1202,7 +1202,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <img class="returnhero-photo" id="returnhero-photo" alt="">
           <div>
             <p class="returnhero-kicker">Welcome back</p>
-            <h2 id="returnhero-title"></h2> <!-- 2026-09-30: page H1 is the hero headline; this is an H2. 2026-10-01 hygiene: emptied — JS sets "Still going as X?" from the saved pick before unhiding; no state text in static HTML. -->
+            <!-- 2026-10-01 (Item 6): the "Still going as X?" heading is rendered by app.js (ensureHead); no heading markup in static HTML. -->
             <div class="returnhero-actions">
               <button class="cta" id="btn-return" type="button">See my ideas again</button>
               <button class="ghost" id="btn-retake" type="button">Retake the quiz</button>
@@ -1408,7 +1408,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <p class="proxybanner" id="q-proxybanner"></p>
     <!-- 2026-09-26: goal-gradient bar. Starts at 15%, never 0%. -->
     <div class="qbar" aria-hidden="true"><div class="qbar-fill" id="qbar-fill"></div></div>
-    <h2 class="q-title" id="q-title"></h2>
+    <!-- 2026-10-01 (Item 6): the question title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
     <p class="q-hint" id="q-hint"></p>
     <div class="opts" id="q-opts"></div>
     <div class="navrow">
@@ -1424,7 +1424,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     <div class="navrow" style="margin:0 0 10px">
       <button class="ghost" id="btn-rtop" type="button">&larr; Back to questions</button>
 </div>
-    <h2 class="q-title">&#127875; Here's what we picked for you</h2>
+    <!-- 2026-10-01 (Item 6): the results heading is rendered by app.js (ensureHead); no heading markup in static HTML. -->
     <p class="q-hint">This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.</p>
     <div id="r-cards"></div>
         <!-- 2026-10-01 (STEP 3): the play nudge is retired from results. -->
@@ -1440,7 +1440,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <section class="screen" id="s-duel">
     <div class="duel-step on" id="duel-s1">
       <p class="progress">Costume duel</p>
-      <h2 class="q-title" id="duel-s1-title"></h2> <!-- 2026-10-01 hygiene: emptied — JS sets "Your friend picked X" in startDuelFlow; no state text in static HTML. -->
+      <!-- 2026-10-01 (Item 6): the duel step-1 title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
       <img class="duel-hero-photo" id="duel-friend-photo" src="" alt="">
       <p class="q-hint">Two quick questions and we will pick yours, then see how you match up.</p>
       <p style="font-weight:700;margin:18px 0 8px">Who is the costume for?</p>
@@ -1448,7 +1448,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
     <div class="duel-step" id="duel-s2">
       <p class="progress">Costume duel</p>
-      <h2 class="q-title">How much effort?</h2>
+      <!-- 2026-10-01 (Item 6): the duel step-2 title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
       <p class="q-hint">Be honest. Your couch will know.</p>
       <div class="opts" id="duel-q2"></div>
       <div class="navrow">
@@ -1457,7 +1457,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
     <div class="duel-step" id="duel-s3">
       <p class="progress">Costume duel</p>
-      <h2 class="q-title" id="duel-s3-title"></h2> <!-- 2026-10-01 hygiene: emptied — JS sets "Side by side"/"You vs your friend" in startDuelFlow; no state text in static HTML. -->
+      <!-- 2026-10-01 (Item 6): the duel step-3 title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
       <div class="duel-vs">
         <div class="duel-fighter">
           <img id="duel-v-friend-img" src="" alt="">
@@ -1491,7 +1491,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <section class="screen" id="s-browse">
     <p style="margin:0 0 6px"><button type="button" class="textlink" id="btn-browse-back">&larr; Back</button></p>
     <p class="progress">Every idea in the bank</p>
-    <h2 class="q-title" id="browse-title">All ideas</h2>
+    <!-- 2026-10-01 (Item 6): the browse title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
     <p class="q-hint">Prefer browsing to quizzing? Here is the whole shelf.</p>
     <div class="bsticky">
     <!-- Z5 browse search: type-ahead search sits above the shelf, never
@@ -1572,7 +1572,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <button class="ghost" id="btn-dtophome" type="button">&#8962; Home</button>
 </div>
     <p class="progress" id="detail-progress">From browsing</p>
-    <h2 class="q-title">Costume detail</h2>
+    <!-- 2026-10-01 (Item 6): the "Costume detail" heading is rendered by app.js (ensureHead); no heading markup in static HTML. -->
     </div>
     <div id="d-card"></div>
     <div class="navrow" style="margin-top:16px">
@@ -1670,7 +1670,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <div class="st-progress" aria-hidden="true"><div class="st-bar" id="st-bar"></div></div>
         <div class="st-bottom" id="st-bottom">
           <p class="st-kicker" id="st-kicker">Storytime</p>
-          <h2 class="st-title" id="st-title"></h2>
+          <!-- 2026-10-01 (Item 6): the story title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
           <p class="st-tale" id="st-tale"></p>
           <p class="st-meta" id="st-meta"></p>
           <div class="st-actions">
@@ -1772,7 +1772,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        in the sitemap. -->
 
 </div>
-<script src="/app.js?v=20261001c" defer></script>
+<script src="/app.js?v=20261001d" defer></script>
 <script>
 /* 2026-09-30 (Week-2 traffic sprint): app bundle boot-guard. The 1.18MB inline
    script moved to /app.js (defer) so the document parses fast. If the bundle
