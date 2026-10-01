@@ -69,7 +69,13 @@ export function onRequest(context) {
      present at generation time; the empty fallback keeps the page honest if
      it ever is not. esc()d: these land inside a meta content attribute. */
   var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
-    esc(_hw.time) + " · " + esc(_hw.cost) + " · " + esc(_hw.effort) + ". " : "";
+    /* 2026-09-30 traffic-operator cold-arrival polish: the triple carries
+       its labels in the share preview (a bare "Medium" pill read as
+       meaningless to cold recipients), and "+ drying" is spelled out as
+       passive wait -- the bank's time value is hands-on time (see the
+       JSON-LD comment below). */
+    "Time: " + esc(_hw.time).replace(/ \+ drying$/, " of hands-on work + drying time") +
+    " \u00b7 Cost: " + esc(_hw.cost) + " \u00b7 Effort: " + esc(_hw.effort) + ". " : "";
   /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
      ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
      for every idea (asserted at generation time in Python below): the article
@@ -215,11 +221,15 @@ export function onRequest(context) {
   var _oNoDuel = ["gift", "pair", "vote", "grandparent", "role", "split"].indexOf(_qp.get("o") || "") >= 0;
   if ((_qp.get("s") || "") && _qp.get("gift") !== "1" && !_oNoDuel) _qp.set("duel", slug);
   var target = "/?" + _qp.toString();
-  /* 2026-09-27 Billy: arrivals from the app’s own rails (from=rail /
+  /* 2026-09-27 Billy: arrivals from the app's own rails (from=rail /
      from=hero) were invited to "Open this costume in Pick My Costume" --
-     the app they just came from. In-app arrivals get a make-it label. */
-  var _fromP = _qp.get("from") || "";
-  var _ctaLabel = /^(rail|hero)/.test(_fromP) ? "Make this costume" : "Open this costume in Pick My Costume";
+     the app they just came from. In-app arrivals got a make-it label.
+     2026-09-30 traffic-operator (cold-arrival polish): cycle-5 QA found the
+     cold label opaque to cold arrivals (Pinterest/Google/direct) -- it names
+     a site they have never seen. One clear label for every arrival now.
+     Reversible: restore the /^(rail|hero)/ branch with the old cold string
+     above to re-split. */
+  var _ctaLabel = "Make this costume";
   var targetAttr = target.replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
      RECIPIENT_BANNER = false returns the page to the no-banner control.
@@ -349,9 +359,17 @@ export function onRequest(context) {
     _quick = "<p class=\"qtriple\">DIY this week: ~" + esc(_hw.cost) + ", " + esc(_hw.time) + "</p>" +
       "<ul class=\"mats qmats\">" + _mats + "</ul>" +
       (_qtip ? "<p class=\"qtip\">Tip: " + esc(_qtip) + "</p>" : "");
-    /* Decision triple: the most quotable line of the guide, first under h1. */
-    var _t = [_hw.time, _hw.cost, _hw.effort].filter(function(x){ return x; });
-    if (_t.length) _triple = "<p class=\"triple\">" + _t.map(function(x){ return "<span class=\"pill\">" + esc(x) + "</span>"; }).join("") + "</p>";
+    /* Decision triple: the most quotable line of the guide, first under h1.
+       2026-09-30 traffic-operator cold-arrival polish: pills carry their
+       labels (a bare "Medium" pill read as meaningless to cold recipients),
+       and "+ drying" is spelled out as passive wait, matching the share
+       preview text. Reversible: restore the bare _t.map line. */
+    var _timeText = esc(_hw.time).replace(/ \+ drying$/, " of hands-on work + drying time");
+    var _pills = [];
+    if (_hw.time) _pills.push("<span class=\"pill\"><span class=\"pl\">Time</span>" + _timeText + "</span>");
+    if (_hw.cost) _pills.push("<span class=\"pill\"><span class=\"pl\">Cost</span>" + esc(_hw.cost) + "</span>");
+    if (_hw.effort) _pills.push("<span class=\"pill\"><span class=\"pl\">Effort</span>" + esc(_hw.effort) + "</span>");
+    if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p>";
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing) _fit = "<p class=\"fit\">Fit: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
@@ -657,6 +675,9 @@ export function onRequest(context) {
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
     ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".pill{display:inline-block;background:#fff4e5;border:1px solid #ffd9a3;color:#8a4a0c;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
+    /* 2026-09-30 traffic-operator: the small-caps unit labels inside the
+       decision pills (Time / Cost / Effort). */
+    ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
     ".fit{font-size:15px;color:#444;margin:0 0 8px;}" +
     ".lede{font-size:17px;color:#444;margin:0;}" +
     "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
