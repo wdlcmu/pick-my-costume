@@ -14283,7 +14283,18 @@ function shareLandingHeadline(idea, search){
          must never change which view renders. Strip them before the "other
          params" test so paid/social arrivals still open the detail view. */
       clean = clean.replace(/[?&](utm_[a-z0-9_]+|fbclid|gclid|gbraid|wbraid|msclkid|ttclid|twclid|li_fat_id|dclid|igshid|mc_cid|mc_eid|srsltid|gad_source|gclsrc|yclid|ef_id|_hsenc|_hsmi|vero_id|vero_conv)(=[^&]*)?/g, "");
-      if (/[a-z0-9]+=/.test(clean)) return; /* other params: existing flow */
+      /* 2026-10-01 P0 follow-up (Claude audit): ?idea=<slug>&plan=1 is the
+         /c/ CTA deep link -- the visitor already chose this costume. Benign
+         unknown params (x=1, stray trackers) must not block the detail view.
+         Only genuine flow params keep the existing landing flow: share ops
+         (o=), challenge (ch=), duel/pair/match experiments, vs= share ids.
+         (s= with 8+ chars already returned early via isGenuineShareArrival.) */
+      var hasPlan = /[?&]plan=1(?:&|$)/.test(q);
+      if (hasPlan) {
+        if (/[?&](o|ch|duel|pair|match|vs)=/.test(clean)) return;
+      } else if (/[a-z0-9]+=/.test(clean)) {
+        return; /* other params: existing flow */
+      }
       var pt = "From browsing";
       var fm = /[?&]from=([a-z-]+)/.exec(q);
       if (fm){
