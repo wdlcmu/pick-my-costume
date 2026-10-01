@@ -325,15 +325,30 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
-    _steps = _hw.s.map(function(x, i){
-      var _tx = esc(x).replace(/^Safety:\s*/, "<strong>Safety:</strong> ");
+    /* 2026-10-01 (Claude fix 1e, mirrored from the in-app plan): safety
+       lines are a callout ABOVE the numbered steps, not "4. Safety: ..."
+       mid-list. The safelink citation still lands on its step. */
+    var _safeSteps = [], _restSteps = [];
+    _hw.s.forEach(function(x){ (/^Safety:\s*/i.test(x) ? _safeSteps : _restSteps).push(x); });
+    var _safeHtml = "";
+    if (_safeSteps.length){
+      _safeHtml = "<div class=\"safety-callout\" role=\"note\"><b>\u26A0\uFE0F Safety</b>" +
+        _safeSteps.map(function(x){
+          return "<p>" + esc(x).replace(/^Safety:\s*/i, "") + "</p>";
+        }).join("") + "</div>";
+    }
+    _steps = _restSteps.map(function(x){
+      /* NOTE: _hw.safelink.step_idx refers to the original _hw.s index
+         (safety steps included). Keep it aligned by comparing original
+         indices, not the renumbered rest-step position. */
+      var _tx = esc(x);
       /* Sourced-facts layer (checklist item #10, audited 2026-09-26): one
          audited external citation per guide, on the first safety-relevant
          step only. The (step_idx, url, label) triple is computed at
          generation time from hour-session/safety-links.json; every URL was
          fetched and its page verified to support the claim before
          embedding. No em dashes in the link text (the voice rule). */
-      if (_hw.safelink && i === _hw.safelink.step_idx) {
+      if (_hw.safelink && x === _hw.s[_hw.safelink.step_idx]) {
         _tx += " (<a class=\"safesrc\" href=\"" + esc(_hw.safelink.url) +
           "\" rel=\"noopener\" target=\"_blank\">" + esc(_hw.safelink.label) + "</a>)";
       }
@@ -724,6 +739,27 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "ol.steps{list-style:none;counter-reset:step;padding:0;margin:0;}" +
     "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
     "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
+    "/* 2026-10-01: safety is a callout above the steps, not a numbered step. */" +
+    ".safety-callout{margin:14px 0;padding:12px 14px;border:1px solid #8a5a2a;border-left:4px solid #ff8c1a;border-radius:10px;background:#2a1c10}" +
+    ".safety-callout p{margin:6px 0 0;font-size:15px;line-height:1.55}" +
+    ".safety-callout p:first-of-type{margin-top:8px}" +
+    "/* 2026-10-01 (Billy): ambient Halloween life on /c/ guide pages. The" +
+    " same bat/firefly/leaf system as the homepage hero, condensed into one" +
+    " fixed pointer-transparent layer. aria-hidden, off under" +
+    " reduced-motion, never intercepts taps. */" +
+    ".amb{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}" +
+    ".bat{position:absolute;pointer-events:none;z-index:1;opacity:.75;animation:batFly linear infinite}" +
+    ".bat svg{display:block;animation:batFlap .55s ease-in-out infinite;transform-origin:50% 50%}" +
+    "@keyframes batFly{0%{transform:translate(-14vw,0)}25%{transform:translate(22vw,-16px)}50%{transform:translate(55vw,8px)}75%{transform:translate(86vw,-12px)}100%{transform:translate(118vw,0)}}" +
+    "@keyframes batFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}" +
+    "@media (prefers-reduced-motion:reduce){.bat{display:none}}" +
+    "@media (prefers-reduced-motion:no-preference){" +
+    ".herofly{position:absolute;pointer-events:none;z-index:1;border-radius:50%;background:#ffe9b8;box-shadow:0 0 8px 2px rgba(255,233,184,.55);opacity:0;animation:herofly 15s linear infinite}" +
+    "@keyframes herofly{0%{transform:translate(0,0);opacity:0}12%{opacity:.7}70%{opacity:.35}100%{transform:translate(4vw,-44vh);opacity:0}}" +
+    ".heroleaf{position:absolute;pointer-events:none;z-index:1;width:9px;height:13px;border-radius:60% 8% 60% 8%;background:#c9762a;opacity:0;animation:heroleaf 12s linear infinite}" +
+    "@keyframes heroleaf{0%{transform:translate(0,-4vh) rotate(0deg);opacity:0}10%{opacity:.8}100%{transform:translate(-9vw,54vh) rotate(330deg);opacity:0}}" +
+    "}" +
+    "@media (prefers-reduced-motion:reduce){.amb{display:none}}" +
     ".ctawrap{margin:20px 0;}" +
     ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
     ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
@@ -768,7 +804,19 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
     ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
     "</style>" +
-    "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
+    "</head><body>" +
+    "<!-- 2026-10-01 (Billy): ambient Halloween life on /c/ guide pages. -->" +
+    "<div class=\"amb\" aria-hidden=\"true\">" +
+    "<div class=\"bat\" style=\"top:6%;animation-duration:24s;animation-delay:-10s\"><svg viewBox=\"0 0 64 32\" width=\"36\" height=\"18\" aria-hidden=\"true\"><path d=\"M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z\" fill=\"#0d0716\"/></svg></div>" +
+    "<div class=\"bat\" style=\"top:13%;animation-duration:32s;animation-delay:-22s\"><svg viewBox=\"0 0 64 32\" width=\"28\" height=\"14\" aria-hidden=\"true\"><path d=\"M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z\" fill=\"#0d0716\"/></svg></div>" +
+    "<span class=\"herofly\" style=\"left:18%;bottom:6%;width:5px;height:5px;animation-delay:-4s\"></span>" +
+    "<span class=\"herofly\" style=\"left:55%;bottom:4%;width:4px;height:4px;animation-delay:-9s;animation-duration:17s\"></span>" +
+    "<span class=\"herofly\" style=\"left:82%;bottom:8%;width:5px;height:5px;animation-delay:-12s;animation-duration:14s\"></span>" +
+    "<span class=\"heroleaf\" style=\"left:26%;top:0;animation-delay:-3s\"></span>" +
+    "<span class=\"heroleaf\" style=\"left:61%;top:0;animation-delay:-8s;animation-duration:14s\"></span>" +
+    "<span class=\"heroleaf\" style=\"left:86%;top:0;animation-delay:-1s;animation-duration:16s\"></span>" +
+    "</div>" +
+    "<div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + title + "</h1>" +
     _triple +
@@ -780,7 +828,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<img src=\"" + heroImg + "\" alt=\"" + title + " costume idea\">" +
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
     _splitHtml +
-    "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
+    "<h2>Steps</h2>" + _safeHtml + "<ol class=\"steps\">" + _steps + "</ol>" +
     _faqs +
     _relHtml +
     _splitPartnerHtml +
