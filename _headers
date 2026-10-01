@@ -4,3 +4,21 @@
 # fresh exactly once per deploy and get cheap 304s between deploys.
 /app.js
   Cache-Control: no-cache
+
+# Utility pages: noindexed (2026-10-01 web-hygiene pass). They stay live for
+# direct/app use but must not appear in search results. X-Robots-Tag keeps
+# the HTML files untouched (no edit conflicts with concurrent streams).
+/links
+  X-Robots-Tag: noindex
+/mcp
+  X-Robots-Tag: noindex
+/flyer
+  X-Robots-Tag: noindex
+/privacy
+  X-Robots-Tag: noindex
+/school-check
+  X-Robots-Tag: noindex
+/pantry
+  X-Robots-Tag: noindex
+/play
+  X-Robots-Tag: noindex
