@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Family Costume Lineup - Pick My Costume</title>
+<meta name="description" content="Pick a group theme, text one link to the family chat, and everyone grabs their own costume spot. Free, no signup, no ads.">
+<link rel="canonical" href="https://pickmycostume.com/lineup">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/lineup">
+<meta property="og:title" content="Family Costume Lineup - Pick My Costume">
+<meta property="og:description" content="One theme, one link, everyone gets their costume. Text it to the family group chat.">
+<meta property="og:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Family Costume Lineup - Pick My Costume">
+<meta name="twitter:description" content="One theme, one link, everyone gets their costume.">
+<meta name="twitter:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:0 16px 64px;background:#fff8f0;color:#2b2118}
+.wrap{max-width:640px;margin:0 auto}
+h1{font-size:26px;margin:28px 0 6px}
+.sub{color:#6b5b4c;margin:0 0 20px;font-size:15px}
+.themegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.themecard{display:block;border:2px solid #ead9c2;border-radius:14px;padding:14px;text-decoration:none;color:inherit;background:#fff}
+.themecard:active{border-color:#e07830}
+.themename{font-weight:700;font-size:16px;display:block}
+.themetag{font-size:13px;color:#6b5b4c;display:block;margin:4px 0}
+.themen{font-size:12px;color:#a08a70}
+.spotcard{border:2px solid #ead9c2;border-radius:14px;padding:14px;margin:0 0 12px;background:#fff}
+.spotcard.claimed{border-color:#7ab648;background:#f6fbee}
+.spothead{display:flex;justify-content:space-between;align-items:baseline}
+.spotnum{font-size:12px;color:#a08a70;text-transform:uppercase;letter-spacing:.06em}
+.spottitle{font-weight:700;font-size:18px;margin:4px 0}
+.triple{font-size:13px;color:#6b5b4c;margin:0 0 6px}
+.blurb{font-size:14px;margin:0 0 10px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;border:2px solid #e07830;color:#e07830;background:#fff;cursor:pointer;min-height:44px;box-sizing:border-box}
+.btn.primary{background:#e07830;color:#fff;border-color:#e07830}
+.btn:disabled{opacity:.5}
+.claimedby{font-size:13px;color:#4c7a2a;font-weight:600;margin:6px 0 0}
+.sharebox{border:2px dashed #e07830;border-radius:14px;padding:16px;margin:24px 0;background:#fff}
+.sharebox h2{font-size:18px;margin:0 0 6px}
+.sharebox p{font-size:14px;color:#6b5b4c;margin:0 0 12px}
+.note{font-size:12px;color:#a08a70;margin:16px 0}
+.back{display:inline-block;margin:18px 0;font-size:14px;color:#e07830}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div id="picker">
+<h1>Pick a family lineup</h1>
+<p class="sub">Choose a theme, text one link to the family group chat, and everyone grabs their own costume spot. Free, no signup, no ads.</p>
+<div class="themegrid">
+<a class="themecard" href="/lineup?t=heroes-night"><span class="themename">Movie Heroes Night</span><span class="themetag">Five big-screen heroes. No sewing, no stress.</span><span class="themen">5 spots</span></a>
+<a class="themecard" href="/lineup?t=space-crew"><span class="themename">Space Crew</span><span class="themetag">Three explorers and one very friendly alien.</span><span class="themen">3 spots</span></a>
+<a class="themecard" href="/lineup?t=witchy-night"><span class="themename">Witchy Night</span><span class="themetag">Witches, a ghost, and zero scary-movie tears.</span><span class="themen">4 spots</span></a>
+<a class="themecard" href="/lineup?t=safari-squad"><span class="themename">Safari Squad</span><span class="themetag">Khaki, binoculars, and one extinct party animal.</span><span class="themen">3 spots</span></a>
+<a class="themecard" href="/lineup?t=breakfast-club"><span class="themename">Breakfast Club</span><span class="themetag">The tastiest group costume on the block.</span><span class="themen">3 spots</span></a>
+<a class="themecard" href="/lineup?t=ocean-crew"><span class="themename">Ocean Crew</span><span class="themetag">Mermaids and one little shark.</span><span class="themen">2 spots</span></a>
+<a class="themecard" href="/lineup?t=royal-court"><span class="themename">Royal Court</span><span class="themetag">Crowns for everyone, pins for no one.</span><span class="themen">3 spots</span></a>
+<a class="themecard" href="/lineup?t=monster-mash"><span class="themename">Monster Mash</span><span class="themetag">Classic monsters, zero nightmares.</span><span class="themen">4 spots</span></a>
+</div>
+<p class="note">New here? The <a href="/?src=share-lineup">2-minute quiz</a> picks a costume for one person. Lineups are for the whole crew.</p>
+</div>
+<div id="themeview" class="hidden">
+<a class="back" href="/lineup">&larr; All lineups</a>
+<h1 id="tname"></h1>
+<p class="sub" id="ttag"></p>
+<div id="spots"></div>
+<div class="sharebox">
+<h2>Send it to the family chat</h2>
+<p>One link. Everyone taps in and claims a spot.</p>
+<div class="btnrow">
+<button class="btn primary" id="smsbtn">Text the family</button>
+<button class="btn" id="copybtn">Copy invite link</button>
+</div>
+</div>
+<p class="note">Claims save on this phone only, so if two people want the same spot, the group chat settles it.</p>
+</div>
+</div>
+<script>
+/* PURE-TESTABLE-START */
+var THEMES = {"heroes-night":{"name":"Movie Heroes Night","tagline":"Five big-screen heroes. No sewing, no stress.","spots":[{"slug":"tin-hero","title":"The Tin Hero","blurb":"Red and gold plus a glowing chest circle: the suit does the talking.","time":"25 min"},{"slug":"wizard","title":"Classic Wizard","blurb":"Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional.","time":"20 min"},{"slug":"cardboard-knight","title":"Cardboard Knight","blurb":"Silver-painted cardboard armor and a pool-noodle sword.","time":"60 min + drying"},{"slug":"galaxy-knights","title":"Galaxy Knights","blurb":"Robes, belts, and toy energy blades for knights of a far-off galaxy.","time":"10 min"},{"slug":"dragon-rider-duo","title":"Dragon Rider Duo","blurb":"A viking rider and a cardboard dragon, ready to fly over the neighborhood.","time":"60 min"}]},"space-crew":{"name":"Space Crew","tagline":"Three explorers and one very friendly alien.","spots":[{"slug":"astronaut","title":"Astronaut","blurb":"White sweats, a paper-bag helmet, and a flag patch.","time":"25 min"},{"slug":"space-crewmate","title":"Space Crewmate","blurb":"Colored sweatsuit plus a cardboard backpack.","time":"20 min"},{"slug":"blue-alien-ohana","title":"Blue Alien Ohana","blurb":"Blue hoodie, big ears: the alien, the girl, or the whole ohana.","time":"30 min"}]},"witchy-night":{"name":"Witchy Night","tagline":"Witches, a ghost, and zero scary-movie tears.","spots":[{"slug":"emerald-witch","title":"Emerald Witch","blurb":"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.","time":"45 min + drying"},{"slug":"little-witch","title":"Little Witch","blurb":"Black cape, pointy hat, striped tights, green face paint.","time":"15 min"},{"slug":"good-witch-bad-witch","title":"Good Witch, Bad Witch","blurb":"Green face paint and black for one, pink gown and crown for the other.","time":"20 min"},{"slug":"classic-ghost","title":"Classic Ghost","blurb":"A white sheet with cut-out eyes.","time":"10 min"}]},"safari-squad":{"name":"Safari Squad","tagline":"Khaki, binoculars, and one extinct party animal.","spots":[{"slug":"safari-zoo-crew","title":"Safari / Zoo Crew","blurb":"Everyone picks an animal: closet clothes in matching colors plus an ear headband.","time":"25 min"},{"slug":"safari-photographer","title":"Safari Photographer","blurb":"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.","time":"20 min"},{"slug":"extinct-party-animal","title":"Extinct Party Animal","blurb":"Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago.","time":"20 min + drying"}]},"breakfast-club":{"name":"Breakfast Club","tagline":"The tastiest group costume on the block.","spots":[{"slug":"cereal-crew","title":"Cereal Crew","blurb":"Solid-color clothes plus a cereal-box front you decorate.","time":"20 min"},{"slug":"breakfast-buffet","title":"Breakfast Buffet","blurb":"Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.","time":"25 min"},{"slug":"bacon-eggs","title":"Bacon & Eggs","blurb":"Wavy bacon stripes and a sunny-side-up egg yolk.","time":"20 min"}]},"ocean-crew":{"name":"Ocean Crew","tagline":"Mermaids and one little shark.","spots":[{"slug":"mermaid-crew","title":"Mermaid Crew","blurb":"The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.","time":"20 min"},{"slug":"little-shark","title":"Little Shark","blurb":"Gray hoodie with a felt fin glued on the back.","time":"25 min + drying"}]},"royal-court":{"name":"Royal Court","tagline":"Crowns for everyone, pins for no one.","spots":[{"slug":"prince-princess","title":"Prince & Princess","blurb":"A crown and cape, a thrifted gown and tiara.","time":"10 min"},{"slug":"fairy-tale-princesses","title":"Fairy Tale Princesses","blurb":"A dress or a crown from the closet. Every princess works.","time":"15 min + drying"},{"slug":"tooth-fairy","title":"Tooth and Tooth Fairy","blurb":"One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.","time":"45 min + drying"}]},"monster-mash":{"name":"Monster Mash","tagline":"Classic monsters, zero nightmares.","spots":[{"slug":"vampire","title":"Classic Vampire","blurb":"Black cape, fangs, slicked hair.","time":"25 min"},{"slug":"pixel-ghost","title":"Pixel Ghost","blurb":"A white sheet cut in chunky pixel squares with felt eyes.","time":"30 min + drying"},{"slug":"ghost-hunters","title":"Ghost Hunters","blurb":"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.","time":"30 min"},{"slug":"spider","title":"Eight-Legged Spider","blurb":"Black sweats with stuffed sock legs attached at the sides.","time":"45 min"}]}};
+var SITE = "https://pickmycostume.com";
+function parseLineupParams(qs){
+  var m = /[?&]t=([a-z0-9-]+)/.exec(qs || "");
+  var t = m ? m[1] : "";
+  return { theme: (t && THEMES[t]) ? t : "" };
+}
+function claimKey(theme){ return "pmc_lineup_" + theme; }
+function getClaims(theme){
+  try { return JSON.parse(localStorage.getItem(claimKey(theme)) || "{}"); }
+  catch(e){ return {}; }
+}
+function setClaim(theme, idx, name){
+  var c = getClaims(theme); c[String(idx)] = name;
+  try { localStorage.setItem(claimKey(theme), JSON.stringify(c)); } catch(e){}
+  return c;
+}
+/* 2026-09-27 loop measurement: one anonymous share id per lineup theme
+   page load; minted fresh per share click so each invite is traceable. */
+var LINEUP_SID = "";
+function newLineupSid(){var a="abcdefghijklmnopqrstuvwxyz0123456789",s="";for(var i=0;i<8;i++)s+=a[Math.floor(Math.random()*a.length)];return s;}
+function buildInviteUrl(theme){ return SITE + "/lineup?t=" + theme + "&s=" + (LINEUP_SID || (LINEUP_SID = newLineupSid())) + "&src=share-lineup-invite"; }
+function buildSmsUrl(theme){
+  var body = "Pick your costume from our " + THEMES[theme].name + " family lineup: " + buildInviteUrl(theme);
+  return "sms:?&body=" + encodeURIComponent(body);
+}
+function buildSpotText(theme, idx){
+  var th = THEMES[theme], sp = th.spots[idx];
+  return "I am the " + sp.title + " in our " + th.name + " lineup (" + sp.time + "). Grab your spot: " + buildInviteUrl(theme);
+}
+function buildGuideUrl(theme, slug){ return "/c/" + slug + "?src=share-lineup-" + theme; }
+function buildPickUrl(theme, slug){ return "/?pick=" + slug + "&src=share-lineup-" + theme; }
+/* PURE-TESTABLE-END */
+
+/* PostHog: anonymous usage stats only. No names are ever sent. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try { if (window.posthog && posthog.init) posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {api_host:"https://us.i.posthog.com", autocapture:false}); } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+function track(name, props){
+  props = props || {};
+  try {
+    var q = location.search;
+    if (/[?&](probe|sim)=/.test(q) || /[?&]internal=1/.test(q)) props.internal = true;
+  } catch(e){}
+  try {
+    if (window.posthog && posthog.capture) posthog.capture(name, props);
+  } catch(e){}
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderTheme(theme){
+  var th = THEMES[theme];
+  document.getElementById("picker").classList.add("hidden");
+  document.getElementById("themeview").classList.remove("hidden");
+  document.getElementById("tname").textContent = th.name + " lineup";
+  document.getElementById("ttag").textContent = th.tagline + " Tap a spot to claim it.";
+  document.title = th.name + " Lineup - Pick My Costume";
+  var claims = getClaims(theme);
+  var html = "";
+  th.spots.forEach(function(sp, i){
+    var who = claims[String(i)];
+    html += '<div class="spotcard' + (who ? ' claimed' : '') + '">'
+      + '<div class="spothead"><span class="spotnum">Spot ' + (i+1) + ' of ' + th.spots.length + '</span></div>'
+      + '<div class="spottitle">' + escHtml(sp.title) + '</div>'
+      + '<p class="triple">' + escHtml(sp.time) + '</p>'
+      + '<p class="blurb">' + escHtml(sp.blurb) + '</p>'
+      + '<div class="btnrow">'
+      + '<a class="btn" href="' + escHtml(buildGuideUrl(theme, sp.slug)) + '">Build guide</a>'
+      + '<a class="btn" href="' + escHtml(buildPickUrl(theme, sp.slug)) + '">Open in quiz</a>'
+      + (who
+          ? '<button class="btn" disabled>Claimed</button>'
+          : '<button class="btn primary" data-claim="' + i + '">This is mine</button>')
+      + '<button class="btn" data-copytext="' + i + '">Copy my text</button>'
+      + '</div>'
+      + (who ? '<p class="claimedby">Claimed by ' + escHtml(who) + '</p>' : '')
+      + '</div>';
+  });
+  document.getElementById("spots").innerHTML = html;
+  track("lineup_opened", {theme: theme});
+}
+
+function init(){
+  var p = parseLineupParams(location.search);
+  if (!p.theme){
+    document.getElementById("picker").classList.remove("hidden");
+    return;
+  }
+  /* 2026-09-27 loop measurement: recipient leg. */
+  (function(){var vsm=/[?&]s=([a-z0-9]{8,})/.exec(location.search||"");if(vsm)track("lineup_opened",{theme:p.theme,via_share_id:vsm[1],share_origin:"lineup"});})();
+  renderTheme(p.theme);
+  document.getElementById("smsbtn").addEventListener("click", function(){
+    LINEUP_SID = newLineupSid();
+    track("lineup_invite_shared", {theme: p.theme, channel: "sms", share_id: LINEUP_SID, share_origin: "lineup"});
+    location.href = buildSmsUrl(p.theme);
+  });
+  document.getElementById("copybtn").addEventListener("click", function(){
+    LINEUP_SID = newLineupSid();
+    var url = buildInviteUrl(p.theme);
+    function done(){ track("lineup_invite_shared", {theme: p.theme, channel: "copy", share_id: LINEUP_SID, share_origin: "lineup"}); }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done, function(){ prompt("Copy this link:", url); });
+    } else { prompt("Copy this link:", url); }
+  });
+  document.getElementById("spots").addEventListener("click", function(ev){
+    var t = ev.target;
+    if (t.hasAttribute("data-claim")){
+      var idx = parseInt(t.getAttribute("data-claim"), 10);
+      var name = prompt("Who is taking this spot? (first name is plenty)");
+      if (name && name.trim()){
+        setClaim(p.theme, idx, name.trim().slice(0, 24));
+        track("lineup_spot_claimed", {theme: p.theme, spot: idx});
+        renderTheme(p.theme);
+      }
+    } else if (t.hasAttribute("data-copytext")){
+      var i2 = parseInt(t.getAttribute("data-copytext"), 10);
+      LINEUP_SID = newLineupSid();
+      var txt = buildSpotText(p.theme, i2);
+      track("lineup_slot_text_copied", {theme: p.theme, spot: i2, share_id: LINEUP_SID, share_origin: "lineup"});
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){}, function(){ prompt("Copy your text:", txt); });
+      } else { prompt("Copy your text:", txt); }
+    }
+  });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+</script>
+</body>
+</html>
