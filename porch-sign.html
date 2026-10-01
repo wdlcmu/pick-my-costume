@@ -196,7 +196,7 @@ function renderSign(){
   empty.style.display = "none"; sign.style.display = "";
   document.getElementById("signkid").textContent = kidLine(document.getElementById("kid").value);
   var img = document.getElementById("signphoto");
-  img.src = photoUrl(pick.id); img.alt = pick.t;
+  img.src = photoUrl(pick.id); img.alt = pick.t + " costume";
   document.getElementById("signtitle").textContent = pick.t;
 }
 function setPick(id){
