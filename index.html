@@ -441,6 +441,17 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .kidsrail{margin-top:14px}
 .kidsrail .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
 .proofrow button.kidscard{flex:0 0 128px;scroll-snap-align:start;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative;padding:0;cursor:pointer;font:inherit;color:inherit}
+/* 2026-10-01 (Billy): share affordance on homepage rail cards. The wrapper
+   takes the card's flex sizing; the share button floats top-right over the
+   photo corner, clear of the focal point. 44px tap target. */
+.railcard{position:relative;flex:0 0 128px;scroll-snap-align:start}
+.railcard>a{flex:none;width:100%}
+.railcard>button.kidscard{flex:none;width:100%}
+.railshare{position:absolute;top:6px;right:6px;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:rgba(12,9,24,.62);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.railshare svg{width:20px;height:20px;flex:none}
+.railshare:active{transform:scale(.93)}
+.railshare.shared{background:#1e7a3c}
+@media (hover:hover){.railshare:hover{background:rgba(12,9,24,.82)}}
 /* 2026-09-26: social proof badge on proof-strip cards */
 .proofbadge{position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600}
 /* "More ways to explore": the quiet secondary surfaces live here, below the strip. */
