@@ -14255,6 +14255,11 @@ function shareLandingHeadline(idea, search){
       var q = location.search || "";
       if (isGenuineShareArrival(q)) return;
       var clean = q.replace(/[?&](idea|from|probe|plan)=[^&]*/g, "");
+      /* 2026-10-01 P0 (Claude traffic audit): marketing/tracking params ride
+         along on the /c/ CTA target (Pinterest UTMs, fbclid, gclid, ...) but
+         must never change which view renders. Strip them before the "other
+         params" test so paid/social arrivals still open the detail view. */
+      clean = clean.replace(/[?&](utm_[a-z0-9_]+|fbclid|gclid|gbraid|wbraid|msclkid|ttclid|twclid|li_fat_id|dclid|igshid|mc_cid|mc_eid|srsltid|gad_source|gclsrc|yclid|ef_id|_hsenc|_hsmi|vero_id|vero_conv)(=[^&]*)?/g, "");
       if (/[a-z0-9]+=/.test(clean)) return; /* other params: existing flow */
       var pt = "From browsing";
       var fm = /[?&]from=([a-z-]+)/.exec(q);
