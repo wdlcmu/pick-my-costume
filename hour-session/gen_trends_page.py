@@ -33,6 +33,13 @@ OG_IMAGE = "https://pickmycostume.com/images/og/classic-ghost.jpg"
 GUIDE_MAP = {
     "witch costume": ("emerald-witch", False),
     "ghost costume": ("classic-ghost", False),
+    "lorax costume": ("fuzzy-monster", True),
+    "superman costume": ("superhero-family", True),
+    "nightwing costume": ("superhero-family", True),
+    "supergirl costume": ("superhero-family", True),
+    "glinda costume": ("good-witch-bad-witch", False),
+    "wednesday costume": ("deadpan-diva", True),
+    "labubu costume": ("pocket-plush", True),
     "elphaba costume": ("emerald-witch", True),
     "toothless costume": ("dragon-rider-duo", True),
     "rumi costume": ("kpop-demon-huntresses", False),
@@ -80,9 +87,10 @@ def main():
     terms = sorted(snap["terms"], key=lambda t: t["rank"])
     assert len(terms) >= 10, "expected at least 10 terms"
     # Merge the stable guide map for snapshots that lack per-term mapping
-    # (raw fetch_pinterest_trends.py output).
+    # (raw fetch_pinterest_trends.py output) or where the snapshot left the
+    # guide empty (guide: None).
     for t in terms:
-        if "guide" not in t:
+        if t.get("guide") is None:
             m = GUIDE_MAP.get(t["term"])
             if m:
                 slug, adjacent = m
