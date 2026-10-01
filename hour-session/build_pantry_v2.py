@@ -1441,6 +1441,36 @@ def main():
     data = {'pantry': PANTRY, 'groups': GROUPS, 'ideas': ideas}
     data_json = json.dumps(data, separators=(',', ':'))
     html_out = TEMPLATE.replace('__DATA__', data_json).replace('__COUNT__', str(len(ideas)))
+    # ---- 2026-09-30 GEO batch: static FAQ + make-tonight list for no-JS
+    # crawlers (PerplexityBot et al. see zero client-rendered content).
+    # Injected here, never by hand-editing pantry.html (generator output).
+    # Regenerate the staged source files when the bank changes.
+    _GEO_STAGED = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               '..', 'hidden_files', 'seo-sprint', 'geo-staged')
+    def _geo_read(name):
+        with open(os.path.join(_GEO_STAGED, name), encoding='utf-8') as _f:
+            return _f.read()
+    _faq_block = re.sub(r'<!-- STAGED CHANGE.*?-->\s*', '',
+                        _geo_read('pantry-faq-block.html'), flags=re.S)
+    _faq_schema = re.sub(r'^//[^\n]*\n', '',
+                         _geo_read('pantry-faq-schema.jsonld'), flags=re.M)
+    _tonight_static = re.sub(r'<!-- STAGED CHANGE.*?-->\s*', '',
+                             _geo_read('pantry-static-tonight.html'), flags=re.S)
+    assert 'id="geo-answer"' in _faq_block and 'id="geo-tonight-static"' in _tonight_static
+    assert 'FAQPage' in _faq_schema
+    _geo_css = ('.geo-answer,.geo-faq,.geo-tonight-static{margin:20px 0}'
+                '.geo-answer h2,.geo-faq h2,.geo-tonight-static h2{font-size:22px;margin:0 0 8px}'
+                '.geo-answer p,.geo-tonight-static p{line-height:1.55}'
+                '.geo-faq details{margin:8px 0}'
+                '.geo-faq summary{cursor:pointer;font-weight:700}'
+                '.geo-tonight-static ul{margin:8px 0 16px;padding-left:20px}'
+                '.geo-tonight-static h3{font-size:16px;margin:14px 0 4px}')
+    html_out = html_out.replace('.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n</style>',
+                                '.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n' + _geo_css + '\n</style>', 1)
+    html_out = html_out.replace('</style>\n</head>', '</style>\n' + _faq_schema + '\n</head>', 1)
+    html_out = html_out.replace('<p class="fresh">Updated for Halloween 2026</p>',
+                                '<p class="fresh">Updated for Halloween 2026</p>\n' + _faq_block + '\n' + _tonight_static, 1)
+    assert 'id="geo-answer"' in html_out and 'id="geo-tonight-static"' in html_out and 'FAQPage' in html_out, 'GEO injection failed'
     # Chopped preservation guard (2026-09-29): the game must survive
     # every regen. Refuse to write output that dropped it.
     for _marker in ('id="chopped"', 'function chopNewRound', 'function chopReveal',
