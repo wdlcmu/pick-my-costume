@@ -170,7 +170,7 @@ evening is going to take."""),
       faqs=[
         ('What makes a couples costume actually work?', 'A joke a stranger gets in three seconds: ketchup and mustard, plug and socket, sun and moon. If you have to explain it, pick a different pair.'),
         ('How do we avoid one person being the boring half?', 'Pick the pair where both halves are equally recognizable, and agree on the effort level in advance. One elaborate half next to a thrown-together half reads as a mistake, not a duo.'),
-        ('We waited until the last minute. What still works?', 'Pairs built from closet clothes: office couple, salt and pepper, a tourist pair. Build both halves side by side so the colors and sizes match.'),
+        ('We waited until the last minute. What still works?', 'Pairs built from closet clothes: office couple, salt and pepper, cat and mouse. Build both halves side by side so the colors and sizes match.'),
       ],
 ),
  dict(slug='toddler-costumes', kw='toddler',
@@ -308,7 +308,7 @@ footer a{{color:var(--mut);margin:0 10px}}
 </div>
 <section class="remindbox">
 <h2>&#128276; One email on Oct 27</h2>
-<p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That&#8217;s it — one email, then you&#8217;re off the list.</p>
+<p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That&#8217;s it, one email, then you&#8217;re off the list.</p>
 <form class="remindform" id="remindForm">
 <input type="email" id="remindEmail" placeholder="you@example.com" aria-label="Email address" required>
 <button type="submit">Remind me</button>
@@ -321,12 +321,12 @@ try{{if(localStorage.getItem('pmc_reminded')==='1'){{f.style.display='none';}}}}
 f.addEventListener('submit',function(e){{e.preventDefault();
 var em=document.getElementById('remindEmail').value.trim();
 var note=document.getElementById('remindNote');
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]{{2,}}$/.test(em)){{note.textContent='That email doesn\u2019t look right \u2014 try again?';return;}}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]{{2,}}$/.test(em)){{note.textContent='That email doesn\u2019t look right. Try again?';return;}}
 note.textContent='Saving\u2026';
 fetch('/reminder-signup',{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify({{email:em,source:'intent'}})}})
 .then(function(r){{return r.json();}}).then(function(j){{
-if(j&&j.ok){{try{{localStorage.setItem('pmc_reminded','1');}}catch(_){{}}note.textContent='\u2705 You\u2019re on the list \u2014 one email on Oct 27, that\u2019s it.';}}
-else if(j&&j.reason==='unconfigured'){{note.textContent='Reminders are being connected \u2014 check back soon.';}}
+if(j&&j.ok){{try{{localStorage.setItem('pmc_reminded','1');}}catch(_){{}}note.textContent='\u2705 You\u2019re on the list: one email on Oct 27, that\u2019s it.';}}
+else if(j&&j.reason==='unconfigured'){{note.textContent='Reminders are being connected. Check back soon.';}}
 else{{note.textContent='Hmm, that didn\u2019t save. Try again?';}}
 }},function(){{note.textContent='Hmm, that didn\u2019t save. Try again?';}});}});}})();</script>
 {faq_html}

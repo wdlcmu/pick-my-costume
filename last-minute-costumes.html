@@ -179,7 +179,7 @@ footer a{color:var(--mut);margin:0 10px}
 </div>
 <section class="remindbox">
 <h2>&#128276; One email on Oct 27</h2>
-<p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That&#8217;s it — one email, then you&#8217;re off the list.</p>
+<p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That&#8217;s it, one email, then you&#8217;re off the list.</p>
 <form class="remindform" id="remindForm">
 <input type="email" id="remindEmail" placeholder="you@example.com" aria-label="Email address" required>
 <button type="submit">Remind me</button>
@@ -192,12 +192,12 @@ try{if(localStorage.getItem('pmc_reminded')==='1'){f.style.display='none';}}catc
 f.addEventListener('submit',function(e){e.preventDefault();
 var em=document.getElementById('remindEmail').value.trim();
 var note=document.getElementById('remindNote');
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){note.textContent='That email doesn’t look right — try again?';return;}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){note.textContent='That email doesn’t look right. Try again?';return;}
 note.textContent='Saving…';
 fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'intent'})})
 .then(function(r){return r.json();}).then(function(j){
-if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='✅ You’re on the list — one email on Oct 27, that’s it.';}
-else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected — check back soon.';}
+if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='✅ You’re on the list: one email on Oct 27, that’s it.';}
+else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected. Check back soon.';}
 else{note.textContent='Hmm, that didn’t save. Try again?';}
 },function(){note.textContent='Hmm, that didn’t save. Try again?';});});})();</script>
 <section class="faqsec" id="faq" data-unit-id="last-minute-costumes" data-unit-type="intent-faq"><h2>Questions, answered</h2><details><summary>What is the one rule for last-minute costumes?</summary><p>One hero piece. A ghost needs only the sheet, a tourist needs only the camera and socks-with-sandals. Build around a single recognizable item and let closet clothes do the rest.</p></details><details><summary>What should I skip when time is short?</summary><p>Anything with drying time: paint, glue-heavy builds, papier-mache. A hair dryer buys you minutes, not miracles.</p></details><details><summary>How do I not look like I gave up?</summary><p>Commit to the bit. A name tag, a prop, or a one-line character voice sells a simple costume more than extra accessories do.</p></details></section>

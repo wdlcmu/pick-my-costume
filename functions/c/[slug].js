@@ -838,7 +838,7 @@ export function onRequest(context) {
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
     "<section class=\"remindbox\">" +
     "<h2>\uD83D\uDD14 One email on Oct 27</h2>" +
-    "<p class=\"remindsub\">Want one email on Oct 27 with costumes you can make that night? That's it \u2014 one email, then you're off the list.</p>" +
+    "<p class=\"remindsub\">Want one email on Oct 27 with costumes you can make that night? That's it, one email, then you're off the list.</p>" +
     "<form id=\"remindForm\" class=\"remindform\">" +
     "<input type=\"email\" id=\"remindEmail\" placeholder=\"you@example.com\" aria-label=\"Email address\" required>" +
     "<button class=\"cta\" type=\"submit\" style=\"border:0;cursor:pointer\">Remind me</button>" +
@@ -851,12 +851,12 @@ export function onRequest(context) {
     "f.addEventListener('submit',function(e){e.preventDefault();" +
     "var em=document.getElementById('remindEmail').value.trim();" +
     "var note=document.getElementById('remindNote');" +
-    "if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(em)){note.textContent='That email doesn\\\u2019t look right \u2014 try again?';return;}" +
+    "if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(em)){note.textContent='That email doesn\\\u2019t look right. Try again?';return;}" +
     "note.textContent='Saving\u2026';" +
     "fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})})" +
     ".then(function(r){return r.json();}).then(function(j){" +
-    "if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='\u2705 You\\\u2019re on the list \u2014 one email on Oct 27, that\\\u2019s it.';try{if(window.posthog&&posthog.capture)posthog.capture('reminder_signup',{source:'c-guide'});}catch(_){}}" +
-    "else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected \u2014 check back soon.';}" +
+    "if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='\u2705 You\\\u2019re on the list: one email on Oct 27, that\\\u2019s it.';try{if(window.posthog&&posthog.capture)posthog.capture('reminder_signup',{source:'c-guide'});}catch(_){}}" +
+    "else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected. Check back soon.';}" +
     "else{note.textContent='Hmm, that didn\\\u2019t save. Try again?';}" +
     "},function(){note.textContent='Hmm, that didn\\\u2019t save. Try again?';});});})();</script>" +
 "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
