@@ -1,5 +1,5 @@
 // POST /send-instructions -- "Email me the instructions", for real.
-// Billy 2026-09-28: the old mailto: fallback (user sends to themselves) was
+// 2026-09-28: the old mailto: fallback (user sends to themselves) was
 // backwards. Now the visitor types their address and the SITE sends it.
 //
 // Trust model:
@@ -17,7 +17,7 @@
 import { INSTRUCTIONS_DATA } from './send-instructions-data.js';
 
 const FROM = 'Pick My Costume <hello@pickmycostume.com>';
-// Billy 2026-09-28: hello@pickmycostume.com is the confirmed sender AND the
+// 2026-09-28: hello@pickmycostume.com is the confirmed sender AND the
 // default reply-to (matches the site's contact link). No gmail anywhere.
 const RESEND_URL = 'https://api.resend.com/emails';
 
@@ -47,7 +47,7 @@ function cleanHeader(s) {
   return String(s).replace(/[\r\n]+/g, ' ').slice(0, 140);
 }
 
-// Server-side composition. NOTE: Billy 2026-09-28 -- no guide/product link
+// Server-side composition. NOTE: 2026-09-28 -- no guide/product link
 // in the body. The email is the instructions, nothing else.
 export function composeEmail(idea) {
   const lines = [];
@@ -59,7 +59,7 @@ export function composeEmail(idea) {
   lines.push('STEPS:');
   idea.s.forEach((x, i) => lines.push((i + 1) + '. ' + x));
   lines.push('');
-  lines.push(idea.time + ' | ' + idea.cost + ' | ' + idea.effort);
+  lines.push(idea.time + ' | ' + idea.effort);
   lines.push('');
   lines.push('-- Pick My Costume');
   return {
@@ -96,7 +96,7 @@ export async function onRequestPost(context) {
   const subject = cleanHeader(composed.subject);
 
   if (!env.RESEND_API_KEY) {
-    // Staged: Billy hasn't connected Resend yet. Plumbing verified, nothing sent.
+    // Staged: Resend hasn't been connected yet. Plumbing verified, nothing sent.
     return json({ ok: true, dry_run: true });
   }
   let res;
