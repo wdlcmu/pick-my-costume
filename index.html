@@ -579,6 +579,10 @@ button.cta{
   background:var(--btn-bg);color:var(--btn-ink);
   border:0;border-radius:var(--radius);cursor:pointer;
 }
+/* 2026-10-01 (Billy): the "see the build guide" caption was orphaned below the
+   button it described. It now rides inside the button as a subtitle. */
+button.cta .cta-main{display:block}
+button.cta .cta-sub{display:block;font-size:13px;font-weight:600;opacity:.72;margin-top:3px}
 button.lightsheet{color:#241a38;}
 .lightsheet .ghost{color:#241a38;background:#fff;}
 /* 2026-09-28: lightsheets are white cards on the dark theme; every heading,
@@ -1729,7 +1733,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </footer>
 
 </div>
-<script src="/app.js?v=20261001a" defer></script>
+<script src="/app.js?v=20261001b" defer></script>
 <script>
 /* 2026-09-30 (Week-2 traffic sprint): app bundle boot-guard. The 1.18MB inline
    script moved to /app.js (defer) so the document parses fast. If the bundle
