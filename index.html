@@ -122,6 +122,34 @@ body{
   padding:12px 10px;border-radius:10px;white-space:nowrap}
 @media (hover:hover){.sitenav a:hover{color:var(--ink)}}
 @media (min-width:900px){.sitehead{margin:0 -32px 4px;padding:0 32px}}
+/* 2026-10-01 (Claude fix 1g): the costume-detail top row (Back/Home,
+   progress, "Costume detail") bleeds to the same padding as the site nav,
+   so it no longer sits inset like a floating island. Same negative-margin
+   trick as .sitehead. */
+#s-detail .dtop{margin:0 -16px 14px;padding:0 16px}
+@media (min-width:900px){#s-detail .dtop{margin:0 -32px 16px;padding:0 32px}}
+/* 2026-10-01 (Claude fix 1h): the shared toast. Fixed, pointer-transparent
+   (never intercepts taps), below the quiz sheet (950/960) so it never covers
+   in-flight interactions. Inert under reduced-motion. */
+.pmc-toast{position:fixed;left:50%;bottom:28px;z-index:2000;pointer-events:none;
+  max-width:90vw;padding:12px 20px;border-radius:12px;background:#fdf3e3;color:#231303;
+  font-weight:700;font-size:15px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5);
+  opacity:0;transform:translateX(-50%) translateY(20px);
+  transition:opacity .25s ease,transform .25s ease}
+.pmc-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.pmc-toast{transition:none}}
+/* 2026-10-01 (Claude fix 1e): safety is a callout, not a numbered step. */
+.safety-callout{margin:12px 0;padding:12px 14px;border:1px solid #8a5a2a;
+  border-left:4px solid var(--accent,#ff8c1a);border-radius:10px;background:#2a1c10}
+.safety-callout p{margin:6px 0 0;font-size:14px}
+.safety-callout p:first-of-type{margin-top:8px}
+/* 2026-10-01 (Billy): ambient Halloween life on down-funnel pages. One fixed,
+   pointer-transparent layer reusing the hero's bat/firefly/leaf keyframes,
+   so quiz results and costume detail feel alive like the homepage. Sparse by
+   design (a few bats, fireflies, falling leaves); below the quiz sheet
+   (950/960); never intercepts taps; off under reduced-motion. */
+.amb{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+@media (prefers-reduced-motion:reduce){.amb{display:none}}
 /* 2026-09-30 (Billy phone QA): storytime is full-screen; the sticky site
    header (z-index 100) would cover its top bar and the close button
    (z-index 3). Hidden while storytime is open. */
@@ -1532,13 +1560,18 @@ footer a#about-link{display:inline-block;padding:12px 18px}
          browser chrome. Painted by paintDetailSky(). -->
     <div class="detail-sky" id="detail-sky" aria-hidden="true"></div>
     <!-- 2026-09-26: back/home were buried at the bottom of the detail
-         screen. They now sit above the fold too. -->
+         screen. They now sit above the fold too.
+         2026-10-01 (Claude fix 1g): the top row now bleeds to the same
+         padding as the site nav (.dtop), so it no longer reads as a
+         misaligned inset island. -->
+    <div class="dtop">
     <div class="navrow" style="margin:0 0 10px">
       <button class="ghost" id="btn-dtopback" type="button">&larr; Back</button>
       <button class="ghost" id="btn-dtophome" type="button">&#8962; Home</button>
 </div>
     <p class="progress" id="detail-progress">From browsing</p>
     <h2 class="q-title">Costume detail</h2>
+    </div>
     <div id="d-card"></div>
     <div class="navrow" style="margin-top:16px">
       <button class="ghost" id="btn-dback" type="button">&larr; Back to browse</button>
