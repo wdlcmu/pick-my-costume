@@ -1048,6 +1048,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .share-card h4{margin:0 0 8px}
 .share-prev{display:flex;gap:10px;align-items:center;margin-bottom:10px}
 .share-prev img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none;background:#241a38}
+/* 2026-10-01 P1: #r-cards .card img{width:100%} (hero-photo rule, specificity
+   1-1-1) beat .share-prev img (0-1-1) on quiz result cards, stretching the
+   64px share thumbnail to full row width and squeezing the caption into a
+   letter-by-letter column. This 1-2-1 override restores the thumbnail. */
+#r-cards .card .share-prev img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none}
 .share-meta{min-width:0}
 .share-meta b{display:block}
 .share-meta p{margin:4px 0 0;font-size:13px;opacity:.85}
