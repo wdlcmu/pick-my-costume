@@ -1145,14 +1145,14 @@ function queueHashSync(){
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 // Costume card metadata: vibe line (bank why-line), quick-fact chips (published
-// time/cost + effort-derived difficulty), vibe tags (curated bank tags). All values
-// come from the enriched data build; nothing is invented here.
+// time + effort-derived difficulty; cost deliberately omitted 2026-10-01 Billy:
+// $4 vs $16 doesn't decide a build, materials on hand do), vibe tags (curated
+// bank tags). All values come from the enriched data build; nothing is invented here.
 function cardMetaHTML(it){
   var h='';
   if(it.why) h+='<p class="vibe">'+esc(it.why)+'</p>';
   var f=[];
   if(it.time) f.push(it.time);
-  if(it.cost) f.push(it.cost);
   if(it.diff) f.push(it.diff);
   if(f.length) h+='<div class="facts" aria-label="Quick facts">'+
     f.map(function(x){ return '<span>'+esc(x)+'</span>'; }).join('')+'</div>';
