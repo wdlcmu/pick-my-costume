@@ -1389,26 +1389,20 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <!-- RESULTS -->
   <section class="screen" id="s-results">
     <p class="progress">Your costume</p>
-    <!-- 2026-09-26: back-to-questions was buried below the results.
-         It now sits above the fold too. -->
+    <!-- 2026-10-01 (STEP 3): one "Back to questions" only, above the
+         fold; the duplicate below the results is gone. -->
     <div class="navrow" style="margin:0 0 10px">
       <button class="ghost" id="btn-rtop" type="button">&larr; Back to questions</button>
 </div>
     <h2 class="q-title">&#127875; Here's what we picked for you</h2>
     <p class="q-hint">This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.</p>
     <div id="r-cards"></div>
-    <!-- 2026-09-28: Play nudge. Shown for kid/family results only:
-         the stuck parent hands the phone to the kid. -->
-    <a class="playnudge" href="/play" id="playnudge-results" hidden>
-      <span class="playnudge-art" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="4" y="6" width="56" height="52" rx="8" fill="#167f7b"/><path d="M13 58V16q0-8 8-8h5v50z" fill="#0b5e5b"/><path d="M51 58V16q0-8-8-8h-5v50z" fill="#0b5e5b"/><path d="M24 54V32q0-11 8-11t8 11v22l-8-5z" fill="#fff"/><circle cx="29" cy="35" r="2.2" fill="#26223a"/><circle cx="35" cy="35" r="2.2" fill="#26223a"/></svg></span>
-      <span class="playnudge-text"><strong>Still deciding?</strong> Hand the phone to your kid and let them pick by playing.</span>
-      <span class="playnudge-go" aria-hidden="true">&rarr;</span>
-</a>
-    <div class="navrow" style="margin-top:8px">
-      <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
-      <button class="ghost" id="btn-restart" type="button">Start over</button>
-      <button class="ghost" id="btn-nextkid" type="button">Pick for another kid</button>
-      <button class="ghost" id="btn-browse-results" type="button">&#128506;&#65039; Wander the galaxy instead</button>
+        <!-- 2026-10-01 (STEP 3): the play nudge is retired from results. -->
+    <!-- 2026-10-01 (STEP 3): the results footer is one text-link line. -->
+    <div class="navrow" style="margin-top:8px;justify-content:center;gap:4px;align-items:center">
+      <button class="textlink" id="btn-restart" type="button">Start over</button><span class="tl-sep" aria-hidden="true">&middot;</span>
+      <button class="textlink" id="btn-nextkid" type="button">Pick for another kid</button><span class="tl-sep" id="tl-sep-kid" aria-hidden="true">&middot;</span>
+      <button class="textlink" id="btn-browse-results" type="button">Wander the galaxy</button>
 </div>
   </section>
 
