@@ -120,7 +120,7 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 
     <div class="factrow">
       <div class="fact"><b>Build time</b><span>25 min</span></div>
-      <div class="fact"><b>Set cost</b><span>$5-10</span></div>
+      <div class="fact"><b>Build time</b><span>25 min</span></div>
       <div class="fact"><b>Effort</b><span>Easy</span></div>
       <div class="fact"><b>Size</b><span>4 people</span></div>
 </div>
@@ -133,7 +133,7 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
       <h3>The set total</h3>
       <ul>
         <li><b>25 min</b> to build the whole set, not per person (the bank gives one build time for all four).</li>
-        <li><b>$5-10 for the whole family</b>, not per person. The bank prices the set, not the roles: most of it is shirts from your closets, and the buy list is one headband each plus shared felt and pins.</li>
+        <li><b>One build for the whole family</b>, not per person. The bank prices the set, not the roles: most of it is shirts from your closets, and the buy list is one headband each plus shared felt and pins.</li>
         <li><b>Easy.</b> Cut ears, pin ears on, pin on a white belly spot, done.</li>
       </ul>
 </div>
@@ -145,7 +145,7 @@ footer{margin-top:56px;text-align:center;color:var(--muted);font-size:14px}
 - Dad Dog: blue shirt, floppy ears, optional tail
 - Mom Dog: orange shirt, floppy ears, optional tail
 - The pups: blue or orange shirts with a white belly spot, floppy ears
-About 25 minutes to build and $5-10 for all of us. Most of it is from our closets.</textarea>
+About 25 minutes to build for all of us. Most of it is from our closets.</textarea>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
         <button class="cta" id="btn-copy-share" type="button" style="font-size:16px;min-height:52px">Copy family text</button>
         <button class="ghost" id="btn-copy-list" type="button" style="min-height:52px">Copy set build list</button>
@@ -188,7 +188,7 @@ About 25 minutes to build and $5-10 for all of us. Most of it is from our closet
 
   <div class="honesty">
     <b>What the bank says (and what it does not):</b> every role, material count,
-    the 25 min build time, the $5-10 set cost, and both FAQs come straight from
+    the 25 min build time, the set materials, and both FAQs come straight from
     the bank entry for <b>Aussie Dog Family</b>. The bank gives per-person counts
     for shirts, headbands, and pins, so the rows above are faithful. The bank
     does <b>not</b> give a per-person cost or a per-person build time, so this
@@ -290,7 +290,7 @@ $("btn-copy-list").addEventListener("click", function(){
     r.mats.forEach(function(m){ lines.push("  - " + m); });
   });
   lines.push("", "Whole set: blue, orange, white craft felt (1 sheet each), scissors.",
-             "Set total: 25 min, $5-10 for all four.");
+             "Set total: 25 min for all four.");
   copyText(lines.join("\n"), function(){ status("Build list copied."); });
 });
 </script>
