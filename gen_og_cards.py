@@ -3,7 +3,7 @@
 
 Replaces gen_og_photos.py (plain center-cropped photos). Each card:
   1200x630, concept photo full-bleed with a dark brand gradient on the left,
-  kicker + title + decision-triple pill + pickmycostume.com footer +
+  kicker + title + decision pill (time · effort) + pickmycostume.com footer +
   "AI-generated concept photo" disclosure.
 
 Why: the link unfurl (iMessage/SMS/vote/pantry-challenge links) is the
@@ -13,7 +13,7 @@ the pick. Pinterest's save flow also scrapes og:image, so these cards
 power the Pinterest bridge too.
 
 Sources: photos/<slug>.webp (concept photos) and index.html -- the idea bank
-(titles) and var INSTRUCTIONS (decision triple: time/cost/effort, plus steps).
+(titles) and var INSTRUCTIONS (decision pair: time/effort, plus steps).
 index.html is the CANONICAL single source of truth, shared with the /c/ page
 chips and meta (gen_share_function.py parses the same fields): the og badge
 must never be baked from a second source (2026-09-29: three-way drift --
@@ -272,14 +272,14 @@ def main():
         if only and slug not in only:
             continue
         g = instr[slug]
-        t, c, e = g.get("time"), g.get("cost"), g.get("effort")
-        assert t and c and e, "missing decision triple for %s" % slug
+        t, e = g.get("time"), g.get("effort")
+        assert t and e, "missing decision pair for %s" % slug
         # "+ drying" is derived, never read: strip any baked suffix, then
         # append only when a build step mentions paint or glue (#23).
         t = re.sub(r"\s*\+\s*drying\s*$", "", t, flags=re.I)
         if any(re.search(r"paint|glue", st, re.I) for st in g.get("s", [])):
             t += " + drying"
-        triple = "%s \u00b7 %s \u00b7 %s" % (t, c, e)  # middle dot separators
+        triple = "%s \u00b7 %s" % (t, e)  # middle dot separators
         photo = os.path.join(ROOT, "photos", slug + ".webp")
         assert os.path.exists(photo), "missing concept photo: %s" % photo
         card = draw_card(photo, title, triple,
