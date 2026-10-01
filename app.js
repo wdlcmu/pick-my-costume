@@ -357,11 +357,11 @@ var QUESTIONS = [
        group-costume ideas (non-scary, school-appropriate); "class" is added
        to those ideas' audience arrays. Bar / club night is hidden for this
        audience, like the kid and family flows. */
-    {label:"Teacher / class", value:"class", emoji:"\uD83C\uDF4E", tags:{}},
-    /* 2026-09-29: the old warm/cold fork ("One quick question first") is
-       folded into Q1 so the "Question X of 5" count stays honest. Picking
-       this branches straight to naming the costume (renderWarmCapture). */
-    {label:"Already have one", value:"warm", emoji:"✅", tags:{}}
+    {label:"Teacher / class", value:"class", emoji:"\uD83C\uDF4E", tags:{}}
+    /* 2026-10-01: "Already have one" is NOT a who, so it is no longer a Q1
+       tile (it confused the question). It lives as a text link under the Q1
+       grid (see renderQ) and reaches the same warm capture via
+       goWarmFromQ1(). */
   ]},
   {id:"q2", title:"What vibe are you going for?", hint:"There are no wrong answers.", options:[
     {label:"Funny", emoji:"\uD83D\uDE02", tags:{funny:2}},
@@ -1901,6 +1901,17 @@ function show(id){
 })();
 
 
+/* 2026-10-01: the warm branch. Reached from the "Already have one" text link
+   under the Q1 grid (it is not a "who", so it is no longer a Q1 tile). Not a
+   quiz path: skip the remaining questions and go straight to naming the
+   costume. The "Question X of 5" count stays honest. */
+function goWarmFromQ1(){
+  state.answers.q1 = {label:"Already have one", value:"warm", emoji:"\u2705", tags:{}};
+  Object.keys(state.answers).forEach(function(k){ if (k !== "q1") delete state.answers[k]; });
+  quizResumeSave();
+  state.warmMode = true;
+  renderWarmCapture();
+}
 function renderQ(){
   /* 2026-09-30: a tapped option keeps :focus, and on touch devices the
      browser paints it stuck-highlighted; clear it on question change. */
@@ -1939,6 +1950,10 @@ function renderQ(){
   }
   var box = $("q-opts");
   box.innerHTML = "";
+  /* 2026-10-01: the Q1 warm link lives outside #q-opts, so clear it on every
+     render; it is re-added below only for q1. */
+  var wlOld = document.getElementById("q-warm-link");
+  if (wlOld && wlOld.parentNode) wlOld.parentNode.removeChild(wlOld);
   var current = state.answers[qid];
   var opts = q.options;
   /* 2026-09-28: visual-first quiz. Option buttons render as
@@ -1995,16 +2010,8 @@ function renderQ(){
          with tapGuard instead of replacing it. */
       if (Date.now() - _sheetOpenedAt < 350) return;
       state.answers[qid] = opt;
-      /* 2026-09-29: "Already have one" folds the old warm/cold fork into Q1.
-         It is not a quiz path: skip the remaining questions and go straight
-         to naming the costume. The "Question X of 5" count stays honest. */
-      if (qid === "q1" && opt.value === "warm") {
-        Object.keys(state.answers).forEach(function(k){ if (k !== "q1") delete state.answers[k]; });
-        quizResumeSave();
-        state.warmMode = true;
-        renderWarmCapture();
-        return;
-      }
+      /* 2026-10-01: the warm branch moved out of the Q1 tile grid into the
+         "Already have one" text link under it; see goWarmFromQ1(). */
       /* "Surprise me" on the interest question: no interest filter, just intent. */
       if (qid === "qinterest" && opt.label === "Surprise me") {
         try { Analytics.track("surprise_me", {source: "quiz_interest"}); } catch(_){}
@@ -2060,6 +2067,24 @@ function renderQ(){
     };
     box.appendChild(b);
   });
+  /* 2026-10-01: "Already have one" moved out of the "who" tile grid (it is
+     not a who). A text link under the grid reaches the same warm branch;
+     the 5-question count stays honest and nobody pays an extra tap. */
+  if (qid === "q1") {
+    var wl = document.createElement("button");
+    wl.type = "button";
+    wl.id = "q-warm-link";
+    wl.className = "q-alt-link";
+    wl.textContent = "Already have a costume? Start from what you've got \u2192";
+    wl.setAttribute("aria-label", "Already have a costume? Start from what you've got");
+    wl.onclick = function(){
+      if (!tapGuard("qopt", 400)) return;
+      if (Date.now() - _sheetOpenedAt < 350) return;
+      try { Analytics.track("warm_started", {source: "q1_link"}); } catch(_){}
+      goWarmFromQ1();
+    };
+    box.parentNode.insertBefore(wl, box.nextSibling);
+  }
   openQuizSheet();
 }
 
@@ -12680,8 +12705,9 @@ $("btn-start").onclick = function(){
   var qp = viaShareProps();
   Analytics.track("quiz_started", qp);
   /* 2026-09-29: the warm/cold fork is folded into Q1 ("Already have one").
-     The quiz starts at Question 1 of 5 directly; warm mode branches from
-     the Q1 answer handler instead of an uncounted pre-question. */
+     2026-10-01: as a text link under the Q1 grid (not a tile: it is not a
+     who). The quiz starts at Question 1 of 5 directly; warm mode branches
+     from the Q1 link instead of an uncounted pre-question. */
   renderQ();
 };
 $("q-back").onclick = function(){
@@ -12698,7 +12724,7 @@ $("q-back").onclick = function(){
     return;
   }
   /* 2026-09-29: Back from the warm capture step returns to Q1, where the
-     "Already have one" option lives (the old fork screen is gone). */
+     "Already have one" link lives (the old fork screen is gone). */
   if (state.warmMode && typeof WARM !== "undefined" && WARM.step === "capture"){ state.warmMode = false; state.qi = 0; renderQ(); return; }
   if (state.qi === 0) { closeQuizSheet(); refreshReturnBox(); return; }
   state.qi--;
@@ -12725,7 +12751,7 @@ $("btn-rtop").onclick = $("btn-rback").onclick;
 })();
 $("btn-restart").onclick = function(){
   /* 2026-09-29: a warm "start over" keeps warm mode and returns to Q1, where
-     "Already have one" lives (the old fork screen is folded into Q1). */
+     "Already have one" lives as a link (the old fork screen is folded into Q1). */
   var wasWarm = !!state.warmMode;
   state = {qi: 0, answers: {}};
   if (wasWarm) state.warmMode = true;
