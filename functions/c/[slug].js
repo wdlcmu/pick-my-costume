@@ -610,6 +610,39 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       "<p class='splitpartner-line'>Going as a duo? Claim your half and draft your partner into theirs.</p>" +
       "<p class='ctawrap'><a class='cta' href='/split.html?idea=" + slug + "'>Split it with your partner</a></p>";
   }
+  /* PostHog funnel instrumentation (2026-10-01): /c/ guide pages had zero
+     analytics, so cold Pinterest arrivals were invisible. guide_viewed is
+     funnel step 3 (site landing); guide_cta_clicked measures the 3->4
+     transition on every link/CTA click (delegated: also covers the
+     client-injected recipient banner). Same init as the homepage
+     (index.html): same project key, autocapture off, session replay off.
+     No capture-time filtering; QA is excluded at query time via ?probe=. */
+  var _phScript = "<script>" +
+    "(function(){" +
+    "var PH_SLUG=" + JSON.stringify(slug) + ";" +
+    "var s=document.createElement('script');" +
+    "s.async=true;" +
+    "s.src='https://us.i.posthog.com/static/array.js';" +
+    "s.onload=function(){" +
+    "try{" +
+    "if(window.posthog&&posthog.init){" +
+    "posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true});" +
+    "var q=new URLSearchParams(location.search||'');" +
+    "posthog.capture('guide_viewed',{slug:PH_SLUG,utm_source:q.get('utm_source'),utm_medium:q.get('utm_medium'),utm_campaign:q.get('utm_campaign'),referrer:document.referrer||null});" +
+    "}" +
+    "}catch(e){}" +
+    "};" +
+    "document.head.appendChild(s);" +
+    "document.addEventListener('click',function(e){" +
+    "var t=e.target;" +
+    "var a=(t&&t.closest)?t.closest('a'):null;" +
+    "if(!a)return;" +
+    "try{if(window.posthog&&posthog.capture){" +
+    "posthog.capture('guide_cta_clicked',{slug:PH_SLUG,cta_label:(a.textContent||'').trim().slice(0,80),destination:a.getAttribute('href')||''});" +
+    "}}catch(err){}" +
+    "},true);" +
+    "})();" +
+    "</" + "script>";
   /* 2026-09-29 QA cycle 1 arrival gate: og/twitter titles keep the friend
      voice ONLY on genuine share arrivals (8+ char share id; the ?nm= named
      variant already requires ?s= in practice). Direct visits and crawlers get
@@ -751,6 +784,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +
     _bannerScript +
     _splitScript +
+    _phScript +
     "</main></body></html>";
   return new Response(html, {
     headers: {
