@@ -106,7 +106,7 @@ function htmlResponse(html) {
   return new Response(html, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
-      "Cache-Control": "public, max-age=3600"
+      "Cache-Control": "max-age=0, must-revalidate"
     }
   });
 }
