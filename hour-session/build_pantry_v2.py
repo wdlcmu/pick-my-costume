@@ -17,7 +17,7 @@ TEMPLATE and regenerate.
 """
 import json, re, collections, html as htmllib, os
 
-BANK_HTML = '/home/hatch/workspace/builds/pick-my-costume/index.html'
+BANK_HTML = '/home/hatch/workspace/builds/pick-my-costume/app.js'  # bank extracted from index.html 2026-09-30
 OUT = '/home/hatch/workspace/builds/pick-my-costume/pantry.html'
 # Harness override for the output path (the store-run tier gate runs the
 # generator to a temp file and byte-compares). Never set on real runs.
@@ -1464,13 +1464,46 @@ def main():
                 '.geo-faq details{margin:8px 0}'
                 '.geo-faq summary{cursor:pointer;font-weight:700}'
                 '.geo-tonight-static ul{margin:8px 0 16px;padding-left:20px}'
-                '.geo-tonight-static h3{font-size:16px;margin:14px 0 4px}')
+                '.geo-tonight-static h3{font-size:16px;margin:14px 0 4px}'
+                '.geo-all-guides{margin:20px 0}'
+                '.geo-all-guides h2{font-size:22px;margin:0 0 8px}'
+                '.geo-all-guides details{margin:8px 0}'
+                '.geo-all-guides summary{cursor:pointer;font-weight:700}'
+                '.geo-all-guides ul{margin:8px 0 16px;padding-left:20px;columns:2;column-gap:28px;font-size:14px}'
+                '.geo-all-guides li{break-inside:avoid;margin:3px 0}'
+                '@media(max-width:600px){.geo-all-guides ul{columns:1}}.browse-more{margin:14px 0 4px;font-size:15px}')
+    # ---- 2026-09-30 traffic sprint Week-2 Stream A: static /c/ link graph
+    # for no-JS crawlers. The pantry tiles render client-side into
+    # #tier0/#tier1/#tier2, so raw HTML carried no relative /c/ anchors
+    # (the GEO tonight block above uses absolute URLs). This build-time
+    # block gives every pantry tile a plain <a href="/c/<slug>"> anchor
+    # with its costume name, A-Z. Collapsed in <details> so the visible
+    # page is unchanged for interactive users; the JS tile render targets
+    # its own containers (#tier0/#tier1/#tier2) and never touches this
+    # block. Regenerates from the live bank on every run.
+    _guide_items = '\n'.join(
+        '    <li><a href="/c/%s">%s</a></li>' % (it['id'], htmllib.escape(it['title']))
+        for it in sorted(ideas, key=lambda x: x['title'].lower()))
+    _all_guides = (
+        '<section class="geo-all-guides" id="geo-all-guides">\n'
+        '  <h2>Every costume guide</h2>\n'
+        '  <details>\n'
+        '    <summary>Browse all %d costume guides A to Z</summary>\n'
+        '    <ul>\n%s\n    </ul>\n'
+        '  </details>\n'
+        '</section>' % (len(ideas), _guide_items))
+    assert _all_guides.count('href="/c/') == len(ideas), 'guide link count mismatch'
+    _browse_more = (
+        '<p class="browse-more">More ways to browse: '
+        '<a href="/diy-costumes-by-materials">filter costumes by materials you own</a> · '
+        '<a href="/make-it-tonight-costumes">costumes you can make tonight</a></p>\n'
+    )
     html_out = html_out.replace('.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n</style>',
                                 '.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n' + _geo_css + '\n</style>', 1)
     html_out = html_out.replace('</style>\n</head>', '</style>\n' + _faq_schema + '\n</head>', 1)
     html_out = html_out.replace('<p class="fresh">Updated for Halloween 2026</p>',
-                                '<p class="fresh">Updated for Halloween 2026</p>\n' + _faq_block + '\n' + _tonight_static, 1)
-    assert 'id="geo-answer"' in html_out and 'id="geo-tonight-static"' in html_out and 'FAQPage' in html_out, 'GEO injection failed'
+                                '<p class="fresh">Updated for Halloween 2026</p>\n' + _faq_block + '\n' + _tonight_static + '\n' + _all_guides + '\n' + _browse_more, 1)
+    assert 'id="geo-answer"' in html_out and 'id="geo-tonight-static"' in html_out and 'FAQPage' in html_out and 'id="geo-all-guides"' in html_out, 'GEO injection failed'
     # Chopped preservation guard (2026-09-29): the game must survive
     # every regen. Refuse to write output that dropped it.
     for _marker in ('id="chopped"', 'function chopNewRound', 'function chopReveal',

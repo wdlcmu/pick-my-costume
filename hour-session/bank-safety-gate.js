@@ -13,7 +13,7 @@
  *
  * Invariants:
  *  1. No idea with scary>=1 may carry the kidunder3 tag, in EITHER bank
- *     copy (index.html IDEAS, mcp-server/bank.json). Scary picks for
+ *     copy (app.js IDEAS, mcp-server/bank.json). Scary picks for
  *     toddlers are banned by the quiz filter; the tag must never be the
  *     loophole that re-admits them.
  *  2. classic-ghost (scary:2) must never appear in the top 3 of a
@@ -29,8 +29,13 @@ var failures = [];
 function fail(m){ failures.push(m); }
 function ok(c, m){ if (!c) fail(m); }
 
-/* ---- bank copy 1: index.html IDEAS ---- */
-var src = fs.readFileSync(ROOT + 'index.html', 'utf8');
+/* ---- bank copy 1: app.js IDEAS (2026-09-30: the 1.18MB inline script moved
+   to /app.js (defer); the bank lives there now. index.html fallback kept
+   for history.) ---- */
+var src = (function(){
+  try { return fs.readFileSync(ROOT + 'app.js', 'utf8'); }
+  catch (e) { return fs.readFileSync(ROOT + 'index.html', 'utf8'); }
+})();
 function extract(a, b){ var x = src.indexOf(a), y = src.indexOf(b, x); if (x < 0 || y < 0) throw new Error('miss ' + a.slice(0, 30)); return src.slice(x, y); }
 var state = { qi: 0, answers: {} };
 eval(extract('var QUESTIONS = [', '/* ================= CONFIG: IDEAS'));
@@ -43,12 +48,12 @@ var mcpIdeas = mcp.ideas || mcp.IDEAS;
 var mcpById = {};
 mcpIdeas.forEach(function(i){ mcpById[i.id] = i; });
 
-/* ---- invariant 4: 144 unique each, same ids ---- */
-ok(htmlIdeas.length === 144, 'index.html IDEAS count=' + htmlIdeas.length + ', want 144');
-ok(mcpIdeas.length === 144, 'bank.json ideas count=' + mcpIdeas.length + ', want 144');
+/* ---- invariant 4: 164 unique each, same ids ---- */
+ok(htmlIdeas.length === 164, 'app.js IDEAS count=' + htmlIdeas.length + ', want 164');
+ok(mcpIdeas.length === 164, 'bank.json ideas count=' + mcpIdeas.length + ', want 164');
 var htmlIds = htmlIdeas.map(function(i){ return i.id; });
-ok(new Set(htmlIds).size === 144, 'index.html IDEAS has duplicate ids');
-ok(new Set(mcpIdeas.map(function(i){ return i.id; })).size === 144, 'bank.json has duplicate ids');
+ok(new Set(htmlIds).size === 164, 'app.js IDEAS has duplicate ids');
+ok(new Set(mcpIdeas.map(function(i){ return i.id; })).size === 164, 'bank.json has duplicate ids');
 
 /* ---- invariant 1: scary>=1 must never carry kidunder3 ---- */
 [['index.html', htmlIdeas], ['bank.json', mcpIdeas]].forEach(function(pair){

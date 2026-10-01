@@ -32,6 +32,46 @@ li span{display:block;color:#555;font-size:14px;margin:0 0 12px;}
 .home a{color:#e07b00;font-weight:700;}
 .quizcta{display:inline-block;margin:6px 0 22px;background:#ff8c1a;color:#2a1500;font-weight:800;font-size:17px;text-decoration:none;padding:14px 26px;border-radius:14px;}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How many costume guides are there?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "164, A to Z. Every one is a free step-by-step DIY build guide."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does each guide include?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The real build time, materials cost, and effort level up front, then the full materials list and steps. The numbers come from the guide itself - nothing is estimated for this page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I make one of these tonight?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "16 of the 164 are make-tonight or 1-2 supplies away from default household basics. The make-it-tonight page lists all of them."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I pick one?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Take the 2-minute quiz and get one personal pick, or browse A-Z and open anything that catches your eye."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body><main class="wrap">
 <h1>All costume guides</h1>
@@ -210,7 +250,7 @@ li span{display:block;color:#555;font-size:14px;margin:0 0 12px;}
 </ul>
 <p class="home"><a href="/">Back to Pick My Costume</a> and take the 2-minute quiz to get one picked for you.</p>
 <!-- 2026-09-26 red-team distro: hub cross-links, folded into the generator
-     2026-09-27. Pantry label matches the page's real title (Billy's rename). -->
+     2026-09-27. Pantry label matches the page's real title (the rename). -->
 <!-- 2026-09-27 red-team hubs: the three collection links pointed at
      /c/family, /c/couples, /c/last-minute -- all 404. Collections actually
      live at /collections/<name> and the couples article is its own page. -->
@@ -235,4 +275,30 @@ li span{display:block;color:#555;font-size:14px;margin:0 0 12px;}
   for (var i = 0; i < links.length; i++) add(links[i]);
 })();
 </script>
+<section class="pmc-faq" id="pmc-faq">
+<style>
+.pmc-faq{margin:32px 0}
+.pmc-faq h2{font-size:22px;margin:0 0 8px}
+.pmc-faq details{margin:8px 0;border:1px solid rgba(140,140,160,.4);border-radius:10px;padding:10px 14px}
+.pmc-faq summary{cursor:pointer;font-weight:700}
+.pmc-faq p{margin:8px 0 4px;line-height:1.55}
+</style>
+<h2>Common questions</h2>
+<details class="faq">
+<summary>How many costume guides are there?</summary>
+<p>164, A to Z. Every one is a free step-by-step DIY build guide.</p>
+</details>
+<details class="faq">
+<summary>What does each guide include?</summary>
+<p>The real build time, materials cost, and effort level up front, then the full materials list and steps. The numbers come from the guide itself - nothing is estimated for this page.</p>
+</details>
+<details class="faq">
+<summary>Can I make one of these tonight?</summary>
+<p>16 of the 164 are make-tonight or 1-2 supplies away from default household basics. The make-it-tonight page lists all of them.</p>
+</details>
+<details class="faq">
+<summary>How do I pick one?</summary>
+<p>Take the 2-minute quiz and get one personal pick, or browse A-Z and open anything that catches your eye.</p>
+</details>
+</section>
 </main></body></html>
