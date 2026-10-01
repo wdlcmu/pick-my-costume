@@ -30,7 +30,7 @@ RECIPIENT_BANNER = True
 # call in the morning.
 IMADEIT = False
 
-src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+src = open(os.path.join(ROOT, "app.js"), encoding="utf-8").read()  # bank + INSTRUCTIONS moved to app.js (2026-10-01)
 ideas = re.findall(r'\{id:"([^"]+)", title:"([^"]+)", blurb:"([^"]+)"', src)
 assert ideas, "no ideas parsed from index.html"
 data = {slug: {"t": title, "b": blurb} for slug, title, blurb in ideas}
@@ -89,7 +89,7 @@ for old, new in ALIASES.items():
 # generated function at build time. Fail loudly if it goes missing so a
 # regeneration can never silently ship a bare "Not found".
 NOTFOUND_SRC = open(os.path.join(ROOT, "404.html"), encoding="utf-8").read()
-assert "This costume is still in the box" in NOTFOUND_SRC, \
+assert "That page is still in the box" in NOTFOUND_SRC, \
     "404.html marker text changed: update the friendly-404 assert"
 
 # Materials, numbered steps, decision triple (time/cost/effort), and FAQs per
@@ -136,9 +136,9 @@ def _esc_len(s):
 def _meta_desc(title, hw):
     t = _esc_len(title)
     art = "" if t.lower().startswith("the ") else ("an " if t[0].lower() in "aeiou" else "a ")
-    d = ("How to make %s%s costume in %s for about %s. %s DIY project "
-         "with a full supplies list and step-by-step guide."
-         % (art, t, _esc_len(hw["time"]), _esc_len(hw["cost"]), _esc_len(hw["effort"])))
+    d = ("How to make %s%s costume in %s. %s DIY project "
+         "with a full supplies list, step-by-step guide, and sizing tips."
+         % (art, t, _esc_len(hw["time"]), _esc_len(hw["effort"])))
     if len(d) > 155:
         d = d.replace("a full supplies list", "a supplies list")
     return d
@@ -242,6 +242,222 @@ assert set(RELATED) == set(data), "related map missing slugs"
 assert all(len(v) == 5 and all(t in data for t in v) for v in RELATED.values()), \
     "related map must hold 5 valid slugs per idea"
 
+# Primary-material classification (SEO 2026-10-01, Claude 4c): every idea gets
+# a primary material for (a) the SEO title pattern "DIY <T> Costume: <N>-Min
+# <Material> Build (Step-by-Step)", (b) the descriptive og/img alt text, and
+# (c) the "More <material> builds" related block. Category-priority scan over
+# the full materials list (cardboard before felt before paper ...): the most
+# craft-distinctive material defines the build, not the first-listed garment.
+# OVERRIDES are hand-verified misfires where the priority order picks an
+# accent (optional face paint, tiny tulle eye squares) over the signature
+# piece. Any bank edit that leaves an idea unclassified fails loudly.
+_MAT_CATS = [
+    ("cardboard", ["cardboard", "cardstock", "shoe box", "cereal box",
+                   "pizza box", "moving box"]),
+    ("felt", ["felt"]),
+    ("paper", ["paper", "crepe", "tissue", "newspaper", "poster board"]),
+    ("balloons", ["balloon"]),
+    ("tulle", ["tulle"]),
+    ("foam", ["foam"]),
+    ("foil", ["foil", "aluminum"]),
+    ("plastic", ["plastic"]),
+    ("paint", ["paint"]),
+    ("makeup", ["makeup", "eyeliner", "lipstick", "face crayon", "mascara"]),
+    ("trash bags", ["trash bag", "garbage bag"]),
+    ("wigs", ["wig", "hair spray", "hairspray"]),
+    ("hats", ["hat", "headband", "cap", "crown", "beanie", "tiara", "helmet"]),
+    ("fabric", ["shirt", "pants", "hoodie", "sweatshirt", "dress", "pillowcase",
+                "t-shirt", "tshirt", "tee", "jacket", "jeans", "skirt",
+                "onesie", "pajama", "scarf", "socks", "tights", "leggings",
+                "shorts", "robe", "towel", "blanket", "sheet", "fabric",
+                "apron", "vest", "cape", "cloth", "sweatpants", "tank top",
+                "blouse", "cardigan", "sweater", "underwear"]),
+    ("wood", ["dowel", "wooden", "stick"]),
+    ("yarn", ["yarn", "twine"]),
+    ("tape", ["duct tape", "masking tape", "packing tape"]),
+]
+_MAT_OVERRIDES = {
+    # accent (optional face paint / tiny eye squares) beat the signature piece
+    "classic-ghost": "fabric",   # the white sheet IS the costume
+    "galaxy-knights": "fabric",  # optional face-paint hood shadow, not the build
+    "wizard": "hats",            # pointy hat is the signature
+    "ninja": "hats",             # headband + beanie, paint is optional
+    "little-witch": "hats",      # pointy hat is the signature
+    "beekeeper-bee": "hats",     # wide-brim veil hat is the signature
+    "scarecrow": "hats",         # old hat is the signature
+    "chill-painter": "wigs",     # the afro wig is the signature
+}
+_mat_res = [(c, [re.compile(r"\b" + re.escape(k) + r"s?\b") for k in ks])
+            for c, ks in _MAT_CATS]
+# Title-case noun per category for the SEO title ("Hat Build", not "Hats Build").
+_MAT_TITLE_NOUN = {"cardboard": "Cardboard", "felt": "Felt", "paper": "Paper",
+                   "balloons": "Balloon", "tulle": "Tulle", "foam": "Foam",
+                   "foil": "Foil", "plastic": "Plastic", "paint": "Paint",
+                   "makeup": "Makeup", "trash bags": "Trash Bag",
+                   "wigs": "Wig", "hats": "Hat", "fabric": "Fabric",
+                   "wood": "Wood", "yarn": "Yarn", "tape": "Tape"}
+
+
+def _primary_material(slug, mats):
+    if slug in _MAT_OVERRIDES:
+        return _MAT_OVERRIDES[slug]
+    for c, res_ in _mat_res:
+        for m in mats:
+            if any(r.search(m.lower()) for r in res_):
+                return c
+    return None
+
+
+PRIMARYMAT = {s: _primary_material(s, howto[s]["m"]) for s in data}
+_unmat = [s for s, c in PRIMARYMAT.items() if c is None]
+assert not _unmat, "ideas with no primary material: %s" % _unmat
+assert all(_MAT_OVERRIDES.get(s, c) == c
+           for s, c in PRIMARYMAT.items()), "override drift"
+
+# "The Tin Hero" -> "Tin Hero" for sentence/SEO-title use, so we never emit
+# "The The Tin Hero" or "DIY The Tin Hero Costume".
+def _bare_title(slug):
+    t = data[slug]["t"]
+    return t[4:] if t.lower().startswith("the ") else t
+
+
+# SEO titles (Claude 4c): "DIY Pizza Slice Costume: 45-Min Cardboard Build
+# (Step-by-Step)" -- build time + primary material from the bank, the same
+# fields the plan page uses. No costs/dollar figures anywhere.
+def _seo_title(slug):
+    t = _bare_title(slug)
+    m = re.match(r"^\s*(\d+)\s*min", howto[slug]["time"] or "")
+    assert m, "time not minute-based for " + slug
+    return "DIY %s Costume: %s-Min %s Build (Step-by-Step)" % (
+        t, m.group(1), _MAT_TITLE_NOUN[PRIMARYMAT[slug]])
+
+
+SEOTITLE = {s: _seo_title(s) for s in data}
+assert set(SEOTITLE) == set(data), "seo title map missing slugs"
+_long_titles = [(s, len(t)) for s, t in SEOTITLE.items() if len(t) > 90]
+assert not _long_titles, "seo title over 90 chars: %s" % (_long_titles[:5],)
+
+# Related-by-material internal links (Claude 4c): up to 5 other ideas sharing
+# the primary material, deterministic slug order. Rendered only when the
+# group has at least one other idea (singletons get no block).
+_mat_groups = {}
+for s in data:
+    _mat_groups.setdefault(PRIMARYMAT[s], []).append(s)
+MATRELATED = {}
+for s in data:
+    _others = sorted(o for o in _mat_groups[PRIMARYMAT[s]] if o != s)
+    MATRELATED[s] = _others[:5]
+assert set(MATRELATED) == set(data), "material-related map missing slugs"
+
+# Material-name cleaning for the intro paragraph and alt text: strip the
+# parenthetical buy/make hints, trailing quantities ("Red felt, 1 sheet" ->
+# "red felt"), and leading counts. Never carries a dollar figure (asserted
+# below along with the other generated copy).
+def _clean_mat(m, max_words=None):
+    m = m.split("(")[0].strip()
+    # Role labels ("Hero: red sweatsuit...") vs detail tails ("1 white flat
+    # sheet: twin size..."): a short prefix is a label, drop it; a long
+    # prefix is the item name, drop the tail.
+    if ":" in m:
+        pre, post = m.split(":", 1)
+        m = post.strip() if len(pre.split()) <= 2 else pre.strip()
+    m = re.sub(r",\s*for\s+\w+.*$", "", m).strip()  # ", for the sheriff"
+    m = re.sub(r"\s+for the \w+.*$", "", m).strip()  # "pants for the rider"
+    m = re.sub(r",\s*e\.g\..*$", "", m).strip()
+    while re.search(r",\s*\d+(\s+[a-z]+)?\s*,", m):  # ", 1," / ", 1 set,"
+        m = re.sub(r",\s*\d+(\s+[a-z]+)?\s*,", ",", m)
+    m = re.sub(r",\s+and\s+", " and ", m)
+    m = re.sub(r",\s*\d+[^,]*$", "", m).strip()  # trailing ", 1 set" etc.
+    m = re.sub(r",\s*per\s+\w+.*$", "", m).strip()  # ", per grown-up"
+    m = re.sub(r",\s*\d+\s+per\s+\w+\s*$", "", m).strip()
+    m = re.sub(r",\s*about\s+\d+\s*$", "", m).strip()
+    # mid-string quantities: "1 pair dark pants" -> "dark pants"
+    m = re.sub(r"\s+\d+\s+(pairs?|sets?|tubes?|bottles?|packs?|rolls?|sheets?|yards?)\b",
+               "", m)
+    m = re.sub(r"\b(or|and)\s+\d+\s+", r"\1 ", m)  # "or 1 old blanket"
+    m = re.sub(r",\s*,", ",", m)  # safety net: collapse double commas
+    m = re.sub(r"^\d+(\s*to\s*\d+)?\s+", "", m)
+    m = re.sub(r"^(sets?|sheets?|pairs?|rolls?|bottles?|packs?|tubes?|yards?)\s+",
+               "", m, flags=re.I)
+    m = re.sub(r"^(one|two|three|a|an)\s+", "", m, flags=re.I)
+    m = re.sub(r"\s+in\s+\d+.*$", "", m)
+    if max_words:
+        m = " ".join(m.split()[:max_words])
+    m = re.sub(r"\s+(in|or|of|and|with|for|to|a|an|the)\s*$", "", m,
+               flags=re.I)
+    m = m.rstrip(" ,;")
+    return (m[0].lower() + m[1:]) if m else m
+
+
+def _short_mat(m):
+    return _clean_mat(m, max_words=7)
+
+
+_AUD_WORD = {"solo": "solo costumers", "couple": "couples",
+             "family": "families", "group": "groups", "kid": "kids",
+             "class": "classrooms"}
+
+
+def _aud_phrase(slug):
+    words = [_AUD_WORD[a] for a in _audmap.get(slug, []) if a in _AUD_WORD]
+    assert words, "no audience words for " + slug
+    if len(words) == 1:
+        return words[0]
+    return ", ".join(words[:-1]) + ", and " + words[-1] if len(words) > 2 \
+        else words[0] + " and " + words[1]
+
+
+# Answer-first intro paragraph (Claude 5 /c/ half): the first paragraph of
+# every /c/ page states what it is, build time, difficulty, the 3 main
+# materials, and who it suits -- all generated from the bank, served as
+# static HTML so fetchers and AI assistants can read it.
+def _intro(slug):
+    mats = [_clean_mat(x) for x in howto[slug]["m"][:3]]
+    assert len(mats) == 3 and all(mats), "need 3 materials for " + slug
+    time = (howto[slug]["time"] or "").strip()
+    drying = " (plus drying time)" if "drying" in time else ""
+    time = re.sub(r"\s*\+\s*drying\s*$", "", time)
+    return ("The %s is a DIY Halloween costume. Plan on %s of hands-on work%s; "
+            "difficulty: %s. You need %s, %s, and %s. It suits %s." % (
+                _bare_title(slug), time, drying, howto[slug]["effort"],
+                mats[0], mats[1], mats[2], _aud_phrase(slug)))
+
+
+INTRO = {s: _intro(s) for s in data}
+assert set(INTRO) == set(data), "intro map missing slugs"
+
+# Descriptive alt text (Claude 4c): generated from the materials list, with a
+# short material form (parentheticals, quantities, and leading counts
+# stripped) so it reads like a human description. Falls back to 2 materials
+# when 3 would run long; hard cap 140 chars. No dollar figures (asserted).
+# Descriptive file names are deliberately NOT done: renaming images/og/*.jpg
+# would require updating every reference (og:image, twitter:image, Pinterest
+# pin media, app.js) and a missed one 404s the share card -- too risky.
+def _alt(slug, n, short):
+    mats = [(_short_mat if short else _clean_mat)(x)
+            for x in howto[slug]["m"][:n]]
+    assert len(mats) == n and all(mats), "need %d materials for %s" % (n, slug)
+    joined = ", ".join(mats[:-1]) + ", and " + mats[-1] if n > 2 \
+        else " and ".join(mats)
+    return "DIY %s costume built from %s" % (data[slug]["t"].lower(), joined)
+
+
+SEALT = {}
+for _s in data:
+    _a = _alt(_s, 3, True)
+    if len(_a) > 140:
+        _a = _alt(_s, 2, False)  # full 2-material form reads better
+    if len(_a) > 140:
+        _a = _alt(_s, 2, True)
+    SEALT[_s] = _a
+assert set(SEALT) == set(data), "alt map missing slugs"
+assert not [s for s in data if len(SEALT[s]) > 140], "alt text over 140 chars"
+# Costs are dead: no dollar figures in any generated SEO copy.
+for _s in data:
+    for _v in (SEOTITLE[_s], INTRO[_s], SEALT[_s]):
+        assert "$" not in _v, "dollar figure in generated copy: " + _s
+
+
 FN = '''// Per-idea share pages: /c/<slug> unfurls the shared costume's own
 // illustration for messengers and serves the full build guide as static
 // HTML (h1, decision triple, materials, steps, FAQs) so fetchers and AI
@@ -278,6 +494,33 @@ var ROLE_CARDS = %s;
 // visitor: not cloaking).
 var RELATED = %s;
 
+// SEO title + primary material + material-related links + answer-first intro
+// + descriptive alt text (SEO 2026-10-01, Claude 4c): all generated from the
+// bank by gen_share_function.py. SEOTITLE targets "how to make" searches:
+// "DIY Pizza Slice Costume: 45-Min Cardboard Build (Step-by-Step)" -- build
+// time + primary material from the idea bank, the same fields the plan uses.
+// No costs/dollar figures anywhere.
+var SEOTITLE = %s;
+
+// Primary material per idea ("cardboard", "felt", ...): the heading noun
+// for the "More <material> builds" block.
+var PRIMARYMAT = %s;
+
+// Material-related internal links: slug -> up to 5 other ideas sharing the
+// primary material (deterministic slug order). Singletons render no block.
+var MATRELATED = %s;
+
+// Answer-first intro paragraph (Claude 5 /c/ half): what it is, build time,
+// difficulty, 3 main materials, who it suits. Plain text; esc()d at use so
+// fetchers and AI assistants read it as static HTML.
+var INTRO = %s;
+
+// Descriptive alt text for the costume image, generated from the materials
+// list. File renames deliberately skipped: images/og/*.jpg are referenced
+// from og:image, twitter:image, and Pinterest pin media, and a missed rename
+// 404s the share card.
+var SEALT = %s;
+
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
 // each page's costume genuinely is a materials list plus steps); the
@@ -301,6 +544,13 @@ export function onRequest(context) {
   var idea = IDEAS[slug];
   if (!idea) return new Response(NOTFOUND_HTML, { status: 404, headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store" } });
   var title = esc(idea.t), blurb = esc(idea.b);
+  /* SEO title (Claude 4c, 2026-10-01): targets "how to make" searches --
+     "DIY Pizza Slice Costume: 45-Min Cardboard Build (Step-by-Step)".
+     Generated from bank data (build time + primary material); the fallback
+     keeps the page honest if a slug ever misses the map. */
+  var seoTitle = esc(SEOTITLE[slug] || (idea.t + " Costume: DIY Guide"));
+  /* Descriptive alt text (Claude 4c): generated from the materials list. */
+  var imgAlt = esc(SEALT[slug] || (idea.t + " costume idea"));
   var img = "https://pickmycostume.com/images/og/" + slug + ".jpg";
   /* schema.org HowTo JSON-LD: this page's costume genuinely is a materials
      list plus numbered steps, so this is honest structured data aimed at AI
@@ -312,14 +562,14 @@ export function onRequest(context) {
      triple, matching the new og:image decision cards. The triple is asserted
      present at generation time; the empty fallback keeps the page honest if
      it ever is not. esc()d: these land inside a meta content attribute. */
-var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
+var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* 2026-09-30 traffic-operator cold-arrival polish: the triple carries
        its labels in the share preview (a bare "Medium" pill read as
        meaningless to cold recipients), and "+ drying" is spelled out as
        passive wait -- the bank's time value is hands-on time (see the
        JSON-LD comment below). */
     "Time: " + esc(_hw.time).replace(/ \\+ drying$/, " of hands-on work + drying time") +
-    " \\u00b7 Cost: " + esc(_hw.cost) + " \\u00b7 Effort: " + esc(_hw.effort) + ". " : "";
+    " \\u00b7 Effort: " + esc(_hw.effort) + ". " : "";
   /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
      ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
      for every idea (asserted at generation time in Python below): the article
@@ -328,11 +578,11 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
      blurb when guide data is missing so the tag is never empty. title/blurb
      are already esc()d above; _hw fields are esc()d here like _tripleText. */
   var _desc = blurb;
-  if (_hw && _hw.time && _hw.cost && _hw.effort) {
+  if (_hw && _hw.time && _hw.effort) {
     var _art = /^the /i.test(title) ? "" : (/^[aeiou]/i.test(title) ? "an " : "a ");
     _desc = "How to make " + _art + title + " costume in " + esc(_hw.time) +
-      " for about " + esc(_hw.cost) + ". " + esc(_hw.effort) +
-      " DIY project with a full supplies list and step-by-step guide.";
+      ". " + esc(_hw.effort) +
+      " DIY project with a full supplies list, step-by-step guide, and sizing tips.";
     if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
   }
   var _ld = "";
@@ -359,15 +609,8 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     };
     var _tm = /^\\s*(\\d+)\\s*min/i.exec(_hw.time || "");
     if (_tm) _hld.totalTime = "PT" + _tm[1] + "M";
-    /* Estimated cost: bank stores "$3-10". Emit a USD MonetaryAmount
-       range, same numbers as the visible triple. */
-    var _cm = /^\\$(\\d+)-(\\d+)$/.exec(_hw.cost || "");
-    /* Parse the dollar range as numbers: schema.org QuantitativeValue
-       expects numeric minValue/maxValue. Same numbers as the visible
-       decision triple. */
-    if (_cm) _hld.estimatedCost = {"@type": "MonetaryAmount",
-      "currency": "USD", "minValue": parseInt(_cm[1], 10),
-      "maxValue": parseInt(_cm[2], 10)};
+    /* No estimatedCost: prices are not decision-useful and can mislead
+       (2026-10-01). The bank keeps its internal cost field; schema omits it. */
     _ld = '<script type="application/ld+json">' + JSON.stringify(_hld) +
       '<' + '/script>';
     /* FAQPage block: the same parent FAQs rendered visibly in the page
@@ -581,7 +824,7 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     _hw.s.forEach(function(x){
       if (/^Optional pro finish:\\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\\s*/i, ""); }
     });
-    _quick = "<p class=\\"qtriple\\">DIY this week: ~" + esc(_hw.cost) + ", " + esc(_hw.time) + "</p>" +
+    _quick = "<p class=\\"qtriple\\">DIY this week: " + esc(_hw.time) + " of hands-on work</p>" +
       "<ul class=\\"mats qmats\\">" + _mats + "</ul>" +
       (_qtip ? "<p class=\\"qtip\\">Tip: " + esc(_qtip) + "</p>" : "");
     /* Decision triple: the most quotable line of the guide, first under h1.
@@ -592,7 +835,6 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     var _timeText = esc(_hw.time).replace(/ \\+ drying$/, " of hands-on work + drying time");
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Time</span>" + _timeText + "</span>");
-    if (_hw.cost) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Cost</span>" + esc(_hw.cost) + "</span>");
     if (_hw.effort) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Effort</span>" + esc(_hw.effort) + "</span>");
     if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p>";
     /* Sizing guidance: the fit note every parent asks about. */
@@ -622,6 +864,22 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
       _rel.map(function(s){ return "<li><a href=\\"/c/" + s + "\\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
       "</ul>";
   }
+  /* Related by material (SEO 2026-10-01, Claude 4c): "More cardboard
+     builds" next to "More costumes like this", grouped by primary material
+     from the bank (cardboard builds, felt builds, etc.). Same for every
+     visitor: not cloaking. Singletons render no block. */
+  var _matHtml = "";
+  var _matRel = MATRELATED[slug] || [];
+  if (_matRel.length && PRIMARYMAT[slug]) {
+    _matHtml = "<h2>More " + esc(PRIMARYMAT[slug]) + " builds</h2><ul class=\\"rellist\\">" +
+      _matRel.map(function(s){ return "<li><a href=\\"/c/" + s + "\\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
+      "</ul>";
+  }
+  /* Answer-first intro (Claude 5 /c/ half, 2026-10-01): the first paragraph
+     states what it is, build time, difficulty, the 3 main materials, and who
+     it suits -- generated from the bank, static HTML so fetchers and AI
+     assistants can read it. */
+  var _introHtml = INTRO[slug] ? "<p class=\\"intro\\">" + esc(INTRO[slug]) + "</p>" : "";
   /* Recipient banner (Experiment 3 recipient ship). Client-side injection:
      genuine share arrivals (?s= present) get the warm friend banner with a
      quiz CTA that preserves ?s= attribution; everyone else (and the
@@ -868,10 +1126,10 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
      the honest guide title, mirroring the <title> tag. */
   var _ogTitle = ((_s || "").length >= 8)
     ? _sharerEsc + " picked " + title + " - Pick My Costume"
-    : title + " Costume: DIY Guide | Pick My Costume";
+    : seoTitle;
   var html = "<!DOCTYPE html>" +
     "<html lang=\\"en\\"><head><meta charset=\\"utf-8\\">" +
-    "<title>" + title + " Costume: DIY Guide | Pick My Costume</title>" +
+    "<title>" + seoTitle + "</title>" +
     "<link rel=\\"canonical\\" href=\\"https://pickmycostume.com/c/" + slug + "\\">" +
     "<meta name=\\"description\\" content=\\"" + _desc + "\\">" +
     "<meta name=\\"author\\" content=\\"Pick My Costume\\">" +
@@ -884,7 +1142,7 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     "<meta property=\\"og:image:type\\" content=\\"image/jpeg\\">" +
     "<meta property=\\"og:image:width\\" content=\\"1200\\">" +
     "<meta property=\\"og:image:height\\" content=\\"630\\">" +
-    "<meta property=\\"og:image:alt\\" content=\\"" + title + " costume idea\\">" +
+    "<meta property=\\"og:image:alt\\" content=\\"" + imgAlt + "\\">" +
     "<meta name=\\"twitter:card\\" content=\\"summary_large_image\\">" +
     "<meta name=\\"twitter:title\\" content=\\"" + _ogTitle + "\\">" +
     "<meta name=\\"twitter:description\\" content=\\"" + blurb + "\\">" +
@@ -905,6 +1163,7 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
     ".fit{font-size:15px;color:#444;margin:0 0 8px;}" +
     ".lede{font-size:17px;color:#444;margin:0;}" +
+    ".intro{font-size:17px;color:#333;margin:0 0 12px;}" +
     "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
     ".quickcard{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
     ".quickcard .qtriple{font-size:16px;font-weight:700;color:#222;margin:0 0 8px;}" +
@@ -975,14 +1234,15 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     "</style>" +
     "</head><body><div class=\\"topbar\\"><a href=\\"/\\">🎃 Pick My <span>Costume</span></a></div><main class=\\"guide\\">" +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
-    "<h1>" + title + "</h1>" +
+    "<h1>" + seoTitle + "</h1>" +
+    _introHtml +
     _triple +
     _sharerLine +
     _fit +
     "<p class=\\"lede\\">" + blurb + "</p>" +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
     "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
-    "<img src=\\"" + img + "\\" alt=\\"" + title + " costume idea\\">" +
+    "<img src=\\"" + img + "\\" alt=\\"" + imgAlt + "\\">" +
     /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
     "<div class=\\"aiphoto\\">AI-generated concept photo</div>" +
     (_quick ? "<div class=\\"quickcard\\">" + _quick + "</div>" : "") +
@@ -990,6 +1250,7 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     "<h2>Steps</h2><ol class=\\"steps\\">" + _steps + "</ol>" +
     _faqs +
     _relHtml +
+    _matHtml +
     _splitPartnerHtml +
     /* "I made it" proof-photo block (novel-find 2026-09-26i, MakerWorld steal):
        gated on the IMADEIT one-line flag. The CTA deep-links into the app's
@@ -1011,7 +1272,9 @@ var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
     }
   });
 }
-''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED), json.dumps(howto), json.dumps(NOTFOUND_SRC),
+''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
+       json.dumps(SEOTITLE), json.dumps(PRIMARYMAT), json.dumps(MATRELATED), json.dumps(INTRO), json.dumps(SEALT),
+       json.dumps(howto), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
 out = os.path.join(ROOT, "functions", "c", "[slug].js")
