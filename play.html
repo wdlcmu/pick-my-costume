@@ -51,7 +51,7 @@
     .intro p{font-size:clamp(1rem,2.6vw,1.18rem);line-height:1.45;color:var(--muted);max-width:520px;margin:14px auto 22px}
     .mini-cast{height:210px;display:flex;align-items:end;justify-content:center;gap:12px;margin:0 0 20px}
     .mini{width:124px;height:174px;filter:drop-shadow(0 7px 4px rgba(40,30,10,.12))}.mini:nth-child(2){width:148px;height:206px}.mini:nth-child(3){transform:scaleX(-1)}
-    .primary{appearance:none;border:0;border-radius:18px;background:var(--orange);color:white;box-shadow:0 5px 0 #a73f20;padding:15px 26px;font-family:"Baloo 2",sans-serif;font-size:1.3rem;font-weight:800;cursor:pointer;min-height:58px;transition:transform .12s,box-shadow .12s}.primary:hover{filter:brightness(1.04)}.primary:active{transform:translateY(4px);box-shadow:0 1px 0 #a73f20}.primary:focus-visible,.answer:focus-visible,.quiet:focus-visible,.mode-card:focus-visible,.piece-card:focus-visible,.costume-card:focus-visible,.guide:focus-visible{outline:4px solid color-mix(in srgb,var(--blue) 70%,white);outline-offset:3px}
+    .primary{appearance:none;border:0;border-radius:18px;background:var(--orange);color:white;box-shadow:0 5px 0 #a73f20;padding:15px 26px;font-family:"Baloo 2",sans-serif;font-size:1.3rem;font-weight:800;cursor:pointer;min-height:58px;transition:transform .12s,box-shadow .12s}.primary:hover{filter:brightness(1.04)}.primary:active{transform:translateY(4px);box-shadow:0 1px 0 #a73f20}.primary:focus-visible,.answer:focus-visible,.quiet:focus-visible,.mode-card:focus-visible,.piece-card:focus-visible,.costume-card:focus-visible,.guide:focus-visible,.gswitch button:focus-visible,.gswitch a:focus-visible{outline:4px solid color-mix(in srgb,var(--blue) 70%,white);outline-offset:3px}
     .mode-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,210px));justify-content:center;gap:14px;margin:2px auto 0}.mode-card{appearance:none;border:2px solid var(--ink);border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 5px 0 var(--ink);padding:13px 14px 10px;cursor:pointer;min-height:76px;text-align:center}.mode-card:first-child{background:var(--orange);color:#fff;border-color:#a73f20;box-shadow:0 5px 0 #a73f20}.mode-card:active{transform:translateY(4px);box-shadow:0 1px 0 currentColor}.mode-title{display:block;font-family:"Baloo 2",sans-serif;font-size:1.2rem;font-weight:800;line-height:1.05}.mode-copy{display:block;font-size:.82rem;font-weight:800;opacity:.78;margin-top:3px}
     .game h2{text-align:center;font-size:clamp(2rem,7vw,3.4rem);letter-spacing:-.025em;margin:0 0 14px}
     .stage{position:relative;width:min(100%,520px);aspect-ratio:1.23;margin:0 auto 22px;border:3px solid var(--ink);border-radius:32px 32px 20px 20px;background:#ffe4a5;box-shadow:var(--shadow);overflow:hidden;isolation:isolate}
@@ -84,7 +84,14 @@
     .basket-item .bemo{font-size:2.2rem;line-height:1}
     .chop-answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(100%,650px);margin:0 auto;min-height:200px}
     @media (max-width:560px){.basket{gap:7px;padding:10px;min-height:138px}.basket-item{min-height:96px;font-size:.72rem}.basket-item .bemo{font-size:1.8rem}.chop-answers{gap:7px}}@keyframes drawLink{to{stroke-dashoffset:0}}@keyframes gentleShake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
-    .finish{justify-content:center;text-align:center;padding-bottom:6vh}.finish h2{font-size:clamp(3.2rem,11vw,6rem);letter-spacing:-.045em}.finish .result{font-family:"Baloo 2";font-size:clamp(1.8rem,6vw,2.6rem);color:var(--teal-dark);margin:14px 0 8px}.finish p{color:var(--muted);font-size:1.12rem;margin:0 auto 28px;max-width:450px}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.finish-quiz{margin:22px auto 0 !important;font-size:1rem !important}.finish-quiz a{color:var(--teal-dark);font-weight:800}.quiet{appearance:none;border:2px solid var(--ink);border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);padding:13px 20px;font-weight:800;cursor:pointer}.quiet:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+    .finish{justify-content:center;text-align:center;padding-bottom:6vh}.finish h2{font-size:clamp(3.2rem,11vw,6rem);letter-spacing:-.045em}.finish .result{font-family:"Baloo 2";font-size:clamp(1.8rem,6vw,2.6rem);color:var(--teal-dark);margin:14px 0 8px}.finish p{color:var(--muted);font-size:1.12rem;margin:0 auto 28px;max-width:450px}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.finish-quiz{margin:22px auto 0 !important;font-size:1rem !important}.finish-quiz a{color:var(--teal-dark);font-weight:800}
+    /* 2026-09-30: in-game switcher. Compact, quiet, pinned to the top of each
+       game screen — far from the answer/piece tap zones, so it can't eat a
+       round the way the old mid-run HUD switcher did (removed 2026-09-28
+       after a playtest lost 5 finished Match rounds to one tap). */
+    .gswitch{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:2px 0 16px}
+    .gswitch button,.gswitch a{appearance:none;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);padding:7px 14px;font-weight:700;font-size:.92rem;cursor:pointer;text-decoration:none;font-family:inherit;line-height:1.2}
+    .gswitch button.cur{background:var(--ink);color:var(--surface);border-color:var(--ink)}.quiet{appearance:none;border:2px solid var(--ink);border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 4px 0 var(--ink);padding:13px 20px;font-weight:800;cursor:pointer}.quiet:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
     .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}.confetti i{position:absolute;top:-30px;width:12px;height:19px;border-radius:3px;animation:fall 1.8s ease-in forwards}
     @keyframes fall{to{transform:translate(var(--drift),110vh) rotate(720deg)}}
     @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.progress,.hider{transition:none}.stage.peeked .costume.show{animation:none}.confetti{display:none}}
@@ -132,7 +139,7 @@
 </script>
 </head>
 <body>
-<div class="sitebar"><a href="/">&larr; Pick My Costume</a></div>
+<div class="sitebar"><a href="/" id="backLink">&larr; Pick My Costume</a></div>
 
   <div class="shell">
     <div class="topline" id="hud" hidden>
@@ -159,6 +166,12 @@
 
       <section class="screen game" id="game" aria-live="polite">
         <h2>Who’s peeking?</h2>
+        <nav class="gswitch" aria-label="Switch game">
+          <button type="button" data-goto="peek">Peekaboo</button>
+          <button type="button" data-goto="match">Match</button>
+          <button type="button" data-goto="chopped">Chopped</button>
+          <a href="/storytime">Storytime</a>
+        </nav>
         <div class="stage" id="stage">
           <svg class="costume" data-id="ghost" viewBox="0 0 300 300" role="img" aria-label="A hidden costume"><path d="M80 255V103Q82 37 150 35q68 2 70 68v152l-35-22-35 24-35-24Z" fill="#fff" stroke="#26223a" stroke-width="7"/><ellipse cx="122" cy="114" rx="13" ry="18" fill="#26223a"/><ellipse cx="178" cy="114" rx="13" ry="18" fill="#26223a"/><path d="M134 154q16 13 32 0" fill="none" stroke="#26223a" stroke-width="7" stroke-linecap="round"/></svg>
           <svg class="costume" data-id="witch" viewBox="0 0 300 300" role="img" aria-label="A hidden costume"><path d="m92 87 60-76 46 76" fill="#4b3475" stroke="#26223a" stroke-width="7"/><ellipse cx="149" cy="89" rx="93" ry="18" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="149" cy="137" r="47" fill="#e9a56c" stroke="#26223a" stroke-width="7"/><circle cx="133" cy="132" r="5"/><circle cx="167" cy="132" r="5"/><path d="M137 155q13 10 26 0" fill="none" stroke="#26223a" stroke-width="6" stroke-linecap="round"/><path d="M75 288q13-100 74-100t77 100" fill="#4b3475" stroke="#26223a" stroke-width="7"/><circle cx="150" cy="225" r="11" fill="#ffbd2e"/></svg>
@@ -175,6 +188,12 @@
 
       <section class="screen materials" id="materials" aria-live="polite">
         <h2 class="match-title">Match the pieces</h2>
+        <nav class="gswitch" aria-label="Switch game">
+          <button type="button" data-goto="peek">Peekaboo</button>
+          <button type="button" data-goto="match">Match</button>
+          <button type="button" data-goto="chopped">Chopped</button>
+          <a href="/storytime">Storytime</a>
+        </nav>
         <p class="match-prompt" id="matchPrompt">Tap a piece, then its costume.</p>
         <div class="match-board" id="matchBoard">
           <svg class="match-lines" id="matchLines" aria-hidden="true"></svg>
@@ -187,6 +206,12 @@
 
       <section class="screen chopped" id="chopped" aria-live="polite">
         <h2>Mystery basket!</h2>
+        <nav class="gswitch" aria-label="Switch game">
+          <button type="button" data-goto="peek">Peekaboo</button>
+          <button type="button" data-goto="match">Match</button>
+          <button type="button" data-goto="chopped">Chopped</button>
+          <a href="/storytime">Storytime</a>
+        </nav>
         <div class="chop-timer" aria-hidden="true"><span id="chopTimeFill"></span></div>
         <p class="chop-sub" id="chopPrompt">You get these 4 things. Which costume can you build?</p>
         <div class="basket" id="basket" aria-label="Mystery basket items"></div>
@@ -222,6 +247,7 @@
   var matchRounds=[     {label:'Easy matches',tip:'Tap a piece, then its costume.',featured:'bumblebee',pairs:[       {id:'witch-hat',label:'Pointy hat',type:'hat',to:'little-witch'},       {id:'dino-tail',label:'Spiky tail',type:'tail',to:'baby-dino'},       {id:'bee-wings',label:'Tiny wings',type:'wings',to:'bumblebee'}]},     {label:'More pieces',tip:'New pieces — look at the shapes.',featured:'friendly-ghost',pairs:[       {id:'stem',label:'Leafy stem',type:'stem',to:'little-pumpkin'},       {id:'poncho',label:'White triangle',type:'poncho',to:'friendly-ghost'},       {id:'helmet',label:'Round helmet',type:'helmet',to:'tiny-astronaut'}]},     {label:'Look closer',tip:'Small details count.',featured:'little-witch',pairs:[       {id:'antennae',label:'Bouncy headband',type:'headband',to:'bumblebee'},       {id:'broom',label:'Broom',type:'broom',to:'little-witch'},       {id:'orange-fabric',label:'Orange square',type:'fabric-orange',to:'little-pumpkin'}]},     {label:'Tricky pairs',tip:'Look at every little detail.',featured:'friendly-ghost',pairs:[       {id:'ghost-eyes',label:'Two black eyes',type:'ghost-eyes',to:'friendly-ghost'},       {id:'stripes',label:'Yellow stripes',type:'stripes',to:'bumblebee'},       {id:'vine',label:'Curly vine',type:'vine',to:'little-pumpkin'}]},     {label:'Super matcher',tip:'Almost there — look closely.',featured:'tiny-astronaut',pairs:[       {id:'mission-patch',label:'Mission patch',type:'patch',to:'tiny-astronaut'},       {id:'claws',label:'Pointy claws',type:'claws',to:'baby-dino'},       {id:'black-fabric',label:'Black square',type:'fabric-black',to:'little-witch'}]},     {label:'Master matcher',tip:'The tiniest clues. You’ve got this.',featured:'baby-dino',pairs:[       {id:'silver-tape',label:'Tape roll',type:'tape',to:'tiny-astronaut'},       {id:'spikes',label:'Green spikes',type:'spikes',to:'baby-dino'},       {id:'white-fabric',label:'White square',type:'fabric-white',to:'friendly-ghost'}]}   ];
   var round=0,points=0,soundOn=true,answered=false,audio=null,mode='peek',selectedPiece=null,matchedCount=0;
   var intro=document.getElementById('intro'),game=document.getElementById('game'),materials=document.getElementById('materials'),chopped=document.getElementById('chopped'),finish=document.getElementById('finish');
+  var backLink=document.getElementById('backLink');
   var hud=document.getElementById('hud'),progressWrap=document.getElementById('progressWrap'),stage=document.getElementById('stage'),answers=document.getElementById('answers');
   var pieceRow=document.getElementById('pieceRow'),costumeRow=document.getElementById('costumeRow'),matchLines=document.getElementById('matchLines');
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
@@ -248,7 +274,14 @@
      Carry the share params forward (same class as the /c/-page fix). */
   function withShare(url){try{var q=location.search||'';var sm=/[?&]s=([a-z0-9]{8})/.exec(q);if(!sm)return url;var om=/[?&]o=([a-z0-9_-]+)/.exec(q);return url+(url.indexOf('?')>=0?'&':'?')+'s='+sm[1]+(om?'&o='+om[1]:'')}catch(e){return url}}
   function tone(freq,dur,delay){if(!soundOn)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();var o=audio.createOscillator(),g=audio.createGain();o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.0001,audio.currentTime+delay);g.gain.exponentialRampToValueAtTime(.13,audio.currentTime+delay+.01);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+delay+dur);o.connect(g);g.connect(audio.destination);o.start(audio.currentTime+delay);o.stop(audio.currentTime+delay+dur+.02)}catch(e){}}
-  function setScreen(el){[intro,game,materials,chopped,finish].forEach(function(x){x.classList.toggle('active',x===el)})}
+  function setScreen(el){[intro,game,materials,chopped,finish].forEach(function(x){x.classList.toggle('active',x===el)});syncBackLink(el);syncGswitch()}
+  /* 2026-09-30: contextual back link. On the hub it goes home
+     ("<- Pick My Costume"); mid-game it reads "<- Games" and returns to
+     the hub instead of leaving the games section. */
+  function syncBackLink(el){if(!backLink)return;var onHub=(el===intro);backLink.innerHTML=onHub?'&larr; Pick My Costume':'&larr; Games';}
+  function toHub(){setScreen(intro);hud.hidden=true;progressWrap.hidden=true;if(window.scrollTo)window.scrollTo(0,0);}
+  /* 2026-09-30: highlight the current game in each in-game switcher. */
+  function syncGswitch(){var btns=document.querySelectorAll('.gswitch button[data-goto]');for(var i=0;i<btns.length;i++){var b=btns[i],cur=b.getAttribute('data-goto')===mode;if(cur){b.setAttribute('aria-current','page')}else{b.removeAttribute('aria-current')}b.classList.toggle('cur',cur);}}
   function resetRun(){round=0;points=0;document.getElementById('score').textContent='0';hud.hidden=false;progressWrap.hidden=false}
   function setHud(label,total){document.getElementById('roundLabel').textContent='Round '+(round+1)+' of '+total+' · '+label;document.getElementById('progress').style.width=(round/total*100)+'%'}
   function start(){mode='peek';resetRun();setScreen(game);syncSwitchLabel();renderPeek()}
@@ -581,13 +614,23 @@ function renderFoundList(){
    active play and silently reset the current game to round 1 (confirmed by
    playtest: 5 finished Match rounds lost to one tap). Switching still lives
    where it is safe: the intro "Pick a way to play" buttons and the finish
-   screen's "Try another game". syncSwitchLabel/switchToOther stay
-   null-safe below in case the button ever returns. */
+   screen's "Try another game". 2026-09-30: plus a compact .gswitch strip at
+   the top of each game screen (pinned above the game title, far from the
+   answer/piece tap zones, tapGuarded) — Billy-approved, same reset-to-round-1
+   semantics. syncSwitchLabel/switchToOther stay null-safe below in case the
+   button ever returns. */
 var switchGame=document.getElementById('switchGame'),switchGameEnd=document.getElementById('switchGameEnd');
 function syncSwitchLabel(){if(!switchGame)return;if(mode==='peek')switchGame.textContent='Try: Match the pieces';else if(mode==='match')switchGame.textContent='Try: Chopped';else switchGame.textContent='Try: Peekaboo';}
 function switchToOther(){if(mode==='peek'){startMaterials()}else if(mode==='match'){startChopped()}else{start()}}
 if(switchGame)switchGame.addEventListener('click',switchToOther);
 if(switchGameEnd)switchGameEnd.addEventListener('click',switchToOther);
+/* 2026-09-30: "<- Games" back link + in-game switcher wiring. The switcher
+   sits at the top of each game screen, away from the answer/piece tap
+   zones, and carries the standing finger-bounce tapGuard so a double-tap
+   can't nuke a round. Switching resets the run (fresh round 1) by design —
+   same as the hub buttons and "Try another game". */
+if(backLink)backLink.addEventListener('click',function(e){if(!intro.classList.contains('active')){e.preventDefault();toHub();}});
+(function(){var btns=document.querySelectorAll('.gswitch button[data-goto]');for(var i=0;i<btns.length;i++)(function(b){b.addEventListener('click',function(){if(!tapGuard('gswitch',800))return;var g=b.getAttribute('data-goto');if(g===mode)return;if(g==='peek')start();else if(g==='match')startMaterials();else if(g==='chopped')startChopped();gcap('play_started',{mode:g,via:'switcher'});});})(btns[i]);})();
 
 /* 2026-09-28: deep links for the homepage kid-games chip bar (?game=peekaboo,
    ?game=match or ?game=chopped). A cold load boots straight into that game; an unknown or
