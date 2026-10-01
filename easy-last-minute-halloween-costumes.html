@@ -166,7 +166,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.65}
 .wrap{max-width:720px;margin:0 auto;padding:20px 16px 64px}
-header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+header.top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:14px 0}.sitenav{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.sitenav a{font-weight:600;font-size:15px;padding:12px 8px;display:inline-flex;align-items:center;min-height:44px}@media (hover:hover){.sitenav a:hover{color:#ffb020}}.remindbox{margin:26px auto;padding:20px;border:2px solid #ff8c1a;border-radius:14px;text-align:center;background:#fff8f0;max-width:640px}.remindbox h2{margin:0 0 6px;font-size:20px}.remindsub{margin:0 0 12px;color:#6b6259;font-size:15px}.remindform{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.remindform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px}.remindform button{font-size:16px;font-weight:800;padding:12px 20px;border-radius:10px;border:0;background:#e8632c;color:#fff;cursor:pointer;min-height:48px}.remindnote{margin:8px 0 0;font-size:14px;color:#6b6259;min-height:20px}
 .brand{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none}
 .brand span{color:var(--accent)}
 .home-link{color:var(--muted);text-decoration:none;font-size:14px}
@@ -216,7 +216,12 @@ ol.steps li{margin:6px 0;color:var(--ink)}
 <div class="wrap">
 <header class="top">
 <a class="brand" href="https://pickmycostume.com/">Pick My <span>Costume</span></a>
-<a class="home-link" href="https://pickmycostume.com/">Home</a>
+<nav class="sitenav" aria-label="Site">
+<a href="https://pickmycostume.com/" aria-label="Find my costume — the quiz">Find</a>
+<a href="https://pickmycostume.com/map/">Explore</a>
+<a href="https://pickmycostume.com/pantry">Pantry</a>
+<a href="https://pickmycostume.com/play">Play</a>
+</nav>
 </header>
 
 <h1>Easy Last-Minute Halloween Costumes 2026</h1>
@@ -378,6 +383,29 @@ ol.steps li{margin:6px 0;color:var(--ink)}
 <div class="faq"><h3>What is a good last-minute couples costume?</h3><p>The Burger Joint Couple: 10 minutes, $8 to $15. One white apron plus a fake mustache, one curly red wig plus glasses. Two costumes, one quick build, one cheap store run.</p></div>
 <div class="faq"><h3>What costume can I make from things I already own?</h3><p>Start from the closet, not the store. A white sheet becomes the Classic Ghost, a sports jersey becomes the Basketball Star, and a cardboard box becomes the Cereal Crew. The pantry page shows every costume your closet can already build.</p></div>
 
+<section class="remindbox">
+<h2>&#128276; One email on Oct 27</h2>
+<p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That's it — one email, then you're off the list.</p>
+<form class="remindform" id="remindForm">
+<input type="email" id="remindEmail" placeholder="you@example.com" aria-label="Email address" required>
+<button type="submit">Remind me</button>
+</form>
+<p class="remindnote" id="remindNote" role="status"></p>
+</section>
+<script>(function(){
+var f=document.getElementById('remindForm');if(!f)return;
+try{if(localStorage.getItem('pmc_reminded')==='1'){f.style.display='none';}}catch(_){}
+f.addEventListener('submit',function(e){e.preventDefault();
+var em=document.getElementById('remindEmail').value.trim();
+var note=document.getElementById('remindNote');
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){note.textContent='That email doesn\u2019t look right \u2014 try again?';return;}
+note.textContent='Saving\u2026';
+fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'intent'})})
+.then(function(r){return r.json();}).then(function(j){
+if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='\u2705 You\u2019re on the list \u2014 one email on Oct 27, that\u2019s it.';}
+else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected \u2014 check back soon.';}
+else{note.textContent='Hmm, that didn\u2019t save. Try again?';}
+},function(){note.textContent='Hmm, that didn\u2019t save. Try again?';});});})();</script>
 <div class="footer">
 <p><a href="https://pickmycostume.com/">Pick My Costume</a> &middot; <a href="https://pickmycostume.com/costumes">Browse all 164 costume guides</a> &middot; <a href="https://pickmycostume.com/pantry">What your closet can build</a></p>
 <p class="fine">Built with Muse.</p>
