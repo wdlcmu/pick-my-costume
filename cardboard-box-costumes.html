@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes | Pick My Costume</title>
-<meta name="description" content="Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, dinosaurs and more. Real times, real costs, step-by-step guides.">
+<meta name="description" content="Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, ghost hunters and more. Real times, real costs, step-by-step guides.">
 <link rel="canonical" href="https://pickmycostume.com/cardboard-box-costumes">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes | Pick My Costume">
-<meta property="og:description" content="Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, dinosaurs and more. Real times, real costs, step-by-step guides.">
+<meta property="og:description" content="Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, ghost hunters and more. Real times, real costs, step-by-step guides.">
 <meta property="og:url" content="https://pickmycostume.com/cardboard-box-costumes">
 <meta property="og:image" content="https://pickmycostume.com/images/og/pizza-slice.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes | Pick My Costume">
-<meta name="twitter:description" content="Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, dinosaurs and more. Real times, real costs, step-by-step guides.">
+<meta name="twitter:description" content="Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, ghost hunters and more. Real times, real costs, step-by-step guides.">
 <meta name="twitter:image" content="https://pickmycostume.com/images/og/pizza-slice.jpg">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes","description":"Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, dinosaurs and more. Real times, real costs, step-by-step guides.",
+{"@context":"https://schema.org","@type":"Article","headline":"Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes","description":"Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, ghost hunters and more. Real times, real costs, step-by-step guides.",
 "author":{"@type":"Organization","name":"Pick My Costume"},
 "datePublished":"2026-09-30","mainEntityOfPage":{"@type":"WebPage","@id":"https://pickmycostume.com/cardboard-box-costumes"},
 "image":"https://pickmycostume.com/images/og/pizza-slice.jpg"}
@@ -68,7 +68,7 @@ footer a{color:var(--mut);margin:0 10px}
 <body>
 <header class="top">
 <a class="brand" href="https://pickmycostume.com/">Pick My <span>Costume</span></a>
-<nav class="sitenav" aria-label="Site">
+<nav class="sitenav" aria-label="Site" data-unit-id="cardboard-box-costumes" data-unit-type="intent-sitenav">
 <a href="https://pickmycostume.com/" aria-label="Find my costume — the quiz">Find</a>
 <a href="https://pickmycostume.com/map/">Explore</a>
 <a href="https://pickmycostume.com/pantry">Pantry</a>
@@ -177,7 +177,7 @@ footer a{color:var(--mut);margin:0 10px}
 <p class="go"><a href="/c/good-witch-bad-witch">Build this costume →</a></p>
 </article>
 </div>
-<section class="remindbox">
+<section class="remindbox" data-unit-id="cardboard-box-costumes" data-unit-type="intent-remind">
 <h2>&#128276; One email on Oct 27</h2>
 <p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That&#8217;s it, one email, then you&#8217;re off the list.</p>
 <form class="remindform" id="remindForm">
@@ -190,16 +190,18 @@ footer a{color:var(--mut);margin:0 10px}
 var f=document.getElementById('remindForm');if(!f)return;
 try{if(localStorage.getItem('pmc_reminded')==='1'){f.style.display='none';}}catch(_){}
 f.addEventListener('submit',function(e){e.preventDefault();
+var rb0=document.querySelector('.remindbox');var uid=rb0?rb0.getAttribute('data-unit-id'):'unknown';
+function rc(res){track('unit_click',{unit_id:uid,unit_type:'intent-remind',page:location.pathname,item_id:'remind-submit',position:0,result:res});}
 var em=document.getElementById('remindEmail').value.trim();
 var note=document.getElementById('remindNote');
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){note.textContent='That email doesn’t look right. Try again?';return;}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){rc('invalid');note.textContent='That email doesn’t look right. Try again?';return;}
 note.textContent='Saving…';
 fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'intent'})})
 .then(function(r){return r.json();}).then(function(j){
-if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='✅ You’re on the list: one email on Oct 27, that’s it.';}
-else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected. Check back soon.';}
-else{note.textContent='Hmm, that didn’t save. Try again?';}
-},function(){note.textContent='Hmm, that didn’t save. Try again?';});});})();</script>
+if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='✅ You’re on the list: one email on Oct 27, that’s it.';rc('saved');}
+else if(j&&j.reason==='unconfigured'){rc('error');note.textContent='Reminders are being connected. Check back soon.';}
+else{rc('error');note.textContent='Hmm, that didn’t save. Try again?';}
+},function(){rc('error');note.textContent='Hmm, that didn’t save. Try again?';});});})();</script>
 <section class="faqsec" id="faq" data-unit-id="cardboard-box-costumes" data-unit-type="intent-faq"><h2>Questions, answered</h2><details><summary>Where do I get big cardboard boxes for free?</summary><p>Ask grocery or liquor stores in the morning; they give away sturdy boxes free most days. Appliance boxes from a buy-nothing group are the best fit for kid torsos.</p></details><details><summary>How do I stop the cardboard tearing at the arm holes?</summary><p>Reinforce every cut edge on the inside with packing tape before the costume goes on. Cut holes smaller than you think and widen slowly; cardboard cut away cannot go back.</p></details><details><summary>What paint works on cardboard?</summary><p>Acrylic craft paint or spray paint, one or two thin coats. Thick coats add weight and make the box sag by the end of the night.</p></details><details><summary>Is a cardboard box costume safe for little kids?</summary><p>Have an adult do all box-cutter work and tape every inside edge so raw cardboard never scratches skin. Keep the costume away from open flames; cardboard is flammable.</p></details></section>
 <div class="cta">
 <p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 164 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
@@ -221,12 +223,31 @@ else{note.textContent='Hmm, that didn’t save. Try again?';}
   else { fire(); }
 })();
 (function(){
+  var n=document.querySelector('.sitenav'); if(!n||n._nb) return; n._nb=true;
+  function nitem(a){ var h=a.getAttribute('href')||''; if(h==='https://pickmycostume.com/')return 'home'; if(h==='https://pickmycostume.com/map/')return 'map'; if(h==='https://pickmycostume.com/pantry')return 'pantry'; if(h==='https://pickmycostume.com/play')return 'play'; return 'unknown'; }
+  function nanchors(){ return Array.prototype.slice.call(n.querySelectorAll('a')); }
+  n.addEventListener('click',function(e){ var a=e.target&&e.target.closest?e.target.closest('a'):null; if(!a||!n.contains(a))return;
+    track('unit_click',{unit_id:n.getAttribute('data-unit-id'),unit_type:'intent-sitenav',page:location.pathname,item_id:nitem(a),position:nanchors().indexOf(a)}); });
+  function fireN(){ track('unit_impression',{unit_id:n.getAttribute('data-unit-id'),unit_type:'intent-sitenav',page:location.pathname,item_count:4,item_ids:['home','map','pantry','play']}); }
+  if('IntersectionObserver' in window){ var o=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ o.disconnect(); fireN(); } }); }); o.observe(n); }
+  else { fireN(); }
+})();
+(function(){
+  var rb=document.querySelector('.remindbox'); if(!rb||rb._rb) return; rb._rb=true;
+  function fireRb(){ track('unit_impression',{unit_id:rb.getAttribute('data-unit-id'),unit_type:'intent-remind',page:location.pathname,item_count:1,item_ids:['remind-submit']}); }
+  if('IntersectionObserver' in window){ var o=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ o.disconnect(); fireRb(); } }); }); o.observe(rb); }
+  else { fireRb(); }
+})();
+(function(){
   var f=document.querySelector('.faqsec'); if(!f||f._fq) return; f._fq=true;
   f.addEventListener('toggle',function(e){ var d=e.target&&e.target.closest?e.target.closest('details'):null;
     if(!d||!f.contains(d)||!d.open) return;
     var q=d.querySelector('summary');
     track('unit_click',{unit_id:f.getAttribute('data-unit-id'),unit_type:'intent-faq',page:location.pathname,
       item_id:(q?q.textContent:'').slice(0,60),position:Array.prototype.indexOf.call(f.querySelectorAll('details'),d)}); },true);
+  function fireFaq(){ track('unit_impression',{unit_id:f.getAttribute('data-unit-id'),unit_type:'intent-faq',page:location.pathname,item_count:f.querySelectorAll('details').length,item_ids:Array.prototype.map.call(f.querySelectorAll('details summary'),function(s){return s.textContent.slice(0,60);}).slice(0,40)}); }
+  if('IntersectionObserver' in window){ var of=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ of.disconnect(); fireFaq(); } }); }); of.observe(f); }
+  else { fireFaq(); }
 })();
 </script>
 </body>

@@ -33,6 +33,8 @@
         /* Internal devices (owner's own phone/laptop, flagged via ?internal=1)
            tag even the automatic pageview as internal. */
         try { if (typeof pmcInternal === "function" && pmcInternal() && posthog.register) posthog.register({internal: true}); } catch(e){}
+        /* Person property so dashboards can filter internal devices directly. */
+        try { if (typeof pmcInternal === "function" && pmcInternal() && posthog.people && posthog.people.set) posthog.people.set({pmc_internal: true}); } catch(e){}
         if (window.Analytics && Analytics._flush) Analytics._flush();
       }
     } catch(e){}
