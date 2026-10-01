@@ -646,7 +646,7 @@ var IDEAS = [
   {id:"tetris-duo", title:"Block Party Duo", blurb:"Two interlocking tetromino shapes built from painted cardboard boxes, worn like sandwich boards.", why:"You click together for every photo, and strangers will try to name your pieces.", audience:["couple"], budget:["diy","low"], tags:{games:3,funny:2,crafty:2,simple:2,couch:1,matchyes:2,occparty:2}, fit:"U", venue:{bar:1}, rank:134},
   {id:"little-lifeguard", title:"Little Lifeguard", blurb:"Red tee, whistle, and a rescue buoy made from a pool noodle ring: an everyday hero costume.", why:"The whistle is real, the buoy is a pool noodle, and the whole thing reads official at a glance.", audience:["kid"], budget:["diy","low"], tags:{heroes:3,cute:2,couch:2,simple:2,funny:1,kidunder3:1,kid36:2,kid7plus:1,occtreat:2,occparty:1,occparade:2}, fit:"U", venue:{bar:1}, rank:135},
   {id:"little-prince", title:"Little Prince", blurb:"Crown, cape, and a royal sash from the dress-up box or the craft drawer.", why:"Every prince costume is a crown away from done, and the crooked crown is the whole charm.", audience:["kid"], budget:["diy","low"], tags:{princess:3,funny:2,cute:2,couch:2,simple:1,kidunder3:2,kid36:2,kid7plus:1,occtreat:2,occparty:1,occparade:2}, fit:"M", venue:{bar:2}, rank:136},
-  {id:"fossil-hunter", title:"Fossil Hunter", blurb:"Khaki vest, toy brush, magnifying glass, and cardboard fossil bones in a belt pouch.", why:"The fossil bones look dug up and real, and the magnifying glass gives your hands something to do between photos.", audience:["solo","kid","class"], budget:["diy","low"], tags:{dinos:3,funny:2,couch:2,crafty:2,simple:2,cute:1,occparty:2,occbar:1,occparade:2}, fit:"U", venue:{bar:2}, rank:137},
+  {id:"fossil-hunter", title:"Fossil Hunter", blurb:"Khaki vest, toy brush, magnifying glass, and cardboard fossil bones in a belt pouch.", why:"The fossil bones look dug up and real, and the magnifying glass gives their hands something to do between photos.", audience:["solo","kid","class"], budget:["diy","low"], tags:{dinos:3,funny:2,couch:2,crafty:2,simple:2,cute:1,occparty:2,occbar:1,occparade:2}, fit:"U", venue:{bar:2}, rank:137},
   {id:"web-slinger-kid", title:"Web Hero", blurb:"Red sweatsuit, tape web lines, big white eye lenses.", why:"Ten minutes of tape webs on a red sweatsuit reads hero from across the street.", audience:["kid"], budget:["low","diy"], tags:{simple:2,cute:2,couch:1,kid36:1,kid7plus:2,heroes:3,occtreat:2,occparade:2}, fit:"M", venue:{bar:2}, rank:138},
 
   {id:"milk-cookies", title:"Milk & Cookies", blurb:"White carton tunic for one, brown cookie with felt chips for the other.", why:"Sweet without trying too hard, and the cookie costume photographs great.", audience:["couple"], budget:["diy","low"], tags:{cute:2,funny:1,couch:2,matchyes:2,food:2,occparty:2,occtreat:1}, fit:"U", venue:{bar:2}, rank:139},
@@ -2522,6 +2522,68 @@ function buildInstructions(idea, opts){
    howto styles. The AI prompt stays as a secondary option inside the
    "Keep building your costume" disclosure. Cast ideas keep their own
    per-person plans via buildCastPanel. */
+/* 2026-10-01 (STEP 1, task D): per-material own/buy status for the plan's
+   "You need" list. Pantry state is the single source when mats data exists
+   for the material index; otherwise the bank string's own parenthetical is
+   the fallback. Returns "own", "buy", or null (no label). */
+function planMatLabel(ideaId, fidx, text){
+  var list = (typeof PANTRY_MATS !== "undefined" && PANTRY_MATS.mats) ? PANTRY_MATS.mats[ideaId] : null;
+  if (list && fidx >= 0 && list[fidx] && typeof pantryMatOk === "function" &&
+      typeof pantrySaved === "function" && typeof pantryTicked === "function"){
+    /* Same convention as the closet badge: no saved pantry means no assumed
+       ownership -- fall through to the bank string's own hint instead of
+       marking everything "(buy: store)". */
+    if (pantrySaved()){
+      return pantryMatOk(list[fidx], pantryTicked(), ideaId, fidx) ? "own" : "buy";
+    }
+  }
+  var low = String(text).toLowerCase();
+  if (/\(own/.test(low)) return "own";
+  if (/buy\s*:/.test(low)) return "buy";
+  return null;
+}
+/* Renders the plan's materials with live own/buy labels. Index alignment:
+   PANTRY_MATS.mats[ideaId][i] lines up with the non-optional materials
+   (pantryMaterialTexts filters optionals), so optional lines keep their raw
+   index of -1 and get no pantry-derived label. Called at plan mount and
+   again by refreshPlanMats whenever a pantry tile is ticked. */
+function renderPlanMats(ul, idea){
+  ul.innerHTML = "";
+  var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
+  if (!ins || !ins.m) return;
+  var fidx = 0;
+  ins.m.forEach(function(m){
+    var isOpt = /\([^)]*optional/i.test(m);
+    var fi = isOpt ? -1 : fidx;
+    if (!isOpt) fidx++;
+    var li = document.createElement("li");
+    /* The static own/buy parentheticals are superseded by the live label;
+       other parentheticals (make:, sizing notes) stay. */
+    var disp = String(m).replace(/\s*\((own|buy)[^)]*\)/gi, "").replace(/\s+/g, " ").trim();
+    li.appendChild(document.createTextNode(disp));
+    var label = planMatLabel(idea.id, fi, m);
+    if (label){
+      var sp = document.createElement("span");
+      sp.className = "ownbuy " + label;
+      sp.textContent = (label === "own") ? "(own)" : "(buy: store)";
+      li.appendChild(sp);
+    }
+    ul.appendChild(li);
+  });
+}
+/* Tick-driven refresh (task D): the pantry tile tap handler calls this so
+   the plan's (own)/(buy: store) labels update in place, no remount. */
+function refreshPlanMats(ideaId){
+  var nodes;
+  try { nodes = document.querySelectorAll('[data-plan-mats="' + ideaId + '"]'); }
+  catch(e){ return; }
+  var idea = null;
+  if (typeof IDEAS !== "undefined"){
+    for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
+  }
+  if (!idea) return;
+  for (var n = 0; n < nodes.length; n++) renderPlanMats(nodes[n], idea);
+}
 function buildInlinePlan(idea){
   var box = document.createElement("div");
   /* 2026-09-30 (share-block spec): scroll target for "How to make it \u2192". */
@@ -2543,23 +2605,26 @@ function buildInlinePlan(idea){
   }
   var body = document.createElement("div");
   body.className = "howto-body";
-  var tri = [ins.time, ins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
+  /* 2026-10-01 (STEP 1, task C.1): difficulty is single-sourced from the bank
+     tags (ideaEffortKey -> EFFORT_FACTS) -- the same field the result card's
+     fact row reads. The plan's own ins.effort disagreed with it (Fossil
+     Hunter: card Medium vs plan Easy); the tag-derived value is canonical
+     and feeds the effort fragments and role computation. */
+  var _dek = (typeof ideaEffortKey === "function") ? ideaEffortKey(idea) : null;
+  var _ddiff = (_dek && typeof EFFORT_FACTS !== "undefined" && EFFORT_FACTS[_dek]) ? EFFORT_FACTS[_dek].difficulty : ins.effort;
+  var tri = [ins.time, _ddiff].filter(function(x){ return x; }).join(" \u00B7 ");
   if (tri){
     var tp = document.createElement("p");
     tp.className = "howto-triple"; tp.textContent = tri;
     body.appendChild(tp);
-    /* 2026-09-30 price rebase: honest pricing basis, one line. */
-    var basis = document.createElement("p");
-    basis.className = "howto-basis";
-    basis.textContent = "Cost estimate: adds up the buy-list items at typical big-box prices (Target, Amazon, thrift store). Closet and made-from-scraps items count as $0. Group costume costs are per person, so your real total may be lower.";
-    body.appendChild(basis);
+    /* 2026-10-01 (STEP 1, task B.2): cost is dead site-wide -- the whole
+       cost-basis paragraph goes, not just the number. */
   }
   var mh = document.createElement("h4"); mh.textContent = "You need";
   body.appendChild(mh);
   var ul = document.createElement("ul");
-  ins.m.forEach(function(m){
-    var li = document.createElement("li"); li.textContent = m; ul.appendChild(li);
-  });
+  ul.setAttribute("data-plan-mats", idea.id);
+  renderPlanMats(ul, idea);
   body.appendChild(ul);
   var sh = document.createElement("h4"); sh.textContent = "Steps";
   body.appendChild(sh);
@@ -2578,20 +2643,9 @@ function buildInlinePlan(idea){
   });
   body.appendChild(ol);
   box.appendChild(body);
-  /* 2026-09-30 (share-block spec): the AI plan left the share block; a quiet
-     text link at the end of the build guide opens it in place. Event name
-     "browse_ai_prompt_copied" is the existing event used for the identical
-     showPromptPreview(div, buildIdeaPrompt(idea), ...) pattern on browse
-     cards (line 10421). The link hides after one tap: one plan per guide. */
-  var aiLink = document.createElement("button");
-  aiLink.type = "button"; aiLink.className = "textlink"; aiLink.textContent = "Want a custom plan?";
-  aiLink.onclick = function(){
-    var d = document.createElement("div");
-    box.appendChild(d);
-    showPromptPreview(d, buildIdeaPrompt(idea), "browse_ai_prompt_copied", true, null);
-    aiLink.style.display = "none";
-  };
-  box.appendChild(aiLink);
+  /* 2026-10-01 (STEP 1): the "Customize with AI" text link lives in the
+     plan's "Next" block (mountPlanFirstPanel) now, not at the end of the
+     build guide. */
   return box;
 }
 /* ================= SHAREABLE RESULT CARD =================
@@ -2789,17 +2843,33 @@ function hasQuizAnswers(){
 }
 function fitReasons(scored, idx){
   var idea = scored.idea, out = [];
+  function ansLabel(qid){
+    var a = state.answers[qid];
+    return a ? a.label : null;
+  }
   /* Pinpoint: when this card IS the named character's match, lead with it. */
   if (state.pinpoint && state.pinpoint.idea === idea.id){
     out.push("You asked for " + state.pinpoint.label + ": this is our DIY take on it.");
   }
   out.push(idea.why);
-  var wl = whyLine(scored, idx).replace(/^Why this fits (you|your kid): /, "");
-  var tail = wl.slice(idea.why.length).trim();
-  if (tail) out.push(tail.charAt(0).toUpperCase() + tail.slice(1));
-  function ansLabel(qid){
-    var a = state.answers[qid];
-    return a ? a.label : null;
+  /* 2026-10-01 (STEP 1, task C.3): each answer is reflected exactly once.
+     The old composition stacked the whyLine tail ("Picked for a funny
+     vibe...") under separate "Matches the funny vibe you picked." and
+     "Built for your kid." bullets, repeating vibe and audience twice. Now
+     the dynamic build/occasion fragments stand alone, vibe + interest share
+     a single bullet, and the audience gets one. whyLine itself is untouched
+     (still feeds the AI prompt builder). */
+  var v = ((idx||0)%3+3)%3;
+  var dyn = [];
+  var e = (typeof FIT_FRAGMENTS !== "undefined") ? FIT_FRAGMENTS[ideaEffortKey(idea)] : null;
+  var qocc = state.answers.qocc;
+  var otag = (qocc && qocc.tags) ? Object.keys(qocc.tags)[0] : null;
+  var o = (typeof FIT_FRAGMENTS !== "undefined" && otag) ? FIT_FRAGMENTS[otag] : null;
+  if (e) dyn.push(e[v]);
+  if (o) dyn.push(o[v]);
+  if (dyn.length){
+    var dj = dyn.join(", ");
+    out.push(dj.charAt(0).toUpperCase() + dj.slice(1) + ".");
   }
   var vibe = ansLabel("q2");
   /* 2026-09-27 pm red-team: only claim the vibe matches when the idea
@@ -2807,7 +2877,11 @@ function fitReasons(scored, idx){
      was telling "Scary" pickers "Matches the scary vibe you picked." */
   var vtags = (state.answers.q2 && state.answers.q2.tags) ? Object.keys(state.answers.q2.tags) : [];
   var vibeHit = vtags.some(function(k){ return idea.tags && idea.tags[k]; });
-  if (vibe && vibeHit) out.push("Matches the " + vibe.toLowerCase() + " vibe you picked.");
+  var personal = [];
+  if (vibe && vibeHit) personal.push("a " + vibe.toLowerCase() + " vibe");
+  var interest = ansLabel("qinterest");
+  if (interest && interest !== "Surprise me") personal.push("your interest in " + interest.toLowerCase());
+  if (personal.length) out.push("Picked for " + personal.join(" and ") + ".");
   var aud = ansLabel("q1");
   if (aud && AUDIENCE_PHRASE[aud]) out.push("Built for " + AUDIENCE_PHRASE[aud] + ".");
   return out.slice(0, 4);
@@ -3312,6 +3386,9 @@ function buildClosetBadge(idea, skipTrack){
       var old = document.getElementById("detail-mats");
       var fresh = buildClosetBadge(idea, true);
       if (old && fresh) old.replaceWith(fresh);
+      /* 2026-10-01 (STEP 1, task D): a tile tap changes own/buy status, so
+         the plan's "You need" labels re-render in place -- no panel remount. */
+      if (typeof refreshPlanMats === "function") refreshPlanMats(idea.id);
     }
     var grid = document.createElement("div"); grid.className = "ptiles";
     var missBits = [];
@@ -6970,22 +7047,29 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     _rs.appendChild(_ul);
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta";
-    var _bMain = document.createElement("span"); _bMain.className = "cta-main"; _bMain.textContent = "Plan this costume"; bPick.appendChild(_bMain);
-    var hint = document.createElement("span"); hint.className = "cta-sub"; hint.textContent = "See the build guide"; bPick.appendChild(hint); /* 2026-10-01 (Billy): the caption was orphaned below the button it described; it now rides inside as the button's subtitle */
-    if (pick && pick.ideaId === idea.id) hint.style.display = "none";
-    var note = document.createElement("p"); note.className = "picked-note";
-    /* 2026-09-26: "You're going as X" read as a joke for family/group
-       picks. The confirmation follows who the quiz was for. */
+    bPick.textContent = "Plan this costume";
+    var planBox = document.createElement("div");
+    var status = document.createElement("p"); status.className = "status";
+    /* 2026-10-01 (STEP 1): the commit button morphs in place. Uncommitted:
+       the one full-width orange "Plan this costume" CTA. Committed: a ghost
+       button carrying the confirmed state ("✓ You're going as X · Change").
+       Tapping the committed button un-commits (clears the saved pick and the
+       panel, restores the orange CTA). setCommitted lives in mount/unmount
+       so every restore path (fit-refinement re-render, runner-up overlay)
+       lands with the right button state. The old "You're going as X"
+       picked-note and the button subtitle spans are gone: the morph carries
+       the confirmed state. */
     var _aud = (state.answers.q1 && state.answers.q1.value) || "solo";
-    note.textContent = "\u2713 " + (
+    var _confText = "\u2713 " + (
       _aud === "kid" ? "Your kid\u2019s going as " + idea.title :
       _aud === "family" ? "Your family\u2019s going as " + idea.title :
       _aud === "couple" ? "You two are going as " + idea.title :
       _aud === "group" ? "You\u2019re all going as " + idea.title :
-      "You\u2019re going as " + idea.title);
-    var planBox = document.createElement("div");
-    if (pick && pick.ideaId === idea.id) note.style.display = "block";
-    var status = document.createElement("p"); status.className = "status";
+      "You\u2019re going as " + idea.title) + " \u00B7 Change";
+    function setCommitted(committed){
+      if (committed){ bPick.className = "ghost"; bPick.textContent = _confText; }
+      else { bPick.className = "cta"; bPick.textContent = "Plan this costume"; }
+    }
     /* Builds the pick panel below the card (share + AI plan, or the cast
        panel for cast-enabled ideas). Split from doPick so a re-rendered
        results page can restore the picked card's panel without re-recording
@@ -6997,8 +7081,11 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          Two copies showed "Great, have fun with it." twice after voting. */
 
       /* 2026-09-28: plan-first. "You picked this costume. Now build it."
-         2026-09-29 (Victory Lap): share leads as the one filled CTA; build actions collapse into the "Keep building your costume" disclosure. */
-      mountPlanFirstPanel(planBox, idea, "s-results", "pick_plan_copied");
+         2026-10-01 (STEP 1): the plan expands below the button, exactly
+         once, then the one always-visible "Next" block. Scroll-to-plan
+         happens in the tap path (doPick), NOT here: restore paths call
+         mountPanel directly and must not yank the viewport. */
+      mountPlanFirstPanel(planBox, idea, "s-results", "pick_plan_copied", "quiz");
       /* 2026-09-26: the build guide is one section now; the separate
          "Make it this week" block was merged into it above. */
       card.setAttribute("data-panel", "1");
@@ -7007,22 +7094,24 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          and retire it. */
       var _reg = panelCards[idea.id] || (panelCards[idea.id] = []);
       if (_reg.indexOf(card) < 0) _reg.push(card);
+      setCommitted(true);
     }
     /* 2026-09-26 pm3 red-team D3: symmetric unmount -- clears the share/AI
-       sections, the picked note, and the restore flag so the card reads
-       unpicked again. Cast field values survive separately in
-       castStateByIdea; re-picking rebuilds the panel from them. */
+       sections and the restore flag so the card reads unpicked again. Cast
+       field values survive separately in castStateByIdea; re-picking
+       rebuilds the panel from them. */
     function unmountPanel(){
       planBox.innerHTML = "";
       card.removeAttribute("data-panel");
       delete panelOpenByIdea[idea.id];
-      note.style.display = "none";
-      hint.style.display = "";
+      setCommitted(false);
     }
     function doPick(){
       var already = load("pmc_pick_v1");
-      /* Re-tapping the picked card is a no-op: the panel stays exactly as the
-         user left it, so cast names, cast size, and role picks survive. */
+      /* Re-tapping the committed card's BODY is a no-op: the panel stays
+         exactly as the user left it, so cast names, cast size, and role
+         picks survive. Un-committing is the committed button's own tap
+         (bPick.onclick below). */
       if (already && already.ideaId === idea.id && card.getAttribute("data-panel")) return;
       /* 2026-09-26 pm3 red-team D3: retire the old pick's panel(s) before
          mounting the new one, so the share the user sees always matches the
@@ -7033,15 +7122,32 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
          recovery nudge; any completed share for this idea clears it via the
          Analytics.track wrapper below. */
       store("pmc_recover_v1", {ideaId: idea.id, at: Date.now()});
-      note.style.display = "block";
-      hint.style.display = "none";
       status.textContent = ""; /* a stale card-level share confirmation must not linger under the fresh pick panel */
       Analytics.track("pick_saved", {idea_id: idea.id});
+      /* 2026-10-01 (STEP 1): plan_commit fires on the commit tap. source =
+         quiz: this card only renders on the quiz results screen. */
+      Analytics.track("plan_commit", {idea_id: idea.id, source: resolvePlanSource("quiz")});
       mountPanel();
+      /* 2026-10-01 (STEP 1): the plan is the point of the tap -- scroll it
+         into view. Restore paths call mountPanel directly, never doPick, so
+         nothing yanks the viewport on re-render. */
+      try { if (planBox.scrollIntoView) planBox.scrollIntoView({block: "start", behavior: scrollBehavior()}); } catch(_){}
+    }
+    function uncommit(){
+      unmountPanel();
+      clearK("pmc_pick_v1");
+      /* The recovery nudge armed by the save stands down with the pick. */
+      clearK("pmc_recover_v1");
     }
     card._mountPanel = mountPanel;
     card._unmountPanel = unmountPanel;
-    bPick.onclick = doPick;
+    bPick.onclick = function(){
+      /* E17 lesson: the card-level tap handler exempts buttons, so this is
+         the button's own tap only. Committed: tap again to un-commit. */
+      var already = load("pmc_pick_v1");
+      if (already && already.ideaId === idea.id && card.getAttribute("data-panel")) uncommit();
+      else doPick();
+    };
     /* The results header says "Tap one to save your pick": make the card body
        tappable too. Taps on buttons/links inside the card keep their own
        behavior, and a tap that was really a text selection is not a pick.
@@ -7086,7 +7192,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
        inline plan ("Your plan") below. */
     card.appendChild(row);
     if (idx === 0) card.appendChild(buildVibeFeedback(idea)); /* ask everyone, not just pickers */
-    card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+    card.appendChild(planBox); card.appendChild(status);
     return card;
 }
 /* Tracks which ideas had their pick panel open in this session, so a
@@ -9664,50 +9770,86 @@ function buildBrowseDetailCard(idea, whyHead){
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
   var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta";
-  var _bMain = document.createElement("span"); _bMain.className = "cta-main"; _bMain.textContent = "Plan this costume"; bPick.appendChild(_bMain);
-  var hint = document.createElement("span"); hint.className = "cta-sub"; hint.textContent = "See the build guide"; bPick.appendChild(hint); /* 2026-10-01 (Billy): the caption was orphaned below the button it described; it now rides inside as the button's subtitle */
-  var note = document.createElement("p"); note.className = "picked-note";
-  note.textContent = "\u2713 You\u2019re going as " + idea.title;
+  bPick.textContent = "Plan this costume";
   var planBox = document.createElement("div");
   var status = document.createElement("p"); status.className = "status";
   var pick = load("pmc_pick_v1");
-  if (pick && pick.ideaId === idea.id){ note.style.display = "block"; hint.style.display = "none"; }
+  /* 2026-10-01 (STEP 1): same in-place morph as the quiz result card.
+     Uncommitted: the one full-width orange "Plan this costume" CTA.
+     Committed: a ghost button carrying the confirmed state
+     ("✓ You're going as X · Change"); tapping it again un-commits.
+     setCommitted lives in mount/unmount so every restore path (detail
+     boot with a saved pick, ?plan=1 deep link) lands with the right
+     button state. The old picked-note, the button subtitle, and the
+     row-level Share button are gone: the plan's Next block owns the
+     single share path. */
+  var _confText = "\u2713 You\u2019re going as " + idea.title + " \u00B7 Change";
+  function setCommitted(committed){
+    if (committed){ bPick.className = "ghost"; bPick.textContent = _confText; }
+    else { bPick.className = "cta"; bPick.textContent = "Plan this costume"; }
+  }
   function mountPickSections(){
     /* 2026-09-28: plan-first. "You picked this costume. Now build it."
-       2026-09-29 (Victory Lap): share leads as the one filled CTA; build actions collapse into the "Keep building your costume" disclosure. */
-    mountPlanFirstPanel(planBox, idea, "s-detail", "browse_detail_plan_copied");
+       2026-10-01 (STEP 1): the plan expands below the button, exactly once,
+       then the one always-visible "Next" block. Scroll-to-plan happens in
+       the tap path (doPick), NOT here: restore paths must not yank the
+       viewport. */
+    mountPlanFirstPanel(planBox, idea, "s-detail", "browse_detail_plan_copied", "browse");
+    setCommitted(true);
+  }
+  function unmountPickSections(){
+    planBox.innerHTML = "";
+    setCommitted(false);
   }
   function doPick(){
     var _already = load("pmc_pick_v1");
     /* 2026-09-26 pm3 red-team D5: double-tap fired pick_saved twice. The UI
        is idempotent (mountPickSections clears before re-render); make the
-       save match by treating a re-tap on the already-picked card as a no-op. */
-    if (_already && _already.ideaId === idea.id && note.style.display === "block") return;
+       save match by treating a re-tap on the already-picked card as a
+       no-op. Un-committing is the committed button's own tap below. */
+    if (_already && _already.ideaId === idea.id && card.getAttribute("data-panel") === "1") return;
     /* 2026-09-26 pm3 red-team D3: a browse pick moves the saved pick too, so
        retire any result-card panels the same way. */
     unmountPanelsExcept(idea.id);
     store("pmc_pick_v1", {ideaId: idea.id, at: Date.now()});
     /* 2026-09-26 afternoon (saved-not-shared recovery): browse saves arm it too. */
     store("pmc_recover_v1", {ideaId: idea.id, at: Date.now()});
-    note.style.display = "block";
-    hint.style.display = "none";
     status.textContent = "";
     Analytics.track("pick_saved", {idea_id: idea.id, via: "browse_detail", thumb_arm: thumbArm()});
+    /* 2026-10-01 (STEP 1): plan_commit fires on the commit tap. The hint is
+       browse (this card only renders on the browse/detail screen), but the
+       ?plan=1 deep link resolves to c_page inside resolvePlanSource. */
+    Analytics.track("plan_commit", {idea_id: idea.id, source: resolvePlanSource("browse")});
+    card.setAttribute("data-panel", "1");
+    mountPickSections();
+    /* The plan is the point of the tap: scroll it into view. Restore paths
+       call mountPickSections directly, never doPick. */
+    try { if (planBox.scrollIntoView) planBox.scrollIntoView({block: "start", behavior: scrollBehavior()}); } catch(_){}
+  }
+  function uncommit(){
+    unmountPickSections();
+    card.removeAttribute("data-panel");
+    clearK("pmc_pick_v1");
+    clearK("pmc_recover_v1");
+  }
+  bPick.onclick = function(){
+    var _already = load("pmc_pick_v1");
+    if (_already && _already.ideaId === idea.id && card.getAttribute("data-panel") === "1") uncommit();
+    else doPick();
+  };
+  /* 2026-10-01 (STEP 1, task E): ?plan=1 deep links commit the detail card
+     without a tap. openIdeaDetail calls this hook after mounting the card. */
+  card._commitPlan = function(){ doPick(); };
+  /* Already picked earlier (e.g. from the quiz): show its sections at once. */
+  if (pick && pick.ideaId === idea.id){
+    card.setAttribute("data-panel", "1");
     mountPickSections();
   }
-  bPick.onclick = doPick;
-  /* Already picked earlier (e.g. from the quiz): show its sections at once. */
-  if (pick && pick.ideaId === idea.id) mountPickSections();
-  /* 2026-09-30 (Billy): prominent Share button in the primary action row.
-     Plan stays the primary CTA (flex-grow); Share sits alongside it instead
-     of living only inside the post-pick panel. */
+  /* 2026-10-01 (STEP 1): "Plan this costume" is the single CTA. It keeps
+     full width; the Share button left this row for the plan's Next block. */
   row.id = "detail-actions";
   bPick.style.flex = "1";
-  var bShare = document.createElement("button");
-  bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
-  bShare.setAttribute("data-item-id", "share");
-  bShare.onclick = function(){ sendShare(idea, "detail", {button: bShare, statusEl: status}); };
-  row.appendChild(bPick); row.appendChild(bShare);
+  row.appendChild(bPick);
   right.appendChild(h); right.appendChild(bl); right.appendChild(wh);
   /* 2026-09-26 closet-coverage badge: decision input, so it sits with the
      decision inputs under the why-line, above the build steps. Renders even
@@ -9716,7 +9858,7 @@ function buildBrowseDetailCard(idea, whyHead){
   if (_closetB) right.appendChild(_closetB);
   /* 2026-10-01 (Billy): same single-CTA merge as the quiz card. The "Make it
      this week" disclosure is out; the plan panel delivers the build guide. */
-  right.appendChild(row); right.appendChild(note); right.appendChild(planBox); right.appendChild(status);
+  right.appendChild(row); right.appendChild(planBox); right.appendChild(status);
   /* 2026-09-30 (Billy, Claude R2): curated "Pairs well with" row sits above
      the algorithmic rail. Quiz result cards are untouched (item-9 minimal). */
   var _pairs = buildPairsWellRow(idea);
@@ -9734,16 +9876,18 @@ var detailReturnTo = "s-browse";
    composes the body from the idea bank (no guide link); the client only ever
    sends {email, idea_id}. Kept as a named top-level function so the jsdom
    harness (hour-session/email-capture-test.js) can extract and walk it. */
-function renderEmailCapture(box, idea){
-  var btn = document.createElement("button");
-  btn.type = "button"; btn.className = "ghost";
-  btn.textContent = "Email me the instructions";
-  /* 2026-09-28: the full-width button looked weird next to the two
-     natural-width ghost buttons above it. Match the siblings. */
-  btn.style.marginTop = "12px";
-
+/* 2026-10-01 (STEP 1): the capture renders openly -- field + Send -- as the
+   first row of the plan's "Next" block. No toggle: the address field and
+   the Send button are both in front of the user. Funnel: email_submit on
+   submit, email_instructions_sent on delivery (the existing event is kept
+   for continuity). */
+function renderEmailCapture(box, idea, source){
   var wrap = document.createElement("div");
-  wrap.style.display = "none"; wrap.style.marginTop = "10px";
+  wrap.style.marginTop = "10px";
+
+  var label = document.createElement("div");
+  label.style.cssText = "font-weight:700;margin-bottom:8px";
+  label.textContent = "Email me these steps";
 
   var row = document.createElement("div");
   row.style.display = "flex"; row.style.gap = "8px";
@@ -9767,15 +9911,6 @@ function renderEmailCapture(box, idea){
   function say(msg){ note.textContent = msg; }
   function tracked(sent){ try { Analytics.track("email_instructions_sent", {idea_id: idea.id, sent: sent}); } catch(_){} }
 
-  btn.onclick = function(){
-    /* 2026-09-28 journey QA: a finger-bounce second tap landed on the
-       synchronously-toggled capture and closed it instantly (flash).
-       A second tap inside 400ms is a bounce, not a close intent. */
-    if (!tapGuard("emailcap", 400)) return;
-    var isOpen = wrap.style.display !== "none";
-    wrap.style.display = isOpen ? "none" : "block";
-    if (!isOpen) { say(NOTE_IDLE); try { input.focus(); } catch(_){} }
-  };
   send.onclick = function(){
     var em = input.value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) {
@@ -9783,6 +9918,7 @@ function renderEmailCapture(box, idea){
       try { input.focus(); } catch(_){}
       return;
     }
+    try { Analytics.track("email_submit", {idea_id: idea.id, source: source || "browse"}); } catch(_){}
     send.disabled = true; send.textContent = "Sending\u2026"; say("Sending\u2026");
     var done = function(ok, dry){
       send.disabled = false; send.textContent = "Send";
@@ -9802,8 +9938,8 @@ function renderEmailCapture(box, idea){
   };
 
   row.appendChild(input); row.appendChild(send);
-  wrap.appendChild(row); wrap.appendChild(note);
-  box.appendChild(btn); box.appendChild(wrap);
+  wrap.appendChild(label); wrap.appendChild(row); wrap.appendChild(note);
+  box.appendChild(wrap);
 }
 
 function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
@@ -9819,7 +9955,17 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
   if (dp) dp.textContent = progressText || "From browsing";
   var box = $("d-card");
   box.innerHTML = "";
-  box.appendChild(buildBrowseDetailCard(idea, whyHead));
+  var _dcard = buildBrowseDetailCard(idea, whyHead);
+  box.appendChild(_dcard);
+  /* 2026-10-01 (STEP 1, task E): the plan=1 deep link (step 2's /c/ CTA)
+     commits the detail card on arrival: the plan expands below the button
+     and the button morphs to the confirmed state, with no tap. This is the
+     live-QA path too: run the quiz with ?probe=, copy the detail URL with
+     &plan=1 appended, load it in a fresh browser, and the committed state
+     should be there. */
+  try {
+    if (/[?&]plan=1(?:&|$)/.test(location.search || "") && _dcard._commitPlan) _dcard._commitPlan();
+  } catch(_){}
   /* 2026-09-30: instrument the dynamic detail units (tile panel + action row). */
   try { UnitTrack.instrumentUnit("detail-materials"); } catch(_du1){}
   try { UnitTrack.instrumentUnit("detail-actions"); } catch(_du2){}
@@ -9965,79 +10111,167 @@ function doCopy(text, done){
    results pick panel and the browse detail pick panel; returnTo is the
    screen the planner/closet return to ("s-results" vs "s-detail").
    Cast-enabled ideas keep their own panel via buildCastPanel. */
-function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent){
+/* STEP 1 (2026-10-01): source mapping for plan_commit / email_submit /
+   share_click / share_complete. Entry paths compare against the existing
+   guide_viewed -> guide_cta_clicked funnel on /c/ pages.
+     quiz   = committed from the quiz results screen (the s-results pick card)
+     browse = committed from a browse/detail card (the s-detail pick card)
+     c_page = arrived from a /c/ guide: document.referrer contains "/c/", or
+              the plan=1 deep link is present (step 2's /c/ CTA lands here)
+     galaxy = arrived from the galaxy map (document.referrer contains "/map/")
+   The explicit plan=1 param wins, then referrer, then the caller's hint. */
+function resolvePlanSource(hint){
+  var q = "";
+  try { q = location.search || ""; } catch(_){}
+  if (/[?&]plan=1(?:&|$)/.test(q)) return "c_page";
+  var ref = "";
+  try { ref = document.referrer || ""; } catch(_){}
+  if (ref.indexOf("/map/") !== -1) return "galaxy";
+  if (ref.indexOf("/c/") !== -1) return "c_page";
+  return hint || "browse";
+}
+/* The ONE share card in the plan's Next block: shows exactly what gets
+   shared (photo, name, one-line hook, link) with a single Share button.
+   Mobile: the native sheet with the full share text. Desktop: copies the
+   bare link and shows a "Link copied" toast. Every tap gives visible
+   feedback (the button arms while the share is in flight, then the status
+   line confirms); a dismissed sheet is a cancel, not a share. */
+function planShare(idea, source, btn, st){
+  var sid = (typeof newShareId === "function") ? newShareId() : String(Date.now());
+  var link = "https://pickmycostume.com/c/" + idea.id;
+  try { Analytics.track("share_click", {idea_id: idea.id, source: source}); } catch(_){}
+  var rearm = (typeof armShareOnce === "function") ? armShareOnce(btn) : function(){};
+  if (!rearm) return; /* double-tap: a share is already in flight */
+  function flash(msg){
+    if (st) st.textContent = msg;
+    else if (btn){
+      var o = btn.textContent; btn.textContent = msg;
+      setTimeout(function(){ if (btn.textContent === msg) btn.textContent = o; }, 2500);
+    }
+  }
+  function complete(via){
+    rearm(); /* the share settled: sent or copied */
+    try {
+      Analytics.track("share_created", {share_id: sid, idea_id: idea.id, share_origin: "plan", via: via});
+      Analytics.track("share_complete", {idea_id: idea.id, source: source, via: via});
+      if (typeof VIA_SHARE !== "undefined" && VIA_SHARE)
+        Analytics.track("second_share_created", {share_id: sid, via_share_id: VIA_SHARE, idea_id: idea.id, share_origin: "plan"});
+    } catch(_){}
+  }
+  function copyLink(){
+    doCopy(link, function(ok, msg){
+      if (ok){ flash("Link copied \u2713"); complete("clipboard"); }
+      else { rearm(); flash(msg || "Copy didn't work. Long-press the link to copy it."); }
+    });
+  }
+  if (typeof navigator !== "undefined" && navigator.share){
+    try {
+      navigator.share({title: "Pick My Costume", text: shareTextFor(idea, sid, "plan", "native")}).then(
+        function(){ flash("Shared."); complete("native"); },
+        function(err){ if (err && err.name === "AbortError") rearm(); else copyLink(); }
+      );
+      return;
+    } catch(e){ /* fall through to the clipboard path */ }
+  }
+  copyLink();
+}
+function buildPlanShareCard(idea, source){
+  var card = document.createElement("div");
+  card.className = "share-card";
+  var h = document.createElement("h4"); h.textContent = "Share your costume";
+  card.appendChild(h);
+  /* What gets shared, shown: the photo, the name, the one-line hook, the link. */
+  var prev = document.createElement("div"); prev.className = "share-prev";
+  var img = document.createElement("img");
+  img.src = "photos/" + idea.id + ".webp"; img.alt = idea.title;
+  img.onerror = function(){ img.style.display = "none"; };
+  var meta = document.createElement("div"); meta.className = "share-meta";
+  var nm = document.createElement("b"); nm.textContent = idea.title;
+  var hook = document.createElement("p");
+  hook.textContent = (typeof shareCaptionFor === "function") ? shareCaptionFor(idea) : idea.blurb;
+  var link = document.createElement("p"); link.className = "share-link";
+  link.textContent = "pickmycostume.com/c/" + idea.id;
+  meta.appendChild(nm); meta.appendChild(hook); meta.appendChild(link);
+  prev.appendChild(img); prev.appendChild(meta);
+  card.appendChild(prev);
+  var st = document.createElement("p"); st.className = "status";
+  var btn = document.createElement("button");
+  btn.type = "button"; btn.className = "ghost"; btn.textContent = "Share";
+  /* E17 lesson: taps inside the pick card must not re-run doPick. */
+  btn.addEventListener("click", function(e){ e.stopPropagation(); });
+  btn.onclick = function(){ planShare(idea, source, btn, st); };
+  card.appendChild(btn); card.appendChild(st);
+  return card;
+}
+function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint){
   planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
-  var shareBox = document.createElement("div");
-  var aiPlanBox = document.createElement("div");
+  /* 2026-10-01 (STEP 1): the shared commit/plan/share component, reworked.
+     One full-width orange "Plan this costume" button (owned by the card;
+     it morphs in place to the confirmed state on tap). The plan expands
+     directly below it, exactly once. After the plan, ONE "Next" block,
+     always visible (no collapsed <details>): email capture shown open,
+     "Add to my calendar" as a ghost button, ONE share card with ONE Share
+     button, and "Customize with AI" as a text link. Deleted: the
+     "How to make it \u2192" button, the "Going as X? Share it." line, the
+     "Preview text" disclosure and the other Share buttons, "Check against
+     your closet" (the pantry tiles already do this), and the "Keep building
+     your costume" disclosure. One-orange-button rule: the committed-state
+     button is a ghost, the copy-plan button is secondary, and only the
+     email Send keeps the accent fill -- at most one filled orange CTA is
+     ever visible at one scroll position in this component. */
+  var source = resolvePlanSource(srcHint);
   var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
   if (_cast && typeof buildCastPanel === "function"){
+    var shareBox = document.createElement("div");
+    var aiPlanBox = document.createElement("div");
     planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
     return;
   }
-  /* 2026-09-29 (Victory Lap): the share block LEADS the panel as the
-     single primary action -- "Share my costume" is the one filled CTA, not a
-     ghost button buried last. Everything else (build actions, email capture,
-     AI plan, save-image / pin-it) collapses into one "Keep building your
-     costume" disclosure below it. onShared opens the disclosure first: the
-     AI plan lives inside it now, and revealAiPlan scrolls to it. */
-  planBox.appendChild(shareBox);
-  /* 2026-09-30 (Billy Issue 2): the button is "Plan this costume", so the
-     panel delivers the plan itself: the idea's own steps, materials, and
-     time estimate from INSTRUCTIONS, inline. The AI prompt stays as a
-     secondary option inside the disclosure below. */
+  /* 1. The plan itself, exactly once. */
   if (typeof buildInlinePlan === "function"){
     planBox.appendChild(buildInlinePlan(idea));
   }
-  var keepBuilding = document.createElement("details");
-  keepBuilding.className = "keep-building";
-  /* 2026-09-30 (share-block spec): after a share, open the "Keep building your
-     costume" disclosure. The AI plan left this block (it now lives as a "Want a
-     custom plan?" link inside the build guide), so the revealAiPlan scroll is
-     dropped here. revealAiPlan itself stays: still called by the cast flow
-     (line ~12893) and the personal-card share (line ~13003). */
-  addCopyShareRow(shareBox, idea, null, null, function(){
-    try { keepBuilding.open = true; } catch(_){}
-  }, false, false, true);
-  var kbSum = document.createElement("summary");
-  kbSum.className = "textlink";
-  kbSum.style.cssText = "cursor:pointer;display:inline-block;font-weight:700;margin:14px 0 4px";
-  kbSum.textContent = "Keep building your costume";
-  keepBuilding.appendChild(kbSum);
-  /* Build actions live inside the disclosure now. */
-  var buildBox = document.createElement("div");
-  buildBox.className = "plan-build";
-  var head = document.createElement("p"); head.className = "status"; head.textContent = "Now build it.";
-  buildBox.appendChild(head);
-  function ghostBtn(label, onclick){
-    var b = document.createElement("button");
-    b.type = "button"; b.className = "ghost"; b.textContent = label;
-    b.onclick = onclick;
-    /* E17 lesson: taps on buttons inside a pick card must not re-run doPick. */
-    b.addEventListener("click", function(e){ e.stopPropagation(); });
-    buildBox.appendChild(b);
-    return b;
-  }
-  if (typeof openPlanner === "function" && typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
-    ghostBtn("Add to my calendar", function(){ openPlanner(idea.id, returnTo); });
-  }
-  if (typeof openCloset === "function"){
-    ghostBtn("Check against your closet", function(){ openCloset(returnTo); });
-  }
-  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id] && typeof renderEmailCapture === "function"){
+  /* 2. One "Next" block, always visible. */
+  var next = document.createElement("div");
+  next.className = "plan-next";
+  /* E17 lesson: taps inside the pick card must not re-run doPick. */
+  if (next.addEventListener) next.addEventListener("click", function(e){ e.stopPropagation(); });
+  var nh = document.createElement("h3"); nh.textContent = "Next";
+  next.appendChild(nh);
+  /* (a) Email capture, shown openly: field + Send, no toggle. */
+  if (typeof renderEmailCapture === "function"){
     var emWrap = document.createElement("div");
     emWrap.addEventListener("click", function(e){ e.stopPropagation(); });
-    renderEmailCapture(emWrap, idea);
-    /* The capture's own 12px top margin assumed standalone placement; inside
-       the stacked plan-build the gap owns the rhythm. */
-    var _emb = emWrap.querySelector("button");
-    if (_emb) _emb.style.marginTop = "0";
-    buildBox.appendChild(emWrap);
+    renderEmailCapture(emWrap, idea, source);
+    next.appendChild(emWrap);
   }
-  keepBuilding.appendChild(buildBox);
-
-  /* Save-the-image / Pin-it moved out of the share block (Victory Lap). */
-  keepBuilding.appendChild(buildMediaShareRows(idea));
-  planBox.appendChild(keepBuilding);
+  /* (b) Add to my calendar, secondary. */
+  if (typeof openPlanner === "function" && typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
+    var cal = document.createElement("button");
+    cal.type = "button"; cal.className = "ghost"; cal.textContent = "Add to my calendar";
+    cal.addEventListener("click", function(e){ e.stopPropagation(); });
+    cal.onclick = function(){ openPlanner(idea.id, returnTo); };
+    next.appendChild(cal);
+  }
+  /* (c) ONE share card with ONE Share button. */
+  next.appendChild(buildPlanShareCard(idea, source));
+  /* (d) "Customize with AI" as a text link (not orange): opens the existing
+     Copy-costume-plan panel in place. The link hides after one tap: one
+     panel per guide. */
+  if (typeof showPromptPreview === "function" && typeof buildIdeaPrompt === "function"){
+    var aiLink = document.createElement("button");
+    aiLink.type = "button"; aiLink.className = "textlink"; aiLink.textContent = "Customize with AI";
+    aiLink.addEventListener("click", function(e){ e.stopPropagation(); });
+    aiLink.onclick = function(){
+      var d = document.createElement("div");
+      next.appendChild(d);
+      showPromptPreview(d, buildIdeaPrompt(idea), "browse_ai_prompt_copied", true, null);
+      aiLink.style.display = "none";
+      try { if (d.scrollIntoView) d.scrollIntoView({block: "nearest", behavior: scrollBehavior()}); } catch(_){}
+    };
+    next.appendChild(aiLink);
+  }
+  planBox.appendChild(next);
 }
 function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   container.innerHTML = "";
@@ -10074,9 +10308,12 @@ function showPromptPreview(container, text, eventName, noScroll, xprops, title){
     toggle.textContent = open ? "Show prompt" : "Hide prompt";
   };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
-  /* 2026-09-30 (Billy spec): the copy button is the visually dominant action —
-     filled CTA, full width on mobile — not a ghost button. */
-  var b = document.createElement("button"); b.type = "button"; b.className = "cta"; b.textContent = "Copy costume plan";
+  /* 2026-10-01 (STEP 1): the copy button is SECONDARY (ghost), not the
+     filled CTA -- the plan itself is the primary content now. Billy's
+     "Keep building this costume" flow above it stays intact. This is the
+     single choke point for every AI-plan block, so the change lands
+     everywhere the block renders. */
+  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy costume plan";
   b.style.width = "100%";
   var works = document.createElement("p"); works.className = "status";
   works.style.cssText = "font-size:13px;opacity:.8;margin-top:8px;";
@@ -13902,11 +14139,15 @@ function shareLandingHeadline(idea, search){
        from a homepage rail or a direct link. Open the dark in-app detail
        directly instead of the hero + landing card, so the journey stays
        dark end to end. Share arrivals (?s=) and experiment landings keep the
-       existing banner/card flow below. */
+       existing banner/card flow below.
+       2026-10-01 (STEP 1, task E): the plan=1 deep link (step 2's /c/ CTA)
+       is also a direct-detail arrival. It survives the scrub below: the
+       commit happens in openIdeaDetail, which reads it before this IIFE's
+       replaceState runs. */
     (function(){
       var q = location.search || "";
       if (isGenuineShareArrival(q)) return;
-      var clean = q.replace(/[?&](idea|from|probe)=[^&]*/g, "");
+      var clean = q.replace(/[?&](idea|from|probe|plan)=[^&]*/g, "");
       if (/[a-z0-9]+=/.test(clean)) return; /* other params: existing flow */
       var pt = "From browsing";
       var fm = /[?&]from=([a-z-]+)/.exec(q);
