@@ -723,6 +723,12 @@ export function onRequest(context) {
     ".ctasub{display:block;font-size:14px;color:#777;margin-top:10px;}" +
     ".quickcard .qmats{margin:12px 0;}" +
     ".pinline a{color:#b3541e;font-weight:700;}" +
+    ".remindbox{margin:26px 0;padding:20px;border:2px solid #ff8c1a;border-radius:14px;text-align:center;background:#fff8f0;}" +
+    ".remindbox h2{margin:0 0 6px;font-size:20px;}" +
+    ".remindsub{font-size:15px;color:#555;margin:0 0 12px;}" +
+    ".remindform{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}" +
+    ".remindform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px;}" +
+    ".remindnote{font-size:13px;color:#777;margin:8px 0 0;min-height:18px;}" +
     ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
     ".safesrc{font-size:14px;color:#777;}" +
     ".rbanner{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
@@ -812,7 +818,30 @@ export function onRequest(context) {
     (IMADEIT ? "<h2>Wore this? Show us</h2>" +
     "<p class=\"madeit-line\">Made this costume? Your photo helps the next person see the real thing.</p>" +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
-    "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
+    "<section class=\"remindbox\">" +
+    "<h2>\uD83D\uDD14 One email on Oct 27</h2>" +
+    "<p class=\"remindsub\">Want one email on Oct 27 with costumes you can make that night? That's it \u2014 one email, then you're off the list.</p>" +
+    "<form id=\"remindForm\" class=\"remindform\">" +
+    "<input type=\"email\" id=\"remindEmail\" placeholder=\"you@example.com\" aria-label=\"Email address\" required>" +
+    "<button class=\"cta\" type=\"submit\" style=\"border:0;cursor:pointer\">Remind me</button>" +
+    "</form>" +
+    "<p class=\"remindnote\" id=\"remindNote\" role=\"status\"></p>" +
+    "</section>" +
+    "<script>(function(){" +
+    "var f=document.getElementById('remindForm');if(!f)return;" +
+    "try{if(localStorage.getItem('pmc_reminded')==='1'){f.style.display='none';}}catch(_){}" +
+    "f.addEventListener('submit',function(e){e.preventDefault();" +
+    "var em=document.getElementById('remindEmail').value.trim();" +
+    "var note=document.getElementById('remindNote');" +
+    "if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(em)){note.textContent='That email doesn\\\u2019t look right \u2014 try again?';return;}" +
+    "note.textContent='Saving\u2026';" +
+    "fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})})" +
+    ".then(function(r){return r.json();}).then(function(j){" +
+    "if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='\u2705 You\\\u2019re on the list \u2014 one email on Oct 27, that\\\u2019s it.';try{if(window.posthog&&posthog.capture)posthog.capture('reminder_signup',{source:'c-guide'});}catch(_){}}" +
+    "else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected \u2014 check back soon.';}" +
+    "else{note.textContent='Hmm, that didn\\\u2019t save. Try again?';}" +
+    "},function(){note.textContent='Hmm, that didn\\\u2019t save. Try again?';});});})();</script>" +
+"<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\"pinline\">Saving this idea? <a target=\"_blank\" rel=\"noopener\" href=\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\">Pin it on Pinterest</a></p>" +
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +

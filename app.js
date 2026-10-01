@@ -3450,7 +3450,12 @@ function sendShare(idea, origin, opts){
   var rearmShare = (typeof armShareOnce === "function") ? armShareOnce(btn) : function(){};
   if (!rearmShare) return; /* double-tap: a share is already in flight */
   var sid = opts.sid || newShareId();
-  var text = opts.buildText ? opts.buildText(sid) : shareTextFor(idea, sid, og);
+  /* 2026-10-01: the share text is built per-path so the recipient link's
+     utm_medium matches the actual channel (native sheet vs clipboard copy).
+     Custom buildText paths (preview cards) keep their exact text. */
+  function textFor(medium){
+    return opts.buildText ? opts.buildText(sid) : shareTextFor(idea, sid, og, medium);
+  }
   function credited(via){
     rearmShare(); /* the share settled: sent or copied */
     var props = {share_id: sid, idea_id: idea.id, share_origin: og, via: via};
@@ -3492,7 +3497,7 @@ function sendShare(idea, origin, opts){
      (desktop headless/broken share target) falls through to the clipboard
      copy path instead of silently re-arming. */
   function copyPath(){
-    doCopy(text, function(ok, msg){
+    doCopy(textFor("copy"), function(ok, msg){
       if (ok){
         Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, share_origin: og, via: "clipboard"});
         if (btn) btnFlash("Copied \u2713");
@@ -3506,7 +3511,7 @@ function sendShare(idea, origin, opts){
   }
   if (navigator.share){
     try {
-      navigator.share({title: "Pick My Costume", text: text}).then(
+      navigator.share({title: "Pick My Costume", text: textFor("native")}).then(
         function(){ doneShare(true, "Shared."); },
         function(err){ if (err && err.name === "AbortError") doneShare(false, ""); else copyPath(); }
       );
@@ -3520,14 +3525,29 @@ function sendShare(idea, origin, opts){
    experiment-6 variant arms all shift together, keeping their relative
    reads valid (absolute share-rate gets a level shift; annotate). */
 function emojiLead(t){ return "🎃 " + t; }
-function shareTextFor(idea, sid, origin){
+/* 2026-10-01 (Claude R2 UTM spec): every recipient link carries
+   utm_source=share&utm_medium=<copy|native>&utm_campaign=<region>, so
+   share-driven visits attribute by channel and galaxy region in PostHog. */
+function shareRegionSlug(idea){
+  try {
+    var r = (typeof GALAXY_REGION_BY_IDEA !== "undefined") ? GALAXY_REGION_BY_IDEA[idea.id] : null;
+    if (r && r[1]) return r[1];
+  } catch(e){}
+  return "unknown";
+}
+function shareUtm(medium, region){
+  return "utm_source=share&utm_medium=" + encodeURIComponent(medium || "copy") +
+    "&utm_campaign=" + encodeURIComponent(region || "unknown");
+}
+function shareTextFor(idea, sid, origin, medium){
   /* The one canonical share message (2026-09-28 simplification). The panel
      used to offer teaser, plan, micro-quiz, SMS, riddle, guess-game, and
      pantry-dare variants, each with its own builder; what remains is this
      one message: the audience-grounded caption, one ask line, the recipient
      link, and the shopping list for kid/family picks. */
   var text = shareCaptionFor(idea) + " " + shareAskLine() +
-    "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic");
+    "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic") +
+    "&" + shareUtm(medium, shareRegionSlug(idea));
   /* Kid/family shares append the shopping list: a parent texting their
      partner needs the materials, not just the costume name. The audience
      follows the caption (voiceAudience), so the list matches the voice. */
@@ -8035,6 +8055,9 @@ var GALAXY_REGION_BY_IDEA = {
 function buildGalaxyShareCard(results, rname, rslug){
   var idea = results[0].idea;
   var url = "https://pickmycostume.com/map/" + rslug + "/" + idea.id;
+  /* 2026-10-01 (Claude R2 UTM spec): region shares carry
+     utm_source=share&utm_medium=<copy|native>&utm_campaign=<region>. */
+  function regionUrl(medium){ return url + "?" + shareUtm(medium, rslug); }
   var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "";
   var wrap = document.createElement("div");
   wrap.style.cssText = "margin:0 0 14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center";
@@ -8049,20 +8072,20 @@ function buildGalaxyShareCard(results, rname, rslug){
     done.style.cssText = "display:none;width:100%;text-align:center;font-size:12px;margin:2px 0 0";
     b.onclick = function(){
       Analytics.track("quiz_share_initiated", {region: rslug, costume: idea.id, variant: variant});
-      var payload = text + "\n" + url;
+      var payload = text + "\n" + regionUrl("copy");
       if (navigator.share){
-        navigator.share({title: "Pick My Costume", text: text, url: url}).catch(function(){});
+        navigator.share({title: "Pick My Costume", text: text, url: regionUrl("native")}).catch(function(){});
       } else if (navigator.clipboard && navigator.clipboard.writeText){
         navigator.clipboard.writeText(payload).then(function(){
           done.style.display = "block";
           done.textContent = "Copied \u2014 paste it anywhere.";
         }, function(){
           done.style.display = "block";
-          done.textContent = url;
+          done.textContent = regionUrl("copy");
         });
       } else {
         done.style.display = "block";
-        done.textContent = url;
+        done.textContent = regionUrl("copy");
       }
     };
     wrap.appendChild(b);
@@ -8076,6 +8099,60 @@ function buildGalaxyShareCard(results, rname, rslug){
     addBtn("\ud83d\uddf3\ufe0f Vote with me",
       "Vote with me: " + tops + "? I'm from " + rname + " \u2014 where are you from?",
       "vote");
+  }
+  return wrap;
+}
+/* 2026-10-01 (traffic sprint): the Oct 27 one-email reminder capture.
+   Inline block for quiz results, intent pages, and /c/ guides -- never a
+   popup. Posts to /reminder-signup; fires reminder_signup {source}.
+   A successful signup sets pmc_reminded so re-renders show the confirmed
+   state instead of a second form. */
+function buildReminderBox(source){
+  var wrap = document.createElement("div");
+  wrap.style.cssText = "margin:18px 0;padding:18px;border:2px solid #ff8c1a;border-radius:14px;text-align:center;max-width:560px;margin-left:auto;margin-right:auto";
+  var h = document.createElement("h3");
+  h.style.margin = "0 0 6px";
+  h.textContent = "\uD83D\uDD14 One email on Oct 27";
+  wrap.appendChild(h);
+  var done = false;
+  try { done = localStorage.getItem("pmc_reminded") === "1"; } catch(e){}
+  var p = document.createElement("p");
+  p.style.cssText = "margin:0 0 10px;color:var(--muted,#cdbcf0);font-size:14px";
+  p.textContent = done
+    ? "You're on the list -- one email on Oct 27, that's it."
+    : "Want one email on Oct 27 with costumes you can make that night? That's it \u2014 one email, then you're off the list.";
+  wrap.appendChild(p);
+  if (!done){
+    var form = document.createElement("form");
+    form.style.cssText = "display:flex;gap:8px;justify-content:center;flex-wrap:wrap";
+    var input = document.createElement("input");
+    input.type = "email"; input.required = true; input.placeholder = "you@example.com";
+    input.setAttribute("aria-label", "Email address");
+    input.style.cssText = "font-size:16px;padding:10px 14px;border-radius:10px;border:1px solid #4b3486;background:#160d28;color:#fdf3e3;min-width:220px";
+    var btn = document.createElement("button");
+    btn.type = "submit"; btn.className = "cta"; btn.textContent = "Remind me";
+    var note = document.createElement("p");
+    note.style.cssText = "width:100%;margin:6px 0 0;font-size:13px;color:var(--muted,#cdbcf0)";
+    note.setAttribute("role", "status");
+    form.appendChild(input); form.appendChild(btn); form.appendChild(note);
+    form.onsubmit = function(e){
+      e.preventDefault();
+      var em = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ note.textContent = "That email doesn't look right \u2014 try again?"; return; }
+      btn.disabled = true; note.textContent = "Saving\u2026";
+      fetch("/reminder-signup", {method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email: em, source: source})}).then(function(r){ return r.json(); }).then(function(j){
+        btn.disabled = false;
+        if (j && j.ok){
+          try { localStorage.setItem("pmc_reminded", "1"); } catch(_){}
+          note.textContent = "\u2705 You're on the list \u2014 one email on Oct 27, that's it.";
+          try { Analytics.track("reminder_signup", {source: source}); } catch(_){}
+        }
+        else if (j && j.reason === "unconfigured"){ note.textContent = "Reminders are being connected \u2014 check back soon."; }
+        else { note.textContent = "Hmm, that didn't save. Try again?"; }
+      }, function(){ btn.disabled = false; note.textContent = "Hmm, that didn't save. Try again?"; });
+    };
+    wrap.appendChild(form);
   }
   return wrap;
 }
@@ -8521,6 +8598,9 @@ function renderResults(results){
       history.replaceState(null, "", _u7.pathname + "?" + _u7.searchParams.toString() + _u7.hash);
     }
   } catch(_){}
+  /* 2026-10-01 (traffic sprint): Oct 27 one-email reminder. Inline block
+     below the results, never a popup. Fires reminder_signup {source}. */
+  box.appendChild(buildReminderBox("quiz-results"));
   show("s-results");
 }
 

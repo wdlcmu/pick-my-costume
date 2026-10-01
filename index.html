@@ -59,6 +59,8 @@
         /* Internal devices (owner's own phone/laptop, flagged via ?internal=1)
            tag even the automatic pageview as internal. */
         try { if (typeof pmcInternal === "function" && pmcInternal() && posthog.register) posthog.register({internal: true}); } catch(e){}
+        /* Person property so dashboards can filter internal devices directly. */
+        try { if (typeof pmcInternal === "function" && pmcInternal() && posthog.people && posthog.people.set) posthog.people.set({pmc_internal: true}); } catch(e){}
         if (window.Analytics && Analytics._flush) Analytics._flush();
       }
     } catch(e){}
@@ -1702,6 +1704,16 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        line 70); the homepage footer keeps just the nav links. -->
   <footer>
     <p><a href="/about" id="about-link">About this site</a> &middot; <a href="/privacy">Privacy</a></p>
+    <p class="foot-ideas">Costume ideas:
+      <a href="/white-sheet-costumes">White sheet</a> &middot;
+      <a href="/cardboard-box-costumes">Cardboard box</a> &middot;
+      <a href="/no-sew-costumes">No-sew</a> &middot;
+      <a href="/last-minute-costumes">Last-minute</a> &middot;
+      <a href="/family-costumes">Family</a> &middot;
+      <a href="/couples-costumes">Couples</a> &middot;
+      <a href="/toddler-costumes">Toddler</a> &middot;
+      <a href="/face-paint-costumes">Face paint</a>
+    </p>
 </footer>
 
 </div>
