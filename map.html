@@ -71,11 +71,13 @@
   #mapui .rowlabel { flex:0 0 auto; align-self:center; font-size:12px; opacity:.7; }
   .chip { flex:0 0 auto; font-size:12px; padding:10px 16px; border-radius:22px;
     min-height:44px; display:inline-flex; align-items:center;
-    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.22);
+    /* 2026-10-01 (STEP 4): solid background so the bubbles render underneath,
+       never through, the chips. */
+    background:#171d3d; border:1px solid rgba(255,255,255,.22);
     color:#fff; cursor:pointer; white-space:nowrap; }
   .chip[aria-pressed="true"] { background:#ffd166; color:#0b1026; border-color:#ffd166; font-weight:700; }
   #gsearch { flex:0 0 auto; width:150px; min-height:44px; font-size:13px; padding:10px 14px;
-    border-radius:22px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.22);
+    border-radius:22px; background:#171d3d; border:1px solid rgba(255,255,255,.22);
     color:#fff; }
   #gsearch::placeholder { color:rgba(255,255,255,.55); }
   #gsearch:focus { outline:2px solid #ffd166; outline-offset:1px; background:rgba(255,255,255,.16); }
@@ -93,7 +95,13 @@
     background:rgba(23,29,61,.92); color:#fff; border:1px solid rgba(255,255,255,.3); cursor:pointer; }
   #doneBtn { position:absolute; top:8px; right:12px; z-index:7; display:none;
     font-size:13px; font-weight:700; padding:8px 16px; border-radius:20px;
-    background:rgba(23,29,61,.92); color:#fff; border:1px solid rgba(255,255,255,.35); cursor:pointer; }
+    /* 2026-10-01 (STEP 4): solid background; Done always renders above the bubbles. */
+    background:#171d3d; color:#fff; border:1px solid rgba(255,255,255,.35); cursor:pointer; }
+  /* 2026-10-01 (STEP 4): on narrow widths Done sits over the chips row --
+     when it is visible (exploring), the rows scroll clear of it. */
+  @media (max-width:699px){
+    #mapwrap.exploring #mapui .row { padding-right:92px; }
+  }
   #mapwrap.exploring #doneBtn { display:block; }
   #hint { position:absolute; left:0; right:0; bottom:16px; z-index:4; text-align:center;
     font-size:12px; opacity:.55; pointer-events:none; transition:opacity .6s; }
@@ -303,7 +311,7 @@
         <h2 id="cardTitle"></h2>
         <p id="cardBlurb"></p>
         <div class="cardmeta" id="cardMeta"></div>
-        <a class="guide" id="cardLink" href="#">Open the guide</a>
+        <a class="guide" id="cardLink" href="#">Plan this costume →</a>
       </div>
     </div>
     <div id="sheet" hidden>
@@ -797,17 +805,10 @@ function exploreRegion(rg, opts){
   showRegionPanel(rg);
   if(!regionPushed){ regionPushed=true; pushView({gx:'explore', gr:regionSlug(rg.name)}); }
   else { try{ history.replaceState({gx:'explore', gr:regionSlug(rg.name)}, '', viewURL({gx:'explore', gr:regionSlug(rg.name)})); }catch(e){} }
-  if(narrow()){ queueHashSync(); return; }   // sheet already shows the flagship
-  var flag=flagshipFor(rg);
-  if(flag){
-    if(cardOpenId && cardOpenId!==flag.id){
-      renderCard(flag); cardOpenId=flag.id; selId=flag.id;
-      var st3={gx:'explore', gc:flag.id, gr:regionSlug(rg.name)};
-      try{ history.replaceState(st3, '', viewURL(st3)); }catch(e){}
-      cardPushed=true;   // the top state now owns a card: X/Esc must unwind via history
-      cardX.focus();
-    } else if(!cardOpenId){ openCard(flag,false); }
-  }
+  /* 2026-10-01 (STEP 4): the region tap opens the cluster panel only.
+     The flagship card no longer auto-opens beside it (panel and costume
+     cannot both be open); the panel's "Start with" link opens the flagship
+     on demand. On phones the sheet already shows the flagship. */
   queueHashSync();
 }
 function handleTap(sx,sy){
@@ -919,6 +920,9 @@ function wireFlagLink(a, flag, canHide){
   }
 });
 function showRegionPanel(rg){
+  /* 2026-10-01 (STEP 4): the cluster panel and the costume card/sheet are
+     mutually exclusive -- opening the panel closes any open costume. */
+  if(cardOpenId){ hideCardVisual(); cardPushed=false; }
   panelRegion=rg;
   if(narrow()){ syncSheet(); return; }
   var members=data.ideas.filter(function(it){return it.cluster===rg.id;});
@@ -949,7 +953,12 @@ function paintSheetCostume(it){
   document.getElementById('sheetTitle').textContent=it.title;
   document.getElementById('sheetBlurb').textContent=it.blurb;
   document.getElementById('sheetMeta').innerHTML=cardMetaHTML(it);
-  document.getElementById('sheetGuide').href='/c/'+it.id;
+  /* 2026-10-01 (STEP 4): the sheet CTA opens the costume in the app
+     (/?idea=<slug>), not the /c/ guide. The label changes with it: it no
+     longer "opens the guide". */
+  var sg=document.getElementById('sheetGuide');
+  sg.href='/?idea='+it.id;
+  sg.textContent='Plan this costume \u2192';
 }
 function paintSheetRegion(rg){
   var flag=flagshipFor(rg);
@@ -960,6 +969,7 @@ function paintSheetRegion(rg){
     document.getElementById('sheetBlurb').textContent=SYNOPSES[regionSlug(rg.name)]||'';
     document.getElementById('sheetMeta').innerHTML='';
     document.getElementById('sheetGuide').href='/map/'+regionSlug(rg.name);
+    document.getElementById('sheetGuide').textContent='Open the guide';
   }
   document.getElementById('sheetRegion').textContent=rg.name;
   var more=document.getElementById('sheetMore');
@@ -1203,8 +1213,12 @@ function renderCard(it){
   document.getElementById('cardTitle').textContent=it.title;
   document.getElementById('cardBlurb').textContent=it.blurb;
   document.getElementById('cardMeta').innerHTML=cardMetaHTML(it);
+  /* 2026-10-01 (step 4 / Billy): the desktop card routes into the app's
+     idea page with the commit flow ("Plan this costume →"), not the /c/
+     guide -- matching the mobile sheet. One orange CTA per card. */
   var a=document.getElementById('cardLink');
-  a.href='/c/'+it.id;
+  a.href='/?idea='+it.id;
+  a.textContent='Plan this costume →';
   card.hidden=false;
   card.classList.add('open');
 }
@@ -1216,13 +1230,18 @@ function hideCardVisual(){
 }
 function openCard(it, push){
   cardOpenId=it.id; selId=it.id;
+  /* 2026-10-01 (STEP 4): the cluster panel and the costume card/sheet are
+     mutually exclusive -- opening a costume closes the panel. The region
+     slug is captured first so back-navigation can restore the panel. */
+  var grSlug=panelRegion?regionSlug(panelRegion.name):null;
+  if(panelRegion){ hideRegionPanel(); regionPushed=false; }
   if(narrow()) syncSheet(); else renderCard(it);
   if(push===false){ cardPushed=false; }
   else if(cardPushed){
-    var st2={gx:'explore', gc:it.id, gr:panelRegion?regionSlug(panelRegion.name):null};
+    var st2={gx:'explore', gc:it.id, gr:grSlug};
     try{ history.replaceState(st2, '', viewURL(st2)); }catch(e){}
   }
-  else pushView({gx:'explore', gc:it.id, gr:panelRegion?regionSlug(panelRegion.name):null});
+  else pushView({gx:'explore', gc:it.id, gr:grSlug});
   markDirty();
   if(narrow()) document.getElementById('sheetX').focus(); else cardX.focus();
 }
@@ -1542,7 +1561,8 @@ function runSelfTest(){
     if(it.blurb && it.blurb.length>3 && href.length>4) linkOk++; else linkFail.push(it.id);
   }
   cam.x=save.x; cam.y=save.y; cam.s=save.s;
-  // tap-model check: zoomed out, a tap on a region opens its flagship (Radio Garden)
+  // tap-model check: zoomed out, a tap on a region opens the cluster panel (STEP 4:
+  // panel and costume never both open; the flagship opens from the panel's Start-with link)
   cam.s=fitScale()*1.0; cam.x=0.5; cam.y=0.5;
   hideCardVisual(); hideRegionPanel(); regionPushed=false; fly=null;
   var rg0=data.regions[0], qp=w2s(rg0.cx,rg0.cy);
@@ -1550,7 +1570,7 @@ function runSelfTest(){
   handleTap(qp[0],qp[1]);
   var flag0=flagshipFor(rg0);
   var tapOk = narrow() ? (!sheet.hidden && sheetState==='region')
-                       : (cardOpenId===(flag0&&flag0.id) && !!panelRegion);
+                       : (!!panelRegion && !cardOpenId);
   fly=null;
   hideRegionPanel(); regionPushed=false;
   hideCardVisual();
