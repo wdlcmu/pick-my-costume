@@ -7069,8 +7069,10 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
       card.appendChild(_rl);
     }
     card.appendChild(_fr); card.appendChild(_rs);
-    var _howto = buildInstructions(idea, {via: "result_card"});
-    if (_howto) card.appendChild(_howto);
+    /* 2026-10-01 (Billy): the standalone "Make it this week" disclosure was a
+       second CTA competing with the Plan button. The make-it content lives
+       inside the plan flow now: tapping "Plan this costume" mounts the full
+       inline plan ("Your plan") below. */
     card.appendChild(row);
     if (idx === 0) card.appendChild(buildVibeFeedback(idea)); /* ask everyone, not just pickers */
     card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
@@ -9701,8 +9703,8 @@ function buildBrowseDetailCard(idea, whyHead){
      when buildInstructions returns null (no guide data). */
   var _closetB = buildClosetBadge(idea);
   if (_closetB) right.appendChild(_closetB);
-  var _howtoB = buildInstructions(idea, {via: "browse_detail"});
-  if (_howtoB) right.appendChild(_howtoB);
+  /* 2026-10-01 (Billy): same single-CTA merge as the quiz card. The "Make it
+     this week" disclosure is out; the plan panel delivers the build guide. */
   right.appendChild(row); right.appendChild(note); right.appendChild(planBox); right.appendChild(status);
   /* 2026-09-30 (Billy, Claude R2): curated "Pairs well with" row sits above
      the algorithmic rail. Quiz result cards are untouched (item-9 minimal). */
