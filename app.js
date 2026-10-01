@@ -394,8 +394,7 @@ var QUESTIONS = [
        not exist. It does now: daytime, classroom-safe picks. */
     {label:"School parade / class party", emoji:"\uD83C\uDFEB", tags:{occparade:2}},
     {label:"Bar / club night", value:"bar", emoji:"\uD83C\uDF78", tags:{occbar:2}},
-    {label:"Handing out candy", emoji:"\uD83C\uDF6D", tags:{occcandy:2}},
-    {label:"Low-key night in", emoji:"\uD83C\uDF19", tags:{occlowkey:2}}
+    {label:"Staying in", emoji:"\uD83C\uDFE0", tags:{occcandy:2, occlowkey:2}}
   ]},
   {id:"qinterest", title:"What is your kid into?", hint:"Pick the closest match.", options:[
     {label:"Animals", emoji:"\uD83D\uDC3E", tags:{animals:2}},
