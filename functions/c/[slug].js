@@ -300,7 +300,7 @@ export function onRequest(context) {
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
      the meta tags in the head, so they cannot regress. */
-  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "";
+  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "", _kbPrompt = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     _steps = _hw.s.map(function(x, i){
@@ -317,6 +317,25 @@ export function onRequest(context) {
       }
       return "<li>" + _tx + "</li>";
     }).join("");
+    /* 2026-09-30 (Billy spec): "Keep building this costume" — the AI plan
+       prompt, generated server-side per costume from the same bank data as
+       the guide. Same framework for every costume; materials and steps go
+       in verbatim so the AI builds on the guide instead of inventing a
+       different costume. Safety notes live inside the step text, so they
+       survive verbatim. Plain text, never JSON. */
+    _kbPrompt = "I'm making this Halloween costume: " + idea.t + ".\n\nIdea:\n" + idea.b +
+      "\n\nReference image:\nhttps://pickmycostume.com/photos/" + slug + ".webp" +
+      "\n\nHere is the build guide I already have.\n\nMaterials:\n- " + _hw.m.join("\n- ") +
+      "\n\nSteps:\n" + _hw.s.map(function(x, i){ return (i + 1) + ". " + x; }).join("\n") +
+      (_hw.s.length ? "" : "\n\nThis costume's guide has no DIY steps: focus the plan on what to buy, how to style and fit each piece, and how to assemble the look, rather than inventing craft projects.") +
+      "\n\nHelp me turn this into something I can actually make.\n\n" +
+      "Give me a concrete plan in this format:\n\n" +
+      "BUY: Tell me exactly what to search for, approximate costs, where I would typically find each item, and what to check for fit or quality.\n\n" +
+      "DIY: Give me at most 5 numbered steps. Make every step specific and actionable. If something needs to be cut, taped, measured, attached, painted, or assembled, tell me exactly how.\n\n" +
+      "TIP: Give me one small detail that makes the finished costume look intentional.\n\n" +
+      "EASIEST: Give me the lowest-effort version that still clearly reads as this costume.\n\n" +
+      "Keep the answer under 200 words. Use plain language and do not repeat the build guide unnecessarily.\n\n" +
+      "After giving me the plan, help me continue building it conversationally. If I tell you what I already own, where I am shopping, or send you a photo, adapt the plan from there instead of restarting.";
     /* 2026-09-25: quick version leads. 2026-09-29 (#31): the quickcard
        used to render first-sentences of the same 5 steps the full ordered
        list repeats below -- structural duplication. The quickcard is now a
@@ -707,6 +726,17 @@ export function onRequest(context) {
        photo (og card rendered from photos/<slug>.webp), so it carries the
        same tag with the same styling. */
     ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
+    /* 2026-09-30 (Billy spec): "Keep building this costume" block. Dominant
+       full-width copy button; the prompt stays collapsed behind "Show prompt". */
+    ".kb{margin:26px 0;}" +
+    ".kb-desc{font-size:16px;color:#444;margin:0 0 8px;line-height:1.55;}" +
+    ".kb-sub{font-size:14px;color:#777;margin:0 0 6px;line-height:1.5;}" +
+    ".kb-copy{width:100%;border:0;cursor:pointer;min-height:56px;font-size:18px;}" +
+    ".kb-works{font-size:14px;color:#777;margin:10px 0 0;}" +
+    ".kb-status{font-size:15px;font-weight:600;color:#333;margin:10px 0 0;}" +
+    ".kb-status:empty{display:none;}" +
+    ".kb-show{background:none;border:0;padding:0;margin:12px 0 0;color:#b3541e;text-decoration:underline;font-size:14px;cursor:pointer;}" +
+    ".kb-prompt{width:100%;box-sizing:border-box;min-height:220px;margin-top:10px;padding:12px;font-size:14px;line-height:1.5;border:1px solid #ddd;border-radius:10px;background:#fffdf6;color:#333;font-family:inherit;white-space:pre-wrap;}" +
     "</style>" +
     "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
@@ -723,6 +753,21 @@ export function onRequest(context) {
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
     _splitHtml +
     "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
+    /* 2026-09-30 (Billy spec): "Keep building this costume" sits directly
+       after the Steps — the natural next action once the guide is read. The
+       prompt is server-generated per costume (_kbPrompt), collapsed by
+       default; one tap copies the whole thing. */
+    (_kbPrompt ?
+    "<section class=\"kb\">" +
+    "<h2>Keep building this costume</h2>" +
+    "<p class=\"kb-desc\">Get a practical plan for what to buy, what to make, and how to put it together.</p>" +
+    "<p class=\"kb-sub\">Your costume details, materials, and instructions are already included.</p>" +
+    "<p class=\"ctawrap\"><button type=\"button\" class=\"cta kb-copy\" id=\"kbCopy\">Copy costume plan</button></p>" +
+    "<p class=\"kb-works\">Works with ChatGPT, Claude, Gemini, Muse, or another AI.</p>" +
+    "<p class=\"kb-status\" id=\"kbStatus\" role=\"status\"></p>" +
+    "<p><button type=\"button\" class=\"kb-show\" id=\"kbShow\">Show prompt</button></p>" +
+    "<textarea class=\"kb-prompt\" id=\"kbPrompt\" readonly style=\"display:none\">" + esc(_kbPrompt) + "</textarea>" +
+    "</section>" : "") +
     _faqs +
     _relHtml +
     _splitPartnerHtml +
@@ -738,6 +783,23 @@ export function onRequest(context) {
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +
     _bannerScript +
     _splitScript +
+    /* 2026-09-30 (Billy spec): "Keep building this costume" interactions.
+       One tap copies the entire generated prompt (clipboard API with a
+       select-and-execCommand fallback); "Show prompt" reveals it collapsed. */
+    "<script>(function(){" +
+    "var btn=document.getElementById('kbCopy'),ta=document.getElementById('kbPrompt')," +
+    "show=document.getElementById('kbShow'),st=document.getElementById('kbStatus');" +
+    "if(!btn||!ta||!show||!st)return;" +
+    "function done(ok){st.textContent=ok?'Copied. Paste it into your AI and keep asking questions as you build.':'Copy did not work. Tap Show prompt, then select and copy the text.';}" +
+    "function fb(){ta.style.display='block';ta.select();try{document.execCommand('copy');done(true);}catch(e){done(false);}show.textContent='Hide prompt';}" +
+    "btn.addEventListener('click',function(){" +
+    "var t=ta.value;" +
+    "if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done(true);},fb);}else{fb();}" +
+    "});" +
+    "show.addEventListener('click',function(){" +
+    "var open=ta.style.display!=='none';ta.style.display=open?'none':'block';show.textContent=open?'Show prompt':'Hide prompt';" +
+    "});" +
+    "})();</script>" +
     "</main></body></html>";
   return new Response(html, {
     headers: {

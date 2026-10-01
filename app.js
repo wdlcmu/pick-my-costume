@@ -2528,7 +2528,7 @@ function buildInlinePlan(idea){
   aiLink.onclick = function(){
     var d = document.createElement("div");
     box.appendChild(d);
-    showPromptPreview(d, buildIdeaPrompt(idea), "browse_ai_prompt_copied", true, null, "Custom AI plan");
+    showPromptPreview(d, buildIdeaPrompt(idea), "browse_ai_prompt_copied", true, null);
     aiLink.style.display = "none";
   };
   box.appendChild(aiLink);
@@ -8946,8 +8946,11 @@ function browseCard(idea){
       bmeta = document.createElement("p"); bmeta.className = "bmeta";
       bmeta.textContent = [_bins.time, _bins.cost, _bins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
     }
+    /* 2026-09-30 (Billy spec): this launcher opens the "Keep building this
+       costume" plan block — it does not copy anything itself, so the label
+       names the block, not the old "Copy AI prompt" developer wording. */
     var b = document.createElement("button");
-    b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
+    b.type = "button"; b.className = "ghost"; b.textContent = "Keep building this costume";
     var bShare = document.createElement("button");
     bShare.type = "button"; bShare.className = "ghost"; bShare.textContent = "Share";
     var st = document.createElement("div");
@@ -9558,24 +9561,35 @@ function buildResultsPrompt(results, beyond){
     lines.join("\n") + "\n\nMy answers: " + ans.join("; ") + ".\n\n" + ask;
 }
 function buildIdeaPrompt(idea){
-  /* 2026-09-25: the prompt ignored the site's own "How to make it"
-     instructions, so the AI started from scratch. Pass our materials and
-     steps in and tell it to build on them. */
+  /* 2026-09-30 (Billy spec): "Keep building this costume" — the prompt reads
+     as a continuation of the build, not a developer "copy an AI prompt"
+     utility. Same framework for every costume; the guide's materials and
+     steps go in verbatim so the AI builds on the guide instead of inventing
+     a different costume. Safety notes live inside the step text, so they
+     survive verbatim. */
   var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
-  var known = "";
+  var guide = "";
   if (ins) {
+    var matLines = ins.m.map(function(x){ return "- " + x; }).join("\n");
     var stepLines = ins.s.map(function(s, i){ return (i + 1) + ". " + s; }).join("\n");
-    known = "\n\nHere is what I already know about making it.\nMaterials:\n- " + ins.m.join("\n- ") +
-      "\nSteps:\n" + stepLines;
+    guide = "\n\nHere is the build guide I already have.\n\nMaterials:\n" + matLines +
+      "\n\nSteps:\n" + stepLines;
+    if (!ins.s.length) {
+      guide += "\n\nThis costume's guide has no DIY steps: focus the plan on what to buy, " +
+        "how to style and fit each piece, and how to assemble the look, " +
+        "rather than inventing craft projects.";
+    }
   }
-  return "I'm considering this Halloween costume idea: " + idea.title + ". The idea: " + idea.blurb +
-    " Reference image: https://pickmycostume.com/photos/" + idea.id + ".webp" + known +
-    "\n\nGive me a concrete plan in exactly this format, under 200 words total:" +
-    "\nBUY: what to search for, what to check for fit and quality." +
-    "\nDIY: at most 5 numbered steps. Start each step with a verb. Build on the steps above, fill in any gaps, add approximate costs." +
-    "\nTIP: one pro tip that makes it look finished." +
-    "\nEASIEST: the laziest version that still reads as this costume." +
-    "\nPlain words, no hype. If a step is vague, make it specific: name the item, the size, and the store aisle.";
+  return "I'm making this Halloween costume: " + idea.title + ".\n\nIdea:\n" + idea.blurb +
+    "\n\nReference image:\nhttps://pickmycostume.com/photos/" + idea.id + ".webp" + guide +
+    "\n\nHelp me turn this into something I can actually make.\n\n" +
+    "Give me a concrete plan in this format:\n\n" +
+    "BUY: Tell me exactly what to search for, approximate costs, where I would typically find each item, and what to check for fit or quality.\n\n" +
+    "DIY: Give me at most 5 numbered steps. Make every step specific and actionable. If something needs to be cut, taped, measured, attached, painted, or assembled, tell me exactly how.\n\n" +
+    "TIP: Give me one small detail that makes the finished costume look intentional.\n\n" +
+    "EASIEST: Give me the lowest-effort version that still clearly reads as this costume.\n\n" +
+    "Keep the answer under 200 words. Use plain language and do not repeat the build guide unnecessarily.\n\n" +
+    "After giving me the plan, help me continue building it conversationally. If I tell you what I already own, where I am shopping, or send you a photo, adapt the plan from there instead of restarting.";
 }
 function doCopy(text, done){
   function fin(ok, msg){
@@ -9682,14 +9696,16 @@ function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   var curText = text;
   function xp(){ return (typeof xprops === "function") ? xprops() : (xprops || {}); }
   var label = document.createElement("p"); label.className = "status";
-  /* 2026-09-24: "Plan this costume" + helper, not "Get your AI costume plan".
-     2026-09-28 consolidation: one plan label everywhere, matching the card CTA.
-     2026-09-30 share-block spec: the build guide's "Want a custom plan?" link
-     retitles the block via the optional title param ("Custom AI plan"); every
-     other caller keeps the default. */
-  label.textContent = title || "Plan this costume";
+  /* 2026-09-30 (Billy spec): "Keep building this costume" — the block reads as
+     a continuation of the build, not a developer "copy an AI prompt" utility.
+     This is the single choke point for every plan block (quiz pick panels,
+     browse detail, cast panel, browse cards), so the new copy lands everywhere. */
+  label.textContent = title || "Keep building this costume";
   var helper = document.createElement("p"); helper.className = "status";
-  helper.textContent = "Paste it into any AI for a step-by-step plan: what to buy, what to make, how to pull it together.";
+  helper.textContent = "Get a practical plan for what to buy, what to make, and how to put it together.";
+  var sub = document.createElement("p"); sub.className = "status";
+  sub.style.cssText = "font-size:13px;opacity:.75;margin-top:2px;";
+  sub.textContent = "Your costume details, materials, and instructions are already included.";
   var ta = document.createElement("textarea");
   ta.className = "promptbox"; ta.setAttribute("readonly", ""); ta.value = text;
   /* 2026-09-24: the prompt text is a wall that buries the CTA. Buttons
@@ -9697,26 +9713,36 @@ function showPromptPreview(container, text, eventName, noScroll, xprops, title){
      without opening it (doCopy reads curText, not the textarea). */
   ta.style.display = "none";
   var toggle = document.createElement("button"); toggle.type = "button";
-  toggle.textContent = "Preview prompt";
+  toggle.textContent = "Show prompt";
   toggle.style.cssText = "background:none;border:0;padding:0;margin:2px 0 0;color:var(--accent);text-decoration:underline;font-size:13px;cursor:pointer;font-family:inherit;min-height:0;";
   toggle.onclick = function(){
     var open = ta.style.display !== "none";
     ta.style.display = open ? "none" : "block";
-    toggle.textContent = open ? "Preview prompt" : "Hide prompt";
+    toggle.textContent = open ? "Show prompt" : "Hide prompt";
   };
   var row = document.createElement("div"); row.className = "row"; row.style.marginTop = "8px";
-  var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Copy AI prompt";
+  /* 2026-09-30 (Billy spec): the copy button is the visually dominant action —
+     filled CTA, full width on mobile — not a ghost button. */
+  var b = document.createElement("button"); b.type = "button"; b.className = "cta"; b.textContent = "Copy costume plan";
+  b.style.width = "100%";
+  var works = document.createElement("p"); works.className = "status";
+  works.style.cssText = "font-size:13px;opacity:.8;margin-top:8px;";
+  works.textContent = "Works with ChatGPT, Claude, Gemini, Muse, or another AI.";
   var status = document.createElement("p"); status.className = "status";
   b.onclick = function(){
     /* 2026-09-26 pm3 red-team D8: double-tap fired the prompt-copied event twice. */
     if (!tapGuard("aiprompt", 2000)) return;
     doCopy(curText, function(ok, msg){
-      status.textContent = msg;
+      /* 2026-09-30 (Billy spec): exact copied-state copy. doCopy's own message
+         is left alone for its other callers. */
+      status.textContent = ok ? "Copied. Paste it into your AI and keep asking questions as you build." : msg;
       if (ok) Analytics.track(eventName, Object.assign({}, xp()));
     });
   };
   row.appendChild(b);
-  container.appendChild(label); container.appendChild(helper); container.appendChild(toggle); container.appendChild(ta); container.appendChild(row); container.appendChild(status);
+  container.appendChild(label); container.appendChild(helper); container.appendChild(sub);
+  container.appendChild(row); container.appendChild(works); container.appendChild(status);
+  container.appendChild(toggle); container.appendChild(ta);
   if (!noScroll && label.scrollIntoView) label.scrollIntoView({block:"nearest", behavior:scrollBehavior()});
   return { setText: function(t){ curText = t; ta.value = t; } };
 }
