@@ -7191,8 +7191,10 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
        inside the plan flow now: tapping "Plan this costume" mounts the full
        inline plan ("Your plan") below. */
     card.appendChild(row);
-    if (idx === 0) card.appendChild(buildVibeFeedback(idea)); /* ask everyone, not just pickers */
     card.appendChild(planBox); card.appendChild(status);
+    /* 2026-10-01 (STEP 3): "Was this the right vibe?" sits below the plan,
+       not between the Plan button and the plan panel. */
+    if (idx === 0) card.appendChild(buildVibeFeedback(idea)); /* ask everyone, not just pickers */
     return card;
 }
 /* Tracks which ideas had their pick panel open in this session, so a
@@ -7585,8 +7587,8 @@ function renderWarmResults(){
     document.querySelector("#s-results p.q-hint").textContent = "No exact match in our costume bank. These group-friendly ideas are the closest fit.";
   }
   $("btn-rtop").style.display = "none";
-  $("btn-rback").style.display = "none";
   $("btn-nextkid").style.display = "none";
+  var _kidSepW = $("tl-sep-kid"); if (_kidSepW) _kidSepW.style.display = "none";
   var box = $("r-cards"); box.innerHTML = "";
   try { Analytics.track("warm_results_viewed", {anchor_matched: !!WARM.anchor, wearer: wearer}); } catch(_){}
 
@@ -8251,60 +8253,73 @@ function buildGalaxyShareCard(results, rname, rslug){
   }
   return wrap;
 }
-/* 2026-10-01 (traffic sprint): the Oct 27 one-email reminder capture.
-   Inline block for quiz results, intent pages, and /c/ guides -- never a
-   popup. Posts to /reminder-signup; fires reminder_signup {source}.
-   A successful signup sets pmc_reminded so re-renders show the confirmed
-   state instead of a second form. */
-function buildReminderBox(source){
+/* 2026-10-01 (STEP 3): buildReminderBox retired -- the standalone Oct 27
+   box is replaced by the results Next block's default-ticked checkbox
+   (explicit, honest enrollment via renderEmailCapture's reminder option). */
+/* 2026-10-01 (STEP 3): the ONE Next block on quiz results. Always visible,
+   below "Also made your top 3": Email me this plan (with the default-ticked
+   Oct 27 reminder checkbox), Share my result, and one "More ways to share"
+   disclosure (no-clone pact, Send to Grandma, Find my +1, Halloween
+   Wrapped). The email Send here is secondary (outlined) so the plan's own
+   Send stays the single orange button. email_submit fires with
+   source "quiz"; Share my result fires share_click/share_complete with
+   source "quiz" via the same planShare path as the plan panel. */
+function buildResultsNextBlock(results){
+  var idea = results[0].idea;
   var wrap = document.createElement("div");
-  wrap.style.cssText = "margin:18px 0;padding:18px;border:2px solid #ff8c1a;border-radius:14px;text-align:center;max-width:560px;margin-left:auto;margin-right:auto";
+  wrap.id = "results-next";
+  wrap.style.cssText = "margin:20px 0 8px;padding:18px;border:2px solid #4b3486;border-radius:14px;background:#211540";
   var h = document.createElement("h3");
-  h.style.margin = "0 0 6px";
-  h.textContent = "\uD83D\uDD14 One email on Oct 27";
+  h.style.cssText = "margin:0 0 4px";
+  h.textContent = "What's next";
   wrap.appendChild(h);
-  var done = false;
-  try { done = localStorage.getItem("pmc_reminded") === "1"; } catch(e){}
-  var p = document.createElement("p");
-  p.style.cssText = "margin:0 0 10px;color:var(--muted,#cdbcf0);font-size:14px";
-  p.textContent = done
-    ? "You're on the list -- one email on Oct 27, that's it."
-    : "Want one email on Oct 27 with costumes you can make that night? That's it \u2014 one email, then you're off the list.";
-  wrap.appendChild(p);
-  if (!done){
-    var form = document.createElement("form");
-    form.style.cssText = "display:flex;gap:8px;justify-content:center;flex-wrap:wrap";
-    var input = document.createElement("input");
-    input.type = "email"; input.required = true; input.placeholder = "you@example.com";
-    input.setAttribute("aria-label", "Email address");
-    input.style.cssText = "font-size:16px;padding:10px 14px;border-radius:10px;border:1px solid #4b3486;background:#160d28;color:#fdf3e3;min-width:220px";
-    var btn = document.createElement("button");
-    btn.type = "submit"; btn.className = "cta"; btn.textContent = "Remind me";
-    var note = document.createElement("p");
-    note.style.cssText = "width:100%;margin:6px 0 0;font-size:13px;color:var(--muted,#cdbcf0)";
-    note.setAttribute("role", "status");
-    form.appendChild(input); form.appendChild(btn); form.appendChild(note);
-    form.onsubmit = function(e){
-      e.preventDefault();
-      var em = input.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ note.textContent = "That email doesn't look right \u2014 try again?"; return; }
-      btn.disabled = true; note.textContent = "Saving\u2026";
-      fetch("/reminder-signup", {method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email: em, source: source})}).then(function(r){ return r.json(); }).then(function(j){
-        btn.disabled = false;
-        if (j && j.ok){
-          try { localStorage.setItem("pmc_reminded", "1"); } catch(_){}
-          note.textContent = "\u2705 You're on the list \u2014 one email on Oct 27, that's it.";
-          try { Analytics.track("reminder_signup", {source: source}); } catch(_){}
-        }
-        else if (j && j.reason === "unconfigured"){ note.textContent = "Reminders are being connected \u2014 check back soon."; }
-        else { note.textContent = "Hmm, that didn't save. Try again?"; }
-      }, function(){ btn.disabled = false; note.textContent = "Hmm, that didn't save. Try again?"; });
-    };
-    wrap.appendChild(form);
-  }
+  var sub = document.createElement("p");
+  sub.style.cssText = "margin:0 0 6px;font-size:14px;color:var(--muted,#cdbcf0)";
+  sub.textContent = "Get the plan, share it, or set the reminder \u2014 pick what helps.";
+  wrap.appendChild(sub);
+  /* Email me this plan + the Oct 27 reminder checkbox (ticked by default,
+     explicit and honest: one email, then you're off the list). */
+  if (typeof renderEmailCapture === "function")
+    renderEmailCapture(wrap, idea, "quiz", {label: "Email me this plan", reminder: true, secondary: true});
+  /* Share my result: one tap, every tap gives visible feedback. */
+  var srow = document.createElement("div");
+  srow.style.marginTop = "16px";
+  var slabel = document.createElement("div");
+  slabel.style.cssText = "font-weight:700;margin-bottom:8px";
+  slabel.textContent = "Share my result";
+  var sbtn = document.createElement("button");
+  sbtn.type = "button"; sbtn.className = "ghost";
+  sbtn.style.cssText = "min-height:52px;padding:12px 20px;font-size:16px;font-weight:700;border-radius:var(--radius);cursor:pointer;font-family:inherit";
+  sbtn.textContent = "Share my result";
+  var sst = document.createElement("p");
+  sst.className = "status";
+  sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px";
+  sbtn.onclick = function(){ planShare(idea, "quiz", sbtn, sst); };
+  srow.appendChild(slabel); srow.appendChild(sbtn); srow.appendChild(sst);
+  wrap.appendChild(srow);
+  /* More ways to share: the four share plays, collapsed in one disclosure.
+     "Find my +1's costume" is hidden for My-kid flows (Billy). */
+  var det = document.createElement("details");
+  det.style.marginTop = "14px";
+  var sum = document.createElement("summary");
+  sum.className = "textlink";
+  sum.style.cssText = "cursor:pointer;font-weight:700;font-size:15px";
+  sum.textContent = "More ways to share";
+  det.appendChild(sum);
+  var isKid = false;
+  try { isKid = state.answers.q1 && state.answers.q1.value === "kid"; } catch(e){}
+  var items = [
+    (typeof buildNocloneBox === "function") ? buildNocloneBox(results) : null,
+    (typeof buildGrandparentBox === "function") ? buildGrandparentBox(results) : null,
+    isKid ? null : ((typeof buildPairShareStep === "function") ? buildPairShareStep(idea) : null),
+    (typeof buildWrappedButton === "function") ? buildWrappedButton(results) : null
+  ];
+  var anyItem = false;
+  items.forEach(function(el){ if (el){ det.appendChild(el); anyItem = true; } });
+  if (anyItem) wrap.appendChild(det);
   return wrap;
 }
+
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
@@ -8314,13 +8329,13 @@ function renderResults(results){
   document.querySelector("#s-results h2.q-title").innerHTML = "&#127875; Here's what we picked for you";
   document.querySelector("#s-results p.q-hint").innerHTML = "This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.";
   $("btn-rtop").style.display = "";
-  $("btn-rback").style.display = "";
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
      the household in one run, and other audiences have no sibling case. */
-  $("btn-nextkid").style.display = (state.answers.q1 && state.answers.q1.value === "kid") ? "" : "none";
-  /* 2026-09-28: Play nudge. Kid/family results only: the stuck parent
-     hands the phone to the kid. */
-  $("playnudge-results").hidden = !(state.answers.q1 && (state.answers.q1.value === "kid" || state.answers.q1.value === "family"));
+  var _isKidFlow3 = !!(state.answers.q1 && state.answers.q1.value === "kid");
+  $("btn-nextkid").style.display = _isKidFlow3 ? "" : "none";
+  var _kidSep3 = $("tl-sep-kid"); if (_kidSep3) _kidSep3.style.display = _isKidFlow3 ? "" : "none";
+  /* 2026-10-01 (STEP 3): duplicate "Back to questions" removed (btn-rtop
+     stays); the play nudge is retired from results. */
   var pick = load("pmc_pick_v1");
   var cards = {}; /* idea id -> card element, for picked-panel restore */
   /* Pinpoint: name the match so the #1 never feels arbitrary. */
@@ -8353,55 +8368,23 @@ function renderResults(results){
   hero.appendChild(heroCard);
   box.appendChild(hero);
 
-  /* 2026-10-01 P1-5: the quiz assigns the region. One line + link naming the
-     #1 pick's galaxy region; stored in localStorage so /map/ pre-selects the
-     chip next visit. No greeting. */
+  /* 2026-10-01 (STEP 3): the visible galaxy line + share card are trimmed
+     from results. The region pre-select for /map/ (pmc_quiz_region) and its
+     analytics stay, invisible. */
   (function(){
     var _rq = (typeof GALAXY_REGION_BY_IDEA !== "undefined") ? GALAXY_REGION_BY_IDEA[results[0].idea.id] : null;
     if (!_rq) return;
-    var _rname = _rq[0], _rslug = _rq[1];
-    var _pline = document.createElement("p");
-    _pline.className = "q-hint";
-    _pline.style.margin = "2px 0 12px";
-    _pline.appendChild(document.createTextNode("Your picks landed in "));
-    var _b = document.createElement("strong"); _b.textContent = _rname; _pline.appendChild(_b);
-    _pline.appendChild(document.createTextNode(" \u2192 "));
-    var _a = document.createElement("a"); _a.href = "/map/" + _rslug; _a.textContent = "Explore " + _rname;
-    _a.onclick = function(){ Analytics.track("quiz_to_map_click", {region: _rslug}); };
-    _pline.appendChild(_a);
-    box.appendChild(_pline);
+    var _rslug = _rq[1];
     var _prev = null;
     try { _prev = localStorage.getItem("pmc_quiz_region"); } catch(e){}
     try { localStorage.setItem("pmc_quiz_region", _rslug); } catch(e){}
     if (_prev !== _rslug) Analytics.track("quiz_region_assigned", {region: _rslug});
-    box.appendChild(buildGalaxyShareCard(results, _rname, _rslug));
   })();
-  /* 2026-09-28: answer chips and refinement rows live one tap behind
-     this collapsed disclosure, below the hero. Tapping a chip re-renders
-     results (the disclosure re-collapses); the new #1 is the feedback.
-     2026-09-30: the disclosure itself moved into the "More options" toggle
-     (built below, after the runners-up); rdet is stashed, not appended. */
-  var refinements = [buildAnswerChips(), buildFitRefinement(), buildAgeRefinement(),
-    buildConstraintRefinement(), buildPartyThemeChip()].filter(function(x){ return !!x; });
-  var rdet = null;
-  if (refinements.length){
-    rdet = document.createElement("details");
-    rdet.style.margin = "16px 0 14px";
-    var rsum = document.createElement("summary");
-    rsum.className = "textlink";
-    rsum.style.cssText = "cursor:pointer;display:inline-block;font-weight:700";
-    rsum.textContent = "Refine your picks";
-    rdet.appendChild(rsum);
-    refinements.forEach(function(el){ rdet.appendChild(el); });
-  }
-  /* 2026-09-26 reveal-moment share prompt: one calm line at the
-     peak-delight second, one tap to share, never buried in the pick panel. */
-  box.appendChild(buildRevealSharePrompt(results[0].idea));
-  /* 2026-09-26 Halloween Wrapped: one calm entry to the 4-slide recap
-     (pick, answers, numbers, share) rendered from the live bank and the
-     actual answers. Null before October (see buildWrappedButton). */
-  var _wb = buildWrappedButton(results);
-  if (_wb) box.appendChild(_wb);
+  /* 2026-10-01 (STEP 3): the refinement disclosure is trimmed from
+     results (it lived inside the removed "More options" toggle). */
+  /* 2026-10-01 (STEP 3): the reveal share prompt is replaced by the
+     results Next block's "Share my result"; Halloween Wrapped moves into
+     the Next block's "More ways to share" disclosure. */
   /* 2026-09-26 evening block-map experiment: additive, flag-gated; the
      builder returns null with the flag off so nothing renders. */
   var bmBox = buildBlockMapBox(results[0].idea);
@@ -8466,9 +8449,8 @@ function renderResults(results){
     pxs.textContent = "You took the quiz for " + PROXY_FOR + ". This is what you got for them.";
     box.insertBefore(pxs, box.firstChild);
   }
-  /* 2026-09-26 pair-share relocation: one calm next-step, tied to the #1
-     pick, rendered once under the hero card (never inside share blocks). */
-  box.appendChild(buildPairShareStep(results[0].idea));
+  /* 2026-10-01 (STEP 3): "Find my +1's costume" moved into the results
+     Next block's "More ways to share" disclosure (hidden for My-kid flows). */
   /* 2026-09-26 match-pair experiment: the instant household pair step.
      buildMatchStep returns null with the flag off. */
   var matchStep = buildMatchStep(results[0].idea);
@@ -8635,51 +8617,11 @@ function renderResults(results){
     if (rIdx >= 0) ruToggles[rIdx]();
   }
   box.appendChild(ru);
-  /* 2026-09-30: results simplification. After the top pick the page keeps
-     the hero card (Plan this costume), the two runner-ups, the one reveal
-     share prompt, and Browse all 164 ideas. Group vote, the "Still stuck?"
-     AI prompt, and Refine collapse behind one "More options" toggle,
-     instrumented as a content unit (UNIT_REGISTRY "more-options"). */
-  var moreWrap = document.createElement("div");
-  moreWrap.id = "more-opts";
-  moreWrap.style.margin = "16px 0 14px";
-  var moreBtn = document.createElement("button");
-  moreBtn.type = "button"; moreBtn.className = "textlink";
-  moreBtn.style.cssText = "cursor:pointer;display:inline-block;font-weight:700;font-size:16px";
-  moreBtn.setAttribute("data-item-id", "more-options");
-  moreBtn.setAttribute("aria-expanded", "false");
-  moreBtn.textContent = "More options";
-  var morePanel = document.createElement("div");
-  morePanel.hidden = true;
-  morePanel.style.marginTop = "10px";
-  moreBtn.onclick = function(){
-    morePanel.hidden = !morePanel.hidden;
-    moreBtn.setAttribute("aria-expanded", String(!morePanel.hidden));
-    try { Analytics.track("more_options_toggled", {open: !morePanel.hidden}); } catch(_mo){}
-  };
-  moreWrap.appendChild(moreBtn);
-  moreWrap.appendChild(morePanel);
-  /* 2026-09-26 family-vote experiment: the vote box now lives inside the
-     More options toggle, after the runners-up. */
-  morePanel.appendChild(buildVoteBox(results));
-  box.appendChild(moreWrap);
-  if (typeof UnitTrack !== "undefined" && UnitTrack.instrumentUnit) UnitTrack.instrumentUnit("more-options");
-  /* 2026-09-27 no-clone pact experiment: class-chat coordination share.
-     Sits with the vote box, clear of Experiment 1's share card and the
-     running share-message arms. */
-  var nocloneBox = buildNocloneBox(results);
-  if (nocloneBox) box.appendChild(nocloneBox);
-  /* 2026-09-27 team-kit distribution experiment: youth-sports team
-     coordination share. Group-audience results only (the builder returns
-     null otherwise). Sits with the vote box, clear of Experiment 1's share
-     card and the running share-message arms. */
-  var teamkitBox = buildTeamKitBox(results);
-  if (teamkitBox) box.appendChild(teamkitBox);
-  /* 2026-09-27 grandparent-loop: kid/family flows only (the builder returns
-     null otherwise). Sits with the vote box, clear of Experiment 1's share
-     card and the running share-message arms. */
-  var gpBox = buildGrandparentBox(results);
-  if (gpBox) box.appendChild(gpBox);
+  /* 2026-10-01 (STEP 3): the "More options" toggle and Group vote are
+     trimmed from results. */
+  /* 2026-10-01 (STEP 3): the no-clone pact and grandparent boxes moved
+     into the results Next block's "More ways to share" disclosure; the
+     team-kit experiment is retired from results. */
   /* 2026-09-26 proxy-quiz experiment: sender invite box + recipient decide
      box. Flag-off: both builders return null, zero DOM change. Sits with
      the vote box, below the runners-up, clear of Experiment 1's post-pick
@@ -8688,28 +8630,8 @@ function renderResults(results){
   if (proxyInvite) box.appendChild(proxyInvite);
   var proxyDecide = buildProxyDecideBox(results);
   if (proxyDecide) box.appendChild(proxyDecide);
-  /* Results-level AI entry lives in the "Still stuck?" box below: one AI
-     button per results page, not two. */
-  /* Still stuck? escape hatch: none of the three results landed. One AI prompt
-     from the three ideas. (The old "Show 3 more ideas" is gone: the browse-all
-     button below covers it without stacking more cards on the page.) */
-  var stuck = document.createElement("div"); stuck.className = "stuck";
-  var sh = document.createElement("h3"); sh.textContent = "Still stuck?";
-  var sp = document.createElement("p");
-  sp.textContent = "None of these quite fit? Use the three ideas as starting points.";
-  var stuckRow = document.createElement("div"); stuckRow.className = "row";
-  var bStuck = document.createElement("button"); bStuck.type = "button"; bStuck.className = "ghost";
-  bStuck.textContent = "Get an AI prompt from these 3 ideas";
-  var stuckBox = document.createElement("div");
-  bStuck.onclick = function(){ showPromptPreview(stuckBox, buildResultsPrompt(results, true), "stuck_prompt_copied"); };
-  stuckRow.appendChild(bStuck);
-  stuck.appendChild(sh); stuck.appendChild(sp); stuck.appendChild(stuckRow); stuck.appendChild(stuckBox);
-  /* 2026-09-30: the "Still stuck?" AI prompt lives inside More options now
-     (after Group vote), with Refine after it. Strings untouched. */
-  morePanel.appendChild(stuck);
-  if (rdet) morePanel.appendChild(rdet);
-  /* The now-what for "none of these fit" lives in the navrow below
-     ("Browse all N ideas"), so no second browse button is rendered here. */
+  /* 2026-10-01 (STEP 3): the "Still stuck?" AI prompt and Refine
+     disclosure are trimmed from results. */
   /* Restore panels that were open before a results re-render (fit refinement):
      cast names, cast size, and roles survive; re-tapping never rebuilds. */
   if (pick && cards[pick.ideaId] && panelOpenByIdea[pick.ideaId] &&
@@ -8747,9 +8669,10 @@ function renderResults(results){
       history.replaceState(null, "", _u7.pathname + "?" + _u7.searchParams.toString() + _u7.hash);
     }
   } catch(_){}
-  /* 2026-10-01 (traffic sprint): Oct 27 one-email reminder. Inline block
-     below the results, never a popup. Fires reminder_signup {source}. */
-  box.appendChild(buildReminderBox("quiz-results"));
+  /* 2026-10-01 (STEP 3): the standalone Oct 27 reminder box is replaced
+     by the results Next block, which carries the default-ticked reminder
+     checkbox with explicit, honest enrollment copy. */
+  box.appendChild(buildResultsNextBlock(results));
   show("s-results");
 }
 
@@ -9881,13 +9804,14 @@ var detailReturnTo = "s-browse";
    the Send button are both in front of the user. Funnel: email_submit on
    submit, email_instructions_sent on delivery (the existing event is kept
    for continuity). */
-function renderEmailCapture(box, idea, source){
+function renderEmailCapture(box, idea, source, opts){
+  opts = opts || {};
   var wrap = document.createElement("div");
   wrap.style.marginTop = "10px";
 
   var label = document.createElement("div");
   label.style.cssText = "font-weight:700;margin-bottom:8px";
-  label.textContent = "Email me these steps";
+  label.textContent = opts.label || "Email me these steps";
 
   var row = document.createElement("div");
   row.style.display = "flex"; row.style.gap = "8px";
@@ -9901,15 +9825,72 @@ function renderEmailCapture(box, idea, source){
   var send = document.createElement("button");
   send.type = "button";
   send.textContent = "Send";
-  send.style.cssText = "min-height:56px;padding:14px 22px;font-size:17px;font-weight:700;border-radius:var(--radius);border:0;background:var(--accent);color:#231303;cursor:pointer;font-family:inherit";
+  if (opts.secondary){
+    /* Results Next block: the plan's own Send stays the one orange button;
+       this one renders secondary (outlined). */
+    send.className = "ghost";
+    send.style.cssText = "min-height:56px;padding:14px 22px;font-size:17px;font-weight:700;border-radius:var(--radius);cursor:pointer;font-family:inherit";
+  } else {
+    send.style.cssText = "min-height:56px;padding:14px 22px;font-size:17px;font-weight:700;border-radius:var(--radius);border:0;background:var(--accent);color:#231303;cursor:pointer;font-family:inherit";
+  }
 
   var note = document.createElement("div");
   note.style.cssText = "margin-top:8px;font-size:13px;opacity:.75";
-  var NOTE_IDLE = "We'll only use this to send the instructions.";
+  /* 2026-10-01 (STEP 3, Billy): the old "We'll only use this to send the
+     instructions" is retired. The plan-panel capture never enrolls anyone
+     in the Oct 27 reminder (that checkbox lives only in the results Next
+     block), and the copy now says so plainly. The results variant is
+     explicit about the default-ticked reminder: one email, then off the
+     list. Nothing silent, nothing broader. */
+  var NOTE_IDLE = opts.reminder
+    ? "Your email gets the plan now. Keep the box ticked for one reminder on Oct 27 \u2014 then you're off the list."
+    : "We'll only use this to send the plan. Nothing else, ever.";
   note.textContent = NOTE_IDLE;
+
+  /* 2026-10-01 (STEP 3): the Oct 27 reminder checkbox, default-ticked,
+     for the results Next block only. Enrollment is explicit: the label
+     states exactly what the one email is, and the promise "one email,
+     then you're off the list" is preserved. */
+  var remindCheck = null, remindBox = null, alreadyReminded = false;
+  if (opts.reminder){
+    try { alreadyReminded = localStorage.getItem("pmc_reminded") === "1"; } catch(e){}
+    remindBox = document.createElement("label");
+    remindBox.style.cssText = "display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;font-size:14px;cursor:pointer;line-height:1.45";
+    if (alreadyReminded){
+      remindBox.style.cursor = "default";
+      remindBox.textContent = "\u2705 You're on the list \u2014 one email on Oct 27, that's it.";
+    } else {
+      remindCheck = document.createElement("input");
+      remindCheck.type = "checkbox"; remindCheck.checked = true;
+      remindCheck.style.cssText = "margin-top:2px;min-width:20px;min-height:20px;accent-color:#ff8c1a";
+      var rsp = document.createElement("span");
+      var rb = document.createElement("strong"); rb.textContent = "Remind me Oct 27";
+      rsp.appendChild(rb);
+      rsp.appendChild(document.createTextNode(" \u2014 one email with last-minute ideas you can make that night. That's it: one email, then you're off the list."));
+      remindBox.appendChild(remindCheck); remindBox.appendChild(rsp);
+    }
+  }
 
   function say(msg){ note.textContent = msg; }
   function tracked(sent){ try { Analytics.track("email_instructions_sent", {idea_id: idea.id, sent: sent}); } catch(_){} }
+  function enrollReminder(em){
+    try {
+      fetch("/reminder-signup", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email: em, source: source || "quiz"})
+      }).then(function(r){ return r.json(); }).then(function(j){
+        if (j && j.ok){
+          try { localStorage.setItem("pmc_reminded", "1"); } catch(_){}
+          try { Analytics.track("reminder_signup", {source: source || "quiz"}); } catch(_){}
+          if (remindBox){
+            remindBox.innerHTML = "";
+            remindBox.style.cursor = "default";
+            remindBox.textContent = "\u2705 You're on the list \u2014 one email on Oct 27, that's it.";
+          }
+        }
+      }, function(){});
+    } catch(e){}
+  }
 
   send.onclick = function(){
     var em = input.value.trim();
@@ -9919,6 +9900,9 @@ function renderEmailCapture(box, idea, source){
       return;
     }
     try { Analytics.track("email_submit", {idea_id: idea.id, source: source || "browse"}); } catch(_){}
+    /* The reminder enrollment is the user's explicit choice (ticked box),
+       independent of the plan-email delivery. */
+    if (remindCheck && remindCheck.checked && !alreadyReminded) enrollReminder(em);
     send.disabled = true; send.textContent = "Sending\u2026"; say("Sending\u2026");
     var done = function(ok, dry){
       send.disabled = false; send.textContent = "Send";
@@ -9938,7 +9922,9 @@ function renderEmailCapture(box, idea, source){
   };
 
   row.appendChild(input); row.appendChild(send);
-  wrap.appendChild(label); wrap.appendChild(row); wrap.appendChild(note);
+  wrap.appendChild(label); wrap.appendChild(row);
+  if (remindBox) wrap.appendChild(remindBox);
+  wrap.appendChild(note);
   box.appendChild(wrap);
 }
 
@@ -13006,12 +12992,12 @@ $("q-back").onclick = function(){
   state.qi--;
   renderQ();
 };
-$("btn-rback").onclick = function(){
+/* 2026-10-01 (STEP 3): one "Back to questions" (btn-rtop); the
+   btn-rback duplicate is gone from the results shell. */
+$("btn-rtop").onclick = function(){
   state.qi = flowOrder().length - 1;
   renderQ();
 };
-/* 2026-09-26: the above-the-fold twin of back-to-questions. */
-$("btn-rtop").onclick = $("btn-rback").onclick;
 /* 2026-09-28: Play tab entries. Plain links to /play; tracked so we
    can see whether the game becomes a real picking path.
    2026-09-28 (Phase-2 Variant A): the hero card became a slim chip bar; the
@@ -13134,7 +13120,7 @@ $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
 $("btn-browse-results").onclick = openBrowse;
 /* 2026-10-01: labels point at the galaxy, not the retired in-app grid. */
 $("btn-browse-hero").textContent = "🗺️ Explore the galaxy";
-$("btn-browse-results").textContent = "🗺️ Wander the galaxy instead";
+$("btn-browse-results").textContent = "Wander the galaxy";
 /* Red-team 2026-09-27: every other hardcoded idea count on the page follows
    the live bank too, so the copy can never drift from the shelf. */
 (function(){
