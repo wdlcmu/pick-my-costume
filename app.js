@@ -2617,7 +2617,9 @@ function renderPlanMats(ul, idea){
       var tag = "(own)";
       if (label !== "own"){
         var store = "store";
-        var bm = /\(buy:\s*([^,)]+)/i.exec(String(m));
+        /* The bank writes "(buy: X)", "(own, or buy: X)", or "(buy: X, ...)";
+           match "buy:" without requiring it to open the paren. */
+        var bm = /buy:\s*([^,)]+)/i.exec(String(m));
         if (bm) store = bm[1].split(/\s+or\s+/i)[0].trim() || "store";
         tag = "(buy: " + store + ")";
       }
