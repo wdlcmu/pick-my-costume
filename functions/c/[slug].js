@@ -18,7 +18,7 @@ var SPLITABLE = ["block-game-crew", "blue-alien-ohana", "blue-dog-family", "boar
 // Partner Split (2026-09-27): slug -> [halfA, halfB] for couple-audience
 // ideas. Halves are derived by gen_split.py, the single source of truth
 // shared with split.html; assert-covered at generation time just above.
-var DRAFT_HALVES = {"rain-cloud-rainbow": ["Rain Cloud", "Rainbow"], "doctor-bride": ["Doctor", "Bride"], "haunted-portraits": ["The haunted portrait", "The gilt frame"], "sun-moon": ["Sun", "Moon"], "moth-porch-light": ["Moth", "Porch Light"], "raptor-ranger": ["Raptor", "Ranger"], "cat-mouse": ["Cat", "Mouse"], "ketchup-mustard": ["Ketchup", "Mustard"], "plumber-duo": ["Red plumber", "Green plumber"], "office-couple": ["The boss", "The assistant"], "burger-joint-couple": ["The cook", "The server"], "plug-socket": ["Plug", "Socket"], "tooth-fairy": ["Tooth", "Tooth Fairy"], "web-hero-duo": ["The web hero", "The sidekick"], "the-olympians": ["The lightning god", "The owl god"], "player-one-two": ["Player One", "Player Two"], "pbj": ["Peanut Butter", "Jelly"], "bacon-eggs": ["Bacon", "Eggs"], "tennis-duo": ["The server", "The receiver"], "caped-duo": ["The masked hero", "The partner in crime"], "prince-princess": ["Prince", "Princess"], "salt-pepper": ["Salt", "Pepper"], "dragon-rider-duo": ["The viking rider", "The dragon"], "galaxy-knights": ["The knight", "The squire"], "plastic-dream-crew": ["The pink dream", "The dream date"], "beekeeper-bee": ["Beekeeper", "Bee"], "tetris-duo": ["The L-block", "The square block"], "milk-cookies": ["Milk", "Cookies"], "chips-guac": ["Chips", "Guac"], "sushi-soy": ["Sushi", "Soy Sauce"], "burger-fries": ["Burger", "Fries"], "donut-coffee": ["Donut", "Coffee"], "wine-cheese": ["Wine", "Cheese"], "juke-joint-vampires": ["The trumpet player", "The bandleader"], "cowboy-duo": ["Cowboy", "Cowgirl"], "smores-duo": ["The marshmallow", "The graham cracker"], "pumpkin-king-bride": ["Pumpkin King", "Stitched Bride"], "macabre-couple": ["The goth bride", "The undertaker"]};
+var DRAFT_HALVES = {"rain-cloud-rainbow": ["Rain Cloud", "Rainbow"], "doctor-bride": ["Doctor", "Bride"], "haunted-portraits": ["The haunted portrait", "The gilt frame"], "sun-moon": ["Sun", "Moon"], "moth-porch-light": ["Moth", "Porch Light"], "raptor-ranger": ["Raptor", "Ranger"], "cat-mouse": ["Cat", "Mouse"], "ketchup-mustard": ["Ketchup", "Mustard"], "plumber-duo": ["Red plumber", "Green plumber"], "office-couple": ["The boss", "The assistant"], "burger-joint-couple": ["The cook", "The server"], "plug-socket": ["Plug", "Socket"], "tooth-fairy": ["Tooth", "Tooth Fairy"], "web-hero-duo": ["The web hero", "The sidekick"], "the-olympians": ["The lightning god", "The owl god"], "player-one-two": ["Player One", "Player Two"], "pbj": ["Peanut Butter", "Jelly"], "bacon-eggs": ["Bacon", "Eggs"], "tennis-duo": ["The server", "The receiver"], "caped-duo": ["The masked hero", "The partner in crime"], "prince-princess": ["Prince", "Princess"], "salt-pepper": ["Salt", "Pepper"], "dragon-rider-duo": ["The viking rider", "The dragon"], "galaxy-knights": ["The knight", "The squire"], "plastic-dream-crew": ["The pink dream", "The dream date"], "beekeeper-bee": ["Beekeeper", "Bee"], "tetris-duo": ["The L-block", "The square block"], "milk-cookies": ["Milk", "Cookies"], "chips-guac": ["Chips", "Guac"], "sushi-soy": ["Sushi", "Soy Sauce"], "burger-fries": ["Burger", "Fries"], "donut-coffee": ["Donut", "Coffee"], "wine-cheese": ["Wine", "Cheese"], "juke-joint-vampires": ["The trumpet player", "The bandleader"], "cowboy-duo": ["Cowboy", "Cowgirl"], "smores-duo": ["The marshmallow", "The graham cracker"], "pumpkin-king-bride": ["Pumpkin Groom", "Patchwork Bride"], "macabre-couple": ["The goth bride", "The undertaker"]};
 
 // Role share cards (2026-09-27, MagicShot.ai novel-scout steal): idea slug
 // -> {role-slug: role display label}, parsed from CASTS by
@@ -44,23 +44,12 @@ var HOWTO = {"neon-demon-hunter": {"m": ["Black hoodie, black pants, chunky snea
 // Friendly 404 for unknown slugs: the site's own 404 page, embedded at
 // generation time (NOTFOUND_SRC in gen_share_function.py), served below
 // with a real 404 status.
-var NOTFOUND_HTML = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n<title>That page is not here - Pick My Costume</title>\n<meta name=\"description\" content=\"This Pick My Costume page does not exist. Take the 2-minute quiz and find your Halloween costume instead.\">\n<meta name=\"robots\" content=\"noindex\">\n<link rel=\"canonical\" href=\"https://pickmycostume.com/\">\n<style>\n:root{--bg:#160d28;--accent:#ff8c1a;--text:#f5efe4}\n*{box-sizing:border-box}\nbody{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}\nmain{max-width:520px}\n.ghost{font-size:64px;line-height:1}\nh1{font-size:28px;margin:16px 0 8px}\np{font-size:17px;line-height:1.5;opacity:.92;margin:0 0 24px}\n.btn{display:inline-block;background:var(--accent);color:#1a0f00;font-weight:700;font-size:17px;padding:14px 28px;border-radius:999px;text-decoration:none;min-height:48px}\n.links{margin-top:20px;font-size:15px}\n.links a{color:var(--accent);margin:0 10px}\nfooter{margin-top:40px;font-size:13px;opacity:.7}\n</style>\n</head>\n<body>\n<main>\n<div class=\"ghost\" aria-hidden=\"true\">&#128123;</div>\n<h1>This costume is still in the box</h1>\n<p>The page you were looking for is not here. The quiz takes about 2 minutes and hands you three costume ideas.</p>\n<a class=\"btn\" href=\"/\">Take the quiz</a>\n<div class=\"links\">\n<a href=\"/costumes\">Browse all costumes</a>\n<a href=\"/pantry\">What you already own</a>\n<a href=\"/\">Home</a>\n</div>\n<footer>Built with Muse.</footer>\n</main>\n</body>\n</html>\n";
+var NOTFOUND_HTML = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>That page is still in the box | Pick My Costume</title>\n<meta name=\"description\" content=\"This Pick My Costume page does not exist. Explore the costume galaxy or take the 2-minute quiz to find your Halloween costume.\">\n<meta name=\"robots\" content=\"noindex\">\n<link rel=\"canonical\" href=\"https://pickmycostume.com/\">\n<style>\n:root{--bg:#0b1026;--bg2:#151c44;--accent:#ffd166;--text:#f4f1ff}\n*{box-sizing:border-box}\nbody{margin:0;background:linear-gradient(180deg,#070b1e,#0b1026 55%,#151c44);color:var(--text);\nfont-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;\nmin-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}\nmain{max-width:520px}\n.ghost{font-size:64px;line-height:1}\nh1{font-size:28px;margin:16px 0 8px}\np{font-size:17px;line-height:1.5;opacity:.85;margin:0 0 24px}\n.btn{display:inline-block;background:var(--accent);color:#0b1026;font-weight:700;font-size:17px;\npadding:14px 28px;border-radius:999px;text-decoration:none;min-height:48px}\n.links{margin-top:20px;font-size:15px}\n.links a{color:var(--accent);margin:0 10px}\nfooter{margin-top:40px;font-size:13px;opacity:.6}\n</style>\n</head>\n<body>\n<main>\n<div class=\"ghost\" aria-hidden=\"true\">&#x1F383;</div>\n<h1>That page is still in the box.</h1>\n<p>The page you were looking for is not here. Wander the galaxy of 164 costume ideas, or take the 2-minute quiz and get three picks.</p>\n<a class=\"btn\" href=\"/map/\">Explore the costume galaxy</a>\n<div class=\"links\">\n<a href=\"/\">Take the quiz</a>\n<a href=\"/pantry\">Pantry</a>\n</div>\n<footer>Built with Muse.</footer>\n</main>\n</body>\n</html>\n";
 
 function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;")
           .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
-
-/* 2026-09-30 (galaxy launch, Part 3 task 8): idea slug -> [region name, region
-   slug] derived from hidden_files/galaxy/galaxy-data.json (cluster -> regions
-   index; slug = lowercase, non-alphanumerics -> '-'). Covers all 164 ideas. */
-var GX_REGION={"astronaut":["Silly Street","silly-street"],"baby-dino":["Dinosaur Land","dinosaur-land"],"baby-pumpkin":["Silly Street","silly-street"],"backyard-hero":["Hero Headquarters","hero-headquarters"],"bacon-eggs":["Food Court","food-court"],"ballerina":["Princess Castle","princess-castle"],"bamboo-demon":["Pop Culture Plaza","pop-culture-plaza"],"banana":["Food Court","food-court"],"basketball-star":["Sports Arena","sports-arena"],"beekeeper-bee":["Animal Kingdom","animal-kingdom"],"black-cat":["Animal Kingdom","animal-kingdom"],"block-game-crew":["Pop Culture Plaza","pop-culture-plaza"],"block-monster":["Pop Culture Plaza","pop-culture-plaza"],"blue-alien-ohana":["Pop Culture Plaza","pop-culture-plaza"],"blue-dog-family":["Pop Culture Plaza","pop-culture-plaza"],"blue-heeler-pup":["Animal Kingdom","animal-kingdom"],"board-game-pieces":["Pop Culture Plaza","pop-culture-plaza"],"bowling-pins":["Sports Arena","sports-arena"],"boxer":["Sports Arena","sports-arena"],"breakfast-buffet":["Food Court","food-court"],"bumble-bee":["Animal Kingdom","animal-kingdom"],"burger-fries":["Food Court","food-court"],"burger-joint-couple":["Food Court","food-court"],"butterfly":["Animal Kingdom","animal-kingdom"],"caped-duo":["Hero Headquarters","hero-headquarters"],"cardboard-knight":["Hero Headquarters","hero-headquarters"],"cat-mouse":["Animal Kingdom","animal-kingdom"],"cereal-crew":["Food Court","food-court"],"cheerleader":["Sports Arena","sports-arena"],"chill-painter":["Silly Street","silly-street"],"chipmunk-trio":["Pop Culture Plaza","pop-culture-plaza"],"chips-guac":["Food Court","food-court"],"classic-ghost":["Fright Night","fright-night"],"coffee-cup":["Food Court","food-court"],"cowboy-duo":["Silly Street","silly-street"],"crowd-camouflage":["Silly Street","silly-street"],"cupcake":["Food Court","food-court"],"daisy":["Silly Street","silly-street"],"deadpan-diva":["Fright Night","fright-night"],"decades-crew":["Silly Street","silly-street"],"demon-boy-band":["Pop Culture Plaza","pop-culture-plaza"],"deviled-egg":["Food Court","food-court"],"dino-herd":["Dinosaur Land","dinosaur-land"],"dino-rangers":["Dinosaur Land","dinosaur-land"],"dino-tourist":["Dinosaur Land","dinosaur-land"],"dinosaur-family":["Dinosaur Land","dinosaur-land"],"doctor-bride":["Fright Night","fright-night"],"donut":["Food Court","food-court"],"donut-coffee":["Food Court","food-court"],"dragon-rider-duo":["Pop Culture Plaza","pop-culture-plaza"],"emerald-witch":["Pop Culture Plaza","pop-culture-plaza"],"emoji-crew":["Silly Street","silly-street"],"emotion-crew":["Pop Culture Plaza","pop-culture-plaza"],"emotional-support-dinosaur":["Dinosaur Land","dinosaur-land"],"enchanted-castle-crew":["Princess Castle","princess-castle"],"error-404":["Silly Street","silly-street"],"extinct-party-animal":["Dinosaur Land","dinosaur-land"],"fairy-tale-princesses":["Princess Castle","princess-castle"],"fossil-hunter":["Dinosaur Land","dinosaur-land"],"fruit-salad":["Food Court","food-court"],"fuzzy-gremlin":["Silly Street","silly-street"],"fuzzy-monster":["Silly Street","silly-street"],"galaxy-knights":["Pop Culture Plaza","pop-culture-plaza"],"garden-fairy":["Princess Castle","princess-castle"],"garden-gnome":["Princess Castle","princess-castle"],"ghost-hunters":["Pop Culture Plaza","pop-culture-plaza"],"gloom-bloom":["Fright Night","fright-night"],"glow-skeleton":["Fright Night","fright-night"],"goggle-crew":["Pop Culture Plaza","pop-culture-plaza"],"good-witch-bad-witch":["Princess Castle","princess-castle"],"goth-braids":["Fright Night","fright-night"],"haunted-animatronics":["Fright Night","fright-night"],"haunted-portraits":["Fright Night","fright-night"],"headless-horsemen":["Fright Night","fright-night"],"hero-squad":["Hero Headquarters","hero-headquarters"],"hot-dog":["Food Court","food-court"],"ice-cream-cone":["Food Court","food-court"],"ice-skater":["Sports Arena","sports-arena"],"juke-joint-vampires":["Fright Night","fright-night"],"kart-racers":["Pop Culture Plaza","pop-culture-plaza"],"ketchup-mustard":["Food Court","food-court"],"kpop-demon-huntresses":["Pop Culture Plaza","pop-culture-plaza"],"ladybug":["Animal Kingdom","animal-kingdom"],"little-artist":["Silly Street","silly-street"],"little-baker":["Food Court","food-court"],"little-lifeguard":["Hero Headquarters","hero-headquarters"],"little-lion":["Animal Kingdom","animal-kingdom"],"little-pig-family":["Pop Culture Plaza","pop-culture-plaza"],"little-prince":["Princess Castle","princess-castle"],"little-shark":["Animal Kingdom","animal-kingdom"],"little-witch":["Princess Castle","princess-castle"],"lost-tourist":["Silly Street","silly-street"],"macabre-couple":["Fright Night","fright-night"],"mermaid-crew":["Princess Castle","princess-castle"],"milk-cookies":["Food Court","food-court"],"moonwalk-star":["Silly Street","silly-street"],"moth-porch-light":["Silly Street","silly-street"],"mystery-crew":["Pop Culture Plaza","pop-culture-plaza"],"mystery-teens":["Pop Culture Plaza","pop-culture-plaza"],"neon-demon-hunter":["Pop Culture Plaza","pop-culture-plaza"],"ninja":["Fright Night","fright-night"],"numbered-players":["Pop Culture Plaza","pop-culture-plaza"],"office-couple":["Pop Culture Plaza","pop-culture-plaza"],"party-pinata":["Silly Street","silly-street"],"pbj":["Food Court","food-court"],"peas-pod":["Food Court","food-court"],"penguin-huddle":["Animal Kingdom","animal-kingdom"],"pickle":["Food Court","food-court"],"pirate-captain":["Silly Street","silly-street"],"pixel-ghost":["Fright Night","fright-night"],"pizza-slice":["Food Court","food-court"],"plague-doctor":["Fright Night","fright-night"],"plastic-dream-crew":["Pop Culture Plaza","pop-culture-plaza"],"player-one-two":["Pop Culture Plaza","pop-culture-plaza"],"plug-socket":["Silly Street","silly-street"],"plumber-duo":["Pop Culture Plaza","pop-culture-plaza"],"pocket-plush":["Silly Street","silly-street"],"pop-star":["Silly Street","silly-street"],"popcorn-bucket":["Food Court","food-court"],"prince-princess":["Princess Castle","princess-castle"],"pumpkin-king-bride":["Pop Culture Plaza","pop-culture-plaza"],"rain-cloud-rainbow":["Silly Street","silly-street"],"ramen-bowl":["Food Court","food-court"],"raptor-barista":["Dinosaur Land","dinosaur-land"],"raptor-ranger":["Dinosaur Land","dinosaur-land"],"referee":["Sports Arena","sports-arena"],"rescue-pups":["Animal Kingdom","animal-kingdom"],"robot-crew":["Silly Street","silly-street"],"robot-ranger":["Silly Street","silly-street"],"safari-photographer":["Animal Kingdom","animal-kingdom"],"safari-zoo-crew":["Animal Kingdom","animal-kingdom"],"salt-pepper":["Food Court","food-court"],"scarecrow":["Animal Kingdom","animal-kingdom"],"smores-duo":["Food Court","food-court"],"snow-sisters":["Princess Castle","princess-castle"],"soccer-squad":["Sports Arena","sports-arena"],"space-crewmate":["Pop Culture Plaza","pop-culture-plaza"],"spaghetti-meatball":["Food Court","food-court"],"spider":["Fright Night","fright-night"],"sun-moon":["Silly Street","silly-street"],"superhero-family":["Hero Headquarters","hero-headquarters"],"sushi-roll":["Food Court","food-court"],"sushi-soy":["Food Court","food-court"],"tall-hat-crew":["Pop Culture Plaza","pop-culture-plaza"],"tennis-duo":["Sports Arena","sports-arena"],"tetris-duo":["Pop Culture Plaza","pop-culture-plaza"],"the-olympians":["Hero Headquarters","hero-headquarters"],"tin-hero":["Hero Headquarters","hero-headquarters"],"tiny-firefighter":["Hero Headquarters","hero-headquarters"],"tiny-snail":["Animal Kingdom","animal-kingdom"],"tooth-fairy":["Princess Castle","princess-castle"],"toy-box-crew":["Pop Culture Plaza","pop-culture-plaza"],"under-the-sea":["Animal Kingdom","animal-kingdom"],"vampire":["Fright Night","fright-night"],"walking-taco":["Food Court","food-court"],"wayfinder-princess":["Princess Castle","princess-castle"],"web-hero-duo":["Hero Headquarters","hero-headquarters"],"web-slinger-crew":["Hero Headquarters","hero-headquarters"],"web-slinger-kid":["Hero Headquarters","hero-headquarters"],"wine-cheese":["Food Court","food-court"],"witchy-sisters":["Pop Culture Plaza","pop-culture-plaza"],"wizard":["Fright Night","fright-night"],"yellow-henchmen":["Pop Culture Plaza","pop-culture-plaza"],"zombie-coworker":["Fright Night","fright-night"]};
-
-
-/* Intent collections (SEO 2026-09-30): reverse link from featured /c/
-   guides back to the intent collection pages that feature them.
-   slug -> [[intentSlug, label], ...]. Same for every visitor: not cloaking. */
-var INTENT_LINKS = {"classic-ghost":[["white-sheet-costumes","White Sheet Costume Ideas"],["last-minute-costumes","Last-Minute Costume Ideas"],["family-costumes","Family Costume Ideas"],["toddler-costumes","Toddler Costume Ideas"]],"little-witch":[["white-sheet-costumes","White Sheet Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"headless-horsemen":[["white-sheet-costumes","White Sheet Costume Ideas"],["no-sew-costumes","No-Sew Costume Ideas"]],"coffee-cup":[["white-sheet-costumes","White Sheet Costume Ideas"]],"vampire":[["white-sheet-costumes","White Sheet Costume Ideas"]],"caped-duo":[["white-sheet-costumes","White Sheet Costume Ideas"]],"dino-herd":[["white-sheet-costumes","White Sheet Costume Ideas"]],"pixel-ghost":[["white-sheet-costumes","White Sheet Costume Ideas"]],"sushi-roll":[["white-sheet-costumes","White Sheet Costume Ideas"]],"doctor-bride":[["white-sheet-costumes","White Sheet Costume Ideas"]],"pizza-slice":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"donut":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"kart-racers":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"ghost-hunters":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"popcorn-bucket":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"block-game-crew":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"robot-crew":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"plug-socket":[["cardboard-box-costumes","Cardboard Box Costume Ideas"],["no-sew-costumes","No-Sew Costume Ideas"]],"haunted-animatronics":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"party-pinata":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"fairy-tale-princesses":[["cardboard-box-costumes","Cardboard Box Costume Ideas"],["family-costumes","Family Costume Ideas"],["toddler-costumes","Toddler Costume Ideas"]],"good-witch-bad-witch":[["cardboard-box-costumes","Cardboard Box Costume Ideas"]],"office-couple":[["no-sew-costumes","No-Sew Costume Ideas"],["last-minute-costumes","Last-Minute Costume Ideas"],["couples-costumes","Couples Costume Ideas"]],"lost-tourist":[["no-sew-costumes","No-Sew Costume Ideas"],["last-minute-costumes","Last-Minute Costume Ideas"]],"ninja":[["no-sew-costumes","No-Sew Costume Ideas"],["last-minute-costumes","Last-Minute Costume Ideas"],["toddler-costumes","Toddler Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"cereal-crew":[["no-sew-costumes","No-Sew Costume Ideas"],["family-costumes","Family Costume Ideas"]],"breakfast-buffet":[["no-sew-costumes","No-Sew Costume Ideas"]],"crowd-camouflage":[["no-sew-costumes","No-Sew Costume Ideas"],["last-minute-costumes","Last-Minute Costume Ideas"]],"bowling-pins":[["no-sew-costumes","No-Sew Costume Ideas"],["family-costumes","Family Costume Ideas"]],"salt-pepper":[["no-sew-costumes","No-Sew Costume Ideas"],["couples-costumes","Couples Costume Ideas"]],"bacon-eggs":[["no-sew-costumes","No-Sew Costume Ideas"],["couples-costumes","Couples Costume Ideas"]],"penguin-huddle":[["no-sew-costumes","No-Sew Costume Ideas"]],"basketball-star":[["last-minute-costumes","Last-Minute Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"error-404":[["last-minute-costumes","Last-Minute Costume Ideas"]],"goggle-crew":[["last-minute-costumes","Last-Minute Costume Ideas"],["family-costumes","Family Costume Ideas"]],"ice-skater":[["last-minute-costumes","Last-Minute Costume Ideas"],["toddler-costumes","Toddler Costume Ideas"]],"raptor-barista":[["last-minute-costumes","Last-Minute Costume Ideas"]],"dino-tourist":[["last-minute-costumes","Last-Minute Costume Ideas"]],"galaxy-knights":[["last-minute-costumes","Last-Minute Costume Ideas"],["couples-costumes","Couples Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"emoji-crew":[["family-costumes","Family Costume Ideas"]],"dino-rangers":[["family-costumes","Family Costume Ideas"]],"mystery-crew":[["family-costumes","Family Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"plumber-duo":[["family-costumes","Family Costume Ideas"],["couples-costumes","Couples Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"decades-crew":[["family-costumes","Family Costume Ideas"]],"mermaid-crew":[["family-costumes","Family Costume Ideas"]],"fruit-salad":[["family-costumes","Family Costume Ideas"]],"prince-princess":[["couples-costumes","Couples Costume Ideas"]],"burger-joint-couple":[["couples-costumes","Couples Costume Ideas"]],"ketchup-mustard":[["couples-costumes","Couples Costume Ideas"]],"cat-mouse":[["couples-costumes","Couples Costume Ideas"],["face-paint-costumes","Face Paint Costume Ideas"]],"plastic-dream-crew":[["couples-costumes","Couples Costume Ideas"]],"player-one-two":[["couples-costumes","Couples Costume Ideas"]],"pbj":[["couples-costumes","Couples Costume Ideas"]],"banana":[["toddler-costumes","Toddler Costume Ideas"]],"backyard-hero":[["toddler-costumes","Toddler Costume Ideas"]],"cheerleader":[["toddler-costumes","Toddler Costume Ideas"]],"pop-star":[["toddler-costumes","Toddler Costume Ideas"]],"little-baker":[["toddler-costumes","Toddler Costume Ideas"]],"cupcake":[["toddler-costumes","Toddler Costume Ideas"]],"little-artist":[["toddler-costumes","Toddler Costume Ideas"]],"fuzzy-monster":[["toddler-costumes","Toddler Costume Ideas"]],"boxer":[["face-paint-costumes","Face Paint Costume Ideas"]],"gloom-bloom":[["face-paint-costumes","Face Paint Costume Ideas"]],"deadpan-diva":[["face-paint-costumes","Face Paint Costume Ideas"]]};
 
 export function onRequest(context) {
   var slug = context.params.slug || "";
@@ -68,10 +57,6 @@ export function onRequest(context) {
   var idea = IDEAS[slug];
   if (!idea) return new Response(NOTFOUND_HTML, { status: 404, headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store" } });
   var title = esc(idea.t), blurb = esc(idea.b);
-  /* 2026-09-30: galaxy cross-link block ("<Title> lives in <Region>"). */
-  var _gx = GX_REGION[slug] || null,
-      _gxBlock = _gx ? "<p class=\"gxline\">" + title + " lives in " + _gx[0] +
-        " &middot; <a href=\"/map/" + _gx[1] + "\">see its neighbors &rarr;</a></p>" : "";
   var img = "https://pickmycostume.com/images/og/" + slug + ".jpg";
   /* schema.org HowTo JSON-LD: this page's costume genuinely is a materials
      list plus numbered steps, so this is honest structured data aimed at AI
@@ -83,14 +68,14 @@ export function onRequest(context) {
      triple, matching the new og:image decision cards. The triple is asserted
      present at generation time; the empty fallback keeps the page honest if
      it ever is not. esc()d: these land inside a meta content attribute. */
-  var _tripleText = (_hw && _hw.time && _hw.cost && _hw.effort) ?
+var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* 2026-09-30 traffic-operator cold-arrival polish: the triple carries
        its labels in the share preview (a bare "Medium" pill read as
        meaningless to cold recipients), and "+ drying" is spelled out as
        passive wait -- the bank's time value is hands-on time (see the
        JSON-LD comment below). */
     "Time: " + esc(_hw.time).replace(/ \+ drying$/, " of hands-on work + drying time") +
-    " \u00b7 Cost: " + esc(_hw.cost) + " \u00b7 Effort: " + esc(_hw.effort) + ". " : "";
+    " \u00b7 Effort: " + esc(_hw.effort) + ". " : "";
   /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
      ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
      for every idea (asserted at generation time in Python below): the article
@@ -99,11 +84,11 @@ export function onRequest(context) {
      blurb when guide data is missing so the tag is never empty. title/blurb
      are already esc()d above; _hw fields are esc()d here like _tripleText. */
   var _desc = blurb;
-  if (_hw && _hw.time && _hw.cost && _hw.effort) {
+  if (_hw && _hw.time && _hw.effort) {
     var _art = /^the /i.test(title) ? "" : (/^[aeiou]/i.test(title) ? "an " : "a ");
     _desc = "How to make " + _art + title + " costume in " + esc(_hw.time) +
-      " for about " + esc(_hw.cost) + ". " + esc(_hw.effort) +
-      " DIY project with a full supplies list and step-by-step guide.";
+      ". " + esc(_hw.effort) +
+      " DIY project with a full supplies list, step-by-step guide, and sizing tips.";
     if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
   }
   var _ld = "";
@@ -130,15 +115,8 @@ export function onRequest(context) {
     };
     var _tm = /^\s*(\d+)\s*min/i.exec(_hw.time || "");
     if (_tm) _hld.totalTime = "PT" + _tm[1] + "M";
-    /* Estimated cost: bank stores "$3-10". Emit a USD MonetaryAmount
-       range, same numbers as the visible triple. */
-    var _cm = /^\$(\d+)-(\d+)$/.exec(_hw.cost || "");
-    /* Parse the dollar range as numbers: schema.org QuantitativeValue
-       expects numeric minValue/maxValue. Same numbers as the visible
-       decision triple. */
-    if (_cm) _hld.estimatedCost = {"@type": "MonetaryAmount",
-      "currency": "USD", "minValue": parseInt(_cm[1], 10),
-      "maxValue": parseInt(_cm[2], 10)};
+    /* No estimatedCost: prices are not decision-useful and can mislead
+       (2026-10-01). The bank keeps its internal cost field; schema omits it. */
     _ld = '<script type="application/ld+json">' + JSON.stringify(_hld) +
       '<' + '/script>';
     /* FAQPage block: the same parent FAQs rendered visibly in the page
@@ -236,7 +214,7 @@ export function onRequest(context) {
   var _oNoDuel = ["gift", "pair", "vote", "grandparent", "role", "split"].indexOf(_qp.get("o") || "") >= 0;
   if ((_qp.get("s") || "") && _qp.get("gift") !== "1" && !_oNoDuel) _qp.set("duel", slug);
   var target = "/?" + _qp.toString();
-  /* 2026-09-27 Billy: arrivals from the app's own rails (from=rail /
+    /* 2026-09-27 Billy: arrivals from the app's own rails (from=rail /
      from=hero) were invited to "Open this costume in Pick My Costume" --
      the app they just came from. In-app arrivals got a make-it label.
      2026-09-30 traffic-operator (cold-arrival polish): cycle-5 QA found the
@@ -325,7 +303,7 @@ export function onRequest(context) {
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
      the meta tags in the head, so they cannot regress. */
-  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "", _kbPrompt = "";
+  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     _steps = _hw.s.map(function(x, i){
@@ -342,25 +320,6 @@ export function onRequest(context) {
       }
       return "<li>" + _tx + "</li>";
     }).join("");
-    /* 2026-09-30 (Billy spec): "Keep building this costume" — the AI plan
-       prompt, generated server-side per costume from the same bank data as
-       the guide. Same framework for every costume; materials and steps go
-       in verbatim so the AI builds on the guide instead of inventing a
-       different costume. Safety notes live inside the step text, so they
-       survive verbatim. Plain text, never JSON. */
-    _kbPrompt = "I'm making this Halloween costume: " + idea.t + ".\n\nIdea:\n" + idea.b +
-      "\n\nReference image:\nhttps://pickmycostume.com/photos/" + slug + ".webp" +
-      "\n\nHere is the build guide I already have.\n\nMaterials:\n- " + _hw.m.join("\n- ") +
-      "\n\nSteps:\n" + _hw.s.map(function(x, i){ return (i + 1) + ". " + x; }).join("\n") +
-      (_hw.s.length ? "" : "\n\nThis costume's guide has no DIY steps: focus the plan on what to buy, how to style and fit each piece, and how to assemble the look, rather than inventing craft projects.") +
-      "\n\nHelp me turn this into something I can actually make.\n\n" +
-      "Give me a concrete plan in this format:\n\n" +
-      "BUY: Tell me exactly what to search for, approximate costs, where I would typically find each item, and what to check for fit or quality.\n\n" +
-      "DIY: Give me at most 5 numbered steps. Make every step specific and actionable. If something needs to be cut, taped, measured, attached, painted, or assembled, tell me exactly how.\n\n" +
-      "TIP: Give me one small detail that makes the finished costume look intentional.\n\n" +
-      "EASIEST: Give me the lowest-effort version that still clearly reads as this costume.\n\n" +
-      "Keep the answer under 200 words. Use plain language and do not repeat the build guide unnecessarily.\n\n" +
-      "After giving me the plan, help me continue building it conversationally. If I tell you what I already own, where I am shopping, or send you a photo, adapt the plan from there instead of restarting.";
     /* 2026-09-25: quick version leads. 2026-09-29 (#31): the quickcard
        used to render first-sentences of the same 5 steps the full ordered
        list repeats below -- structural duplication. The quickcard is now a
@@ -371,7 +330,7 @@ export function onRequest(context) {
     _hw.s.forEach(function(x){
       if (/^Optional pro finish:\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\s*/i, ""); }
     });
-    _quick = "<p class=\"qtriple\">DIY this week: ~" + esc(_hw.cost) + ", " + esc(_hw.time) + "</p>" +
+    _quick = "<p class=\"qtriple\">DIY this week: " + esc(_hw.time) + " of hands-on work</p>" +
       "<ul class=\"mats qmats\">" + _mats + "</ul>" +
       (_qtip ? "<p class=\"qtip\">Tip: " + esc(_qtip) + "</p>" : "");
     /* Decision triple: the most quotable line of the guide, first under h1.
@@ -382,7 +341,6 @@ export function onRequest(context) {
     var _timeText = esc(_hw.time).replace(/ \+ drying$/, " of hands-on work + drying time");
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\"pill\"><span class=\"pl\">Time</span>" + _timeText + "</span>");
-    if (_hw.cost) _pills.push("<span class=\"pill\"><span class=\"pl\">Cost</span>" + esc(_hw.cost) + "</span>");
     if (_hw.effort) _pills.push("<span class=\"pill\"><span class=\"pl\">Effort</span>" + esc(_hw.effort) + "</span>");
     if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p>";
     /* Sizing guidance: the fit note every parent asks about. */
@@ -410,15 +368,6 @@ export function onRequest(context) {
   if (_rel.length) {
     _relHtml = "<h2>More costumes like this</h2><ul class=\"rellist\">" +
       _rel.map(function(s){ return "<li><a href=\"/c/" + s + "\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
-      "</ul>";
-  }
-  /* Intent collection links (2026-09-30): "More collections like this"
-     back-links to the intent pages featuring this guide. */
-  var _il = INTENT_LINKS[slug] || [];
-  var _ilHtml = "";
-  if (_il.length) {
-    _ilHtml = "<h2>More collections like this</h2><ul class=\"intentlist\">" +
-      _il.map(function(p){ return "<li><a href=\"/" + p[0] + "\">" + p[1] + "</a></li>"; }).join("") +
       "</ul>";
   }
   /* Recipient banner (Experiment 3 recipient ship). Client-side injection:
@@ -692,10 +641,9 @@ export function onRequest(context) {
     _ld +
     "<style>" +
     "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#1f1f1f;background:#fff;line-height:1.55;}" +
-    ".topbar{background:#fff;border-bottom:1px solid #eee2d3;padding:10px 20px;position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;}" +
+    ".topbar{background:#fff;border-bottom:1px solid #eee2d3;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
     ".topbar a{color:#1f1f1f;text-decoration:none;font-weight:800;font-size:16px;}" +
     ".topbar a span{color:#ff8c1a;}" +
-    ".topbar .expl{font-size:13px;font-weight:700;color:#ff8c1a;white-space:nowrap;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
     ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
@@ -737,12 +685,6 @@ export function onRequest(context) {
     ".ctasub{display:block;font-size:14px;color:#777;margin-top:10px;}" +
     ".quickcard .qmats{margin:12px 0;}" +
     ".pinline a{color:#b3541e;font-weight:700;}" +
-    ".remindbox{margin:26px 0;padding:20px;border:2px solid #ff8c1a;border-radius:14px;text-align:center;background:#fff8f0;}" +
-    ".remindbox h2{margin:0 0 6px;font-size:20px;}" +
-    ".remindsub{font-size:15px;color:#555;margin:0 0 12px;}" +
-    ".remindform{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}" +
-    ".remindform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px;}" +
-    ".remindnote{font-size:13px;color:#777;margin:8px 0 0;min-height:18px;}" +
     ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
     ".safesrc{font-size:14px;color:#777;}" +
     ".rbanner{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
@@ -769,12 +711,7 @@ export function onRequest(context) {
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
     ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
-    ".intentlist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
-    ".intentlist li{margin:0;}" +
-    ".intentlist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
     ".crumb{font-size:13px;color:#777;margin:0 0 8px;}" +
-    ".gxline{font-size:14px;color:#777;margin:12px 0 0;}" +
-    ".gxline a{color:#b3541e;text-decoration:none;font-weight:700;}" +
     ".crumb a{color:#b3541e;text-decoration:none;}" +
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
     ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
@@ -783,25 +720,13 @@ export function onRequest(context) {
        photo (og card rendered from photos/<slug>.webp), so it carries the
        same tag with the same styling. */
     ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
-    /* 2026-09-30 (Billy spec): "Keep building this costume" block. Dominant
-       full-width copy button; the prompt stays collapsed behind "Show prompt". */
-    ".kb{margin:26px 0;}" +
-    ".kb-desc{font-size:16px;color:#444;margin:0 0 8px;line-height:1.55;}" +
-    ".kb-sub{font-size:14px;color:#777;margin:0 0 6px;line-height:1.5;}" +
-    ".kb-copy{width:100%;border:0;cursor:pointer;min-height:56px;font-size:18px;}" +
-    ".kb-works{font-size:14px;color:#777;margin:10px 0 0;}" +
-    ".kb-status{font-size:15px;font-weight:600;color:#333;margin:10px 0 0;}" +
-    ".kb-status:empty{display:none;}" +
-    ".kb-show{background:none;border:0;padding:0;margin:12px 0 0;color:#b3541e;text-decoration:underline;font-size:14px;cursor:pointer;}" +
-    ".kb-prompt{width:100%;box-sizing:border-box;min-height:220px;margin-top:10px;padding:12px;font-size:14px;line-height:1.5;border:1px solid #ddd;border-radius:10px;background:#fffdf6;color:#333;font-family:inherit;white-space:pre-wrap;}" +
     "</style>" +
-    "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a><a class=\"expl\" href=\"/map/\">🗺️ Explore the galaxy</a></div><main class=\"guide\">" +
+    "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + title + "</h1>" +
     _triple +
     _sharerLine +
     _fit +
-    _gxBlock +
     "<p class=\"lede\">" + blurb + "</p>" +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a><span class=\"ctasub\">No signup \u00b7 2 minutes.</span></p>" +
@@ -811,24 +736,8 @@ export function onRequest(context) {
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
     _splitHtml +
     "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
-    /* 2026-09-30 (Billy spec): "Keep building this costume" sits directly
-       after the Steps — the natural next action once the guide is read. The
-       prompt is server-generated per costume (_kbPrompt), collapsed by
-       default; one tap copies the whole thing. */
-    (_kbPrompt ?
-    "<section class=\"kb\">" +
-    "<h2>Keep building this costume</h2>" +
-    "<p class=\"kb-desc\">Get a practical plan for what to buy, what to make, and how to put it together.</p>" +
-    "<p class=\"kb-sub\">Your costume details, materials, and instructions are already included.</p>" +
-    "<p class=\"ctawrap\"><button type=\"button\" class=\"cta kb-copy\" id=\"kbCopy\">Copy costume plan</button></p>" +
-    "<p class=\"kb-works\">Works with ChatGPT, Claude, Gemini, Muse, or another AI.</p>" +
-    "<p class=\"kb-status\" id=\"kbStatus\" role=\"status\"></p>" +
-    "<p><button type=\"button\" class=\"kb-show\" id=\"kbShow\">Show prompt</button></p>" +
-    "<textarea class=\"kb-prompt\" id=\"kbPrompt\" readonly style=\"display:none\">" + esc(_kbPrompt) + "</textarea>" +
-    "</section>" : "") +
     _faqs +
     _relHtml +
-    _ilHtml +
     _splitPartnerHtml +
     /* "I made it" proof-photo block (novel-find 2026-09-26i, MakerWorld steal):
        gated on the IMADEIT one-line flag. The CTA deep-links into the app's
@@ -836,52 +745,12 @@ export function onRequest(context) {
     (IMADEIT ? "<h2>Wore this? Show us</h2>" +
     "<p class=\"madeit-line\">Made this costume? Your photo helps the next person see the real thing.</p>" +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
-    "<section class=\"remindbox\">" +
-    "<h2>\uD83D\uDD14 One email on Oct 27</h2>" +
-    "<p class=\"remindsub\">Want one email on Oct 27 with costumes you can make that night? That's it, one email, then you're off the list.</p>" +
-    "<form id=\"remindForm\" class=\"remindform\">" +
-    "<input type=\"email\" id=\"remindEmail\" placeholder=\"you@example.com\" aria-label=\"Email address\" required>" +
-    "<button class=\"cta\" type=\"submit\" style=\"border:0;cursor:pointer\">Remind me</button>" +
-    "</form>" +
-    "<p class=\"remindnote\" id=\"remindNote\" role=\"status\"></p>" +
-    "</section>" +
-    "<script>(function(){" +
-    "var f=document.getElementById('remindForm');if(!f)return;" +
-    "try{if(localStorage.getItem('pmc_reminded')==='1'){f.style.display='none';}}catch(_){}" +
-    "f.addEventListener('submit',function(e){e.preventDefault();" +
-    "var em=document.getElementById('remindEmail').value.trim();" +
-    "var note=document.getElementById('remindNote');" +
-    "if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(em)){note.textContent='That email doesn\\\u2019t look right. Try again?';return;}" +
-    "note.textContent='Saving\u2026';" +
-    "fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})})" +
-    ".then(function(r){return r.json();}).then(function(j){" +
-    "if(j&&j.ok){try{localStorage.setItem('pmc_reminded','1');}catch(_){}note.textContent='\u2705 You\\\u2019re on the list: one email on Oct 27, that\\\u2019s it.';try{if(window.posthog&&posthog.capture)posthog.capture('reminder_signup',{source:'c-guide'});}catch(_){}}" +
-    "else if(j&&j.reason==='unconfigured'){note.textContent='Reminders are being connected. Check back soon.';}" +
-    "else{note.textContent='Hmm, that didn\\\u2019t save. Try again?';}" +
-    "},function(){note.textContent='Hmm, that didn\\\u2019t save. Try again?';});});})();</script>" +
-"<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
+    "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\"pinline\">Saving this idea? <a target=\"_blank\" rel=\"noopener\" href=\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\">Pin it on Pinterest</a></p>" +
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +
     _bannerScript +
     _splitScript +
-    /* 2026-09-30 (Billy spec): "Keep building this costume" interactions.
-       One tap copies the entire generated prompt (clipboard API with a
-       select-and-execCommand fallback); "Show prompt" reveals it collapsed. */
-    "<script>(function(){" +
-    "var btn=document.getElementById('kbCopy'),ta=document.getElementById('kbPrompt')," +
-    "show=document.getElementById('kbShow'),st=document.getElementById('kbStatus');" +
-    "if(!btn||!ta||!show||!st)return;" +
-    "function done(ok){st.textContent=ok?'Copied. Paste it into your AI and keep asking questions as you build.':'Copy did not work. Tap Show prompt, then select and copy the text.';}" +
-    "function fb(){ta.style.display='block';ta.select();try{document.execCommand('copy');done(true);}catch(e){done(false);}show.textContent='Hide prompt';}" +
-    "btn.addEventListener('click',function(){" +
-    "var t=ta.value;" +
-    "if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done(true);},fb);}else{fb();}" +
-    "});" +
-    "show.addEventListener('click',function(){" +
-    "var open=ta.style.display!=='none';ta.style.display=open?'none':'block';show.textContent=open?'Show prompt':'Hide prompt';" +
-    "});" +
-    "})();</script>" +
     "</main></body></html>";
   return new Response(html, {
     headers: {
