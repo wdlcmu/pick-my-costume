@@ -11,7 +11,8 @@
 // - Idempotency: checks Resend for an already-sent broadcast with our
 //   subject before sending; a second trigger returns already_sent.
 // - No request body fields are honored; the content is fixed to the copy
-//   Billy approved (oct-27-reminder-email-FINAL-v3.md).
+//   Billy approved (oct-27-reminder-email-FINAL-v4.md; v4 removes dollar
+//   figures per his Oct 1 no-dollar decision, pending his re-approval).
 // - If REMINDER_AUDIENCE_ID is missing it returns unconfigured (no send).
 
 const SUBJECT = 'Halloween is 4 days away. You already own a costume.';
@@ -27,46 +28,46 @@ Pick My Costume's pantry check ranks all 164 costume ideas by what you can make 
 
 https://pickmycostume.com/pantry
 
-Here are 16 that are genuinely make-tonight, with real times and costs straight from the guides.
+Here are 16 that are genuinely make-tonight, with real build times straight from the guides.
 
-Half of these are $2 or less, and none top $15.
+Most of these build from stuff already in your house.
 
-- Classic Ghost (10 min, $4-5): white sheet, black marker for the eyes, scissors
+- Classic Ghost (10 min): white sheet, black marker for the eyes, scissors
   https://pickmycostume.com/c/classic-ghost
-- Ninja (10 min + drying, $0): all-black closet outfit, headband wrap, an old tie as the sash
+- Ninja (10 min + drying): all-black closet outfit, headband wrap, an old tie as the sash
   https://pickmycostume.com/c/ninja
-- Emoji Crew (15 min, $0-1): yellow tee per person, paper plate face, markers
+- Emoji Crew (15 min): yellow tee per person, paper plate face, markers
   https://pickmycostume.com/c/emoji-crew
-- Breakfast Buffet (25 min, $0): cardboard from boxes you have, markers, string
+- Breakfast Buffet (25 min): cardboard from boxes you have, markers, string
   https://pickmycostume.com/c/breakfast-buffet
-- Coffee Cup (20 min, $4-6): white sheet or trash bag, a cardboard tube, a paper lid
+- Coffee Cup (20 min): white sheet or trash bag, a cardboard tube, a paper lid
   https://pickmycostume.com/c/coffee-cup
-- Salt & Pepper (15 min + drying, $1-2): white outfit for Salt, black for Pepper, cardboard shaker tops
+- Salt & Pepper (15 min + drying): white outfit for Salt, black for Pepper, cardboard shaker tops
   https://pickmycostume.com/c/salt-pepper
-- Decades Crew (20 min, $1-2): your own closet clothes, a hand-lettered decade card
+- Decades Crew (20 min): your own closet clothes, a hand-lettered decade card
   https://pickmycostume.com/c/decades-crew
-- Plug and Socket (45 min + drying, $1-2): two cardboard panels, gray and white paint
+- Plug and Socket (45 min + drying): two cardboard panels, gray and white paint
   https://pickmycostume.com/c/plug-socket
-- Player One & Two (20 min, $2): matching tees, iron-on 1 and 2
+- Player One & Two (20 min): matching tees, iron-on 1 and 2
   https://pickmycostume.com/c/player-one-two
-- Ghost Hunters (30 min, $3-8): thrift-store khaki outfit, a cardboard box pack, paper name patches
+- Ghost Hunters (30 min): thrift-store khaki outfit, a cardboard box pack, paper name patches
   https://pickmycostume.com/c/ghost-hunters
-- Ice Cream Cone (20 min + drying, $6-8): paper cone hat, white tee, paper-dot sprinkles
+- Ice Cream Cone (20 min + drying): paper cone hat, white tee, paper-dot sprinkles
   https://pickmycostume.com/c/ice-cream-cone
-- Cereal Crew (20 min, $0-1): solid-color shirt and pants, empty cereal boxes
+- Cereal Crew (20 min): solid-color shirt and pants, empty cereal boxes
   https://pickmycostume.com/c/cereal-crew
-- Block Game Crew (45 min + drying, $8-11): big cardboard boxes, paint in hero colors
+- Block Game Crew (45 min + drying): big cardboard boxes, paint in hero colors
   https://pickmycostume.com/c/block-game-crew
-- Fairy Tale Princesses (15 min + drying, $9-12): a dress from the closet, a cereal-box crown, gold paint
+- Fairy Tale Princesses (15 min + drying): a dress from the closet, a cereal-box crown, gold paint
   https://pickmycostume.com/c/fairy-tale-princesses
-- Block Monster (30 min + drying, $12-14): a solid sweatsuit, cardboard blocks, tape
+- Block Monster (30 min + drying): a solid sweatsuit, cardboard blocks, tape
   https://pickmycostume.com/c/block-monster
-- Space Crewmate (20 min, $10-15): a plain sweatsuit, cardboard and foil for the pack
+- Space Crewmate (20 min): a plain sweatsuit, cardboard and foil for the pack
   https://pickmycostume.com/c/space-crewmate
 
-Every guide shows the real cost and build time before you start.
+Every guide shows the build time and what you need before you start.
 
-I had AI help me build this site, and I keep the numbers honest.
+I had AI help me build this site, and I keep the build times honest.
 
 That's the one email. You're off the list.
 
