@@ -1427,6 +1427,17 @@ document.addEventListener("click", function(e){
 });
 function show(id){
   closeQuizSheet();
+  /* 2026-10-01 (Billy): the runner-up fullscreen overlay (z-index 1000) sits
+     above every screen and is not a .screen, so a bare screen switch left it
+     covering the new screen: the plan panel's "Add to my calendar" and
+     "Check against your closet" appeared to do nothing (their _opened events
+     fired, the new screen rendered underneath). Any screen change dismisses
+     the overlay, mirroring its own close button. */
+  try {
+    var _ro = document.getElementById("ru-overlay");
+    if (_ro && _ro.style.display !== "none"){ _ro.style.display = "none"; _ro.innerHTML = ""; }
+    document.body.style.overflow = "";
+  } catch(_){}
   var screens = document.querySelectorAll(".screen");
   for (var i = 0; i < screens.length; i++) screens[i].classList.remove("on");
   $(id).classList.add("on");
