@@ -6919,7 +6919,7 @@ function startDuelFlow(){
      of combat framing. */
   var _kf = duelKidFrame(theirs);
   try { Analytics.track("duel_started", Object.assign(viaShareProps(), {kid_frame: _kf})); } catch(_){}
-  $("duel-friend-name").textContent = theirs.title;
+  $("duel-s1-title").textContent = "Your friend picked " + theirs.title; /* 2026-10-01 hygiene: full string set client-side; static HTML carries no state text */
   var _s3t = $("duel-s3-title");
   _s3t.textContent = _kf ? "Side by side" : "You vs your friend";
   Array.prototype.forEach.call(document.querySelectorAll("#s-duel .progress"), function(p){
