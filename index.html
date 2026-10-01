@@ -1040,6 +1040,22 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .st-chan small{display:block;font-weight:400;font-size:13px;color:var(--muted);margin-top:2px}
 @media (hover:hover){.st-chan:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 @media (min-width:900px){.st-title{font-size:40px}.st-bottom{padding:28px 48px calc(28px + env(safe-area-inset-bottom))}.st-tale{font-size:22px;max-height:40vh}.st-tale.fs1{font-size:27px}.st-tale.fs2{font-size:33px}}
+/* 2026-10-01 (STEP 1): plan-first panel -- "Next" block, share card, own/buy labels. */
+.plan-next{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.plan-next h3{margin:0 0 10px}
+.plan-next>.ghost{width:100%;margin-top:10px}
+.share-card{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:var(--radius)}
+.share-card h4{margin:0 0 8px}
+.share-prev{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.share-prev img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none;background:#241a38}
+.share-meta{min-width:0}
+.share-meta b{display:block}
+.share-meta p{margin:4px 0 0;font-size:13px;opacity:.85}
+.share-meta .share-link{font-size:12px;opacity:.65;word-break:break-all}
+.share-card>.ghost{width:100%}
+.ownbuy{font-weight:700;font-size:13px;margin-left:6px;white-space:nowrap}
+.ownbuy.own{color:#7ee2a8}
+.ownbuy.buy{color:var(--accent)}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
@@ -1122,7 +1138,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <p class="tminus" id="tminus" style="display:none"></p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <!-- 2026-09-30 delight: hero promise, plain. -->
-      <p class="fine honestline firstonly">Answer 5 quick questions. Get your costume pick with cost and build time.</p>
+      <p class="fine honestline firstonly">Answer 5 quick questions. Get your costume pick with build time and a step-by-step plan.</p>
       <p class="fine firstonly" style="margin:6px 0 0">No signup · 2 minutes · free</p>
     <!-- 2026-10-01: galaxy elevated to secondary CTA under the quiz hero. -->
     <p class="fine firstonly" style="margin:8px 0 0">Rather wander? <a href="/map/">Explore all 164 as a galaxy</a> &#8594;</p>
