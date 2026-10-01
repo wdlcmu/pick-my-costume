@@ -253,7 +253,7 @@ function pick(id){
   document.getElementById("ctitle").textContent=e.t;
   document.getElementById("cblurb").textContent=e.b;
   document.getElementById("triple").innerHTML=
-    "<span>"+esc(e.time)+"</span><span>"+esc(e.cost)+"</span><span>"+esc(e.effort)+"</span>";
+    "<span>"+esc(e.time)+"</span><span>"+esc(e.effort)+"</span>";
   var fh="";
   e.flags.forEach(function(f){fh+='<div class="flag"><b>'+esc(f.label)+'</b><span>'+esc(f.why)+'</span></div>';});
   if(e.paint&&!e.flags.some(function(f){return f.k==="mask";})){fh+='<div class="clear">Uses face paint, not a mask. Most schools are fine with face paint.</div>';}
