@@ -237,10 +237,11 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      Reversible: restore the /^(rail|hero)/ branch with the old cold string
      above to re-split. */
   /* 2026-10-01: single CTA (the duplicate bottom one was removed below).
-     "Plan it in the app" names the destination for cold arrivals better
-     than the old "Make this costume" (cold-arrival polish). Reversible:
-     restore the old string. */
-  var _ctaLabel = "Plan it in the app →";
+     "Plan this costume →" matches the in-app button text so the handoff
+     feels continuous -- and it never implies a native app to download
+     (Billy: "Plan it in the app" read like an app-store ask; there is no
+     app). Reversible: restore the old string. */
+  var _ctaLabel = "Plan this costume →";
   var targetAttr = target.replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
      RECIPIENT_BANNER = false returns the page to the no-banner control.
