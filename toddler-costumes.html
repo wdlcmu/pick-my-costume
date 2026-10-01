@@ -31,8 +31,10 @@ document.head.appendChild(s); })();
 <style>
 :root{--acc:#e8632c;--ink:#1d1a16;--mut:#6b6259;--bg:#fffaf3}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.55}
-.top{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#1d1a16;color:#fff}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:14px 20px;background:#1d1a16;color:#fff}
 .top a{color:#fff;text-decoration:none}.brand{font-weight:800;font-size:18px}.brand span{color:#ffb020}
+.sitenav{display:flex;gap:16px;align-items:center}.sitenav a{font-weight:600;font-size:15px}
+@media (hover:hover){.sitenav a:hover{color:#ffb020}}
 main{max-width:1060px;margin:0 auto;padding:24px 20px 60px}
 h1{font-size:32px;margin:10px 0 4px}.byline{color:var(--mut);font-size:14px;margin:0 0 12px}
 .lede{font-size:18px;max-width:720px}
@@ -46,19 +48,17 @@ h1{font-size:32px;margin:10px 0 4px}.byline{color:var(--mut);font-size:14px;marg
 .cta a{color:#ffb020;font-weight:700}
 footer{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}
 footer a{color:var(--mut);margin:0 10px}
-.remind{border:2px solid var(--acc);border-radius:14px;padding:24px;margin:32px 0;text-align:center;background:#fff}
-.remind h2{margin:0 0 8px;font-size:22px}
-.rsub{color:var(--mut);margin:0 0 16px}
-.rform{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.rform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #ddd;min-width:220px;max-width:100%}
-.rform button{font-size:16px;font-weight:700;padding:12px 22px;border-radius:10px;border:0;background:var(--acc);color:#fff;cursor:pointer}
-.rnote{font-size:13px;color:var(--mut);margin:10px 0 0;min-height:18px}
 </style>
 </head>
 <body>
 <header class="top">
 <a class="brand" href="https://pickmycostume.com/">Pick My <span>Costume</span></a>
-<a class="home-link" href="https://pickmycostume.com/">Home</a>
+<nav class="sitenav" aria-label="Site">
+<a href="https://pickmycostume.com/" aria-label="Find my costume — the quiz">Find</a>
+<a href="https://pickmycostume.com/map/">Explore</a>
+<a href="https://pickmycostume.com/pantry">Pantry</a>
+<a href="https://pickmycostume.com/play">Play</a>
+</nav>
 </header>
 <main>
 <p class="byline">Updated September 2026 · Pick My Costume</p>
@@ -165,37 +165,7 @@ footer a{color:var(--mut);margin:0 10px}
 <div class="cta">
 <p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 164 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
 </div>
-<section class="remind" data-unit-id="remind">
-<h2>🔔 One email on Oct 27</h2>
-<p class="rsub">Want one email on Oct 27 with costumes you can make that night? That's it — one email, then you're off the list.</p>
-<form id="remindForm" class="rform">
-<input type="email" id="remindEmail" placeholder="you@example.com" aria-label="Email address" required>
-<button type="submit">Remind me</button>
-</form>
-<p class="rnote" id="remindNote" role="status"></p>
-</section>
-<script>
-(function(){
-var sec=document.querySelector('section.remind'); var f=document.getElementById('remindForm'); if(!f||!sec) return;
-function fireImp(){ track('unit_impression',{unit_id:'remind',unit_type:'cta',page:location.pathname,item_count:1}); }
-if('IntersectionObserver' in window){ var o=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ o.disconnect(); fireImp(); } }); }); o.observe(sec); }
-else { fireImp(); }
-try{ if(localStorage.getItem('pmc_reminded')==='1'){ f.style.display='none'; } }catch(e){}
-f.addEventListener('submit',function(e){ e.preventDefault();
-var em=document.getElementById('remindEmail').value.trim();
-var note=document.getElementById('remindNote');
-track('unit_click',{unit_id:'remind',unit_type:'cta',page:location.pathname,item_id:'remind-form',position:0});
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){ note.textContent='That email doesn\u2019t look right \u2014 try again?'; return; }
-note.textContent='Saving\u2026';
-fetch('/reminder-signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,source:'toddler-costumes'})})
-.then(function(r){return r.json();}).then(function(j){
-if(j&&j.ok){ try{localStorage.setItem('pmc_reminded','1');}catch(x){} note.textContent='\u2705 You\u2019re on the list \u2014 one email on Oct 27, that\u2019s it.'; track('reminder_signup',{source:'toddler-costumes'}); }
-else if(j&&j.reason==='unconfigured'){ note.textContent='Reminders are being connected \u2014 check back soon.'; }
-else{ note.textContent='Hmm, that didn\u2019t save. Try again?'; }
-},function(){ note.textContent='Hmm, that didn\u2019t save. Try again?'; });
-});
-})();
-</script></main>
+</main>
 <footer>
 <a href="/about">About</a><a href="/about#faq">FAQ</a><a href="mailto:hello@pickmycostume.com">Contact</a>
 <p>Built with Muse.</p>
