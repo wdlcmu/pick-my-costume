@@ -6958,8 +6958,9 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     });
     _rs.appendChild(_ul);
     var row = document.createElement("div"); row.className = "row";
-    var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "Plan this costume";
-    var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Tap \"Plan this costume\" above to see the build guide."; /* 2026-09-30: instruction, not an error-style nudge */
+    var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta";
+    var _bMain = document.createElement("span"); _bMain.className = "cta-main"; _bMain.textContent = "Plan this costume"; bPick.appendChild(_bMain);
+    var hint = document.createElement("span"); hint.className = "cta-sub"; hint.textContent = "See the build guide"; bPick.appendChild(hint); /* 2026-10-01 (Billy): the caption was orphaned below the button it described; it now rides inside as the button's subtitle */
     if (pick && pick.ideaId === idea.id) hint.style.display = "none";
     var note = document.createElement("p"); note.className = "picked-note";
     /* 2026-09-26: "You're going as X" read as a joke for family/group
@@ -7072,7 +7073,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     if (_howto) card.appendChild(_howto);
     card.appendChild(row);
     if (idx === 0) card.appendChild(buildVibeFeedback(idea)); /* ask everyone, not just pickers */
-    card.appendChild(hint); card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
+    card.appendChild(note); card.appendChild(planBox); card.appendChild(status);
     return card;
 }
 /* Tracks which ideas had their pick panel open in this session, so a
@@ -9649,8 +9650,9 @@ function buildBrowseDetailCard(idea, whyHead){
   wh.appendChild(wb);
   wh.appendChild(document.createTextNode(": " + idea.why));
   var row = document.createElement("div"); row.className = "row";
-  var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta"; bPick.textContent = "Plan this costume";
-  var hint = document.createElement("p"); hint.className = "pick-hint"; hint.textContent = "Tap \"Plan this costume\" above to see the build guide."; /* 2026-09-30: instruction, not an error-style nudge */
+  var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta";
+  var _bMain = document.createElement("span"); _bMain.className = "cta-main"; _bMain.textContent = "Plan this costume"; bPick.appendChild(_bMain);
+  var hint = document.createElement("span"); hint.className = "cta-sub"; hint.textContent = "See the build guide"; bPick.appendChild(hint); /* 2026-10-01 (Billy): the caption was orphaned below the button it described; it now rides inside as the button's subtitle */
   var note = document.createElement("p"); note.className = "picked-note";
   note.textContent = "\u2713 You\u2019re going as " + idea.title;
   var planBox = document.createElement("div");
@@ -9701,7 +9703,7 @@ function buildBrowseDetailCard(idea, whyHead){
   if (_closetB) right.appendChild(_closetB);
   var _howtoB = buildInstructions(idea, {via: "browse_detail"});
   if (_howtoB) right.appendChild(_howtoB);
-  right.appendChild(row); right.appendChild(hint); right.appendChild(note); right.appendChild(planBox); right.appendChild(status);
+  right.appendChild(row); right.appendChild(note); right.appendChild(planBox); right.appendChild(status);
   /* 2026-09-30 (Billy, Claude R2): curated "Pairs well with" row sits above
      the algorithmic rail. Quiz result cards are untouched (item-9 minimal). */
   var _pairs = buildPairsWellRow(idea);
