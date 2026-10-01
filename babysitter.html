@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Babysitter's Halloween | Pick My Costume</title>
+<meta name="description" content="Your sitter needs a costume too. Pick one kid-safe, comfy, easy Halloween costume and send her the link: build guide included.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://pickmycostume.com/babysitter">
+<meta property="og:title" content="The Babysitter's Halloween">
+<meta property="og:description" content="Pick your sitter a Halloween costume: kid-safe, comfy, easy to make. One link, build guide included.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pickmycostume.com/babysitter">
+<script>
+/* PostHog: anonymous usage stats only. No names are sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+/* Standing QA exclusion: ?probe=, ?sim=, ?internal=1 tag the event internal. */
+function ph(name,props){props=props||{};try{var q=location.search;if(/[?&](probe|sim)=/.test(q)||/[?&]internal=1/.test(q))props.internal=true;if(window.posthog&&window.posthog.capture){window.posthog.capture(name,props);}}catch(e){}}
+</script>
+<script>
+/* fuzzy_typeahead.js: shared tiered type-ahead for Pick My Costume staged pages.
+ *
+ * Pure, dependency-free, no DOM, ES5. Two staged pages vendor this file inline
+ * at build time (school-check.html, sibling-draft.html); each build embeds it
+ * byte-identically and the harnesses assert that, so a fix here reaches both
+ * pages on their next regen. Never edit a page's copy directly.
+ *
+ * Tiers (first non-empty wins; suggestions only, capped):
+ *   1. exact token-AND substring over title
+ *   2. exact token-AND substring over title + blurb
+ *   3. token-level fuzzy over title tokens: exact substring always wins;
+ *      otherwise Levenshtein distance <= 1 or one adjacent transposition,
+ *      and only for query and title tokens of length >= 4 (short tokens
+ *      collide, e.g. cat/car).
+ *
+ * search(query, items, opts) -> [{id, tier}, ...]. Every result shares the
+ * tier that produced it. opts: {max (default 8), minLen (default 2)}.
+ * Callers that need to know whether the fuzzy tier rescued a search
+ * (e.g. for an analytics event) check results[0].tier === 3.
+ */
+var FuzzyTypeAhead = (function(){
+  function ed1(a, b){
+    var la = a.length, lb = b.length, i = 0, j = 0, ed = 0;
+    if (Math.abs(la - lb) > 1) return false;
+    while (i < la && j < lb){
+      if (a.charCodeAt(i) === b.charCodeAt(j)){ i++; j++; }
+      else {
+        ed++; if (ed > 1) return false;
+        if (la === lb){ i++; j++; }
+        else if (la > lb){ i++; }
+        else { j++; }
+      }
+    }
+    return ed + (la - i) + (lb - j) <= 1;
+  }
+  function transp(a, b){
+    if (a.length !== b.length || a.length < 4) return false;
+    var d = -1, i;
+    for (i = 0; i < a.length; i++){
+      if (a.charCodeAt(i) !== b.charCodeAt(i)){ d = i; break; }
+    }
+    if (d < 0 || d + 1 >= a.length) return false;
+    return a.charCodeAt(d) === b.charCodeAt(d + 1) &&
+           a.charCodeAt(d + 1) === b.charCodeAt(d) &&
+           a.slice(d + 2) === b.slice(d + 2);
+  }
+  function tokMatch(qk, tt){
+    if (tt.indexOf(qk) > -1) return true;
+    if (qk.length < 4 || tt.length < 4) return false;
+    return ed1(qk, tt) || transp(qk, tt);
+  }
+  function words(s){
+    return String(s == null ? "" : s).toLowerCase().match(/[a-z0-9]+/g) || [];
+  }
+  function search(query, items, opts){
+    opts = opts || {};
+    var max = opts.max || 8;
+    var minLen = (opts.minLen === undefined) ? 2 : opts.minLen;
+    var v = String(query == null ? "" : query).trim().toLowerCase();
+    if (v.length < minLen) return [];
+    var toks = v.split(/\s+/);
+    function titleOf(e){ return String(e.title == null ? "" : e.title).toLowerCase(); }
+    function blurbOf(e){ return String(e.blurb == null ? "" : e.blurb).toLowerCase(); }
+    var tier = 1;
+    var res = items.filter(function(e){
+      var t = titleOf(e);
+      return toks.every(function(tk){ return t.indexOf(tk) > -1; });
+    });
+    if (!res.length){
+      res = items.filter(function(e){
+        var tb = titleOf(e) + " " + blurbOf(e);
+        return toks.every(function(tk){ return tb.indexOf(tk) > -1; });
+      });
+      tier = 2;
+    }
+    if (!res.length){
+      res = items.filter(function(e){
+        var tt = words(titleOf(e));
+        return toks.every(function(qk){
+          return tt.some(function(t){ return tokMatch(qk, t); });
+        });
+      });
+      tier = 3;
+    }
+    return res.slice(0, max).map(function(e){ return {id: e.id, tier: tier}; });
+  }
+  return {search: search, ed1: ed1, transp: transp, tokMatch: tokMatch};
+})();
+
+</script>
+<style>
+:root{--ink:#23201a;--mut:#6b655a;--line:#e5ddcf;--card:#fffdf8;--acc:#c2410c;--sel:#fff3e4}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#faf6ee;margin:0;padding:0 16px 80px}
+.wrap{max-width:640px;margin:0 auto}
+h1{font-size:30px;margin:28px 0 6px}
+.sub{color:var(--mut);font-size:16px;margin:0 0 20px}
+.step{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--acc);margin:26px 0 8px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.card h3{margin:0 0 4px;font-size:18px}
+.card p{margin:4px 0;color:var(--mut);font-size:14px}
+.card .triple{font-size:14px;color:var(--ink);font-weight:600}
+.card .why{font-size:13px;color:var(--acc);font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,input[type=search],.chip,.quizcta{min-height:44px}
+button{padding:10px 18px;font-size:16px;border-radius:10px;border:2px solid var(--acc);background:var(--acc);color:#fff;font-weight:700;cursor:pointer;font-family:inherit}
+button.ghost{background:#fff;color:var(--acc)}
+input[type=search]{padding:8px 12px;font-size:16px;border:2px solid var(--line);border-radius:10px;flex:1;min-width:140px;font-family:inherit;width:100%}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:10px 16px;font-size:15px;cursor:pointer;font-family:inherit;line-height:1.3}
+.chip.on{border-color:var(--acc);background:var(--sel);font-weight:700}
+.banner{background:var(--sel);border:2px solid var(--acc);border-radius:14px;padding:14px;margin:18px 0}
+.banner p{margin:6px 0}
+.sharebox textarea{width:100%;min-height:120px;font-size:15px;padding:10px;border:2px solid var(--line);border-radius:10px;font-family:inherit}
+.note{font-size:13px;color:var(--mut)}
+a{color:var(--acc)}
+.quizcta{display:flex;align-items:center;justify-content:center;text-align:center;margin:22px 0;padding:14px;border-radius:12px;background:var(--acc);color:#fff;font-weight:700;text-decoration:none;font-size:17px}
+.hits ul{list-style:none;margin:6px 0 0;padding:0;border:2px solid var(--line);border-radius:10px;max-height:240px;overflow:auto;background:#fff}
+.hits li{padding:10px 12px;font-size:16px;cursor:pointer;border-bottom:1px solid var(--line);min-height:44px;display:flex;align-items:center}
+.hits li:last-child{border-bottom:0}
+.hits li:hover,.hits li:focus{background:#faf6ec;outline:none}
+details.browse{margin-top:10px}
+details.browse summary{cursor:pointer;font-weight:700;color:var(--acc);min-height:44px;display:flex;align-items:center;font-size:16px}
+.pickgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.fineprint{font-size:12px;color:var(--mut);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="builder">
+<h1>The Babysitter's Halloween</h1>
+<p class="sub">Your sitter needs a costume too. Pick one that is comfy, easy to make, and kid-safe, then send her the link. Every pick below takes 45 minutes or less.</p>
+
+<p class="step">1. Pick her costume</p>
+<div class="card">
+<input id="q" type="search" placeholder="Start typing a costume" autocomplete="off" aria-label="Search kid-safe costumes">
+<div class="hits"><ul id="hits" style="display:none"></ul></div>
+<details class="browse">
+<summary id="browsesum">Browse all 36 kid-safe picks</summary>
+<div class="pickgrid" id="pickgrid"></div>
+</details>
+</div>
+
+<div id="pickcard" hidden>
+<p class="step">2. Her costume</p>
+<div class="card">
+<p class="why" id="pickwhy"></p>
+<h3 id="picktitle"></h3>
+<p id="pickblurb"></p>
+<p class="triple" id="picktriple"></p>
+<p><a id="pickguide" href="#">Step by step build guide</a></p>
+</div>
+
+<p class="step">3. Send her the link</p>
+<div class="card sharebox">
+<textarea id="sharetext" readonly aria-label="Share text for the sitter"></textarea>
+<div class="row" style="margin-top:10px">
+<button id="sharebtn">Share</button>
+<button class="ghost" id="copybtn">Copy text</button>
+</div>
+<p class="note">One link per sitter. She sees her costume and the build guide. Nothing to sign up for.</p>
+</div>
+</div>
+
+<a class="quizcta" id="builderquiz" href="https://pickmycostume.com/?src=share-babysitter">Not the one? Take the 2-minute quiz</a>
+<p class="fineprint">Costumes and times come from our own 138-idea bank, word for word. Nothing is invented.</p>
+</div>
+
+<div id="recipient" hidden>
+<div class="banner">
+<h1 style="margin-top:0">Your Halloween pick</h1>
+<p>A family you babysit for picked this for you: comfy, easy to make, and done in 45 minutes or less.</p>
+</div>
+<div class="card">
+<p class="why">Your costume</p>
+<h3 id="rtitle"></h3>
+<p id="rblurb"></p>
+<p class="triple" id="rtriple"></p>
+<p><a id="rguide" href="#">Step by step build guide</a></p>
+</div>
+<a class="quizcta" id="recipquiz" href="https://pickmycostume.com/?src=share-babysitter">Want your own pick? Take the 2-minute quiz</a>
+<p class="fineprint">Costumes and times come from our own 138-idea bank, word for word. Nothing is invented.</p>
+</div>
+
+</div>
+<script>
+var IDEAS=[{"blurb":"Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.","effort":"Easy","id":"blue-dog-family","time":"25 min","title":"Aussie Dog Family"},{"blurb":"Green hoodie, felt spikes down the back, stuffed tail.","effort":"Easy","id":"baby-dino","time":"20 min","title":"Baby Dinosaur"},{"blurb":"Short cape plus a first initial on the chest, mask optional.","effort":"Easy","id":"backyard-hero","time":"15 min","title":"Backyard Superhero"},{"blurb":"A tulle tutu tied onto elastic, a leotard, and a neat ballerina bun.","effort":"Easy","id":"ballerina","time":"20 min","title":"Ballerina"},{"blurb":"Yellow sweatsuit with a green felt stem hat.","effort":"Easy","id":"banana","time":"10 min","title":"Banana"},{"blurb":"Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.","effort":"Easy","id":"basketball-star","time":"5 min","title":"Basketball Star"},{"blurb":"Blue hoodie, big ears: the alien, the girl, or the whole ohana.","effort":"Easy","id":"blue-alien-ohana","time":"30 min","title":"Blue Alien Ohana"},{"blurb":"Black sweats with yellow tape stripes and soft felt antennae.","effort":"Easy","id":"bumble-bee","time":"20 min + drying","title":"Bumble Bee"},{"blurb":"Team colors and pom-poms made from cut plastic bags.","effort":"Easy","id":"cheerleader","time":"15 min","title":"Cheerleader"},{"blurb":"Brown tunic for the wrapper, white pillowcase for frosting, cherry on top.","effort":"Easy","id":"cupcake","time":"15 min","title":"Cupcake"},{"blurb":"A yellow petal headband and a green dress: a walking flower.","effort":"Easy","id":"daisy","time":"30 min + drying","title":"Daisy"},{"blurb":"Pink cardboard ring with sprinkles, worn like a sandwich board.","effort":"Easy","id":"donut","time":"35 min + drying","title":"Donut"},{"blurb":"A dress or a crown from the closet. Every princess works.","effort":"Easy","id":"fairy-tale-princesses","time":"15 min + drying","title":"Fairy Tale Princesses"},{"blurb":"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.","effort":"Easy","id":"fuzzy-monster","time":"15 min + drying","title":"Fuzzy Monster"},{"blurb":"Tulle wings, a flower crown, and a wand: the backyard turns into a fairy tale.","effort":"Easy","id":"garden-fairy","time":"20 min","title":"Garden Fairy"},{"blurb":"A tan paper cone hat and a sprinkle-dotted scoop shirt.","effort":"Easy","id":"ice-cream-cone","time":"20 min","title":"Ice Cream Cone"},{"blurb":"A white dress, tights, and a perfect bun: gold-medal energy, no ice required.","effort":"Easy","id":"ice-skater","time":"10 min","title":"Ice Skater"},{"blurb":"Red sweats, black felt dots, and little spotted wings.","effort":"Easy","id":"ladybug","time":"20 min","title":"Ladybug"},{"blurb":"A beret, a cardboard paint palette, and a splatter-painted smock.","effort":"Easy","id":"little-artist","time":"15 min + drying","title":"Little Artist"},{"blurb":"A paper chef hat, an apron, and a toy whisk.","effort":"Easy","id":"little-baker","time":"15 min","title":"Little Baker"},{"blurb":"Red tee, whistle, and a rescue buoy made from a pool noodle ring: an everyday hero costume.","effort":"Easy","id":"little-lifeguard","time":"20 min","title":"Little Lifeguard"},{"blurb":"Tan sweatsuit plus a fuzzy mane hood.","effort":"Easy","id":"little-lion","time":"20 min","title":"Little Lion"},{"blurb":"Pink clothes and a snout headband; little brother brings the dinosaur.","effort":"Easy","id":"little-pig-family","time":"25 min","title":"Little Pig Family"},{"blurb":"Crown, cape, and a royal sash from the dress-up box or the craft drawer.","effort":"Easy","id":"little-prince","time":"20 min","title":"Little Prince"},{"blurb":"Gray hoodie with a felt fin glued on the back.","effort":"Easy","id":"little-shark","time":"25 min + drying","title":"Little Shark"},{"blurb":"Black cape, pointy hat, striped tights, green face paint.","effort":"Easy","id":"little-witch","time":"15 min","title":"Little Witch"},{"blurb":"A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.","effort":"Easy","id":"pocket-plush","time":"25 min + drying","title":"Pocket Plush Monster"},{"blurb":"A sparkly jacket, a toy microphone, and the biggest hair in the room.","effort":"Easy","id":"pop-star","time":"15 min","title":"Pop Star"},{"blurb":"A striped cardboard-box body with balloon popcorn on top.","effort":"Easy","id":"popcorn-bucket","time":"30 min","title":"Popcorn Bucket"},{"blurb":"The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.","effort":"Easy","id":"snow-sisters","time":"30 min + drying","title":"Snow Sisters"},{"blurb":"White shirt with yarn spaghetti glued on, brown pom-pom meatballs.","effort":"Easy","id":"spaghetti-meatball","time":"40 min + drying","title":"Spaghetti & Meatball"},{"blurb":"Red and gold plus a glowing chest circle: the suit does the talking.","effort":"Easy","id":"tin-hero","time":"25 min","title":"The Tin Hero"},{"blurb":"Red sweats, a plastic helmet, and a toy hose.","effort":"Easy","id":"tiny-firefighter","time":"25 min","title":"Tiny Firefighter"},{"blurb":"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.","effort":"Easy","id":"tiny-snail","time":"30 min","title":"Tiny Snail"},{"blurb":"Tan vest painted like a taco shell with felt toppings.","effort":"Easy","id":"walking-taco","time":"45 min","title":"Walking Taco"},{"blurb":"Red sweatsuit, tape web lines, big white eye lenses.","effort":"Easy","id":"web-slinger-kid","time":"25 min","title":"Web Slinger"}];
+var IDEA_BY_ID={};IDEAS.forEach(function(e){IDEA_BY_ID[e.id]=e;});
+var _tapGuards={};
+function tapGuard(key,ms){var n=Date.now();if(n-(_tapGuards[key]||0)<ms)return false;_tapGuards[key]=n;return true;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function params(){return new URLSearchParams(window.location.search);}
+function guideUrl(id){return "https://pickmycostume.com/c/"+id+"?src=share-babysitter";}
+function sitterUrl(id){return "https://pickmycostume.com/babysitter?sitter="+encodeURIComponent(id)+"&src=share-babysitter";}
+function triple(e){return e.time+" - "+e.effort+" to make";}
+var current=null;
+
+function renderPick(e){
+  document.getElementById("pickwhy").textContent="Her costume";
+  document.getElementById("picktitle").textContent=e.title;
+  document.getElementById("pickblurb").textContent=e.blurb;
+  document.getElementById("picktriple").textContent=triple(e);
+  document.getElementById("pickguide").href=guideUrl(e.id);
+  document.getElementById("pickcard").hidden=false;
+  document.getElementById("sharetext").value=shareText(e);
+  markOn(e.id);
+  ph("babysitter_pick_set",{idea_id:e.id});
+}
+function markOn(id){
+  var grid=document.getElementById("pickgrid");
+  for(var i=0;i<grid.children.length;i++){
+    grid.children[i].classList.toggle("on",grid.children[i].getAttribute("data-id")===id);
+  }
+}
+function shareText(e){
+  var t="Your Halloween pick: "+e.title+". "+e.blurb+" Takes "+e.time+". ";
+  t+="Full build guide: "+guideUrl(e.id)+"\n\n";
+  t+="Pick your own with the 2-minute quiz: https://pickmycostume.com/?src=share-babysitter";
+  return t;
+}
+function doShare(){
+  if(!current||!tapGuard("babysitter-share",1000))return;
+  var text=document.getElementById("sharetext").value;
+  var done=function(){ph("babysitter_share_opened",{idea_id:current.id});};
+  if(navigator.share){
+    navigator.share({title:"The Babysitter's Halloween",text:text,url:sitterUrl(current.id)}).then(done,function(){});
+  }else{
+    doCopy();
+  }
+}
+function doCopy(){
+  if(!current||!tapGuard("babysitter-copy",1000))return;
+  var full=sitterUrl(current.id)+"\n\n"+document.getElementById("sharetext").value;
+  var done=function(){ph("babysitter_link_copied",{idea_id:current.id});};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(full).then(function(){done();alert("Copied. Text it to your sitter.");},function(){prompt("Copy this:",full);});
+  }else{prompt("Copy this:",full);}
+}
+function renderRecipient(e){
+  document.getElementById("builder").hidden=true;
+  document.getElementById("recipient").hidden=false;
+  document.getElementById("rtitle").textContent=e.title;
+  document.getElementById("rblurb").textContent=e.blurb;
+  document.getElementById("rtriple").textContent=triple(e);
+  document.getElementById("rguide").href=guideUrl(e.id);
+  ph("babysitter_recipient_view",{idea_id:e.id});
+}
+function quizClick(role){
+  return function(){if(!tapGuard("babysitter-quiz",1000))return;ph("babysitter_quiz_clicked",{idea_id:current?current.id:"",role:role});};
+}
+(function init(){
+  var q=document.getElementById("q"),hits=document.getElementById("hits");
+  var grid=document.getElementById("pickgrid");
+  IDEAS.forEach(function(e){
+    var c=document.createElement("button");
+    c.type="button";c.className="chip";c.textContent=e.title;
+    c.setAttribute("data-id",e.id);
+    c.onclick=function(){if(tapGuard("babysitter-pick",400)){current=e;renderPick(e);}};
+    grid.appendChild(c);
+  });
+  function doSearch(){
+    var res=FuzzyTypeAhead.search(q.value,IDEAS.map(function(e){return{id:e.id,title:e.title,blurb:e.blurb};}),{max:8});
+    hits.innerHTML="";
+    res.forEach(function(r){
+      var e=IDEA_BY_ID[r.id];
+      var li=document.createElement("li");li.tabIndex=0;
+      li.textContent=e.title+" ("+e.time+")";
+      var go=function(){if(tapGuard("babysitter-pick",400)){current=e;q.value=e.title;renderPick(e);hits.style.display="none";}};
+      li.onclick=go;
+      li.onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();go();}};
+      hits.appendChild(li);
+    });
+    hits.style.display=res.length?"block":"none";
+  }
+  q.addEventListener("input",doSearch);
+  document.getElementById("sharebtn").onclick=doShare;
+  document.getElementById("copybtn").onclick=doCopy;
+  document.getElementById("builderquiz").addEventListener("click",quizClick("builder"));
+  document.getElementById("recipquiz").addEventListener("click",quizClick("recipient"));
+  var p=params();
+  var sid=p.get("sitter");
+  if(sid&&IDEA_BY_ID[sid]){renderRecipient(IDEA_BY_ID[sid]);return;}
+  var src=p.get("src")||"";
+  ph("babysitter_view",{via:src?src.replace(/^share-/,""):"direct"});
+})();
+</script>
+</body>
+</html>
