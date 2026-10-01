@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Costume Receipt | Pick My Costume</title>
+<meta name="description" content="Pick any of our 138 Halloween costumes and get a shareable receipt: what it costs, how long it takes, how hard it is, straight from the build guide.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://pickmycostume.com/receipt">
+<meta property="og:title" content="My Halloween Costume Receipt">
+<meta property="og:description" content="What my costume costs, how long it takes, how hard it is. Price yours with the 2-minute quiz.">
+<meta property="og:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
+<meta property="og:type" content="website">
+<script src="vendor/qrcode-generator/qrcode.js"></script>
+<script>
+/* PostHog: anonymous usage stats only. No answers or names are sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+function ph(name,props){props=props||{};try{var q=location.search;if(/[?&](probe|sim)=/.test(q)||/[?&]internal=1/.test(q))props.internal=true;if(window.posthog&&window.posthog.capture){window.posthog.capture(name,props);}}catch(e){}}
+</script>
+<script>
+/* fuzzy_typeahead.js: shared tiered type-ahead for Pick My Costume staged pages.
+ *
+ * Pure, dependency-free, no DOM, ES5. Two staged pages vendor this file inline
+ * at build time (school-check.html, sibling-draft.html); each build embeds it
+ * byte-identically and the harnesses assert that, so a fix here reaches both
+ * pages on their next regen. Never edit a page's copy directly.
+ *
+ * Tiers (first non-empty wins; suggestions only, capped):
+ *   1. exact token-AND substring over title
+ *   2. exact token-AND substring over title + blurb
+ *   3. token-level fuzzy over title tokens: exact substring always wins;
+ *      otherwise Levenshtein distance <= 1 or one adjacent transposition,
+ *      and only for query and title tokens of length >= 4 (short tokens
+ *      collide, e.g. cat/car).
+ *
+ * search(query, items, opts) -> [{id, tier}, ...]. Every result shares the
+ * tier that produced it. opts: {max (default 8), minLen (default 2)}.
+ * Callers that need to know whether the fuzzy tier rescued a search
+ * (e.g. for an analytics event) check results[0].tier === 3.
+ */
+var FuzzyTypeAhead = (function(){
+  function ed1(a, b){
+    var la = a.length, lb = b.length, i = 0, j = 0, ed = 0;
+    if (Math.abs(la - lb) > 1) return false;
+    while (i < la && j < lb){
+      if (a.charCodeAt(i) === b.charCodeAt(j)){ i++; j++; }
+      else {
+        ed++; if (ed > 1) return false;
+        if (la === lb){ i++; j++; }
+        else if (la > lb){ i++; }
+        else { j++; }
+      }
+    }
+    return ed + (la - i) + (lb - j) <= 1;
+  }
+  function transp(a, b){
+    if (a.length !== b.length || a.length < 4) return false;
+    var d = -1, i;
+    for (i = 0; i < a.length; i++){
+      if (a.charCodeAt(i) !== b.charCodeAt(i)){ d = i; break; }
+    }
+    if (d < 0 || d + 1 >= a.length) return false;
+    return a.charCodeAt(d) === b.charCodeAt(d + 1) &&
+           a.charCodeAt(d + 1) === b.charCodeAt(d) &&
+           a.slice(d + 2) === b.slice(d + 2);
+  }
+  function tokMatch(qk, tt){
+    if (tt.indexOf(qk) > -1) return true;
+    if (qk.length < 4 || tt.length < 4) return false;
+    return ed1(qk, tt) || transp(qk, tt);
+  }
+  function words(s){
+    return String(s == null ? "" : s).toLowerCase().match(/[a-z0-9]+/g) || [];
+  }
+  function search(query, items, opts){
+    opts = opts || {};
+    var max = opts.max || 8;
+    var minLen = (opts.minLen === undefined) ? 2 : opts.minLen;
+    var v = String(query == null ? "" : query).trim().toLowerCase();
+    if (v.length < minLen) return [];
+    var toks = v.split(/\s+/);
+    function titleOf(e){ return String(e.title == null ? "" : e.title).toLowerCase(); }
+    function blurbOf(e){ return String(e.blurb == null ? "" : e.blurb).toLowerCase(); }
+    var tier = 1;
+    var res = items.filter(function(e){
+      var t = titleOf(e);
+      return toks.every(function(tk){ return t.indexOf(tk) > -1; });
+    });
+    if (!res.length){
+      res = items.filter(function(e){
+        var tb = titleOf(e) + " " + blurbOf(e);
+        return toks.every(function(tk){ return tb.indexOf(tk) > -1; });
+      });
+      tier = 2;
+    }
+    if (!res.length){
+      res = items.filter(function(e){
+        var tt = words(titleOf(e));
+        return toks.every(function(qk){
+          return tt.some(function(t){ return tokMatch(qk, t); });
+        });
+      });
+      tier = 3;
+    }
+    return res.slice(0, max).map(function(e){ return {id: e.id, tier: tier}; });
+  }
+  return {search: search, ed1: ed1, transp: transp, tokMatch: tokMatch};
+})();
+
+</script>
+<style>
+:root{--ink:#1c1a17;--muted:#6f6a61;--paper:#fffdf8;--card:#ffffff;--line:#e9e2d6;--cta:#d9481c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 64px}
+h1{font-size:28px;margin:8px 0 4px}
+.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 16px}
+#q{width:100%;font-size:16px;padding:12px 14px;border:1px solid var(--line);border-radius:10px}
+.hits ul{list-style:none;margin:6px 0 0;padding:0;border:1px solid var(--line);border-radius:10px;max-height:240px;overflow:auto;background:#fff}
+.hits li{padding:10px 12px;font-size:16px;cursor:pointer;border-bottom:1px solid var(--line)}
+.hits li:last-child{border-bottom:0}
+.hits li:hover,.hits li:focus{background:#faf6ec;outline:none}
+.btn{display:inline-block;background:var(--cta);color:#fff;border:0;border-radius:999px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;margin:6px 8px 0 0}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+#receipt{display:none}
+#receipt.show{display:block}
+.paper{max-width:380px;margin:12px auto;background:#fff;border:1px solid var(--line);border-top:6px solid var(--ink);border-bottom:6px solid var(--ink);padding:20px 18px;font-family:"Courier New",Courier,monospace}
+.rhead{text-align:center;font-weight:700;letter-spacing:1px}
+.rdiv{border-top:2px dashed #bbb;margin:12px 0}
+.remo{text-align:center;font-size:56px;line-height:1.1}
+.rtitle{text-align:center;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:4px 0}
+.rrow{display:flex;align-items:baseline;gap:8px;font-size:15px;margin:7px 0}
+.rrow .dots{flex:1;border-bottom:2px dotted #999;min-width:20px}
+.rrow .val{font-weight:700;text-align:right}
+.rpaid{text-align:center;font-weight:700}
+.rqr{text-align:center}
+.rqr svg{width:120px;height:120px}
+.rqrcap{font-size:10px;color:var(--muted);word-break:break-all;text-align:center;margin-top:4px}
+.rfoot{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+textarea#sharepreview{width:100%;min-height:110px;font-size:14px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fafafa}
+.fineprint{font-size:12px;color:var(--muted);margin-top:14px}
+.status{font-size:14px;color:var(--muted);margin-top:8px;min-height:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Costume receipt</h1>
+  <p class="sub">Pick a costume. Get a receipt: what it costs, how long it takes, how hard it is, straight from the build guide. Share the flex, or price your own.</p>
+  <div class="card">
+    <input id="q" type="search" placeholder="Which costume is on your receipt? Start typing" autocomplete="off" aria-label="Search costumes">
+    <div class="hits"><ul id="hits" style="display:none"></ul></div>
+</div>
+  <div id="receipt">
+    <div class="card">
+      <div class="paper" id="paper">
+        <div class="rhead">PICK MY COSTUME<br>*** COSTUME RECEIPT ***</div>
+        <div class="rdiv"></div>
+        <div class="remo" id="remo" aria-hidden="true"></div>
+        <div class="rtitle" id="rtitle"></div>
+        <div class="rdiv"></div>
+        <div class="rrow"><span>BUILD TIME</span><span class="dots"></span><span class="val" id="rtime"></span></div>
+        <div class="rrow"><span>EST. COST</span><span class="dots"></span><span class="val" id="rcost"></span></div>
+        <div class="rrow"><span>DIFFICULTY</span><span class="dots"></span><span class="val" id="reffort"></span></div>
+        <div class="rrow"><span>SUPPLIES</span><span class="dots"></span><span class="val" id="rsupplies"></span></div>
+        <div class="rdiv"></div>
+        <div class="rpaid">*** PAID IN FULL ***<br>one fun Halloween</div>
+        <div class="rdiv"></div>
+        <div class="rqr" id="qr"></div>
+        <div class="rqrcap" id="qrurl"></div>
+        <div class="rfoot">Scan for the build guide.<br>Price your own costume (2 min quiz):<br><span id="quizurl"></span></div>
+</div>
+      <div style="margin-top:12px">
+        <button class="btn" id="sharebtn" type="button">Share my receipt</button>
+        <button class="btn ghost" id="copybtn" type="button">Copy receipt text</button>
+</div>
+      <div class="status" id="status"></div>
+      <div style="margin-top:12px">
+        <textarea id="sharepreview" readonly aria-label="Share text preview"></textarea>
+</div>
+</div>
+</div>
+  <p class="fineprint">Time, cost, and difficulty come from our own 138-idea bank, word for word. Cost is the guide's estimate range, never a promise.</p>
+</div>
+<script>
+var IDEAS=[{"id":"neon-demon-hunter","title":"Neon Demon Hunter","emoji":"🔎","time":"25 min + drying","cost":"$5-12","effort":"Easy","supplies":6},{"id":"classic-ghost","title":"Classic Ghost","emoji":"👻","time":"10 min","cost":"$3-8","effort":"Easy","supplies":4},{"id":"blue-dog-family","title":"Aussie Dog Family","emoji":"🐶","time":"25 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"superhero-family","title":"Superhero Family","emoji":"🦸","time":"30 min","cost":"$5-10","effort":"Easy","supplies":6},{"id":"blue-alien-ohana","title":"Blue Alien Ohana","emoji":"👽","time":"30 min","cost":"$5-10","effort":"Easy","supplies":8},{"id":"emerald-witch","title":"Emerald Witch","emoji":"🧙‍♀️","time":"45 min + drying","cost":"$8-15","effort":"Medium","supplies":6},{"id":"gloom-bloom","title":"Gloom & Bloom","emoji":"🥀","time":"15 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"deadpan-diva","title":"Deadpan Diva","emoji":"😐","time":"15 min","cost":"$3-8","effort":"Easy","supplies":4},{"id":"safari-zoo-crew","title":"Safari / Zoo Crew","emoji":"🦒","time":"25 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"fairy-tale-princesses","title":"Fairy Tale Princesses","emoji":"👸","time":"15 min + drying","cost":"$2-5","effort":"Easy","supplies":5},{"id":"tin-hero","title":"The Tin Hero","emoji":"🥫","time":"25 min","cost":"$5-10","effort":"Easy","supplies":6},{"id":"good-witch-bad-witch","title":"Good Witch, Bad Witch","emoji":"🧙‍♀️","time":"20 min","cost":"$5-12","effort":"Easy","supplies":6},{"id":"fuzzy-monster","title":"Fuzzy Monster","emoji":"🐹","time":"15 min + drying","cost":"$8-15","effort":"Easy","supplies":5},{"id":"pocket-plush","title":"Pocket Plush Monster","emoji":"🧸","time":"25 min + drying","cost":"$3-8","effort":"Easy","supplies":6},{"id":"soccer-squad","title":"Soccer Squad","emoji":"⚽","time":"25 min","cost":"$3-8","effort":"Easy","supplies":7},{"id":"glow-skeleton","title":"Glow Skeleton","emoji":"💀","time":"20 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"block-game-crew","title":"Block Game Crew","emoji":"🧱","time":"45 min + drying","cost":"$5-12","effort":"Medium","supplies":5},{"id":"web-slinger-crew","title":"Web-Slinger Crew","emoji":"🕸️","time":"30 min + drying","cost":"$5-10","effort":"Easy","supplies":5},{"id":"mermaid-crew","title":"Mermaid Crew","emoji":"🧜‍♀️","time":"20 min","cost":"$5-10","effort":"Easy","supplies":6},{"id":"little-pig-family","title":"Little Pig Family","emoji":"🐖","time":"25 min","cost":"$3-8","effort":"Easy","supplies":7},{"id":"enchanted-castle-crew","title":"Enchanted Castle Crew","emoji":"🏰","time":"40 min + drying","cost":"$5-12","effort":"Medium","supplies":6},{"id":"bumble-bee","title":"Bumble Bee","emoji":"🐝","time":"20 min + drying","cost":"$5-10","effort":"Easy","supplies":6},{"id":"baby-dino","title":"Baby Dinosaur","emoji":"🐣","time":"20 min","cost":"$3-8","effort":"Easy","supplies":6},{"id":"little-lion","title":"Little Lion","emoji":"🦁","time":"20 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"tiny-firefighter","title":"Tiny Firefighter","emoji":"🧑‍🚒","time":"25 min","cost":"$8-15","effort":"Easy","supplies":5},{"id":"little-shark","title":"Little Shark","emoji":"🦈","time":"25 min + drying","cost":"$3-8","effort":"Easy","supplies":5},{"id":"walking-taco","title":"Walking Taco","emoji":"🌮","time":"45 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"ramen-bowl","title":"Ramen Bowl","emoji":"🍜","time":"50 min + drying","cost":"$8-12","effort":"Easy","supplies":7},{"id":"tiny-snail","title":"Tiny Snail","emoji":"🐌","time":"30 min","cost":"$3-8","effort":"Easy","supplies":8},{"id":"little-witch","title":"Little Witch","emoji":"🧙‍♀️","time":"15 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"spider","title":"Eight-Legged Spider","emoji":"🕷️","time":"45 min","cost":"$5-10","effort":"Medium","supplies":7},{"id":"backyard-hero","title":"Backyard Superhero","emoji":"🦸","time":"15 min","cost":"$3-8","effort":"Easy","supplies":6},{"id":"pickle","title":"Pickle","emoji":"🥒","time":"30 min + drying","cost":"$3-8","effort":"Easy","supplies":4},{"id":"vampire","title":"Classic Vampire","emoji":"🧛","time":"25 min","cost":"$5-10","effort":"Easy","supplies":6},{"id":"bamboo-demon","title":"Bamboo-Muzzle Demon","emoji":"😈","time":"20 min","cost":"$5-12","effort":"Easy","supplies":7},{"id":"emoji-crew","title":"Emoji Crew","emoji":"😎","time":"15 min","cost":"$5-12","effort":"Easy","supplies":4},{"id":"robot-crew","title":"Cardboard Robot Crew","emoji":"🤖","time":"45 min","cost":"$8-12","effort":"Medium","supplies":8},{"id":"cereal-crew","title":"Cereal Crew","emoji":"🥣","time":"20 min","cost":"$2-4","effort":"Easy","supplies":6},{"id":"decades-crew","title":"Decades Crew","emoji":"📻","time":"20 min","cost":"$2-5","effort":"Easy","supplies":5},{"id":"under-the-sea","title":"Under the Sea","emoji":"🐠","time":"40 min","cost":"$5-12","effort":"Easy","supplies":7},{"id":"dino-rangers","title":"Dino Rangers","emoji":"🦕","time":"15 min","cost":"$5-10","effort":"Easy","supplies":6},{"id":"board-game-pieces","title":"Board Game Pieces","emoji":"🎲","time":"45 min + drying","cost":"$5-10","effort":"Medium","supplies":8},{"id":"rain-cloud-rainbow","title":"Rain Cloud and Rainbow","emoji":"🌈","time":"30 min + drying","cost":"$4-10","effort":"Easy","supplies":7},{"id":"doctor-bride","title":"The Doctor & the Bride","emoji":"🩺","time":"25 min","cost":"$5-12","effort":"Easy","supplies":8},{"id":"breakfast-buffet","title":"Breakfast Buffet","emoji":"🥞","time":"25 min","cost":"$2-5","effort":"Easy","supplies":4},{"id":"ghost-hunters","title":"Ghost Hunters","emoji":"🔎","time":"30 min","cost":"$5-12","effort":"Easy","supplies":5},{"id":"haunted-animatronics","title":"Haunted Animatronics","emoji":"🤖","time":"60 min + drying","cost":"$8-15","effort":"Medium","supplies":5},{"id":"mystery-crew","title":"Mystery Crew","emoji":"🔍","time":"15 min","cost":"$2-6","effort":"Easy","supplies":5},{"id":"headless-horsemen","title":"Headless Horsemen","emoji":"🎩","time":"20 min","cost":"$2-8","effort":"Easy","supplies":5},{"id":"haunted-portraits","title":"Haunted Portraits","emoji":"🖼️","time":"25 min","cost":"$5-12","effort":"Easy","supplies":4},{"id":"goggle-crew","title":"Goggle Crew","emoji":"🥽","time":"10 min","cost":"$10-20","effort":"Easy","supplies":4},{"id":"garden-gnome","title":"Garden Gnome","emoji":"🧙","time":"30 min + drying","cost":"$5-10","effort":"Easy","supplies":7},{"id":"black-cat","title":"Black Cat Burglar","emoji":"🐈‍⬛","time":"20 min","cost":"$3-8","effort":"Easy","supplies":8},{"id":"block-monster","title":"Block Monster","emoji":"👹","time":"30 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"space-crewmate","title":"Space Crewmate","emoji":"👾","time":"20 min","cost":"$5-12","effort":"Easy","supplies":7},{"id":"sun-moon","title":"Sun and Moon","emoji":"🌞","time":"40 min","cost":"$5-8","effort":"Easy","supplies":6},{"id":"moth-porch-light","title":"Moth and Porch Light","emoji":"💡","time":"40 min","cost":"$5-10","effort":"Medium","supplies":8},{"id":"raptor-ranger","title":"Raptor & Ranger","emoji":"🦖","time":"25 min","cost":"$3-8","effort":"Easy","supplies":6},{"id":"cat-mouse","title":"Cat & Mouse","emoji":"🐱","time":"15 min","cost":"$3-6","effort":"Easy","supplies":6},{"id":"ketchup-mustard","title":"Ketchup & Mustard","emoji":"🍅","time":"15 min","cost":"$5-12","effort":"Easy","supplies":5},{"id":"plumber-duo","title":"Plumber Brothers","emoji":"🔧","time":"15 min","cost":"$5-12","effort":"Easy","supplies":6},{"id":"office-couple","title":"Office Couple","emoji":"💼","time":"10 min","cost":"$2-5","effort":"Easy","supplies":5},{"id":"burger-joint-couple","title":"Burger Joint Couple","emoji":"🍔","time":"10 min","cost":"$8-15","effort":"Easy","supplies":5},{"id":"plug-socket","title":"Plug and Socket","emoji":"🔌","time":"45 min + drying","cost":"$3-6","effort":"Easy","supplies":6},{"id":"lost-tourist","title":"Lost Tourist","emoji":"📷","time":"10 min","cost":"$5-12","effort":"Easy","supplies":5},{"id":"tooth-fairy","title":"Tooth and Tooth Fairy","emoji":"🧚","time":"45 min + drying","cost":"$5-10","effort":"Medium","supplies":8},{"id":"web-hero-duo","title":"Web Hero Duo","emoji":"🕸️","time":"25 min","cost":"$3-8","effort":"Easy","supplies":6},{"id":"plague-doctor","title":"Plague Doctor","emoji":"🐦","time":"60 min + drying","cost":"$8-15","effort":"Medium","supplies":7},{"id":"crowd-camouflage","title":"Crowd Camouflage","emoji":"🔍","time":"5 min","cost":"$2-5","effort":"Easy","supplies":5},{"id":"error-404","title":"Error 404","emoji":"🚫","time":"15 min + drying","cost":"$5-12","effort":"Easy","supplies":6},{"id":"zombie-coworker","title":"Zombie Coworker","emoji":"🧟","time":"20 min","cost":"$3-8","effort":"Easy","supplies":6},{"id":"the-olympians","title":"The Olympians","emoji":"🏅","time":"45 min","cost":"$8-15","effort":"Medium","supplies":7},{"id":"safari-photographer","title":"Safari Photographer","emoji":"📸","time":"20 min","cost":"$5-12","effort":"Easy","supplies":7},{"id":"player-one-two","title":"Player One & Two","emoji":"🎮","time":"20 min","cost":"$3-8","effort":"Easy","supplies":4},{"id":"dinosaur-family","title":"Dinosaur Family","emoji":"🦕","time":"25 min","cost":"$8-15","effort":"Easy","supplies":5},{"id":"snow-sisters","title":"Snow Sisters","emoji":"❄️","time":"30 min + drying","cost":"$8-12","effort":"Easy","supplies":6},{"id":"sushi-roll","title":"Sushi Roll","emoji":"🍣","time":"40 min","cost":"$8-12","effort":"Easy","supplies":7},{"id":"deviled-egg","title":"Deviled Egg","emoji":"🥚","time":"20 min","cost":"$3-8","effort":"Easy","supplies":7},{"id":"pizza-slice","title":"Pizza Slice","emoji":"🍕","time":"45 min + drying","cost":"$8-12","effort":"Medium","supplies":6},{"id":"popcorn-bucket","title":"Popcorn Bucket","emoji":"🍿","time":"30 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"ice-cream-cone","title":"Ice Cream Cone","emoji":"🍦","time":"20 min","cost":"$2-6","effort":"Easy","supplies":5},{"id":"pbj","title":"Peanut Butter & Jelly","emoji":"🥜","time":"20 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"bacon-eggs","title":"Bacon & Eggs","emoji":"🍳","time":"20 min","cost":"$3-6","effort":"Easy","supplies":6},{"id":"peas-pod","title":"Peas in a Pod","emoji":"🫛","time":"60 min + drying","cost":"$8-15","effort":"Medium","supplies":6},{"id":"basketball-star","title":"Basketball Star","emoji":"🏀","time":"5 min","cost":"$3-8","effort":"Easy","supplies":4},{"id":"referee","title":"Referee","emoji":"🏁","time":"20 min","cost":"$2-5","effort":"Easy","supplies":5},{"id":"boxer","title":"Boxer","emoji":"🥊","time":"10 min","cost":"$5-12","effort":"Easy","supplies":5},{"id":"cheerleader","title":"Cheerleader","emoji":"📣","time":"15 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"tennis-duo","title":"Tennis Duo","emoji":"🎾","time":"20 min","cost":"$5-12","effort":"Easy","supplies":6},{"id":"bowling-pins","title":"Bowling Pins","emoji":"🎳","time":"15 min","cost":"$2-5","effort":"Easy","supplies":5},{"id":"cardboard-knight","title":"Cardboard Knight","emoji":"⚔️","time":"60 min + drying","cost":"$5-10","effort":"Medium","supplies":7},{"id":"ninja","title":"Ninja","emoji":"🥷","time":"10 min","cost":"$2-5","effort":"Easy","supplies":5},{"id":"caped-duo","title":"Caped Duo","emoji":"🦸","time":"30 min + drying","cost":"$5-10","effort":"Easy","supplies":6},{"id":"hero-squad","title":"Hero Squad","emoji":"🦸","time":"40 min + drying","cost":"$4-8","effort":"Easy","supplies":5},{"id":"astronaut","title":"Astronaut","emoji":"🧑‍🚀","time":"25 min","cost":"$3-10","effort":"Easy","supplies":5},{"id":"robot-ranger","title":"Robot Ranger","emoji":"🤖","time":"60 min","cost":"$8-15","effort":"Medium","supplies":8},{"id":"penguin-huddle","title":"Penguin Huddle","emoji":"🐧","time":"35 min + drying","cost":"$4-10","effort":"Easy","supplies":6},{"id":"prince-princess","title":"Prince & Princess","emoji":"👑","time":"10 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"dino-herd","title":"Dino Herd","emoji":"🦕","time":"30 min","cost":"$5-12","effort":"Easy","supplies":6},{"id":"pixel-ghost","title":"Pixel Ghost","emoji":"👾","time":"30 min + drying","cost":"$2-5","effort":"Easy","supplies":5},{"id":"spaghetti-meatball","title":"Spaghetti & Meatball","emoji":"🍝","time":"40 min + drying","cost":"$5-10","effort":"Easy","supplies":5},{"id":"cupcake","title":"Cupcake","emoji":"🧁","time":"15 min","cost":"$3-6","effort":"Easy","supplies":4},{"id":"banana","title":"Banana","emoji":"🍌","time":"10 min","cost":"$2-5","effort":"Easy","supplies":4},{"id":"hot-dog","title":"Hot Dog","emoji":"🌭","time":"15 min + drying","cost":"$3-6","effort":"Easy","supplies":4},{"id":"donut","title":"Donut","emoji":"🍩","time":"35 min + drying","cost":"$3-8","effort":"Easy","supplies":5},{"id":"coffee-cup","title":"Coffee Cup","emoji":"☕","time":"20 min","cost":"$2-5","effort":"Easy","supplies":4},{"id":"salt-pepper","title":"Salt & Pepper","emoji":"🧂","time":"15 min + drying","cost":"$2-5","effort":"Easy","supplies":6},{"id":"fruit-salad","title":"Fruit Salad Crew","emoji":"🍓","time":"20 min","cost":"$3-8","effort":"Easy","supplies":4},{"id":"wizard","title":"Classic Wizard","emoji":"🧙","time":"20 min","cost":"$3-8","effort":"Easy","supplies":5},{"id":"toy-box-crew","title":"Toy Box Crew","emoji":"🧸","time":"35 min","cost":"$8-15","effort":"Easy","supplies":7},{"id":"demon-boy-band","title":"Demon Boy Band","emoji":"😈","time":"40 min + drying","cost":"$6-15","effort":"Easy","supplies":7},{"id":"dragon-rider-duo","title":"Dragon Rider Duo","emoji":"🐉","time":"60 min","cost":"$5-10","effort":"Medium","supplies":7},{"id":"numbered-players","title":"Numbered Players","emoji":"🏁","time":"30 min","cost":"$4-10","effort":"Easy","supplies":6},{"id":"emotion-crew","title":"Emotion Crew","emoji":"🙂","time":"25 min","cost":"$5-10","effort":"Easy","supplies":5},{"id":"kart-racers","title":"Kart Racers","emoji":"🏎️","time":"45 min + drying","cost":"$2-6","effort":"Medium","supplies":6},{"id":"tall-hat-crew","title":"Tall Hat Crew","emoji":"🎩","time":"20 min","cost":"$8-15","effort":"Easy","supplies":7},{"id":"chipmunk-trio","title":"Chipmunk Trio","emoji":"🐿","time":"25 min","cost":"$8-15","effort":"Easy","supplies":6},{"id":"galaxy-knights","title":"Galaxy Knights","emoji":"⚔️","time":"10 min","cost":"$8-20","effort":"Easy","supplies":5},{"id":"plastic-dream-crew","title":"Plastic Dream Crew","emoji":"💖","time":"15 min","cost":"$5-12","effort":"Easy","supplies":5},{"id":"extinct-party-animal","title":"Extinct Party Animal","emoji":"🦕","time":"20 min + drying","cost":"$3-8","effort":"Easy","supplies":7},{"id":"dino-tourist","title":"Dino Tourist","emoji":"🦕","time":"10 min","cost":"$12-20","effort":"Easy","supplies":5},{"id":"raptor-barista","title":"Raptor Barista","emoji":"☕","time":"10 min","cost":"$5-12","effort":"Easy","supplies":4},{"id":"emotional-support-dinosaur","title":"Emotional Support Dinosaur","emoji":"🧸","time":"25 min + drying","cost":"$3-8","effort":"Easy","supplies":6},{"id":"garden-fairy","title":"Garden Fairy","emoji":"🧚","time":"20 min","cost":"$3-8","effort":"Easy","supplies":11},{"id":"ballerina","title":"Ballerina","emoji":"🩰","time":"20 min","cost":"$3-8","effort":"Easy","supplies":6},{"id":"butterfly","title":"Butterfly","emoji":"🦋","time":"40 min + drying","cost":"$5-10","effort":"Medium","supplies":8},{"id":"pop-star","title":"Pop Star","emoji":"🎤","time":"15 min","cost":"$8-15","effort":"Easy","supplies":5},{"id":"ice-skater","title":"Ice Skater","emoji":"⛸️","time":"10 min","cost":"$5-12","effort":"Easy","supplies":5},{"id":"ladybug","title":"Ladybug","emoji":"🐞","time":"20 min","cost":"$3-8","effort":"Easy","supplies":8},{"id":"daisy","title":"Daisy","emoji":"🌼","time":"30 min + drying","cost":"$5-8","effort":"Easy","supplies":6},{"id":"little-baker","title":"Little Baker","emoji":"👨‍🍳","time":"15 min","cost":"$2-5","effort":"Easy","supplies":6},{"id":"little-artist","title":"Little Artist","emoji":"🎨","time":"15 min + drying","cost":"$3-8","effort":"Easy","supplies":6},{"id":"beekeeper-bee","title":"Beekeeper & Bee","emoji":"🐝","time":"25 min","cost":"$3-10","effort":"Easy","supplies":9},{"id":"tetris-duo","title":"Block Party Duo","emoji":"🧩","time":"45 min + drying","cost":"$3-8","effort":"Easy","supplies":6},{"id":"little-lifeguard","title":"Little Lifeguard","emoji":"🏊","time":"20 min","cost":"$3-8","effort":"Easy","supplies":7},{"id":"little-prince","title":"Little Prince","emoji":"👑","time":"20 min","cost":"$3-8","effort":"Easy","supplies":8},{"id":"fossil-hunter","title":"Fossil Hunter","emoji":"🦴","time":"25 min","cost":"$3-8","effort":"Easy","supplies":8},{"id":"web-slinger-kid","title":"Web Slinger","emoji":"🕷️","time":"25 min","cost":"$3-8","effort":"Easy","supplies":6}];
+var IDEA_BY_ID={};IDEAS.forEach(function(e){IDEA_BY_ID[e.id]=e;});
+var _tapGuards={};
+function tapGuard(key,ms){var n=Date.now();if(n-(_tapGuards[key]||0)<ms)return false;_tapGuards[key]=n;return true;}
+var q=document.getElementById("q"),hits=document.getElementById("hits"),receipt=document.getElementById("receipt");
+var current=null,shareId=null;
+function guideUrl(id){return "https://pickmycostume.com/c/"+id+"?src=share-receipt";}
+function newShareId(){var c="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function quizUrl(){return "https://pickmycostume.com/?s="+shareId+"&src=share-receipt";}
+function doSearch(){
+  var res=FuzzyTypeAhead.search(q.value,IDEAS.map(function(e){return{id:e.id,title:e.title};}),{max:8});
+  hits.innerHTML="";
+  res.forEach(function(r){
+    var e=IDEA_BY_ID[r.id];
+    var li=document.createElement("li");li.tabIndex=0;
+    li.textContent=e.emoji+" "+e.title;
+    var go=function(){if(tapGuard("receipt-pick",400))pick(e.id);};
+    li.onclick=go;
+    li.onkeydown=function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();go();}};
+    hits.appendChild(li);
+  });
+  hits.style.display=res.length?"block":"none";
+}
+function pick(id){
+  var e=IDEA_BY_ID[id];if(!e)return;current=e;shareId=newShareId();
+  hits.style.display="none";q.value=e.title;
+  document.getElementById("remo").textContent=e.emoji;
+  document.getElementById("rtitle").textContent=e.title;
+  document.getElementById("rtime").textContent=e.time;
+  document.getElementById("rcost").textContent=e.cost;
+  document.getElementById("reffort").textContent=e.effort;
+  document.getElementById("rsupplies").textContent=e.supplies+(e.supplies===1?" item":" items");
+  var url=guideUrl(id);
+  document.getElementById("qrurl").textContent=url;
+  document.getElementById("quizurl").textContent=quizUrl();
+  var qrbox=document.getElementById("qr");qrbox.innerHTML="";
+  try{
+    if(typeof qrcode==="function"){
+      var qr=qrcode(0,"M");qr.addData(url);qr.make();
+      qrbox.innerHTML=qr.createSvgTag({cellSize:4,margin:0,scalable:true});
+    }else{qrbox.textContent="QR unavailable";}
+  }catch(err){qrbox.textContent="QR unavailable";}
+  document.getElementById("sharepreview").value=shareText();
+  receipt.classList.add("show");
+  ph("receipt_viewed",{idea_id:e.id});
+}
+function shareText(){
+  return "My Halloween costume receipt: "+current.emoji+" "+current.title+
+    ". Cost "+current.cost+", "+current.time+", "+current.effort+
+    ". Price yours with the 2-minute quiz: "+quizUrl();
+}
+function setStatus(t){document.getElementById("status").textContent=t;}
+q.addEventListener("input",doSearch);
+document.getElementById("sharebtn").onclick=function(){
+  if(!current||!tapGuard("receipt-share",2000))return;
+  var text=shareText();
+  var done=function(via){
+    ph("receipt_shared",{idea_id:current.id,share_id:shareId,via:via});
+    setStatus(via==="native"?"Shared.":"Copied. Paste it in the group chat.");
+  };
+  if(navigator.share){
+    try{
+      navigator.share({title:"My costume receipt",text:text}).then(
+        function(){done("native");},
+        function(){setStatus("Share cancelled.");}
+      );
+    }catch(e){
+      doCopy(text,function(){done("clipboard");});
+    }
+  }else{
+    doCopy(text,function(){done("clipboard");});
+  }
+};
+function doCopy(text,cb){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){cb();},function(){fallbackCopy(text,cb);});
+  }else{fallbackCopy(text,cb);}
+}
+function fallbackCopy(text,cb){
+  var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);
+  ta.select();try{document.execCommand("copy");}catch(e){}
+  document.body.removeChild(ta);cb();
+}
+document.getElementById("copybtn").onclick=function(){
+  if(!current||!tapGuard("receipt-copy",1000))return;
+  var text=shareText();
+  doCopy(text,function(){
+    ph("receipt_text_copied",{idea_id:current.id,share_id:shareId,via:"clipboard"});
+    setStatus("Copied. Paste it in the group chat.");
+  });
+};
+(function(){
+  var m=/[?&]pick=([^&]+)/.exec(location.search||"");
+  if(!m)return;
+  var id;try{id=decodeURIComponent(m[1]);}catch(e){return;}
+  if(IDEA_BY_ID[id])pick(id);
+})();
+</script>
+</body>
+</html>

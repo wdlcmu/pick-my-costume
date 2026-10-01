@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Block Party Duo - Pocket Make Sheet | Pick My Costume</title>
+<meta name="robots" content="noindex">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 12px;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #e8e8e8; color: #111;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+  }
+  .screen-note {
+    max-width: 3.5in; font-size: 12px; color: #555; text-align: center;
+  }
+  .print-btn {
+    font-size: 16px; padding: 10px 22px; border-radius: 8px;
+    border: 2px solid #111; background: #111; color: #fff; cursor: pointer;
+  }
+  .card {
+    width: 3.5in; background: #fff; color: #111;
+    border: 1.5pt dashed #888; border-radius: 6px;
+    padding: 0.28in 0.26in; box-shadow: 0 2px 12px rgba(0,0,0,.18);
+  }
+  .card header { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .card header img {
+    width: 1.15in; height: 1.15in; object-fit: cover; border-radius: 6px;
+    border: 1px solid #111; flex: none;
+    filter: grayscale(1) contrast(1.08);
+  }
+  .card h1 { font-size: 17px; line-height: 1.2; margin: 0 0 4px; }
+  .triple { font-size: 11px; margin: 0; font-weight: 700; }
+  .card h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+    margin: 12px 0 6px; border-bottom: 1.5pt solid #111; padding-bottom: 3px;
+  }
+  .card h2 .note { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .card ul { list-style: none; margin: 0; padding: 0; }
+  .card ul li {
+    font-size: 10.5px; line-height: 1.35; margin: 0 0 5px;
+    padding-left: 20px; position: relative;
+  }
+  .card ul li::before {
+    content: ""; position: absolute; left: 0; top: 1px;
+    width: 11px; height: 11px; border: 1.5pt solid #111; border-radius: 2px;
+  }
+  .card ol { margin: 0; padding: 0 0 0 20px; }
+  .card ol li { font-size: 10.5px; line-height: 1.4; margin: 0 0 6px; }
+  .card footer {
+    margin-top: 12px; padding-top: 8px; border-top: 1pt solid #111;
+    font-size: 10px; line-height: 1.5;
+  }
+  .card footer .brand { font-weight: 800; }
+  @media print {
+    @page { size: letter; margin: 0.5in; }
+    body { background: #fff; padding: 0; display: block; }
+    .screen-note, .print-btn { display: none !important; }
+    .card {
+      margin: 0 auto; border: 1.5pt solid #111; border-radius: 0;
+      box-shadow: none;
+    }
+    .card, .card * {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+<p class="screen-note">Pocket card, 3.5 in wide. Prints as one card; cut along the border.</p>
+<button class="print-btn" onclick="window.print()">Print this card</button>
+<main class="card">
+  <header>
+    <img src="../photos/tetris-duo.webp" alt="Block Party Duo costume photo">
+    <div>
+      <h1>🧩 Block Party Duo</h1>
+      <p class="triple">45 min + drying  |  $3-8  |  Easy</p>
+</div>
+  </header>
+  <section>
+    <h2>You need</h2>
+    <ul>
+      <li>Two large cardboard boxes, flattened (make: from shipping boxes)</li>
+      <li>Acrylic paint in two bright colors, 1 set (buy: craft store)</li>
+      <li>Wide ribbon or webbing for shoulder straps, about 4 yards (buy: craft store)</li>
+      <li>Painter&#x27;s tape, 1 roll (buy: dollar store)</li>
+      <li>Scissors or a box cutter, 1</li>
+      <li>Ruler or yardstick, 1 (own)</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Build it <span class="note">(key steps)</span></h2>
+    <ol>
+      <li>Mark a grid of 12-inch squares on the cardboard with the ruler.</li>
+      <li>Each block shape is 4 squares: cut an L shape for one person and a T or square shape for the other. Cut the squares oversized first and trim after a fitting.</li>
+      <li>Paint each shape its color and let dry fully, flat, for at least 2 hours.</li>
+      <li>Tape ribbon loops to the top of each shape for shoulder straps. Test the hang before the party: each shape should sit at chest height.</li>
+      <li>Safety: cut on a protected surface with the blade pointed away from fingers, and round the cardboard corners so nobody gets poked in a crowd.</li>
+    </ol>
+  </section>
+  <footer>
+    Full 7-step guide: <span class="brand">pickmycostume.com/c/tetris-duo</span><br>
+    <span class="brand">Pick My Costume</span> - pocket make sheet
+</footer>
+</main>
+</body>
+</html>

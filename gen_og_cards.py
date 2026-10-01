@@ -12,8 +12,21 @@ or time. The card carries the decision triple so the preview pre-sells
 the pick. Pinterest's save flow also scrapes og:image, so these cards
 power the Pinterest bridge too.
 
-Sources: photos/<slug>.webp (concept photos), mcp-server/bank.json
-instructions (decision triple: time/cost/effort, asserted complete).
+Sources: photos/<slug>.webp (concept photos) and index.html -- the idea bank
+(titles) and var INSTRUCTIONS (decision triple: time/cost/effort, plus steps).
+index.html is the CANONICAL single source of truth, shared with the /c/ page
+chips and meta (gen_share_function.py parses the same fields): the og badge
+must never be baked from a second source (2026-09-29: three-way drift --
+chips said "10 min" from [slug].js, the badge baked "15 min + drying" from a
+stale mcp-server/bank.json, and the card file was stale even against that).
+The "+ drying" suffix is NOT read from the time field: it is appended only
+when a build step mentions paint or glue, so the badge can never claim drying
+time the steps do not need.
+
+Per-idea photo overrides: PHOTO_OVERRIDES below. The default cover-crop can
+cut the subject badly on tall portraits (error-404's center crop cut the face
+at the eyes and hid the cracked phone); "contain-right" fits the whole photo
+right-aligned against the dark panel instead, duel-screen style.
 
 Outputs overwrite images/og/<slug>.jpg IN PLACE: the /c/ pages reference
 https://pickmycostume.com/images/og/<slug>.jpg, so zero HTML/JS changes.
@@ -22,6 +35,7 @@ baked text.
 """
 import json
 import os
+import re
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
@@ -41,10 +55,21 @@ FR = os.path.join(FONT_DIR, "DejaVuSans.ttf")
 for f in (FB, FR):
     assert os.path.exists(f), "missing font: " + f
 
-KICKER = "YOUR 2026 HALLOWEEN COSTUME"
+# Viewer-neutral: the friend viewing a shared link is the audience, not the
+# sharer, so "YOUR ..." was the wrong perspective (2026-09-29).
+KICKER = "A 2026 HALLOWEEN COSTUME IDEA"
 DISCLOSURE = "AI-generated concept photo"
 BRAND = "pickmycostume.com"
 BAD_CHARS = ("\u2013", "\u2014")  # en/em dash: never in user-facing art
+
+# Per-idea photo treatment overrides (2026-09-29 #30). Values:
+#   "contain-right": fit the whole photo (contain) right-aligned against the
+#   dark brand panel instead of cover-cropping. The left text zone keeps its
+#   dark gradient; the full composition stays visible.
+PHOTO_OVERRIDES = {
+    "error-404": "contain-right",  # center crop cut the face at the eyes
+                                   # and hid the cracked phone
+}
 
 
 def cover(im, w, h):
@@ -105,15 +130,26 @@ def wrap(draw, text, font, max_w, max_lines):
     return lines[:max_lines]
 
 
-def draw_card(photo_path, title, triple, sub=None, kicker=KICKER):
+def draw_card(photo_path, title, triple, sub=None, kicker=KICKER,
+              photo_mode=None):
     # Role cards (2026-09-27): sub = the costume idea title, drawn as a
     # small line between the role title and the triple pill. None keeps the
     # classic single-card layout byte-identical. kicker defaults to KICKER
     # so the classic path is unchanged; role cards pass their own.
+    # photo_mode "contain-right" (PHOTO_OVERRIDES): fit the whole photo
+    # right-aligned against the dark panel instead of cover-cropping.
     for s in (title, triple, kicker, DISCLOSURE, BRAND, sub or ""):
         for bad in BAD_CHARS:
             assert bad not in s, "em/en dash in baked text: %r" % s
-    im = cover(Image.open(photo_path).convert("RGB"), W, H)
+    if photo_mode == "contain-right":
+        im = Image.new("RGB", (W, H), DARK)
+        ph = Image.open(photo_path).convert("RGB")
+        scale = min(W / ph.width, H / ph.height)
+        pw, phh = int(ph.width * scale + 0.5), int(ph.height * scale + 0.5)
+        ph = ph.resize((pw, phh), Image.LANCZOS)
+        im.paste(ph, (W - pw, (H - phh) // 2))
+    else:
+        im = cover(Image.open(photo_path).convert("RGB"), W, H)
 
     solid, alpha = left_gradient(W, H)
     im.paste(solid, (0, 0), alpha)
@@ -172,39 +208,93 @@ def draw_card(photo_path, title, triple, sub=None, kicker=KICKER):
     return im
 
 
+# Brace-matching parse of var INSTRUCTIONS in index.html (same technique as
+# gen_share_function.py: the object has a trailing comma strict JSON rejects).
+def _parse_instructions(src):
+    marker = "var INSTRUCTIONS ="
+    i = src.index("{", src.index(marker) + len(marker))
+    depth, in_str, esc = 0, False, False
+    for j in range(i, len(src)):
+        ch = src[j]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        else:
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    seg = re.sub(r",\s*([}\]])", r"\1", src[i:j + 1])
+                    return json.loads(seg)
+    raise ValueError("INSTRUCTIONS object not balanced")
+
+
 def main():
-    bank = json.load(open(os.path.join(ROOT, "mcp-server", "bank.json"), encoding="utf-8"))
-    ideas = bank["ideas"]
-    instr = bank["instructions"]
-    assert len(ideas) == 144, "expected 144 ideas, got %d" % len(ideas)
+    # Canonical source: the bank + INSTRUCTIONS, the same fields
+    # the /c/ chips and meta use (2026-09-29 #23: single source of truth).
+    # 2026-09-30: the bank moved from index.html to app.js (bundle split);
+    # read app.js first, index.html fallback kept for older trees.
+    # mcp-server/bank.json is NOT read here; stage 2 syncs its triple fields
+    # from the bank instead.
+    bank_path = os.path.join(ROOT, "app.js")
+    if not os.path.exists(bank_path):
+        bank_path = os.path.join(ROOT, "index.html")
+    src = open(bank_path, encoding="utf-8").read()
+    # Parse ideas ONLY inside the IDEAS bank array (2026-09-29): the
+    # QUESTIONS section also uses {id:"...", title:"..."} entries, and a
+    # whole-src regex misparsed 6 question ids as ideas. The IDEAS array
+    # is the canonical bank boundary; UI edits elsewhere can never poison
+    # generation again. INSTRUCTIONS (brace-matched below) is unaffected:
+    # "var INSTRUCTIONS =" appears once, in the bank section.
+    bank_src = src[src.index("var IDEAS = ["):
+                   src.index("/* ================= CONFIG: SHARE")]
+    ideas = re.findall(r'\{id:"([^"]+)", title:"([^"]+)"', bank_src)
+    assert ideas, "no ideas parsed from " + bank_path
+    assert len(ideas) == len(set(s for s, _ in ideas)), "duplicate idea ids"
+    titles = {slug: title for slug, title in ideas}
+    instr = _parse_instructions(src)
+    missing = [s for s in titles if s not in instr]
+    assert not missing, "ideas missing instructions: %s" % missing
 
     og_dir = os.path.join(ROOT, "images", "og")
     os.makedirs(og_dir, exist_ok=True)
 
     made = 0
     only = set(s.strip() for s in os.environ.get("SLUGS", "").split(",") if s.strip())
-    for it in ideas:
-        slug = it["id"]
+    for slug, title in ideas:
         if only and slug not in only:
             continue
-        g = instr.get(slug) or {}
+        g = instr[slug]
         t, c, e = g.get("time"), g.get("cost"), g.get("effort")
         assert t and c and e, "missing decision triple for %s" % slug
+        # "+ drying" is derived, never read: strip any baked suffix, then
+        # append only when a build step mentions paint or glue (#23).
+        t = re.sub(r"\s*\+\s*drying\s*$", "", t, flags=re.I)
+        if any(re.search(r"paint|glue", st, re.I) for st in g.get("s", [])):
+            t += " + drying"
         triple = "%s \u00b7 %s \u00b7 %s" % (t, c, e)  # middle dot separators
         photo = os.path.join(ROOT, "photos", slug + ".webp")
         assert os.path.exists(photo), "missing concept photo: %s" % photo
-        card = draw_card(photo, it["title"], triple)
+        card = draw_card(photo, title, triple,
+                         photo_mode=PHOTO_OVERRIDES.get(slug))
         out = os.path.join(og_dir, slug + ".jpg")
         card.save(out, "JPEG", quality=84)
         made += 1
 
-    # post-conditions: every file a valid 1200x630 JPEG
-    for it in ideas:
-        p = os.path.join(og_dir, it["id"] + ".jpg")
+    # post-conditions: every idea's file a valid 1200x630 JPEG
+    for slug in titles:
+        p = os.path.join(og_dir, slug + ".jpg")
         with Image.open(p) as chk:
             assert chk.size == (W, H), "bad size %s: %s" % (p, chk.size)
             assert chk.format == "JPEG", "not jpeg: %s" % p
-    print("og decision cards: %d/%d written to images/og/" % (made, len(ideas)))
+    print("og decision cards: %d/%d written to images/og/" % (made, len(titles)))
 
 
 if __name__ == "__main__":

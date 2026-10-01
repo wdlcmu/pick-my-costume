@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Story Poll Pack | Pick My Costume</title>
+<meta name="description" content="Torn between two Halloween costumes? Make a story card, put the vote on your Instagram or Facebook Story, and let friends decide.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://pickmycostume.com/story-polls">
+<meta property="og:title" content="The Story Poll Pack">
+<meta property="og:description" content="Torn between two costumes? Put the vote on your Story.">
+<meta property="og:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
+<meta property="og:type" content="website">
+<script>
+/* PostHog: anonymous usage stats only. No names are sent. Session replay is off. */
+(function(){
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://us.i.posthog.com/static/array.js";
+  s.onload = function(){
+    try {
+      if (window.posthog && posthog.init) {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+          api_host: "https://us.i.posthog.com",
+          autocapture: false,
+          capture_pageview: true,
+          disable_session_recording: true
+        });
+      }
+    } catch(e){}
+  };
+  document.head.appendChild(s);
+})();
+function ph(name,props){props=props||{};try{var q=location.search;if(/[?&](probe|sim)=/.test(q)||/[?&]internal=1/.test(q))props.internal=true;if(window.posthog&&window.posthog.capture){window.posthog.capture(name,props);}}catch(e){}}
+</script>
+<style>
+:root{--ink:#1c1a17;--muted:#6f6a61;--paper:#fffdf8;--card:#ffffff;--line:#e9e2d6;--cta:#d9481c;--accent:#ff8c1a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 64px}
+.sub{color:var(--muted);margin:0 0 20px}
+.sub a{color:inherit}
+h1{font-size:28px;line-height:1.2;margin:8px 0}
+.steps{counter-reset:st;margin:20px 0;padding:0;list-style:none}
+.steps li{display:flex;gap:12px;margin:0 0 18px;align-items:flex-start}
+.steps .n{counter-increment:st;flex:0 0 auto;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.steps .n::before{content:counter(st)}
+label.lbl{display:block;font-weight:700;margin:18px 0 6px}
+input[type=text]{width:100%;font-size:17px;padding:14px 16px;border:2px solid var(--line);border-radius:12px;background:#fff}
+input[type=text]:focus{outline:none;border-color:var(--cta)}
+.searchbox{position:relative;margin-bottom:4px}
+#qa,#qb{width:100%;font-size:17px;padding:14px 16px;border:2px solid var(--line);border-radius:12px;background:#fff}
+#qa:focus,#qb:focus{outline:none;border-color:var(--cta)}
+.hits{list-style:none;margin:8px 0 0;padding:0;border:1px solid var(--line);border-radius:12px;background:#fff;max-height:260px;overflow:auto;display:none}
+.hits li{padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:16px;min-height:44px}
+.hits li:last-child{border-bottom:none}
+.hits li:active{background:#f7f3ea}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#f4efe4;border-radius:999px;padding:8px 8px 8px 16px;font-size:15px;margin:6px 6px 0 0}
+.chip button{border:none;background:var(--ink);color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer}
+.slot{border:2px dashed var(--line);border-radius:12px;padding:14px 16px;margin-top:8px;font-size:15px;color:var(--muted)}
+.slot.full{border-style:solid;border-color:var(--cta);color:var(--ink)}
+.slot .vs-badge{display:inline-block;background:var(--cta);color:#fff;font-weight:800;border-radius:8px;padding:2px 10px;margin-right:8px}
+#preview{margin-top:24px;display:none}
+#preview.show{display:block}
+.cardframe{background:#2a1545;border-radius:16px;padding:16px;display:flex;justify-content:center}
+canvas#card{width:100%;max-width:360px;height:auto;border-radius:8px;background:#2a1545}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button.btn,a.btn{font-size:16px;padding:14px 18px;border-radius:12px;border:none;cursor:pointer;text-decoration:none;display:inline-block;min-height:48px}
+button.btn.primary{background:var(--cta);color:#fff;font-weight:700}
+button.btn.dark{background:#1c1a17;color:#fff}
+button.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+button.btn:disabled{opacity:.55;cursor:default}
+.copybox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px}
+.copybox .cap{font-weight:700;margin:0 0 6px}
+.copybox p{margin:0 0 10px;font-size:15px;word-break:break-word}
+.copybox code{font-size:13px;word-break:break-all}
+.howto{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:20px}
+.howto ol{margin:8px 0 0;padding-left:20px}
+.howto li{margin:0 0 8px;font-size:15px}
+.fineprint{margin-top:24px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="sub"><a href="/">Pick My Costume</a></p>
+  <h1>The Story Poll Pack</h1>
+  <p class="sub">Torn between two costumes? Put the vote on your Story. Friends tap A or B in the poll, then tap your link sticker to take the 2-minute quiz for their own kid.</p>
+
+  <label class="lbl" for="kid">Whose costume is it? (first name, optional)</label>
+  <input type="text" id="kid" maxlength="20" placeholder="Maya" autocomplete="off">
+
+  <label class="lbl">Your two finalists</label>
+  <div class="searchbox">
+    <input type="text" id="qa" placeholder="Finalist A - start typing a costume" autocomplete="off" aria-label="Search finalist A">
+    <ul class="hits" id="hitsA" role="listbox"></ul>
+</div>
+  <div class="searchbox">
+    <input type="text" id="qb" placeholder="Finalist B - start typing a costume" autocomplete="off" aria-label="Search finalist B">
+    <ul class="hits" id="hitsB" role="listbox"></ul>
+</div>
+  <div class="slot" id="slot"><span class="vs-badge">VS</span><span id="slottext">Pick two finalists above.</span></div>
+
+  <div class="btns">
+    <button class="btn primary" id="makebtn" disabled>Make my story card</button>
+</div>
+
+  <div id="preview">
+    <div class="cardframe"><canvas id="card" width="1080" height="1920"></canvas></div>
+    <div class="btns">
+      <button class="btn dark" id="dlbtn">Download the card</button>
+</div>
+    <div class="copybox">
+      <p class="cap">1. Story caption (copy, then paste under your Story)</p>
+      <p id="caption"></p>
+      <div class="btns"><button class="btn ghost" id="copycap">Copy caption</button></div>
+</div>
+    <div class="copybox">
+      <p class="cap">2. Link sticker URL (copy, add as a link sticker on the Story)</p>
+      <p><code id="linkurl"></code></p>
+      <div class="btns"><button class="btn ghost" id="copylink">Copy link</button></div>
+</div>
+    <div class="howto">
+      <p class="cap"><strong>3. Post it (30 seconds)</strong></p>
+      <ol>
+        <li>Download the card above.</li>
+        <li>New Story, add the card as the background.</li>
+        <li>Add a <strong>poll sticker</strong>: question "Which costume?", options "A" and "B".</li>
+        <li>Add a <strong>link sticker</strong> with the URL above. Friends who tap it take the quiz for their own kid.</li>
+      </ol>
+</div>
+</div>
+
+  <p class="fineprint">Cards are made in your browser. Nothing is uploaded anywhere. The link friends tap carries <code>?src=story-poll</code> so we can see the Story votes working.</p>
+</div>
+<script>
+var BANK = [{"id":"astronaut","t":"Astronaut"},{"id":"blue-dog-family","t":"Aussie Dog Family"},{"id":"baby-dino","t":"Baby Dinosaur"},{"id":"backyard-hero","t":"Backyard Superhero"},{"id":"bacon-eggs","t":"Bacon & Eggs"},{"id":"ballerina","t":"Ballerina"},{"id":"bamboo-demon","t":"Bamboo-Muzzle Demon"},{"id":"banana","t":"Banana"},{"id":"basketball-star","t":"Basketball Star"},{"id":"beekeeper-bee","t":"Beekeeper & Bee"},{"id":"black-cat","t":"Black Cat Burglar"},{"id":"block-game-crew","t":"Block Game Crew"},{"id":"block-monster","t":"Block Monster"},{"id":"blue-alien-ohana","t":"Blue Alien Ohana"},{"id":"board-game-pieces","t":"Board Game Pieces"},{"id":"bowling-pins","t":"Bowling Pins"},{"id":"boxer","t":"Boxer"},{"id":"breakfast-buffet","t":"Breakfast Buffet"},{"id":"bumble-bee","t":"Bumble Bee"},{"id":"burger-joint-couple","t":"Burger Joint Couple"},{"id":"butterfly","t":"Butterfly"},{"id":"caped-duo","t":"Caped Duo"},{"id":"cardboard-knight","t":"Cardboard Knight"},{"id":"robot-crew","t":"Cardboard Robot Crew"},{"id":"cat-mouse","t":"Cat & Mouse"},{"id":"cereal-crew","t":"Cereal Crew"},{"id":"cheerleader","t":"Cheerleader"},{"id":"chipmunk-trio","t":"Chipmunk Trio"},{"id":"classic-ghost","t":"Classic Ghost"},{"id":"vampire","t":"Classic Vampire"},{"id":"wizard","t":"Classic Wizard"},{"id":"coffee-cup","t":"Coffee Cup"},{"id":"crowd-camouflage","t":"Crowd Camouflage"},{"id":"cupcake","t":"Cupcake"},{"id":"daisy","t":"Daisy"},{"id":"deadpan-diva","t":"Deadpan Diva"},{"id":"decades-crew","t":"Decades Crew"},{"id":"demon-boy-band","t":"Demon Boy Band"},{"id":"deviled-egg","t":"Deviled Egg"},{"id":"dino-herd","t":"Dino Herd"},{"id":"dino-rangers","t":"Dino Rangers"},{"id":"dino-tourist","t":"Dino Tourist"},{"id":"dinosaur-family","t":"Dinosaur Family"},{"id":"donut","t":"Donut"},{"id":"dragon-rider-duo","t":"Dragon Rider Duo"},{"id":"spider","t":"Eight-Legged Spider"},{"id":"emerald-witch","t":"Emerald Witch"},{"id":"emoji-crew","t":"Emoji Crew"},{"id":"emotion-crew","t":"Emotion Crew"},{"id":"emotional-support-dinosaur","t":"Emotional Support Dinosaur"},{"id":"enchanted-castle-crew","t":"Enchanted Castle Crew"},{"id":"error-404","t":"Error 404"},{"id":"extinct-party-animal","t":"Extinct Party Animal"},{"id":"fairy-tale-princesses","t":"Fairy Tale Princesses"},{"id":"fossil-hunter","t":"Fossil Hunter"},{"id":"fruit-salad","t":"Fruit Salad Crew"},{"id":"fuzzy-monster","t":"Fuzzy Monster"},{"id":"galaxy-knights","t":"Galaxy Knights"},{"id":"garden-fairy","t":"Garden Fairy"},{"id":"garden-gnome","t":"Garden Gnome"},{"id":"ghost-hunters","t":"Ghost Hunters"},{"id":"gloom-bloom","t":"Gloom & Bloom"},{"id":"glow-skeleton","t":"Glow Skeleton"},{"id":"goggle-crew","t":"Goggle Crew"},{"id":"good-witch-bad-witch","t":"Good Witch, Bad Witch"},{"id":"haunted-animatronics","t":"Haunted Animatronics"},{"id":"haunted-portraits","t":"Haunted Portraits"},{"id":"headless-horsemen","t":"Headless Horsemen"},{"id":"hero-squad","t":"Hero Squad"},{"id":"hot-dog","t":"Hot Dog"},{"id":"ice-cream-cone","t":"Ice Cream Cone"},{"id":"ice-skater","t":"Ice Skater"},{"id":"kart-racers","t":"Kart Racers"},{"id":"ketchup-mustard","t":"Ketchup & Mustard"},{"id":"ladybug","t":"Ladybug"},{"id":"little-artist","t":"Little Artist"},{"id":"little-baker","t":"Little Baker"},{"id":"little-lifeguard","t":"Little Lifeguard"},{"id":"little-lion","t":"Little Lion"},{"id":"little-pig-family","t":"Little Pig Family"},{"id":"little-prince","t":"Little Prince"},{"id":"little-shark","t":"Little Shark"},{"id":"little-witch","t":"Little Witch"},{"id":"lost-tourist","t":"Lost Tourist"},{"id":"mermaid-crew","t":"Mermaid Crew"},{"id":"moth-porch-light","t":"Moth and Porch Light"},{"id":"mystery-crew","t":"Mystery Crew"},{"id":"neon-demon-hunter","t":"Neon Demon Hunter"},{"id":"ninja","t":"Ninja"},{"id":"numbered-players","t":"Numbered Players"},{"id":"office-couple","t":"Office Couple"},{"id":"pbj","t":"Peanut Butter & Jelly"},{"id":"peas-pod","t":"Peas in a Pod"},{"id":"penguin-huddle","t":"Penguin Huddle"},{"id":"pickle","t":"Pickle"},{"id":"pixel-ghost","t":"Pixel Ghost"},{"id":"pizza-slice","t":"Pizza Slice"},{"id":"plague-doctor","t":"Plague Doctor"},{"id":"plastic-dream-crew","t":"Plastic Dream Crew"},{"id":"player-one-two","t":"Player One & Two"},{"id":"plug-socket","t":"Plug and Socket"},{"id":"plumber-duo","t":"Plumber Brothers"},{"id":"pocket-plush","t":"Pocket Plush Monster"},{"id":"pop-star","t":"Pop Star"},{"id":"popcorn-bucket","t":"Popcorn Bucket"},{"id":"prince-princess","t":"Prince & Princess"},{"id":"rain-cloud-rainbow","t":"Rain Cloud and Rainbow"},{"id":"ramen-bowl","t":"Ramen Bowl"},{"id":"raptor-ranger","t":"Raptor & Ranger"},{"id":"raptor-barista","t":"Raptor Barista"},{"id":"referee","t":"Referee"},{"id":"robot-ranger","t":"Robot Ranger"},{"id":"safari-zoo-crew","t":"Safari / Zoo Crew"},{"id":"safari-photographer","t":"Safari Photographer"},{"id":"salt-pepper","t":"Salt & Pepper"},{"id":"snow-sisters","t":"Snow Sisters"},{"id":"soccer-squad","t":"Soccer Squad"},{"id":"space-crewmate","t":"Space Crewmate"},{"id":"spaghetti-meatball","t":"Spaghetti & Meatball"},{"id":"sun-moon","t":"Sun and Moon"},{"id":"superhero-family","t":"Superhero Family"},{"id":"sushi-roll","t":"Sushi Roll"},{"id":"tall-hat-crew","t":"Tall Hat Crew"},{"id":"tennis-duo","t":"Tennis Duo"},{"id":"tetris-duo","t":"Block Party Duo"},{"id":"doctor-bride","t":"The Doctor & the Bride"},{"id":"the-olympians","t":"The Olympians"},{"id":"tin-hero","t":"The Tin Hero"},{"id":"tiny-firefighter","t":"Tiny Firefighter"},{"id":"tiny-snail","t":"Tiny Snail"},{"id":"tooth-fairy","t":"Tooth and Tooth Fairy"},{"id":"toy-box-crew","t":"Toy Box Crew"},{"id":"under-the-sea","t":"Under the Sea"},{"id":"walking-taco","t":"Walking Taco"},{"id":"web-hero-duo","t":"Web Hero Duo"},{"id":"web-slinger-kid","t":"Web Slinger"},{"id":"web-slinger-crew","t":"Web-Slinger Crew"},{"id":"zombie-coworker","t":"Zombie Coworker"}];
+var BY_ID = {};
+BANK.forEach(function(e){ BY_ID[e.id] = e; });
+
+/* ---------- pure logic (no DOM): exercised by the verify harness ---------- */
+function cleanKid(raw){
+  var k = String(raw || "").replace(/<[^>]*>/g, "").replace(/[^A-Za-z '\-]/g, "").slice(0, 20).trim();
+  return k;
+}
+function kidLine(raw){
+  var k = cleanKid(raw);
+  return k ? (k + "'s Halloween costume") : "Our Halloween costume";
+}
+function buildStoryLink(){
+  return "https://pickmycostume.com/?src=story-poll";
+}
+function buildCaption(aTitle, bTitle, rawKid){
+  var who = cleanKid(rawKid);
+  var lead = who ? ("Help us pick " + who + "'s Halloween costume!") : "Help us pick our Halloween costume!";
+  return lead + " Vote A (" + aTitle + ") or B (" + bTitle + ") in the poll - then tap the link if you are still deciding for YOUR kid: the 2-minute quiz picks one from 138 ideas. " + buildStoryLink();
+}
+function photoUrl(id){ return "photos/" + id + ".webp"; }
+
+/* ---------- tap guard: one fire per tap, no double submits ---------- */
+function tapGuard(btn, fn, ms){
+  var locked = false;
+  btn.addEventListener("click", function(){
+    if (locked) return;
+    locked = true;
+    try { fn(); } finally {
+      setTimeout(function(){ locked = false; }, ms || 700);
+    }
+  });
+}
+
+/* ---------- finalist pickers ---------- */
+var pickA = null, pickB = null;
+function wireSearch(inputId, hitsId, setPick){
+  var input = document.getElementById(inputId);
+  var hits = document.getElementById(hitsId);
+  input.addEventListener("input", function(){
+    var q = input.value.trim().toLowerCase();
+    hits.innerHTML = "";
+    if (q.length < 2) { hits.style.display = "none"; return; }
+    var out = 0;
+    for (var i = 0; i < BANK.length && out < 8; i++){
+      if (BANK[i].t.toLowerCase().indexOf(q) !== -1){
+        (function(e){
+          var li = document.createElement("li");
+          li.textContent = e.t;
+          li.setAttribute("role", "option");
+          tapGuard(li, function(){ setPick(e); input.value = ""; hits.style.display = "none"; }, 400);
+        })(BANK[i]);
+        out++;
+      }
+    }
+    hits.style.display = out ? "block" : "none";
+  });
+  input.addEventListener("blur", function(){ setTimeout(function(){ hits.style.display = "none"; }, 200); });
+}
+function clearPick(which){
+  if (which === "A") pickA = null; else pickB = null;
+  refreshSlot();
+}
+function refreshSlot(){
+  var slot = document.getElementById("slot");
+  var txt = document.getElementById("slottext");
+  var make = document.getElementById("makebtn");
+  function chipHTML(e, which){
+    return '<span class="chip"><strong>' + which + '.</strong> ' + escapeHTML(e.t) +
+      ' <button data-clear="' + which + '" aria-label="Remove ' + escapeHTML(e.t) + '">x</button></span>';
+  }
+  var html = "";
+  if (pickA) html += chipHTML(pickA, "A");
+  if (pickB) html += chipHTML(pickB, "B");
+  if (pickA && pickB){
+    slot.classList.add("full");
+    txt.innerHTML = '<span class="vs-badge">VS</span> ' + html;
+    make.disabled = false;
+  } else {
+    slot.classList.remove("full");
+    txt.innerHTML = '<span class="vs-badge">VS</span> ' + (html || "Pick two finalists above.");
+    make.disabled = true;
+    document.getElementById("preview").classList.remove("show");
+  }
+  var btns = slot.querySelectorAll("[data-clear]");
+  for (var i = 0; i < btns.length; i++){
+    (function(b){ tapGuard(b, function(){ clearPick(b.getAttribute("data-clear")); }, 400); })(btns[i]);
+  }
+}
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function setA(e){ if (pickB && pickB.id === e.id) { alert("Pick two different finalists."); return; } pickA = e; refreshSlot(); }
+function setB(e){ if (pickA && pickA.id === e.id) { alert("Pick two different finalists."); return; } pickB = e; refreshSlot(); }
+wireSearch("qa", "hitsA", setA);
+wireSearch("qb", "hitsB", setB);
+
+/* ---------- story card render (1080 x 1920) ---------- */
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function wrapText(ctx, text, maxW){
+  var words = String(text).split(" "), lines = [], line = "";
+  for (var i = 0; i < words.length; i++){
+    var t = line ? (line + " " + words[i]) : words[i];
+    if (ctx.measureText(t).width > maxW && line){ lines.push(line); line = words[i]; }
+    else { line = t; }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+function loadPhoto(id){
+  return new Promise(function(res){
+    var img = new Image();
+    img.onload = function(){ res(img); };
+    img.onerror = function(){ res(null); };
+    img.src = photoUrl(id);
+  });
+}
+function drawCover(ctx, img, x, y, w, h){
+  var s = Math.max(w / img.width, h / img.height);
+  var dw = img.width * s, dh = img.height * s;
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+}
+function drawFallbackTile(ctx, title, x, y, w, h){
+  ctx.fillStyle = "#3a2666";
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = "#ffd9a0";
+  ctx.font = "700 200px -apple-system, Segoe UI, Roboto, sans-serif";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(String(title).charAt(0).toUpperCase(), x + w / 2, y + h / 2);
+}
+function drawPanel(ctx, img, title, badge, px, py){
+  var pw = 470, ph = 640;
+  ctx.save();
+  roundRect(ctx, px, py, pw, ph, 36);
+  ctx.clip();
+  if (img) drawCover(ctx, img, px, py, pw, 400);
+  else drawFallbackTile(ctx, title, px, py, pw, 400);
+  ctx.fillStyle = "rgba(20,10,35,0.92)";
+  ctx.fillRect(px, py + 400, pw, ph - 400);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "700 52px -apple-system, Segoe UI, Roboto, sans-serif";
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  var lines = wrapText(ctx, title, pw - 48);
+  var ly = py + 420;
+  for (var i = 0; i < Math.min(lines.length, 4); i++){
+    ctx.fillText(lines[i], px + pw / 2, ly);
+    ly += 62;
+  }
+  ctx.restore();
+  ctx.beginPath();
+  ctx.arc(px + 62, py + 62, 58, 0, Math.PI * 2);
+  ctx.fillStyle = "#ff8c1a";
+  ctx.fill();
+  ctx.fillStyle = "#1c1a17";
+  ctx.font = "800 64px -apple-system, Segoe UI, Roboto, sans-serif";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(badge, px + 62, py + 64);
+}
+function renderCard(){
+  var canvas = document.getElementById("card");
+  var ctx = canvas.getContext("2d");
+  var W = 1080, H = 1920;
+  return Promise.all([loadPhoto(pickA.id), loadPhoto(pickB.id)]).then(function(imgs){
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#2a1545");
+    g.addColorStop(0.55, "#4a1f4d");
+    g.addColorStop(1, "#7a2d12");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    for (var i = 0; i < 70; i++){
+      var sx = (i * 173) % W, sy = (i * 311) % H;
+      ctx.beginPath(); ctx.arc(sx, sy, 2 + (i % 3), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.font = "90px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.globalAlpha = 0.16;
+    var pumpkins = [[120, 420], [960, 700], [150, 1620], [930, 1500], [540, 240]];
+    for (var p = 0; p < pumpkins.length; p++) ctx.fillText("\uD83C\uDF83", pumpkins[p][0], pumpkins[p][1]);
+    ctx.globalAlpha = 1;
+
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    roundRect(ctx, W / 2 - 250, 96, 500, 84, 42); ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "700 40px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("P I C K   M Y   C O S T U M E", W / 2, 140);
+
+    ctx.font = "800 132px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("HELP US", W / 2, 300);
+    ctx.fillText("DECIDE!", W / 2, 436);
+
+    ctx.font = "600 54px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillStyle = "#ffd9a0";
+    ctx.fillText(kidLine(document.getElementById("kid").value), W / 2, 560);
+
+    drawPanel(ctx, imgs[0], pickA.t, "A", 40, 660);
+    drawPanel(ctx, imgs[1], pickB.t, "B", 570, 660);
+
+    ctx.beginPath();
+    ctx.arc(W / 2, 990, 92, 0, Math.PI * 2);
+    ctx.fillStyle = "#ff8c1a"; ctx.fill();
+    ctx.lineWidth = 8; ctx.strokeStyle = "#ffffff"; ctx.stroke();
+    ctx.fillStyle = "#1c1a17";
+    ctx.font = "800 72px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillText("VS", W / 2, 992);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "700 58px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillText("Vote A or B in the poll", W / 2, 1420);
+    ctx.fillStyle = "#ffd9a0";
+    ctx.font = "600 48px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillText("Still deciding for YOUR kid?", W / 2, 1500);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "400 44px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillText("Take the 2-minute quiz at", W / 2, 1560);
+    ctx.fillStyle = "#ff8c1a";
+    ctx.font = "800 88px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillText("pickmycostume.com", W / 2, 1660);
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.font = "400 40px -apple-system, Segoe UI, Roboto, sans-serif";
+    ctx.fillText("138 ideas, free, no signup", W / 2, 1760);
+  });
+}
+
+/* ---------- wire up ---------- */
+tapGuard(document.getElementById("makebtn"), function(){
+  if (!pickA || !pickB) return;
+  renderCard().then(function(){
+    var prev = document.getElementById("preview");
+    prev.classList.add("show");
+    document.getElementById("caption").textContent = buildCaption(pickA.t, pickB.t, document.getElementById("kid").value);
+    document.getElementById("linkurl").textContent = buildStoryLink();
+    if (history.replaceState){
+      try {
+        history.replaceState(null, "", "/story-polls?a=" + encodeURIComponent(pickA.id) +
+          "&b=" + encodeURIComponent(pickB.id) +
+          "&kid=" + encodeURIComponent(cleanKid(document.getElementById("kid").value)));
+      } catch(e){}
+    }
+    ph("story_poll_viewed", {a: pickA.id, b: pickB.id});
+    prev.scrollIntoView({behavior: "smooth", block: "start"});
+  });
+}, 800);
+
+tapGuard(document.getElementById("dlbtn"), function(){
+  var canvas = document.getElementById("card");
+  if (canvas.toBlob){
+    canvas.toBlob(function(blob){
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "costume-story-poll.png";
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+      ph("story_poll_card_downloaded", {a: pickA.id, b: pickB.id});
+    }, "image/png");
+  } else {
+    alert("Your browser cannot save the card. Screenshot it instead.");
+  }
+}, 800);
+
+function copyText(text, evtName){
+  function done(){ ph(evtName, {a: pickA.id, b: pickB.id}); }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ done(); alert("Copied. Paste it on your Story."); }, function(){ prompt("Copy this:", text); });
+  } else { prompt("Copy this:", text); }
+}
+tapGuard(document.getElementById("copycap"), function(){
+  copyText(document.getElementById("caption").textContent, "story_poll_caption_copied");
+}, 600);
+tapGuard(document.getElementById("copylink"), function(){
+  copyText(document.getElementById("linkurl").textContent, "story_poll_link_copied");
+}, 600);
+
+/* deep link: /story-polls?a=<id>&b=<id>&kid=<name> */
+(function(){
+  function qp(n){ var m = new RegExp("[?&]" + n + "=([^&]*)").exec(location.search); return m ? decodeURIComponent(m[1]) : ""; }
+  var a = qp("a"), b = qp("b"), k = qp("kid");
+  if (a && BY_ID[a]) pickA = BY_ID[a];
+  if (b && BY_ID[b]) pickB = BY_ID[b];
+  if (k) document.getElementById("kid").value = cleanKid(k);
+  if (pickA || pickB) refreshSlot();
+})();
+</script>
+</body>
+</html>
