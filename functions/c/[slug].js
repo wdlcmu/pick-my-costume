@@ -2,7 +2,8 @@
 // illustration for messengers and serves the full build guide as static
 // HTML (h1, decision triple, materials, steps, FAQs) so fetchers and AI
 // assistants can read and quote it. A CTA deep-links humans into the app
-// idea page (?idea=<slug>, share params preserved).
+// idea page (?idea=<slug>&plan=1, share params preserved), landing the
+// detail page in the COMMITTED state with the plan already open.
 // Regenerate with gen_share_function.py when the idea bank changes.
 var IDEAS = {"neon-demon-hunter": {"t": "Neon Demon Hunter", "b": "Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup."}, "classic-ghost": {"t": "Classic Ghost", "b": "A white sheet with cut-out eyes."}, "blue-dog-family": {"t": "Aussie Dog Family", "b": "Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups."}, "superhero-family": {"t": "Superhero Family", "b": "Red sweatsuits, black eye masks, felt logo. The whole family goes super."}, "blue-alien-ohana": {"t": "Blue Alien Ohana", "b": "A blue hoodie and an antenna headband turn the kid into the alien."}, "emerald-witch": {"t": "Emerald Witch", "b": "An all-green-everything gown, dramatic makeup, and a pointy hat gone couture."}, "gloom-bloom": {"t": "Gloom & Bloom", "b": "Braids and black for Gloom, color-pop and smiles for Bloom."}, "deadpan-diva": {"t": "Deadpan Diva", "b": "Black dress, two braids, pale makeup, and a stare that ends conversations."}, "safari-zoo-crew": {"t": "Safari / Zoo Crew", "b": "Everyone picks an animal: closet clothes in matching colors plus an ear headband."}, "fairy-tale-princesses": {"t": "Fairy Tale Princesses", "b": "A dress or a crown from the closet. Every princess works."}, "tin-hero": {"t": "The Tin Hero", "b": "Red and gold plus a glowing chest circle: the suit does the talking."}, "good-witch-bad-witch": {"t": "Good Witch, Bad Witch", "b": "Green face paint and black for one, pink gown and crown for the other."}, "fuzzy-monster": {"t": "Fuzzy Monster", "b": "A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile."}, "pocket-plush": {"t": "Pocket Plush Monster", "b": "A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag."}, "soccer-squad": {"t": "Soccer Squad", "b": "Jerseys for the players, black for the ref, one red card."}, "glow-skeleton": {"t": "Glow Skeleton", "b": "Black sweats with glow-in-the-dark bone tape, plus glow bracelets."}, "block-game-crew": {"t": "Block Game Crew", "b": "Cardboard-box heads: pick your blocky hero."}, "web-slinger-crew": {"t": "Web Hero Crew", "b": "Red, black, and pink hoodies plus masks. Pick your spider."}, "mermaid-crew": {"t": "Mermaid Crew", "b": "The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role."}, "little-pig-family": {"t": "Little Pig Family", "b": "Pink clothes and a snout headband; little brother brings the dinosaur."}, "enchanted-castle-crew": {"t": "Enchanted Castle Crew", "b": "The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role."}, "bumble-bee": {"t": "Bumble Bee", "b": "Black sweats with yellow tape stripes and soft felt antennae."}, "baby-dino": {"t": "Baby Dinosaur", "b": "Green hoodie, felt spikes down the back, stuffed tail."}, "little-lion": {"t": "Little Lion", "b": "Tan sweatsuit plus a fuzzy mane hood."}, "tiny-firefighter": {"t": "Tiny Firefighter", "b": "Red sweats, a plastic helmet, and a toy hose."}, "little-shark": {"t": "Little Shark", "b": "Gray hoodie with a felt fin glued on the back."}, "walking-taco": {"t": "Walking Taco", "b": "Tan vest painted like a taco shell with felt toppings."}, "ramen-bowl": {"t": "Ramen Bowl", "b": "Cardboard bowl rim, noodle-yarn hair, a foam egg on top."}, "tiny-snail": {"t": "Tiny Snail", "b": "Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack."}, "little-witch": {"t": "Little Witch", "b": "Black cape, pointy hat, striped tights, green face paint."}, "spider": {"t": "Eight-Legged Spider", "b": "Black sweats with stuffed sock legs attached at the sides."}, "backyard-hero": {"t": "Backyard Superhero", "b": "Short cape plus a first initial on the chest, mask optional."}, "pickle": {"t": "Pickle", "b": "Green tunic, bumpy texture, smug grin."}, "vampire": {"t": "Classic Vampire", "b": "Black cape, fangs, slicked hair."}, "bamboo-demon": {"t": "Bamboo-Muzzle Demon", "b": "Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon."}, "emoji-crew": {"t": "Emoji Crew", "b": "Everyone picks an emoji: a yellow tee plus a big printed face."}, "robot-crew": {"t": "Cardboard Robot Crew", "b": "Boxy robots built from cardboard boxes, foil, and bottle-cap buttons."}, "cereal-crew": {"t": "Cereal Crew", "b": "Solid-color clothes plus a cereal-box front you decorate."}, "decades-crew": {"t": "Decades Crew", "b": "Each person picks a decade and dresses from their own closet."}, "under-the-sea": {"t": "Under the Sea", "b": "Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves."}, "dino-rangers": {"t": "Dino Rangers", "b": "Khaki outfits for the grown-ups, dino hoods for the kids. Leash a toy raptor."}, "board-game-pieces": {"t": "Board Game Pieces", "b": "Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes."}, "rain-cloud-rainbow": {"t": "Rain Cloud and Rainbow", "b": "One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes."}, "doctor-bride": {"t": "The Doctor & the Bride", "b": "Green face paint and neck bolts for one; tall streaked wig and torn gown for the other."}, "breakfast-buffet": {"t": "Breakfast Buffet", "b": "Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes."}, "ghost-hunters": {"t": "Ghost Hunters", "b": "Khaki jumpsuits, cardboard ghost-catching backpacks, name patches."}, "haunted-animatronics": {"t": "Haunted Animatronics", "b": "Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves."}, "mystery-crew": {"t": "Mystery Crew", "b": "Assign the leader, the style icon, the brains, the goofball, and one very good dog."}, "headless-horsemen": {"t": "Headless Horsemen", "b": "Black capes, jack-o-lanterns held at shoulder height, group gallop."}, "haunted-portraits": {"t": "Haunted Portraits", "b": "Gray makeup, old-timey clothes, hold a gilt frame."}, "goggle-crew": {"t": "Goggle Crew", "b": "Yellow tees, denim overalls, goggles, black gloves."}, "garden-gnome": {"t": "Garden Gnome", "b": "Wear earth tones, make a pointy hat from cardboard, draw a white beard, carry a tiny fishing rod or garden shovel."}, "black-cat": {"t": "Black Cat Burglar", "b": "Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar."}, "block-monster": {"t": "Block Monster", "b": "Wear all one solid color, square up your silhouette with foam or cardboard blocks on shoulders/limbs, draw a pixelated face."}, "space-crewmate": {"t": "Space Crewmate", "b": "Colored sweatsuit plus a cardboard backpack."}, "sun-moon": {"t": "Sun and Moon", "b": "One in yellow with cardboard rays, one in navy with paper stars and a crescent."}, "moth-porch-light": {"t": "Moth and Porch Light", "b": "One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade."}, "raptor-ranger": {"t": "Raptor & Ranger", "b": "One khaki ranger, one green dino hood. The ranger holds the leash."}, "cat-mouse": {"t": "Cat & Mouse", "b": "Cat ears versus mouse ears. Spend the night chasing each other."}, "ketchup-mustard": {"t": "Ketchup & Mustard", "b": "Red bottle tunic and cap for one, yellow for the other."}, "plumber-duo": {"t": "Plumber Duo", "b": "Overalls, red and green caps and shirts, drawn mustaches."}, "office-couple": {"t": "Office Couple", "b": "White shirts, name tags, and a teapot. The office's finest."}, "burger-joint-couple": {"t": "Burger Joint Couple", "b": "White apron plus fake mustache, curly red wig plus glasses. Burger shop owners."}, "plug-socket": {"t": "Plug and Socket", "b": "Cardboard plug and outlet worn front and back."}, "lost-tourist": {"t": "Lost Tourist", "b": "Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder."}, "tooth-fairy": {"t": "Tooth and Tooth Fairy", "b": "One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money."}, "web-hero-duo": {"t": "Web Hero Duo", "b": "Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude."}, "plague-doctor": {"t": "Plague Doctor", "b": "Long coat, wide hat, beaked mask."}, "crowd-camouflage": {"t": "Crowd Camouflage", "b": "Gray hoodie, dark pants, blank expression. Vanish into any crowd."}, "error-404": {"t": "Error 404", "b": "Wear all black with a blank white page taped to your chest; carry a phone with a cracked-screen prop."}, "zombie-coworker": {"t": "Zombie Coworker", "b": "Torn button-down, loosened tie, pale makeup, coffee mug."}, "the-olympians": {"t": "The Olympians", "b": "Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident."}, "safari-photographer": {"t": "Safari Photographer", "b": "Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm."}, "player-one-two": {"t": "Player One & Two", "b": "Matching tees with 1 and 2, toy controllers in hand, ready for co-op."}, "dinosaur-family": {"t": "Dinosaur Family", "b": "Matching dino-hoodie sweatsuits for the whole crew, spikes down every back."}, "snow-sisters": {"t": "Ice Kingdom Crew", "b": "The ice queen, the snow princess, the talking snowman, the reindeer: pick your role."}, "sushi-roll": {"t": "Sushi Roll", "b": "A white-sheet wrap with felt salmon and pom-pom wasabi. Chopsticks optional."}, "deviled-egg": {"t": "Deviled Egg", "b": "White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil."}, "pizza-slice": {"t": "Pizza Slice", "b": "A big cardboard triangle, painted golden with felt pepperoni."}, "popcorn-bucket": {"t": "Popcorn Bucket", "b": "A striped cardboard-box body with balloon popcorn on top."}, "ice-cream-cone": {"t": "Ice Cream Cone", "b": "A tan paper cone hat and a sprinkle-dotted scoop shirt."}, "pbj": {"t": "Peanut Butter & Jelly", "b": "One in brown with a PB label, one in purple with a J label."}, "bacon-eggs": {"t": "Bacon & Eggs", "b": "Wavy bacon stripes and a sunny-side-up egg yolk."}, "peas-pod": {"t": "Peas in a Pod", "b": "Green shirts in a row under one long felt pod sash."}, "basketball-star": {"t": "Basketball Star", "b": "Jersey, shorts, eye-black stripes, and a ball that never leaves your hand."}, "referee": {"t": "Referee", "b": "A striped shirt, a whistle, and a yellow penalty flag."}, "boxer": {"t": "Boxer", "b": "Bathrobe, toy gloves, bruise makeup, and entrance music."}, "cheerleader": {"t": "Cheerleader", "b": "Team colors and pom-poms made from cut plastic bags."}, "tennis-duo": {"t": "Tennis Duo", "b": "All-white outfits, headbands, toy rackets, and a tube of balls."}, "bowling-pins": {"t": "Bowling Pins", "b": "White outfits with red neck stripes, plus one bowler in black."}, "cardboard-knight": {"t": "Cardboard Knight", "b": "Silver-painted cardboard armor and a pool-noodle sword."}, "ninja": {"t": "Ninja", "b": "All black with a belt sash and a slit headband."}, "caped-duo": {"t": "Caped Duo", "b": "Matching sheet capes, felt masks, and your own emblems."}, "hero-squad": {"t": "Hero Squad", "b": "Color-coded capes and masks, one team pose for photos."}, "astronaut": {"t": "Astronaut", "b": "White sweats, a paper-bag helmet, and a flag patch."}, "robot-ranger": {"t": "Robot Ranger", "b": "Silver boxes, dryer-vent arms, and sticker dials."}, "penguin-huddle": {"t": "Penguin Huddle", "b": "Black shirts, felt bellies, beak headbands. Waddle together."}, "prince-princess": {"t": "Prince & Princess", "b": "A crown and cape, a thrifted gown and tiara."}, "dino-herd": {"t": "Dino Herd", "b": "Green ponchos with felt spikes and stuffed-sock tails."}, "pixel-ghost": {"t": "Pixel Ghost", "b": "A white sheet cut in chunky pixel squares with felt eyes."}, "spaghetti-meatball": {"t": "Spaghetti & Meatball", "b": "White shirt with yarn spaghetti glued on, brown pom-pom meatballs."}, "cupcake": {"t": "Cupcake", "b": "Brown tunic for the wrapper, white pillowcase for frosting, cherry on top."}, "banana": {"t": "Banana", "b": "Yellow sweatsuit with a green felt stem hat."}, "hot-dog": {"t": "Hot Dog", "b": "Tan foam pool noodle bun, red shirt for the dog, mustard squiggle."}, "donut": {"t": "Donut", "b": "Pink cardboard ring with sprinkles, worn like a sandwich board."}, "coffee-cup": {"t": "Coffee Cup", "b": "White trash bag over a cardboard tube, brown lid hat."}, "salt-pepper": {"t": "Salt & Pepper", "b": "White and black outfits with shaker tops made from cardboard."}, "fruit-salad": {"t": "Fruit Salad Crew", "b": "Each person picks a fruit color, wears it head to toe with a leaf hat."}, "wizard": {"t": "Classic Wizard", "b": "Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional."}, "toy-box-crew": {"t": "Toy Box Crew", "b": "A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite."}, "demon-boy-band": {"t": "Demon Boy Band", "b": "Matching streetwear-idol outfits with glowing patterns for your whole boy band."}, "dragon-rider-duo": {"t": "Dragon Rider Duo", "b": "A viking rider and a cardboard dragon, ready to fly over the neighborhood."}, "numbered-players": {"t": "Numbered Players", "b": "Green tracksuits, numbered bibs, and a survival-game attitude."}, "emotion-crew": {"t": "Emotion Crew", "b": "One loud color per person: each of you is a different emotion."}, "kart-racers": {"t": "Kart Racers", "b": "Cardboard karts and racing caps for a full starting grid of friends."}, "tall-hat-crew": {"t": "Tall Hat Crew", "b": "A striped stovepipe hat, a bow tie, and two wild blue-haired Things."}, "chipmunk-trio": {"t": "Chipmunk Trio", "b": "Letter sweaters, felt ears, and whiskers for a singing trio of chipmunks."}, "galaxy-knights": {"t": "Galaxy Knights", "b": "Robes, belts, and toy energy blades for knights of a far-off galaxy."}, "plastic-dream-crew": {"t": "Plastic Dream Crew", "b": "Head-to-toe pink outfits with plastic accessories for the dream crew."}, "extinct-party-animal": {"t": "Extinct Party Animal", "b": "Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago."}, "dino-tourist": {"t": "Dino Tourist", "b": "Hawaiian shirt, dino tail, camera around your neck, and a fanny pack. The meteor missed this one."}, "raptor-barista": {"t": "Raptor Barista", "b": "Green hoodie with a dino snout hood, tiny T. rex arms strapped on, and a coffee cup you can barely hold."}, "emotional-support-dinosaur": {"t": "Emotional Support Dinosaur", "b": "Dino-spike vest over normal clothes with a badge that says Emotional Support Dinosaur. Do not pet."}, "garden-fairy": {"t": "Garden Fairy", "b": "Tulle wings, a flower crown, and a wand: the backyard turns into a fairy tale."}, "ballerina": {"t": "Ballerina", "b": "A tulle tutu tied onto elastic, a leotard, and a neat ballerina bun."}, "butterfly": {"t": "Butterfly", "b": "Painted cardboard wings on black sweats: the garden's prettiest visitor."}, "pop-star": {"t": "Pop Star", "b": "A sparkly jacket, a toy microphone, and the biggest hair in the room."}, "ice-skater": {"t": "Ice Skater", "b": "A white dress, tights, and a perfect bun: gold-medal energy, no ice required."}, "ladybug": {"t": "Ladybug", "b": "Red sweats, black felt dots, and little spotted wings."}, "daisy": {"t": "Daisy", "b": "A yellow petal headband and a green dress: a walking flower."}, "little-baker": {"t": "Little Baker", "b": "A paper chef hat, an apron, and a toy whisk."}, "little-artist": {"t": "Little Artist", "b": "A beret, a cardboard paint palette, and a splatter-painted smock."}, "beekeeper-bee": {"t": "Beekeeper & Bee", "b": "One goes as the beekeeper in white with a mesh veil; the other wears yellow and black stripes with antennae."}, "tetris-duo": {"t": "Block Party Duo", "b": "Two interlocking tetromino shapes built from painted cardboard boxes, worn like sandwich boards."}, "little-lifeguard": {"t": "Little Lifeguard", "b": "Red tee, whistle, and a rescue buoy made from a pool noodle ring: an everyday hero costume."}, "little-prince": {"t": "Little Prince", "b": "Crown, cape, and a royal sash from the dress-up box or the craft drawer."}, "fossil-hunter": {"t": "Fossil Hunter", "b": "Khaki vest, toy brush, magnifying glass, and cardboard fossil bones in a belt pouch."}, "web-slinger-kid": {"t": "Web Hero", "b": "Red sweatsuit, tape web lines, big white eye lenses."}, "milk-cookies": {"t": "Milk & Cookies", "b": "White carton tunic for one, brown cookie with felt chips for the other."}, "chips-guac": {"t": "Chips & Guac", "b": "Green guac tunic with red tomato dots for one, giant triangle chip hat for the other."}, "sushi-soy": {"t": "Sushi & Soy Sauce", "b": "White rice tunic with orange fish sash for one, dark soy bottle for the other."}, "burger-fries": {"t": "Burger & Fries", "b": "Sesame-seed bun top for one, red fry carton with yellow fry sticks for the other."}, "donut-coffee": {"t": "Donut & Coffee", "b": "Pink frosted ring tunic for one, takeout coffee cup for the other."}, "wine-cheese": {"t": "Wine & Cheese", "b": "Burgundy wine glass tunic for one, yellow cheese wedge with holes for the other."}, "kpop-demon-huntresses": {"t": "Pop Star Demon Huntresses", "b": "Matching stage outfits, toy microphones, and demon-hunter poses for three."}, "goth-braids": {"t": "Goth Girl with Braids", "b": "Black dress, two tight braids, and a stare that ends conversations."}, "juke-joint-vampires": {"t": "Juke-Joint Vampires", "b": "Sharp vintage suits, fangs, and a trumpet one of you never puts down."}, "blue-heeler-pup": {"t": "Blue Heeler Pup", "b": "Blue-gray hoodie, felt ears, and a painted nose for the littlest pup."}, "baby-pumpkin": {"t": "Baby Pumpkin", "b": "An orange onesie, green felt leaves, and the easiest first Halloween ever."}, "pirate-captain": {"t": "Pirate Captain", "b": "Striped shirt, cardboard captain hat, and a treasure map you drew yourself."}, "cowboy-duo": {"t": "Cowboy and Cowgirl", "b": "Denim, cardboard hats, and bandanas for the pair that rides together."}, "smores-duo": {"t": "S'mores Duo", "b": "Two graham-cracker tunics with a marshmallow and chocolate candy square between you."}, "scarecrow": {"t": "Friendly Scarecrow", "b": "Plaid shirt, straw poking out, and a stitched smile."}, "yellow-henchmen": {"t": "Yellow Henchmen Crew", "b": "Yellow shirts, blue overalls, and swim goggles for the whole crew."}, "mystery-teens": {"t": "Mystery-Solving Teens", "b": "Color-coded outfits, a toy magnifying glass, and one giant sandwich."}, "pumpkin-king-bride": {"t": "Pumpkin Groom and Patchwork Bride", "b": "Pinstripe suit and pumpkin mask for one, patchwork dress and yarn hair for the other."}, "moonwalk-star": {"t": "Moonwalking Pop Star", "b": "Red jacket, one glitter glove, and the lean everyone attempts."}, "witchy-sisters": {"t": "Witchy Sister Trio", "b": "Three color-coded witch dresses: green, purple, and orange."}, "macabre-couple": {"t": "Macabre Goth Couple", "b": "Long black gown and calm stare for one, sharp suit for the other."}, "party-pinata": {"t": "Party Pinata", "b": "A cardboard box wrapped in rainbow fringe, with real candy inside."}, "fuzzy-gremlin": {"t": "Fuzzy Gremlin Plush", "b": "A furry brown onesie, big felt ears, and googly eyes."}, "rescue-pups": {"t": "Rescue Pup Team", "b": "Color-coded pup vests and felt ears for the whole preschool crew."}, "wayfinder-princess": {"t": "Wayfinder Princess", "b": "A printed sailcloth top, grass skirt, and a cardboard hook."}, "chill-painter": {"t": "Chill Painter with Fro", "b": "A big brown afro wig, denim shirt, and a palette you painted yourself."}};
 
@@ -58,6 +59,14 @@ export function onRequest(context) {
   if (!idea) return new Response(NOTFOUND_HTML, { status: 404, headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store" } });
   var title = esc(idea.t), blurb = esc(idea.b);
   var img = "https://pickmycostume.com/images/og/" + slug + ".jpg";
+  /* 2026-10-01: on-page hero uses the REAL costume photo
+     (/photos/<slug>.webp -- the same real photo the galaxy map and the
+     in-app detail page use), not the AI-generated og decision card. The
+     og:image / twitter meta tags below intentionally still use img: social
+     cards are separate from the on-page hero. Role variants (_role) also
+     fall back to the base real photo -- there is one hero per costume.
+     Reversible: point heroImg back at img. */
+  var heroImg = "/photos/" + slug + ".webp";
   /* schema.org HowTo JSON-LD: this page's costume genuinely is a materials
      list plus numbered steps, so this is honest structured data aimed at AI
      assistants parsing the page. (Google retired HowTo rich results in 2023;
@@ -148,9 +157,14 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      notably ?s=, so genuine-share recipient attribution keeps working (see
      hour-session/arrival-context-gate.js). This is the URL the old
      auto-redirect pointed at; it is now a visible CTA so fetchers and
-     humans alike read the guide first. */
+     humans alike read the guide first.
+     2026-10-01: &plan=1 added -- the CTA now lands the detail page in the
+     COMMITTED state with the plan panel already open (a parallel stream
+     implements the plan=1 handling on the detail page; this only builds
+     the URL). Reversible: delete the _qp.set("plan","1") line. */
   var _qp = new URLSearchParams(new URL(context.request.url).search);
   _qp.set("idea", slug);
+  _qp.set("plan", "1");
   /* 2026-09-26 evening red-team: QA-hygiene. The ?probe= param exists only so
      QA-harness traffic can be excluded from analytics; it must never leak
      into quiz-bound hrefs, or a harness click-through would mint share links
@@ -222,7 +236,11 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      a site they have never seen. One clear label for every arrival now.
      Reversible: restore the /^(rail|hero)/ branch with the old cold string
      above to re-split. */
-  var _ctaLabel = "Make this costume";
+  /* 2026-10-01: single CTA (the duplicate bottom one was removed below).
+     "Plan it in the app" names the destination for cold arrivals better
+     than the old "Make this costume" (cold-arrival polish). Reversible:
+     restore the old string. */
+  var _ctaLabel = "Plan it in the app →";
   var targetAttr = target.replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
      RECIPIENT_BANNER = false returns the page to the no-banner control.
@@ -673,86 +691,81 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
     _ld +
     "<style>" +
-    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#1f1f1f;background:#fff;line-height:1.55;}" +
-    ".topbar{background:#fff;border-bottom:1px solid #eee2d3;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
-    ".topbar a{color:#1f1f1f;text-decoration:none;font-weight:800;font-size:16px;}" +
+    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#fdf3e3;background:#160d28;line-height:1.55;}" +
+    ".topbar{background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
+    ".topbar a{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;}" +
     ".topbar a span{color:#ff8c1a;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
     ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
-    ".pill{display:inline-block;background:#fff4e5;border:1px solid #ffd9a3;color:#8a4a0c;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
+    ".pill{display:inline-block;background:#2a1c52;border:1px solid #4b3486;color:#fdf3e3;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
     /* 2026-09-30 traffic-operator: the small-caps unit labels inside the
        decision pills (Time / Cost / Effort). */
     ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
-    ".fit{font-size:15px;color:#444;margin:0 0 8px;}" +
-    ".lede{font-size:17px;color:#444;margin:0;}" +
+    ".fit{font-size:15px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".lede{font-size:17px;color:#fdf3e3;margin:0;}" +
     "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
-    ".quickcard{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
-    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#222;margin:0 0 8px;}" +
+    ".quickcard{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
+    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#fdf3e3;margin:0 0 8px;}" +
     ".quickcard .qsteps{font-size:16px;line-height:1.5;padding-left:22px;margin:0;}" +
     ".quickcard .qsteps li{margin:8px 0;}" +
-    ".quickcard .qtip{font-size:15px;color:#555;font-style:italic;margin:10px 0 0;}" +
-    "details.faq{border:1px solid #e3ddd2;border-radius:10px;margin:8px 0;background:#faf8f4;}" +
+    ".quickcard .qtip{font-size:15px;color:#cdbcf0;font-style:italic;margin:10px 0 0;}" +
+    "details.faq{border:1px solid #4b3486;border-radius:10px;margin:8px 0;background:#211540;}" +
     "details.faq summary{font-weight:700;font-size:16px;padding:12px 14px;cursor:pointer;list-style:none;}" +
     "details.faq summary::-webkit-details-marker{display:none;}" +
-    "details.faq summary::before{content:'+ ';color:#b3540c;font-weight:700;}" +
+    "details.faq summary::before{content:'+ ';color:#ff8c1a;font-weight:700;}" +
     "details.faq[open] summary::before{content:'\u2212 ';}" +
     "details.faq p{margin:0;padding:0 14px 12px;font-size:16px;line-height:1.55;}" +
-    ".mats{list-style:none;padding:0;margin:0;background:#faf8f4;border:1px solid #eee2d3;border-radius:14px;padding:6px 18px;}" +
-    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #f0e8da;position:relative;font-size:16px;}" +
+    ".mats{list-style:none;padding:0;margin:0;background:#211540;border:1px solid #4b3486;border-radius:14px;padding:6px 18px;}" +
+    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #4b3486;position:relative;font-size:16px;}" +
     ".mats li:last-child{border-bottom:none;}" +
-    ".mats li::before{content:'✓';position:absolute;left:2px;color:#b3540c;font-weight:700;}" +
+    ".mats li::before{content:'✓';position:absolute;left:2px;color:#ff8c1a;font-weight:700;}" +
     "ol.steps{list-style:none;counter-reset:step;padding:0;margin:0;}" +
     "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
     "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
     ".ctawrap{margin:20px 0;}" +
-    ".storyline{font-size:16px;margin:0 0 14px;color:#444;}" +
-    ".storyline a{color:#b3541e;font-weight:700;text-decoration:none;}" +
+    ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
+    ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
     ".guide img{max-width:100%;height:auto;border-radius:12px;margin:6px 0;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
-    ".quizline{font-size:15px;color:#555;margin-top:26px;}" +
+    ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
-    ".pinline{font-size:14px;color:#555;margin:10px 0 0;}" +
-    ".sharerline{font-size:16px;color:#555;margin:2px 0 12px;}" +
-    ".ctasub{display:block;font-size:14px;color:#777;margin-top:10px;}" +
+    ".pinline{font-size:14px;color:#cdbcf0;margin:10px 0 0;}" +
+    ".sharerline{font-size:16px;color:#cdbcf0;margin:2px 0 12px;}" +
+    ".ctasub{display:block;font-size:14px;color:#cdbcf0;margin-top:10px;}" +
     ".quickcard .qmats{margin:12px 0;}" +
-    ".pinline a{color:#b3541e;font-weight:700;}" +
-    ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
-    ".safesrc{font-size:14px;color:#777;}" +
-    ".rbanner{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
-    ".rbanner-line{font-size:17px;font-weight:700;color:#333;margin:0 0 6px;line-height:1.4;}" +
-    ".rbanner-sub{font-size:15px;color:#666;margin:0 0 14px;line-height:1.45;}" +
+    ".pinline a{color:#ff8c1a;font-weight:700;}" +
+    ".splitpartner-line{font-size:15px;color:#cdbcf0;margin:6px 0 0;}" +
+    ".safesrc{font-size:14px;color:#cdbcf0;}" +
+    ".rbanner{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
+    ".rbanner-line{font-size:17px;font-weight:700;color:#fdf3e3;margin:0 0 6px;line-height:1.4;}" +
+    ".rbanner-sub{font-size:15px;color:#cdbcf0;margin:0 0 14px;line-height:1.45;}" +
     ".rbanner .cta{margin:0;}" +
-    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #e0a33e;border-radius:14px;background:#fffdf6;}" +
+    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #4b3486;border-radius:14px;background:#211540;}" +
     ".splitwrap .splitopen{width:100%;}" +
     ".splitq{font-size:16px;font-weight:700;margin:0 0 8px;}" +
     ".splitstepper{display:flex;align-items:center;gap:14px;margin:0 0 12px;}" +
     ".splitstepper .ghost{margin:0;}" +
     ".splitcount{font-size:20px;font-weight:700;min-width:24px;text-align:center;}" +
-    ".splitnamein{display:block;width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #ddd;border-radius:10px;}" +
+    ".splitnamein{display:block;width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #4b3486;border-radius:10px;background:#160d28;color:#fdf3e3;}" +
     ".splitresult{margin-top:12px;}" +
     ".splitres-head{font-size:16px;font-weight:700;margin:0 0 8px;}" +
     ".splitres-list{font-size:15px;}" +
-    ".splitnote{font-size:14px;color:#777;}" +
+    ".splitnote{font-size:14px;color:#cdbcf0;}" +
     ".splitnames{margin:10px 0;}" +
-    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#fff;color:#ff8c1a;cursor:pointer;}" +
+    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#2a1c52;color:#ff8c1a;cursor:pointer;}" +
     ".splitmine-head{font-size:16px;font-weight:700;margin:12px 0 6px;}" +
     ".splititems{font-size:16px;}" +
-    ".splititems-empty{font-size:15px;color:#777;}" +
-    ".madeit-line{font-size:16px;color:#444;margin:0 0 14px;line-height:1.55;}" +
+    ".splititems-empty{font-size:15px;color:#cdbcf0;}" +
+    ".madeit-line{font-size:16px;color:#cdbcf0;margin:0 0 14px;line-height:1.55;}" +
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
-    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
-    ".crumb{font-size:13px;color:#777;margin:0 0 8px;}" +
-    ".crumb a{color:#b3541e;text-decoration:none;}" +
-    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
-    ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
-    /* AI honesty label (2026-09-30): the quiz-results page tags concept
-       photos "AI-generated concept photo"; the guide page shows the same AI
-       photo (og card rendered from photos/<slug>.webp), so it carries the
-       same tag with the same styling. */
-    ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
+    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #4b3486;border-radius:999px;color:#ff8c1a;text-decoration:none;font-size:15px;font-weight:600;}" +
+    ".crumb{font-size:13px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".crumb a{color:#ff8c1a;text-decoration:none;}" +
+    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
+    ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
     "</style>" +
     "</head><body><div class=\"topbar\"><a href=\"/\">🎃 Pick My <span>Costume</span></a></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
@@ -763,9 +776,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\"lede\">" + blurb + "</p>" +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a><span class=\"ctasub\">No signup \u00b7 2 minutes.</span></p>" +
-    "<img src=\"" + img + "\" alt=\"" + title + " costume idea\">" +
-    /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
-    "<div class=\"aiphoto\">AI-generated concept photo</div>" +
+    "<img src=\"" + heroImg + "\" alt=\"" + title + " costume idea\">" +
     (_quick ? "<div class=\"quickcard\">" + _quick + "</div>" : "") +
     _splitHtml +
     "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
@@ -778,7 +789,6 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     (IMADEIT ? "<h2>Wore this? Show us</h2>" +
     "<p class=\"madeit-line\">Made this costume? Your photo helps the next person see the real thing.</p>" +
     "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + (targetAttr + "&amp;madeit=1") + "\">Share my costume photo</a></p>" : "") +
-    "<p class=\"ctawrap\"><a class=\"cta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a></p>" +
     "<p class=\"quizline\">Want one picked for you? <a href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\"pinline\">Saving this idea? <a target=\"_blank\" rel=\"noopener\" href=\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\">Pin it on Pinterest</a></p>" +
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +
