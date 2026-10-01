@@ -142,7 +142,7 @@ var GHOST = {
   title: "Classic Ghost",
   blurb: "A white sheet with cut-out eyes.",
   why: "Top five for kids and adults alike -- the most universal costume there is.",
-  time: "10 min", cost: "$0-3", effort: "Easy",
+  time: "10 min", effort: "Easy",
   materials: [
     "1 white flat sheet: twin size for kids under 8, full size for tweens and adults (make: use an old sheet; buy: thrift store for a dollar or two)",
     "Black marker, thick tip, 1 (buy: dollar store)",
@@ -210,7 +210,7 @@ function renderCard(){
   card.appendChild(el("p", "why", GHOST.why));
 
   var facts = el("div", "factrow");
-  [["Time", GHOST.time], ["Cost", GHOST.cost], ["Effort", GHOST.effort]].forEach(function(pair){
+  [["Time", GHOST.time], ["Effort", GHOST.effort]].forEach(function(pair){
     var f = el("div", "fact");
     f.appendChild(el("b", null, pair[0]));
     var s = el("span", null, pair[1]);
