@@ -521,7 +521,7 @@ var IDEAS = [
   {id:"deadpan-diva", title:"Deadpan Diva", blurb:"Black dress, two braids, pale makeup, and a stare that ends conversations.", why:"The goth icon: closet-easy, instantly readable, and the braids do half the work.", audience:["solo"], budget:["diy","low"], tags:{tv:3,scary:3,simple:2,couch:2,occbar:2,occparty:1}, fit:"F", venue:{bar:2}, rank:8},
   {id:"safari-zoo-crew", title:"Safari / Zoo Crew", blurb:"Everyone picks an animal: closet clothes in matching colors plus an ear headband.", why:"One ear pack covers the whole group, and everyone still gets their own role.", audience:["group","family","class"], budget:["low","diy"], tags:{cute:3,simple:2,couch:1,animals:3,occparty:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:9},
   {id:"fairy-tale-princesses", title:"Fairy Tale Princesses", blurb:"A dress or a crown from the closet. Every princess works.", why:"Most kids already have a favorite; the dress does the work.", audience:["kid","family","group","class"], budget:["diy","low"], tags:{"cute":3,"simple":1,"couch":2,"kid36":2,"kid7plus":1,princess:3,occparty:1,occtreat:2,occparade:2}, trending:true, trendLane:"Princess", trendStat:"a top pick for kids this year", fit:"F", venue:{bar:2}, rank:10},
-  {id:"tin-hero", title:"The Tin Hero", blurb:"Red and gold plus a glowing chest circle: the suit does the talking.", why:"Kids lose their minds over the chest light, and it costs less than the candy.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2,occbar:1,occparty:1,occtreat:2,occparade:2}, fit:"M", venue:{bar:2}, rank:11},
+  {id:"tin-hero", title:"The Tin Hero", blurb:"Red and gold plus a glowing chest circle: the suit does the talking.", why:"Kids lose their minds over the chest light, and the build is mostly a red shirt plus tape.", audience:["solo","kid"], budget:["diy","low"], tags:{"cute":1,"funny":1,"simple":2,"couch":1,"crafty":1,"kid36":2,"kid7plus":2,heroes:3,tv:2,occbar:1,occparty:1,occtreat:2,occparade:2}, fit:"M", venue:{bar:2}, rank:11},
   {id:"good-witch-bad-witch", title:"Good Witch, Bad Witch", blurb:"Green face paint and black for one, pink gown and crown for the other.", why:"The duo of the year: one goes dark, one goes dazzling.", audience:["group"], budget:["diy","mid"], tags:{"cute":2,"scary":1,"crafty":2,"simple":1,"kid7plus":1,princess:2,tv:3,occbar:1,occparty:2}, trending:true, trendLane:"Witch", trendStat:"a top pick for adults this year", fit:"F", venue:{bar:2}, rank:12, roles:{kid:["the good witch"],adult:["the bad witch"]}},
   {id:"fuzzy-monster", title:"Fuzzy Monster", blurb:"A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.", why:"Ugly-cute is the whole point, and it is basically pajamas.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:3,funny:1,kidunder3:1,kid36:2,kid7plus:1,dinos:2,occlowkey:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:13},
   {id:"pocket-plush", title:"Pocket Plush Monster", blurb:"A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.", why:"You become the toy-aisle icon: ugly-cute, comfy, and built for hugs.", audience:["kid"], budget:["diy","low"], tags:{cute:3,dinos:2,funny:2,simple:2,couch:1,kid36:2,kid7plus:2,kidunder3:1,occlowkey:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:14},
@@ -537,7 +537,7 @@ var IDEAS = [
   {id:"little-lion", title:"Little Lion", blurb:"Tan sweatsuit plus a fuzzy mane hood.", why:"Head to toe warm, and the mane hood photographs perfectly.", audience:["kid"], budget:["mid"], tags:{couch:2,cute:3,kidunder3:2,kid36:2,animals:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:24},
   {id:"tiny-firefighter", title:"Tiny Firefighter", blurb:"Red sweats, a plastic helmet, and a toy hose.", why:"The helmet does all the work, and other 3-year-olds will wave at yours.", audience:["kid"], budget:["low","mid"], tags:{couch:2,simple:2,kidunder3:1,kid36:2,kid7plus:1,occtreat:2,heroes:3,occparade:2}, fit:"U", venue:{bar:1}, rank:25},
   {id:"little-shark", title:"Little Shark", blurb:"Gray hoodie with a felt fin glued on the back.", why:"Sharks are timeless even when the song is not, and it is just a hoodie with a fin.", audience:["kid"], budget:["low","mid"], tags:{cute:2,couch:1,kidunder3:2,kid36:2,animals:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:26},
-  {id:"walking-taco", title:"Walking Taco", blurb:"Tan vest painted like a taco shell with felt toppings.", why:"Maximum laughs per dollar at the preschool parade.", audience:["kid"], budget:["diy","mid"], tags:{funny:3,crafty:2,kid36:2,kid7plus:1,food:2,occparty:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:27},
+  {id:"walking-taco", title:"Walking Taco", blurb:"Tan vest painted like a taco shell with felt toppings.", why:"Wins the preschool parade on laughs alone.", audience:["kid"], budget:["diy","mid"], tags:{funny:3,crafty:2,kid36:2,kid7plus:1,food:2,occparty:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:27},
   {id:"ramen-bowl", title:"Ramen Bowl", blurb:"Cardboard bowl rim, noodle-yarn hair, a foam egg on top.", why:"Cozy, funny, and the chopsticks make every photo.", audience:["kid","solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,kid36:2,food:2,occparty:2,occtreat:1,occparade:2}, fit:"U", venue:{bar:1}, rank:28},
   {id:"tiny-snail", title:"Tiny Snail", blurb:"Neutral clothes plus a lightweight spiral shell from cardboard worn like a backpack.", why:"Recognizable without anything on the head or face.", audience:["kid"], budget:["diy"], tags:{couch:2,cute:3,simple:2,kid36:2,kidunder3:2,animals:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:29},
   {id:"little-witch", title:"Little Witch", blurb:"Black cape, pointy hat, striped tights, green face paint.", why:"Classic, comfortable, and the green face paint keeps it from being just-a-witch.", audience:["kid"], budget:["low","diy"], tags:{couch:2,cute:2,scary:1,kid36:2,kid7plus:1,occtreat:2}, fit:"F", venue:{bar:2}, rank:30},
@@ -554,7 +554,7 @@ var IDEAS = [
   {id:"dino-rangers", title:"Dino Rangers", blurb:"Khaki outfits for the grown-ups, dino hoods for the kids. Leash a toy raptor.", why:"The kids get to be dinosaurs; that's the whole sell.", audience:["family","class"], budget:["low","mid"], tags:{funny:2,cute:2,couch:1,simple:1,crafty:2,dinos:3,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:41, roles:{kid:["a dino"],adult:["a ranger"]}},
   {id:"board-game-pieces", title:"Board Game Pieces", blurb:"Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.", why:"Everyone recognizes every piece, and the group looks like a set.", audience:["group","class"], budget:["diy","low"], tags:{funny:2,cute:1,crafty:1,games:2,occbar:1,occparty:2,occparade:2}, fit:"U", venue:{bar:1}, rank:42, roles:{kid:["the pawn","the playing card"],adult:["the cardboard die","the domino"]}},
   {id:"rain-cloud-rainbow", title:"Rain Cloud and Rainbow", blurb:"One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.", why:"The two costumes clearly belong together without matching outfits.", audience:["couple"], budget:["diy","low"], tags:{couch:2,cute:3,matchyes:2,simple:1,occparty:2,occtreat:1}, fit:"U", venue:{bar:2}, rank:43},
-  {id:"doctor-bride", title:"The Doctor & the Bride", blurb:"Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.", why:"The classic monster duo: scary, cheap, and everyone knows who you are.", audience:["couple"], budget:["diy","low"], tags:{tv:2,scary:3,funny:1,simple:2,couch:1,matchyes:2,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:44},
+  {id:"doctor-bride", title:"The Doctor & the Bride", blurb:"Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.", why:"The classic monster duo: scary, easy, and everyone knows who you are.", audience:["couple"], budget:["diy","low"], tags:{tv:2,scary:3,funny:1,simple:2,couch:1,matchyes:2,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:44},
   {id:"breakfast-buffet", title:"Breakfast Buffet", blurb:"Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.", why:"Scales to any group size and nobody needs a full costume.", audience:["family","group","class"], budget:["diy","low"], tags:{couch:2,funny:3,simple:1,food:2,occparty:2,occtreat:1,occparade:2}, fit:"U", venue:{bar:2}, rank:45, roles:{kid:["the egg","the pancake"],adult:["the bacon","the coffee"]}},
   {id:"ghost-hunters", title:"Ghost Hunters", blurb:"Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.", why:"Paranormal investigators for the night. Scare each other all night.", audience:["group","family"], budget:["mid","diy"], tags:{funny:2,scary:1,crafty:1,tv:3,occparty:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:46},
   {id:"haunted-animatronics", title:"Haunted Animatronics", blurb:"Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves.", why:"Scary-funny in a group, and the photo booth line will find you.", audience:["group"], budget:["diy","mid"], tags:{scary:2,funny:2,crafty:2,allout:1,games:2,occbar:2,occparty:2}, fit:"U", venue:{bar:0}, rank:47},
@@ -563,7 +563,7 @@ var IDEAS = [
   {id:"haunted-portraits", title:"Haunted Portraits", blurb:"Gray makeup, old-timey clothes, hold a gilt frame.", why:"Spooky, artsy, and you just stand still.", audience:["couple","group","family"], budget:["diy","mid"], tags:{allout:2,scary:2,crafty:2,matchloose:2,occbar:1,occparty:2}, fit:"U", venue:{bar:2}, rank:50},
   {id:"goggle-crew", title:"Goggle Crew", blurb:"Yellow tees, denim overalls, goggles, black gloves.", why:"Group chaos in its purest form, and overalls are just useful.", audience:["group","family","class"], budget:["low","mid"], tags:{couch:2,cute:2,funny:1,tv:3,occparty:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:51},
   {id:"garden-gnome", title:"Garden Gnome", blurb:"Wear earth tones, make a pointy hat from cardboard, draw a white beard, carry a tiny fishing rod or garden shovel.", why:"Big silhouette, tiny fishing rod: the proportions are the whole joke.", audience:["solo"], budget:["diy","low"], tags:{couch:2,funny:2,simple:2,cute:1,occcandy:2,occlowkey:2}, fit:"M", venue:{bar:2}, rank:52},
-  {id:"black-cat", title:"Black Cat Burglar", blurb:"Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.", why:"Warm, cheap, and the ears do all the work.", audience:["solo"], budget:["low"], tags:{cute:2,funny:1,couch:3,simple:2,animals:3,occbar:2,occcandy:1,occlowkey:1}, fit:"F", venue:{bar:0}, rank:53},
+  {id:"black-cat", title:"Black Cat Burglar", blurb:"Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.", why:"Warm, easy, and the ears do all the work.", audience:["solo"], budget:["low"], tags:{cute:2,funny:1,couch:3,simple:2,animals:3,occbar:2,occcandy:1,occlowkey:1}, fit:"F", venue:{bar:0}, rank:53},
   {id:"block-monster", title:"Block Monster", blurb:"Wear all one solid color, square up your silhouette with foam or cardboard blocks on shoulders/limbs, draw a pixelated face.", why:"Video game people recognize it instantly, pure geometry, works at any scale.", audience:["solo"], budget:["low","diy"], tags:{funny:2,couch:2,simple:1,crafty:2,games:3,occbar:1,occparty:2}, fit:"U", venue:{bar:1}, rank:54},
   {id:"space-crewmate", title:"Space Crewmate", blurb:"Colored sweatsuit plus a cardboard backpack.", why:"One shopping trip and you're done.", audience:["solo"], budget:["low"], tags:{funny:3,couch:3,simple:2,games:3,occbar:1,occlowkey:1,occparty:2}, fit:"U", venue:{bar:1}, rank:55},
   {id:"sun-moon", title:"Sun and Moon", blurb:"One in yellow with cardboard rays, one in navy with paper stars and a crescent.", why:"Two faces, one night: simple paint, big charm.", audience:["couple"], budget:["diy"], tags:{couch:2,cute:3,matchyes:2,simple:1,occlowkey:1,occparty:2}, fit:"U", venue:{bar:1}, rank:56},
@@ -582,7 +582,7 @@ var IDEAS = [
   {id:"crowd-camouflage", title:"Crowd Camouflage", blurb:"Gray hoodie, dark pants, blank expression. Vanish into any crowd.", why:"Six of you walk in dressed identically. Nobody knows who arrived with whom.", audience:["solo"], budget:["diy","low"], tags:{couch:2,simple:3,funny:1,occbar:1,occlowkey:2,occparty:1}, fit:"U", venue:{bar:2}, rank:70},
   {id:"error-404", title:"Error 404", blurb:"Wear all black with a blank white page taped to your chest; carry a phone with a cracked-screen prop.", why:"Instantly readable, tech crowd gets it, non-tech crowd gets it anyway.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:3,simple:2,occbar:2,occlowkey:1,occparty:1}, fit:"U", venue:{bar:2}, rank:71},
   {id:"zombie-coworker", title:"Zombie Coworker", blurb:"Torn button-down, loosened tie, pale makeup, coffee mug.", why:"Scary with zero shopping: it's just your work clothes, ruined.", audience:["solo"], budget:["diy"], tags:{couch:2,scary:2,funny:1,make:2,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:72},
-  {id:"the-olympians", title:"The Olympians", blurb:"Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.", why:"Greek myth went cinematic again this year, and a bedsheet toga is the cheapest epic costume ever made.", audience:["group","couple","family","class"], budget:["diy","low"], tags:{heroes:3,tv:2,allout:1,cute:1,funny:1,crafty:2,occparty:2,occbar:1,occparade:2}, fit:"U", venue:{bar:1}, rank:65, trending:true, trendLane:"Greek myth", trendStat:"Odyssey year", roles:{kid:["the owl god","the trident god"],adult:["the lightning god"]}},
+  {id:"the-olympians", title:"The Olympians", blurb:"Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.", why:"Greek myth went cinematic again this year, and a bedsheet toga is the most epic thing a bedsheet ever did.", audience:["group","couple","family","class"], budget:["diy","low"], tags:{heroes:3,tv:2,allout:1,cute:1,funny:1,crafty:2,occparty:2,occbar:1,occparade:2}, fit:"U", venue:{bar:1}, rank:65, trending:true, trendLane:"Greek myth", trendStat:"Odyssey year", roles:{kid:["the owl god","the trident god"],adult:["the lightning god"]}},
   {id:"safari-photographer", title:"Safari Photographer", blurb:"Khaki vest, toy camera and binoculars, plus a stuffed lion cub under one arm.", why:"The camera does the talking, and the plush cub steals every photo.", audience:["solo"], budget:["diy","low"], tags:{funny:2,cute:2,couch:2,simple:1,animals:3,occcandy:1,occparty:1,occtreat:1}, fit:"U", venue:{bar:2}, rank:73},
   {id:"player-one-two", title:"Player One & Two", blurb:"Matching tees with 1 and 2, toy controllers in hand, ready for co-op.", why:"Zero sewing, instantly readable, and the controllers are the whole joke.", audience:["couple"], budget:["diy","low"], tags:{funny:3,couch:2,simple:2,matchyes:2,games:3,occbar:1,occparty:2}, fit:"U", venue:{bar:2}, rank:74},
   {id:"dinosaur-family", title:"Dinosaur Family", blurb:"Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.", why:"Matching dino hoodies need zero coordination, and the spikes sell it from far away.", audience:["family","class"], budget:["low","diy"], tags:{cute:3,funny:1,couch:2,simple:2,dinos:3,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:75},
@@ -591,14 +591,14 @@ var IDEAS = [
   {id:"deviled-egg", title:"Deviled Egg", blurb:"White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.", why:"The yolk-and-horns combo reads from twenty feet away with zero explaining.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:2,food:2,occbar:2}, fit:"U", venue:{bar:2}, rank:78},
   {id:"pizza-slice", title:"Pizza Slice", blurb:"A big cardboard triangle, painted golden with felt pepperoni.", why:"Cardboard and felt become the rare costume kids and adults both reach for.", audience:["solo","kid"], budget:["diy"], tags:{funny:2,crafty:2,kid36:2,food:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:79},
   {id:"popcorn-bucket", title:"Popcorn Bucket", blurb:"A striped cardboard-box body with balloon popcorn on top.", why:"The balloon popcorn bounces when they walk, which sells the whole thing.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,food:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:80},
-  {id:"ice-cream-cone", title:"Ice Cream Cone", blurb:"A tan paper cone hat and a sprinkle-dotted scoop shirt.", why:"Three cheap pieces read as ice cream instantly, no explanation needed.", audience:["kid","solo"], budget:["diy"], tags:{cute:2,couch:2,kid36:2,food:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:81},
+  {id:"ice-cream-cone", title:"Ice Cream Cone", blurb:"A tan paper cone hat and a sprinkle-dotted scoop shirt.", why:"A cone hat, a scoop shirt, and sprinkles read as ice cream instantly, no explanation needed.", audience:["kid","solo"], budget:["diy"], tags:{cute:2,couch:2,kid36:2,food:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:81},
   {id:"pbj", title:"Peanut Butter & Jelly", blurb:"One in brown with a PB label, one in purple with a J label.", why:"Two solid-color outfits and two labels make the most recognizable duo in the room.", audience:["couple"], budget:["diy"], tags:{funny:2,couch:2,food:2,occparty:2}, fit:"U", venue:{bar:2}, rank:82},
   {id:"bacon-eggs", title:"Bacon & Eggs", blurb:"Wavy bacon stripes and a sunny-side-up egg yolk.", why:"The wavy bacon stripes make the pair readable from across the room.", audience:["couple"], budget:["diy"], tags:{funny:2,couch:2,food:2,occcandy:2}, fit:"U", venue:{bar:2}, rank:83},
   {id:"peas-pod", title:"Peas in a Pod", blurb:"Green shirts in a row under one long felt pod sash.", why:"The shared sash turns any group into one costume people actually remember.", audience:["family","group","class"], budget:["diy"], tags:{cute:2,allout:2,food:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:84},
   {id:"basketball-star", title:"Basketball Star", blurb:"Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.", why:"Real gear plus one theatrical touch beats a store-bought uniform.", audience:["solo","kid"], budget:["diy"], tags:{simple:2,couch:2,kid7plus:2,sports:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:85},
   {id:"referee", title:"Referee", blurb:"A striped shirt, a whistle, and a yellow penalty flag.", why:"The whistle gives you a bit to perform instead of just standing around.", audience:["solo","group","class"], budget:["low","diy"], tags:{funny:2,couch:2,sports:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:86},
   {id:"boxer", title:"Boxer", blurb:"Bathrobe, toy gloves, bruise makeup, and entrance music.", why:"The entrance music does half the work before a single punch is thrown.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:2,sports:2,occbar:2}, fit:"M", venue:{bar:1}, rank:87},
-  {id:"cheerleader", title:"Cheerleader", blurb:"Team colors and pom-poms made from cut plastic bags.", why:"Homemade pom-poms and a chant beat a store costume for half the price.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,sports:2,occtreat:2,occparade:2}, fit:"F", venue:{bar:2}, rank:88},
+  {id:"cheerleader", title:"Cheerleader", blurb:"Team colors and pom-poms made from cut plastic bags.", why:"Homemade pom-poms and a chant beat a store costume, no contest.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,sports:2,occtreat:2,occparade:2}, fit:"F", venue:{bar:2}, rank:88},
   {id:"tennis-duo", title:"Tennis Duo", blurb:"All-white outfits, headbands, toy rackets, and a tube of balls.", why:"The all-white dress code makes two people look like a team instantly.", audience:["couple"], budget:["low","diy"], tags:{simple:2,couch:2,sports:2,occlowkey:2}, fit:"U", venue:{bar:2}, rank:89},
   {id:"bowling-pins", title:"Bowling Pins", blurb:"White outfits with red neck stripes, plus one bowler in black.", why:"The bowler-and-pins bit gives the group something to do all night.", audience:["group","family","class"], budget:["diy"], tags:{funny:2,crafty:2,sports:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:90, roles:{kid:["a bowling pin"],adult:["the bowler"]}},
   {id:"cardboard-knight", title:"Cardboard Knight", blurb:"Silver-painted cardboard armor and a pool-noodle sword.", why:"Spray paint turns moving boxes into armor that looks genuinely cool.", audience:["solo","kid"], budget:["diy"], tags:{funny:2,allout:2,kid7plus:2,heroes:3,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:91},
@@ -612,7 +612,7 @@ var IDEAS = [
   {id:"dino-herd", title:"Dino Herd", blurb:"Green ponchos with felt spikes and stuffed-sock tails.", why:"A line of stomping dinos gets a bigger reaction than one T-Rex alone.", audience:["group"], budget:["diy"], tags:{scary:2,crafty:2,dinos:2,occtreat:2}, fit:"U", venue:{bar:2}, rank:99},
   {id:"pixel-ghost", title:"Pixel Ghost", blurb:"A white sheet cut in chunky pixel squares with felt eyes.", why:"The zigzag pixel edge makes a sheet ghost feel brand new.", audience:["kid"], budget:["diy"], tags:{scary:2,crafty:2,kid36:2,games:3,occtreat:2}, fit:"U", venue:{bar:1}, rank:100},
   {id:"spaghetti-meatball", title:"Spaghetti & Meatball", blurb:"White shirt with yarn spaghetti glued on, brown pom-pom meatballs.", why:"Dinner you can wear, and the yarn survives the washing machine.", audience:["kid"], budget:["diy"], tags:{cute:2,couch:2,kid36:2,kidunder3:1,food:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:101},
-  {id:"cupcake", title:"Cupcake", blurb:"Brown tunic for the wrapper, white pillowcase for frosting, cherry on top.", why:"A pillowcase becomes frosting, which means the whole costume costs almost nothing.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,food:2,occtreat:2,occparty:1,occparade:2}, fit:"U", venue:{bar:2}, rank:102},
+  {id:"cupcake", title:"Cupcake", blurb:"Brown tunic for the wrapper, white pillowcase for frosting, cherry on top.", why:"Dessert you can wear, crowned with a cherry.", audience:["kid"], budget:["diy"], tags:{cute:2,crafty:2,kid36:2,food:2,occtreat:2,occparty:1,occparade:2}, fit:"U", venue:{bar:2}, rank:102},
   {id:"banana", title:"Banana", blurb:"Yellow sweatsuit with a green felt stem hat.", why:"A single color all over, and the green stem hat makes it read instantly in photos.", audience:["kid","solo"], budget:["low"], tags:{funny:2,couch:2,kid36:2,food:2,occtreat:2,occparade:2}, fit:"U", venue:{bar:1}, rank:103},
   {id:"hot-dog", title:"Hot Dog", blurb:"Tan foam pool noodle bun, red shirt for the dog, mustard squiggle.", why:"Pool noodles were made for this costume, and you can actually sit down in it.", audience:["solo"], budget:["diy"], tags:{funny:2,couch:2,food:2,occparty:2,occbar:1}, fit:"U", venue:{bar:1}, rank:104},
   {id:"donut", title:"Donut", blurb:"Pink cardboard ring with sprinkles, worn like a sandwich board.", why:"Cardboard and pink paint, and the sprinkle pattern hides every brush mistake.", audience:["solo","kid"], budget:["diy"], tags:{cute:2,couch:2,kid36:2,food:2,occparty:2,occparade:2}, fit:"U", venue:{bar:1}, rank:105},
@@ -689,7 +689,7 @@ var INSTRUCTIONS = {"astronaut":{"m":["White sweatshirt and sweatpants, 1 set (b
 "galaxy-knights":{"m":["1 brown or beige bathrobe or long coat per knight (make: from closet)","1 toy energy-blade prop per knight (buy: toy store)","1 wide belt or rope sash per knight (make: from closet)","1 pair dark pants and boots per knight (make: from closet)","Brown face paint for a hood shadow, 1 tube, optional (buy: drugstore)"],"s":["Wear the bathrobe over dark pants with the belt tied at the waist. Pull the hood up.","Carry the energy blade unlit until the photo. Two stances: blade up ready, or blade down calm.","Safety: keep the toy blades pointed up or down, never at faces. Sparring stays slow and pretend.","Line up the knights in a row, ignite the blades, and take the council photo.","Optional pro finish: tie the belt over the robe at the natural waist and let the robe flare below it. Belted robes read as uniform; unbelted robes read as bath time."],"time":"10 min","cost":"$6-8","effort":"Easy","sizing":"Each partner builds their half in their own size. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["Are toy energy blades safe for kids?","Yes if they are soft foam or plastic with rounded tips. Keep blades pointed up or down, never at faces, and skip hard plastic for kids under 6."],["How do you make a bathrobe not look like a bathrobe?","Belt it tight at the waist, pull the hood up, and wear dark pants and boots underneath. The belt and the boots do all the work."]]},
 "plastic-dream-crew":{"m":["All-pink outfit per person: dress, suit, or sweatsuit, 1 set each (buy: a set at a thrift store, or own: from closet)","Pink sunglasses, 1 per person (buy: dollar store)","Plastic play accessories: phone, tiara, handbag, 1 per person (buy: a set at a dollar store, or own: from the toy box)","Pink feather boa, 1 to share (buy: dollar store, optional)","Blonde wig, 1 per person (buy: costume aisle, optional)"],"s":["Pull an all-pink outfit per person from the closet. Buy the pink sunglasses and feather boa.","Everyone wears pink head to toe with the pink sunglasses. Add the tiara, handbag, or toy phone.","Drape the feather boa over whoever is feeling the most plastic today.","Strike the wave-and-smile pose. Everything is pink, and that is the whole point.","Optional pro finish: give everyone the same accessory, matching sunglasses or matching purses. Uniform accessories are what turn pink outfits into a crew.","Optional pro finish: try the wig on for 20 minutes before the party. Itchy wigs get ripped off by nine."],"time":"15 min","cost":"$10-15","effort":"Easy","sizing":"Each partner builds their half in their own size. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["Do you need the wigs?","No, matching pink outfits plus matching accessories carry it. Wigs help but the uniformity is the costume, not the hair."],["How do you keep it from looking like just pink clothes?","Commit to the bit: wave like a doll, pose like a doll, talk like everything is fantastic. The performance is the costume."]]},"extinct-party-animal":{"m":["1 jacket or blazer you own (own)","1 sheet green craft felt, 9x12 inches (buy: craft store; construction paper works too)","1 party hat (buy: dollar store or party aisle)","1 blank name badge (buy: office supply aisle)","Fabric glue, 1 tube (buy: craft store)","Marker, 1","Scissors, 1 pair"],"s":["Cut one paper spike first and check the size against the jacket shoulder, about 3 inches tall.","Cut 6 to 8 triangle spikes from the green craft felt with the scissors. Cut them all from the template so the row looks even.","Glue the spikes in a row along the shoulders of the jacket. Let dry 15 minutes.","Write 'Last seen 66 million years ago' on the badge with the marker.","Pin on the badge, put on the party hat, and work the room.","Optional pro finish: write 'Last seen 66 million years ago' in neat block letters on the badge. Neat handwriting sells the museum-label joke; scribble kills it."],"time":"20 min + drying","cost":"$11-14","effort":"Easy","sizing":"Built for teens and adults. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["Will the spikes survive on a blazer all night?","Yes if you glue them the night before and let the glue cure. Same-day glue peels when the jacket moves."],["How do you make the party hat stay on?","Tape a bobby pin to the inside of the hat and clip it to the hair. Elastic straps slip; a bobby pin holds."]]},"dino-tourist":{"m":["1 Hawaiian shirt (buy: thrift store, or use your own)","1 fanny pack (own, or buy: thrift store)","1 plush dinosaur tail (buy: toy store or online)","1 toy camera, optional (own)","1 pair sunglasses, optional (own)"],"s":["Pull the Hawaiian shirt and fanny pack from the closet.","Clip or pin the plush tail to your waistband at the back.","Hang the toy camera around your neck.","Put on the sunglasses, ask strangers to take your picture, and complain about the meteor.","Optional pro finish: tuck a folded paper map into the fanny pack and let it stick out. The map is the tourist detail people laugh at."],"time":"10 min","cost":"$5-6","effort":"Easy","sizing":"Built for teens and adults. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["How do you attach the tail so it stays on?","Clip or pin it to the waistband at the back center with two safety pins through the tail's seam. One pin spins; two pins hold."],["How do you make it read as dinosaur, not just tourist?","The tail does all the work. Without it you are just a tourist: wear it high on the waistband where people see it from the side."]]},"raptor-barista":{"m":["Green hoodie, 1 (buy: clothing store, or use your own)","Toy T. rex arms, 1 pair (buy: toy store or online)","Paper coffee cup, 1 (own: from home)","Brown eyeliner pencil, 1 (own, optional)"],"s":["Put on the green hoodie with the hood up.","Strap the tiny T. rex arms over your own arms at the elbows.","Grab the paper coffee cup with the tiny arms and serve.","Optional pro finish: write a fake coffee order on the cup in marker, like RAWR-LATTE, and tape a paper name tag to the hoodie as your barista badge."],"time":"10 min","cost":"$4-5","effort":"Easy","sizing":"Built for teens and adults. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["How do the tiny arms stay on?","Strap the tiny T. rex arms over your own arms at the elbows. They sit best on a hoodie with snug sleeves so they do not slide down."],["What if I cannot find toy dinosaur arms?","Cut two small arms from green felt and pin them to the hoodie sleeves at the elbows. They will not grip the cup, so tuck the cup between the felt arms for photos."]]},"emotional-support-dinosaur":{"m":["1 vest or sleeveless jacket you own (own)","1 sheet green craft felt, 9x12 inches (buy: craft store; construction paper works too)","1 blank badge or pin (buy: office supply aisle)","Fabric glue, 1 tube (buy: craft store)","Marker, 1","Scissors, 1 pair"],"s":["Cut one paper spike first and hold it against the vest shoulder to check the size, about 3 inches tall.","Cut 6 to 8 triangle spikes from the green craft felt with the scissors using the paper template. Uniform spikes look designed; freehand spikes look ragged.","Glue the spikes along the vest shoulders and back. Let dry 15 minutes.","Write 'Emotional Support Dinosaur. Do not pet.' on the badge with the marker.","Pin it on and refuse all pets.","Optional pro finish: write 'Emotional Support Dinosaur' in all caps on the badge, then add 'Do not pet.' underneath in smaller letters. The official-looking hierarchy sells the joke."],"time":"25 min + drying","cost":"$10-12","effort":"Easy","sizing":"Built for teens and adults. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["Will fabric glue hold spikes through a night of hugs?","Yes if you glue the night before so it cures fully. Same-day glue is still tacky by party time and spikes slide."],["What vest works best?","Any vest or sleeveless jacket with structured shoulders: denim, fleece, or utility. Floppy vests let the spikes droop."]]},
   "garden-fairy":{"m":["Pink tulle, 1 yard (buy: craft store)","Cardboard for wings, 1 large piece about 2x3 feet (make: from a shipping box)","Fake flowers, 1 bunch (buy: dollar store)","Headband, 1 (buy: dollar store, or own)","Wooden dowel or stick for the wand, about 12 inches (make: from the yard)","Cardboard star for the wand tip, 1 (make: from scraps)","Elastic for wing straps, about 2 feet (buy: craft store)","Glitter glue, 1 tube (buy: craft store)","Tape, 1 roll","Glue, 1 bottle","Scissors, 1 pair"],"s":["Draw ONE wing on paper, cut it, and trace it flipped for the second. Symmetric wings are the fairy illusion. Cut two large wing shapes from the cardboard with the scissors.","Cover each wing with pink tulle and tape the edges down.","Glue fake flowers around the headband for the crown.","Tape the cardboard star to the top of the dowel for the wand.","Safety: keep the wand away from faces during photos.","Tape elastic straps to the back of the wings and slip arms through.","Optional pro finish: outline the wing edges with glitter glue and add three dots down the center. The glitter edge catches light in every photo."],"time":"20 min + drying","cost":"$16-19","effort":"Easy","sizing":"Built for kids ages 3 to 10. Elastic headbands fit most kids and adults; if the costume uses a paper bag or mask, cut the face opening while it is on the wearer, small first, then widen until they see and breathe easily.","faqs":[["How do you keep cardboard wings from flopping?","Score a center crease and tape a ruler or paint stick along the back as a spine. Flat cardboard folds; spined cardboard holds."],["What is the fastest fairy wand?","A stick with a star cut from cardboard, glittered, taped on. Five minutes, and every fairy photo needs the wand."]]},
-  "ballerina":{"m":["Pink tulle, 2 to 3 yards (buy: craft store; about $1 a yard)","Wide elastic, 1 inch wide, cut to the waist size plus 1 inch overlap (buy: craft store)","Pink leotard or fitted shirt, 1 (own, or buy: clothing store)","Pink tights, 1 pair (own, or buy: clothing store)","Hair ties and bobby pins, 1 pack (own)","Scissors, 1 pair"],"s":["Measure the waist with the elastic: wrap it snug where the tutu will sit, overlap 1 inch, and cut.","Tie or knot the overlap into a loop, this is the waistband. Cut it to the waist, not the hips, or the tutu slides down while twirling.","Cut the tulle into strips about 3 inches wide and twice as long as you want the skirt. For a toddler, strips roughly 3 by 20 inches; longer for bigger kids.","Fold one strip in half to make a loop at the top. Slip the loop under the elastic, pull the strip ends through the loop, and pull tight.","Repeat side by side all the way around until the tutu looks full, usually 30 to 40 strips.","Fluff the strips outward. Trim the bottom edge even while the tutu hangs.","Safety: the elastic should sit snug on the waist, not the hips, so it stays up while twirling. Nothing tied around the neck.","Wear the tutu over the leotard and tights. Pull the hair into a high bun with the hair ties and bobby pins.","Optional pro finish: tie a short length of satin ribbon into a small bow and pin it at the back waistband. One bow is the difference between craft project and costume."],"time":"20 min","cost":"$10-11","effort":"Easy","sizing":"Built for kids ages 3 to 10. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["How much tulle for a no-sew tutu?","2 yards for a toddler, 3 for a bigger kid. Cut strips 3 inches wide, with length equal to twice the finished skirt length."],["How do you keep a no-sew tutu from falling down?","Measure the elastic snug at the waist (not the hips) with a 1-inch overlap, and tie strips tight against each other so the weight stays balanced."]]},
+  "ballerina":{"m":["Pink tulle, 2 to 3 yards (buy: craft store)","Wide elastic, 1 inch wide, cut to the waist size plus 1 inch overlap (buy: craft store)","Pink leotard or fitted shirt, 1 (own, or buy: clothing store)","Pink tights, 1 pair (own, or buy: clothing store)","Hair ties and bobby pins, 1 pack (own)","Scissors, 1 pair"],"s":["Measure the waist with the elastic: wrap it snug where the tutu will sit, overlap 1 inch, and cut.","Tie or knot the overlap into a loop, this is the waistband. Cut it to the waist, not the hips, or the tutu slides down while twirling.","Cut the tulle into strips about 3 inches wide and twice as long as you want the skirt. For a toddler, strips roughly 3 by 20 inches; longer for bigger kids.","Fold one strip in half to make a loop at the top. Slip the loop under the elastic, pull the strip ends through the loop, and pull tight.","Repeat side by side all the way around until the tutu looks full, usually 30 to 40 strips.","Fluff the strips outward. Trim the bottom edge even while the tutu hangs.","Safety: the elastic should sit snug on the waist, not the hips, so it stays up while twirling. Nothing tied around the neck.","Wear the tutu over the leotard and tights. Pull the hair into a high bun with the hair ties and bobby pins.","Optional pro finish: tie a short length of satin ribbon into a small bow and pin it at the back waistband. One bow is the difference between craft project and costume."],"time":"20 min","cost":"$10-11","effort":"Easy","sizing":"Built for kids ages 3 to 10. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["How much tulle for a no-sew tutu?","2 yards for a toddler, 3 for a bigger kid. Cut strips 3 inches wide, with length equal to twice the finished skirt length."],["How do you keep a no-sew tutu from falling down?","Measure the elastic snug at the waist (not the hips) with a 1-inch overlap, and tie strips tight against each other so the weight stays balanced."]]},
   "butterfly":{"m":["Large cardboard for wings, 1 sheet about 3x2 feet (make: from a shipping box)","Acrylic paint set, 1 (buy: craft store)","Black sweatsuit, 1 set (own, or buy: clothing store)","Elastic for wing straps, about 2 feet (buy: craft store)","Headband, 1 (buy: dollar store, or use your own)","Pipe cleaners for antennae, 2 (buy: craft store)","Tape, 1 roll","Scissors, 1 pair"],"s":["Draw ONE wing on paper first, cut it out, and trace it flipped for the second, symmetric wings are the whole butterfly illusion.","Cut two big wing shapes from the cardboard with the scissors following the template.","Paint both wings with bright patterns and let them dry flat.","Tape elastic loops to the back of each wing for the arms.","Bend pipe cleaners into antennae and tape them to the headband.","Safety: keep wing edges away from doorways; turn sideways to pass through.","Wear the wings over the black sweats with the antennae headband.","Optional pro finish: outline the wing patterns with glitter glue after the paint dries. The glitter edge catches light and photographs like real wing scales."],"time":"40 min + drying","cost":"$12-14","effort":"Medium","sizing":"Built for ages 1 to 8. Elastic headbands fit most kids and adults; if the costume uses a paper bag or mask, cut the face opening while it is on the wearer, small first, then widen until they see and breathe easily.","faqs":[["How big should butterfly wings be?","Wingtip to wingtip about as wide as the wearer's arm span. Bigger looks majestic in photos but will not fit through doorways, turn sideways."],["How do you attach wings so they stay up?","Tape two elastic loops to the back of each wing and slip arms through like a backpack. Elastic, not ribbon, it flexes when they move."]]},
   "pop-star":{"m":["Sparkly or sequin jacket, 1 (buy: thrift store)","Toy microphone, 1 (buy: toy store or dollar store)","Hair teasing comb, 1 (own, or buy: drugstore)","Sunglasses, 1 pair (own, or buy: dollar store)","Dark jeans and a dark top, 1 set (own)"],"s":["Tease the hair big with the comb.","Safety: go easy teasing near the scalp; no pulling hard.","Wear the sparkly jacket over the dark jeans and top.","Put on the sunglasses.","Carry the toy microphone everywhere and take requests.","Optional pro finish: learn one 8-count of choreography and do it on request all night. A pop star who performs is unforgettable; one who just stands there is overdressed."],"time":"15 min","cost":"$5-7","effort":"Easy","sizing":"Built for kids ages 3 to 10. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["Which pop star should I pick?","Whoever's outfit you can build from your closet, the hair and the attitude matter more than the exact outfit. Commit to one era, not a mashup."],["How do you get big pop-star hair?","Backcomb the crown, spray it, and let the ends stay smooth. Volume on top, smooth below, that is the silhouette."]]},
   "ice-skater":{"m":["White dress, 1 (buy: thrift store, or own)","White tights, 1 pair (own, or buy: clothing store)","Hair donut for the bun, 1 (buy: drugstore)","Blush, 1 (own, or buy: drugstore)","Bobby pins, 1 pack (own)"],"s":["Buy or pull the white dress, white tights, and hair donut.","Twist the hair into a high bun around the hair donut and pin it.","Dab a little blush on the cheeks for the cold-air glow.","Safety: skip real skates; this costume is for dry land only.","Wear the white dress with the tights and strike the finishing pose.","Optional pro finish: wrap white ribbon crisscrossed up the calves over the tights. The laced calves read as skates even in sneakers."],"time":"10 min","cost":"$3-4","effort":"Easy","sizing":"Built for kids ages 3 to 10. Start with clothes the wearer already owns in their size. Hold any wearable pieces in place before cutting or taping so they sit comfortably.","faqs":[["No ice skates, what goes on the feet?","White sneakers or white boots. Nobody sees feet past the laced calves; the ribbon lacing does the work."],["How do you get the perfect skater bun?","A hair donut plus bobby pins, twist the hair around the donut and pin every inch. The donut is the difference between a bun and a lump."]]},
@@ -1497,7 +1497,7 @@ function show(id){
     var p = plannerPlanFor(ideaId);
     var ins = p.ins;
     var lastStep = p.buildSteps.length ? p.buildSteps[p.buildSteps.length-1] : "Gather everything in one spot the night before.";
-    var buyDetails = "\uD83C\uDF83 Supply run: " + idea.title + " costume (about " + ins.cost + ")" + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\n" +
+    var buyDetails = "\uD83C\uDF83 Supply run: " + idea.title + " costume" + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\n" +
       "You need:\n" +
       p.buyList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") +
       (p.ownList.length ? "\n\nCheck at home first:\n" + p.ownList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") : "") +
@@ -1510,7 +1510,7 @@ function show(id){
     /* Buy */
     h += '<div class="pms"><p class="pdate">Buy by ' + plannerFmt(p.buyDay) + '</p>';
     h += '<h3>Get the materials</h3>';
-    h += '<p class="pcount">' + esc(plannerCountText(p.buyDay)) + ' Budget: ' + esc(ins.cost) + '.</p>';
+    h += '<p class="pcount">' + esc(plannerCountText(p.buyDay)) + '.</p>';
     if (p.buyList.length){
       h += '<p class="psec">Shopping list</p><ul>' +
         p.buyList.map(function(m){ return "<li>" + esc(m) + "</li>"; }).join("") + '</ul>';
@@ -2174,7 +2174,7 @@ function buildInstructions(idea, opts){
   /* Plain-text build list for the copy button: decision triple, materials,
      numbered steps. */
   function tripleText(){
-    var t = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; });
+    var t = [ins.time, ins.effort].filter(function(x){ return x; });
     return t.length ? t.join(" \u00B7 ") : "";
   }
   function buildListText(){
@@ -2183,7 +2183,7 @@ function buildInstructions(idea, opts){
        the weekly plan (cost/time/buy/steps), not a second materials list. */
     var mp = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
     if (mp){
-      lines.push("Est. cost " + mp.cost + " \u00B7 about " + String(mp.time).replace(/^~/, ""));
+      lines.push("Build time: about " + String(mp.time).replace(/^~/, ""));
       lines.push("", "What to buy:");
       mp.buy.forEach(function(b){ lines.push("- " + b); });
     } else {
@@ -2252,7 +2252,7 @@ function buildInstructions(idea, opts){
     if (!ins) return wrap;
     var head = document.createElement("p");
     head.className = "howto-triple";
-    head.textContent = "DIY this week: ~" + ins.cost + ", " + ins.time;
+    head.textContent = "DIY this week: " + ins.time;
     wrap.appendChild(head);
     /* Content layer 2026-09-25: sizing guidance, the fit note every parent
        asks about, right under the decision triple. */
@@ -2358,14 +2358,14 @@ function buildInstructions(idea, opts){
     copyRow.appendChild(eb);
     copyRow.appendChild(cst);
     wrap.appendChild(copyRow);
-    /* 2026-09-26: ONE build section. The weekly plan (est. cost/time +
+    /* 2026-09-26: ONE build section. The weekly plan (build time +
        what to buy) leads; the old separate "You need" materials chips are
        dropped when the plan exists, because they described the same build. */
     var _mp = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
     if (_mp){
       var meta = document.createElement("p");
       meta.className = "howto-triple";
-      meta.textContent = "Est. cost " + _mp.cost + " \u00B7 about " + String(_mp.time).replace(/^~/, "");
+      meta.textContent = "Build time: about " + String(_mp.time).replace(/^~/, "");
       wrap.appendChild(meta);
       var buyh = document.createElement("h4"); buyh.textContent = "What to buy";
       wrap.appendChild(buyh);
@@ -2483,7 +2483,7 @@ function buildInlinePlan(idea){
   }
   var body = document.createElement("div");
   body.className = "howto-body";
-  var tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
+  var tri = [ins.time, ins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
   if (tri){
     var tp = document.createElement("p");
     tp.className = "howto-triple"; tp.textContent = tri;
@@ -2546,7 +2546,6 @@ var EFFORT_FACTS = {
   crafty: {build: "1 to 2 hours", difficulty: "Medium"},
   allout: {build: "A weekend project", difficulty: "Ambitious"}
 };
-var BUDGET_FACTS = {diy: "From your closet", low: "Under $20", mid: "$20 to $50"};
 function ideaEffortKey(idea){
   var tags = idea.tags || {}, best = "crafty", bestV = 0;
   /* Ties resolve toward the higher effort: if an idea scores for both
@@ -2556,31 +2555,27 @@ function ideaEffortKey(idea){
   });
   return bestV > 0 ? best : "crafty";
 }
-function ideaBudgetLabel(idea){
-  var b = idea.budget || [];
-  if (b.indexOf("diy") >= 0) return BUDGET_FACTS.diy;
-  if (b.indexOf("low") >= 0) return BUDGET_FACTS.low;
-  return BUDGET_FACTS.mid;
-}
 /* 2026-09-29 (claim 4): the result tile showed tag-derived Build/Budget
    ("From your closet" + "1 to 2 hours") while the build steps showed the
-   INSTRUCTIONS plan's own time/cost ("~$5-10, 60 min") -- same idea, two
-   answers. Build and Budget are now single-sourced from the INSTRUCTIONS
-   build plan (the same fields "Make it this week" and the detail tri-rows
-   read), so the tile can never disagree with the steps. Tag-derived labels
-   remain only as a fallback for ideas without a build plan. Difficulty
-   stays tag-derived: it feeds the effort fragments and role computation. */
+   INSTRUCTIONS plan's own time/cost -- same idea, two answers. Build is now
+   single-sourced from the INSTRUCTIONS build plan (the same field "Make it
+   this week" and the detail tri-rows read), so the tile can never disagree
+   with the steps. Tag-derived labels remain only as a fallback for ideas
+   without a build plan. Difficulty stays tag-derived: it feeds the effort
+   fragments and role computation. 2026-10-01: budget removed from the
+   display per the no-dollar-figures decision; the bank keeps its internal
+   budget tags for scoring only. */
 function planFacts(idea){
   var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
-  if (ins && (ins.time || ins.cost)) return {build: ins.time || null, budget: ins.cost || null};
+  if (ins && ins.time) return {build: ins.time};
   var _ek = ideaEffortKey(idea);
-  return {build: EFFORT_FACTS[_ek].build, budget: ideaBudgetLabel(idea)};
+  return {build: EFFORT_FACTS[_ek].build};
 }
 /* Result roles (2026-09-25; expanded 2026-09-25 per his "be creative"
    brief): the top 3 earn their labels; labels are computed, never hardcoded.
    #1 is always "Best Match". Runner-up candidates, most defensible first:
    "Easiest" (unique lowest build difficulty, margin >= 2, never #1),
-   "Zero-Dollar Build" (the make-plan cost is genuinely $0 -- a range like
+   "Closet Build" (the make-plan cost is genuinely $0 -- a range like
    $0-10 is not zero), "Tonight-Ready" (make-plan time of 30 min or less),
    "Plot Twist" (its top interest differs from the user's picked interest
    while its vibe matches the user's picked vibe), "Wildcard" (clearly the
@@ -2608,7 +2603,7 @@ function tagDistance(a, b){
 /* Evidence gates for the newer roles. Each returns a hard yes/no from real
    data; a role renders only when its gate passes. */
 function planCostIsZero(idea){
-  /* "Zero-Dollar Build": the MAKE_PLANS cost is genuinely $0. A range like
+  /* "Closet Build": the MAKE_PLANS cost is genuinely $0. A range like
      "~$0-10 total" is NOT zero -- it can cost money. Only an exact $0 parses. */
   if (typeof MAKE_PLANS === "undefined") return false;
   var p = MAKE_PLANS[idea.id];
@@ -2643,15 +2638,15 @@ function planCostMax(idea){
 }
 /* 2026-09-26 constraint refinement (CHC Costume Wizard steal, adapted): the
    Wizard asks time and money budget as first-class questions and then ignores
-   them in results; we ask as results-screen chips (the 5-max keeps them
+   them in results; we ask time as results-screen chips (the 5-max keeps them
    out of the quiz; the q3 budget question was cut 2026-09-23 after moving
-   outcomes on only 4.5% of kid paths) and hard-filter on them honestly.
+   outcomes on only 4.5% of kid paths, and the budget chip was cut 2026-10-01
+   per the no-dollar-figures call) and hard-filter on them honestly.
    Same <3 relaxation as the interest/vibe filters: a constraint that would
    leave fewer than 3 ideas does not apply. */
 var CONSTRAINT_CHIPS = [
   {key:"time", max:30, label:"30 min or less"},
-  {key:"time", max:60, label:"An hour or less"},
-  {key:"budget", max:10, label:"$10 or less"}
+  {key:"time", max:60, label:"An hour or less"}
 ];
 function constraintOk(idea, c){
   if (!c) return true;
@@ -2691,7 +2686,7 @@ function planIsPlotTwist(idea){
 var ROLE_NOTES = {
   "Best Match": "The highest-scoring pick for your answers.",
   "Easiest": "The simplest build of your top 3, by a clear margin.",
-  "Zero-Dollar Build": "Made entirely from things you already own. It costs $0.",
+  "Closet Build": "Made entirely from things you already own.",
   "Tonight-Ready": "Builds in 30 minutes or less.",
   "Plot Twist": "A different interest than the one you picked, but the same vibe. Worth a look.",
   "Wildcard": "The most different pick from your best match. A curveball."
@@ -2710,7 +2705,7 @@ function resultRoles(results){
   [1, 2].forEach(function(i){
     var idea = results[i].idea, c = [];
     if (minCount === 1 && minIdx === i && (nextD - minD) >= 2) c.push("Easiest");
-    if (planCostIsZero(idea)) c.push("Zero-Dollar Build");
+    if (planCostIsZero(idea)) c.push("Closet Build");
     if (planIsTonightReady(idea)) c.push("Tonight-Ready");
     if (planIsPlotTwist(idea)) c.push("Plot Twist");
     if (wildIdx === i) c.push("Wildcard");
@@ -4093,8 +4088,8 @@ function buildCantBuyItBox(idea, results){
   var hook = document.createElement("p");
   hook.textContent = "Sold out, over budget, or it's already 9pm. That's exactly what this plan is for: build " + idea.title + " from what is already in your house.";
   wrap.appendChild(h); wrap.appendChild(hook);
-  /* Decision triple: the guide's own time/cost/effort. */
-  var t = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; });
+  /* Decision triple: the guide's own time/effort. */
+  var t = [ins.time, ins.effort].filter(function(x){ return x; });
   if (t.length){
     var tp = document.createElement("p");
     tp.id = "cantbuyit-triple";
@@ -5418,7 +5413,7 @@ function spinTextFor(idea, sid){
   var tri = "";
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
-    tri = [ins.time, ins.cost].filter(function(x){ return x; }).join(", ");
+    tri = [ins.time].filter(function(x){ return x; }).join(", ");
   }
   return "The shuffle picked " + idea.title + " for me this Halloween" + (tri ? " (" + tri + ")" : "") + ". Get your pick: " + link;
 }
@@ -5432,7 +5427,7 @@ function spinTriple(idea){
   var ins = INSTRUCTIONS[idea.id];
   /* Proof-rail style triple: "25 min · $3-10 · Easy". Middot matches the
      site; no em/en dashes anywhere in user-facing spin copy. */
-  return [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(" · ");
+  return [ins.time, ins.effort].filter(function(x){ return x; }).join(" · ");
 }
 function renderSpinResult(idea){
   window.__pmcSpinIdea = idea;
@@ -5570,7 +5565,7 @@ $("btn-spin-share").onclick = function(){
 /* ================= PROXY QUIZ (2026-09-26) =================
    "Have a friend decide": the sender cannot pick, so they send the quiz
    itself. The recipient takes the quiz FOR them and sends one pick back
-   with the time and cost. Every builder returns null with
+   with the time. Every builder returns null with
    PROXY_QUIZ_ENABLED false. Pure pieces (proxySanitizeName,
    parseDecideFor, proxyTriple, buildProxyInviteText,
    buildProxyTellBackText) carry no DOM so the harness can eval them. */
@@ -5598,7 +5593,7 @@ function parseDecideFor(search){
 function proxyTriple(ideaId){
   if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[ideaId]) return "";
   var ins = INSTRUCTIONS[ideaId];
-  return [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+  return [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
 }
 /* Pure: the invite text the sender copies or shares. Null without a name. */
 function buildProxyInviteText(name, sid){
@@ -5723,7 +5718,7 @@ function buildProxyDecideBox(results){
   var dh = document.createElement("h3");
   dh.textContent = "Send " + name + " your pick";
   var dp = document.createElement("p");
-  dp.textContent = "Tap the one you would choose for them. They get the time and cost, plus a link to claim it.";
+  dp.textContent = "Tap the one you would choose for them. They get the time, plus a link to claim it.";
   var drow = document.createElement("div"); drow.className = "row";
   var dpanel = document.createElement("div");
   dpanel.style.display = "none"; dpanel.style.marginTop = "10px";
@@ -5847,7 +5842,7 @@ function buildVoteText(results, sid){
     var tri = "";
     if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
       var ins = INSTRUCTIONS[idea.id];
-      tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+      tri = [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
     }
     var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=vote";
     lines.push((i + 1) + ". " + idea.title + (tri ? " (" + tri + ")" : "") + " - " + url);
@@ -5970,7 +5965,7 @@ function nocloneTextFor(idea, sid){
   var tri = "";
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
-    tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+    tri = [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
   }
   var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=noclone";
   var reply = (aud === "family")
@@ -6086,7 +6081,7 @@ function teamkitTextFor(idea, sid){
   var tri = "";
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
-    tri = [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+    tri = [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
   }
   var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=team";
   return emojiLead("One costume for the whole team this Halloween.") + "\n" +
@@ -6331,17 +6326,17 @@ function duelCoop(mine, theirs){
 function duelTriple(idea){
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
-    return [ins.time, ins.cost, ins.effort].filter(function(x){ return x; }).join(", ");
+    return [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
   }
   return "";
 }
 /* Data-grounded pairing verdict. Only claims what the bank supports:
    audience tags for duo potential, the effort field for the easy match. */
-/* 2026-09-30 delight: duel verdicts grounded in the bank's real time/cost.
+/* 2026-09-30 delight: duel verdicts grounded in the bank's real build time.
    Parsers read the INSTRUCTIONS strings ("25 min", "35 min + drying",
-   ranges, "1 hour"; "$3-10", "$12") into comparable numbers. Returns a
+   ranges, "1 hour") into comparable numbers. Returns a
    structured verdict {type, winner, text} where winner is "mine", "theirs",
-   or null. Types: same, coop, double_win, cost_win, time_win, effort_win,
+   or null. Types: same, coop, time_win, effort_win,
    tie. A winner is crowned only on a meaningful, measured edge; kid/family
    picks never get a winner (cooperation, not competition). */
 function duelTimeMin(str){
@@ -6352,13 +6347,6 @@ function duelTimeMin(str){
   var mult = /^h/i.test(m[3]) ? 60 : 1;
   return Math.round(((lo + hi) / 2) * mult);
 }
-function duelCostMid(str){
-  if (!str) return null;
-  var nums = String(str).match(/(\d+(?:\.\d+)?)/g);
-  if (!nums || !nums.length) return null;
-  var vals = nums.map(Number);
-  return (vals[0] + vals[vals.length - 1]) / 2;
-}
 function duelEasy(idea){
   if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[idea.id]) return false;
   return /^easy/i.test(INSTRUCTIONS[idea.id].effort || "");
@@ -6366,7 +6354,7 @@ function duelEasy(idea){
 function duelScoreLine(idea){
   if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[idea.id]) return "";
   var ins = INSTRUCTIONS[idea.id];
-  return [ins.time, ins.cost].filter(function(x){ return x; }).join(" · ");
+  return [ins.time].filter(function(x){ return x; }).join(" · ");
 }
 function duelVerdictV2(mine, theirs){
   if (mine.id === theirs.id)
@@ -6377,17 +6365,11 @@ function duelVerdictV2(mine, theirs){
   var mi = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[mine.id]) || {};
   var ti = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[theirs.id]) || {};
   var mt = duelTimeMin(mi.time), tt = duelTimeMin(ti.time);
-  var mc = duelCostMid(mi.cost), tc = duelCostMid(ti.cost);
   var me = duelEasy(mine), te = duelEasy(theirs);
-  var costEdge = (mc != null && tc != null) ? tc - mc : null; /* >0: mine cheaper */
   var timeEdge = (mt != null && tt != null) ? tt - mt : null; /* >0: mine faster */
   var type = "tie", winner = null;
-  if (costEdge != null && timeEdge != null){
-    if (costEdge >= 8 && timeEdge >= 15){ type = "double_win"; winner = "mine"; }
-    else if (costEdge <= -8 && timeEdge <= -15){ type = "double_win"; winner = "theirs"; }
-    else if (costEdge >= 8){ type = "cost_win"; winner = "mine"; }
-    else if (costEdge <= -8){ type = "cost_win"; winner = "theirs"; }
-    else if (timeEdge >= 15){ type = "time_win"; winner = "mine"; }
+  if (timeEdge != null){
+    if (timeEdge >= 15){ type = "time_win"; winner = "mine"; }
     else if (timeEdge <= -15){ type = "time_win"; winner = "theirs"; }
   }
   if (!winner && me !== te){ type = "effort_win"; winner = me ? "mine" : "theirs"; }
@@ -6395,9 +6377,7 @@ function duelVerdictV2(mine, theirs){
   var lTitle = winner === "mine" ? theirs.title : mine.title;
   var grace = " " + lTitle + " is still a great costume.";
   var text;
-  if (type === "double_win") text = "🏆 " + wTitle + " takes it: cheaper and faster to build." + grace;
-  else if (type === "cost_win") text = "🏆 " + wTitle + " wins on cost." + grace;
-  else if (type === "time_win") text = "🏆 " + wTitle + " wins on build time." + grace;
+  if (type === "time_win") text = "🏆 " + wTitle + " wins on build time." + grace;
   else if (type === "effort_win") text = "🏆 " + wTitle + " wins on ease." + grace;
   else if (groupish(mine.audience) && groupish(theirs.audience)) text = "Both going big-group energy. The Halloween party just got a theme.";
   else if (me && te) text = "Both low-effort, both brilliant. Efficiency is a costume too.";
@@ -6744,8 +6724,8 @@ function startDuelFlow(){
   $("duel-back1").onclick = function(){ duelShowStep(1); };
 }
 /* 2026-09-30 delight: the duel verdict is grounded in the bank's real
-   time/cost (duelVerdictV2). The scoreboard shows both costumes' build time
-   and cost under their photos; the crown goes only to a meaningful winner
+   time and effort (duelVerdictV2). The scoreboard shows both costumes'
+   build time under their photos; the crown goes only to a meaningful winner
    (never for kid/family picks); and all three stores are saved in this one
    flow so a duel completion is a real pick. mineOverride supports the
    fresh-saved-pick shortcut (compare immediately, no questions again). */
@@ -6913,7 +6893,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote){
     /* 2026-09-27 pm red-team: the value echoes the USER's picked vibe, not the
        idea's, so the label says "Your vibe" (was "Vibe", which read as an
        idea fact next to Build/Budget/Difficulty). */
-    [["Your vibe", _vibeA], ["Build", _pf.build], ["Budget", _pf.budget], ["Difficulty", EFFORT_FACTS[_ek].difficulty]].forEach(function(f){
+    [["Your vibe", _vibeA], ["Build", _pf.build], ["Difficulty", EFFORT_FACTS[_ek].difficulty]].forEach(function(f){
       var _d = document.createElement("div"); _d.className = "fact";
       var _b = document.createElement("b"); _b.textContent = f[0];
       var _s = document.createElement("span"); _s.textContent = f[1];
@@ -7159,7 +7139,7 @@ function scoreWithConstraint(chip, on){
   state.constraints = saved;
   return r;
 }
-/* Constraint refinement chips (2026-09-26): "Short on time or money?" on the
+/* Constraint refinement chips (2026-09-26): "Short on time?" on the
    results screen, following the q5kid refinement pattern. Chips toggle
    independently and combine; tapping an active chip clears it. The row
    renders only when toggling at least one chip would change the current top
@@ -7180,7 +7160,7 @@ function buildConstraintRefinement(){
   var wrap = document.createElement("div");
   wrap.className = "fitref";
   var p = document.createElement("p");
-  p.textContent = "Short on time or money? Filter the picks.";
+  p.textContent = "Short on time? Filter the picks.";
   wrap.appendChild(p);
   var row = document.createElement("div");
   row.className = "row";
@@ -9069,20 +9049,12 @@ function aliasHit(key){
 
 /* Structured attribute filters: parsed from the query, mapped to the bank's
    real tags (budget/audience/venue/fit/plan data), never to title text. */
-function planCostNum(idea){
-  if (typeof MAKE_PLANS === "undefined" || !MAKE_PLANS[idea.id]) return null;
-  var m = (MAKE_PLANS[idea.id].cost || "").match(/\$([\d.]+)/);
-  return m ? parseFloat(m[1]) : null;
-}
 function planBuyText(idea){
   if (typeof MAKE_PLANS === "undefined" || !MAKE_PLANS[idea.id]) return "";
   return (MAKE_PLANS[idea.id].buy || []).join(" ").toLowerCase();
 }
 
 var SEARCH_ATTRS = [
-  {keys:["cheap","inexpensive","affordable","budget"], test:function(i){ var c = planCostNum(i); return c !== null && c <= 10; }},
-  {keys:["free","0 dollar","zero dollar"], test:function(i){ return planCostNum(i) === 0; }},
-  {keys:["under 10"], test:function(i){ var c = planCostNum(i); return c !== null && c < 10; }},
   {keys:["male","men","mens","boys","boy","guys","gents"], test:function(i){ return i.fit === "M"; }},
   {keys:["female","women","womens","ladies","lady","girls","girl"], test:function(i){ return i.fit === "F"; }},
   {keys:["kid","kids"], test:function(i){ return (i.audience || []).indexOf("kid") >= 0; }},
@@ -9262,15 +9234,15 @@ function browseCard(idea){
     img.setAttribute("onerror", "if(!this.dataset.fbk){this.dataset.fbk=1;this.src='photos/" + idea.id + ".webp';}else{this.style.display='none';}");
     var h = document.createElement("h3"); h.textContent = idea.title;
     var p = document.createElement("p"); p.textContent = idea.blurb;
-    /* Red-team 2026-09-27: the hero promises "Every idea shows what it costs
-       and how long it takes before you click." Quiz result cards carry the
-       factrow, but browse cards showed title + blurb only. INSTRUCTIONS has
-       time+cost+effort for all 164 ideas, so the shelf keeps the promise. */
+    /* Red-team 2026-09-27: the hero promises every idea shows how long it
+       takes before you click. Quiz result cards carry the factrow, but
+       browse cards showed title + blurb only. INSTRUCTIONS has
+       time+effort for all 164 ideas, so the shelf keeps the promise. */
     var _bins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
     var bmeta = null;
-    if (_bins && (_bins.time || _bins.cost)){
+    if (_bins && _bins.time){
       bmeta = document.createElement("p"); bmeta.className = "bmeta";
-      bmeta.textContent = [_bins.time, _bins.cost, _bins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
+      bmeta.textContent = [_bins.time, _bins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
     }
     /* 2026-09-30 (Billy spec): this launcher opens the "Keep building this
        costume" plan block — it does not copy anything itself, so the label
@@ -10138,7 +10110,7 @@ function drawShareImage(idea, done){
     g.fillStyle = "#cdbfe8";
     var capLines = wrap(shareCaptionFor(idea), W - 140, "400 38px system-ui, sans-serif").slice(0, 3);
     g.fillStyle = "#8f7fb8";
-    var facts = [ideaFact(idea, "vibe"), ideaFact(idea, "build"), ideaFact(idea, "budget"), ideaFact(idea, "difficulty")]
+    var facts = [ideaFact(idea, "vibe"), ideaFact(idea, "build"), ideaFact(idea, "difficulty")]
       .filter(Boolean).join("  \u00b7  ");
     var factLines = wrap(facts, W - 140, "400 32px system-ui, sans-serif").slice(0, 2);
     /* Adaptive trim: worst-case text (2+3+2 lines) would collide with the
@@ -10174,18 +10146,18 @@ function drawShareImage(idea, done){
   img.onerror = function(){ paint(null); };
   img.src = "photos/" + idea.id + ".webp";
 }
-/* Fact-row values for the image card; mirrors the hero card's four cells. */
+/* Fact-row values for the image card; mirrors the hero card's three cells. */
 function ideaFact(idea, kind){
   if (kind === "vibe"){
     return (state.answers.q2 && state.answers.q2.label) ? state.answers.q2.label : "Any";
   }
   var ek = (typeof ideaEffortKey === "function") ? ideaEffortKey(idea) : null;
   var ef = (ek && typeof EFFORT_FACTS !== "undefined") ? EFFORT_FACTS[ek] : null;
-  /* 2026-09-29: Build/Budget single-sourced from the build plan (planFacts),
-     same as the hero tile -- the image card can never disagree with it. */
+  /* 2026-09-29: Build single-sourced from the build plan (planFacts),
+     same as the hero tile -- the image card can never disagree with it.
+     2026-10-01: budget removed per the no-dollar-figures call. */
   var pf = (typeof planFacts === "function") ? planFacts(idea) : null;
   if (kind === "build") return pf ? pf.build : (ef ? ef.build : null);
-  if (kind === "budget") return pf ? pf.budget : ((typeof ideaBudgetLabel === "function") ? ideaBudgetLabel(idea) : null);
   if (kind === "difficulty") return ef ? ef.difficulty : null;
   return null;
 }
@@ -11509,20 +11481,17 @@ function buildPersonPlans(idea, list){
   buyH.textContent = "Option 1: Buy";
   guide.appendChild(buyH);
   var buyP = document.createElement("p"); buyP.className = "pp-buy";
-  var costLine = mp.cost;
-  var perPersonCost = /each/.test(costLine) ? costLine :
-    costLine.replace(" total", "") + " for one costume";
   /* 2026-09-26 (copy audit fix): head-comfort advice only when the
      costume actually uses headwear. Detected from the guide materials. */
   var hwWord = headwearWord(idea.id);
   var buyText = "Search for \u201C" + buySearchFor(list[0].role, idea) + "\u201D. " +
-    "Expect about " + perPersonCost.replace(/^~/, "") + ". Check the size chart, not just your normal size.";
+    "Check the size chart, not just your normal size.";
   if (hwWord) buyText += " If the " + hwWord + " feels tight after five minutes, it will not survive Halloween night.";
   buyP.textContent = buyText;
   guide.appendChild(buyP);
   /* DIY option: quick-guide steps */
   var diyH = document.createElement("p"); diyH.className = "pp-opt";
-  diyH.textContent = "Option 2: DIY, about " + mp.cost + ", " + mp.time;
+  diyH.textContent = "Option 2: DIY, " + mp.time;
   guide.appendChild(diyH);
   var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
   var tip = null, n = 0;
@@ -11541,13 +11510,13 @@ function buildPersonPlans(idea, list){
   box.appendChild(guide);
   /* Easiest version: derived from the real guide, not boilerplate.
      2026-09-26 (copy audit fix). Easy guides (4 or fewer DIY steps)
-     recommend doing the DIY with the real step count, cost, and time. Only
+     recommend doing the DIY with the real step count and time. Only
      longer guides recommend buying, naming real items from the plan. */
   var easy = document.createElement("p"); easy.className = "pp-easy";
   var diySteps = mp.steps.filter(function(s){ return !/^optional/i.test(s); });
   if (diySteps.length > 0 && diySteps.length <= 4){
     easy.textContent = "Easiest version: skip the store. This one is " + diySteps.length +
-      " step" + (diySteps.length === 1 ? "" : "s") + ", " + mp.cost + ", " + mp.time +
+      " step" + (diySteps.length === 1 ? "" : "s") + ", " + mp.time +
       ". Start here: " + short(diySteps[0]);
   } else {
     var buyItems = (mp.buy && mp.buy.length) ? mp.buy.slice(0, 2) : ["the accessory kit"];
@@ -13329,8 +13298,8 @@ function shareLandingHeadline(idea, search){
     if (p && p.buy && p.buy.length){
       tale += " To dress up as " + idea.title + ", you'll need " + p.buy.slice(0,3).join(", ") + ".";
     }
-    if (p && (p.time || p.cost)){
-      tale += " It takes " + (p.time || "some time") + " and costs " + (p.cost || "a few dollars") + ".";
+    if (p && p.time){
+      tale += " It takes " + p.time + ".";
     }
     return tale;
   }
