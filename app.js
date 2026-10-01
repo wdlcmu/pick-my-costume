@@ -1472,6 +1472,34 @@ function paintAmbient(){
 function clearAmbient(){
   try{ var w = document.getElementById("pmc-amb"); if (w && w.parentNode) w.parentNode.removeChild(w); }catch(e){}
 }
+/* 2026-10-01 (Item 6): app-screen headings render client-side, never in static
+   HTML — crawlers see no empty <h2>s and no app-state headings in the raw
+   markup. ensureHead(id, cls, spot) returns the <h2>, creating it on first
+   use at the exact position the static element used to occupy.
+   spot = {before:"<css selector>"} inserts before an anchor element, or
+   {appendTo:"<css selector>"} appends inside a container. The id and class
+   are preserved so existing CSS/JS keep working. */
+function ensureHead(id, cls, spot){
+  var h = document.getElementById(id);
+  if (h) return h;
+  h = document.createElement("h2");
+  h.id = id;
+  if (cls) h.className = cls;
+  var placed = false;
+  try {
+    if (spot && spot.before){
+      var a = document.querySelector(spot.before);
+      if (a && a.parentNode){ a.parentNode.insertBefore(h, a); placed = true; }
+    }
+    if (!placed && spot && spot.appendTo){
+      var p = document.querySelector(spot.appendTo);
+      if (p){ p.appendChild(h); placed = true; }
+    }
+  } catch(_){}
+  if (!placed) document.body.appendChild(h);
+  return h;
+}
+
 function show(id){
   closeQuizSheet();
   /* 2026-10-01 (Billy): the runner-up fullscreen overlay (z-index 1000) sits
@@ -2024,7 +2052,7 @@ function renderQ(){
   var _qpct = _qn > 0 ? Math.round((state.qi / _qn) * 100) : 100;
   var _qbf = $("qbar-fill");
   if (_qbf) _qbf.style.width = _qpct + "%";
-  $("q-title").textContent = qTitle(qid);
+  ensureHead("q-title", "q-title", {before:"#q-hint"}).textContent = qTitle(qid);
   $("q-hint").textContent = qHint(qid);
   /* 2026-09-26 proxy-quiz: recipient banner ("You are picking for X").
      Flag-off: PROXY_FOR is null, so the banner stays hidden and nothing
@@ -6919,8 +6947,9 @@ function startDuelFlow(){
      of combat framing. */
   var _kf = duelKidFrame(theirs);
   try { Analytics.track("duel_started", Object.assign(viaShareProps(), {kid_frame: _kf})); } catch(_){}
-  $("duel-s1-title").textContent = "Your friend picked " + theirs.title; /* 2026-10-01 hygiene: full string set client-side; static HTML carries no state text */
-  var _s3t = $("duel-s3-title");
+  ensureHead("duel-s1-title", "q-title", {before:"#duel-friend-photo"}).textContent = "Your friend picked " + theirs.title; /* 2026-10-01 (Item 6): heading element itself is client-rendered too */
+  ensureHead("duel-s2-title", "q-title", {before:"#duel-q2"}).textContent = "How much effort?"; /* 2026-10-01 (Item 6): was static app-state markup, now JS-rendered */
+  var _s3t = ensureHead("duel-s3-title", "q-title", {before:"#duel-s3 .duel-vs"});
   _s3t.textContent = _kf ? "Side by side" : "You vs your friend";
   Array.prototype.forEach.call(document.querySelectorAll("#s-duel .progress"), function(p){
     p.textContent = _kf ? "Costume compare" : "Costume duel";
@@ -6994,8 +7023,8 @@ function finishDuelFlow(theirs, mineOverride){
      be the kid-tagged one. Recompute with both picks now that mine is known.
      The title id is dropped by the staged extraction build, hence the guard. */
   var _coop = duelCoop(mine, theirs);
-  var _s3t2 = $("duel-s3-title");
-  if (_s3t2) _s3t2.textContent = _coop ? "Side by side" : "You vs your friend";
+  var _s3t2 = ensureHead("duel-s3-title", "q-title", {before:"#duel-s3 .duel-vs"});
+  _s3t2.textContent = _coop ? "Side by side" : "You vs your friend";
   Array.prototype.forEach.call(document.querySelectorAll("#s-duel .progress"), function(p){
     p.textContent = _coop ? "Costume compare" : "Costume duel";
   });
@@ -7541,7 +7570,7 @@ function warmQuizChrome(title, hint){
   openQuizSheet();
   $("q-progress").textContent = "";
   var qbf = $("qbar-fill"); if (qbf) qbf.style.width = "0%";
-  $("q-title").textContent = title;
+  ensureHead("q-title", "q-title", {before:"#q-hint"}).textContent = title;
   $("q-hint").textContent = hint;
   var pb = $("q-proxybanner"); if (pb) pb.style.display = "none";
   var box = $("q-opts"); box.innerHTML = "";
@@ -7687,11 +7716,11 @@ function renderWarmResults(){
      this header and the nav buttons for the cold path. */
   document.querySelector("#s-results .progress").textContent = "Your plan";
   if (WARM.anchor){
-    document.querySelector("#s-results h2.q-title").textContent = "\uD83C\uDF83 " + name + " is sorted.";
+    ensureHead("results-title", "q-title", {before:"#r-cards"}).textContent = "\uD83C\uDF83 " + name + " is sorted.";
     document.querySelector("#s-results p.q-hint").textContent = "The costume is decided. Here is the plan around it.";
   } else {
     /* C1: never present a non-match as a finished plan. */
-    document.querySelector("#s-results h2.q-title").textContent = "We don't have " + name + " yet.";
+    ensureHead("results-title", "q-title", {before:"#r-cards"}).textContent = "We don't have " + name + " yet.";
     document.querySelector("#s-results p.q-hint").textContent = "No exact match in our costume bank. These group-friendly ideas are the closest fit.";
   }
   $("btn-rtop").style.display = "none";
@@ -8440,7 +8469,7 @@ function renderResults(results){
   /* 2026-09-27: the s-results shell is shared with the warm path, which
      rewrites this header and hides nav buttons. Reset for the cold path. */
   document.querySelector("#s-results .progress").textContent = "Your costume";
-  document.querySelector("#s-results h2.q-title").innerHTML = "&#127875; Here's what we picked for you";
+  ensureHead("results-title", "q-title", {before:"#r-cards"}).innerHTML = "&#127875; Here's what we picked for you";
   document.querySelector("#s-results p.q-hint").innerHTML = "This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.";
   $("btn-rtop").style.display = "";
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
@@ -10053,6 +10082,9 @@ function openIdeaDetail(ideaId, whyHead, returnTo, progressText){
     : ((detailReturnTo === "s-hero") ? "&larr; Back" : "&larr; Back to browse");
   var dp = $("detail-progress");
   if (dp) dp.textContent = progressText || "From browsing";
+  /* 2026-10-01 (Item 6): "Costume detail" heading is client-rendered inside
+     .dtop (keeps the bleed styling); no heading markup in static HTML. */
+  ensureHead("detail-title", "q-title", {appendTo:"#s-detail .dtop"}).textContent = "Costume detail";
   var box = $("d-card");
   box.innerHTML = "";
   var _dcard = buildBrowseDetailCard(idea, whyHead);
@@ -13303,7 +13335,7 @@ $("btn-browse-results").textContent = "Wander the galaxy";
   var els = document.querySelectorAll(".ideacount");
   for (var i = 0; i < els.length; i++) els[i].textContent = IDEAS.length;
 })();
-$("browse-title").textContent = "All " + IDEAS.length + " ideas";
+ensureHead("browse-title", "q-title", {before:"#s-browse .bsticky"}).textContent = "All " + IDEAS.length + " ideas";
 /* Variant C hero: the search-block label carries the live bank count. */
 (function(){ var hsc = $("hero-search-count"); if (hsc) hsc.textContent = IDEAS.length; })();
 /* ================= HOMEPAGE RAIL SHARE =================
@@ -14082,7 +14114,7 @@ function shareLandingHeadline(idea, search){
     pmcSrcset($("st-photo"), idea.id, "100vw");
     $("st-photo").alt = idea.title + " costume";
     $("st-kicker").textContent = currentLabel;
-    $("st-title").textContent = idea.title;
+    ensureHead("st-title", "st-title", {before:"#st-tale"}).textContent = idea.title;
     $("st-tale").textContent = tale;
     applyStFont();
     $("st-meta").textContent = metaFor(idea);
@@ -15491,7 +15523,7 @@ function refreshReturnBox(){
     if (idea) {
       var photo = $("returnhero-photo");
       if (photo){ photo.src = "photos/" + idea.id + ".webp"; pmcSrcset(photo, idea.id, "52px"); photo.alt = idea.title + " costume"; }
-      $("returnhero-title").textContent = "Still going as " + idea.title + "?";
+      ensureHead("returnhero-title", "", {before:"#returnbox .returnhero-actions"}).textContent = "Still going as " + idea.title + "?";
       var st = $("returnhero-share-status");
       if (st) st.textContent = "";
       box.hidden = false;
