@@ -1,5 +1,7 @@
 # Cloudflare Pages redirects — Section 4 SEO consolidation.
-# Approved by Billy 2026-10-01 ("Ship all 15").
+# Approved by Billy 2026-10-01 ("Ship all 15"); amended 2026-10-01 per Billy's
+# redirect-intent review: 14 rules (cheap + materials pages un-retired,
+# quiz article retired to /).
 # Each source is a duplicate/thin/retired landing page; targets are the canonicals.
 # NOTE: the zone's pretty-URL rule 308s *.html -> clean first, so these clean-path
 # rules cover both /foo and /foo.html (the latter chains 308 -> 301).
@@ -28,9 +30,16 @@
 # Couples cluster -> /couples-costumes
 /couple-halloween-costumes-2026 /couples-costumes 301
 
-# Retired cost positioning -> /costumes-from-your-closet
-/cheap-halloween-costumes /costumes-from-your-closet 301
+# Cheap cluster -> /costumes-from-your-closet (the /cheap-halloween-costumes page
+# itself was UN-RETIRED 2026-10-01: "cheap Halloween costumes" is a big search
+# term with different intent than closet builds, and the page already exists
+# as a quality standalone. Only the /collections/ alias stays redirected.)
 /collections/cheap-homemade-costumes /costumes-from-your-closet 301
 
-# Orphaned materials page -> /costumes-from-your-closet
-/diy-costumes-by-materials /costumes-from-your-closet 301
+# Materials hub is a real page again (2026-10-01): /diy-costumes-by-materials
+# is now a minimal hub linking the four material collections, so its old
+# redirect to /costumes-from-your-closet is removed.
+
+# Retired quiz article -> / (2026-10-01): /halloween-costume-ideas-quiz was an
+# article-form duplicate of the homepage quiz; link equity consolidates to /.
+/halloween-costume-ideas-quiz / 301
