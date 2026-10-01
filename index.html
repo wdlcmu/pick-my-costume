@@ -113,6 +113,12 @@ body{
   color:var(--ink);text-decoration:none;font-weight:800;font-size:18px}
 @media (hover:hover){.sitehead-link:hover{color:var(--ink);text-decoration:none}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 .sitehead-mark{font-size:22px;line-height:1}
+/* 2026-10-01 IA pass: Find (quiz) -> Explore (galaxy) -> Pantry -> Play. */
+.sitehead{display:flex;align-items:center;gap:12px}
+.sitenav{margin-left:auto;display:flex;align-items:center;gap:2px}
+.sitenav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:700;
+  padding:12px 10px;border-radius:10px;white-space:nowrap}
+@media (hover:hover){.sitenav a:hover{color:var(--ink)}}
 @media (min-width:900px){.sitehead{margin:0 -32px 4px;padding:0 32px}}
 /* 2026-09-30 (Billy phone QA): storytime is full-screen; the sticky site
    header (z-index 100) would cover its top bar and the close button
@@ -1023,6 +1029,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <span class="sitehead-mark" aria-hidden="true">&#127875;</span>
       <span class="sitehead-name">Pick My Costume</span>
 </a>
+    <!-- 2026-10-01 IA: Find (quiz) -> Explore (galaxy) -> Pantry -> Play. -->
+    <nav class="sitenav" aria-label="Site">
+      <a href="/" aria-label="Find my costume — the quiz">Find</a>
+      <a href="/map/">Explore</a>
+      <a href="/pantry">Pantry</a>
+      <a href="/play">Play</a>
+    </nav>
   </header>
 
   <!-- HERO -->
@@ -1088,6 +1101,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-09-30 delight: hero promise, plain. -->
       <p class="fine honestline firstonly">Answer 5 quick questions. Get your costume pick with cost and build time.</p>
       <p class="fine firstonly" style="margin:6px 0 0">No signup · 2 minutes · free</p>
+    <!-- 2026-10-01: galaxy elevated to secondary CTA under the quiz hero. -->
+    <p class="fine firstonly" style="margin:8px 0 0">Rather wander? <a href="/map/">Explore all 164 as a galaxy</a> &#8594;</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
            The Trending tab below shows the photos; a text list of names was
@@ -1265,7 +1280,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <button class="tooltab" type="button" role="tab" id="toolt-classroom" aria-selected="false" aria-controls="toolpanel-classroom" data-item-id="classroom">🏫 Class planner</button>
           <button class="tooltab" type="button" role="tab" id="toolt-handmedown" aria-selected="false" aria-controls="toolpanel-handmedown" data-item-id="handmedown">♻️ Closet refresh</button>
           <button class="tooltab" type="button" role="tab" id="toolt-flyer" aria-selected="false" aria-controls="toolpanel-flyer" data-item-id="flyer">🖨️ Printables</button>
-          <button class="tooltab" type="button" role="tab" id="toolt-browse" aria-selected="false" aria-controls="toolpanel-browse" data-item-id="browse">🔍 Browse all</button>
+          <button class="tooltab" type="button" role="tab" id="toolt-browse" aria-selected="false" aria-controls="toolpanel-browse" data-item-id="browse">🗺️ Explore the galaxy</button>
           <button class="tooltab" type="button" role="tab" id="toolt-planner" aria-selected="false" aria-controls="toolpanel-planner" data-item-id="planner">📅 Halloween plan</button>
           <button class="tooltab" type="button" role="tab" id="toolt-shuffle" aria-selected="false" aria-controls="toolpanel-shuffle" data-item-id="shuffle">🎲 Role shuffle</button>
 </div>
@@ -1283,8 +1298,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <p style="margin:0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">🖨️ Get the printable flyers</a></p>
 </div>
           <div class="toolpanel" id="toolpanel-browse" role="tabpanel" aria-labelledby="toolt-browse" hidden>
-            <p class="fine" style="margin:0 0 10px">Scroll every idea at once, then tap any card to see the plan.</p>
-            <p style="margin:0"><button type="button" id="btn-browse-hero" class="textlink">🔍 Browse all 164 ideas</button></p>
+            <p class="fine" style="margin:0 0 10px">Wander all 164 ideas as a galaxy map, then tap any costume for the plan.</p>
+            <p style="margin:0"><button type="button" id="btn-browse-hero" class="textlink">🗺️ Explore the galaxy</button></p>
 </div>
           <div class="toolpanel" id="toolpanel-planner" role="tabpanel" aria-labelledby="toolt-planner" hidden>
             <p class="fine" style="margin:0 0 10px">Buy day, build day, dress-up day: a simple plan for your Halloween.</p>
@@ -1354,7 +1369,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <button class="ghost" id="btn-rback" type="button">&larr; Back to questions</button>
       <button class="ghost" id="btn-restart" type="button">Start over</button>
       <button class="ghost" id="btn-nextkid" type="button">Pick for another kid</button>
-      <button class="ghost" id="btn-browse-results" type="button">Browse all 164 ideas</button>
+      <button class="ghost" id="btn-browse-results" type="button">&#128506;&#65039; Wander the galaxy instead</button>
 </div>
   </section>
 

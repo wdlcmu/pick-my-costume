@@ -667,7 +667,7 @@ var IDEAS = [
 {id:"scarecrow", title:"Friendly Scarecrow", blurb:"Plaid shirt, straw poking out, and a stitched smile.", why:"Straw in the sleeves and a painted smile: the friendliest scare on the block.", audience:["solo"], budget:["diy","low"], tags:{funny:2,simple:2,crafty:1,couch:2,occparty:2,occtreat:1}, fit:"U", venue:{bar:2}, rank:153},
 {id:"yellow-henchmen", title:"Yellow Henchmen Crew", blurb:"Yellow shirts, blue overalls, and swim goggles for the whole crew.", why:"One color scheme for everybody, and the goggles get laughs on sight.", audience:["group","class"], budget:["diy","low"], tags:{funny:3,matchyes:2,tv:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:154},
 {id:"mystery-teens", title:"Mystery-Solving Teens", blurb:"Color-coded outfits, a toy magnifying glass, and one giant sandwich.", why:"Everyone dresses from their own closet in one assigned color, and it clicks.", audience:["group","class"], budget:["diy","low"], tags:{funny:2,simple:2,tv:3,matchyes:1,couch:2,occparty:2,occparade:2}, fit:"U", venue:{bar:2}, rank:155},
-{id:"pumpkin-king-bride", title:"Pumpkin King and Stitched Bride", blurb:"Pinstripe suit and pumpkin mask for one, patchwork dress and yarn hair for the other.", why:"Spooky-romantic and readable from far away, with thrifted pieces doing the lifting.", audience:["couple"], budget:["diy","mid"], tags:{cute:2,scary:1,crafty:2,matchyes:2,tv:2,occparty:2}, fit:"U", venue:{bar:2}, rank:156},
+{id:"pumpkin-king-bride", title:"Pumpkin Groom and Patchwork Bride", blurb:"Pinstripe suit and pumpkin mask for one, patchwork dress and yarn hair for the other.", why:"Spooky-romantic and readable from far away, with thrifted pieces doing the lifting.", audience:["couple"], budget:["diy","mid"], tags:{cute:2,scary:1,crafty:2,matchyes:2,tv:2,occparty:2}, fit:"U", venue:{bar:2}, rank:156},
 {id:"moonwalk-star", title:"Moonwalking Pop Star", blurb:"Red jacket, one glitter glove, and the lean everyone attempts.", why:"Nail the lean and the moonwalk and strangers will request songs all night.", audience:["solo"], budget:["diy","low"], tags:{funny:2,allout:1,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:157},
 {id:"witchy-sisters", title:"Witchy Sister Trio", blurb:"Three color-coded witch dresses: green, purple, and orange.", why:"Each picks a color and cackles in harmony; trios out-photograph duos.", audience:["group"], budget:["diy","low"], tags:{funny:2,scary:1,matchyes:2,tv:2,crafty:2,occtreat:2,occparty:2}, fit:"U", venue:{bar:2}, rank:158},
 {id:"macabre-couple", title:"Macabre Goth Couple", blurb:"Long black gown and calm stare for one, sharp suit for the other.", why:"The gothic couples standard: elegant, eerie, and almost entirely thrifted.", audience:["couple"], budget:["diy","low"], tags:{scary:2,cute:1,matchyes:2,tv:2,occbar:1,occparty:2}, fit:"U", venue:{bar:2}, rank:159},
@@ -7857,6 +7857,228 @@ function buildWrappedButton(results){
   btn.onclick = function(){ openWrapped(results); };
   return btn;
 }
+/* ================= GALAXY REGION ASSIGNMENT (2026-10-01, P1-5) ================
+   The quiz assigns the region: the #1 pick's galaxy region, from
+   hidden_files/galaxy/galaxy-data.json (idea.cluster -> region index).
+   Format: idea id -> [region name, region slug]. All 164 bank ideas covered. */
+var GALAXY_REGION_BY_IDEA = {
+"neon-demon-hunter":["Pop Culture Plaza","pop-culture-plaza"],
+"classic-ghost":["Fright Night","fright-night"],
+"blue-dog-family":["Pop Culture Plaza","pop-culture-plaza"],
+"superhero-family":["Hero Headquarters","hero-headquarters"],
+"blue-alien-ohana":["Pop Culture Plaza","pop-culture-plaza"],
+"emerald-witch":["Pop Culture Plaza","pop-culture-plaza"],
+"gloom-bloom":["Fright Night","fright-night"],
+"deadpan-diva":["Fright Night","fright-night"],
+"safari-zoo-crew":["Animal Kingdom","animal-kingdom"],
+"fairy-tale-princesses":["Princess Castle","princess-castle"],
+"tin-hero":["Hero Headquarters","hero-headquarters"],
+"good-witch-bad-witch":["Princess Castle","princess-castle"],
+"fuzzy-monster":["Silly Street","silly-street"],
+"pocket-plush":["Silly Street","silly-street"],
+"soccer-squad":["Sports Arena","sports-arena"],
+"glow-skeleton":["Fright Night","fright-night"],
+"block-game-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"web-slinger-crew":["Hero Headquarters","hero-headquarters"],
+"mermaid-crew":["Princess Castle","princess-castle"],
+"little-pig-family":["Pop Culture Plaza","pop-culture-plaza"],
+"enchanted-castle-crew":["Princess Castle","princess-castle"],
+"bumble-bee":["Animal Kingdom","animal-kingdom"],
+"baby-dino":["Dinosaur Land","dinosaur-land"],
+"little-lion":["Animal Kingdom","animal-kingdom"],
+"tiny-firefighter":["Hero Headquarters","hero-headquarters"],
+"little-shark":["Animal Kingdom","animal-kingdom"],
+"walking-taco":["Food Court","food-court"],
+"ramen-bowl":["Food Court","food-court"],
+"tiny-snail":["Animal Kingdom","animal-kingdom"],
+"little-witch":["Princess Castle","princess-castle"],
+"spider":["Fright Night","fright-night"],
+"backyard-hero":["Hero Headquarters","hero-headquarters"],
+"pickle":["Food Court","food-court"],
+"vampire":["Fright Night","fright-night"],
+"bamboo-demon":["Pop Culture Plaza","pop-culture-plaza"],
+"emoji-crew":["Silly Street","silly-street"],
+"robot-crew":["Silly Street","silly-street"],
+"cereal-crew":["Food Court","food-court"],
+"decades-crew":["Silly Street","silly-street"],
+"under-the-sea":["Animal Kingdom","animal-kingdom"],
+"dino-rangers":["Dinosaur Land","dinosaur-land"],
+"board-game-pieces":["Pop Culture Plaza","pop-culture-plaza"],
+"rain-cloud-rainbow":["Silly Street","silly-street"],
+"doctor-bride":["Fright Night","fright-night"],
+"breakfast-buffet":["Food Court","food-court"],
+"ghost-hunters":["Pop Culture Plaza","pop-culture-plaza"],
+"haunted-animatronics":["Fright Night","fright-night"],
+"mystery-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"headless-horsemen":["Fright Night","fright-night"],
+"haunted-portraits":["Fright Night","fright-night"],
+"goggle-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"garden-gnome":["Princess Castle","princess-castle"],
+"black-cat":["Animal Kingdom","animal-kingdom"],
+"block-monster":["Pop Culture Plaza","pop-culture-plaza"],
+"space-crewmate":["Pop Culture Plaza","pop-culture-plaza"],
+"sun-moon":["Silly Street","silly-street"],
+"moth-porch-light":["Silly Street","silly-street"],
+"raptor-ranger":["Dinosaur Land","dinosaur-land"],
+"cat-mouse":["Animal Kingdom","animal-kingdom"],
+"ketchup-mustard":["Food Court","food-court"],
+"plumber-duo":["Pop Culture Plaza","pop-culture-plaza"],
+"office-couple":["Pop Culture Plaza","pop-culture-plaza"],
+"burger-joint-couple":["Food Court","food-court"],
+"plug-socket":["Silly Street","silly-street"],
+"lost-tourist":["Silly Street","silly-street"],
+"tooth-fairy":["Princess Castle","princess-castle"],
+"web-hero-duo":["Hero Headquarters","hero-headquarters"],
+"plague-doctor":["Fright Night","fright-night"],
+"crowd-camouflage":["Silly Street","silly-street"],
+"error-404":["Silly Street","silly-street"],
+"zombie-coworker":["Fright Night","fright-night"],
+"the-olympians":["Hero Headquarters","hero-headquarters"],
+"safari-photographer":["Animal Kingdom","animal-kingdom"],
+"player-one-two":["Pop Culture Plaza","pop-culture-plaza"],
+"dinosaur-family":["Dinosaur Land","dinosaur-land"],
+"snow-sisters":["Princess Castle","princess-castle"],
+"sushi-roll":["Food Court","food-court"],
+"deviled-egg":["Food Court","food-court"],
+"pizza-slice":["Food Court","food-court"],
+"popcorn-bucket":["Food Court","food-court"],
+"ice-cream-cone":["Food Court","food-court"],
+"pbj":["Food Court","food-court"],
+"bacon-eggs":["Food Court","food-court"],
+"peas-pod":["Food Court","food-court"],
+"basketball-star":["Sports Arena","sports-arena"],
+"referee":["Sports Arena","sports-arena"],
+"boxer":["Sports Arena","sports-arena"],
+"cheerleader":["Sports Arena","sports-arena"],
+"tennis-duo":["Sports Arena","sports-arena"],
+"bowling-pins":["Sports Arena","sports-arena"],
+"cardboard-knight":["Hero Headquarters","hero-headquarters"],
+"ninja":["Fright Night","fright-night"],
+"caped-duo":["Hero Headquarters","hero-headquarters"],
+"hero-squad":["Hero Headquarters","hero-headquarters"],
+"astronaut":["Silly Street","silly-street"],
+"robot-ranger":["Silly Street","silly-street"],
+"penguin-huddle":["Animal Kingdom","animal-kingdom"],
+"prince-princess":["Princess Castle","princess-castle"],
+"dino-herd":["Dinosaur Land","dinosaur-land"],
+"pixel-ghost":["Fright Night","fright-night"],
+"spaghetti-meatball":["Food Court","food-court"],
+"cupcake":["Food Court","food-court"],
+"banana":["Food Court","food-court"],
+"hot-dog":["Food Court","food-court"],
+"donut":["Food Court","food-court"],
+"coffee-cup":["Food Court","food-court"],
+"salt-pepper":["Food Court","food-court"],
+"fruit-salad":["Food Court","food-court"],
+"wizard":["Fright Night","fright-night"],
+"toy-box-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"demon-boy-band":["Pop Culture Plaza","pop-culture-plaza"],
+"dragon-rider-duo":["Pop Culture Plaza","pop-culture-plaza"],
+"numbered-players":["Pop Culture Plaza","pop-culture-plaza"],
+"emotion-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"kart-racers":["Pop Culture Plaza","pop-culture-plaza"],
+"tall-hat-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"chipmunk-trio":["Pop Culture Plaza","pop-culture-plaza"],
+"galaxy-knights":["Pop Culture Plaza","pop-culture-plaza"],
+"plastic-dream-crew":["Pop Culture Plaza","pop-culture-plaza"],
+"extinct-party-animal":["Dinosaur Land","dinosaur-land"],
+"dino-tourist":["Dinosaur Land","dinosaur-land"],
+"raptor-barista":["Dinosaur Land","dinosaur-land"],
+"emotional-support-dinosaur":["Dinosaur Land","dinosaur-land"],
+"garden-fairy":["Princess Castle","princess-castle"],
+"ballerina":["Princess Castle","princess-castle"],
+"butterfly":["Animal Kingdom","animal-kingdom"],
+"pop-star":["Silly Street","silly-street"],
+"ice-skater":["Sports Arena","sports-arena"],
+"ladybug":["Animal Kingdom","animal-kingdom"],
+"daisy":["Silly Street","silly-street"],
+"little-baker":["Food Court","food-court"],
+"little-artist":["Silly Street","silly-street"],
+"beekeeper-bee":["Animal Kingdom","animal-kingdom"],
+"tetris-duo":["Pop Culture Plaza","pop-culture-plaza"],
+"little-lifeguard":["Hero Headquarters","hero-headquarters"],
+"little-prince":["Princess Castle","princess-castle"],
+"fossil-hunter":["Dinosaur Land","dinosaur-land"],
+"web-slinger-kid":["Hero Headquarters","hero-headquarters"],
+"milk-cookies":["Food Court","food-court"],
+"chips-guac":["Food Court","food-court"],
+"sushi-soy":["Food Court","food-court"],
+"burger-fries":["Food Court","food-court"],
+"donut-coffee":["Food Court","food-court"],
+"wine-cheese":["Food Court","food-court"],
+"kpop-demon-huntresses":["Pop Culture Plaza","pop-culture-plaza"],
+"goth-braids":["Fright Night","fright-night"],
+"juke-joint-vampires":["Fright Night","fright-night"],
+"blue-heeler-pup":["Animal Kingdom","animal-kingdom"],
+"baby-pumpkin":["Silly Street","silly-street"],
+"pirate-captain":["Silly Street","silly-street"],
+"cowboy-duo":["Silly Street","silly-street"],
+"smores-duo":["Food Court","food-court"],
+"scarecrow":["Animal Kingdom","animal-kingdom"],
+"yellow-henchmen":["Pop Culture Plaza","pop-culture-plaza"],
+"mystery-teens":["Pop Culture Plaza","pop-culture-plaza"],
+"pumpkin-king-bride":["Pop Culture Plaza","pop-culture-plaza"],
+"moonwalk-star":["Silly Street","silly-street"],
+"witchy-sisters":["Pop Culture Plaza","pop-culture-plaza"],
+"macabre-couple":["Fright Night","fright-night"],
+"party-pinata":["Silly Street","silly-street"],
+"fuzzy-gremlin":["Silly Street","silly-street"],
+"rescue-pups":["Animal Kingdom","animal-kingdom"],
+"wayfinder-princess":["Princess Castle","princess-castle"],
+"chill-painter":["Silly Street","silly-street"]
+};
+
+/* 2026-10-01 P1-6: quiz-result share card. Native share sheet on mobile,
+   copy-to-clipboard on desktop. Links to /map/<region>/<costume>, whose OG
+   image shows the costume photo plus the region name. Couple/family results
+   get a "Vote with me" variant sharing the top 3 (voting itself comes later). */
+function buildGalaxyShareCard(results, rname, rslug){
+  var idea = results[0].idea;
+  var url = "https://pickmycostume.com/map/" + rslug + "/" + idea.id;
+  var aud = (state.answers.q1 && state.answers.q1.value) ? state.answers.q1.value : "";
+  var wrap = document.createElement("div");
+  wrap.style.cssText = "margin:0 0 14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center";
+  function addBtn(label, text, variant){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ghost";
+    b.textContent = label;
+    b.style.minHeight = "44px";
+    var done = document.createElement("p");
+    done.className = "status";
+    done.style.cssText = "display:none;width:100%;text-align:center;font-size:12px;margin:2px 0 0";
+    b.onclick = function(){
+      Analytics.track("quiz_share_initiated", {region: rslug, costume: idea.id, variant: variant});
+      var payload = text + "\n" + url;
+      if (navigator.share){
+        navigator.share({title: "Pick My Costume", text: text, url: url}).catch(function(){});
+      } else if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(payload).then(function(){
+          done.style.display = "block";
+          done.textContent = "Copied \u2014 paste it anywhere.";
+        }, function(){
+          done.style.display = "block";
+          done.textContent = url;
+        });
+      } else {
+        done.style.display = "block";
+        done.textContent = url;
+      }
+    };
+    wrap.appendChild(b);
+    wrap.appendChild(done);
+  }
+  addBtn("\ud83d\udcf2 Share my result",
+    "The quiz says I'm going as " + idea.title + " \u2014 I'm from " + rname + ". Where are you from?",
+    "single");
+  if ((aud === "couple" || aud === "family") && results.length >= 3){
+    var tops = [results[0].idea.title, results[1].idea.title, results[2].idea.title].join(", ");
+    addBtn("\ud83d\uddf3\ufe0f Vote with me",
+      "Vote with me: " + tops + "? I'm from " + rname + " \u2014 where are you from?",
+      "vote");
+  }
+  return wrap;
+}
 function renderResults(results){
   var box = $("r-cards");
   box.innerHTML = "";
@@ -7904,6 +8126,30 @@ function renderResults(results){
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
+
+  /* 2026-10-01 P1-5: the quiz assigns the region. One line + link naming the
+     #1 pick's galaxy region; stored in localStorage so /map/ pre-selects the
+     chip next visit. No greeting. */
+  (function(){
+    var _rq = (typeof GALAXY_REGION_BY_IDEA !== "undefined") ? GALAXY_REGION_BY_IDEA[results[0].idea.id] : null;
+    if (!_rq) return;
+    var _rname = _rq[0], _rslug = _rq[1];
+    var _pline = document.createElement("p");
+    _pline.className = "q-hint";
+    _pline.style.margin = "2px 0 12px";
+    _pline.appendChild(document.createTextNode("Your picks landed in "));
+    var _b = document.createElement("strong"); _b.textContent = _rname; _pline.appendChild(_b);
+    _pline.appendChild(document.createTextNode(" \u2192 "));
+    var _a = document.createElement("a"); _a.href = "/map/" + _rslug; _a.textContent = "Explore " + _rname;
+    _a.onclick = function(){ Analytics.track("quiz_to_map_click", {region: _rslug}); };
+    _pline.appendChild(_a);
+    box.appendChild(_pline);
+    var _prev = null;
+    try { _prev = localStorage.getItem("pmc_quiz_region"); } catch(e){}
+    try { localStorage.setItem("pmc_quiz_region", _rslug); } catch(e){}
+    if (_prev !== _rslug) Analytics.track("quiz_region_assigned", {region: _rslug});
+    box.appendChild(buildGalaxyShareCard(results, _rname, _rslug));
+  })();
   /* 2026-09-28: answer chips and refinement rows live one tap behind
      this collapsed disclosure, below the hero. Tapping a chip re-renders
      results (the disclosure re-collapses); the new #1 is the feedback.
@@ -9082,20 +9328,11 @@ function renderBrowse(){
 }
 /* 2026-09-25: browse back button returns to the screen browse was opened from (hero or results). */
 var browseReturnTo = "s-hero";
+/* 2026-10-01: browse is now the Costume Galaxy. Every browse entry point
+   lands on /map/; the in-app browse grid is retired (code left in place
+   as dead weight, cleanup later). */
 function openBrowse(){
-  var cur = document.querySelector(".screen.on");
-  browseReturnTo = (cur && cur.id && cur.id !== "s-browse") ? cur.id : "s-hero";
-  /* Z5: if the hero pinpoint box holds typed text, open the shelf
-     pre-filtered to it (case-insensitive title substring). The query lands
-     in the shelf search box too, so it can be edited or cleared. Empty
-     text opens the unfiltered shelf, exactly today's behavior. */
-  var _pin = ($("pinpoint-input") && $("pinpoint-input").value) ? $("pinpoint-input").value.trim() : "";
-  browseSearchQ = _pin;
-  var _bs = $("browse-search");
-  if (_bs) _bs.value = _pin;
-  renderBrowse();
-  Analytics.track("browse_opened", {thumb_arm: thumbArm()});
-  show("s-browse");
+  location.href = "/map/";
 }
 
 /* ================= BROWSE DETAIL: E20 PARITY =================
@@ -12544,8 +12781,9 @@ $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
   }
 })();
 $("btn-browse-results").onclick = openBrowse;
-$("btn-browse-hero").textContent = "Browse all " + IDEAS.length + " ideas";
-$("btn-browse-results").textContent = "Browse all " + IDEAS.length + " ideas";
+/* 2026-10-01: labels point at the galaxy, not the retired in-app grid. */
+$("btn-browse-hero").textContent = "🗺️ Explore the galaxy";
+$("btn-browse-results").textContent = "🗺️ Wander the galaxy instead";
 /* Red-team 2026-09-27: every other hardcoded idea count on the page follows
    the live bank too, so the copy can never drift from the shelf. */
 (function(){
