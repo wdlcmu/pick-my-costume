@@ -3812,13 +3812,42 @@ function sendShare(idea, origin, opts){
     });
   }
   if (navigator.share){
+    /* 2026-10-02 (Billy): attach the costume photo to the native share sheet.
+       Text-only shares show no image; the photo is the hook. Fetch the -480
+       webp, wrap as a File, and share with files when the platform allows.
+       Any failure falls through to the text-only path, then clipboard. */
+    var photoUrl = "https://pickmycostume.com/photos/" + idea.id + "-480.webp";
+    function shareWithText(){
+      try {
+        navigator.share({title: "Pick My Costume", text: textFor("native")}).then(
+          function(){ doneShare(true, "Shared."); },
+          function(err){ if (err && err.name === "AbortError") doneShare(false, ""); else copyPath(); }
+        );
+        return;
+      } catch(e){ /* fall through to clipboard copy */ }
+      copyPath();
+    }
     try {
-      navigator.share({title: "Pick My Costume", text: textFor("native")}).then(
-        function(){ doneShare(true, "Shared."); },
-        function(err){ if (err && err.name === "AbortError") doneShare(false, ""); else copyPath(); }
-      );
-      return;
-    } catch(e){ /* fall through to clipboard copy */ }
+      if (navigator.canShare){
+        fetch(photoUrl).then(function(r){
+          if (!r.ok) throw new Error("photo " + r.status);
+          return r.blob();
+        }).then(function(blob){
+          var file = new File([blob], idea.id + ".webp", {type: "image/webp"});
+          if (navigator.canShare({files: [file]})){
+            navigator.share({title: "Pick My Costume", text: textFor("native"), files: [file]}).then(
+              function(){ doneShare(true, "Shared."); },
+              function(err){ if (err && err.name === "AbortError") doneShare(false, ""); else copyPath(); }
+            );
+          } else {
+            shareWithText();
+          }
+        }, function(){ shareWithText(); });
+        return;
+      }
+    } catch(e){ /* fall through */ }
+    shareWithText();
+    return;
   }
   copyPath();
 }
@@ -3850,43 +3879,14 @@ function shareTextFor(idea, sid, origin, medium){
   var text = shareCaptionFor(idea) + " " + shareAskLine() +
     "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic") +
     "&" + shareUtm(medium, shareRegionSlug(idea));
-  /* Kid/family shares append the shopping list: a parent texting their
-     partner needs the materials, not just the costume name. The audience
-     follows the caption (voiceAudience), so the list matches the voice. */
-  var aud = voiceAudience(idea);
-  if ((aud === "kid" || aud === "family") && typeof INSTRUCTIONS !== "undefined"){
-    var ins = INSTRUCTIONS[idea.id];
-    if (ins && ins.m && ins.m.length) text += shareShoppingListAppend(ins);
-  }
+  /* 2026-10-02 (Billy): the kid/family shopping-list append is out. It buried
+     the link mid-message and turned a share into a chore list. The recipient
+     link lands on the full guide, which has the materials. Share = image +
+     one-line declaration + link, nothing else. */
   /* 2026-09-28 share red-team P2: standing rule is emoji in all user-facing
      copy, share text included. Every other share builder goes through
      emojiLead(); the canonical quiz text was the one that did not. */
   return emojiLead(text);
-}
-/* 2026-09-27 red-team copy-then-bail: the kid/family share append dumped the
-   raw materials list under a "You need" header, including own/make items
-   ("Scissors, 1 pair; tape, 1 roll; marker, 1 (own: household)") -- telling
-   your partner to get things you already own, inside a 700+ char wall of
-   text. A parent texting their partner needs the SHOPPING list: entries the
-   bank marks buy (same word test the /compare generator's classifyMaterial
-   uses; buy-or-make "either" items count, they can be bought). Nothing to
-   buy -> append nothing, so the text stays short and ends on the link. */
-function shareShoppingListAppend(ins){
-  var shop = ins.m.filter(function(s){
-    var low = String(s).toLowerCase();
-    return /\bbuy\b/.test(low) && !/\bown\b/.test(low);
-  });
-  if (!shop.length) return "";
-  /* 2026-09-28 share red-team P3: the raw material strings carry bank
-     annotations like "(buy: discount store)" -- internal sourcing notes,
-     not human language. Strip the buy-annotation parentheticals in the
-     share-text path only (keep the item, drop the note); the pantry
-     buy-only logic elsewhere is untouched. */
-  var items = shop.slice(0, 8).map(function(s){
-    return String(s).replace(/\s*\([^)]*\bbuy\b[^)]*\)/gi, "").replace(/\s+/g, " ").trim();
-  });
-  return " You need: " + items.join(", ") +
-    (shop.length > 8 ? ", plus " + (shop.length - 8) + " more." : ".");
 }
 /* 2026-09-26 pair-share experiment ("Find my +1's costume"): the cooperative
    counterpart to the duel. The sender goes as this pick; the recipient takes
@@ -11866,17 +11866,10 @@ function buildCastShareText(idea, list, sid){
     text = lead + idea.title + " this Halloween: " + castLine(list) +
       ". " + shareAskLine() + castShareUrl;
   }
-  /* Mara 2026-09-25: a parent texting their partner needs the shopping list,
-     not just the costume name. Kid/family cast shares append the materials,
-     mirroring shareTextFor (the generic share path already does this). */
-  if ((aud === "kid" || aud === "family") && typeof INSTRUCTIONS !== "undefined"){
-    var ins = INSTRUCTIONS[idea.id];
-    if (ins && ins.m && ins.m.length){
-      text += shareShoppingListAppend(ins);
-      /* 2026-09-26 pm3 red-team: the 8-item slice silently dropped the 9th
-         material (beekeeper-bee) while presenting the list as complete. */
-    }
-  }
+  /* 2026-10-02 (Billy): shopping-list append removed from all share paths.
+     It buried the link and turned shares into chore lists. The recipient
+     link lands on the full guide with materials. The cast list above stays;
+     that is the planning content. */
   return text;
 }
 function buildCastPrompt(idea, list){
