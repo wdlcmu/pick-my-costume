@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Halloween Party Invite - Pick My Costume</title>
-<meta name="description" content="Make one invite link for your office or friend-group Halloween party. Pick a costume theme, share the link, and every guest gets a 2-minute costume quiz. Free, no signup, no ads.">
+<meta name="description" content="Make one invite link for your Halloween party. Pick a theme, share the link, every guest gets a 2-minute costume quiz. Free.">
 <link rel="canonical" href="https://pickmycostume.com/party">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pickmycostume.com/party">
@@ -63,6 +63,7 @@ input.txt:focus{border-color:#e07830;outline:none}
 .invitecard{border:3px solid #e07830;border-radius:18px;padding:24px 20px;background:#fff;text-align:center;margin:28px 0 16px}
 .invitecard .kicker{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#e07830;font-weight:700}
 .invitecard h1{margin:10px 0 6px}
+.inametitle{font-size:26px;font-weight:700;margin:10px 0 6px}
 .invitecard .when{font-size:16px;color:#6b5b4c;margin:0 0 4px}
 .invitecard .theme{font-size:18px;font-weight:700;margin:14px 0 4px}
 .invitecard .themetagline{font-size:14px;color:#6b5b4c;margin:0 0 14px}
@@ -127,7 +128,7 @@ input.txt:focus{border-color:#e07830;outline:none}
 <div id="invite" class="hidden">
 <div class="invitecard">
 <div class="kicker">You are invited</div>
-<h1 id="iname"></h1>
+<div id="iname" class="inametitle"></div>
 <p class="when" id="idate"></p>
 <p class="theme" id="itheme"></p>
 <p class="themetagline" id="ithemetag"></p>
