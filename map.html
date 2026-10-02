@@ -95,6 +95,7 @@
     font-size:13px; font-weight:700; padding:8px 16px; border-radius:20px;
     background:rgba(23,29,61,.92); color:#fff; border:1px solid rgba(255,255,255,.35); cursor:pointer; }
   #mapwrap.exploring #doneBtn { display:block; }
+  #mapwrap.exploring #chips { padding-right:96px; }
   #hint { position:absolute; left:0; right:0; bottom:16px; z-index:4; text-align:center;
     font-size:12px; opacity:.55; pointer-events:none; transition:opacity .6s; }
   /* ---- card ---- */
@@ -1094,6 +1095,7 @@ function buildSearch(){
   wrap.id='gsearchwrap';
   var inp=document.createElement('input');
   inp.id='gsearch'; inp.type='search'; inp.setAttribute('autocomplete','off');
+  inp.placeholder='Search costumes';
   inp.setAttribute('role','combobox'); inp.setAttribute('aria-expanded','false');
   inp.setAttribute('aria-controls','gsuggest');
   inp.setAttribute('aria-label','Search costumes by name');
@@ -1337,6 +1339,18 @@ canvas.addEventListener('keydown', function(e){
 });
 
 // ---- chips: regions + audience filters + surprise ----
+/* 2026-10-01: quiz->galaxy handoff. setAud is the single path for changing
+   the audience filter, so taps and ?aud= arrivals stay in sync: the chip is
+   visibly pressed AND the filter actually applies. */
+function setAud(key){
+  audFilter=key;
+  var ar=document.getElementById('audrow');
+  var btns=ar.querySelectorAll('.chip');
+  for(var i=0;i<btns.length;i++){
+    btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-aud')===key ? 'true' : 'false');
+  }
+  markDirty();
+}
 function buildChips(){
   var box=document.getElementById('chips');
   data.regions.forEach(function(rg,idx){
@@ -1350,15 +1364,10 @@ function buildChips(){
   AUDS.forEach(function(pair){
     var b=document.createElement('button');
     b.className='chip'; b.textContent=pair[1];
+    b.setAttribute('data-aud', pair[0]);
     b.setAttribute('aria-pressed', pair[0]==='all' ? 'true' : 'false');
     b.setAttribute('aria-labelledby', 'forlabel');
-    b.addEventListener('click', function(){
-      audFilter=pair[0];
-      var btns=ar.querySelectorAll('.chip');
-      for(var i=0;i<btns.length;i++) btns[i].setAttribute('aria-pressed','false');
-      b.setAttribute('aria-pressed','true');
-      markDirty();
-    });
+    b.addEventListener('click', function(){ setAud(pair[0]); });
     ar.appendChild(b);
   });
   var s=document.createElement('button');
@@ -1456,6 +1465,11 @@ function boot(p){
     if(qi){ if(!exploring) enterExplore(false);
       cam.x=qi.x; cam.y=qi.y; cam.s=fitScale()*3.4; clampCam();
       openCard(qi,false); }
+  }
+  if(q2.aud){   // 2026-10-01: arrival from the quiz/homepage (?aud=couple etc).
+    var audOk=false;   // The chip must arrive VISIBLY selected, not just filtered.
+    for(var ai2=0;ai2<AUDS.length;ai2++) if(AUDS[ai2][0]===q2.aud) audOk=true;
+    if(audOk && q2.aud!=='all') setAud(q2.aud);
   }
   var hh=parsePath(), legacyHash=false;
   if(!hh){ hh=parseHash(); legacyHash=!!hh; }
