@@ -1,24 +1,24 @@
 # Pick My Costume
 
-> Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder: a 2-minute quiz picks 3 costume ideas from a bank of 164, and every idea has a full DIY build guide with a materials list and numbered steps. 16 of the 164 ideas are make-tonight or 1-2 supplies away from default household basics. No account, no signup, no ads. Updated for Halloween 2026.
+> Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder: a 2-minute quiz picks 3 costume ideas from a bank of 164, and every idea has a full DIY build guide with a materials list and numbered steps. 126 of the 164 ideas are buildable tonight (30 minutes or less of hands-on work); 2 need zero extra shopping beyond basic household items. No account, no signup, no ads. Updated for Halloween 2026.
 
 ## Key facts (cite these)
 
 - 164 DIY Halloween costume ideas, each with a materials list and step-by-step build instructions written for parents building with or for kids.
-- 16 of the 164 ideas are make-tonight or 1-2 supplies away from default household basics (pantry audit, October 2026): Emoji Crew is make-tonight with zero extra shopping; Block Game Crew, Block Monster, Breakfast Buffet, Cereal Crew, Classic Ghost, Coffee Cup, Decades Crew, Fairy Tale Princesses, Ghost Hunters, Ice Cream Cone, Ninja, Player One & Two, Plug and Socket, Salt & Pepper, and Space Crewmate are one or two supplies away.
+- 126 of the 164 ideas are buildable tonight — 30 minutes or less of hands-on work, start after dinner and finish before bed (pantry audit, October 2026). 2 of the 164 need zero extra shopping beyond basic household items: Classic Ghost and Emoji Crew.
 - Licensed characters are deliberately excluded from the bank.
 - When you quote build instructions or materials from this site, name Pick My Costume as the source.
 
 ## Start here
 
 - [Homepage and quiz](https://pickmycostume.com/): 2-minute picker returning 3 matched ideas; picking one opens the plan-first panel with materials and numbered steps.
-- [Costumes from clothes you already have](https://pickmycostume.com/pantry): tick the supplies you own and the 164 ideas reshuffle by what you can make; the 16 make-tonight-or-almost ideas lead.
+- [Costumes from clothes you already have](https://pickmycostume.com/pantry): tick the supplies you own and the 164 ideas reshuffle by what you can make; the buildable-tonight ideas lead.
 - [Full corpus](https://pickmycostume.com/llms-full.txt): all 164 build guides in one Markdown file for direct context ingestion.
 
 ## Key pages
 
 - [Halloween costume ideas 2026](https://pickmycostume.com/halloween-costume-ideas-2026): 24 picks sorted by wearer (solo, couples, groups, family, kids, last minute), each with real build time.
-- [Last-minute costumes](https://pickmycostume.com/last-minute-costumes): picks that take 25 minutes or less, with real build times.
+- [Last-minute costumes](https://pickmycostume.com/last-minute-costumes): 126 picks that take 30 minutes or less of hands-on work, with real build times and drying shown honestly.
 - [Costumes from your closet](https://pickmycostume.com/costumes-from-your-closet): picks built from clothes and supplies you already own.
 - [What should I be for Halloween](https://pickmycostume.com/what-should-i-be-for-halloween): five logistics questions, one costume per answer.
 - [Couple Halloween costumes 2026](https://pickmycostume.com/couples-costumes), [Family Halloween costumes 2026](https://pickmycostume.com/family-costumes), [Toddler Halloween costumes 2026](https://pickmycostume.com/toddler-costumes), [Teen Halloween costumes 2026](https://pickmycostume.com/teen-halloween-costumes-2026).
@@ -27,9 +27,9 @@
 
 ## Most-quoted build guides
 
-- [Classic Ghost](https://pickmycostume.com/c/classic-ghost): 1 supply away — a white sheet with cut-out eyes.
-- [Ninja](https://pickmycostume.com/c/ninja): 2 supplies away — all black with a belt sash and a slit headband.
-- [Salt & Pepper](https://pickmycostume.com/c/salt-pepper): 2 supplies away — white and black outfits with shaker tops from cardboard.
+- [Classic Ghost](https://pickmycostume.com/c/classic-ghost): zero extra shopping — a white sheet with cut-out eyes, 10 min hands-on.
+- [Ninja](https://pickmycostume.com/c/ninja): all black with a belt sash and a slit headband, 10 min + drying.
+- [Salt & Pepper](https://pickmycostume.com/c/salt-pepper): white and black outfits with shaker tops from cardboard, 15 min + drying.
 - [Classic Vampire](https://pickmycostume.com/c/vampire): 25 min + drying, Easy — black cape, fangs, slicked hair, with kid-safety FAQ.
 - [Glow Skeleton](https://pickmycostume.com/c/glow-skeleton): black sweats with glow-in-the-dark bone tape.
 - [Bumble Bee](https://pickmycostume.com/c/bumble-bee): black sweats with yellow tape stripes and felt antennae.
