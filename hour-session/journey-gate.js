@@ -60,6 +60,23 @@ function extract(a, b){ var x = src.indexOf(a), y = src.indexOf(b, x); if (x < 0
 eval(extract('var IDEAS = [', '/* ================= CONFIG: SHARE'));
 var ideaIds = {};
 IDEAS.forEach(function(it){ ideaIds[it.id] = true; });
+/* 2026-10-01: run the bank's computeTonight IIFE so idea.tonight is set,
+   exactly as the live bundle does (the gate evals functions, not the bundle). */
+(function(){
+  function extractObj(marker){
+    var start = src.indexOf(marker);
+    if (start < 0) throw new Error('marker not found: ' + marker.slice(0, 40));
+    var open = src.indexOf('{', start), depth = 0;
+    for (var i = open; i < src.length; i++){
+      if (src[i] === '{') depth++;
+      else if (src[i] === '}'){ depth--; if (depth === 0) return src.slice(start, i + 1); }
+    }
+    throw new Error('unbalanced braces after: ' + marker.slice(0, 40));
+  }
+  eval(extractObj('var MAKE_PLANS = {'));
+  eval(extractObj('var PANTRY_MATS = {'));
+  eval(extract('(function computeTonight(){', 'function pantryTicked(){'));
+})();
 function ideaById(id){ for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === id) return IDEAS[i]; return null; }
 
 /* ---------- 1. homepage tap targets ---------- */
@@ -101,6 +118,50 @@ ok(pageSrc.indexOf('id="btn-start"') >= 0, 'homepage: #btn-start missing');
 /* Browse entry: button exists and opens the browse shelf. */
 ok(pageSrc.indexOf('id="btn-browse-hero"') >= 0, 'homepage: #btn-browse-hero missing');
 ok(src.indexOf('$("btn-browse-hero").onclick = openBrowse') >= 0, 'homepage: #btn-browse-hero not wired to openBrowse');
+/* 2026-10-01: quiz->galaxy handoff. openBrowse must carry the quiz audience
+   as ?aud= so the galaxy's For: chip arrives visibly selected and filtered
+   (Billy's phone catch: Couple arrived unselected). */
+(function(){
+  var m = src.match(/function openBrowse\(\)\{[\s\S]*?\n\}/);
+  ok(!!m, 'browse: openBrowse function not found');
+  if (m){
+    ok(m[0].indexOf('?aud=') >= 0, 'browse: openBrowse does not carry ?aud=');
+    ok(m[0].indexOf('couple') >= 0 && m[0].indexOf('"fam"') >= 0, 'browse: openBrowse missing quiz->galaxy audience mapping');
+  }
+})();
+/* map.html must honor ?aud= on boot via the shared setAud path (visible chip
+   press AND filter), not a silent variable set. */
+(function(){
+  var mapSrc = fs.readFileSync(path.join(__dirname, '..', 'map.html'), 'utf8');
+  ok(mapSrc.indexOf('function setAud(key)') >= 0, 'galaxy: setAud missing');
+  ok(mapSrc.indexOf('setAud(q2.aud)') >= 0, 'galaxy: boot does not honor ?aud=');
+  ok(mapSrc.indexOf("b.setAttribute('data-aud'") >= 0, 'galaxy: aud chips missing data-aud');
+})();
+/* 2026-10-01: Tonight filter. ?tonight=1 must arrive with the Tonight chip
+   visibly pressed; inFilter is the single predicate (URL is the only state);
+   it.tonight is the stored bank boolean. */
+(function(){
+  var mapSrc = fs.readFileSync(path.join(__dirname, '..', 'map.html'), 'utf8');
+  ok(mapSrc.indexOf("id='tonight-chip'") >= 0 || mapSrc.indexOf('id="tonight-chip"') >= 0, 'galaxy: Tonight chip missing');
+  ok(mapSrc.indexOf("if(q2.tonight==='1') setTonight(true)") >= 0, 'galaxy: boot does not honor ?tonight=1');
+  ok(mapSrc.indexOf('function inFilter(it)') >= 0, 'galaxy: inFilter single predicate missing');
+  ok(mapSrc.indexOf('function setTonight(on)') >= 0, 'galaxy: setTonight missing');
+  /* app.js: tonight computed once, quiz reads the stored field. */
+  ok(src.indexOf('IDEAS[i].tonight = tonightFor(IDEAS[i].id)') >= 0, 'bank: computeTonight does not store idea.tonight');
+  ok(src.indexOf('return !!(idea && idea.tonight)') >= 0, 'quiz: planIsTonightReady does not read idea.tonight');
+})();
+/* 2026-10-01: last-minute page must list only tonight=true ideas. */
+(function(){
+  var lm = fs.readFileSync(path.join(__dirname, '..', 'last-minute-costumes.html'), 'utf8');
+  var cards = lm.match(/data-unit-item="([^"]+)"/g) || [];
+  ok(cards.length >= 1, 'last-minute: no cards');
+  /* The strict boolean currently qualifies classic-ghost and emoji-crew only. */
+  cards.forEach(function(c){
+    var id = c.match(/"([^"]+)"/)[1];
+    ok(id === 'classic-ghost' || id === 'emoji-crew', 'last-minute: ' + id + ' is not tonight-qualifying');
+  });
+  ok(lm.indexOf('+ drying') < 0, 'last-minute: page still lists + drying items');
+})();
 /* Pantry entry: link resolves to /pantry. */
 ok(pageSrc.indexOf('href="/pantry"') >= 0, 'homepage: pantry link does not resolve to /pantry');
 
@@ -745,7 +806,7 @@ console.log('more-like-this rail: render-level tap-through verified');
     ok(r.ids.length > 0, 'search: hero chip "' + t + '" returned zero');
   });
   var _tn = runQuery('tonight').ids.slice().sort();
-  var _tr = IDEAS.filter(function(i){ var m = planMinutes(i); return m !== null && m <= 30; })
+  var _tr = IDEAS.filter(function(i){ return !!i.tonight; })
     .map(function(i){ return i.id; }).sort();
   ok(JSON.stringify(_tn) === JSON.stringify(_tr),
     'search: "tonight" != Tonight-Ready set (' + _tn.length + ' vs ' + _tr.length + ')');
@@ -955,6 +1016,60 @@ console.log('more-like-this rail: render-level tap-through verified');
   ok(badgeSrc.indexOf('\u2014') < 0 && badgeSrc.indexOf('\u2013') < 0,
     'closet badge: em/en dash found in badge copy');
   console.log('closet badge: placement, analytics, copy all ok');
+})();
+
+/* ---------- 8. pictured honesty captions + related thumbnail cards
+   (Billy 2026-10-01) ---------- */
+/* In-app (app.js): ideaMedia renders the bank's pictured caption under the
+   "AI-generated concept photo" tag when the idea has one; nothing for
+   ideas without the field. */
+(function(){
+  var im = extractFn('function ideaMedia(idea, photoOnly){');
+  ok(im.indexOf('idea.pictured') >= 0,
+    'pictured: ideaMedia does not render the pictured caption');
+  ok(im.indexOf('AI-generated concept photo') >= 0,
+    'pictured: ideaMedia lost the AI-generated concept photo label');
+  /* Bank: pictured fields are honest captions, never empty, no em/en
+     dashes in user-facing copy. */
+  var caps = [];
+  var re = /pictured:"((?:[^"\\]|\\.)*)"/g, m;
+  while ((m = re.exec(src))) caps.push(m[1]);
+  ok(caps.length >= 50, 'pictured: expected >=50 bank pictured fields, found ' + caps.length);
+  caps.forEach(function(c){
+    ok(c.indexOf('Pictured:') === 0, 'pictured: caption does not lead with "Pictured:": ' + c.slice(0, 40));
+    ok(c.indexOf('\u2014') < 0 && c.indexOf('\u2013') < 0, 'pictured: em/en dash in caption: ' + c.slice(0, 40));
+  });
+  console.log('pictured: ideaMedia renders caption; bank holds', caps.length, 'honest captions');
+})();
+/* /c/ guides (functions/c/[slug].js): the related block renders thumbnail
+   cards with lazy 256px images and a full-photo fallback, keeping static
+   /c/<slug> anchors (SEO); the hero renders the pictured caption under the
+   photo when PICTURED has the slug. */
+(function(){
+  var fsrc;
+  try { fsrc = fs.readFileSync(path.join(__dirname, '..', 'functions', 'c', '[slug].js'), 'utf8'); }
+  catch (e){ ok(false, 'pictured: cannot read functions/c/[slug].js'); return; }
+  ok(fsrc.indexOf('/photos/" + s + "-256.webp') >= 0,
+    '/c/ related: thumbnails not rendered (-256.webp missing)');
+  ok(fsrc.indexOf('loading=\\"lazy\\"') >= 0 || fsrc.indexOf('loading="lazy"') >= 0,
+    '/c/ related: thumbnails lack loading="lazy"');
+  ok(fsrc.indexOf('onerror=') >= 0 && fsrc.indexOf("/photos/\" + s + \".webp") >= 0,
+    '/c/ related: no full-photo fallback when the thumbnail is missing');
+  ok(fsrc.indexOf('<a href=\\"/c/" + s + "\\">') >= 0 || fsrc.indexOf('<a href="/c/" + s + "">') >= 0,
+    '/c/ related: static /c/<slug> anchors missing');
+  ok(fsrc.indexOf('PICTURED[slug]') >= 0 && fsrc.indexOf('class=\\"pictured\\"') >= 0,
+    '/c/ hero: pictured caption not rendered under the hero photo');
+  /* The PICTURED map mirrors the bank's pictured slugs (both from the same
+     caption pass); a slug in one but not the other is a desync. */
+  var picSlugs = [], re = /"([a-z0-9-]+)": "Pictured:/g, m;
+  var picSeg = fsrc.slice(fsrc.indexOf('var PICTURED'));
+  while ((m = re.exec(picSeg))) picSlugs.push(m[1]);
+  ok(picSlugs.length >= 50, '/c/ PICTURED: expected >=50 entries, found ' + picSlugs.length);
+  picSlugs.forEach(function(s){
+    ok(src.indexOf('{id:"' + s + '",') >= 0 && new RegExp('\\{id:"' + s + '"[^}]*pictured:"Pictured:').test(src),
+      '/c/ PICTURED: slug ' + s + ' has no pictured field in the app.js bank');
+  });
+  console.log('/c/ related: thumbnail cards ok;', picSlugs.length, 'pictured captions mirrored');
 })();
 
 /* ---------- verdict ---------- */
