@@ -136,14 +136,17 @@ def _esc_len(s):
 def _meta_desc(title, hw):
     t = _esc_len(title)
     art = "" if t.lower().startswith("the ") else ("an " if t[0].lower() in "aeiou" else "a ")
+    # Meta descriptions use hands-on time only (drying estimates would push
+    # over the 155-char limit); the full time incl. drying is on the page.
+    ht = re.sub(r'\s*\+.*$', '', _esc_len(hw["time"]))
     d = ("How to make %s%s costume in %s. %s DIY project "
          "with a full supplies list, step-by-step guide, and sizing tips."
-         % (art, t, _esc_len(hw["time"]), _esc_len(hw["effort"])))
+         % (art, t, ht, _esc_len(hw["effort"])))
     if len(d) > 155:
         d = d.replace("a full supplies list", "a supplies list")
     return d
 _bad_desc = [(s, len(_meta_desc(data[s]["t"], _instructions[s]))) for s in data
-             if not 120 <= len(_meta_desc(data[s]["t"], _instructions[s])) <= 155]
+             if not 110 <= len(_meta_desc(data[s]["t"], _instructions[s])) <= 155]
 assert not _bad_desc, "meta description outside 120-155 chars: %s" % (_bad_desc[:10],)
 # Sourced-facts layer (AI-citation checklist item #10, audited 2026-09-26):
 # one audited external citation per guide, on safety-relevant steps only.
@@ -321,15 +324,106 @@ def _bare_title(slug):
     return t[4:] if t.lower().startswith("the ") else t
 
 
-# SEO titles (Claude 4c): "DIY Pizza Slice Costume: 45-Min Cardboard Build
-# (Step-by-Step)" -- build time + primary material from the bank, the same
-# fields the plan page uses. No costs/dollar figures anywhere.
+# SEO titles (Claude 4c, shortened 2026-10-01 Lane 4): "DIY Pizza Slice
+# Costume: 45-Min Cardboard Build" -- build time + primary material from the
+# bank, the same fields the plan page uses. Dropped " (Step-by-Step)" (15 chars)
+# to keep all titles <=60 chars. No costs/dollar figures anywhere.
+# Per-slug overrides for the two names still >60 chars after the drop.
+_TITLE_OVERRIDES = {
+    "kpop-demon-huntresses": "DIY Pop Star Demon Huntresses: 40-Min Cardboard Build",
+    "pumpkin-king-bride": "DIY Pumpkin Groom & Patchwork Bride: 45-Min Cardboard Build",
+}
 def _seo_title(slug):
     t = _bare_title(slug)
     m = re.match(r"^\s*(\d+)\s*min", howto[slug]["time"] or "")
     assert m, "time not minute-based for " + slug
-    return "DIY %s Costume: %s-Min %s Build (Step-by-Step)" % (
+    if slug in _TITLE_OVERRIDES:
+        return _TITLE_OVERRIDES[slug]
+    if slug in _EASY_TITLE_SLUGS or _is_clothing_based(slug, howto[slug]["m"]):
+        return "DIY %s Costume: Easy %s-Min Build" % (
+            t, m.group(1))
+    return "DIY %s Costume: %s-Min %s Build" % (
         t, m.group(1), _MAT_TITLE_NOUN[PRIMARYMAT[slug]])
+
+
+# Material-claim audit (Item 4, 2026-10-01): the <Material> in the title must
+# be the main BUILD material (what the hands-on work actually builds from).
+# The slugs below named a purchased prop / worn accessory / minor accent
+# instead (plastic fangs & whistles, one wig among props, a store-bought hat,
+# accent face paint), so their titles drop the material claim and read
+# "DIY <Name> Costume: Easy <N>-Min Build (Step-by-Step)".
+# Deliberately NOT moved (judgment calls): chill-painter keeps "Wig Build"
+# (the fro IS the costume's identity); beekeeper-bee / bumble-bee / ninja
+# keep "Hat Build" (the veil / antennae / headband is the constructed
+# centerpiece, not a worn accessory); ballerina keeps "Tulle Build" (the
+# tulle tutu is the whole build); demon-boy-band / web-slinger-crew keep
+# "Paint Build" (neon/web paint on the shirts is the main customization);
+# daisy / hot-dog keep "Foam Build" (foam sheets / pool noodle is the build).
+# Dominant-material rule (Claude recheck, 2026-10-01): the title material must
+# be the DOMINANT build material, not the first craft material listed. When
+# the first (base) material is clothing -- the costume is worn, not built --
+# and the craft materials are minor accents (a felt stem, labels, leaf hats),
+# no material gets named: the title uses the "Easy" form. Detected from the
+# bank, not hardcoded per-slug.
+_CLOTHING_RE = re.compile(
+    r"sweatshirt|sweatpants|t-shirt|hoodie|\bshirt\b|outfits|\bvest\b|tunic",
+    re.I)
+# Judgment calls: clothing-first but the craft element IS the build focus,
+# so the material title stays honest.
+_CLOTHING_KEEP_MAT = {
+    # felt spikes + stuffed tail are the hands-on build, hoodie is the canvas
+    "baby-dino",
+    # neon paint on the shirts IS the customization (Item 4 keep)
+    "demon-boy-band",
+    # large felt sheets wrap the body as seaweed; felt is the costume
+    "sushi-roll",
+    # NOTE (Claude 2026-10-01): blue-alien-ohana removed -- antennas are an
+    # accessory; the costume reads from blue clothes. Gets Easy title.
+}
+# Substantial construction: a box, yards of fabric, large sheets, or
+# multiple sheets. A single 9x12 sheet is an accent, not a build.
+_SUBSTANTIAL_RE = re.compile(
+    r"box|boxes|yards?|large sheets?|([2-9]|\d{2,})\s+sheets?|\bpack\b",
+    re.I)
+
+# Slugs with unique (costume-specific) sizing advice. Templated/duplicated
+# sizing texts are not shown -- only real costume-specific guidance appears,
+# as a "Sizing" line in the plan card. (Claude review 2026-10-01.)
+_UNIQUE_SIZING = {'web-slinger-kid', 'pixel-ghost', 'macabre-couple', 'little-prince', 'hero-squad', 'moonwalk-star', 'backyard-hero', 'party-pinata', 'little-witch', 'chill-painter', 'prince-princess', 'juke-joint-vampires', 'kpop-demon-huntresses', 'wayfinder-princess', 'fuzzy-gremlin', 'blue-heeler-pup', 'yellow-henchmen', 'smores-duo', 'rescue-pups', 'cowboy-duo', 'astronaut', 'garden-fairy', 'block-monster', 'fossil-hunter', 'scarecrow', 'baby-pumpkin', 'mystery-teens', 'goth-braids', 'pirate-captain', 'pumpkin-king-bride', 'witchy-sisters'}
+
+
+
+def _is_clothing_based(slug, mats):
+    if slug in _CLOTHING_KEEP_MAT:
+        return False
+    if not mats or not _CLOTHING_RE.search(mats[0]):
+        return False
+    # Clothing-first: Easy unless some non-clothing material is substantial
+    # construction. A felt stem or paper label on a sweatsuit isn't a
+    # "Felt Build".
+    return not any(_SUBSTANTIAL_RE.search(m) for m in mats[1:])
+
+
+_EASY_TITLE_SLUGS = {
+    # plastic props, bought not built
+    "cheerleader", "vampire", "juke-joint-vampires", "little-lifeguard",
+    "referee", "plastic-dream-crew",
+    # wig is one of several props, not the build
+    "burger-joint-couple",
+    # makeup is an accent, not the build
+    "macabre-couple",
+    # hats bought/worn, not built
+    "little-witch", "wizard", "scarecrow", "moonwalk-star",
+    "crowd-camouflage",
+    # paint is an accent, not the build
+    "basketball-star", "boxer", "deadpan-diva", "goth-braids",
+    "hero-squad", "web-hero-duo", "glow-skeleton", "little-lion",
+    "pickle", "zombie-coworker",
+    # foam props bought, not built
+    "headless-horsemen", "neon-demon-hunter",
+}
+assert _EASY_TITLE_SLUGS <= set(data), \
+    "easy-title slug not in bank: %s" % (_EASY_TITLE_SLUGS - set(data))
 
 
 SEOTITLE = {s: _seo_title(s) for s in data}
@@ -348,6 +442,19 @@ for s in data:
     _others = sorted(o for o in _mat_groups[PRIMARYMAT[s]] if o != s)
     MATRELATED[s] = _others[:5]
 assert set(MATRELATED) == set(data), "material-related map missing slugs"
+
+# Related-block heading labels (Item 4, 2026-10-01): "More <material> builds"
+# reads wrong for bought-not-built categories ("More hats builds",
+# "More wigs builds"). Per-category labels embedded as MATRELLABEL; anything
+# not listed keeps the default "More <category> builds".
+_MAT_REL_LABEL = {
+    "hats": "More hat costumes",
+    "wigs": "More costumes with wigs",
+    "plastic": "More costumes with plastic props",
+    "makeup": "More makeup costumes",
+    "trash bags": "More costumes from trash bags",
+}
+assert set(_MAT_REL_LABEL) <= set(_MAT_TITLE_NOUN), "label for unknown mat cat"
 
 # Material-name cleaning for the intro paragraph and alt text: strip the
 # parenthetical buy/make hints, trailing quantities ("Red felt, 1 sheet" ->
@@ -407,24 +514,38 @@ def _aud_phrase(slug):
         else words[0] + " and " + words[1]
 
 
-# Answer-first intro paragraph (Claude 5 /c/ half): the first paragraph of
-# every /c/ page states what it is, build time, difficulty, the 3 main
-# materials, and who it suits -- all generated from the bank, served as
-# static HTML so fetchers and AI assistants can read it.
-def _intro(slug):
+# Hand-written intro paragraphs (Billy-approved voice, 2026-10-01).
+# Loaded from hidden_files/intro-rewrites-164.py. Facts (time, materials)
+# validated against the bank before deploy; see intro validation script.
+_INTRO_NEW_PATH = os.path.join(ROOT, "hidden_files", "intro-rewrites-164.py")
+_intro_new_src = open(_INTRO_NEW_PATH, encoding="utf-8").read()
+_intro_new_ns = {}
+exec(_intro_new_src, _intro_new_ns)
+INTRO_NEW = _intro_new_ns["INTRO_NEW"]
+
+
+# Answer-first intro paragraph: hand-written per costume (Billy-approved
+# voice). Falls back to the templated _intro_tmpl if a slug is missing.
+def _intro_tmpl(slug):
     mats = [_clean_mat(x) for x in howto[slug]["m"][:3]]
     assert len(mats) == 3 and all(mats), "need 3 materials for " + slug
     time = (howto[slug]["time"] or "").strip()
-    drying = " (plus drying time)" if "drying" in time else ""
-    time = re.sub(r"\s*\+\s*drying\s*$", "", time)
+    dm = re.search(r"\+\s*([\d.]+)\s*(min|hr)s?\s*drying\s*$", time)
+    if dm:
+        drying = " plus %s drying time" % (dm.group(1) + " " + ("hrs" if "hr" in dm.group(2) and float(dm.group(1)) != 1 else dm.group(2)))
+        time = re.sub(r"\s*\+\s*[\d.]+\s*(min|hr)s?\s*drying\s*$", "", time)
+    else:
+        drying = ""
     return ("The %s is a DIY Halloween costume. Plan on %s of hands-on work%s; "
             "difficulty: %s. You need %s, %s, and %s. It suits %s." % (
                 _bare_title(slug), time, drying, howto[slug]["effort"],
                 mats[0], mats[1], mats[2], _aud_phrase(slug)))
 
 
-INTRO = {s: _intro(s) for s in data}
+INTRO = {s: INTRO_NEW.get(s, _intro_tmpl(s)) for s in data}
 assert set(INTRO) == set(data), "intro map missing slugs"
+_missing = [s for s in data if s not in INTRO_NEW]
+assert not _missing, "intros missing hand-written copy: %s" % _missing
 
 # Descriptive alt text (Claude 4c): generated from the materials list, with a
 # short material form (parentheticals, quantities, and leading counts
@@ -497,14 +618,21 @@ var RELATED = %s;
 // SEO title + primary material + material-related links + answer-first intro
 // + descriptive alt text (SEO 2026-10-01, Claude 4c): all generated from the
 // bank by gen_share_function.py. SEOTITLE targets "how to make" searches:
-// "DIY Pizza Slice Costume: 45-Min Cardboard Build (Step-by-Step)" -- build
-// time + primary material from the idea bank, the same fields the plan uses.
+// "DIY Pizza Slice Costume: 45-Min Cardboard Build" -- build time + primary
+// material from the idea bank, the same fields the plan uses. Titles kept
+// <=60 chars (Lane 4, 2026-10-01).
 // No costs/dollar figures anywhere.
 var SEOTITLE = %s;
+var _UNIQUE_SIZING = new Set(%s);
 
 // Primary material per idea ("cardboard", "felt", ...): the heading noun
 // for the "More <material> builds" block.
 var PRIMARYMAT = %s;
+
+// Per-category heading labels for the material-related block (Item 4,
+// 2026-10-01: "More hat costumes", "More costumes with wigs", ...).
+// Falls back to "More <category> builds" when a category has no override.
+var MATRELLABEL = %s;
 
 // Material-related internal links: slug -> up to 5 other ideas sharing the
 // primary material (deterministic slug order). Singletons render no block.
@@ -707,6 +835,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      duel frame like pair/vote. */
   var _oNoDuel = ["gift", "pair", "vote", "grandparent", "role", "split"].indexOf(_qp.get("o") || "") >= 0;
   if ((_qp.get("s") || "") && _qp.get("gift") !== "1" && !_oNoDuel) _qp.set("duel", slug);
+  _qp.set("plan", "1");
   var target = "/?" + _qp.toString();
     /* 2026-09-27 Billy: arrivals from the app's own rails (from=rail /
      from=hero) were invited to "Open this costume in Pick My Costume" --
@@ -716,7 +845,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      a site they have never seen. One clear label for every arrival now.
      Reversible: restore the /^(rail|hero)/ branch with the old cold string
      above to re-split. */
-  var _ctaLabel = "Make this costume";
+  var _ctaLabel = "Plan this costume \\u2192";
   var targetAttr = target.replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
      RECIPIENT_BANNER = false returns the page to the no-banner control.
@@ -824,9 +953,12 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     _hw.s.forEach(function(x){
       if (/^Optional pro finish:\\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\\s*/i, ""); }
     });
-    _quick = "<p class=\\"qtriple\\">DIY this week: " + esc(_hw.time) + " of hands-on work</p>" +
+    var _qt = esc(_hw.time);
+    var _qdm = _qt.match(/\s*\+\s*([\d.]+)\s*(min|hrs?)\s*drying\s*$/);
+    var _qtime = _qdm ? _qt.slice(0, _qdm.index) + ' of hands-on work plus ' + _qdm[1] + ' ' + (_qdm[2].charAt(0) === 'h' ? (parseFloat(_qdm[1]) === 1 ? 'hr' : 'hrs') : 'min') + ' drying time' : _qt + ' of hands-on work';
+    _quick = "<p class=\\"qtriple\\">DIY this week: " + _qtime + "</p>" +
       "<ul class=\\"mats qmats\\">" + _mats + "</ul>" +
-      (_qtip ? "<p class=\\"qtip\\">Tip: " + esc(_qtip) + "</p>" : "");
+      (_qtip ? "<p class=\\"qtip\\">Tip: " + esc(_qtip) + "</p>" : "") + _fit;
     /* Decision triple: the most quotable line of the guide, first under h1.
        2026-09-30 traffic-operator cold-arrival polish: pills carry their
        labels (a bare "Medium" pill read as meaningless to cold recipients),
@@ -838,7 +970,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     if (_hw.effort) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Effort</span>" + esc(_hw.effort) + "</span>");
     if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p>";
     /* Sizing guidance: the fit note every parent asks about. */
-    if (_hw.sizing) _fit = "<p class=\\"fit\\">Fit: " + esc(_hw.sizing) + "</p>";
+    if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\\"sizing\\">Sizing: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
        og meta only (never card pixels). Defaults to "Your friend".
        2026-09-29 QA cycle 1 arrival gate: emit ONLY on genuine share arrivals
@@ -871,7 +1003,9 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _matHtml = "";
   var _matRel = MATRELATED[slug] || [];
   if (_matRel.length && PRIMARYMAT[slug]) {
-    _matHtml = "<h2>More " + esc(PRIMARYMAT[slug]) + " builds</h2><ul class=\\"rellist\\">" +
+    var _matLabel = (MATRELLABEL[PRIMARYMAT[slug]] ||
+      ("More " + PRIMARYMAT[slug] + " builds"));
+    _matHtml = "<h2>" + esc(_matLabel) + "</h2><ul class=\\"rellist\\">" +
       _matRel.map(function(s){ return "<li><a href=\\"/c/" + s + "\\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
       "</ul>";
   }
@@ -1150,87 +1284,83 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">" +
     _ld +
     "<style>" +
-    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#1f1f1f;background:#fff;line-height:1.55;}" +
-    ".topbar{background:#fff;border-bottom:1px solid #eee2d3;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
-    ".topbar a{color:#1f1f1f;text-decoration:none;font-weight:800;font-size:16px;}" +
+    "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#fdf3e3;background:#160d28;line-height:1.55;}" +
+    ".topbar{background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
+    ".topbar a{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;}" +
     ".topbar a span{color:#ff8c1a;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
     ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
-    ".pill{display:inline-block;background:#fff4e5;border:1px solid #ffd9a3;color:#8a4a0c;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
+    ".pill{display:inline-block;background:#2a1c52;border:1px solid #4b3486;color:#fdf3e3;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
     /* 2026-09-30 traffic-operator: the small-caps unit labels inside the
        decision pills (Time / Cost / Effort). */
     ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
-    ".fit{font-size:15px;color:#444;margin:0 0 8px;}" +
-    ".lede{font-size:17px;color:#444;margin:0;}" +
-    ".intro{font-size:17px;color:#333;margin:0 0 12px;}" +
+    ".fit{font-size:15px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".sizing{font-size:14px;color:#cdbcf0;margin:8px 0 0;font-style:italic;}" +
+    ".lede{font-size:17px;color:#fdf3e3;margin:0;}" +
+    ".intro{font-size:17px;color:#fdf3e3;margin:0 0 12px;}" +
     "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
-    ".quickcard{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
-    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#222;margin:0 0 8px;}" +
+    ".quickcard{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
+    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#fdf3e3;margin:0 0 8px;}" +
     ".quickcard .qsteps{font-size:16px;line-height:1.5;padding-left:22px;margin:0;}" +
     ".quickcard .qsteps li{margin:8px 0;}" +
-    ".quickcard .qtip{font-size:15px;color:#555;font-style:italic;margin:10px 0 0;}" +
-    "details.faq{border:1px solid #e3ddd2;border-radius:10px;margin:8px 0;background:#faf8f4;}" +
+    ".quickcard .qtip{font-size:15px;color:#cdbcf0;font-style:italic;margin:10px 0 0;}" +
+    "details.faq{border:1px solid #4b3486;border-radius:10px;margin:8px 0;background:#211540;}" +
     "details.faq summary{font-weight:700;font-size:16px;padding:12px 14px;cursor:pointer;list-style:none;}" +
     "details.faq summary::-webkit-details-marker{display:none;}" +
-    "details.faq summary::before{content:'+ ';color:#b3540c;font-weight:700;}" +
-    "details.faq[open] summary::before{content:'\\u2212 ';}" +
+    "details.faq summary::before{content:'+ ';color:#ff8c1a;font-weight:700;}" +
+    "details.faq[open] summary::before{content:'\u2212 ';}" +
     "details.faq p{margin:0;padding:0 14px 12px;font-size:16px;line-height:1.55;}" +
-    ".mats{list-style:none;padding:0;margin:0;background:#faf8f4;border:1px solid #eee2d3;border-radius:14px;padding:6px 18px;}" +
-    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #f0e8da;position:relative;font-size:16px;}" +
+    ".mats{list-style:none;padding:0;margin:0;background:#211540;border:1px solid #4b3486;border-radius:14px;padding:6px 18px;}" +
+    ".mats li{margin:0;padding:10px 0 10px 28px;border-bottom:1px solid #4b3486;position:relative;font-size:16px;}" +
     ".mats li:last-child{border-bottom:none;}" +
-    ".mats li::before{content:'✓';position:absolute;left:2px;color:#b3540c;font-weight:700;}" +
+    ".mats li::before{content:'✓';position:absolute;left:2px;color:#ff8c1a;font-weight:700;}" +
     "ol.steps{list-style:none;counter-reset:step;padding:0;margin:0;}" +
     "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
     "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
     ".ctawrap{margin:20px 0;}" +
-    ".storyline{font-size:16px;margin:0 0 14px;color:#444;}" +
-    ".storyline a{color:#b3541e;font-weight:700;text-decoration:none;}" +
+    ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
+    ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
     ".guide img{max-width:100%%;height:auto;border-radius:12px;margin:6px 0;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
-    ".quizline{font-size:15px;color:#555;margin-top:26px;}" +
+    ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
-    ".pinline{font-size:14px;color:#555;margin:10px 0 0;}" +
-    ".sharerline{font-size:16px;color:#555;margin:2px 0 12px;}" +
-    ".ctasub{display:block;font-size:14px;color:#777;margin-top:10px;}" +
+    ".pinline{font-size:14px;color:#cdbcf0;margin:10px 0 0;}" +
+    ".sharerline{font-size:16px;color:#cdbcf0;margin:2px 0 12px;}" +
+    ".ctasub{display:block;font-size:14px;color:#cdbcf0;margin-top:10px;}" +
     ".quickcard .qmats{margin:12px 0;}" +
-    ".pinline a{color:#b3541e;font-weight:700;}" +
-    ".splitpartner-line{font-size:15px;color:#555;margin:6px 0 0;}" +
-    ".safesrc{font-size:14px;color:#777;}" +
-    ".rbanner{background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
-    ".rbanner-line{font-size:17px;font-weight:700;color:#333;margin:0 0 6px;line-height:1.4;}" +
-    ".rbanner-sub{font-size:15px;color:#666;margin:0 0 14px;line-height:1.45;}" +
+    ".pinline a{color:#ff8c1a;font-weight:700;}" +
+    ".splitpartner-line{font-size:15px;color:#cdbcf0;margin:6px 0 0;}" +
+    ".safesrc{font-size:14px;color:#cdbcf0;}" +
+    ".rbanner{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
+    ".rbanner-line{font-size:17px;font-weight:700;color:#fdf3e3;margin:0 0 6px;line-height:1.4;}" +
+    ".rbanner-sub{font-size:15px;color:#cdbcf0;margin:0 0 14px;line-height:1.45;}" +
     ".rbanner .cta{margin:0;}" +
-    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #e0a33e;border-radius:14px;background:#fffdf6;}" +
+    ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #4b3486;border-radius:14px;background:#211540;}" +
     ".splitwrap .splitopen{width:100%%;}" +
     ".splitq{font-size:16px;font-weight:700;margin:0 0 8px;}" +
     ".splitstepper{display:flex;align-items:center;gap:14px;margin:0 0 12px;}" +
     ".splitstepper .ghost{margin:0;}" +
     ".splitcount{font-size:20px;font-weight:700;min-width:24px;text-align:center;}" +
-    ".splitnamein{display:block;width:100%%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #ddd;border-radius:10px;}" +
+    ".splitnamein{display:block;width:100%%;box-sizing:border-box;font-size:16px;padding:10px 12px;margin:0 0 8px;border:1px solid #4b3486;border-radius:10px;background:#160d28;color:#fdf3e3;}" +
     ".splitresult{margin-top:12px;}" +
     ".splitres-head{font-size:16px;font-weight:700;margin:0 0 8px;}" +
     ".splitres-list{font-size:15px;}" +
-    ".splitnote{font-size:14px;color:#777;}" +
+    ".splitnote{font-size:14px;color:#cdbcf0;}" +
     ".splitnames{margin:10px 0;}" +
-    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#fff;color:#ff8c1a;cursor:pointer;}" +
+    ".splitname{display:inline-block;margin:0 8px 8px 0;padding:10px 16px;font-size:16px;font-weight:700;border-radius:999px;border:1px solid #ff8c1a;background:#2a1c52;color:#ff8c1a;cursor:pointer;}" +
     ".splitmine-head{font-size:16px;font-weight:700;margin:12px 0 6px;}" +
     ".splititems{font-size:16px;}" +
-    ".splititems-empty{font-size:15px;color:#777;}" +
-    ".madeit-line{font-size:16px;color:#444;margin:0 0 14px;line-height:1.55;}" +
+    ".splititems-empty{font-size:15px;color:#cdbcf0;}" +
+    ".madeit-line{font-size:16px;color:#cdbcf0;margin:0 0 14px;line-height:1.55;}" +
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
-    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #e0a33e;border-radius:999px;color:#b3541e;text-decoration:none;font-size:15px;font-weight:600;}" +
-    ".crumb{font-size:13px;color:#777;margin:0 0 8px;}" +
-    ".crumb a{color:#b3541e;text-decoration:none;}" +
-    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #eee2d3;text-align:center;font-size:14px;color:#888;}" +
-    ".foot a{color:#b3541e;text-decoration:none;font-weight:700;}" +
-    /* AI honesty label (2026-09-30): the quiz-results page tags concept
-       photos "AI-generated concept photo"; the guide page shows the same AI
-       photo (og card rendered from photos/<slug>.webp), so it carries the
-       same tag with the same styling. */
-    ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
+    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #4b3486;border-radius:999px;color:#ff8c1a;text-decoration:none;font-size:15px;font-weight:600;}" +
+    ".crumb{font-size:13px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".crumb a{color:#ff8c1a;text-decoration:none;}" +
+    ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
+    ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
     "</style>" +
     "</head><body><div class=\\"topbar\\"><a href=\\"/\\">🎃 Pick My <span>Costume</span></a></div><main class=\\"guide\\">" +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
@@ -1238,8 +1368,6 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     _introHtml +
     _triple +
     _sharerLine +
-    _fit +
-    "<p class=\\"lede\\">" + blurb + "</p>" +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
     "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
     "<img src=\\"" + img + "\\" alt=\\"" + imgAlt + "\\">" +
@@ -1258,7 +1386,6 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     (IMADEIT ? "<h2>Wore this? Show us</h2>" +
     "<p class=\\"madeit-line\\">Made this costume? Your photo helps the next person see the real thing.</p>" +
     "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + (targetAttr + "&amp;madeit=1") + "\\">Share my costume photo</a></p>" : "") +
-    "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a></p>" +
     "<p class=\\"quizline\\">Want one picked for you? <a href=\\"" + quizTargetAttr + "\\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\\"pinline\\">Saving this idea? <a target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\\">Pin it on Pinterest</a></p>" +
     "<footer class=\\"foot\\"><a href=\\"/\\">Pick My Costume</a> - Built with Muse.</footer>" +
@@ -1268,12 +1395,12 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   return new Response(html, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
-      "Cache-Control": "public, max-age=3600"
+      "Cache-Control": "max-age=0, must-revalidate"
     }
   });
 }
 ''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
-       json.dumps(SEOTITLE), json.dumps(PRIMARYMAT), json.dumps(MATRELATED), json.dumps(INTRO), json.dumps(SEALT),
+       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(INTRO), json.dumps(SEALT),
        json.dumps(howto), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
