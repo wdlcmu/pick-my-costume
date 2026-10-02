@@ -9619,7 +9619,18 @@ var browseReturnTo = "s-hero";
    lands on /map/; the in-app browse grid is retired (code left in place
    as dead weight, cleanup later). */
 function openBrowse(){
-  location.href = "/map/";
+  /* 2026-10-01: carry the quiz audience into the galaxy so the "For:" chip
+     arrives visibly selected AND filtered (Billy's phone catch: Couple arrived
+     unselected). Quiz Q1 values -> galaxy AUDS keys: kid/couple stay;
+     family/group fold into fam (the galaxy's Family+Group chip); solo/class/
+     unknown omit the param and the galaxy defaults to Everyone. */
+  var aud = null;
+  try {
+    if (typeof state !== "undefined" && state.answers && state.answers.q1 && state.answers.q1.value) aud = state.answers.q1.value;
+    else { var _last = load("pmc_last_v1"); if (_last && _last.answers && _last.answers.q1 && _last.answers.q1.value) aud = _last.answers.q1.value; }
+  } catch(e){}
+  var ga = {kid:"kid", couple:"couple", family:"fam", group:"fam"}[aud] || null;
+  location.href = "/map/" + (ga ? "?aud=" + ga : "");
 }
 
 /* ================= BROWSE DETAIL: E20 PARITY =================
