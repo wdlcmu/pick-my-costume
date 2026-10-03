@@ -38,7 +38,7 @@
      mirrors them verbatim.
      Costume build times and prices live on each /c/ guide's own HowTo. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe and timeline. Every pick comes with a free DIY build guide that shows the build time and full supplies list up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"The Make Tonight list is purely time-based: 30 minutes or less of hands-on work, two hours or less including drying. 125 of the 164 guides qualify. Separately, the Pantry page lets you tick off what you already own and ranks costumes by how many materials you are missing."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Every build guide lists what you need before you start, and the ideas are designed around thrift-store and closet basics."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe and timeline. Every pick comes with a free DIY build guide that shows the build time and full supplies list up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"The Make Tonight list is purely time-based: 30 minutes or less of hands-on work, two hours or less including drying. 126 of the 169 guides qualify. Separately, the Pantry page lets you tick off what you already own and ranks costumes by how many materials you are missing."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Every build guide lists what you need before you start, and the ideas are designed around thrift-store and closet basics."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}}]}
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -871,7 +871,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 /* Three selects share one row on wide screens and wrap on narrow phones.
    16px type avoids iOS auto-zoom on tap. Sticky kept. */
 .bfilters select{flex:1 1 auto;min-width:0;padding:10px 12px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
-/* Z5 browse search: type-ahead search-first for the 164-idea shelf. 16px
+/* Z5 browse search: type-ahead search-first for the 169-idea shelf. 16px
    type avoids iOS auto-zoom on tap; sits above the cards, never inside one. */
 .bsearch{margin:0 0 8px}
 .bsearch input{width:100%;box-sizing:border-box;padding:12px 14px;font-size:16px;border:2px solid var(--line);border-radius:var(--radius);background:var(--bg2);color:var(--ink);font-family:inherit}
@@ -889,7 +889,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .bchip:active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .bclose{margin:18px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 /* Sticky browse filters: the filter bar stays pinned while the grid
-   scrolls, so the 164 ideas never strand you without a way to narrow them.
+   scrolls, so the 169 ideas never strand you without a way to narrow them.
    (Spirit Halloween pattern; Party City lets its toolbar scroll away.) */
 .bsticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 4px;border-bottom:1px solid var(--line)}
 .bsticky .bcount{margin:2px 0 6px}
@@ -1254,7 +1254,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            removed to cut decisions (pinpoint-chips no longer rendered). -->
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Know what you want?</p>
-        <p class="fine" style="margin:0 0 6px">Search all <span id="hero-search-count">164</span> costumes directly.</p>
+        <p class="fine" style="margin:0 0 6px">Search all <span id="hero-search-count">169</span> costumes directly.</p>
         <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
@@ -1367,15 +1367,15 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
         <div class="toolpanels" id="tool-panels">
           <div class="toolpanel" id="toolpanel-handmedown" role="tabpanel" aria-labelledby="toolt-handmedown" hidden>
-            <p class="fine" style="margin:0 0 10px">Own last year&rsquo;s costume? Tick the parts you already own and we rank all 164 ideas by what you can reuse.</p>
-            <p style="margin:0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 164 ideas by the parts you already own">♻️ Turn it into this year&rsquo;s build</a></p>
+            <p class="fine" style="margin:0 0 10px">Own last year&rsquo;s costume? Tick the parts you already own and we rank all 169 ideas by what you can reuse.</p>
+            <p style="margin:0"><a class="pantry-link" href="/hand-me-down" title="Pick the costume already in your closet, we rank all 169 ideas by the parts you already own">♻️ Turn it into this year&rsquo;s build</a></p>
 </div>
           <div class="toolpanel" id="toolpanel-flyer" role="tabpanel" aria-labelledby="toolt-flyer" hidden>
             <p class="fine" style="margin:0 0 10px">Need a handout? One-page printables for teachers, waiting rooms, libraries, and party hosts.</p>
             <p style="margin:0"><a class="pantry-link" href="/flyer" title="Printable one-page flyers for teachers, waiting rooms, libraries, and party hosts">🖨️ Get the printable flyers</a></p>
 </div>
           <div class="toolpanel" id="toolpanel-browse" role="tabpanel" aria-labelledby="toolt-browse" hidden>
-            <p class="fine" style="margin:0 0 10px">Wander all 164 ideas as a galaxy map, then tap any costume for the plan.</p>
+            <p class="fine" style="margin:0 0 10px">Wander all 169 ideas as a galaxy map, then tap any costume for the plan.</p>
             <p style="margin:0"><button type="button" id="btn-browse-hero" class="textlink">🗺️ Explore the galaxy</button></p>
 </div>
           <div class="toolpanel" id="toolpanel-planner" role="tabpanel" aria-labelledby="toolt-planner" hidden>
@@ -1388,7 +1388,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
 </div>
         <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">👕 What materials or clothes are already in your house?</a></p>
-      <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 164 ideas by what you can build tonight.</p>
+      <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 169 ideas by what you can build tonight.</p>
   <section id="faq" aria-label="Frequently asked questions" style="margin-top:28px">
     <h2 class="q-title">Good questions</h2>
     <div class="faq-item">
@@ -1397,7 +1397,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-2" aria-expanded="false">I need a costume for tonight. What is actually last-minute?</button>
-      <div class="faq-a"><p>The Make Tonight list is purely time-based: 30 minutes or less of hands-on work, two hours or less including drying. 125 of the 164 guides qualify. Separately, the Pantry page lets you tick off what you already own and ranks costumes by how many materials you are missing.</p></div>
+      <div class="faq-a"><p>The Make Tonight list is purely time-based: 30 minutes or less of hands-on work, two hours or less including drying. 126 of the 169 guides qualify. Separately, the Pantry page lets you tick off what you already own and ranks costumes by how many materials you are missing.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-3" aria-expanded="false">What are some cheap couples costumes?</button>
@@ -1661,7 +1661,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p>You get: <b>Ketchup &amp; Mustard</b>: red bottle tunic and cap for one, yellow for the other.</p>
         <p>Tap &ldquo;Plan this costume&rdquo; to save your pick, text it to your partner, and get an AI plan for putting it together.</p>
 </div>
-      <p>Your answers are scored against <span class="ideacount">164</span> hand-picked ideas. No account, no email required. Your answers never leave your phone; we only track anonymous usage stats.</p>
+      <p>Your answers are scored against <span class="ideacount">169</span> hand-picked ideas. No account, no email required. Your answers never leave your phone; we only track anonymous usage stats.</p>
       <p>Questions or a costume we should add? Email <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a>.</p>
       <p><b>Halloween by the numbers:</b> Half of Americans plan to dress in costume this year, and nearly half are using AI to help with Halloween shopping. (Source: <a href="https://nrf.com/media-center/press-releases/nrf-halloween-survey-shows-consumer-spending-expected-to-reach-13-5-billion">NRF&apos;s 2026 Halloween survey, Sept 2026</a>.) Google&apos;s <a href="https://frightgeist.withgoogle.com/">Frightgeist</a> tracks the most-searched costumes each October; ideas marked <b>Trending</b> follow Frightgeist&apos;s top searches, and each card shows its lane.</p>
 </div>
