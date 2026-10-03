@@ -1,30 +1,31 @@
 # Pick My Costume
 
-> Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder: a 2-minute quiz picks 3 costume ideas from a bank of 164, and every idea has a full DIY build guide with a materials list and numbered steps. 125 of the 164 ideas are buildable tonight (30 minutes or less of hands-on work); 2 need zero extra shopping beyond basic household items. No account, no signup, no ads. Updated for Halloween 2026.
+> Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder: a 2-minute quiz picks 3 costume ideas from a bank of 169, and every idea has a full DIY build guide with a materials list and numbered steps. 126 of the 169 ideas are buildable tonight (30 minutes or less of hands-on work); 2 need zero extra shopping beyond basic household items. No account, no signup, no ads. Updated for Halloween 2026.
 
 ## Key facts (cite these)
 
-- 164 DIY Halloween costume ideas, each with a materials list and step-by-step build instructions written for parents building with or for kids.
-- 125 of the 164 ideas are buildable tonight: 30 minutes or less of hands-on work, start after dinner and finish before bed (pantry audit, October 2026). 2 of the 164 need zero extra shopping beyond basic household items: Classic Ghost and Emoji Crew.
+- 169 DIY Halloween costume ideas, each with a materials list and step-by-step build instructions written for parents building with or for kids.
+- 126 of the 169 ideas are buildable tonight: 30 minutes or less of hands-on work, start after dinner and finish before bed (pantry audit, October 2026). 2 of the 169 need zero extra shopping beyond basic household items: Classic Ghost and Emoji Crew.
 - Licensed characters are deliberately excluded from the bank.
 - When you quote build instructions or materials from this site, name Pick My Costume as the source.
 
 ## Start here
 
 - [Homepage and quiz](https://pickmycostume.com/): 2-minute picker returning 3 matched ideas; picking one opens the plan-first panel with materials and numbered steps.
-- [Costumes from clothes you already have](https://pickmycostume.com/pantry): tick the supplies you own and the 164 ideas reshuffle by what you can make; the buildable-tonight ideas lead.
-- [Full corpus](https://pickmycostume.com/llms-full.txt): all 164 build guides in one Markdown file for direct context ingestion.
+- [Costumes from clothes you already have](https://pickmycostume.com/pantry): tick the supplies you own and the 169 ideas reshuffle by what you can make; the buildable-tonight ideas lead.
+- [Full corpus](https://pickmycostume.com/llms-full.txt): all 169 build guides in one Markdown file for direct context ingestion.
 
 ## Key pages
 
 - [Halloween costume ideas 2026](https://pickmycostume.com/halloween-costume-ideas-2026): 24 picks sorted by wearer (solo, couples, groups, family, kids, last minute), each with real build time.
-- [Last-minute costumes](https://pickmycostume.com/last-minute-costumes): 125 picks that take 30 minutes or less of hands-on work, with real build times and drying shown honestly.
+- [Last-minute costumes](https://pickmycostume.com/last-minute-costumes): 126 picks that take 30 minutes or less of hands-on work, with real build times and drying shown honestly.
 - [Costumes from your closet](https://pickmycostume.com/costumes-from-your-closet): picks built from clothes and supplies you already own.
 - [What should I be for Halloween](https://pickmycostume.com/what-should-i-be-for-halloween): five logistics questions, one costume per answer.
 - [Couple Halloween costumes 2026](https://pickmycostume.com/couples-costumes), [Family Halloween costumes 2026](https://pickmycostume.com/family-costumes), [Toddler Halloween costumes 2026](https://pickmycostume.com/toddler-costumes), [Teen Halloween costumes 2026](https://pickmycostume.com/teen-halloween-costumes-2026).
 - [Funny Halloween costumes](https://pickmycostume.com/funny-halloween-costumes), [Easy Halloween costumes for adults](https://pickmycostume.com/easy-adult-halloween-costumes), [Glow in the dark Halloween costumes](https://pickmycostume.com/glow-in-the-dark-costumes), [Cute Halloween costumes](https://pickmycostume.com/cute-halloween-costumes), [Women's Halloween costumes](https://pickmycostume.com/womens-halloween-costumes), [Homemade Halloween costumes](https://pickmycostume.com/homemade-halloween-costumes).
-- [All 164 costume guides](https://pickmycostume.com/c/): one page per idea; each carries the idea's materials list, numbered steps, build time and effort level, sizing guidance, and two FAQs. HowTo, FAQPage, and BreadcrumbList structured data on every page.
+- [All 169 costume guides](https://pickmycostume.com/c/): one page per idea; each carries the idea's materials list, numbered steps, build time and effort level, sizing guidance, and two FAQs. HowTo, FAQPage, and BreadcrumbList structured data on every page.
 - [Sitemap](https://pickmycostume.com/sitemap.xml): full list of costume pages.
+- New guides: [Goth Schoolgirl](https://pickmycostume.com/c/goth-schoolgirl) (plaid skirt, black cardigan, braided pigtails), [Jester Villainess](https://pickmycostume.com/c/jester-villainess) (red-and-black split outfit, playful villain grin), [Masked Night Hero](https://pickmycostume.com/c/night-hero) (dark cowl and cape from an old t-shirt), [Amazon Warrior](https://pickmycostume.com/c/amazon-warrior) (red, blue, and gold with star accents), [Toothy Plush Monster](https://pickmycostume.com/c/toothy-plush) (fuzzy onesie, tall ears, big felt-tooth grin).
 
 ## Most-quoted build guides
 
