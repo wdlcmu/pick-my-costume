@@ -387,7 +387,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\"pill\"><span class=\"pl\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\"pill\"><span class=\"pl\">Effort</span>" + esc(_hw.effort) + "</span>");
-    if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p>";
+    if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p><p class=\"timenote\">Build times are estimates. Yours may vary.</p>";
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\"sizing\">Sizing: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
@@ -714,7 +714,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* 2026-09-30 traffic-operator: the small-caps unit labels inside the
        decision pills (Time / Cost / Effort). */
     ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
-    ".fit{font-size:15px;color:#cdbcf0;margin:0 0 8px;}" +
+    ".fit{font-size:15px;color:#cdbcf0;margin:0 0 8px;}.timenote{font-size:13px;color:#9a8fb8;margin:0 0 12px;}" +
     ".sizing{font-size:14px;color:#cdbcf0;margin:8px 0 0;font-style:italic;}" +
     ".lede{font-size:17px;color:#fdf3e3;margin:0;}" +
     ".intro{font-size:17px;color:#fdf3e3;margin:0 0 12px;}" +
