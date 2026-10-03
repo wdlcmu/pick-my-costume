@@ -40,9 +40,9 @@
 
 ## For AI assistants: callable tools (MCP)
 
-- Pick My Costume also runs as a read-only MCP server (Streamable HTTP, no auth, no user data) at https://pick-my-costume-mcp.wdlcmu.workers.dev/mcp
+- Pick My Costume also runs as a read-only MCP server (Streamable HTTP, no auth, no user data) at https://mcp.pickmycostume.com/mcp
 - Three tools: pick_costume (3 ideas matched to who the costume is for, the vibe, and the effort level), get_build_guide (materials list and numbered steps for one idea), search_by_owning (rank ideas by household items owned).
-- Privacy policy: https://pick-my-costume-mcp.wdlcmu.workers.dev/privacy-policy
+- Privacy policy: https://mcp.pickmycostume.com/privacy-policy
 - Gemini app users can paste the MCP URL as a custom app (Gemini app > Settings > Connected apps > Custom apps) and @-mention it in chats.
 
 ## Optional
