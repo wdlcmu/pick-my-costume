@@ -2,13 +2,13 @@
 
 > Complete Markdown text of pickmycostume.com's 164 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
-> Generated: 2026-10-01. Regenerate with gen_llms_full.py when the bank changes.
+> Generated: 2026-10-03. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
 - Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder.
 - 164 costume ideas. Every idea has a materials list and numbered step-by-step build instructions.
-- 16 of the 164 ideas are make-tonight or 1-2 supplies away from default household basics (pantry audit, Oct 2026).
+- 16 of the 164 ideas need zero to two supplies beyond default household basics (pantry audit, Oct 2026).
 - Licensed characters are deliberately excluded from the bank.
 
 ## All 164 build guides
@@ -214,7 +214,7 @@ URL: https://pickmycostume.com/c/bamboo-demon
 
 Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Pink bathrobe or kimono-style robe, 1 (own, or buy: clothing store)
@@ -248,7 +248,7 @@ URL: https://pickmycostume.com/c/banana
 
 Yellow sweatsuit with a green felt stem hat.
 
-Build time, effort: 10 min + drying / Easy
+Build time, effort: 10 min + 30 min drying / Easy
 
 Materials:
 - Yellow sweatshirt and sweatpants, 1 set (buy: at a clothing store, or own: from closet)
@@ -277,7 +277,7 @@ URL: https://pickmycostume.com/c/basketball-star
 
 Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.
 
-Build time, effort: 5 min + drying / Easy
+Build time, effort: 5 min + 10 min drying / Easy
 
 Materials:
 - Basketball jersey or numbered tank top, 1 (own, or buy: sporting goods store)
@@ -307,7 +307,7 @@ URL: https://pickmycostume.com/c/beekeeper-bee
 
 One goes as the beekeeper in white with a mesh veil; the other wears yellow and black stripes with antennae.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - White long-sleeve shirt and white pants, 1 set (own, or buy: thrift store)
@@ -343,7 +343,7 @@ URL: https://pickmycostume.com/c/black-cat
 
 Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Black shirt and pants or sweatsuit, 1 set (own)
@@ -377,7 +377,7 @@ URL: https://pickmycostume.com/c/block-game-crew
 
 Cardboard-box heads: pick your blocky hero.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - 1 large cardboard box per person, big enough to fit over the torso (make: ask a grocery store for spares)
@@ -409,7 +409,7 @@ URL: https://pickmycostume.com/c/block-monster
 
 Wear all one solid color, square up your silhouette with foam or cardboard blocks on shoulders/limbs, draw a pixelated face.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 10 min drying / Easy
 
 Materials:
 - Solid-color sweatsuit, any color, 1 set (own)
@@ -442,7 +442,7 @@ URL: https://pickmycostume.com/c/blue-alien-ohana
 
 A blue hoodie and an antenna headband turn the kid into the alien.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - Blue hoodie per alien-role person, 1 each (own, or buy: clothing store)
@@ -459,11 +459,12 @@ Steps:
 1. Wrap each headband in blue tape so the whole band reads blue from across the room.
 2. Twist two blue pipe cleaners around the top of each headband so they stand up about 6 inches tall, then bend each tip into a small curl.
 3. Tape one blue pom-pom to the tip of each pipe cleaner. The two bobbing balls are what read as antennae from ten feet away.
-4. Pull on the blue hoodies.
-5. Lilo: cut leaf shapes from the white felt or paper with the scissors. Pin or glue the leaves across the red t-shirt or dress.
-6. Safety: Pin from the front of the red shirt, so pin backs face the fabric and never the skin.
-7. Wear dark hair down for Lilo. Put the antenna headbands on the aliens last.
-8. Optional pro finish: twist each pipe cleaner into a loose zigzag before adding the pom-pom. The wobble makes the antennae bounce when the kid runs, and movement reads as alien better than any static shape.
+4. Safety: Under 3: skip the pom-pom antennae, toddlers can pull them off and they are a choking hazard. The blue hoodie alone carries the costume.
+5. Pull on the blue hoodies.
+6. Lilo: cut leaf shapes from the white felt or paper with the scissors. Pin or glue the leaves across the red t-shirt or dress.
+7. Safety: Pin from the front of the red shirt, so pin backs face the fabric and never the skin.
+8. Wear dark hair down for Lilo. Put the antenna headbands on the aliens last.
+9. Optional pro finish: twist each pipe cleaner into a loose zigzag before adding the pom-pom. The wobble makes the antennae bounce when the kid runs, and movement reads as alien better than any static shape.
 
 Q: How do you keep the antennae from flopping?
 A: Twist each pipe cleaner around the headband twice at the base before standing it up, the double wrap is the anchor. Then tape over the twist. Pipe cleaner alone flops by hour two; the tape wrap locks it.
@@ -511,7 +512,7 @@ URL: https://pickmycostume.com/c/blue-heeler-pup
 
 Blue-gray hoodie, felt ears, and a painted nose for the littlest pup.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 1 hr drying / Easy
 
 Materials:
 - Blue-gray hoodie, 1 (own, or buy: thrift store)
@@ -544,7 +545,7 @@ URL: https://pickmycostume.com/c/board-game-pieces
 
 Each person picks a piece: cardboard die, playing card, pawn, or domino over monochrome clothes.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - Black or white monochrome clothes, 1 set per person (own)
@@ -613,7 +614,7 @@ URL: https://pickmycostume.com/c/boxer
 
 Bathrobe, toy gloves, bruise makeup, and entrance music.
 
-Build time, effort: 10 min + drying / Easy
+Build time, effort: 10 min + 10 min drying / Easy
 
 Materials:
 - Bathrobe, 1 (own)
@@ -676,7 +677,7 @@ URL: https://pickmycostume.com/c/bumble-bee
 
 Black sweats with yellow tape stripes and soft felt antennae.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 30 min drying / Easy
 
 Materials:
 - Black sweatshirt and sweatpants, 1 set (own, or buy: clothing store)
@@ -709,7 +710,7 @@ URL: https://pickmycostume.com/c/burger-fries
 
 Sesame-seed bun top for one, red fry carton with yellow fry sticks for the other.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 1 hr drying / Easy
 
 Materials:
 - Tan t-shirt, 1 (own, or buy: thrift store)
@@ -778,7 +779,7 @@ URL: https://pickmycostume.com/c/butterfly
 
 Painted cardboard wings on black sweats: the garden's prettiest visitor.
 
-Build time, effort: 40 min + drying / Medium
+Build time, effort: 40 min + 1 hr drying / Medium
 
 Materials:
 - Large cardboard for wings, 1 sheet about 3x2 feet (make: from a shipping box)
@@ -814,7 +815,7 @@ URL: https://pickmycostume.com/c/caped-duo
 
 Matching sheet capes, felt masks, and your own emblems.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - 2 old twin sheets or large fabric rectangles, about 4x5 feet each (make: cut from old sheets)
@@ -848,7 +849,7 @@ URL: https://pickmycostume.com/c/cardboard-knight
 
 Silver-painted cardboard armor and a pool-noodle sword.
 
-Build time, effort: 60 min + drying / Medium
+Build time, effort: 60 min + 1 hr drying / Medium
 
 Materials:
 - Large cardboard boxes, 2 to 3 (make: collect spares)
@@ -883,7 +884,7 @@ URL: https://pickmycostume.com/c/cat-mouse
 
 Cat ears versus mouse ears. Spend the night chasing each other.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 1 hr drying / Easy
 
 Materials:
 - 2 headbands (buy: dollar store)
@@ -979,7 +980,7 @@ URL: https://pickmycostume.com/c/chill-painter
 
 A big brown afro wig, denim shirt, and a palette you painted yourself.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 1 hr drying / Easy
 
 Materials:
 - Big brown afro wig, 1 (buy: costume aisle or online)
@@ -1012,7 +1013,7 @@ URL: https://pickmycostume.com/c/chipmunk-trio
 
 Letter sweaters, felt ears, and whiskers for a singing trio of chipmunks.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - Red, blue, and green sweaters or sweatshirts, 1 each (buy: thrift store)
@@ -1044,7 +1045,7 @@ URL: https://pickmycostume.com/c/chips-guac
 
 Green guac tunic with red tomato dots for one, giant triangle chip hat for the other.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 20 min drying / Easy
 
 Materials:
 - Green t-shirt or tunic, 1 (own, or buy: thrift store)
@@ -1204,7 +1205,7 @@ URL: https://pickmycostume.com/c/cupcake
 
 Brown tunic for the wrapper, white pillowcase for frosting, cherry on top.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 30 min drying / Easy
 
 Materials:
 - Brown t-shirt or tunic for the wrapper, 1 (make: from closet)
@@ -1234,7 +1235,7 @@ URL: https://pickmycostume.com/c/daisy
 
 A yellow petal headband and a green dress: a walking flower.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 1 hr drying / Easy
 
 Materials:
 - Yellow craft foam sheets, 2 (buy: craft store)
@@ -1266,7 +1267,7 @@ URL: https://pickmycostume.com/c/deadpan-diva
 
 Black dress, two braids, pale makeup, and a stare that ends conversations.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 10 min drying / Easy
 
 Materials:
 - Black dress, 1 (own)
@@ -1283,6 +1284,7 @@ Steps:
 6. Put on the black dress, fold the arms, and hold the stare.
 7. Use skin-safe makeup and wash it all off before bed.
 8. Optional pro finish: add a thin black ribbon choker. The choker plus the braids plus the stare is the complete silhouette, without it, it is just a black dress.
+9. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: How do you get the braids right?
 A: Two tight braids, middle part, pulled flat against the head. Loose or messy braids break the severe look, tight is the whole point.
@@ -1331,7 +1333,7 @@ URL: https://pickmycostume.com/c/demon-boy-band
 
 Matching streetwear-idol outfits with glowing patterns for your whole boy band.
 
-Build time, effort: 40 min + drying / Easy
+Build time, effort: 40 min + 2 hrs drying / Easy
 
 Materials:
 - Oversized black or white t-shirt per person, 1 each (make: from closet)
@@ -1349,6 +1351,7 @@ Steps:
 4. Safety: Keep paint off faces and away from eyes.
 5. Wear the matching streetwear, carry a toy microphone each, line up shoulder to shoulder, and strike the synchronized album-cover pose.
 6. Optional pro finish: give every member the same temporary tattoo on the same cheek. One matching detail is what turns matching shirts into a band.
+7. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: Will neon fabric paint glow without a black light?
 A: No, it needs a black light to pop. Without one it still reads as bright neon color, so check what the venue has before you count on the glow.
@@ -1364,7 +1367,7 @@ URL: https://pickmycostume.com/c/deviled-egg
 
 White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 1 hr drying / Easy
 
 Materials:
 - 1 white t-shirt (buy: craft store, or use one you own)
@@ -1497,7 +1500,7 @@ URL: https://pickmycostume.com/c/dinosaur-family
 
 Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 1 hr drying / Easy
 
 Materials:
 - 1 green sweatsuit per person (buy: discount store, or use one you own)
@@ -1529,7 +1532,7 @@ URL: https://pickmycostume.com/c/doctor-bride
 
 Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 1 hr drying / Easy
 
 Materials:
 - 1 old dark suit or jacket (make: use what you own)
@@ -1564,7 +1567,7 @@ URL: https://pickmycostume.com/c/donut
 
 Pink cardboard ring with sprinkles, worn like a sandwich board.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 1 hr drying / Easy
 
 Materials:
 - 1 large cardboard box, about 24x24 inches flat (make: from home)
@@ -1595,7 +1598,7 @@ URL: https://pickmycostume.com/c/donut-coffee
 
 Pink frosted ring tunic for one, takeout coffee cup for the other.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 1 hr drying / Easy
 
 Materials:
 - White t-shirt, 1 (own, or buy: thrift store)
@@ -1634,7 +1637,7 @@ URL: https://pickmycostume.com/c/dragon-rider-duo
 
 A viking rider and a cardboard dragon, ready to fly over the neighborhood.
 
-Build time, effort: 60 min + drying / Medium
+Build time, effort: 60 min + 30 min drying / Medium
 
 Materials:
 - 1 brown t-shirt and 1 pair dark pants for the rider (make: from closet)
@@ -1668,7 +1671,7 @@ URL: https://pickmycostume.com/c/emerald-witch
 
 An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - 1 long green dress, or green fabric, 3 yards (buy: fabric store)
@@ -1732,7 +1735,7 @@ URL: https://pickmycostume.com/c/emotion-crew
 
 One loud color per person: each of you is a different emotion.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - 1 solid bright color outfit per person: yellow, blue, red, green, purple, or orange (buy: a set at a thrift store, or own: from closet)
@@ -1762,7 +1765,7 @@ URL: https://pickmycostume.com/c/emotional-support-dinosaur
 
 Dino-spike vest over normal clothes with a badge that says Emotional Support Dinosaur. Do not pet.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 15 min drying / Easy
 
 Materials:
 - 1 vest or sleeveless jacket you own (own)
@@ -1794,7 +1797,7 @@ URL: https://pickmycostume.com/c/enchanted-castle-crew
 
 The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role.
 
-Build time, effort: 40 min + drying / Medium
+Build time, effort: 40 min + 1 hr drying / Medium
 
 Materials:
 - Princess: yellow fabric, 2 yards (buy: fabric store)
@@ -1858,7 +1861,7 @@ URL: https://pickmycostume.com/c/extinct-party-animal
 
 Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 15 min drying / Easy
 
 Materials:
 - 1 jacket or blazer you own (own)
@@ -1891,7 +1894,7 @@ URL: https://pickmycostume.com/c/fairy-tale-princesses
 
 A dress or a crown from the closet. Every princess works.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 1 hr drying / Easy
 
 Materials:
 - 1 dress from the closet per person (make: use what you own)
@@ -1957,7 +1960,7 @@ URL: https://pickmycostume.com/c/fruit-salad
 
 Each person picks a fruit color, wears it head to toe with a leaf hat.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 30 min drying / Easy
 
 Materials:
 - Solid-color outfits in fruit colors (red, yellow, green, orange), 1 set per person (buy: a set at a thrift store, or own: from closet)
@@ -1986,7 +1989,7 @@ URL: https://pickmycostume.com/c/fuzzy-gremlin
 
 A furry brown onesie, big felt ears, and googly eyes.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - Brown fuzzy onesie or footed pajamas, 1 (buy: thrift store or online)
@@ -2018,7 +2021,7 @@ URL: https://pickmycostume.com/c/fuzzy-monster
 
 A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 30 min drying / Easy
 
 Materials:
 - 1 pastel fuzzy sweatsuit (buy: discount store)
@@ -2080,7 +2083,7 @@ URL: https://pickmycostume.com/c/garden-fairy
 
 Tulle wings, a flower crown, and a wand: the backyard turns into a fairy tale.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 30 min drying / Easy
 
 Materials:
 - Pink tulle, 1 yard (buy: craft store)
@@ -2118,7 +2121,7 @@ URL: https://pickmycostume.com/c/garden-gnome
 
 Wear earth tones, make a pointy hat from cardboard, draw a white beard, carry a tiny fishing rod or garden shovel.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 10 min drying / Easy
 
 Materials:
 - Earth-tone shirt and pants, 1 set (own)
@@ -2184,7 +2187,7 @@ URL: https://pickmycostume.com/c/gloom-bloom
 
 Braids and black for Gloom, color-pop and smiles for Bloom.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 10 min drying / Easy
 
 Materials:
 - 1 set black clothes from the closet (make: use what you own)
@@ -2215,7 +2218,7 @@ URL: https://pickmycostume.com/c/glow-skeleton
 
 Black sweats with glow-in-the-dark bone tape, plus glow bracelets.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Black sweatsuit, 1 (buy: discount store, or own)
@@ -2230,7 +2233,9 @@ Steps:
 3. Cut the bone tape into rib bones: lay strips horizontally across the chest and back. Add vertical spine segments down the center, and arm and leg bones down the limbs.
 4. Snap the glow bracelets onto both wrists and both ankles right before heading out.
 5. Test the face paint on the wrist first and wait 10 minutes for any reaction. Paint simple skull eye circles with the black face paint, keeping clear of the eyes so vision stays clear.
-6. Optional pro finish: 'charge' the glow tape under a bright lamp for 10 minutes right before heading out. Freshly charged tape glows dramatically for the first hour, that is when the photos happen.
+6. Safety: Under 3: skip the glow bracelets, toddlers can chew them open and they are small parts. Skip the skull face paint too, little kids rub their eyes and the glow tape alone carries the costume.
+7. Optional pro finish: 'charge' the glow tape under a bright lamp for 10 minutes right before heading out. Freshly charged tape glows dramatically for the first hour, that is when the photos happen.
+8. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: Does glow tape really glow all night?
 A: No, it fades over 1 to 2 hours. Charge it under bright light right before going out, and bring the roll for touch-ups. The first hour is the magic hour.
@@ -2275,7 +2280,7 @@ URL: https://pickmycostume.com/c/good-witch-bad-witch
 
 Green face paint and black for one, pink gown and crown for the other.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 1 hr drying / Easy
 
 Materials:
 - 1 black dress or set of black clothes for the bad witch (make: use your closet)
@@ -2307,7 +2312,7 @@ URL: https://pickmycostume.com/c/goth-braids
 
 Black dress, two tight braids, and a stare that ends conversations.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Black dress, 1 (own, or buy: thrift store)
@@ -2324,6 +2329,7 @@ Steps:
 4. Safety: Test the face paint on the inside of the wrist first and wash it off before bed so it never stains the pillow.
 5. Practice the stare in the mirror: calm, unimpressed, unblinking.
 6. Optional pro finish: carry a black umbrella even if it is not raining. The prop completes the silhouette.
+7. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: How do you keep the braids tight all night?
 A: Braid damp hair and tie each braid at two points, top and bottom. Damp braids set tighter as they dry.
@@ -2339,7 +2345,7 @@ URL: https://pickmycostume.com/c/haunted-animatronics
 
 Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves.
 
-Build time, effort: 60 min + drying / Medium
+Build time, effort: 60 min + 1 hr drying / Medium
 
 Materials:
 - 1 large cardboard box per person, big enough to cover the head (make: use what you own)
@@ -2371,7 +2377,7 @@ URL: https://pickmycostume.com/c/haunted-portraits
 
 Gray makeup, old-timey clothes, hold a gilt frame.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - 1 set old-fashioned dark clothes per person, e.g. a vest, long skirt, or button-up (make: use your closet)
@@ -2432,7 +2438,7 @@ URL: https://pickmycostume.com/c/hero-squad
 
 Color-coded capes and masks, one team pose for photos.
 
-Build time, effort: 40 min + drying / Easy
+Build time, effort: 40 min + 1 hr drying / Easy
 
 Materials:
 - Cape per person in squad colors, 1 each (buy: craft store, or make: cut from 1 yard of fabric each)
@@ -2464,7 +2470,7 @@ URL: https://pickmycostume.com/c/hot-dog
 
 Tan foam pool noodle bun, red shirt for the dog, mustard squiggle.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 1 hr drying / Easy
 
 Materials:
 - Red t-shirt, 1 (own)
@@ -2493,7 +2499,7 @@ URL: https://pickmycostume.com/c/ice-cream-cone
 
 A tan paper cone hat and a sprinkle-dotted scoop shirt.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 1 hr drying / Easy
 
 Materials:
 - Tan paper party hat or cone, 1 (buy: dollar store)
@@ -2587,7 +2593,7 @@ URL: https://pickmycostume.com/c/kart-racers
 
 Cardboard karts and racing caps for a full starting grid of friends.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - Large cardboard box, 1 per racer, big enough to fit around the torso (make: collect spares)
@@ -2651,7 +2657,7 @@ URL: https://pickmycostume.com/c/kpop-demon-huntresses
 
 Matching stage outfits, toy microphones, and demon-hunter poses for three.
 
-Build time, effort: 40 min + drying / Medium
+Build time, effort: 40 min + 10 min drying / Medium
 
 Materials:
 - Black leggings or pants, 3 (own, or buy: thrift store)
@@ -2685,7 +2691,7 @@ URL: https://pickmycostume.com/c/ladybug
 
 Red sweats, black felt dots, and little spotted wings.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 1 hr drying / Easy
 
 Materials:
 - Red shirt, 1 (own)
@@ -2721,7 +2727,7 @@ URL: https://pickmycostume.com/c/little-artist
 
 A beret, a cardboard paint palette, and a splatter-painted smock.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 1 hr drying / Easy
 
 Materials:
 - Beret or flat cap, 1 (buy: thrift store)
@@ -2785,7 +2791,7 @@ URL: https://pickmycostume.com/c/little-lifeguard
 
 Red tee, whistle, and a rescue buoy made from a pool noodle ring: an everyday hero costume.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Red t-shirt, 1 (own, or buy: thrift store)
@@ -2819,7 +2825,7 @@ URL: https://pickmycostume.com/c/little-lion
 
 Tan sweatsuit plus a fuzzy mane hood.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 1 hr drying / Easy
 
 Materials:
 - Tan or brown sweatsuit, 1 (buy: discount store, or use one you own)
@@ -2887,7 +2893,7 @@ URL: https://pickmycostume.com/c/little-prince
 
 Crown, cape, and a royal sash from the dress-up box or the craft drawer.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 30 min drying / Easy
 
 Materials:
 - Gold cardstock or a paper crown, 1 (buy: party store, or make: from cardstock)
@@ -2922,7 +2928,7 @@ URL: https://pickmycostume.com/c/little-shark
 
 Gray hoodie with a felt fin glued on the back.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - Gray hoodie, 1 (buy: thrift store, or own: from closet)
@@ -2954,7 +2960,7 @@ URL: https://pickmycostume.com/c/little-witch
 
 Black cape, pointy hat, striped tights, green face paint.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 10 min drying / Easy
 
 Materials:
 - Black cape or black bedsheet, 1 (buy: dollar store, or make: cut a cape from a black t-shirt)
@@ -3049,7 +3055,7 @@ URL: https://pickmycostume.com/c/mermaid-crew
 
 The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - T-shirt or dress in a sea color (teal, purple, red, white), 1 per person (buy: thrift store, or own)
@@ -3079,7 +3085,7 @@ URL: https://pickmycostume.com/c/milk-cookies
 
 White carton tunic for one, brown cookie with felt chips for the other.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - White t-shirt or tunic, 1 (own, or buy: thrift store)
@@ -3114,7 +3120,7 @@ URL: https://pickmycostume.com/c/moonwalk-star
 
 Red jacket, one glitter glove, and the lean everyone attempts.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - Red jacket, 1 (buy: thrift store)
@@ -3183,7 +3189,7 @@ URL: https://pickmycostume.com/c/mystery-crew
 
 Assign the leader, the style icon, the brains, the goofball, and one very good dog.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 10 min drying / Easy
 
 Materials:
 - Orange, purple, blue, and red t-shirts, 1 each (buy: thrift store, or own: from closet)
@@ -3245,7 +3251,7 @@ URL: https://pickmycostume.com/c/neon-demon-hunter
 
 Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 2 hrs drying / Easy
 
 Materials:
 - Black hoodie, black pants, chunky sneakers, 1 set (own)
@@ -3275,7 +3281,7 @@ URL: https://pickmycostume.com/c/ninja
 
 All black with a belt sash and a slit headband.
 
-Build time, effort: 10 min + drying / Easy
+Build time, effort: 10 min + 10 min drying / Easy
 
 Materials:
 - All-black outfit: t-shirt, pants, and a black beanie, 1 set (own: from closet)
@@ -3292,6 +3298,7 @@ Steps:
 5. Wrap the black headband around the forehead and tie it at the back, leaving the eyes clear.
 6. Paint a thin black stripe across the bridge of the nose with the black face paint. Practice the silent sneaky walk.
 7. Optional pro finish: tuck the headband ends in instead of letting them dangle. Clean lines read as trained ninja; loose ends read as pirate.
+8. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: How do you wrap the headband so it is safe?
 A: Wrap it above the eyes on the forehead and tie it at the back with a quick-release knot. Eyes and mouth stay completely uncovered, vision first, costume second.
@@ -3369,7 +3376,7 @@ URL: https://pickmycostume.com/c/party-pinata
 
 A cardboard box wrapped in rainbow fringe, with real candy inside.
 
-Build time, effort: 40 min + drying / Medium
+Build time, effort: 40 min + 30 min drying / Medium
 
 Materials:
 - Cardboard box, 1 large (make: from a shipping box)
@@ -3433,7 +3440,7 @@ URL: https://pickmycostume.com/c/peas-pod
 
 Green shirts in a row under one long felt pod sash.
 
-Build time, effort: 60 min + drying / Medium
+Build time, effort: 60 min + 1 hr drying / Medium
 
 Materials:
 - Green t-shirts, 1 per person for 3 to 5 people (buy: thrift store, or own: from closet)
@@ -3467,7 +3474,7 @@ URL: https://pickmycostume.com/c/penguin-huddle
 
 Black shirts, felt bellies, beak headbands. Waddle together.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 30 min drying / Easy
 
 Materials:
 - Black long-sleeve shirts, 1 per person (buy: thrift store, or own: from closet)
@@ -3499,7 +3506,7 @@ URL: https://pickmycostume.com/c/pickle
 
 Green tunic, bumpy texture, smug grin.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 1 hr drying / Easy
 
 Materials:
 - Green tunic or oversized green t-shirt, 1 (buy: thrift store, or own: from closet)
@@ -3564,7 +3571,7 @@ URL: https://pickmycostume.com/c/pixel-ghost
 
 A white sheet cut in chunky pixel squares with felt eyes.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - White bedsheet or white fabric, 1 twin-size (buy: thrift store)
@@ -3597,7 +3604,7 @@ URL: https://pickmycostume.com/c/pizza-slice
 
 A big cardboard triangle, painted golden with felt pepperoni.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - Large cardboard box, 1 (make: cut a big triangle, about 3 feet tall)
@@ -3628,7 +3635,7 @@ URL: https://pickmycostume.com/c/plague-doctor
 
 Long coat, wide hat, beaked mask.
 
-Build time, effort: 60 min + drying / Medium
+Build time, effort: 60 min + 1 hr drying / Medium
 
 Materials:
 - Long black coat or black robe, 1 (buy: thrift store)
@@ -3649,6 +3656,7 @@ Steps:
 7. Cut round eye holes in the black half mask and fit it so the eyes are fully open.
 8. Wear the long black coat, wide-brim black hat, black gloves, and the beaked mask together. Carry a wooden staff or walking stick for the full effect.
 9. Optional pro finish: paint the finished beak with a second light coat and let it dry fully. One thin coat looks gray in flash photos; two coats read as true black.
+10. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: How do you attach the beak to the mask?
 A: Hot-glue the beak to the front of the black half mask so it juts forward, with an adult handling the glue gun. Test the fit before gluing, the mask must sit so the eyes are fully open.
@@ -3726,7 +3734,7 @@ URL: https://pickmycostume.com/c/plug-socket
 
 Cardboard plug and outlet worn front and back.
 
-Build time, effort: 45 min + drying / Easy
+Build time, effort: 45 min + 1 hr drying / Easy
 
 Materials:
 - Cardboard box, 1 large (own: cut two flat panels, one per person)
@@ -3758,7 +3766,7 @@ URL: https://pickmycostume.com/c/plumber-duo
 
 Overalls, red and green caps and shirts, drawn mustaches.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 10 min drying / Easy
 
 Materials:
 - Blue overalls, 2 (buy: thrift store)
@@ -3789,7 +3797,7 @@ URL: https://pickmycostume.com/c/pocket-plush
 
 A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - Fuzzy one-piece pajamas or sweatsuit, 1 (buy: thrift store, or own: from closet)
@@ -3851,7 +3859,7 @@ URL: https://pickmycostume.com/c/popcorn-bucket
 
 A striped cardboard-box body with balloon popcorn on top.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 1 hr drying / Easy
 
 Materials:
 - Cardboard box, 1 medium (make: tall enough to cover the torso)
@@ -3909,7 +3917,7 @@ URL: https://pickmycostume.com/c/pumpkin-king-bride
 
 Pinstripe suit and pumpkin mask for one, patchwork dress and yarn hair for the other.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - Pinstripe or black suit, 1 (buy: thrift store)
@@ -3942,7 +3950,7 @@ URL: https://pickmycostume.com/c/rain-cloud-rainbow
 
 One wears gray with cotton clouds and paper raindrops; the other wears rainbow stripes.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 1 hr drying / Easy
 
 Materials:
 - Gray t-shirt or sweatshirt, 1 (buy: thrift store, or own: from closet)
@@ -3976,7 +3984,7 @@ URL: https://pickmycostume.com/c/ramen-bowl
 
 Cardboard bowl rim, noodle-yarn hair, a foam egg on top.
 
-Build time, effort: 50 min + drying / Easy
+Build time, effort: 50 min + 1 hr drying / Easy
 
 Materials:
 - Large cardboard circle, about 2 feet wide (make: cut from a big box)
@@ -4039,7 +4047,7 @@ URL: https://pickmycostume.com/c/raptor-ranger
 
 One khaki ranger, one green dino hood. The ranger holds the leash.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - Khaki shirt and hat for the ranger, 1 set (own: from closet, or buy at a thrift store)
@@ -4102,7 +4110,7 @@ URL: https://pickmycostume.com/c/rescue-pups
 
 Color-coded pup vests and felt ears for the whole preschool crew.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - T-shirts in assigned colors, 1 per kid (own, or buy: thrift store)
@@ -4243,7 +4251,7 @@ URL: https://pickmycostume.com/c/safari-zoo-crew
 
 Everyone picks an animal: closet clothes in matching colors plus an ear headband.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - Solid-color clothes in animal colors, 1 set per person (own)
@@ -4275,7 +4283,7 @@ URL: https://pickmycostume.com/c/salt-pepper
 
 White and black outfits with shaker tops made from cardboard.
 
-Build time, effort: 15 min + drying / Easy
+Build time, effort: 15 min + 1 hr drying / Easy
 
 Materials:
 - White shirt, pants, and hat for Salt, 1 set (own)
@@ -4307,7 +4315,7 @@ URL: https://pickmycostume.com/c/scarecrow
 
 Plaid shirt, straw poking out, and a stitched smile.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - Plaid flannel shirt, 1 (own, or buy: thrift store)
@@ -4341,7 +4349,7 @@ URL: https://pickmycostume.com/c/smores-duo
 
 Two graham-cracker tunics with a marshmallow and chocolate candy square between you.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - Tan t-shirts or tunics, 2 (own, or buy: thrift store)
@@ -4375,7 +4383,7 @@ URL: https://pickmycostume.com/c/snow-sisters
 
 The ice queen, the snow princess, the talking snowman, the reindeer: pick your role.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - Icy-blue dress or blue dress plus silver glitter glue, 1 set (buy glitter glue: craft store)
@@ -4477,7 +4485,7 @@ URL: https://pickmycostume.com/c/spaghetti-meatball
 
 White shirt with yarn spaghetti glued on, brown pom-pom meatballs.
 
-Build time, effort: 40 min + drying / Easy
+Build time, effort: 40 min + 30 min drying / Easy
 
 Materials:
 - White t-shirt or sweatshirt, 1 (own: from closet)
@@ -4508,7 +4516,7 @@ URL: https://pickmycostume.com/c/spider
 
 Black sweats with stuffed sock legs attached at the sides.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 1 hr drying / Medium
 
 Materials:
 - Black sweatshirt and black sweatpants, 1 set (own: from closet)
@@ -4543,7 +4551,7 @@ URL: https://pickmycostume.com/c/sun-moon
 
 One in yellow with cardboard rays, one in navy with paper stars and a crescent.
 
-Build time, effort: 40 min + drying / Easy
+Build time, effort: 40 min + 30 min drying / Easy
 
 Materials:
 - Yellow shirt and pants for the Sun, 1 set (own: from closet)
@@ -4611,7 +4619,7 @@ URL: https://pickmycostume.com/c/sushi-roll
 
 A white-sheet wrap with felt salmon and pom-pom wasabi. Chopsticks optional.
 
-Build time, effort: 40 min + drying / Easy
+Build time, effort: 40 min + 30 min drying / Easy
 
 Materials:
 - White bedsheet or large white t-shirt to wear, 1 (own: from closet)
@@ -4646,7 +4654,7 @@ URL: https://pickmycostume.com/c/sushi-soy
 
 White rice tunic with orange fish sash for one, dark soy bottle for the other.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 1 hr drying / Easy
 
 Materials:
 - White t-shirt or tunic, 1 (own, or buy: thrift store)
@@ -4749,7 +4757,7 @@ URL: https://pickmycostume.com/c/tetris-duo
 
 Two interlocking tetromino shapes built from painted cardboard boxes, worn like sandwich boards.
 
-Build time, effort: 45 min + drying / Easy
+Build time, effort: 45 min + 2 hrs drying / Easy
 
 Materials:
 - Two large cardboard boxes, flattened (make: from shipping boxes)
@@ -4782,7 +4790,7 @@ URL: https://pickmycostume.com/c/the-olympians
 
 Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 10 min drying / Medium
 
 Materials:
 - White bedsheets or large white fabric, 1 per person (own: raid the linen closet)
@@ -4915,7 +4923,7 @@ URL: https://pickmycostume.com/c/tooth-fairy
 
 One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 30 min drying / Medium
 
 Materials:
 - Tooth: all-white outfit, 1 set (own: from closet)
@@ -4951,7 +4959,7 @@ URL: https://pickmycostume.com/c/toy-box-crew
 
 A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 30 min drying / Easy
 
 Materials:
 - Cowboy hat, 1, and cow-print vest, 1, for the sheriff (buy: costume aisle or thrift store)
@@ -5019,7 +5027,7 @@ URL: https://pickmycostume.com/c/vampire
 
 Black cape, fangs, slicked hair.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - Black cape or black bedsheet, 1 (buy cape: costume aisle; or make: from a black sheet from home)
@@ -5036,6 +5044,7 @@ Steps:
 4. Make the face: dust the pale face paint over the face and neck. Dab a thin line of red lipstick at each corner of the mouth like drips of blood.
 5. Wear the black cape over the shoulders and pop the vampire fangs in last before photos.
 6. Optional pro finish: paint the nails black and pop the cape collar up high, since the collar silhouette is what reads as vampire from across the room.
+7. Safety: Add reflective tape or a glow stick and carry a flashlight for visibility at night.
 
 Q: Are the plastic fangs safe for small kids?
 A: Skip the fangs for small kids who might choke on them. Draw two white fang triangles on the lower lip with face paint instead.
@@ -5051,7 +5060,7 @@ URL: https://pickmycostume.com/c/walking-taco
 
 Tan vest painted like a taco shell with felt toppings.
 
-Build time, effort: 45 min + drying / Medium
+Build time, effort: 45 min + 30 min drying / Medium
 
 Materials:
 - Tan vest or tan t-shirt, 1 (own: from closet)
@@ -5084,7 +5093,7 @@ URL: https://pickmycostume.com/c/wayfinder-princess
 
 A printed sailcloth top, grass skirt, and a cardboard hook.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 1 hr drying / Easy
 
 Materials:
 - Tan or brown tank top, 1 (own, or buy: thrift store)
@@ -5117,7 +5126,7 @@ URL: https://pickmycostume.com/c/web-hero-duo
 
 Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - Hero: red and blue sweatsuit, or red shirt with blue pants, 1 set (buy: a set at a discount store, or own: from closet)
@@ -5152,7 +5161,7 @@ URL: https://pickmycostume.com/c/web-slinger-crew
 
 Red, black, and pink hoodies plus masks. Pick your spider.
 
-Build time, effort: 30 min + drying / Easy
+Build time, effort: 30 min + 30 min drying / Easy
 
 Materials:
 - Hoodies in red, black, and pink, 1 per person (buy: at a thrift store, or own: from closet)
@@ -5185,7 +5194,7 @@ URL: https://pickmycostume.com/c/web-slinger-kid
 
 Red sweatsuit, tape web lines, big white eye lenses.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 10 min drying / Easy
 
 Materials:
 - Red sweatsuit or red shirt and pants, 1 set (buy: at a clothing store, or own: from closet)
@@ -5218,7 +5227,7 @@ URL: https://pickmycostume.com/c/wine-cheese
 
 Burgundy wine glass tunic for one, yellow cheese wedge with holes for the other.
 
-Build time, effort: 25 min + drying / Easy
+Build time, effort: 25 min + 30 min drying / Easy
 
 Materials:
 - Burgundy or maroon t-shirt, 1 (own, or buy: thrift store)
@@ -5251,7 +5260,7 @@ URL: https://pickmycostume.com/c/witchy-sisters
 
 Three color-coded witch dresses: green, purple, and orange.
 
-Build time, effort: 35 min + drying / Easy
+Build time, effort: 35 min + 10 min drying / Easy
 
 Materials:
 - Dresses in green, purple, and orange, 3 (buy: thrift store)
@@ -5282,7 +5291,7 @@ URL: https://pickmycostume.com/c/wizard
 
 Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Tall black pointy wizard hat, 1 (buy: costume aisle or craft store)
@@ -5346,7 +5355,7 @@ URL: https://pickmycostume.com/c/zombie-coworker
 
 Torn button-down, loosened tie, pale makeup, coffee mug.
 
-Build time, effort: 20 min + drying / Easy
+Build time, effort: 20 min + 10 min drying / Easy
 
 Materials:
 - Old button-down shirt you can cut up, 1 (own: from closet)
