@@ -251,6 +251,8 @@
   .staple-note{font-size:13px;color:var(--muted);margin:0 0 4px}
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .geo-answer,.geo-faq,.geo-tonight-static{margin:20px 0}.geo-answer h2,.geo-faq h2,.geo-tonight-static h2{font-size:22px;margin:0 0 8px}.geo-answer p,.geo-tonight-static p{line-height:1.55}.geo-faq details{margin:8px 0}.geo-faq summary{cursor:pointer;font-weight:700}.geo-tonight-static ul{margin:8px 0 16px;padding-left:20px}.geo-tonight-static h3{font-size:16px;margin:14px 0 4px}.geo-all-guides{margin:20px 0}.geo-all-guides h2{font-size:22px;margin:0 0 8px}.geo-all-guides details{margin:8px 0}.geo-all-guides summary{cursor:pointer;font-weight:700}.geo-all-guides ul{margin:8px 0 16px;padding-left:20px;columns:2;column-gap:28px;font-size:14px}.geo-all-guides li{break-inside:avoid;margin:3px 0}@media(max-width:600px){.geo-all-guides ul{columns:1}}.browse-more{margin:14px 0 4px;font-size:15px}
+.aiphoto{font-size:11px;color:#9a8fb8;margin:2px 0 8px;}
+.aiphoto-note{font-size:11px;color:#9a8fb8;margin:8px 0 0;}
 </style>
 <script type="application/ld+json">
 {
@@ -314,6 +316,7 @@
         <span>Breakfast Buffet<small>1 supply away</small></span>
       </a>
     </div>
+    <p class="aiphoto-note">Costume photos are AI-generated concept photos.</p>
   </section>
   <p class="sub">We assume your home has the basics, so these costumes lead. Tick anything else you own below and the list reshuffles around your stuff.</p>
   <p class="fresh">Updated for Halloween 2026</p>
@@ -341,7 +344,7 @@
 <section class="geo-tonight-static" id="geo-tonight-static">
   <h2>Make tonight: the full list</h2>
   <p>These are the 16 costumes you can make tonight or with 1&ndash;2 extra supplies, from default household basics. Each links to its full build guide with materials and steps.</p>
-  <h3>Make tonight &mdash; nothing to buy</h3>
+  <h3>Ready with what you have</h3>
   <ul>
     <li><a href="https://pickmycostume.com/c/classic-ghost">Classic Ghost</a> &mdash; a white sheet with cut-out eyes</li>
   </ul>
@@ -1800,6 +1803,7 @@ function cardHtml(r, i, firstEager){
     '<img class="thumb" src="photos/' + r.it.id + '.webp" alt="' + esc(r.it.title) + '"' +
     (firstEager && i === 0 ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"') +
     ' onerror="this.remove()"></div>' +
+    '<div class="aiphoto">AI-generated concept photo</div>' +
     '<div class="cbody"><div class="rank">#' + (i + 1) + '</div>' +
     '<h3>' + esc(r.it.title) + '</h3>' + likelyHtml + needsHtml +
     '<a class="go" href="index.html?pick=' + r.it.id + viaS + '">How to make it</a></div></div>';
@@ -2009,7 +2013,7 @@ function render(){
       '<div class="tphotos">' + top.map(r =>
         '<a class="tphoto" href="index.html?pick=' + r.it.id + viaS + '">' +
         '<img src="photos/' + r.it.id + '.webp" alt="' + esc(r.it.title) + '" loading="lazy" onerror="this.remove()">' +
-        '<span>' + esc(r.it.title) + '</span></a>').join('') + '</div>';
+        '<span>' + esc(r.it.title) + '</span><span class="aiphoto">AI-generated concept photo</span></a>').join('') + '</div>';
   })();
   // unlock suggestions: single-item gaps only, ranked by costumes unlocked
   const unlockMap = {};
