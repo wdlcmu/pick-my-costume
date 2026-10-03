@@ -7914,9 +7914,9 @@ function renderWarmResults(){
      cards. */
   var _tonightBackups = warmTonightIdeas(wearer === "kid" ? "kid" : "solo");
   if (_tonightBackups.length){
-    warmSection(box, "If it does not arrive in time", "Shipping fails sometimes. Each of these can be made tonight from stuff already at home.");
+    warmSection(box, "If it does not arrive in time", "Shipping fails sometimes. Each of these needs only what you already have at home.");
     _tonightBackups.forEach(function(m){
-      var card = warmPairCard(m, "Make tonight: everything it needs is already at home.");
+      var card = warmPairCard(m, "Ready with what you have: everything it needs is already at home.");
       box.appendChild(card);
     });
   }
