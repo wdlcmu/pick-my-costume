@@ -6,6 +6,9 @@ from the bank. This script is the source of truth for:
   - funny-halloween-costumes.html      ("funny halloween costumes")
   - easy-adult-halloween-costumes.html  ("easy halloween costumes for adults")
   - glow-in-the-dark-costumes.html      ("glow in the dark halloween costumes")
+  - cute-halloween-costumes.html        ("cute halloween costumes")
+  - womens-halloween-costumes.html      ("womens halloween costumes")
+  - homemade-halloween-costumes.html    ("homemade halloween costumes")
 
 Reads build times, effort, and materials from INSTRUCTIONS in app.js so cards
 never drift from the guides. Do not hand-edit the outputs; change this script
@@ -76,6 +79,66 @@ PAGES = [
              "They are more visible than most costumes, which drivers appreciate. Keep face openings wide and props soft."),
             ("How long does the glow last?",
              "Glow tape charges in light and fades over a few hours. Hold it under a lamp for 10 minutes before heading out for a recharge."),
+        ],
+    },
+    {
+        "key": "cute-halloween-costumes",
+        "h1": "Cute Halloween Costume Ideas",
+        "title": "Cute Halloween Costumes: 10 Adorable DIY Ideas | Pick My Costume",
+        "desc": "Ten cute DIY Halloween costumes with real build times and step-by-step guides: princesses, fairies, animals, and food cuties.",
+        "lede": "Cute is a strategy. Every costume below scored high on cute in our 164-guide bank, and each one has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "quick": [("fairy-tale-princesses", "Fairy Tale Princesses"), ("tiny-snail", "Tiny Snail"), ("ladybug", "Ladybug")],
+        "quick_tail": "the cutest quick wins below.",
+        "picks": ["fairy-tale-princesses", "garden-fairy", "ladybug", "tiny-snail",
+                  "baby-pumpkin", "blue-heeler-pup", "little-lion", "daisy",
+                  "pocket-plush", "chipmunk-trio"],
+        "faqs": [
+            ("What makes a costume read as cute?",
+             "Soft shapes, round features, and one oversized detail. Animal ears, a tutu, or a plush texture do the work; the build underneath can stay simple."),
+            ("Are these only for kids?",
+             "Most of the picks below are kid and family favorites, but cute scales up. A ladybug or a chipmunk works at any age with the right sizing."),
+            ("Can I make one tonight?",
+             "Yes, most of these take 30 minutes or less of hands-on work. Check the time chip on each card; anything with drying time needs a head start."),
+        ],
+    },
+    {
+        "key": "womens-halloween-costumes",
+        "h1": "Women's Halloween Costume Ideas",
+        "title": "Women's Halloween Costumes: 10 DIY Ideas | Pick My Costume",
+        "desc": "Ten DIY Halloween costumes for women with real build times and step-by-step guides. Witches, cats, divas, and duos.",
+        "lede": "Ten costumes built for adult women, from our 164-guide bank. Each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "quick": [("black-cat", "Black Cat Burglar"), ("deadpan-diva", "Deadpan Diva"), ("emerald-witch", "Emerald Witch")],
+        "quick_tail": "strong solo picks below.",
+        "picks": ["emerald-witch", "deadpan-diva", "vampire", "black-cat",
+                  "tooth-fairy", "deviled-egg", "pirate-captain", "witchy-sisters",
+                  "good-witch-bad-witch", "juke-joint-vampires"],
+        "faqs": [
+            ("I want cute, not scary. What should I pick?",
+             "Start with the Black Cat Burglar or the Tooth Fairy. Both read instantly and neither needs horror makeup."),
+            ("What works for a duo or group?",
+             "Good Witch Bad Witch and the Witchy Sisters give everyone a distinct role with one shared theme. The Tooth Fairy plus Tooth is a classic couple pick."),
+            ("How much time do these take?",
+             "Most are under 30 minutes of hands-on work. Check the time chip on each card; anything with drying time needs a head start."),
+        ],
+    },
+    {
+        "key": "homemade-halloween-costumes",
+        "h1": "Homemade Halloween Costume Ideas",
+        "title": "Homemade Halloween Costumes: 10 Real DIY Builds | Pick My Costume",
+        "desc": "Ten truly homemade Halloween costumes with real build times and step-by-step guides: cardboard builds, closet builds, and paint builds.",
+        "lede": "Actually homemade, not store-bought with a hat. Every costume below is built from cardboard, closet clothes, or craft supplies in our 164-guide bank, each with a free step-by-step guide: real materials, numbered steps, and honest build times.",
+        "quick": [("classic-ghost", "Classic Ghost"), ("error-404", "Error 404"), ("tiny-snail", "Tiny Snail")],
+        "quick_tail": "the simplest builds below.",
+        "picks": ["pizza-slice", "tiny-snail", "cardboard-knight", "robot-crew",
+                  "classic-ghost", "error-404", "toy-box-crew", "boxer",
+                  "walking-taco", "chill-painter"],
+        "faqs": [
+            ("What counts as homemade here?",
+             "Builds made from household stuff: cardboard boxes, closet clothes, sheets, felt, and paint. If the guide's first material is a store costume, it did not make this list."),
+            ("I have zero craft skills. Where do I start?",
+             "The Classic Ghost or Error 404. One is a sheet with eye holes, the other is a hoodie and paper. Both take 10 minutes."),
+            ("What about cardboard builds with kids?",
+             "The Pizza Slice, Tiny Snail, and Cardboard Knight are built for exactly that: big cardboard, kid-safe steps, and paint."),
         ],
     },
 ]
