@@ -442,6 +442,18 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .proofrow::-webkit-scrollbar{display:none}
 /* 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
+/* 2026-10-03 (Billy): homepage simplification. Tonight section, featured
+   guides grid, and the More expander. */
+.tonightsec{margin-top:18px}
+.featsec{margin-top:18px}
+.featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.featgrid a{display:block;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
+.featgrid img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.featgrid span{display:block;font-size:12px;color:var(--text);text-align:center;padding:6px 6px 0;line-height:1.3;font-weight:600}
+.featgrid .proofmeta{padding:2px 6px 8px}
+.moresec{margin-top:20px;text-align:center}
+.morebtn{background:var(--card);color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px}
+#more-body{text-align:left}
 /* 2026-09-26 (landing refresh): proof-card entrance. A soft staggered
    fade-up on first paint only; the .fresh gate below is retired by JS ~1.2s
    after load, so Discover tab switches (un-hiding a row restarts its cards'
@@ -1168,15 +1180,12 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
       <div class="herotext">
       <h1 class="firstonly">A Halloween costume picked for you.</h1>
-      <!-- 2026-09-29: countdown sits directly under the tagline, above
-           the CTA. Populated by the tminus renderer; keep the id. -->
-      <p class="tminus" id="tminus" style="display:none"></p>
+      <!-- 2026-10-03 (Billy): homepage simplification. Hero slimmed to
+           headline + one button + the no-signup line. The countdown, the
+           honestline, and the galaxy detour drop out of the hero (the
+           galaxy keeps its nav link for explorers). -->
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
-      <!-- 2026-09-30 delight: hero promise, plain. -->
-      <p class="fine honestline firstonly">Answer 5 quick questions. Get your costume pick with build time and a step-by-step plan.</p>
       <p class="fine firstonly" style="margin:6px 0 0">No signup · 2 minutes · free</p>
-    <!-- 2026-10-01: galaxy elevated to secondary CTA under the quiz hero. -->
-    <p class="fine firstonly" style="margin:8px 0 0">Rather wander? <a href="/map/">Explore all 164 as a galaxy</a> &#8594;</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
            The Trending tab below shows the photos; a text list of names was
@@ -1229,15 +1238,39 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <a href="/c/walking-taco" aria-label="Walking Taco costume guide"><img src="photos/walking-taco.webp" srcset="photos/walking-taco-256.webp 256w, photos/walking-taco-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Walking Taco costume" loading="eager"><span>Walking Taco</span></a>
 </div>
 </div>
-      <!-- 2026-09-29: Kids zone. The games chips and the kid-favorites
-           rail grouped under one heading (was: chips in the hero, rail far
-           below the storytime rail). Unit: kids-bar, kids-rail. -->
+      <!-- 2026-10-03 (Billy): homepage simplification. "Make it tonight"
+           promoted from a tab to its own always-visible section right under
+           the hero. JS-rendered by renderTonightSection() from the stored
+           idea.tonight predicate (time-only: hands-on <= 30 min AND
+           hands-on + drying <= 120 min). Unit: tonight-section. -->
+      <section class="tonightsec" id="tonight-section" aria-label="Costumes you can make tonight">
+        <h2 class="q-title">Make it tonight</h2>
+        <p class="fine" style="margin:0 0 10px">Start after dinner, done before bed. Drying time shown honestly.</p>
+        <div class="proofrow" id="row-tonight-live" role="list" aria-label="Costumes you can make tonight"></div>
+        <p class="fine" id="row-tonight-live-status" style="margin:8px 0 0" hidden></p>
+      </section>
+      <!-- 2026-10-03 (Billy): homepage simplification. Search moves below
+           the tonight rail as a single simple box; the hero chip row is
+           removed to cut decisions (pinpoint-chips no longer rendered). -->
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
-        <p class="fine" style="margin:0 0 6px">Search <span id="hero-search-count">164</span> costumes directly</p>
-        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. vampire" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
-        <div class="pinpoint-chips" id="pinpoint-chips"></div>
+        <p class="fine" style="margin:0 0 6px">Know what you want?</p>
+        <p class="fine" style="margin:0 0 6px">Search all <span id="hero-search-count">164</span> costumes directly.</p>
+        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
-</div>
+      </div>
+      <!-- 2026-10-03 (Billy): homepage simplification. Three featured guides
+           as static cards, giving scanners an instant answer. Copy is
+           deliberately unranked ("start with a classic"), not "most-opened".
+           Unit: featured-guides. -->
+      <section class="featsec" id="featured" aria-label="Start with a classic">
+        <h2 class="q-title">Start with a classic</h2>
+        <p class="fine" style="margin:0 0 10px">Three easy builds to get you going.</p>
+        <div class="featgrid">
+          <a href="/c/classic-ghost" aria-label="Classic Ghost costume guide"><img src="photos/classic-ghost.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="128px" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span><span class="proofmeta">10 min · Easy</span></a>
+          <a href="/c/blue-dog-family" aria-label="Aussie Dog Family costume guide"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span><span class="proofmeta">25 min · Easy</span></a>
+          <a href="/c/vampire" aria-label="Classic Vampire costume guide"><img src="photos/vampire.webp" srcset="photos/vampire-256.webp 256w, photos/vampire-480.webp 480w" sizes="128px" alt="Classic Vampire costume" loading="lazy"><span>Classic Vampire</span><span class="proofmeta">25 min · Easy</span></a>
+        </div>
+      </section>
       <!-- 2026-09-27: Kid favorites moved above Discover (kid-first
            order). Curated rail, F/M/F/M visual rhythm, generic names only
            (never licensed character names). When web-slinger-kid's photo
@@ -1245,55 +1278,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-09-26: tabbed Discover feed. One section with three
            collections (Trending / Make tonight / New) instead of stacked
            rails, so discovery never competes with the quiz CTA. -->
-      <div class="discover" id="discover">
-        <p class="fine" style="margin:14px 0 0">Discover costumes · <a href="/compare" style="color:var(--accent)">Easy classics, compared →</a></p>
-        <div class="chiprow" role="tablist" aria-label="Costume collections">
-          <button class="chip on" role="tab" aria-selected="true" aria-controls="row-trending" data-tab="row-trending" type="button">Trending</button>
-          <button class="chip" role="tab" aria-selected="false" aria-controls="row-tonight" data-tab="row-tonight" type="button">Make tonight</button>
-          <button class="chip" role="tab" aria-selected="false" aria-controls="row-new" data-tab="row-new" type="button">New</button>
-</div>
-        <div class="proofstrip" style="margin-top:8px">
-          <!-- Proof-strip photo-quality blocklist (never promote): neon-demon-hunter (taste + never top-saved, permanent), wizard (adult-presenting photo). tin-hero re-verified 2026-09-26 (regenerated: kid now, cleared). -->
-          <div class="proofrow" id="row-trending" role="tabpanel" aria-label="Popular costumes this week">
-            <!-- 2026-09-30 delight: no invented numeric ranks. The rail shows
-                 popular costumes; the #1/#2/#3 marks implied a measured
-                 ranking we don't publish, so they're gone. -->
-            <a href="/?idea=snow-sisters&from=rail"><img src="photos/snow-sisters.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w, photos/snow-sisters-960.webp 960w" sizes="128px" alt="Ice Kingdom Crew costume" loading="lazy"><span>Ice Kingdom Crew</span></a>
-            <a href="/?idea=tin-hero&from=rail"><img src="photos/tin-hero.webp" srcset="photos/tin-hero-256.webp 256w, photos/tin-hero-480.webp 480w, photos/tin-hero-960.webp 960w" sizes="128px" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
-            <a href="/?idea=lost-tourist&from=rail"><img src="photos/lost-tourist.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="128px" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-            <a href="/?idea=blue-dog-family&from=rail"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w, photos/blue-dog-family-960.webp 960w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
-            <a href="/?idea=mermaid-crew&from=rail"><img src="photos/mermaid-crew.webp" srcset="photos/mermaid-crew-256.webp 256w, photos/mermaid-crew-480.webp 480w, photos/mermaid-crew-960.webp 960w" sizes="128px" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
-            <a href="/?idea=ghost-hunters&from=rail"><img src="photos/ghost-hunters.webp" srcset="photos/ghost-hunters-256.webp 256w, photos/ghost-hunters-480.webp 480w" sizes="128px" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
-            <a href="/?idea=little-pig-family&from=rail"><img src="photos/little-pig-family.webp" srcset="photos/little-pig-family-256.webp 256w, photos/little-pig-family-480.webp 480w" sizes="128px" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
-            <a href="/?idea=breakfast-buffet&from=rail"><img src="photos/breakfast-buffet.webp" srcset="photos/breakfast-buffet-256.webp 256w, photos/breakfast-buffet-480.webp 480w" sizes="128px" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
-</div>
-          <!-- 2026-09-27 honest "Make tonight" rail: JS-rendered by
-               renderTonightRail() from the live PANTRY_MATS data. An idea
-               appears here ONLY when pantryMissing(idea.id) === 0 under the
-               viewer's real pantry ticks -- the same predicate as the
-               quiz-result "Make tonight" badge. Hand-picked cards were removed:
-               every one of them needed a store run. -->
-          <div class="proofrow" id="row-tonight" role="tabpanel" aria-label="Costumes you can make tonight" hidden></div>
-          <p class="fine" id="row-tonight-status" style="margin:8px 0 0" hidden></p>
-          <div class="proofrow" id="row-new" role="tabpanel" aria-label="New costumes this week" hidden>
-            <a href="/?idea=beekeeper-bee&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/beekeeper-bee.webp" srcset="photos/beekeeper-bee-256.webp 256w, photos/beekeeper-bee-480.webp 480w, photos/beekeeper-bee-960.webp 960w" sizes="128px" alt="Beekeeper and Bee costume" loading="lazy"><span>Beekeeper &amp; Bee</span></a>
-            <a href="/?idea=little-prince&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-prince.webp" srcset="photos/little-prince-256.webp 256w, photos/little-prince-480.webp 480w, photos/little-prince-960.webp 960w" sizes="128px" alt="Little Prince costume" loading="lazy"><span>Little Prince</span></a>
-            <a href="/?idea=tetris-duo&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/tetris-duo.webp" srcset="photos/tetris-duo-256.webp 256w, photos/tetris-duo-480.webp 480w, photos/tetris-duo-960.webp 960w" sizes="128px" alt="Block Party Duo costume" loading="lazy"><span>Block Party Duo</span></a>
-            <a href="/?idea=little-lifeguard&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-lifeguard.webp" srcset="photos/little-lifeguard-256.webp 256w, photos/little-lifeguard-480.webp 480w, photos/little-lifeguard-960.webp 960w" sizes="128px" alt="Little Lifeguard costume" loading="lazy"><span>Little Lifeguard</span></a>
-            <a href="/?idea=fossil-hunter&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" srcset="photos/fossil-hunter-256.webp 256w, photos/fossil-hunter-480.webp 480w, photos/fossil-hunter-960.webp 960w" sizes="128px" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
-</div>
-</div>
-        <!-- 2026-09-26 (landing refresh, proof-strip v2): the planned
-             "Most-saved this week: Snow Sisters" anchor line was dropped in QA
-             (2026-09-26): the tabbed feed's rank pills (already shipped) say
-             the same thing on the card itself, so the text line read as
-             repetition to a cold user. The living-feed honesty line stays: it
-             makes staleness visible instead of dishonest. Refresh the rank
-             pills + this line with the Monday cron. -->
-        <!-- 2026-09-30 delight: the "ranks refresh every Monday" line is gone
-             with the rank badges. The rail shows popular costumes, nothing
-             more. -->
-</div>
       <!-- 2026-10-01: search-trends teaser card -> /trending (real
            weekly Pinterest Trends data). One card, static markup.
            Unit: trends-search-teaser. -->
@@ -1344,12 +1328,36 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <a href="/play?game=chopped">Chopped</a>
 </div>
         <p class="fine" style="margin:6px 0 0">Guess who&#8217;s hiding, pair the pieces, or build a costume from a mystery basket.</p>
-        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">👕 What materials or clothes are already in your house?</a></p>
-      <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 164 ideas by what you can build tonight.</p>
-        <!-- 2026-09-29: tools as a horizontal tab row. One tap reveals
-             the tool inline below; only one panel open at a time. Every tool
-             stays reachable; panels reuse the existing destinations instead of
-             duplicating flows. Unit: tools-bar. -->
+      <p style="margin:16px 0 0" hidden><button type="button" id="btn-spin" class="ghost">Can&#39;t decide?</button></p>
+      <!-- 2026-10-03 (Billy): homepage simplification. The More expander:
+           trending + new rails, tool tabs, pantry teaser, and FAQ live here.
+           New visitors get quiz -> tonight -> search -> featured; everything
+           else is one tap away. Unit: more-expander. -->
+      <div class="moresec" id="more-wrap" style="margin-top:20px">
+        <button class="morebtn" id="more-btn" type="button" aria-expanded="false" aria-controls="more-body">More: trending, tools, pantry, FAQ &darr;</button>
+        <div id="more-body" hidden>
+      <p class="fine" style="margin:14px 0 0">Popular costumes</p>
+          <div class="proofrow" id="row-trending" role="list" aria-label="Popular costumes this week">
+            <!-- 2026-09-30 delight: no invented numeric ranks. The rail shows
+                 popular costumes; the #1/#2/#3 marks implied a measured
+                 ranking we don't publish, so they're gone. -->
+            <a href="/?idea=snow-sisters&from=rail"><img src="photos/snow-sisters.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w, photos/snow-sisters-960.webp 960w" sizes="128px" alt="Ice Kingdom Crew costume" loading="lazy"><span>Ice Kingdom Crew</span></a>
+            <a href="/?idea=tin-hero&from=rail"><img src="photos/tin-hero.webp" srcset="photos/tin-hero-256.webp 256w, photos/tin-hero-480.webp 480w, photos/tin-hero-960.webp 960w" sizes="128px" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
+            <a href="/?idea=lost-tourist&from=rail"><img src="photos/lost-tourist.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="128px" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
+            <a href="/?idea=blue-dog-family&from=rail"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w, photos/blue-dog-family-960.webp 960w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+            <a href="/?idea=mermaid-crew&from=rail"><img src="photos/mermaid-crew.webp" srcset="photos/mermaid-crew-256.webp 256w, photos/mermaid-crew-480.webp 480w, photos/mermaid-crew-960.webp 960w" sizes="128px" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
+            <a href="/?idea=ghost-hunters&from=rail"><img src="photos/ghost-hunters.webp" srcset="photos/ghost-hunters-256.webp 256w, photos/ghost-hunters-480.webp 480w" sizes="128px" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
+            <a href="/?idea=little-pig-family&from=rail"><img src="photos/little-pig-family.webp" srcset="photos/little-pig-family-256.webp 256w, photos/little-pig-family-480.webp 480w" sizes="128px" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
+            <a href="/?idea=breakfast-buffet&from=rail"><img src="photos/breakfast-buffet.webp" srcset="photos/breakfast-buffet-256.webp 256w, photos/breakfast-buffet-480.webp 480w" sizes="128px" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
+</div>
+      <p class="fine" style="margin:14px 0 0">New costumes</p>
+          <div class="proofrow" id="row-new" role="list" aria-label="New costumes this week">
+            <a href="/?idea=beekeeper-bee&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/beekeeper-bee.webp" srcset="photos/beekeeper-bee-256.webp 256w, photos/beekeeper-bee-480.webp 480w, photos/beekeeper-bee-960.webp 960w" sizes="128px" alt="Beekeeper and Bee costume" loading="lazy"><span>Beekeeper &amp; Bee</span></a>
+            <a href="/?idea=little-prince&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-prince.webp" srcset="photos/little-prince-256.webp 256w, photos/little-prince-480.webp 480w, photos/little-prince-960.webp 960w" sizes="128px" alt="Little Prince costume" loading="lazy"><span>Little Prince</span></a>
+            <a href="/?idea=tetris-duo&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/tetris-duo.webp" srcset="photos/tetris-duo-256.webp 256w, photos/tetris-duo-480.webp 480w, photos/tetris-duo-960.webp 960w" sizes="128px" alt="Block Party Duo costume" loading="lazy"><span>Block Party Duo</span></a>
+            <a href="/?idea=little-lifeguard&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-lifeguard.webp" srcset="photos/little-lifeguard-256.webp 256w, photos/little-lifeguard-480.webp 480w, photos/little-lifeguard-960.webp 960w" sizes="128px" alt="Little Lifeguard costume" loading="lazy"><span>Little Lifeguard</span></a>
+            <a href="/?idea=fossil-hunter&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" srcset="photos/fossil-hunter-256.webp 256w, photos/fossil-hunter-480.webp 480w, photos/fossil-hunter-960.webp 960w" sizes="128px" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
+</div>
         <div class="tooltabrow" id="tool-tabs" role="tablist" aria-label="Costume tools" style="margin-top:12px">
           <button class="tooltab" type="button" role="tab" id="toolt-handmedown" aria-selected="false" aria-controls="toolpanel-handmedown" data-item-id="handmedown">♻️ Closet refresh</button>
           <button class="tooltab" type="button" role="tab" id="toolt-flyer" aria-selected="false" aria-controls="toolpanel-flyer" data-item-id="flyer">🖨️ Printables</button>
@@ -1379,7 +1387,67 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <p style="margin:0"><button type="button" id="btn-shuffler-hero" class="textlink">🎲 Shuffle who&rsquo;s who</button></p>
 </div>
 </div>
-      <p style="margin:16px 0 0" hidden><button type="button" id="btn-spin" class="ghost">Can&#39;t decide?</button></p>
+        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">👕 What materials or clothes are already in your house?</a></p>
+      <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 164 ideas by what you can build tonight.</p>
+  <section id="faq" aria-label="Frequently asked questions" style="margin-top:28px">
+    <h2 class="q-title">Good questions</h2>
+    <div class="faq-item">
+      <button type="button" class="faq-q" data-item-id="faq-1" aria-expanded="false">What should I be for Halloween?</button>
+      <div class="faq-a"><p>Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe and timeline. Every pick comes with a free DIY build guide that shows the build time and full supplies list up front.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" data-item-id="faq-2" aria-expanded="false">I need a costume for tonight. What is actually last-minute?</button>
+      <div class="faq-a"><p>Open the pantry page and tick off what you already own. It ranks all 164 ideas by what you can make tonight with zero shopping, what needs one purchase, and what needs two.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" data-item-id="faq-3" aria-expanded="false">What are some cheap couples costumes?</button>
+      <div class="faq-a"><p>Take the quiz as a couple. Every build guide lists what you need before you start, and the ideas are designed around thrift-store and closet basics.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" data-item-id="faq-4" aria-expanded="false">Do you have costume ideas for kids?</button>
+      <div class="faq-a"><p>Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones.</p></div>
+    </div>
+    <div class="faq-item">
+      <button type="button" class="faq-q" data-item-id="faq-5" aria-expanded="false">Is it really free?</button>
+      <div class="faq-a"><p>Yes. No account, no ads, no checkout. It is a hobby project, free forever.</p></div>
+    </div>
+  </section>
+  <script>
+  /* 2026-09-30 (Billy): FAQ toggles. Answers start collapsed (CSS hides
+     .faq-a when its button reads aria-expanded="false"); each question
+     collapses or reopens its answer. */
+  (function(){
+    var faq = document.getElementById("faq");
+    if (!faq) return;
+    faq.addEventListener("click", function(e){
+      var b = e.target && e.target.closest ? e.target.closest(".faq-q") : null;
+      if (!b || !faq.contains(b)) return;
+      var a = b.parentNode.querySelector(".faq-a");
+      if (!a) return;
+      var open = b.getAttribute("aria-expanded") === "true";
+      b.setAttribute("aria-expanded", String(!open));
+      a.style.display = open ? "none" : "";
+    });
+  })();
+  </script>
+        </div>
+      </div>
+      <script>
+      /* 2026-10-03 (Billy): More expander toggle. One tap reveals the rails,
+         tools, pantry teaser, and FAQ; tapping again collapses. */
+      (function(){
+        var b = document.getElementById("more-btn");
+        var body = document.getElementById("more-body");
+        if (!b || !body) return;
+        b.addEventListener("click", function(){
+          var open = b.getAttribute("aria-expanded") === "true";
+          b.setAttribute("aria-expanded", String(!open));
+          body.hidden = open;
+          b.innerHTML = open ? "More: trending, tools, pantry, FAQ &darr;"
+                            : "Less &uarr;";
+        });
+      })();
+      </script>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
         <p class="fine" style="margin:0 0 8px">Here&#39;s a pick for you:</p>
         <div id="spin-media" aria-hidden="true"></div>
@@ -1724,47 +1792,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        toggles, instrumented like every other content unit). The FAQPage
        JSON-LD in <head> mirrors these Q&As verbatim; the content stays in
        the DOM so the schema and the visible section never drift. -->
-  <section id="faq" aria-label="Frequently asked questions" style="margin-top:28px">
-    <h2 class="q-title">Good questions</h2>
-    <div class="faq-item">
-      <button type="button" class="faq-q" data-item-id="faq-1" aria-expanded="false">What should I be for Halloween?</button>
-      <div class="faq-a"><p>Take the 2-minute quiz: 5 quick questions, one pick matched to your vibe and timeline. Every pick comes with a free DIY build guide that shows the build time and full supplies list up front.</p></div>
-    </div>
-    <div class="faq-item">
-      <button type="button" class="faq-q" data-item-id="faq-2" aria-expanded="false">I need a costume for tonight. What is actually last-minute?</button>
-      <div class="faq-a"><p>Open the pantry page and tick off what you already own. It ranks all 164 ideas by what you can make tonight with zero shopping, what needs one purchase, and what needs two.</p></div>
-    </div>
-    <div class="faq-item">
-      <button type="button" class="faq-q" data-item-id="faq-3" aria-expanded="false">What are some cheap couples costumes?</button>
-      <div class="faq-a"><p>Take the quiz as a couple. Every build guide lists what you need before you start, and the ideas are designed around thrift-store and closet basics.</p></div>
-    </div>
-    <div class="faq-item">
-      <button type="button" class="faq-q" data-item-id="faq-4" aria-expanded="false">Do you have costume ideas for kids?</button>
-      <div class="faq-a"><p>Yes. Take the quiz for your kid to get age-appropriate picks, and every guide includes safety notes for little ones.</p></div>
-    </div>
-    <div class="faq-item">
-      <button type="button" class="faq-q" data-item-id="faq-5" aria-expanded="false">Is it really free?</button>
-      <div class="faq-a"><p>Yes. No account, no ads, no checkout. It is a hobby project, free forever.</p></div>
-    </div>
-  </section>
-  <script>
-  /* 2026-09-30 (Billy): FAQ toggles. Answers start collapsed (CSS hides
-     .faq-a when its button reads aria-expanded="false"); each question
-     collapses or reopens its answer. */
-  (function(){
-    var faq = document.getElementById("faq");
-    if (!faq) return;
-    faq.addEventListener("click", function(e){
-      var b = e.target && e.target.closest ? e.target.closest(".faq-q") : null;
-      if (!b || !faq.contains(b)) return;
-      var a = b.parentNode.querySelector(".faq-a");
-      if (!a) return;
-      var open = b.getAttribute("aria-expanded") === "true";
-      b.setAttribute("aria-expanded", String(!open));
-      a.style.display = open ? "none" : "";
-    });
-  })();
-  </script>
 
   <!-- 2026-10-01 (Billy): footer killed -- the About/Privacy + SEO-link
        block added visual noise at the bottom of the homepage without earning
