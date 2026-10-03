@@ -2469,7 +2469,7 @@ function buildInstructions(idea, opts){
       wrap.appendChild(tp);
     }
     /* 2026-09-26 red-team P1: safety steps were stripped from the app
-       with no path to the full guide (114/164 have them). They render here as
+       with no path to the full guide (120/169 have them). They render here as
        a compact safety block, not counted in the 5 steps. */
     var safeties = [];
     ins.s.forEach(function(s){
@@ -3131,7 +3131,7 @@ function shareCaptionFor(idea){
   if (capLow.indexOf("going as") !== -1 || capLow.indexOf(String(idea.title).toLowerCase()) !== -1) return cap;
   return line + " " + cap;
 }
-/* 2026-09-25 pantry-aware experiment helpers. PANTRY_MATS is the regenerated    164-idea requirement map: {staples:[6 pantry ids], mats:{ideaId:[materials]}}.
+/* 2026-09-25 pantry-aware experiment helpers. PANTRY_MATS is the regenerated    169-idea requirement map: {staples:[6 pantry ids], mats:{ideaId:[materials]}}.
    Each material is an AND-item; each material holds OR-groups of pantry ids;
    null inside a group means honestly still-need (never satisfied by ticking).
    2026-09-27 D5 fix: this block is a pure port of pantry.html DATA mats
@@ -5360,7 +5360,7 @@ function pairTextFor(idea, sid){
   return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match mine: " + link;
 }
 /* 2026-09-26 costume roulette experiment ("Can't decide? Let me pick for you"): a zero-question entry point for the undecided. Uniform
-   random over all 164 ideas, one tap, no quiz -- the funnel for the
+   random over all 169 ideas, one tap, no quiz -- the funnel for the
    weakest link in the share loop, the procrastinator who never starts.
    The result card carries its own share path with new share origin "spin"
    (link: https://pickmycostume.com/?s=<sid>&o=spin&spin=<slug>), so the
@@ -5814,7 +5814,7 @@ function startSpin(source){
   again.disabled = true; shareBtn.disabled = true;
   var guideLink = $("spin-guide-link");
   if (guideLink) guideLink.style.visibility = "hidden"; /* hide the stale link until landing */
-  /* The pick is drawn once, up front, uniformly over all 164 ideas, and      revealed immediately with a short fade -- a tool answering, not a
+  /* The pick is drawn once, up front, uniformly over all 169 ideas, and      revealed immediately with a short fade -- a tool answering, not a
      casino wheel. (The 3.7s slot-machine ticker was removed 2026-09-26.) */
   var target = IDEAS[Math.floor(Math.random() * IDEAS.length)];
   $("spin-media").innerHTML = "";
@@ -9555,7 +9555,7 @@ function browseCard(idea){
     /* Red-team 2026-09-27: the hero promises every idea shows how long it
        takes before you click. Quiz result cards carry the factrow, but
        browse cards showed title + blurb only. INSTRUCTIONS has
-       time+effort for all 164 ideas, so the shelf keeps the promise. */
+       time+effort for all 169 ideas, so the shelf keeps the promise. */
     var _bins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
     var bmeta = null;
     if (_bins && _bins.time){
