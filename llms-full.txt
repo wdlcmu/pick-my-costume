@@ -1,17 +1,50 @@
 # Pick My Costume: full build-guide corpus
 
-> Complete Markdown text of pickmycostume.com's 164 Halloween costume build guides,
+> Complete Markdown text of pickmycostume.com's 169 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
 > Generated: 2026-10-03. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
 - Pick My Costume (https://pickmycostume.com/) is a free Halloween costume idea finder.
-- 164 costume ideas. Every idea has a materials list and numbered step-by-step build instructions.
-- 16 of the 164 ideas need zero to two supplies beyond default household basics (pantry audit, Oct 2026).
+- 169 costume ideas. Every idea has a materials list and numbered step-by-step build instructions.
+- 16 of the 169 ideas need zero to two supplies beyond default household basics (pantry audit, Oct 2026).
 - Licensed characters are deliberately excluded from the bank.
 
-## All 164 build guides
+## All 169 build guides
+
+### Amazon Warrior
+
+URL: https://pickmycostume.com/c/amazon-warrior
+
+Red, blue, and gold with star accents and cuff bracelets: battle-ready like a kid goddess.
+
+Build time, effort: 40 min / Easy
+
+Materials:
+- Red top, 1 (own, or buy: thrift store)
+- Blue shorts or skirt, 1 (own)
+- Gold craft foam for cuffs, 1 sheet (buy: craft store)
+- Gold star stickers, 1 pack (buy: craft store)
+- Red headband, 1 (own, or buy: dollar store)
+- Gold and red non-toxic face paint, 1 set (buy: toy store)
+- Scissors, 1 pair
+
+Steps:
+1. Pull on the red top and the blue shorts or skirt.
+2. Cut two wide cuffs from the gold craft foam and tape them closed around the wrists.
+3. Stick gold star stickers across the red top and one on each cheek.
+4. Safety: keep face paint clear of the eyes, and keep the foam cuffs loose enough to slide a finger underneath.
+5. Paint one bold stripe of red and gold across one cheek, then pull on the red headband.
+6. Optional pro finish: cut a gold star from leftover foam and glue it to the headband. The headband star is the photo moment.
+
+Q: What if I cannot find gold craft foam?
+A: Cut the cuffs from cardboard and cover them in gold stickers or yellow tape. The shape reads as cuffs before the color does.
+
+Q: How do the cuffs stay on?
+A: Tape each cuff into a loose tube that slides over the hand. Snug enough to stay, loose enough to slide off fast.
+
+---
 
 ### Astronaut
 
@@ -2339,6 +2372,40 @@ A: A very dark gray or navy reads black in party lighting. The braids and makeup
 
 ---
 
+### Goth Schoolgirl
+
+URL: https://pickmycostume.com/c/goth-schoolgirl
+
+Plaid skirt, black cardigan over a white collar, and braided pigtails with pale makeup.
+
+Build time, effort: 30 min / Easy
+
+Materials:
+- Plaid skirt or black skirt, 1 (own, or buy: thrift store)
+- White collared shirt, 1 (own)
+- Black cardigan or sweater, 1 (own)
+- Black tights, 1 pair (own, or buy: dollar store)
+- Hair ties, 2 (own)
+- Pale foundation or white face paint, 1 (buy: drugstore or craft store)
+- Black eyeliner, 1 (own, or buy: drugstore)
+- Dark lipstick, 1 (own)
+
+Steps:
+1. Pull on the white collared shirt, the plaid skirt, the black cardigan, and the black tights.
+2. Part hair down the middle and braid two low pigtails, tying each off with a hair tie.
+3. Apply the pale foundation or white face paint evenly, blending at the jawline.
+4. Safety: keep all makeup clear of the eyes, and do a small skin patch test first if the skin is sensitive.
+5. Line the eyes with black eyeliner and finish with dark lipstick.
+6. Optional pro finish: paint the nails dark and carry a stack of books. The books sell the schoolgirl half of the look.
+
+Q: Can a younger kid wear this?
+A: Yes. Skip the dark lipstick for under-7s and keep the pale makeup to a light dusting of powder. The uniform and pigtails carry the costume.
+
+Q: What if I do not own a plaid skirt?
+A: A plain black skirt works the same. The white collar plus black cardigan is what reads schoolgirl; the plaid is a bonus.
+
+---
+
 ### Haunted Animatronics
 
 URL: https://pickmycostume.com/c/haunted-animatronics
@@ -2551,6 +2618,38 @@ A: White sneakers or white boots. Nobody sees feet past the laced calves; the ri
 
 Q: How do you get the perfect skater bun?
 A: A hair donut plus bobby pins, twist the hair around the donut and pin every inch. The donut is the difference between a bun and a lump.
+
+---
+
+### Jester Villainess
+
+URL: https://pickmycostume.com/c/jester-villainess
+
+A red-and-black split outfit, playful villain makeup, and pigtails tied with ribbons.
+
+Build time, effort: 45 min / Easy
+
+Materials:
+- Red top, 1 (own, or buy: thrift store)
+- Black bottoms, 1 pair (own)
+- Red and black non-toxic face paint, 1 set (buy: toy store)
+- Ribbon for pigtails, 2 pieces (buy: craft store)
+- Black eyeliner, 1 (own, or buy: drugstore)
+- Hair ties, 2 (own)
+
+Steps:
+1. Wear the red top with the black bottoms, splitting red to one side and black to the other where you can.
+2. Tie hair into two high pigtails and knot a ribbon around each.
+3. Paint a playful grin: red lips stretched wide with black diamond accents at the outer eyes.
+4. Safety: keep face paint clear of the eyes, and remove it with gentle soap and water before bed.
+5. Line the eyes heavily with black eyeliner.
+6. Optional pro finish: paint one nail red and one black on each hand. The tiny split detail photographs great.
+
+Q: How do I get the split-color look without sewing?
+A: Wear a red top with black bottoms, then add a black glove on one hand and a red ribbon on the other side. Asymmetry reads as split.
+
+Q: Will the face paint last all night?
+A: Set it with a light dusting of translucent powder. Bring the eyeliner for touch-ups; the grin is the part people photograph.
 
 ---
 
@@ -3272,6 +3371,37 @@ A: It glows under blacklight and looks electric in daylight. Under normal indoor
 
 Q: Toy sword or foam sword?
 A: Foam. Toy plastic swords snap and leave sharp edges; foam swords survive all-night duels and venue security.
+
+---
+
+### Masked Night Hero
+
+URL: https://pickmycostume.com/c/night-hero
+
+A dark cowl and a cape cut from an old t-shirt, ready for rooftop patrol.
+
+Build time, effort: 35 min / Easy
+
+Materials:
+- Old pillowcase or t-shirt for the cape, 1 (make: cut up)
+- Black shirt and pants or sweatsuit (own)
+- Black felt for the cowl mask, 1 sheet (buy: craft store)
+- Safety pins, 4
+- Scissors, 1 pair
+
+Steps:
+1. Cut the cape: lay the old pillowcase or t-shirt flat and cut a wide rectangle, keeping it above the knees.
+2. Safety: an adult handles the scissors for the cape cut, and pin the cape at the shoulders, never tie anything around the neck.
+3. Pin the cape at the shoulders of the black shirt with the safety pins.
+4. Cut two eye holes in the black felt and tie it on as a cowl mask.
+5. Pull on the black shirt and pants, pin the cape, tie the mask.
+6. Optional pro finish: cut a small bat shape from leftover felt and pin it to the chest. One silhouette doubles the recognition.
+
+Q: How do you keep the mask on?
+A: Tie the felt strip snugly and knot it twice at the back. Felt grips hair better than paper, so it stays put through trick-or-treating.
+
+Q: Is the cape safe for a young kid?
+A: Keep it short, above the knees, and pin it at the shoulders, never tie it around the neck. A pinned cape pulls free if it snags.
 
 ---
 
@@ -4950,6 +5080,38 @@ A: One person wears the all-white outfit with the big tooth on the chest, the ot
 
 Q: Is the wire hanger safe for wings?
 A: Yes if you tape down every sharp wire end and keep the taped ends at the back on the cardboard. For small kids, use felt wings with no wire at all.
+
+---
+
+### Toothy Plush Monster
+
+URL: https://pickmycostume.com/c/toothy-plush
+
+A fuzzy onesie with tall ears and a huge felt-tooth grin, plus a keychain ring for collecting.
+
+Build time, effort: 40 min / Easy
+
+Materials:
+- Fuzzy one-piece pajamas or sweatsuit, 1 (buy: thrift store, or own: from closet)
+- White felt for the teeth, 1 sheet (buy: craft store)
+- Felt for tall ears, 2 pieces (buy: craft store)
+- Keychain ring or carabiner, 1 (buy: dollar store)
+- Fabric glue, 1 tube (buy: craft store)
+- Scissors, 1 pair
+
+Steps:
+1. Cut two tall ears from felt and glue them to the hood, angled slightly outward.
+2. Cut a row of big triangle teeth from the white felt and glue them in a grin across the chest.
+3. Safety: use non-toxic fabric glue, keep small felt scraps away from toddlers, and let everything dry fully before wearing.
+4. Clip the keychain ring to a belt loop or the onesie zipper pull like a collectible tag.
+5. Pull on the fuzzy onesie and fluff the ears upright.
+6. Optional pro finish: glue two smaller teeth to the sleeve cuffs as claws. Teeth on the grin plus teeth on the hands sells the mischief.
+
+Q: How is this different from the other plush monsters?
+A: This one grins with big felt teeth instead of a stitched smile, and the keychain ring makes it the collectible of the group.
+
+Q: Will the felt teeth stay on?
+A: Yes if the glue dries fully: press each tooth for thirty seconds and let the onesie sit flat for an hour before wearing.
 
 ---
 
