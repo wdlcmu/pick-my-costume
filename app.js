@@ -10352,8 +10352,8 @@ var ENTRY_UTM_SOURCE = null;
 /* STEP 1 (2026-10-01): source mapping for plan_commit / email_submit /
    calendar_add / share_click / share_complete. Entry paths compare against
    the existing guide_viewed -> guide_cta_clicked funnel on /c/ pages.
-     connector = arrived via a connector (utm_source=claude-connector or
-                 chatgpt-app). Checked first: an explicit channel signal
+     connector = arrived via a connector (utm_source=claude-connector,
+                 chatgpt-app, or the connector default "connector"). Checked first: an explicit channel signal
                  beats the inferred path. A lazy location.search read backs
                  up the boot capture in case the URL was scrubbed later
                  (e.g. the detail screen's Home tap clears all params).
@@ -10377,7 +10377,7 @@ function resolvePlanSource(hint){
       if (_um){ try { _utm = decodeURIComponent(_um[1]); } catch(_ud){ _utm = _um[1]; } }
     } catch(_ue){}
   }
-  if (_utm === "claude-connector" || _utm === "chatgpt-app") return "connector";
+  if (_utm === "claude-connector" || _utm === "chatgpt-app" || _utm === "connector") return "connector";
   if (/[?&]plan=1(?:&|$)/.test(q)) return "c_page";
   var ref = "";
   try { ref = document.referrer || ""; } catch(_){}
