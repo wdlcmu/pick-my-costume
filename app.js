@@ -3760,6 +3760,15 @@ function sendShare(idea, origin, opts){
   var rearmShare = (typeof armShareOnce === "function") ? armShareOnce(btn) : function(){};
   if (!rearmShare) return; /* double-tap: a share is already in flight */
   var sid = opts.sid || newShareId();
+  /* 2026-10-03: tap-vs-dismiss instrumentation. share_button_tapped fires once
+     per share attempt (after the double-tap guard, so one event per attempt),
+     BEFORE the native sheet or clipboard path runs. Join to share_created on
+     share_id: a tap with no matching created = dismissed sheet (dismissal
+     fires nothing by design) or failed copy. This separates "nobody taps"
+     from "everybody dismisses". via is the attempted channel at tap time
+     (native sheet vs clipboard); the settled channel lands on share_created.
+     Additive only: credited()/copyPath() below are untouched. */
+  Analytics.track("share_button_tapped", {share_id: sid, idea_id: idea.id, share_origin: og, via: (navigator.share ? "native" : "clipboard")});
   /* 2026-10-01: the share text is built per-path so the recipient link's
      utm_medium matches the actual channel (native sheet vs clipboard copy).
      Custom buildText paths (preview cards) keep their exact text. */
@@ -12442,6 +12451,11 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         var rearmShare = armShareOnce(send);
         if (!rearmShare) return; /* double-tap: a share is already in flight */
         var sid = newShareId();
+        /* 2026-10-03: tap-vs-dismiss instrumentation (see sendShare): one
+           event per attempt, before the sheet opens. cards_id joins the tap to
+           this render's personal_cards_made; share_id joins to the
+           share_text_copied/share_created below. via is the attempted channel. */
+        Analytics.track("share_button_tapped", {share_id: sid, idea_id: idea.id, share_origin: "card", cards_id: pcCardsId, via: (navigator.share ? "native" : "clipboard")});
         /* Names typed after the cards render still count: read the live
            inputs at send time, not the card-build snapshot. */
         var fp = currentList()[idx] || p;
