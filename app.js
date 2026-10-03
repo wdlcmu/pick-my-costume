@@ -10365,6 +10365,10 @@ var ENTRY_UTM_SOURCE = null;
               /c/ page is the last hop before the commit. Direct galaxy ->
               homepage arrivals keep source=galaxy.
      galaxy = arrived from the galaxy map (document.referrer contains "/map/")
+     ai-citation = organic AI-assistant citation (utm_source=chatgpt.com,
+              perplexity.ai, or claude.ai): the assistant linked the site
+              unprompted, not via the connector. Added 2026-10-03 when the
+              first ChatGPT referral sessions were observed.
    The connector UTM wins, then the plan=1 param, then referrer, then the
    caller's hint. */
 function resolvePlanSource(hint){
@@ -10378,6 +10382,12 @@ function resolvePlanSource(hint){
     } catch(_ue){}
   }
   if (_utm === "claude-connector" || _utm === "chatgpt-app" || _utm === "connector") return "connector";
+  /* 2026-10-03 (AI-citation round 2): organic AI-assistant citations arrive
+     with the assistant's domain as utm_source (observed: chatgpt.com on the
+     first referral sessions, Oct 3). Attribute them to their own channel so
+     the citation strategy is measurable; checked before plan=1 so the
+     channel wins over the mechanism. */
+  if (_utm === "chatgpt.com" || _utm === "perplexity.ai" || _utm === "claude.ai") return "ai-citation";
   if (/[?&]plan=1(?:&|$)/.test(q)) return "c_page";
   var ref = "";
   try { ref = document.referrer || ""; } catch(_){}
