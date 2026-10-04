@@ -8505,11 +8505,11 @@ function buildGalaxyShareCard(results, rname, rslug){
    (explicit, honest enrollment via renderEmailCapture's reminder option). */
 /* 2026-10-01 (STEP 3): the ONE Next block on quiz results. Always visible,
    below "Also made your top 3": Email me this plan (with the default-ticked
-   Oct 27 reminder checkbox), Share my result, and one "More ways to share"
+   Oct 27 reminder checkbox), Share, and one "More ways to share"
    disclosure (no-clone pact, Send to Grandma, Find my +1, Halloween
    Wrapped). The email Send here is secondary (outlined) so the plan's own
    Send stays the single orange button. email_submit fires with
-   source "quiz"; Share my result fires share_click/share_complete with
+   source "quiz"; Share fires share_click/share_complete with
    source "quiz" via the same planShare path as the plan panel. */
 /* 2026-10-01 (Claude fix 1a): the share plays ("More ways to share") live in
    ONE place -- inside the plan's share card. This builder is shared by the
@@ -8551,15 +8551,15 @@ function buildResultsNextBlock(results){
      explicit and honest: one email, then you're off the list). */
   if (typeof renderEmailCapture === "function")
     renderEmailCapture(wrap, idea, resolvePlanSource("quiz"), {label: "Email me this plan", reminder: true, secondary: true});
-  /* Share my result: one tap, every tap gives visible feedback. The button
-     carries its own label -- the old label div above it rendered "Share my
-     result" twice (2026-10-01). */
+  /* Share: one tap, every tap gives visible feedback. The button
+     carries its own label -- the old label div above it rendered "Share"
+     twice (2026-10-01). */
   var srow = document.createElement("div");
   srow.style.marginTop = "16px";
   var sbtn = document.createElement("button");
   sbtn.type = "button"; sbtn.className = "ghost";
   sbtn.style.cssText = "min-height:52px;padding:12px 20px;font-size:16px;font-weight:700;border-radius:var(--radius);cursor:pointer;font-family:inherit";
-  sbtn.textContent = "Share my result";
+  sbtn.textContent = "Share";
   var sst = document.createElement("p");
   sst.className = "status";
   sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px";
@@ -8621,6 +8621,27 @@ function renderResults(results){
   hero.appendChild(heroCard);
   box.appendChild(hero);
 
+  /* 2026-10-04: elevated Share at the emotional moment. A primary CTA
+     directly under the #1 pick (before runners-up and the What's-next
+     block), firing the same planShare flow as the What's-next button.
+     Label is just "Share". */
+  (function(){
+    var _idea = results[0].idea;
+    var swrap = document.createElement("div");
+    swrap.id = "pick-share";
+    swrap.style.cssText = "margin:14px 0 4px";
+    var sbtn = document.createElement("button");
+    sbtn.type = "button"; sbtn.className = "cta";
+    sbtn.style.cssText = "width:100%;min-height:56px;font-size:17px;font-weight:800;border-radius:var(--radius);cursor:pointer;font-family:inherit";
+    sbtn.textContent = "Share";
+    var sst = document.createElement("p");
+    sst.className = "status";
+    sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px;text-align:center";
+    sbtn.onclick = function(){ planShare(_idea, resolvePlanSource("quiz"), sbtn, sst); };
+    swrap.appendChild(sbtn); swrap.appendChild(sst);
+    box.appendChild(swrap);
+  })();
+
   /* 2026-10-01 (STEP 3): the visible galaxy line + share card are trimmed
      from results. The region pre-select for /map/ (pmc_quiz_region) and its
      analytics stay, invisible. */
@@ -8636,7 +8657,7 @@ function renderResults(results){
   /* 2026-10-01 (STEP 3): the refinement disclosure is trimmed from
      results (it lived inside the removed "More options" toggle). */
   /* 2026-10-01 (STEP 3): the reveal share prompt is replaced by the
-     results Next block's "Share my result"; Halloween Wrapped moves into
+     results Next block's "Share"; Halloween Wrapped moves into
      the Next block's "More ways to share" disclosure. */
   /* 2026-09-26 evening block-map experiment: additive, flag-gated; the
      builder returns null with the flag off so nothing renders. */
