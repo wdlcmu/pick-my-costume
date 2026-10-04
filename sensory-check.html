@@ -236,7 +236,7 @@ function pick(id){
   document.getElementById("ctitle").textContent=e.t;
   document.getElementById("cblurb").textContent=e.b;
   document.getElementById("triple").innerHTML=
-    "<span>"+esc(e.time)+"</span><span>"+esc(e.cost)+"</span><span>"+esc(e.effort)+"</span>";
+    "<span>"+esc(e.time)+"</span><span>"+esc(e.effort)+"</span>";
   var fh="";
   e.flags.forEach(function(f){fh+='<div class="flag"><b>'+esc(f.label)+'</b><span>'+esc(f.why)+'</span><span class="fix">Fix: '+esc(f.fix)+'</span></div>';});
   if(e.flags.length===0){fh+='<div class="clear">Checked: no mask, face paint, beard, goggles, wig, helmet, crown, itchy fabric, whistle, cape, or wings words in the materials.</div>';}
