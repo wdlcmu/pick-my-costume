@@ -1281,14 +1281,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-09-26: tabbed Discover feed. One section with three
            collections (Trending / Make tonight / New) instead of stacked
            rails, so discovery never competes with the quiz CTA. -->
-      <!-- 2026-10-01: search-trends teaser card -> /trending (real
-           weekly Pinterest Trends data). One card, static markup.
-           Unit: trends-search-teaser. -->
+      <!-- 2026-10-04 (Billy): teaser now points at the live Pinterest-powered
+           weekly page (redirect removed per his "Agree on A"). /trending
+           stays as the evergreen Frightgeist hub. -->
       <div class="kidsrail" id="searchtrendsteaser">
         <p class="fine" style="margin:14px 0 0">What the country is searching for</p>
         <p class="fine" style="margin:2px 0 0">Google's Frightgeist ranking, plus what's popular on this site.</p>
         <div id="row-search-trends" role="list" aria-label="Costume search trends">
-          <a href="/trending" role="listitem" data-item-id="whats-trending" style="display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-decoration:none;margin-top:8px">
+          <a href="/whats-trending" role="listitem" data-item-id="whats-trending" style="display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-decoration:none;margin-top:8px">
             <span style="display:block;font-size:15px;font-weight:700;color:var(--ink)">What America is searching for this Halloween</span>
             <span class="fine" style="margin:4px 0 0">Google Frightgeist rankings and Pinterest trends, with links to our guides <span aria-hidden="true">&rarr;</span></span>
           </a>
