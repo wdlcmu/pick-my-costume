@@ -1815,7 +1815,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       var b = document.getElementById(ids[i]);
       if (!b || b.getAttribute("data-pmc-retry")) continue;
       b.setAttribute("data-pmc-retry", "1");
-      b.textContent = "Couldn't load — tap to retry";
+      b.textContent = "Couldn't load. Tap to retry";
       b.onclick = function(){ window.location.reload(); };
     }
   }
