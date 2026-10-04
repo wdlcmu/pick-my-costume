@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build 8 static SEO intent pages from bank + pantry materials data.
+"""Build 7 static SEO intent pages from bank + pantry materials data.
 Emits <slug>.html at repo root. Regenerate with this script; do not hand-edit outputs.
 Does NOT touch bank data."""
-import re, os, html, json
+import re, os, html, json, datetime
 
 ROOT = os.path.expanduser('~/workspace/builds/pick-my-costume')
 src = open(os.path.join(ROOT, 'app.js'), encoding='utf-8').read()
@@ -13,13 +13,13 @@ for line in src.split('\n'):
     line = line.strip()
     if not line.startswith('{id:"'):
         continue
-    m = re.match(r'\{id:"([a-z0-9-]+)", title:"((?:[^"\\]|\\.)*)", blurb:"((?:[^"\\]|\\.)*)", why:"((?:[^"\\]|\\.)*)", audience:\[([^\]]*)\]', line)
+    m = re.match(r'\{id:"([a-z0-9-]+)", title:"((?:[^"\\]|\\.)*)", blurb:"((?:[^"\\]|\\.)*)", (?:pictured:"(?:[^"\\]|\\.)*", )?why:"((?:[^"\\]|\\.)*)", audience:\[([^\]]*)\]', line)
     if not m:
         continue
     tags_m = re.search(r'tags:\{([^}]*)\}', line)
     ideas[m.group(1)] = {'title': m.group(2), 'blurb': m.group(3),
                          'audience': m.group(5), 'tags': tags_m.group(1) if tags_m else ''}
-assert len(ideas) == 164, f'idea count drift: {len(ideas)}'
+assert len(ideas) == 169, f'idea count drift: {len(ideas)}'
 
 instr = {}
 for m in re.finditer(r'"([a-z0-9-]+)":\{"m":\[(.*?)\],"s":\["', src):
@@ -30,7 +30,7 @@ for m in re.finditer(r'"time":"((?:[^"\\]|\\.)*)","cost":"((?:[^"\\]|\\.)*)","ef
 for m in re.finditer(r'"([a-z0-9-]+)":\{"m":\[.*?\],"s":\[.*?\],"time":"((?:[^"\\]|\\.)*)","cost":"((?:[^"\\]|\\.)*)","effort":"((?:[^"\\]|\\.)*)","sizing":"((?:[^"\\]|\\.)*)"', src):
     instr.setdefault(m.group(1), {}).update({'time': m.group(2), 'cost': m.group(3),
         'effort': m.group(4), 'sizing': m.group(5).encode().decode('unicode_escape')})
-assert len(instr) == 164
+assert len(instr) == 169
 
 def minutes(t):
     t = (t or '').lower()
@@ -57,17 +57,23 @@ def need_line(mats, n=2):
     return '; '.join(bits)
 
 # ---------- page definitions ----------
+# NOTE 2026-10-04: last-minute-costumes.html is NOT built by this script anymore.
+# It is a standalone honest-cards page (all tonight-eligible ideas grouped by
+# hands-on time, 126 cards) maintained separately. It was removed from PAGES so
+# a regen here can never clobber it with the old 12-card template (the exact
+# Oct 1 stale-template failure mode). Its sitemap URL is already present and
+# the sitemap section below keeps it (idempotent).
 PAGES = [
  dict(slug='white-sheet-costumes', kw='white sheet',
       title='White Sheet Costume Ideas: 10 DIY Costumes From a Bedsheet',
-      desc='Ten Halloween costumes you can make from a white or black bedsheet: classic ghost, vampire cape, headless horseman and more. Real times, real costs, step-by-step guides.',
+      desc='Ten Halloween costumes you can make from a white or black bedsheet: classic ghost, vampire cape, headless horseman and more. Real times, step-by-step guides.',
       intro=("""That old bedsheet in the linen closet is the fastest costume in the house. A white flat sheet,
 scissors, and a marker get you the classic ghost in ten minutes flat, and a black sheet cut into a cape
 covers vampires, headless horsemen, and little witches with almost no sewing. The trick most people miss
 is sizing the sheet before you cut: twin for kids under eight, full or queen for teens and adults, and
 always cut eye holes smaller than you think, you can widen them but you cannot shrink them. Every costume
 below starts from a sheet you already own, lists exactly what else you need, and links to a full build
-guide with real hands-on time and honest cost. No costume-shop run required."""),
+guide with real hands-on time. No costume-shop run required."""),
       match=lambda i, d: any(re.search(r'\b(bed\s?sheet|twin sheets?|flat sheet|old sheets?|white sheets?|black sheets?)\b', x, re.I) for x in d.get('m', [])),
       rank=lambda iid: (next((n for n, x in enumerate(instr[iid]['m']) if re.search(r'sheet', x, re.I)), 9), minutes(instr[iid].get('time'))),
       limit=10,
@@ -80,14 +86,14 @@ guide with real hands-on time and honest cost. No costume-shop run required.""")
 ),
  dict(slug='cardboard-box-costumes', kw='cardboard box',
       title='Cardboard Box Costume Ideas: 12 DIY Costumes From Boxes',
-      desc='Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, dinosaurs and more. Real times, real costs, step-by-step guides.',
+      desc='Twelve Halloween costumes built from cardboard boxes: robots, block games, pizza slices, ghost hunters and more. Real times, step-by-step guides.',
       intro=("""The box your last delivery came in is a costume waiting to happen. A medium box worn over the
 torso becomes a robot, a pizza slice, a game block, or a dinosaur body with nothing more than a box cutter,
 tape, and paint. Ask a grocery or liquor store for spares if you need big ones, they give them away free
 most mornings. Cut arm and head holes smaller than you think, reinforce inside edges with packing tape so
 they survive the night, and keep paint to one or two coats so the cardboard stays light. Every costume
 below starts from a box, lists the rest of the supplies honestly, and links to a full build guide with
-real hands-on time and cost. The box is free. The costume is not far behind."""),
+real hands-on time. The box is already in the recycling. The costume is not far behind."""),
       match=lambda i, d: any(re.search(r'\bbox\b', x, re.I) and not re.search(r'lunch ?box|box of|toolbox', x, re.I) for x in d.get('m', [])),
       rank=lambda iid: (0 if re.search(r'box per (person|racer)|box, 1 (large|medium)', ' '.join(instr[iid]['m']), re.I) else 1, minutes(instr[iid].get('time'))),
       limit=12,
@@ -102,13 +108,13 @@ real hands-on time and cost. The box is free. The costume is not far behind.""")
 ),
  dict(slug='no-sew-costumes', kw='no-sew',
       title='No-Sew Costume Ideas: 12 DIY Costumes Without a Needle',
-      desc='Twelve Halloween costumes with zero sewing: closet clothes, safety pins, tape, and glue. Real times, real costs, step-by-step guides.',
+      desc='Twelve Halloween costumes with zero sewing: closet clothes, safety pins, tape, and glue. Real times, step-by-step guides.',
       intro=("""If you do not sew, you are not locked out of a good homemade costume. Most of the ideas below
 hold together with safety pins, fabric tape, hot glue, or nothing at all, just clothes arranged cleverly.
 Pin from the inside so the backs never touch skin, use double-sided fabric tape for hems that need to look
 clean, and remember that a hot glue gun sets in under a minute, which beats waiting on stitches you were
 never going to do. Every costume below needs no needle, lists exactly what to pull from the closet, and
-links to a full build guide with real hands-on time and honest cost. Thread not required."""),
+links to a full build guide with real hands-on time. Thread not required."""),
       match=lambda i, d: d.get('effort') == 'Easy' and not any(re.search(r'\bsew\w*|stitch|needle', x, re.I) for x in d.get('m', [])) and any('(own' in x for x in d.get('m', [])),
       rank=lambda iid: (cost_lo(instr[iid].get('cost')), minutes(instr[iid].get('time'))),
       limit=12,
@@ -118,33 +124,15 @@ links to a full build guide with real hands-on time and honest cost. Thread not 
         ('Can I wash clothes after using fabric tape or hot glue?', 'Fabric tape usually survives a gentle wash. Hot glue peels off most fabrics if you pick at an edge. Test a hidden spot first on clothes you care about.'),
       ],
 ),
- dict(slug='last-minute-costumes', kw='last-minute',
-      title='Last-Minute Costume Ideas: 12 Costumes in 30 Minutes or Less',
-      desc='Twelve Halloween costumes you can build in 30 minutes or less, tonight, from stuff at home. Real times, real costs, step-by-step guides.',
-      intro=("""It is the night of the party and you have nothing. Good news: some of the best costumes on
-this site take less time than ordering takeout. The rule for last-minute builds is one hero piece, a ghost
-needs only the sheet, a tourist needs only the camera and socks-with-sandals, and everything else is
-clothes you already own. Skip anything with drying time unless you have a hair dryer and patience. Every
-costume below clocks in at thirty minutes of hands-on work or less, lists exactly what to grab, and links
-to a full build guide with honest cost. Set a timer. You will make it."""),
-      match=lambda i, d: minutes(d.get('time')) <= 30,
-      rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
-      limit=12,
-      faqs=[
-        ('What is the one rule for last-minute costumes?', 'One hero piece. A ghost needs only the sheet, a tourist needs only the camera and socks-with-sandals. Build around a single recognizable item and let closet clothes do the rest.'),
-        ('What should I skip when time is short?', 'Anything with drying time: paint, glue-heavy builds, papier-mache. A hair dryer buys you minutes, not miracles.'),
-        ('How do I not look like I gave up?', 'Commit to the bit. A name tag, a prop, or a one-line character voice sells a simple costume more than extra accessories do.'),
-      ],
-),
  dict(slug='family-costumes', kw='family',
       title='Family Halloween Costume Ideas: 12 Group Costumes for the Whole Crew',
-      desc='Twelve family Halloween costumes, from toddler-safe to teen-approved. Real times, real costs, step-by-step guides for every group size.',
+      desc='Twelve family Halloween costumes, from toddler-safe to teen-approved. Real times, step-by-step guides for every group size.',
       intro=("""A family costume only works if the littlest member can actually wear it, sit in it, and
 survive the evening in it. The sets below were picked because every member gets a real costume, not a
 background role, and the builds scale: make the baby the centerpiece, give the teens the funny parts, and
 keep total build time sane by repeating one simple base across the group. Start with the hardest costume
 first, usually the smallest person, and fit everything while they are still in a good mood. Every set below
-links to full build guides with real hands-on time and honest cost per person, so there are no
+links to full build guides with real hands-on time per person, so there are no
 day-of surprises."""),
       match=lambda i, d: '"family"' in i['audience'],
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
@@ -157,12 +145,12 @@ day-of surprises."""),
 ),
  dict(slug='couples-costumes', kw='couples',
       title='Couples Halloween Costume Ideas: 12 Duo Costumes',
-      desc='Twelve couples Halloween costumes, from cute to funny to low-effort. Real times, real costs, step-by-step guides.',
+      desc='Twelve couples Halloween costumes, from cute to funny to low-effort. Real times, step-by-step guides.',
       intro=("""The best couples costumes have a joke a stranger gets in three seconds: ketchup and mustard,
 plug and socket, sun and moon. Pick the one where both people are equally recognizable, nobody wants to be
 the human accessory. Build both halves side by side so the colors and sizes match, and agree in advance on
 the effort level, one elaborate half next to one thrown-together half reads as a mistake, not a duo. Every
-pair below links to full build guides with real hands-on time and honest cost, so you both know what the
+pair below links to full build guides with real hands-on time, so you both know what the
 evening is going to take."""),
       match=lambda i, d: '"couple"' in i['audience'],
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
@@ -175,13 +163,12 @@ evening is going to take."""),
 ),
  dict(slug='toddler-costumes', kw='toddler',
       title='Toddler Halloween Costume Ideas: 12 Easy Costumes for Ages 1-3',
-      desc='Twelve toddler Halloween costumes that are soft, simple, and stroller-friendly. Real times, real costs, step-by-step guides.',
+      desc='Twelve toddler Halloween costumes that are soft, simple, and stroller-friendly. Real times, step-by-step guides.',
       intro=("""Dressing a toddler is a different sport. Nothing itchy, nothing that covers the face, nothing
 with small parts, and it has to survive the stroller, the car seat, and a meltdown. The costumes below were
 picked because they go over normal warm clothes, use soft materials, and take under half an hour, since
 toddlers do not do fittings. Do the fiddly bits while they nap and save the five-minute dress-up for right
-before you leave. Every costume below links to a full build guide with real hands-on time, honest cost, and
-sizing notes for little bodies."""),
+before you leave. Every costume below links to a full build guide with real hands-on time and sizing notes for little bodies."""),
       match=lambda i, d: 'kid36' in i['tags'] or re.search(r'toddler|ages? 1 (to|-) ?[38]', d.get('sizing', ''), re.I),
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
       limit=12,
@@ -193,13 +180,13 @@ sizing notes for little bodies."""),
 ),
  dict(slug='face-paint-costumes', kw='face paint',
       title='Face Paint Costume Ideas: 10 Costumes With Makeup as the Star',
-      desc='Ten Halloween costumes where face paint does the heavy lifting: skeletons, witches, animals and more. Real times, real costs, step-by-step guides.',
+      desc='Ten Halloween costumes where face paint does the heavy lifting: ninjas, witches, animals and more. Real times, step-by-step guides.',
       intro=("""When the costume is mostly face paint, the outfit can be dead simple, black clothes plus a
 painted skeleton face beats a store-bought suit every time. Use proper face paint or makeup, not craft paint
 or markers, and do a small patch test on the jaw an hour before in case of sensitive skin. Paint the base
 first, let it set, then add details, and keep makeup wipes in your pocket because touch-ups are part of the
 deal. Every costume below leans on the paint job, lists the rest honestly, and links to a full build guide
-with real hands-on time and cost. The brush is the costume."""),
+with real hands-on time. The brush is the costume."""),
       match=lambda i, d: any(re.search(r'face paint|makeup', x, re.I) for x in d.get('m', [])),
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
       faqs=[
@@ -218,17 +205,27 @@ s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('ph
 document.head.appendChild(s); })();
 </script>"""
 
-def card(iid):
+def card(iid, slug=''):
     i, d = ideas[iid], instr[iid]
     need = need_line(d.get('m', []))
+    safety = SAFETY_NOTES.get((slug, iid), '')
+    safety_html = f'\n<p class="safety-note">{safety}</p>' if safety else ''
     return f"""<article class="ccard" data-unit-item="{iid}">
 <a href="/c/{iid}"><img src="/photos/{iid}.webp" alt="{html.escape(i['title'])} Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/{iid}">{html.escape(i['title'])}</a></h3>
-<p class="chips"><span class="chip">⏱ {html.escape(d.get('time',''))} hands-on</span><span class="chip">💲 {html.escape(d.get('cost',''))}</span><span class="chip">{html.escape(d.get('effort',''))}</span></p>
+<p class="chips"><span class="chip">⏱ {html.escape(d.get('time',''))} hands-on</span><span class="chip">{html.escape(d.get('effort',''))}</span></p>
 <p class="need"><strong>You need:</strong> {html.escape(need)}</p>
-<p class="blurb">{html.escape(i['blurb'])}</p>
+<p class="blurb">{html.escape(i['blurb'])}</p>{safety_html}
 <p class="go"><a href="/c/{iid}">Build this costume →</a></p>
 </article>"""
+
+# Per-(page, idea) safety notes, emitted inside the card. Added 2026-10-04:
+# the under-3s sheet note was hand-added to toddler-costumes.html and would be
+# lost on regen; it now lives here (dash-free per the no-em/en-dash rule).
+SAFETY_NOTES = {
+    ('toddler-costumes', 'classic-ghost'):
+        '<strong>For under-3s:</strong> cut the sheet as a poncho with the face open. Never cover a toddler\'s face.',
+}
 
 TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -292,8 +289,8 @@ footer a{{color:var(--mut);margin:0 10px}}
 <body>
 <header class="top">
 <a class="brand" href="https://pickmycostume.com/">Pick My <span>Costume</span></a>
-<nav class="sitenav" aria-label="Site">
-<a href="https://pickmycostume.com/" aria-label="Find my costume — the quiz">Find</a>
+<nav class="sitenav" aria-label="Site" data-unit-id="{slug}" data-unit-type="intent-sitenav">
+<a href="https://pickmycostume.com/" aria-label="Find my costume: the quiz">Find</a>
 <a href="https://pickmycostume.com/map/">Explore</a>
 <a href="https://pickmycostume.com/pantry">Pantry</a>
 <a href="https://pickmycostume.com/play">Play</a>
@@ -306,7 +303,7 @@ footer a{{color:var(--mut);margin:0 10px}}
 <div class="grid" id="intent-grid" data-unit-id="{slug}" data-unit-type="intent-grid">
 {cards}
 </div>
-<section class="remindbox">
+<section class="remindbox" data-unit-id="{slug}" data-unit-type="intent-remind">
 <h2>&#128276; One email on Oct 27</h2>
 <p class="remindsub">Want one email on Oct 27 with costumes you can make that night? That&#8217;s it, one email, then you&#8217;re off the list.</p>
 <form class="remindform" id="remindForm">
@@ -319,19 +316,21 @@ footer a{{color:var(--mut);margin:0 10px}}
 var f=document.getElementById('remindForm');if(!f)return;
 try{{if(localStorage.getItem('pmc_reminded')==='1'){{f.style.display='none';}}}}catch(_){{}}
 f.addEventListener('submit',function(e){{e.preventDefault();
+var rb0=document.querySelector('.remindbox');var uid=rb0?rb0.getAttribute('data-unit-id'):'unknown';
+function rc(res){{track('unit_click',{{unit_id:uid,unit_type:'intent-remind',page:location.pathname,item_id:'remind-submit',position:0,result:res}});}}
 var em=document.getElementById('remindEmail').value.trim();
 var note=document.getElementById('remindNote');
-if(!/^[^\s@]+@[^\s@]+\.[^\s@]{{2,}}$/.test(em)){{note.textContent='That email doesn\u2019t look right. Try again?';return;}}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]{{2,}}$/.test(em)){{rc('invalid');note.textContent='That email doesn\u2019t look right. Try again?';return;}}
 note.textContent='Saving\u2026';
 fetch('/reminder-signup',{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify({{email:em,source:'intent'}})}})
 .then(function(r){{return r.json();}}).then(function(j){{
-if(j&&j.ok){{try{{localStorage.setItem('pmc_reminded','1');}}catch(_){{}}note.textContent='\u2705 You\u2019re on the list: one email on Oct 27, that\u2019s it.';}}
-else if(j&&j.reason==='unconfigured'){{note.textContent='Reminders are being connected. Check back soon.';}}
-else{{note.textContent='Hmm, that didn\u2019t save. Try again?';}}
-}},function(){{note.textContent='Hmm, that didn\u2019t save. Try again?';}});}});}})();</script>
+if(j&&j.ok){{try{{localStorage.setItem('pmc_reminded','1');}}catch(_){{}}note.textContent='\u2705 You\u2019re on the list: one email on Oct 27, that\u2019s it.';rc('saved');}}
+else if(j&&j.reason==='unconfigured'){{rc('error');note.textContent='Reminders are being connected. Check back soon.';}}
+else{{rc('error');note.textContent='Hmm, that didn\u2019t save. Try again?';}}
+}},function(){{rc('error');note.textContent='Hmm, that didn\u2019t save. Try again?';}});}});}})();</script>
 {faq_html}
 <div class="cta">
-<p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 164 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
+<p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 169 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
 </div>
 </main>
 <footer>
@@ -350,12 +349,31 @@ else{{note.textContent='Hmm, that didn\u2019t save. Try again?';}}
   else {{ fire(); }}
 }})();
 (function(){{
+  var n=document.querySelector('.sitenav'); if(!n||n._nb) return; n._nb=true;
+  function nitem(a){{ var h=a.getAttribute('href')||''; if(h==='https://pickmycostume.com/')return 'home'; if(h==='https://pickmycostume.com/map/')return 'map'; if(h==='https://pickmycostume.com/pantry')return 'pantry'; if(h==='https://pickmycostume.com/play')return 'play'; return 'unknown'; }}
+  function nanchors(){{ return Array.prototype.slice.call(n.querySelectorAll('a')); }}
+  n.addEventListener('click',function(e){{ var a=e.target&&e.target.closest?e.target.closest('a'):null; if(!a||!n.contains(a))return;
+    track('unit_click',{{unit_id:n.getAttribute('data-unit-id'),unit_type:'intent-sitenav',page:location.pathname,item_id:nitem(a),position:nanchors().indexOf(a)}}); }});
+  function fireN(){{ track('unit_impression',{{unit_id:n.getAttribute('data-unit-id'),unit_type:'intent-sitenav',page:location.pathname,item_count:4,item_ids:['home','map','pantry','play']}}); }}
+  if('IntersectionObserver' in window){{ var o=new IntersectionObserver(function(es){{ es.forEach(function(en){{ if(en.isIntersecting){{ o.disconnect(); fireN(); }} }}); }}); o.observe(n); }}
+  else {{ fireN(); }}
+}})();
+(function(){{
+  var rb=document.querySelector('.remindbox'); if(!rb||rb._rb) return; rb._rb=true;
+  function fireRb(){{ track('unit_impression',{{unit_id:rb.getAttribute('data-unit-id'),unit_type:'intent-remind',page:location.pathname,item_count:1,item_ids:['remind-submit']}}); }}
+  if('IntersectionObserver' in window){{ var o=new IntersectionObserver(function(es){{ es.forEach(function(en){{ if(en.isIntersecting){{ o.disconnect(); fireRb(); }} }}); }}); o.observe(rb); }}
+  else {{ fireRb(); }}
+}})();
+(function(){{
   var f=document.querySelector('.faqsec'); if(!f||f._fq) return; f._fq=true;
   f.addEventListener('toggle',function(e){{ var d=e.target&&e.target.closest?e.target.closest('details'):null;
     if(!d||!f.contains(d)||!d.open) return;
     var q=d.querySelector('summary');
     track('unit_click',{{unit_id:f.getAttribute('data-unit-id'),unit_type:'intent-faq',page:location.pathname,
       item_id:(q?q.textContent:'').slice(0,60),position:Array.prototype.indexOf.call(f.querySelectorAll('details'),d)}}); }},true);
+  function fireFaq(){{ track('unit_impression',{{unit_id:f.getAttribute('data-unit-id'),unit_type:'intent-faq',page:location.pathname,item_count:f.querySelectorAll('details').length,item_ids:Array.prototype.map.call(f.querySelectorAll('details summary'),function(s){{return s.textContent.slice(0,60);}}).slice(0,40)}}); }}
+  if('IntersectionObserver' in window){{ var of=new IntersectionObserver(function(es){{ es.forEach(function(en){{ if(en.isIntersecting){{ of.disconnect(); fireFaq(); }} }}); }}); of.observe(f); }}
+  else {{ fireFaq(); }}
 }})();
 </script>
 </body>
@@ -373,7 +391,7 @@ for p in PAGES:
     assert len(picked) >= 8, f"{p['slug']}: only {len(picked)} matches"
     assert 80 <= wc <= 150, f"{p['slug']}: intro {wc} words"
     assert len(set(picked)) == len(picked)
-    cards = '\n'.join(card(i) for i in picked)
+    cards = '\n'.join(card(i, p['slug']) for i in picked)
     faq_items = ''.join(
         '<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), html.escape(a))
         for q, a in p['faqs'])
@@ -401,7 +419,8 @@ for slug, _ in built:
     url = f'https://pickmycostume.com/{slug}'
     if url in s:
         continue  # idempotent regen
-    s = s.replace('</urlset>', f'  <url><loc>{url}</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>\n</urlset>')
+    today = datetime.date.today().isoformat()
+    s = s.replace('</urlset>', f'  <url><loc>{url}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n</urlset>')
 open(sm, 'w', encoding='utf-8').write(s)
 import xml.dom.minidom; xml.dom.minidom.parseString(s.encode('utf-8'))
 print('sitemap updated + XML valid')
