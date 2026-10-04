@@ -82,13 +82,18 @@ li span{display:block;color:#555;font-size:14px;margin:0 0 12px;}
 <!-- 2026-09-26 SEO articles batch: plain-anchor path home -> /costumes -> article.
      Folded into the generator 2026-09-27 (red-team): a regen used to drop this
      line, the quiz CTA, and the Explore nav below.
-     2026-10-03: the four 2026 article links had drifted to non-article pages
-     (/last-minute-costumes x2, /couples-costumes, /costumes-from-your-closet),
-     failing seo-articles-gate's hub->article contract (4 failures: easy-last-minute,
-     cheap, couple-2026, last-minute-2026). Restored the article hrefs; the
-     standalone hub pages (/last-minute-costumes, /couples-costumes,
-     /costumes-from-your-closet) keep their Explore-nav and cross-site links. -->
-<p class="home" style="margin:2px 0 22px">Costume guides by question: <a href="/what-should-i-be-for-halloween">What should I be?</a> &middot; <a href="/what-should-my-kid-be-for-halloween">What should my kid be?</a> &middot; <a href="/halloween-costume-ideas-2026">2026 ideas</a> &middot; <a href="/halloween-costume-ideas-quiz">Costume ideas quiz</a> &middot; <a href="/easy-last-minute-halloween-costumes">Last-minute costumes</a> &middot; <a href="/cheap-halloween-costumes">Cheap costumes</a> &middot; <a href="/school-halloween-costumes">School costumes</a> &middot; <a href="/office-costumes">Office costumes</a> &middot; <a href="/scary-halloween-costumes-2026">Scary costumes</a> &middot; <a href="/easy-diy-halloween-costumes-for-kids">Easy DIY kid costumes</a> &middot; <a href="/couple-halloween-costumes-2026">Couple costumes</a> &middot; <a href="/last-minute-halloween-costumes-2026">Night-before costumes</a> &middot; <a href="/teen-halloween-costumes-2026">Teen costumes</a> &middot; <a href="/toddler-costumes">Toddler costumes</a> &middot; <a href="/family-costumes">Family costumes</a></p>
+     2026-10-01 SEO consolidation (Billy: "Ship all 15"; hidden_files/seo/proposed-301-map-2026-10-01.md):
+     /easy-last-minute-halloween-costumes and /last-minute-halloween-costumes-2026 retired
+     via 301 to /last-minute-costumes; /couple-halloween-costumes-2026 retired via 301 to
+     /couples-costumes. Internal links (this line included) were updated to the canonicals
+     as part of the shipped consolidation: the hub links the LIVE canonical, never a
+     retired source. seo-articles-gate.js asserts hub->canonical for retired articles.
+     2026-10-03: /cheap-halloween-costumes was UN-RETIRED in Billy's 2026-10-01
+     redirect-intent review (big search term, distinct intent; quality standalone, still in
+     sitemap, live HTTP 200). The consolidation had pointed this line at
+     /costumes-from-your-closet per the proposed map; restored the live article href here
+     and kept the gate's hub->article assertion for cheap. -->
+<p class="home" style="margin:2px 0 22px">Costume guides by question: <a href="/what-should-i-be-for-halloween">What should I be?</a> &middot; <a href="/what-should-my-kid-be-for-halloween">What should my kid be?</a> &middot; <a href="/halloween-costume-ideas-2026">2026 ideas</a> &middot; <a href="/halloween-costume-ideas-quiz">Costume ideas quiz</a> &middot; <a href="/last-minute-costumes">Last-minute costumes</a> &middot; <a href="/cheap-halloween-costumes">Cheap costumes</a> &middot; <a href="/school-halloween-costumes">School costumes</a> &middot; <a href="/office-costumes">Office costumes</a> &middot; <a href="/scary-halloween-costumes-2026">Scary costumes</a> &middot; <a href="/easy-diy-halloween-costumes-for-kids">Easy DIY kid costumes</a> &middot; <a href="/couples-costumes">Couple costumes</a> &middot; <a href="/last-minute-costumes">Night-before costumes</a> &middot; <a href="/teen-halloween-costumes-2026">Teen costumes</a> &middot; <a href="/toddler-costumes">Toddler costumes</a> &middot; <a href="/family-costumes">Family costumes</a></p>
       <li><a href="/c/amazon-warrior">Amazon Warrior</a><span>Red, blue, and gold with star accents and cuff bracelets: battle-ready like a kid goddess.</span></li>
       <li><a href="/c/astronaut">Astronaut</a><span>White sweats, a paper-bag helmet, and a flag patch.</span></li>
       <li><a href="/c/blue-dog-family">Aussie Dog Family</a><span>Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.</span></li>
