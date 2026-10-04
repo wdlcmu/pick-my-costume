@@ -481,7 +481,7 @@
     if(mode==='chopped'){
       document.getElementById('result').textContent='You built '+points+' out of '+CHOP_ROUNDS+'!';
       document.getElementById('finishTitle').textContent='Mystery chef!';
-      document.getElementById('finishCopy').textContent=chopBest>=3?('A '+chopBest+'-basket streak — unstoppable!'):'Those mystery baskets couldn\'t stump you.';
+      document.getElementById('finishCopy').textContent=chopBest>=3?('A '+chopBest+'-basket streak. Unstoppable!'):'Those mystery baskets couldn\'t stump you.';
     }else{
       document.getElementById('result').textContent=mode==='match'?'You matched all '+matchRounds.length+' rounds!':'You found '+points+' out of '+peekRounds.length+'!';
       document.getElementById('finishTitle').textContent='Costume star!';
