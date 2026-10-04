@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stream C (Week-2 traffic sprint): generate two staged hub pages.
 Sources (all real, site-native):
-  - pantry.html const DATA  -> 164 ideas {id,title,mats:[{t,g}]}, 56 pantry materials {id,label,group,staple}
+  - pantry.html const DATA  -> 169 ideas {id,title,mats:[{t,g}]}, 56 pantry materials {id,label,group,staple}
   - functions/c/[slug].js   -> canonical /c/ guide data {time,cost,effort} and materials texts {m}
   - pantry-mats.json         -> cross-check slug universe (164)
 Pages are written to the repo working tree (STAGED, not deployed).
@@ -55,7 +55,7 @@ IDEAS = {x['id']: x for x in PANTRY['ideas']}
 MAT_LABEL = {x['id']: x['label'] for x in PANTRY['pantry']}
 STAPLES = {x['id'] for x in PANTRY['pantry'] if x.get('staple')}
 GROUPS = PANTRY['groups']
-assert len(IDEAS) == 164, len(IDEAS)
+assert len(IDEAS) == 169, len(IDEAS)
 assert set(IDEAS) == set(CG), 'slug universe mismatch'
 
 def mins(time_str):
@@ -213,7 +213,7 @@ def header():
 
 def footer():
     return f"""<div class="footer">
-<p><a href="{SITE}/">Pick My Costume</a> &middot; <a href="{SITE}/costumes">Browse all 164 costume guides</a> &middot; <a href="{SITE}/pantry">What your closet can build</a></p>
+<p><a href="{SITE}/">Pick My Costume</a> &middot; <a href="{SITE}/costumes">Browse all 169 costume guides</a> &middot; <a href="{SITE}/pantry">What your closet can build</a></p>
 <p class="fine">Built with Muse.</p>
 </div>
 </div>"""
@@ -222,11 +222,11 @@ def footer():
 def build_page1():
     slug = 'diy-costumes-by-materials'
     title = 'Easy DIY Halloween Costumes by Materials You Already Have | Pick My Costume'
-    desc = ('Filter 164 easy DIY Halloween costumes by the materials you already own. '
+    desc = ('Filter 169 easy DIY Halloween costumes by the materials you already own. '
             'Tick your craft stash and see exactly what each costume still needs, with real build times and step-by-step guides.')
     faqs = [
         ("How does the materials filter work?",
-         "Tick the supplies you already own and every one of the 164 costumes is re-ranked by what it still needs: fully covered builds lead, then builds missing one or two supplies, then the rest. The materials lists are the real ones from each costume's build guide."),
+         "Tick the supplies you already own and every one of the 169 costumes is re-ranked by what it still needs: fully covered builds lead, then builds missing one or two supplies, then the rest. The materials lists are the real ones from each costume's build guide."),
         ("What household basics do you assume I have?",
          "Scissors, tape, markers, paper and pen, aluminum foil, cardboard, a white t-shirt, a plain t-shirt, black clothes, an old bedsheet, a pillowcase, and socks. These 12 staples are assumed present on this page; the pantry page lets you untick anything you don't actually have."),
         ("Do any costumes need zero extra shopping?",
@@ -248,11 +248,11 @@ def build_page1():
     cards.sort(key=lambda c: (c[0], c[1], c[2]))
     ready_n = sum(1 for c in cards if c[0] == 0)
     one_two = sum(1 for c in cards if 1 <= c[0] <= 2)
-    assert ready_n + one_two == 16, (ready_n, one_two)  # the make-tonight/almost 16
+    assert ready_n + one_two == 17, (ready_n, one_two)  # the make-tonight/almost 17
 
     def need_line(miss):
         if not miss:
-            return '<p class="need ready">Ready to build &mdash; you have everything.</p>'
+            return '<p class="need ready">Ready to build: you have everything.</p>'
         shown = miss[:3]
         extra = f' and {len(miss)-3} more' if len(miss) > 3 else ''
         return f'<p class="need">Still need {len(miss)}: {E("; ".join(shown))}{E(extra)}</p>'
@@ -262,7 +262,7 @@ def build_page1():
         r = reqs_of(IDEAS[sid])
         rjson = E(json.dumps([{'t': txt, 'g': gs} for txt, gs in r]), quote=True)
         mat_items = ''.join(f'<li>{E(m["t"])}</li>' for m in IDEAS[sid]['mats'])
-        triple = f"{E(CG[sid]['time'])} &middot; {E(CG[sid]['cost'])} &middot; {E(CG[sid]['effort'])}"
+        triple = f"{E(CG[sid]['time'])} &middot; {E(CG[sid]['effort'])}"
         card_html.append(
             f'<article class="ccard" data-slug="{sid}" data-mins="{mn}" data-reqs=\'{rjson}\'>'
             f'<h3><a href="{SITE}/c/{sid}">{E(t)}</a></h3>'
@@ -288,7 +288,7 @@ def build_page1():
     body = f"""{header()}
 <h1>Easy DIY Halloween Costumes, Filtered by What You Already Own</h1>
 <p class="byline">Updated September 2026</p>
-<p class="lede">Don't start from the store. Start from the junk drawer. Tick the materials you already have and all <strong>164 costume ideas</strong> re-rank around your stash &mdash; fully covered builds first, then the ones missing just a supply or two.</p>
+<p class="lede">Don't start from the store. Start from the junk drawer. Tick the materials you already have and all <strong>169 costume ideas</strong> re-rank around your stash: fully covered builds first, then the ones missing just a supply or two.</p>
 <p class="sub">Every materials list below is the real one from that costume's build guide, and the build times are the real ones too. No guessing, no "easy" hand-waving.</p>
 
 <div class="basics"><strong>We assume you have the 12 household basics:</strong> {E(staples_line)}. Untick anything you don't actually own on the <a href="{SITE}/pantry">pantry page</a>, which fine-tunes every costume.</div>
@@ -302,10 +302,10 @@ def build_page1():
 <button class="chip" type="button" data-tmax="30" aria-pressed="false">30 minutes or less</button>
 <button class="chip" type="button" data-tmax="60" aria-pressed="false">1 hour or less</button>
 </div></div>
-<p class="resultline" id="resultline" aria-live="polite">With just the household basics, you can build {ready_n} costume{"" if ready_n==1 else "s"} fully, and {one_two} more with 1&ndash;2 extra supplies.</p>
+<p class="resultline" id="resultline" aria-live="polite">With just the household basics, you can build {ready_n} costume{"" if ready_n==1 else "s"} fully, and {one_two} more with 1-2 extra supplies.</p>
 </div>
 
-<h2><span class="qn">1.</span> All 164 costumes, ranked by your stash</h2>
+<h2><span class="qn">1.</span> All 169 costumes, ranked by your stash</h2>
 <p class="section-note">Sorted by what each build still needs, from the 12 assumed basics. Tap materials above to re-rank.</p>
 <div class="grid" id="grid">
 {cards_block}
@@ -315,8 +315,8 @@ def build_page1():
 <p class="section-note">If the clock matters more than the craft drawer, start with the costumes built for tonight.</p>
 <div class="answer">
 <h3>Make-it-tonight builds</h3>
-<p>16 of the 164 ideas are <strong>make-tonight or 1&ndash;2 supplies away</strong> from default household basics &mdash; the Classic Ghost needs zero extra shopping. They are tiered by real build time, 15 minutes to 45 minutes.</p>
-<a class="go" href="{SITE}/make-it-tonight-costumes">See the 16 make-it-tonight costumes</a>
+<p>17 of the 169 ideas are <strong>make-tonight or 1-2 supplies away</strong> from default household basics: the Classic Ghost and the Emoji Crew need zero extra shopping. They are tiered by real build time, 15 minutes to 45 minutes.</p>
+<a class="go" href="{SITE}/make-it-tonight-costumes">See the 17 make-it-tonight costumes</a>
 <a class="quiet" href="{SITE}/pantry">Or tick everything you own on the pantry page &rarr;</a>
 </div>
 
@@ -325,9 +325,9 @@ def build_page1():
 
 <div class="final">
 <h2>Not sure where to start?</h2>
-<p>The 2-minute quiz picks 3 costume ideas from the bank of 164 &mdash; free, no signup.</p>
+<p>The 2-minute quiz picks 3 costume ideas from the bank of 169, free, no signup.</p>
 <a class="go" href="{SITE}/">Take the quiz</a>
-<p class="fine">Prefer to browse? <a href="{SITE}/costumes">Browse all 164 guides</a> &middot; <a href="{SITE}/easy-last-minute-halloween-costumes">Last-minute picks</a></p>
+<p class="fine">Prefer to browse? <a href="{SITE}/costumes\">Browse all 169 guides</a> &middot; <a href="{SITE}/easy-last-minute-halloween-costumes">Last-minute picks</a></p>
 </div>
 {footer()}
 <script>
@@ -349,7 +349,7 @@ def build_page1():
   }}
 
   function needLine(miss){{
-    if (!miss.length) return '<p class="need ready">Ready to build &mdash; you have everything.</p>';
+    if (!miss.length) return '<p class="need ready">Ready to build: you have everything.</p>';
     var shown = miss.slice(0,3).map(function(m){{ return m.t; }});
     var extra = miss.length > 3 ? ' and ' + (miss.length-3) + ' more' : '';
     return '<p class="need">Still need ' + miss.length + ': ' +
@@ -391,7 +391,7 @@ def build_page1():
     }});
     cards.forEach(function(card){{ grid.appendChild(card); }});
     resultline.innerHTML = 'With what you ticked, you can build <strong>' + ready + '</strong> costume' +
-      (ready === 1 ? '' : 's') + ' fully, and <strong>' + oneTwo + '</strong> more with 1&ndash;2 extra supplies.' +
+      (ready === 1 ? '' : 's') + ' fully, and <strong>' + oneTwo + '</strong> more with 1-2 extra supplies.' +
       (shown < cards.length ? ' (' + shown + ' shown by build-time filter.)' : '');
   }}
 
@@ -447,25 +447,25 @@ TIER_DEFS = [
 
 def build_page2():
     slug = 'make-it-tonight-costumes'
-    title = 'Make-It-Tonight Halloween Costumes: 16 Builds You Can Finish This Evening | Pick My Costume'
-    desc = ('16 Halloween costumes you can make tonight from household basics: 5 take 15 minutes or less, '
-            '9 take 20 to 30 minutes, and the longest takes 45. Real build times, costs, and step-by-step guides.')
-    mt16 = ['classic-ghost','ninja','emoji-crew','fairy-tale-princesses','salt-pepper',
+    title = 'Make-It-Tonight Halloween Costumes: 17 Builds You Can Finish This Evening | Pick My Costume'
+    desc = ('17 Halloween costumes you can make tonight from household basics: 5 take 15 minutes or less, '
+            '9 take 20 to 30 minutes, and 3 take up to 45 minutes. Real build times and step-by-step guides.')
+    mt17 = ['classic-ghost','ninja','emoji-crew','fairy-tale-princesses','salt-pepper',
             'breakfast-buffet','cereal-crew','decades-crew','ice-cream-cone','player-one-two',
             'space-crewmate','coffee-cup','ghost-hunters','block-monster',
-            'block-game-crew','plug-socket']
+            'block-game-crew','plug-socket','night-hero']
     tiers = {15: [], 30: [], 45: []}
-    for s in mt16:
+    for s in mt17:
         m = mins(CG[s]['time'])
         tier = 15 if m <= 15 else (30 if m <= 30 else 45)
         tiers[tier].append(s)
-    assert sum(len(v) for v in tiers.values()) == 16
+    assert sum(len(v) for v in tiers.values()) == 17
     print('tiers:', {k: len(v) for k, v in tiers.items()})
 
     titles = {'classic-ghost': 'Classic Ghost', 'ninja': 'Ninja', 'emoji-crew': 'Emoji Crew',
               'fairy-tale-princesses': 'Fairy Tale Princesses', 'salt-pepper': 'Salt & Pepper'}
     # titles from pantry DATA for the rest
-    for s in mt16:
+    for s in mt17:
         titles[s] = IDEAS[s]['title']
 
     blurbs = {
@@ -485,11 +485,12 @@ def build_page2():
         'block-monster': 'Foam blocks or small boxes plus face paint. Thirty minutes plus drying.',
         'block-game-crew': 'Cardboard boxes and an acrylic paint set: become the game pieces. The biggest build here.',
         'plug-socket': 'Cardboard, black and white paint. The couples costume that fits together.',
+        'night-hero': 'A dark cowl and a cape cut from an old t-shirt. Rooftop patrol starts at home.',
     }
 
     def card(s):
         c = CG[s]
-        triple = f"{E(c['time'])} &middot; {E(c['cost'])} &middot; {E(c['effort'])}"
+        triple = f"{E(c['time'])} &middot; {E(c['effort'])}"
         mats = ''.join(f'<li>{E(m)}</li>' for m in c['mats'])
         return (f'<article class="ccard">'
                 f'<h3><a href="{SITE}/c/{s}">{E(titles[s])}</a></h3>'
@@ -511,30 +512,30 @@ def build_page2():
 
     faqs = [
         ("What does \"make it tonight\" mean?",
-         "Buildable this evening from the 12 default household basics (scissors, tape, markers, cardboard, old clothes, paper) plus at most 1 or 2 extra supplies. Two of the 16, the Classic Ghost and the Emoji Crew, need zero extra shopping."),
+         "Buildable this evening from the 12 default household basics (scissors, tape, markers, cardboard, old clothes, paper) plus at most 1 or 2 extra supplies. Two of the 17, the Classic Ghost and the Emoji Crew, need zero extra shopping."),
         ("How many make-tonight costumes are there?",
-         "16 out of the 164 costume ideas on Pick My Costume. Two of them, the Classic Ghost and the Emoji Crew, need zero extra shopping from the household basics. The other 14 need just one quick grab of 1 to 2 supplies, so a single dollar-store or craft-aisle run covers all of them."),
+         "17 out of the 169 costume ideas on Pick My Costume. Two of them, the Classic Ghost and the Emoji Crew, need zero extra shopping from the household basics. The other 15 need just one quick grab of 1 to 2 supplies, so a single dollar-store or craft-aisle run covers all of them."),
         ("What is the fastest costume I can make?",
          "The Classic Ghost and the Ninja, 10 minutes each. The Emoji Crew, Fairy Tale Princesses, and Salt & Pepper take 15 minutes."),
-        ("Which make-it-tonight costumes cost nothing?",
-         "The Ninja, the Breakfast Buffet, and the Space Crewmate each cost $0 to make from household basics."),
+        ("Which make-it-tonight costumes need nothing new?",
+         "The Classic Ghost and the Emoji Crew build entirely from the 12 household basics, with zero extra shopping."),
         ("What if I don't have the 1 or 2 extra supplies?",
-         "One quick store run covers all 16. Every costume below lists exactly what it still needs, and each build guide names the cheapest place to get it."),
+         "One quick store run covers all 17. Every costume below lists exactly what it still needs."),
     ]
 
     body = f"""{header()}
 <h1>Make-It-Tonight Halloween Costumes</h1>
 <p class="byline">Updated September 2026</p>
-<p class="lede">It's the evening of the party and you have no costume. These <strong>16 builds</strong> &mdash; out of the 164 costume ideas on Pick My Costume &mdash; are make-tonight or 1&ndash;2 supplies away from default household basics. The longest takes 45 minutes.</p>
-<p class="sub">"Tonight" means tonight: real build times from each costume's guide, tiered below. The Classic Ghost and the Emoji Crew need zero extra shopping; the other 14 need one quick grab of 1&ndash;2 supplies.</p>
+<p class="lede">It's the evening of the party and you have no costume. These <strong>17 builds</strong>, out of the 169 costume ideas on Pick My Costume, are make-tonight or 1-2 supplies away from default household basics. The longest takes 45 minutes.</p>
+<p class="sub">"Tonight" means tonight: real build times from each costume's guide, tiered below. The Classic Ghost and the Emoji Crew need zero extra shopping; the other 15 need one quick grab of 1-2 supplies.</p>
 
 {''.join(tier_blocks)}
 
 <h2><span class="qn">&#10067;</span> Know what you already own?</h2>
 <p class="section-note">If the craft drawer is fuller than the basics, start from your stash instead.</p>
 <div class="answer">
-<h3>Filter all 164 costumes by your materials</h3>
-<p>Tick what you own &mdash; face paint colors, felt, headbands, yarn &mdash; and every costume re-ranks by what it still needs. Fully covered builds jump to the top.</p>
+<h3>Filter all 169 costumes by your materials</h3>
+<p>Tick what you own: face paint colors, felt, headbands, yarn, and every costume re-ranks by what it still needs. Fully covered builds jump to the top.</p>
 <a class="go" href="{SITE}/diy-costumes-by-materials">Filter by my materials</a>
 <a class="quiet" href="{SITE}/pantry">Or tick everything you own on the pantry page &rarr;</a>
 </div>
@@ -544,9 +545,9 @@ def build_page2():
 
 <div class="final">
 <h2>Want a pick instead of a list?</h2>
-<p>The 2-minute quiz picks 3 costume ideas from the bank of 164 &mdash; free, no signup.</p>
+<p>The 2-minute quiz picks 3 costume ideas from the bank of 169, free, no signup.</p>
 <a class="go" href="{SITE}/">Take the quiz</a>
-<p class="fine">More ways in: <a href="{SITE}/costumes">Browse all 164 guides</a> &middot; <a href="{SITE}/easy-last-minute-halloween-costumes">Last-minute picks</a> &middot; <a href="{SITE}/cheap-halloween-costumes">Cheap builds</a></p>
+<p class="fine">More ways in: <a href="{SITE}/costumes\">Browse all 169 guides</a> &middot; <a href="{SITE}/easy-last-minute-halloween-costumes">Last-minute picks</a> &middot; <a href="{SITE}/cheap-halloween-costumes">Cheap builds</a></p>
 </div>
 {footer()}
 """
