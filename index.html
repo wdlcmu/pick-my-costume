@@ -130,6 +130,15 @@ body{
   padding:12px 10px;border-radius:10px;white-space:nowrap}
 @media (hover:hover){.sitenav a:hover{color:var(--ink)}}
 @media (min-width:900px){.sitehead{margin:0 -32px 4px;padding:0 32px}}
+/* 2026-10-04: phone header goes two rows (wordmark row, nav row) so the
+   name never wraps mid-phrase and the nav never squeezes it. */
+@media (max-width:899px){
+  .sitehead{flex-wrap:wrap;gap:0 12px;padding-top:8px;padding-bottom:4px}
+  .sitehead-link{min-height:0}
+  .sitehead-name{white-space:nowrap}
+  .sitenav{margin-left:0;flex:1 1 100%;justify-content:space-between}
+  .sitenav a{padding:8px 4px;font-size:13px}
+}
 /* 2026-10-01 Section 2: the costume-detail top row (Back/Home,
    progress, "Costume detail") used a negative-margin bleed that assumes
    #s-detail sits inside .wrap -- it does not (wrap closes before #s-detail),
@@ -233,6 +242,8 @@ body.st-open .sitehead{display:none}
   #resume-wrap{order:5}
   #hw-weather{order:6}
   #returnbox{order:7;align-self:stretch}
+  /* 2026-10-04: keep the value-prop line clear of the absolute moon. */
+  .hero p.fine.firstonly{max-width:calc(100% - 84px)}
 }
 /* 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
    it stays cheap on phones; off entirely under prefers-reduced-motion. */
@@ -1207,7 +1218,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-10-03 (Billy): value-prop tweak. Eric's "saves a few minutes
            vs Google" read meant the hero sold ideas, not the differentiator.
            One line now names the plan deliverable; hero stays slim. -->
-      <p class="fine firstonly" style="margin:6px 0 0">Your pick, your materials list, your build plan. No signup · 2 minutes · free</p>
+      <p class="fine firstonly" style="margin:6px auto 0">Your pick, your materials list, your build plan. No signup · 2 minutes · free</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
            The Trending tab below shows the photos; a text list of names was
