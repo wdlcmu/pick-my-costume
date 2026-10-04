@@ -111,6 +111,14 @@ body{
 .sitehead{position:sticky;top:0;z-index:100;background:rgba(22,13,40,.94);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);margin:0 -16px 4px;padding:0 16px}
+/* 2026-10-04: Halloween countdown ticker. Slim, full-bleed within .wrap like
+   the sitehead; scrolls away (not sticky) so it never eats phone viewport. */
+.ticker{display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:0 -16px;padding:7px 16px;font-size:13px;font-weight:600;
+  color:#ffd166;background:rgba(255,140,26,.10);
+  border-bottom:1px solid rgba(255,140,26,.25)}
+.ticker a{color:#ffd166;font-weight:700;white-space:nowrap}
+@media (min-width:900px){.ticker{margin:0 -32px;padding:7px 32px}}
 .sitehead-link{display:flex;align-items:center;gap:10px;min-height:54px;
   color:var(--ink);text-decoration:none;font-weight:800;font-size:18px}
 @media (hover:hover){.sitehead-link:hover{color:var(--ink);text-decoration:none}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
@@ -1108,6 +1116,17 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </head>
 <body>
 <div class="wrap">
+
+  <!-- 2026-10-04: Halloween countdown ticker (novel-finds 2026-10-04, costumes.com
+       steal). Slim persistent bar above the site header, NOT the hero: Billy cut
+       the hero countdown on Oct 3 for hero slimness; this is the site-top ticker
+       pattern instead. JS-computed days until Oct 31; hidden entirely after
+       Halloween. Feeds the quiz funnel, which ends at the Oct 27 reminder. -->
+  <div class="ticker" id="ticker" hidden>
+    <span aria-hidden="true">&#127875;</span>
+    <span id="ticker-text"></span>
+    <a href="/" id="ticker-cta">Find my costume &rarr;</a>
+  </div>
 
   <!-- 2026-09-29: persistent site header — logo + name on every screen, links home. -->
   <header class="sitehead">
