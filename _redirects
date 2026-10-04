@@ -14,7 +14,10 @@
 
 # Trending cluster -> /trending
 /trends-2026 /trending 301
-/whats-trending /trending 301
+# 2026-10-04 (Billy): /whats-trending redirect removed per his "Agree on A".
+# The Pinterest-powered weekly page is live again at /whats-trending;
+# /trending stays as the evergreen Frightgeist hub.
+# /whats-trending /trending 301
 
 # Toddler cluster -> /toddler-costumes
 /toddler-halloween-costumes-2026 /toddler-costumes 301
