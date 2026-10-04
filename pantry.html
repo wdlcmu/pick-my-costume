@@ -275,10 +275,10 @@
     },
     {
       "@type": "Question",
-      "name": "How much does a DIY costume actually cost?",
+      "name": "What will I need to buy for a costume?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Real materials prices, not guesses: the cheapest of the 169 builds costs $0 to $5, 15 ideas cost $5 or less, and 118 cost $10 or less. Each costume's guide page shows its own build time, cost, and effort level."
+        "text": "Start with your closet: most builds reuse clothes, linens, cardboard, and basic craft supplies you already own. Every costume's guide page lists exactly what you need, what you still need to buy, and how long the build takes, so you know the full shopping list before you start."
       }
     }
   ]
@@ -318,7 +318,7 @@
   <p class="fresh">Updated for Halloween 2026</p>
 <section class="geo-answer" id="geo-answer">
   <h2>Short answer</h2>
-  <p>Out of 169 costume ideas on Pick My Costume, <strong>16 are ready with what you have or 1&ndash;2 supplies away</strong> from default household basics (scissors, tape, markers, cardboard, old clothes, paper). The Classic Ghost needs zero extra shopping; 15 more &mdash; including the Ninja, Salt &amp; Pepper, Emoji Crew, and Block Game Crew &mdash; need just one quick grab of 1&ndash;2 supplies. Every costume below shows exactly what you still need, or nothing at all.</p>
+  <p>Out of 164 costume ideas on Pick My Costume, <strong>16 are ready with what you have or 1&ndash;2 supplies away</strong> from default household basics (scissors, tape, markers, cardboard, old clothes, paper). The Classic Ghost needs zero extra shopping; 15 more &mdash; including the Ninja, Salt &amp; Pepper, Emoji Crew, and Block Game Crew &mdash; need just one quick grab of 1&ndash;2 supplies. Every costume below shows exactly what you still need, or nothing at all.</p>
 </section>
 
 <section class="geo-faq" id="geo-faq">
@@ -332,8 +332,8 @@
     <p>Scissors, tape, markers, paper and pen, aluminum foil, cardboard, a white t-shirt, a plain t-shirt, black clothes, an old bedsheet, a pillowcase, and socks. These are the 12 assumed staples; everything else is a per-costume requirement listed on each costume's build guide.</p>
   </details>
   <details class="faq">
-    <summary>How much does a DIY costume actually cost?</summary>
-    <p>Real materials prices, not guesses: the cheapest of the 169 builds costs $0 to $5, 15 ideas cost $5 or less, and 118 cost $10 or less. Each costume's guide page shows its own build time, cost, and effort level.</p>
+    <summary>What will I need to buy for a costume?</summary>
+    <p>Start with your closet: most builds reuse clothes, linens, cardboard, and basic craft supplies you already own. Every costume's guide page lists exactly what you need, what you still need to buy, and how long the build takes, so you know the full shopping list before you start.</p>
   </details>
 </section>
 
@@ -1723,7 +1723,7 @@ function renderGroups(){
       window._phT = setTimeout(function(){ track('pantry_materials_changed', { ticked_count: ticked.size }); }, 1500);
       /* 2026-09-30 Tab 6 fix 3 (tap lag): the checkbox tile's own class
          flipped synchronously above -- defer the full render() a frame so the
-         169-card rebuild can't block the tick's paint. */
+         164-card rebuild can't block the tick's paint. */
       requestAnimationFrame(() => setTimeout(() => { render(); }, 0));
     });
   });
@@ -1927,7 +1927,7 @@ function renderFocus(){
       }
       /* 2026-09-30 Tab 6 fix 3 (tap lag): paint the tapped tile synchronously
          FIRST -- class, badge, emoji -- then defer the renderGroups()/render()
-         rebuild a frame so the 169-card rebuild can't block the tile's own
+         rebuild a frame so the 164-card rebuild can't block the tile's own
          paint. One change covers the dead-tap fix and the tap-lag fix. */
       let tileOkNow = true;
       for (const e of tileEntries()){ if (!reqOk(e.m, it.id, e.i)){ tileOkNow = false; break; } }
