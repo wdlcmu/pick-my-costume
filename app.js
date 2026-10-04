@@ -14630,7 +14630,7 @@ function shareLandingHeadline(idea, search){
     /* 2026-09-26 pair-share: a recipient arriving to match a friend's pick
        gets the match ask on the primary CTA. Unknown slugs keep the default. */
     var _pairFor = (VIA_SHARE_ORIGIN === "pair" && typeof PAIR_IDEA_ID !== "undefined" && PAIR_IDEA_ID) ? pairIdeaById(PAIR_IDEA_ID) : null;
-    b.textContent = (chm || chm2) ? "See what YOU can make" : (_pairFor ? "Find YOUR costume to match" : "What are you going as? Find my costume");
+    b.textContent = (chm || chm2) ? "See what YOU can make" : (_pairFor ? "Find YOUR costume to match" : "What are you going as? Pick my costume");
     b.onclick = function(){
       state = {qi: 0, answers: {}};
       clearK("pmc_pick_v1");
@@ -15452,8 +15452,8 @@ function shareLandingHeadline(idea, search){
         var tpct = Math.round(tn.illum * 100), hpct = Math.round(hw.illum * 100);
         var daybit = days > 1 ? " (" + days + " days away)" : days === 1 ? " (tomorrow night)" : days === 0 ? " (tonight!)" : "";
         var hwLabel = rolled ? "Next Halloween night" : "Halloween night";
-        $("moon-tonight").textContent = "Tonight's moon: " + tn.name + ", " + tpct + "% lit."; /* 2026-09-30: moon-only widget, no day sun branch */
-        $("moon-halloween").textContent = hwLabel + ": " + hw.name + ", " + hpct + "% lit" + daybit + ".";
+        $("moon-tonight").textContent = "Tonight: " + tn.name + " · " + tpct + "% lit."; /* 2026-09-30: moon-only widget, no day sun branch */
+        $("moon-halloween").textContent = hwLabel + ": " + hw.name + " · " + hpct + "% lit" + daybit + ".";
         var fun;
         if (hw.illum >= 0.85) fun = "Full moon on Halloween. Spooky season is cooperating.";
         else if (hw.illum >= 0.4) fun = "A " + hpct + "% moon on Halloween night. Spooky enough.";
