@@ -30,6 +30,28 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", sweep);
   else sweep();
 })();
+
+/* 2026-10-04: Halloween countdown ticker (novel-finds 2026-10-04). Pure date
+   math, no server call. Shows days until Oct 31 of the current year; hidden
+   entirely once Halloween has passed. */
+(function(){
+  function renderTicker(){
+    var bar = document.getElementById("ticker");
+    var txt = document.getElementById("ticker-text");
+    if (!bar || !txt) return;
+    var now = new Date();
+    var hw = new Date(now.getFullYear(), 9, 31);
+    var days = Math.ceil((hw.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 864e5);
+    if (days < 0) return; // past Halloween: stay hidden
+    var msg = days > 1 ? days + " days until Halloween"
+      : days === 1 ? "Tomorrow is Halloween"
+      : "Happy Halloween! Tonight is the night";
+    txt.textContent = msg;
+    bar.hidden = false;
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderTicker);
+  else renderTicker();
+})();
 /* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
 /* Internal-traffic marking (analytics only, no UX change). Visiting any page
    with ?internal=1 once sets localStorage pmc_internal=1 on that device
@@ -8251,7 +8273,7 @@ function buildWrappedButton(results){
 /* ================= GALAXY REGION ASSIGNMENT (2026-10-01, P1-5) ================
    The quiz assigns the region: the #1 pick's galaxy region, from
    hidden_files/galaxy/galaxy-data.json (idea.cluster -> region index).
-   Format: idea id -> [region name, region slug]. All 164 bank ideas covered. */
+   Format: idea id -> [region name, region slug]. All 169 bank ideas covered. */
 var GALAXY_REGION_BY_IDEA = {
 "neon-demon-hunter":["Pop Culture Plaza","pop-culture-plaza"],
 "classic-ghost":["Fright Night","fright-night"],
@@ -8416,7 +8438,12 @@ var GALAXY_REGION_BY_IDEA = {
 "fuzzy-gremlin":["Silly Street","silly-street"],
 "rescue-pups":["Animal Kingdom","animal-kingdom"],
 "wayfinder-princess":["Princess Castle","princess-castle"],
-"chill-painter":["Silly Street","silly-street"]
+"chill-painter":["Silly Street","silly-street"],
+"goth-schoolgirl":["Fright Night","fright-night"],
+"jester-villainess":["Silly Street","silly-street"],
+"night-hero":["Hero Headquarters","hero-headquarters"],
+"amazon-warrior":["Hero Headquarters","hero-headquarters"],
+"toothy-plush":["Silly Street","silly-street"]
 };
 
 /* 2026-10-01 P1-6: quiz-result share card. Native share sheet on mobile,
