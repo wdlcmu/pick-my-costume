@@ -383,6 +383,8 @@ body.st-open .sitehead{display:none}
 /* 2026-09-26: quiz goal-gradient bar. Starts at 15%, never 0%. */
 .qbar{height:4px;background:var(--line);border-radius:2px;margin:0 0 12px;overflow:hidden}
 .qbar-fill{height:100%;width:15%;background:var(--accent);border-radius:2px;transition:width .3s ease}
+/* 2026-10-05: quiz welcome screen (game-like pacing). One big button. */
+.q-welcome-cta{width:100%;margin:6px 0 18px}
 /* 2026-09-26: sticky bottom quiz CTA, mobile only. Appears once the
    hero CTA scrolls out of view; hides on quiz start. */
 .stickycta{position:fixed;left:0;right:0;bottom:0;z-index:900;display:none;pointer-events:none;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(20,20,40,.97),rgba(20,20,40,0))}
@@ -726,6 +728,9 @@ button.lightsheet{color:#241a38;}
 .castliveprev-lab{margin:0 0 4px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .castliveprev-text{margin:0;font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
 .card .blurb{margin:0 0 10px;font-size:17px}
+/* 2026-10-05: at-a-glance strip. Three honest bullets under the result title. */
+.glance{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:0}
+.glance li{background:var(--chip,#f6efe0);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
 .card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
 .card .why b{color:var(--ink)}
 .card .row{display:flex;flex-wrap:wrap;gap:10px}
@@ -1505,7 +1510,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <div id="quizBackdrop" aria-hidden="true"></div>
   <section class="screen" id="s-quiz" role="dialog" aria-modal="true" aria-label="Costume quiz">
     <div class="quiz-grabber" aria-hidden="true"></div>
-    <p class="progress" id="q-progress">Question 1 of 5</p>
+    <p class="progress" id="q-progress"></p>
     <p class="proxybanner" id="q-proxybanner"></p>
     <!-- 2026-09-26: goal-gradient bar. Starts at 15%, never 0%. -->
     <div class="qbar" aria-hidden="true"><div class="qbar-fill" id="qbar-fill"></div></div>
