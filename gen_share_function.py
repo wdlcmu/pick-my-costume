@@ -31,6 +31,35 @@ RECIPIENT_BANNER = True
 IMADEIT = False
 
 src = open(os.path.join(ROOT, "app.js"), encoding="utf-8").read()  # bank + INSTRUCTIONS moved to app.js (2026-10-01)
+
+def _extract_json(src, marker):
+    i = src.index(marker); j = src.index('{', i)
+    depth, in_str, esc = 0, False, False
+    for k in range(j, len(src)):
+        c = src[k]
+        if in_str:
+            if esc: esc = False
+            elif c == '\\': esc = True
+            elif c == '"': in_str = False
+        else:
+            if c == '"': in_str = True
+            elif c == '{': depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    raw = re.sub(r'/\*.*?\*/', '', src[j:k+1], flags=re.S)
+                    return json.loads(raw)
+    raise ValueError('unterminated JSON after ' + marker)
+
+# 2026-10-05 (Billy): the visual supply cards are the single materials
+# presentation on /c/ guides. The tile model is ported from app.js (same
+# PANTRY_MATS / LABELS / EMOJI the app badge uses) so /c/ cards and app
+# cards can never drift.
+_PANTRY_MATS = _extract_json(src, 'var PANTRY_MATS =')
+_PANTRY_LABELS = _extract_json(src, 'var PANTRY_LABELS =')
+_PANTRY_EMOJI = _extract_json(src, 'var PANTRY_EMOJI =')
+_PANTRY_STAPLES = _PANTRY_MATS['staples']
+_OPTIONAL_PAREN_RE = re.compile(r'\([^)]*optional', re.I)
 ideas = re.findall(r'\{id:"([^"]+)", title:"([^"]+)", blurb:"([^"]+)"', src)
 assert ideas, "no ideas parsed from index.html"
 data = {slug: {"t": title, "b": blurb} for slug, title, blurb in ideas}
@@ -92,7 +121,7 @@ NOTFOUND_SRC = open(os.path.join(ROOT, "404.html"), encoding="utf-8").read()
 assert "That page is still in the box" in NOTFOUND_SRC, \
     "404.html marker text changed: update the friendly-404 assert"
 
-# Materials, numbered steps, decision triple (time/cost/effort), and FAQs per
+# Materials, numbered steps, decision triple (time/effort), and FAQs per
 # idea, for schema.org HowTo JSON-LD on the /c/ pages and the static guide
 # body (triple + FAQs are visible content; only m/s feed the JSON-LD).
 # Parsed with brace matching because the object has a trailing comma that
@@ -206,6 +235,16 @@ howto = {s: {"m": _instructions[s]["m"], "s": _instructions[s]["s"],
              "safelink": _safety_link_for(_instructions[s]["s"])}
         for s in data}
 
+# 2026-10-05: the /c/ supply cards align tile indices 1:1 with pantry mats,
+# exactly like app.js pantryMaterialTexts. Fail fast if any idea drifts.
+for _s in data:
+    _pm = _PANTRY_MATS['mats'].get(_s) or []
+    _tx = [t for t in _instructions[_s]["m"] if not _OPTIONAL_PAREN_RE.search(t)]
+    assert _pm, 'no pantry mats for ' + _s
+    assert len(_pm) == len(_tx), \
+        'pantry/text misalignment for %s: %d mats vs %d texts' % (_s, len(_pm), len(_tx))
+print('pantry/text alignment ok for %d ideas' % len(data))
+
 # Related-costume internal links (SEO, 2026-09-27): every /c/ guide renders a
 # "More costumes like this" block of plain static <a href="/c/..."> anchors
 # (crawler-visible, same for every visitor: not cloaking). Relatedness =
@@ -255,8 +294,10 @@ assert all(len(v) == 5 and all(t in data for t in v) for v in RELATED.values()),
 # accent (optional face paint, tiny tulle eye squares) over the signature
 # piece. Any bank edit that leaves an idea unclassified fails loudly.
 _MAT_CATS = [
+    # 2026-10-02: "cereal boxes" (plural) never matched "cereal box"+s?,
+    # so cereal-crew classified as fabric. Box plurals are real bank words.
     ("cardboard", ["cardboard", "cardstock", "shoe box", "cereal box",
-                   "pizza box", "moving box"]),
+                   "cereal boxes", "pizza box", "moving box"]),
     ("felt", ["felt"]),
     ("paper", ["paper", "crepe", "tissue", "newspaper", "poster board"]),
     ("balloons", ["balloon"]),
@@ -421,6 +462,15 @@ _EASY_TITLE_SLUGS = {
     "pickle", "zombie-coworker",
     # foam props bought, not built
     "headless-horsemen", "neon-demon-hunter",
+    # 2026-10-02 (Lane D fabric-build audit): worn clothing + props/accents,
+    # not a fabric craft build -- the sheet/robe/dress/shirt is worn, the
+    # signature piece is a bought prop or nothing at all
+    "classic-ghost",    # bedsheet is clothing-like; "Fabric Build" mislabels
+    "dino-tourist",     # Hawaiian shirt + bought plush tail/camera props
+    "galaxy-knights",   # bathrobe + bought toy prop, paint optional
+    "ice-skater",       # white dress + tights + hair/makeup accessories
+    "office-couple",    # button-downs + name tags + teapot prop
+    "pop-star",         # sequin jacket + bought mic/sunglasses props
 }
 assert _EASY_TITLE_SLUGS <= set(data), \
     "easy-title slug not in bank: %s" % (_EASY_TITLE_SLUGS - set(data))
@@ -578,6 +628,105 @@ for _s in data:
     for _v in (SEOTITLE[_s], INTRO[_s], SEALT[_s]):
         assert "$" not in _v, "dollar figure in generated copy: " + _s
 
+# Pictured honesty captions (Billy 2026-10-01): the bank's pictured field
+# (full "Pictured: ..." caption, written by viewing the actual concept
+# photo) is mirrored into the /c/ guides so the hero renders the same
+# caption that in-app ideaMedia shows under the AI honesty label. Parsed
+# from the bank at every regen, so a caption edit can never silently desync
+# the share pages.
+# (Lane 4 batch-1 regen on 2026-10-03 silently dropped this map -- the bank
+# never lost the captions. Restored 2026-10-03. Per the standing rule: never
+# hand-fix the generated file alone; this parse is the single source of
+# truth and every regen re-emits it.)
+def _idea_block(slug):
+    """Return the bank's {id:"<slug>", ...} object text, brace-matched."""
+    i = src.index('{id:"%s",' % slug)
+    depth, in_str, esc = 0, False, False
+    for j in range(i, len(src)):
+        ch = src[j]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        else:
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return src[i:j + 1]
+    raise AssertionError("unbalanced braces in bank entry: " + slug)
+
+PICTURED = {}
+for _s in data:
+    _pm = re.search(r'pictured:"((?:[^"\\]|\\.)*)"', _idea_block(_s))
+    if _pm:
+        PICTURED[_s] = _pm.group(1)
+assert len(PICTURED) >= 50, "pictured map too small: %d" % len(PICTURED)
+for _s, _c in PICTURED.items():
+    assert _c.startswith("Pictured:"), "pictured caption must lead with 'Pictured:': " + _s
+    assert "\u2014" not in _c and "\u2013" not in _c, \
+        "em/en dash in pictured caption: " + _s
+    assert "$" not in _c, "dollar figure in pictured caption: " + _s
+    assert _s in data and data[_s]["t"], "pictured slug not in bank: " + _s
+
+
+# 2026-10-05 (Billy): client-side tick script for the /c/ supply cards.
+# Reads/writes the same pantry2 localStorage the app uses, so ticks carry
+# over between /c/ guides and the app. Runs synchronously right after the
+# cards markup, correcting tick state before paint.
+_CLIENTJS = """(function(){
+var root=document.getElementById("detail-mats");
+if(!root||!window.PMD)return;
+var D=window.PMD,SLUG=root.getAttribute("data-slug"),MATS=D.mats,TILES=D.tiles,STAPLES=D.staples||[];
+function readTicked(){var s=null;try{s=JSON.parse(localStorage.getItem("pantry2")||localStorage.getItem("pantry3")||"null");}catch(_){}
+var set={};for(var i=0;i<STAPLES.length;i++)set[STAPLES[i]]=1;if(s&&s.length)for(var j=0;j<s.length;j++)set[s[j]]=1;return set;}
+function saveTicked(set){try{localStorage.setItem("pantry2",JSON.stringify(Object.keys(set)));}catch(_){}}
+function has(set,k){return !!set[k];}
+function buyKey(mi){return "buy:"+SLUG+"#"+mi;}
+function matOk(mat,tk,mi){var hasReal=false,g,k,id,grp;
+for(g=0;g<mat.length;g++){grp=mat[g];for(k=0;k<grp.length;k++){if(grp[k]){hasReal=true;break;}}if(hasReal)break;}
+for(g=0;g<mat.length;g++){grp=mat[g];var gok=false;
+for(k=0;k<grp.length;k++){id=grp[k];if(!id)continue;if(has(tk,id)){gok=true;break;}}
+if(!gok){var allNull=true;for(k=0;k<grp.length;k++){if(grp[k]){allNull=false;break;}}
+if(allNull&&has(tk,buyKey(mi)))gok=true;if(allNull&&hasReal)gok=true;}
+if(!gok)return false;}return true;}
+function tileOk(t,tk){for(var j=0;j<t.idxs.length;j++){if(!matOk(MATS[t.idxs[j]],tk,t.idxs[j]))return false;}return true;}
+function nextTapId(mat,tk){for(var g=0;g<mat.length;g++){var grp=mat[g],gsat=false,k,id;
+for(k=0;k<grp.length;k++){id=grp[k];if(id&&has(tk,id)){gsat=true;break;}}if(gsat)continue;
+for(k=0;k<grp.length;k++){id=grp[k];if(id)return id;}return null;}return null;}
+function escH(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function render(){var tk=readTicked(),btns=root.querySelectorAll(".ptile"),have=0,total=MATS.length,missHtml="",b,t,btn;
+for(b=0;b<TILES.length;b++){t=TILES[b];btn=btns[b];if(!btn)continue;var ok=tileOk(t,tk);
+btn.className="ptile "+(ok?"have":"miss");
+var badge=btn.querySelector(".ptbadge");if(badge)badge.textContent=ok?"\\u2713":"\\u25CB";
+btn.setAttribute("aria-label",btn.getAttribute("data-label")+": "+(ok?"you have this":"missing")+". Tap to update.");
+if(!ok)missHtml+='<span class="pchip"><span class="pmemo" aria-hidden="true">'+t.e+"</span>"+escH(t.label)+"</span>";}
+for(var mi=0;mi<MATS.length;mi++){if(matOk(MATS[mi],tk,mi))have++;}
+var head=root.querySelector("[data-role=chead]");
+if(head)head.textContent=have>=total?"You have everything for this one. Nothing to buy.":(have===0?"You have 0 of "+total+" things for this.":"You already have "+have+" of "+total+" things for this.");
+var needP=root.querySelector("[data-role=cneed]"),chips=root.querySelector("[data-role=cchips]");
+if(needP)needP.style.display=missHtml?"":"none";
+if(chips){chips.innerHTML=missHtml;chips.style.display=missHtml?"":"none";}}
+function onTap(btn){var t=TILES[parseInt(btn.getAttribute("data-ti"),10)];if(!t)return;
+var tk=readTicked(),j,mi;
+if(t.rep){var target=null;
+for(j=0;j<t.idxs.length;j++){mi=t.idxs[j];if(!matOk(MATS[mi],tk,mi)){target=nextTapId(MATS[mi],tk);break;}}
+if(!target||has(tk,target))return;tk[target]=1;}
+else{var keys=t.idxs.map(function(x){return buyKey(x);});
+var anyUnticked=keys.some(function(k){return !has(tk,k);});
+keys.forEach(function(k){if(anyUnticked)tk[k]=1;else delete tk[k];});}
+saveTicked(tk);render();}
+var all=root.querySelectorAll(".ptile");
+for(var b2=0;b2<all.length;b2++)(function(btn){btn.addEventListener("click",function(e){e.preventDefault();onTap(btn);});})(all[b2]);
+render();})();"""
+assert "\u2014" not in _CLIENTJS and "\u2013" not in _CLIENTJS, "em/en dash in client tick script"
+
 
 FN = '''// Per-idea share pages: /c/<slug> unfurls the shared costume's own
 // illustration for messengers and serves the full build guide as static
@@ -649,12 +798,123 @@ var INTRO = %s;
 // 404s the share card.
 var SEALT = %s;
 
+// Pictured honesty captions (Billy 2026-10-01): slug -> full "Pictured: ..."
+// caption, parsed from the bank's pictured fields by gen_share_function.py.
+// The hero renders the caption under the AI honesty label when PICTURED has
+// the slug; ideas without the field render nothing -- same as in-app
+// ideaMedia.
+var PICTURED = %s;
+
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
 // each page's costume genuinely is a materials list plus steps); the
-// decision triple (time/cost/effort) and the 2 parent FAQs are rendered as
+// decision triple (time/effort) and the 2 parent FAQs are rendered as
 // visible static HTML so AI assistants can quote them.
 var HOWTO = %s;
+
+// Pantry tile model (2026-10-05): the visual supply cards are the single
+// materials presentation on /c/ guides. Same PANTRY_MATS / LABELS / EMOJI
+// the app badge uses (extracted from app.js at generation time), so /c/
+// cards and app cards can never drift.
+var PANTRY_MATS = %s;
+var PANTRY_LABELS = %s;
+var PANTRY_EMOJI = %s;
+
+/* Supply-card tile computation (2026-10-05): mirrors app.js pantryTileBits
+   + buildClosetBadge dup-merge. Output is static HTML (same for every
+   visitor); tick state applies client-side from localStorage. */
+function _cShortName(t){
+  if (!t) return null;
+  var s = String(t);
+  s = s.replace(/\\s*\\([^)]*\\)/g, "");
+  s = s.replace(/,\\s*\\d+\\s*(pairs?|sets?|packs?|rolls?|sheets?|bottles?|tubes?)?\\s*$/i, "");
+  s = s.replace(/,\\s*\\d+\\s+(per\\s+person|to\\s+share)\\s*$/i, "");
+  s = s.replace(/\\s+per\\s+person\\s*$/i, "");
+  s = s.replace(/^\\s*(a|an|the)\\s+/i, "");
+  s = s.replace(/^\\d+\\s+(pair\\s+|set\\s+)?/i, "");
+  s = s.replace(/\\s+/g, " ").trim();
+  s = s.split(",")[0].trim();
+  if (/\\sor\\s/i.test(s)) s = s.split(/\\sor\\s/i)[0].trim();
+  if (s.length > 42 && /\\sand\\s/i.test(s)) s = s.split(/\\sand\\s/i)[0].trim();
+  if (s.length > 42 && s.indexOf(":") > 0){
+    var sides = s.split(":"), longest = sides[0];
+    for (var si = 1; si < sides.length; si++){ if (sides[si].length > longest.length) longest = sides[si]; }
+    s = longest.trim();
+  }
+  s = s.replace(/^\\s*(a|an|the)\\s+/i, "");
+  s = s.replace(/^\\d+\\s+(pair\\s+|set\\s+)?/i, "");
+  s = s.replace(/\\s+/g, " ").trim();
+  if (!s || s.length > 42) return null;
+  return s;
+}
+function _cTileBits(mat, texts, i){
+  var reps = [];
+  for (var g = 0; g < mat.length; g++){
+    var grp = mat[g];
+    for (var k = 0; k < grp.length; k++){
+      var id = grp[k];
+      if (id && PANTRY_EMOJI[id]){ if (reps.indexOf(id) < 0) reps.push(id); break; }
+    }
+  }
+  if (reps.length){
+    var label = PANTRY_LABELS[reps[0]] || reps[0];
+    if (mat.length > 1) label += " +" + (mat.length - 1);
+    return {e: PANTRY_EMOJI[reps[0]], label: label, rep: reps[0]};
+  }
+  return {e: "🛒", label: _cShortName(texts[i]) || "Item", rep: null};
+}
+/* Merged tile list for a slug: [{rep, idxs:[material indices], e, label}].
+   Returns null when pantry data is missing or misaligned (fail safe). */
+function _cTiles(slug){
+  var mats = (PANTRY_MATS.mats[slug] || []);
+  var hw = HOWTO[slug];
+  if (!hw || !hw.m || !mats.length) return null;
+  var texts = hw.m.filter(function(t){ return !/\\([^)]*optional/i.test(t); });
+  if (texts.length !== mats.length) return null;
+  var tiles = [], seen = {};
+  for (var i = 0; i < mats.length; i++){
+    var bits = _cTileBits(mats[i], texts, i);
+    var key = bits.rep ? ("id:" + bits.rep) : ("buy:" + bits.label);
+    if (seen[key]){ seen[key].idxs.push(i); continue; }
+    var t = {rep: bits.rep, idxs: [i], e: bits.e, label: bits.label};
+    seen[key] = t; tiles.push(t);
+  }
+  return {mats: mats, texts: texts, tiles: tiles};
+}
+/* Static supply-cards HTML. Rendered neutral (all miss, zero count); the
+   inline client script corrects tick state from localStorage before paint.
+   Each card carries the full material text (quantity + buy/make hint) as a
+   sub-line, so the cards are the complete materials list. */
+function _cCardsHtml(slug, ct){
+  if (!ct) return "";
+  var staples = PANTRY_MATS.staples || [];
+  var cards = ct.tiles.map(function(t, ti){
+    var assumed = t.rep && staples.indexOf(t.rep) >= 0;
+    var sub = t.idxs.map(function(mi){ return esc(ct.texts[mi]); }).join("<br>");
+    return "<button type=\\"button\\" class=\\"ptile miss\\" data-ti=\\"" + ti + "\\" data-label=\\"" + esc(t.label) + "\\" aria-label=\\"" + esc(t.label) + ": missing. Tap to update.\\">" +
+      "<span class=\\"ptbadge\\" aria-hidden=\\"true\\">\\u25CB</span>" +
+      "<span class=\\"ptemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" +
+      "<span class=\\"ptlabel\\">" + esc(t.label) + "</span>" +
+      "<span class=\\"ptsub\\">" + sub + "</span>" +
+      (assumed ? "<span class=\\"ptag\\">assumed</span>" : "") +
+      "</button>";
+  }).join("");
+  var chips = ct.tiles.map(function(t){
+    return "<span class=\\"pchip\\"><span class=\\"pmemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" + esc(t.label) + "</span>";
+  }).join("");
+  return "<div class=\\"closet-badge\\" id=\\"detail-mats\\" data-slug=\\"" + slug + "\\">" +
+    "<p class=\\"closet-line\\" data-role=\\"chead\\">You have 0 of " + ct.mats.length + " things for this.</p>" +
+    "<p class=\\"ptiles-sub\\">Tap a supply to tick what you own.</p>" +
+    "<div class=\\"ptiles\\">" + cards + "</div>" +
+    "<p class=\\"closet-need\\" data-role=\\"cneed\\">Still need:</p>" +
+    "<div class=\\"pchips\\" data-role=\\"cchips\\">" + chips + "</div>" +
+    "<a class=\\"closet-link\\" href=\\"/pantry?for=" + slug + "\\">Update my pantry</a>" +
+    "</div>";
+}
+/* Client-side tick script source (static): reads/writes the same pantry2
+   localStorage the app uses, so ticks carry over between /c/ guides and
+   the app. Runs synchronously right after the cards markup. */
+var _clientJsSrc = %s;
 
 // Friendly 404 for unknown slugs: the site's own 404 page, embedded at
 // generation time (NOTFOUND_SRC in gen_share_function.py), served below
@@ -847,6 +1107,17 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      above to re-split. */
   var _ctaLabel = "Plan this costume \\u2192";
   var targetAttr = target.replace(/&/g, "&amp;");
+  /* 2026-10-03 Stream 17 (citation deep-link bridge): bottom-of-guide
+     planner CTA uses the exact deep-link shape ChatGPT generates in the
+     wild (?idea=<slug>&plan=1), carrying ?s= through only when the guide
+     was reached from a share link, so recipient attribution survives the
+     tap. Cold arrivals get the bare deep link, matching the assistant
+     channel's proven entry point. */
+  var _plnQ = new URLSearchParams();
+  _plnQ.set("idea", slug);
+  _plnQ.set("plan", "1");
+  if (_qp.get("s")) _plnQ.set("s", _qp.get("s"));
+  var _plannerAttr = ("/?" + _plnQ.toString()).replace(/&/g, "&amp;");
   /* Recipient banner wiring (Experiment 3 recipient ship). One-line flag:
      RECIPIENT_BANNER = false returns the page to the no-banner control.
      The flag's value is emitted INTO the served page's script below, so the
@@ -926,7 +1197,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
      the meta tags in the head, so they cannot regress. */
-  var _mats = "", _steps = "", _triple = "", _faqs = "", _quick = "", _fit = "", _sharerLine = "";
+  var _mats = "", _steps = "", _triple = "", _faqs = "", _fit = "", _sharerLine = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     _steps = _hw.s.map(function(x, i){
@@ -953,12 +1224,20 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     _hw.s.forEach(function(x){
       if (/^Optional pro finish:\\s*/i.test(x)){ if (!_qtip) _qtip = x.replace(/^Optional pro finish:\\s*/i, ""); }
     });
-    var _qt = esc(_hw.time);
-    var _qdm = _qt.match(/\s*\+\s*([\d.]+)\s*(min|hrs?)\s*drying\s*$/);
-    var _qtime = _qdm ? _qt.slice(0, _qdm.index) + ' of hands-on work plus ' + _qdm[1] + ' ' + (_qdm[2].charAt(0) === 'h' ? (parseFloat(_qdm[1]) === 1 ? 'hr' : 'hrs') : 'min') + ' drying time' : _qt + ' of hands-on work';
-    _quick = "<p class=\\"qtriple\\">DIY this week: " + _qtime + "</p>" +
-      "<ul class=\\"mats qmats\\">" + _mats + "</ul>" +
-      (_qtip ? "<p class=\\"qtip\\">Tip: " + esc(_qtip) + "</p>" : "") + _fit;
+    /* 2026-10-05 (Billy): the "DIY this week" quickcard is gone. The visual
+       supply cards are the single materials presentation; the tip and the
+       sizing note stay. Materials remain indexable via the noscript block
+       below and the HowTo JSON-LD supply list. */
+    var _tipHtml = _qtip ? "<p class=\\"qtip\\">Tip: " + esc(_qtip) + "</p>" : "";
+    /* Sizing guidance: the fit note every parent asks about. (It used to be
+       concatenated into _quick before assignment, so it never rendered;
+       fixed 2026-10-05.) */
+    if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\\"sizing\\">Sizing: " + esc(_hw.sizing) + "</p>";
+    var _ct = _cTiles(slug);
+    var _cardsHtml = _cCardsHtml(slug, _ct);
+    var _pmd = _ct ? JSON.stringify({mats: _ct.mats, tiles: _ct.tiles, staples: (PANTRY_MATS.staples || [])}) : "null";
+    var _cardsScript = _ct ? "<script>window.PMD=" + _pmd + ";" + _clientJsSrc + "</scr" + "ipt>" : "";
+    var _noscriptMats = "<noscript><div class=\\"nsmats\\"><h2>Materials</h2><ul class=\\"mats\\">" + _mats + "</ul></div></noscript>";
     /* Decision triple: the most quotable line of the guide, first under h1.
        2026-09-30 traffic-operator cold-arrival polish: pills carry their
        labels (a bare "Medium" pill read as meaningless to cold recipients),
@@ -968,7 +1247,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Effort</span>" + esc(_hw.effort) + "</span>");
-    if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p>";
+    if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p><p class=\\"timenote\\">Build times are estimates. Yours may vary.</p>";
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\\"sizing\\">Sizing: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
@@ -987,26 +1266,36 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       }).join("");
     }
   }
-  /* Related guides (SEO 2026-09-27): plain static anchors to kindred
-     costumes. Same for every visitor and query string: not cloaking. */
+  /* Related guides (SEO 2026-09-27): thumbnail cards with lazy 256px photos,
+     each linking to the related /c/ page as a plain static anchor (SEO-safe;
+     same for every visitor: not cloaking).
+     2026-10-01 (Billy): cards carry thumbnails, not bare text links. The
+     thumbnail falls back to the full-size photo if the -256.webp is ever
+     missing. */
   var _relHtml = "";
   var _rel = RELATED[slug] || [];
   if (_rel.length) {
     _relHtml = "<h2>More costumes like this</h2><ul class=\\"rellist\\">" +
-      _rel.map(function(s){ return "<li><a href=\\"/c/" + s + "\\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
+      _rel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"\\">" +
+        "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>";
   }
   /* Related by material (SEO 2026-10-01, Claude 4c): "More cardboard
      builds" next to "More costumes like this", grouped by primary material
      from the bank (cardboard builds, felt builds, etc.). Same for every
-     visitor: not cloaking. Singletons render no block. */
+     visitor: not cloaking. Singletons render no block.
+     2026-10-01 (Billy): thumbnail cards here too, matching the kindred
+     block above. */
   var _matHtml = "";
   var _matRel = MATRELATED[slug] || [];
   if (_matRel.length && PRIMARYMAT[slug]) {
     var _matLabel = (MATRELLABEL[PRIMARYMAT[slug]] ||
       ("More " + PRIMARYMAT[slug] + " builds"));
     _matHtml = "<h2>" + esc(_matLabel) + "</h2><ul class=\\"rellist\\">" +
-      _matRel.map(function(s){ return "<li><a href=\\"/c/" + s + "\\">" + esc(IDEAS[s].t) + "</a></li>"; }).join("") +
+      _matRel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"\\">" +
+        "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>";
   }
   /* Answer-first intro (Claude 5 /c/ half, 2026-10-01): the first paragraph
@@ -1261,6 +1550,23 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _ogTitle = ((_s || "").length >= 8)
     ? _sharerEsc + " picked " + title + " - Pick My Costume"
     : seoTitle;
+  /* 2026-10-03 Stream 17: bottom-of-guide planner CTA. Rendered at
+     request time so ?s= (when present) is carried into the deep link. */
+  var _plannerCtaHtml =
+    "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" href=\\"" + _plannerAttr + "\\">Start this costume in the planner</a></p>";
+  /* 2026-10-03 Stream 17: tapGuard for the plan-flow CTAs (standing rule
+     2026-09-27). Both the top CTA and the new bottom planner CTA open the
+     app plan flow; a finger bounce must not double-fire the entry. */
+  var _plannerGuardScript = "<script>" +
+    "(function(){" +
+    "var _tg={};" +
+    "function _tgOk(k){var n=Date.now();if(n-(_tg[k]||0)<400)return false;_tg[k]=n;return true;}" +
+    "var links=document.querySelectorAll('a.plancta');" +
+    "for(var i=0;i<links.length;i++){" +
+    "(function(a){if(a._tgW)return;a._tgW=true;" +
+    "a.addEventListener('click',function(ev){if(!_tgOk('plancta'))ev.preventDefault();});})(links[i]);}" +
+    "})();" +
+    " <" + "/script>";
   var html = "<!DOCTYPE html>" +
     "<html lang=\\"en\\"><head><meta charset=\\"utf-8\\">" +
     "<title>" + seoTitle + "</title>" +
@@ -1293,18 +1599,36 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".triple{margin:0 0 10px;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".pill{display:inline-block;background:#2a1c52;border:1px solid #4b3486;color:#fdf3e3;font-size:14px;font-weight:700;padding:5px 12px;border-radius:999px;}" +
     /* 2026-09-30 traffic-operator: the small-caps unit labels inside the
-       decision pills (Time / Cost / Effort). */
+       decision pills (Time / Effort). */
     ".pl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;opacity:.65;margin-right:7px;}" +
     ".fit{font-size:15px;color:#cdbcf0;margin:0 0 8px;}" +
     ".sizing{font-size:14px;color:#cdbcf0;margin:8px 0 0;font-style:italic;}" +
     ".lede{font-size:17px;color:#fdf3e3;margin:0;}" +
     ".intro{font-size:17px;color:#fdf3e3;margin:0 0 12px;}" +
     "h2{font-size:22px;margin:32px 0 12px;letter-spacing:-0.01em;}" +
-    ".quickcard{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 18px;margin:18px 0;}" +
-    ".quickcard .qtriple{font-size:16px;font-weight:700;color:#fdf3e3;margin:0 0 8px;}" +
-    ".quickcard .qsteps{font-size:16px;line-height:1.5;padding-left:22px;margin:0;}" +
-    ".quickcard .qsteps li{margin:8px 0;}" +
-    ".quickcard .qtip{font-size:15px;color:#cdbcf0;font-style:italic;margin:10px 0 0;}" +
+    ".closet-badge{border:1px solid #4b3486;border-radius:14px;padding:12px 14px;margin:18px 0;background:#2a1c52;}" +
+    ".closet-badge p{margin:0 0 6px;}" +
+    ".closet-line{font-weight:700;font-size:15px;color:#fdf3e3;}" +
+    ".ptiles-sub{margin:0 0 10px;color:#cdbcf0;font-size:14px;}" +
+    ".ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px;}" +
+    ".ptile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:10px 6px;text-align:center;font:inherit;cursor:pointer;border:2px solid #4b3486;border-radius:14px;background:rgba(0,0,0,.18);color:#fdf3e3;}" +
+    ".ptile .ptemo{font-size:36px;line-height:1.1;}" +
+    ".ptile .ptlabel{font-size:11px;line-height:1.25;overflow-wrap:anywhere;}" +
+    ".ptile .ptsub{font-size:11px;line-height:1.35;color:#cdbcf0;overflow-wrap:anywhere;}" +
+    ".ptile.have{border-color:#7ee2a8;}" +
+    ".ptile.have .ptlabel{color:#cdbcf0;}" +
+    ".ptile.miss{border-style:dashed;}" +
+    ".ptile .ptbadge{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}" +
+    ".ptile.have .ptbadge{background:#7ee2a8;color:#0c2b18;}" +
+    ".ptile.miss .ptbadge{border:2px solid #ff8c1a;color:#ff8c1a;}" +
+    ".ptile .ptag{font-size:10px;color:#cdbcf0;border:1px solid #4b3486;border-radius:10px;padding:2px 7px;white-space:nowrap;}" +
+    ".ptile:active{background:rgba(255,255,255,.06);}" +
+    ".pchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px;}" +
+    ".pchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 10px;border:1px dashed #4b3486;border-radius:999px;color:#fdf3e3;}" +
+    ".pchip .pmemo{font-size:16px;}" +
+    ".closet-need{color:#cdbcf0;font-size:13px;}" +
+    ".closet-link{font-size:13px;color:#ff8c1a;text-decoration:underline;cursor:pointer;}" +
+    ".qtip{font-size:15px;color:#cdbcf0;font-style:italic;margin:10px 0 0;}" +
     "details.faq{border:1px solid #4b3486;border-radius:10px;margin:8px 0;background:#211540;}" +
     "details.faq summary{font-weight:700;font-size:16px;padding:12px 14px;cursor:pointer;list-style:none;}" +
     "details.faq summary::-webkit-details-marker{display:none;}" +
@@ -1357,25 +1681,38 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
     ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #4b3486;border-radius:999px;color:#ff8c1a;text-decoration:none;font-size:15px;font-weight:600;}" +
+    /* 2026-10-01 (Billy): related thumbnail cards. Overrides the pill link
+       above: thumb + title side by side. */
+    ".relcard a{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;}" +
+    ".relcard img{width:56px;height:56px;object-fit:cover;border-radius:8px;flex:none;}" +
+    /* 2026-10-01 (Billy): pictured honesty caption -- same type scale as the
+       in-app ideaMedia caption. */
+    ".pictured{font-size:11px;color:#9a8fb8;margin:-8px 0 12px;}" +
     ".crumb{font-size:13px;color:#cdbcf0;margin:0 0 8px;}" +
     ".crumb a{color:#ff8c1a;text-decoration:none;}" +
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
     ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
     "</style>" +
-    "</head><body><div class=\\"topbar\\"><a href=\\"/\\">🎃 Pick My <span>Costume</span></a></div><main class=\\"guide\\">" +
+    "<script>(function(){var s=document.createElement(\\"script\\");s.async=true;s.src=\\"https://us.i.posthog.com/static/array.js\\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\\",{api_host:\\"https://us.i.posthog.com\\",autocapture:false,capture_pageview:false,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\\"click\\",function(e){var t=e.target.closest&&e.target.closest(\\"[data-claude]\\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\\"add_to_claude_clicked\\",{source:\\"guide_page\\"});}catch(_){}}});})();</script>" +
+    "</head><body><div class=\\"topbar\\"><a href=\\"/\\">🎃 Pick My <span>Costume</span></a><a class=\\"claudebtn\\" href=\\"https://pickmycostume.com/mcp\\" data-claude=\\"1\\">Add to Claude</a></div><main class=\\"guide\\">" +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
     _introHtml +
     _triple +
     _sharerLine +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
-    "<p class=\\"ctawrap\\"><a class=\\"cta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
+    "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
     "<img src=\\"" + img + "\\" alt=\\"" + imgAlt + "\\">" +
     /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
     "<div class=\\"aiphoto\\">AI-generated concept photo</div>" +
-    (_quick ? "<div class=\\"quickcard\\">" + _quick + "</div>" : "") +
+    /* 2026-10-01 (Billy): pictured honesty caption under the hero photo --
+       the same caption in-app ideaMedia renders. No pictured field = no
+       caption. */
+    (PICTURED[slug] ? "<p class=\\"pictured\\">" + esc(PICTURED[slug]) + "</p>" : "") +
+    _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
     _splitHtml +
     "<h2>Steps</h2><ol class=\\"steps\\">" + _steps + "</ol>" +
+    _plannerCtaHtml +
     _faqs +
     _relHtml +
     _matHtml +
@@ -1391,6 +1728,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<footer class=\\"foot\\"><a href=\\"/\\">Pick My Costume</a> - Built with Muse.</footer>" +
     _bannerScript +
     _splitScript +
+    _plannerGuardScript +
     "</main></body></html>";
   return new Response(html, {
     headers: {
@@ -1400,8 +1738,8 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   });
 }
 ''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
-       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(INTRO), json.dumps(SEALT),
-       json.dumps(howto), json.dumps(NOTFOUND_SRC),
+       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED),
+       json.dumps(howto), json.dumps(_PANTRY_MATS), json.dumps(_PANTRY_LABELS), json.dumps(_PANTRY_EMOJI), json.dumps(_CLIENTJS), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
 out = os.path.join(ROOT, "functions", "c", "[slug].js")
