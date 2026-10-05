@@ -2091,14 +2091,42 @@ function goWarmFromQ1(){
   state.warmMode = true;
   renderWarmCapture();
 }
+/* 2026-10-05: game-like pacing. Fresh quizzes open on a welcome screen
+   before Q1; the "Let's start" button advances to the first question.
+   Presentation only: no scoring, bank, or question-semantic changes.
+   Skipped for edit mode, first-mode (pre-filled q1), and resumed quizzes
+   (answers already recorded). */
+function renderWelcome(){
+  var box = warmQuizChrome("\uD83C\uDF83 Let's find your costume", "Five quick questions, about two minutes. There are no wrong answers.");
+  var wlOld = document.getElementById("q-warm-link");
+  if (wlOld && wlOld.parentNode) wlOld.parentNode.removeChild(wlOld);
+  var b = document.createElement("button");
+  b.type = "button";
+  b.className = "cta q-welcome-cta";
+  b.textContent = "Let's start";
+  b.setAttribute("aria-label", "Start the costume quiz");
+  b.onclick = function(){
+    if (!tapGuard("qopt", 400)) return;
+    state.welcomed = true;
+    renderQ();
+  };
+  box.appendChild(b);
+  try { Analytics.track("quiz_welcome_shown", viaShareProps()); } catch(_){}
+}
 function renderQ(){
   /* 2026-09-30: a tapped option keeps :focus, and on touch devices the
      browser paints it stuck-highlighted; clear it on question change. */
   try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(_blur){}
   var order = flowOrder();
+  if (!state.welcomed && !state.editQid && state.qi === 0 && Object.keys(state.answers).length === 0){
+    renderWelcome();
+    return;
+  }
   var qid = order[state.qi];
   var q = qById(qid);
-  $("q-progress").textContent = "Question " + (state.qi + 1) + " of " + flowOrder().length;
+  /* 2026-10-05: no "Question X of Y" anxiety text; the thin bar carries the
+     progress. The edit-mode label stays: it names the detour, not a count. */
+  $("q-progress").textContent = "";
   /* 2026-09-27: name the one-question edit so the detour is explicit. */
   if (state.editQid) $("q-progress").textContent = "Changing one answer \u00B7 Question " + (state.qi + 1) + " of " + flowOrder().length;
   /* 2026-09-30: honest progress. The bar shows how much of the quiz is
@@ -7227,6 +7255,42 @@ function buildVibeFeedback(idea){
 }
 /* 2026-09-26: buildMakePlan removed; its content (cost/time/buy)
    was merged into the single "Make it this week" build section. */
+/* 2026-10-05: at-a-glance strip. Three honest bullets per result card,
+   derived from bank data only: audience/age fit, build time (hands-on +
+   drying), and tonight-eligibility. "Tonight-approved" appears only when the
+   stored idea.tonight predicate passes (hands-on <= 30 AND total <= 120). */
+function glanceBullets(idea){
+  var out = [];
+  var t = idea.tags || {};
+  var aud = idea.audience || [];
+  var fit;
+  if (t.kidunder3) fit = "Toddler-safe, good under 3";
+  else if (aud.indexOf("kid") >= 0 && t.kid36) fit = "Great for ages 3 to 6";
+  else if (aud.indexOf("kid") >= 0 && t.kid7plus) fit = "Great for ages 7 and up";
+  else if (aud.indexOf("kid") >= 0) fit = "Made for kids";
+  else if (aud.indexOf("family") >= 0) fit = "Fits the whole family";
+  else if (aud.indexOf("couple") >= 0) fit = "Built for two";
+  else if (aud.indexOf("group") >= 0) fit = "Built for a group";
+  else if (aud.indexOf("class") >= 0) fit = "Classroom-friendly";
+  else fit = "Flying solo";
+  out.push(fit);
+  var total = idea.totalMin, dry = idea.dryMin || 0;
+  var hands = (total === null || total === undefined) ? null : total - dry;
+  function fmtMin(m){
+    if (m % 60 === 0) return (m / 60) + " hr";
+    if (m > 60) return Math.floor(m / 60) + " hr " + (m % 60) + " min";
+    return m + " min";
+  }
+  if (hands === null){
+    out.push(planFacts(idea).build + " build");
+  } else if (dry > 0){
+    out.push(fmtMin(hands) + " build + " + fmtMin(dry) + " drying");
+  } else {
+    out.push(fmtMin(hands) + " build, no drying");
+  }
+  out.push(idea.tonight ? "Tonight-approved" : "Not a tonight build");
+  return out;
+}
 function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
   /* xopts (2026-10-01, Claude fix 1a): optional {results} -- passed by the
      results page so the committed plan's Next block can absorb the
@@ -7431,6 +7495,19 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
     });
     row.appendChild(bPick); /* "Plan this costume" stands alone full-width: the post-pick panel owns the single share path */
     if (!noArt){ card.appendChild(im); card.appendChild(h); } /* noArt=true only when the caller renders art+title itself; the fullscreen runner-up overlay passes false so the detail matches the #1 card */
+    /* 2026-10-05: at-a-glance strip, right under the title. Three honest
+       bullets from bank data: who it fits, the real build time, and whether
+       it is tonight-approved. */
+    (function(){
+      var _gl = document.createElement("ul");
+      _gl.className = "glance";
+      glanceBullets(idea).forEach(function(btxt){
+        var _li = document.createElement("li");
+        _li.textContent = btxt;
+        _gl.appendChild(_li);
+      });
+      card.appendChild(_gl);
+    })();
     if (_pb) card.appendChild(_pb); /* pantry badge: right after the title on the hero; before the blurb on runner-up detail */
     card.appendChild(bl);
     /* 2026-09-27: family mode ASSIGNS roles instead of listing them.
@@ -15366,6 +15443,17 @@ function shareLandingHeadline(idea, search){
     IDEAS.forEach(function(it){ if (it.id === m[1]) idea = it; });
     if (!idea) return;
     openIdeaDetail(idea.id, null, "s-pantry", "From your pantry");
+  })();
+  /* 2026-10-05: ?quiz=1 deep link. The SEO entry pages ("101 Costume Ideas",
+     "Last-Minute Costumes") funnel into the quiz with a "Pick my costume"
+     CTA pointing here. Opens the quiz sheet on load; the welcome screen
+     shows first, then Q1. Mirrors the other quiz entry points. */
+  (function(){
+    if (!/[?&]quiz=1/.test(location.search || "")) return;
+    state = {qi: 0, answers: {}};
+    state.pinpoint = null;
+    try { Analytics.track("quiz_started", Object.assign({entry: "quiz_param"}, viaShareProps())); } catch(_){}
+    renderQ();
   })();
   /* 2026-09-26: real moon phase. The hero moon shows tonight's actual
      phase, computed in pure JS with Paul Schlyter's low-precision lunar
