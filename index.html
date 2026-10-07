@@ -242,8 +242,10 @@ body.st-open .sitehead{display:none}
   #resume-wrap{order:5}
   #hw-weather{order:6}
   #returnbox{order:7;align-self:stretch}
-  /* 2026-10-04: keep the value-prop line clear of the absolute moon. */
-  .hero p.fine.firstonly{max-width:calc(100% - 84px)}
+  /* 2026-10-06: keep the value-prop line clear of the absolute moon.
+     The moon zone is 64px from the right (54px moon + 10px offset); the old
+     84px total left 42px/side, still overlapping. 140px total clears it. */
+  .hero p.fine.firstonly{max-width:calc(100% - 140px)}
 }
 /* 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
    it stays cheap on phones; off entirely under prefers-reduced-motion. */
@@ -730,7 +732,7 @@ button.lightsheet{color:#241a38;}
 .card .blurb{margin:0 0 10px;font-size:17px}
 /* 2026-10-05: at-a-glance strip. Three honest bullets under the result title. */
 .glance{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:0}
-.glance li{background:var(--chip,#f6efe0);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+.glance li{background:var(--chip,#f6efe0);color:#2a1c52;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
 .card .why{margin:0 0 16px;color:var(--muted);font-size:15px}
 .card .why b{color:var(--ink)}
 .card .row{display:flex;flex-wrap:wrap;gap:10px}
@@ -1224,7 +1226,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-10-03 (Billy): value-prop tweak. Eric's "saves a few minutes
            vs Google" read meant the hero sold ideas, not the differentiator.
            One line now names the plan deliverable; hero stays slim. -->
-      <p class="fine firstonly" style="margin:6px auto 0">Your pick, your materials list, your build plan. No signup · 2 minutes · free</p>
+      <!-- 2026-10-06 (launch review): moat's second half above the fold.
+           The line sold the deliverables but not the differentiator:
+           picks matched to what you already own. -->
+      <p class="fine firstonly" style="margin:6px auto 0">Your pick, your materials list, your build plan, matched to what you already own. No signup · 2 minutes · free</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
            The Trending tab below shows the photos; a text list of names was
@@ -1254,7 +1259,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <div class="returnhero-actions">
               <button class="cta" id="btn-return" type="button">See my ideas again</button>
               <button class="ghost" id="btn-retake" type="button">Retake the quiz</button>
-              <button class="returnhero-share" id="btn-returnshare" type="button">Share my pick</button>
+              <button class="returnhero-share" id="btn-returnshare" type="button">Share</button>
             </div>
           </div>
         </div>
@@ -1501,7 +1506,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p id="spin-announce" role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"></p>
         <div class="row" style="display:flex;gap:10px;margin-top:8px">
           <button type="button" id="btn-spin-again" class="cta" style="flex:1">Pick again</button>
-          <button type="button" id="btn-spin-share" class="ghost" style="flex:1">Share my pick</button>
+          <button type="button" id="btn-spin-share" class="ghost" style="flex:1">Share</button>
 </div>
         <p style="margin:10px 0 0"><a id="spin-guide-link" href="/c/classic-ghost">See the full guide</a> <span class="fine">or</span> <button type="button" id="btn-spin-quiz" class="textlink">take the 2-minute quiz</button></p>
         <p class="status" id="spin-status" style="margin:8px 0 0"></p>
@@ -1855,6 +1860,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       var b = document.getElementById(ids[i]);
       if (!b || b.getAttribute("data-pmc-retry")) continue;
       b.setAttribute("data-pmc-retry", "1");
+      if (!b.getAttribute("data-pmc-orig")) b.setAttribute("data-pmc-orig", b.textContent);
       b.textContent = "Couldn't load. Tap to retry";
       b.onclick = function(){ window.location.reload(); };
     }
