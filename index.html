@@ -472,6 +472,13 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
 /* 2026-10-03 (Billy): homepage simplification. Tonight section, featured
    guides grid, and the More expander. */
+/* 2026-10-06 (Lane 2, second wave): Pantry elevation section, directly under the hero. */
+.pantrysec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18)}
+.pantrysec .q-title{margin:0 0 8px}
+.pantrychips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
+.pchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:transparent}
+.pchip b{font-size:15px;color:var(--ink)}
+.pantrysec button.cta{width:100%}
 .tonightsec{margin-top:18px}
 .featsec{margin-top:18px}
 .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
@@ -1284,6 +1291,22 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <a href="/c/walking-taco" aria-label="Walking Taco costume guide"><img src="photos/walking-taco.webp" srcset="photos/walking-taco-256.webp 256w, photos/walking-taco-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Walking Taco costume" loading="eager"><span>Walking Taco</span></a>
 </div>
 </div>
+      <!-- 2026-10-06 (Lane 2, second wave): Pantry elevation. Strong secondary
+           section directly under the hero. Chip counts are computed live by
+           renderPantryPreview() in app.js from the visitor's saved pantry
+           (staples-only baseline for new visitors), bucketed exactly like the
+           pantry page rails (0 / 1 / 2 missing). Unit: pantry-section. -->
+      <section class="pantrysec" id="pantry-section" aria-label="Use what you already have">
+        <h2 class="q-title">What can I make with what I already have?</h2>
+        <p class="fine" style="margin:0 0 10px">Tick the clothes and supplies you already own. We rank all 169 builds by what you already cover, and what you would still need.</p>
+        <div class="pantrychips" id="pantry-chips" aria-live="polite">
+          <span class="pchip"><b id="pc-ready">&ndash;</b> Nothing else needed</span>
+          <span class="pchip"><b id="pc-one">&ndash;</b> 1 thing away</span>
+          <span class="pchip"><b id="pc-two">&ndash;</b> 2 things away</span>
+        </div>
+        <p style="margin:12px 0 0"><button class="cta" id="btn-pantry" type="button">Check my pantry</button></p>
+        <p class="fine" style="margin:8px 0 0">Basics like scissors, tape, and cardboard are already assumed.</p>
+      </section>
       <!-- 2026-10-03 (Billy): homepage simplification. "Make it tonight"
            promoted from a tab to its own always-visible section right under
            the hero. JS-rendered by renderTonightSection() from the stored
