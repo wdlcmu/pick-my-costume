@@ -243,6 +243,7 @@ body.st-open .sitehead{display:none}
   #btn-start{order:3;align-self:center}
   .hero .hero-pantry{order:4;align-self:center}
   .hero .hero-proof{order:5}
+  .hero .hero-galaxylink{order:6}
   .hero .honestline{order:4}
   #resume-wrap{order:5}
   #hw-weather{order:6}
@@ -466,7 +467,7 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
    small thumbnails; the hero CTA stays the dominant action on the page. */
 .proofstrip{margin-top:14px}
 /* 2026-09-25: the strip is a horizontal swipe rail, not a fixed row. */
-.proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.proofrow{scroll-snap-type:x mandatory;scroll-padding:0 16px}
 .proofrow::-webkit-scrollbar{display:none}
 /* 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
@@ -480,6 +481,13 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .pchip b{font-size:15px;color:var(--ink)}
 .pantrysec button.cta{width:100%}
 .tonightsec{margin-top:18px}
+/* 2026-10-06 (Billy): tonight rail carousel — first card was clipping at the
+   viewport edge. Mandatory snap set on .proofrow above. */
+.galaxysec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18)}
+.galaxysec .q-title{margin:0 0 8px}
+.galaxypreview{display:block;margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line);text-decoration:none;position:relative}
+.galaxypreview img{display:block;width:100%;aspect-ratio:39/50;object-fit:cover;object-position:top}
+.galaxypreview span{position:absolute;left:12px;right:12px;bottom:12px;display:inline-block;font-weight:700;color:#fff;background:rgba(20,10,30,.72);border-radius:10px;padding:10px 14px;text-align:center}
 .featsec{margin-top:18px}
 .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
 .featgrid a{display:block;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
@@ -1234,6 +1242,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Tell us who&rsquo;s dressing up, your vibe, and what&rsquo;s already in your closet. We&rsquo;ll rank 169 DIY costumes and show you what you can make, what you&rsquo;re missing, and how to build it.</p>
       <button class="cta firstonly" id="btn-start" type="button">Find my costume</button>
       <div class="firstonly hero-pantry" style="margin-top:10px"><button class="ghost" id="btn-closet-hero" type="button">Use what I already have</button></div>
+      <!-- 2026-10-06 (Billy): quiet tertiary link — galaxy is a marquee feature
+           but the hero stays at two buttons. Text link, not a third button. -->
+      <p class="firstonly hero-galaxylink" style="margin:10px auto 0"><a href="/map" style="color:var(--muted);font-size:14px">Explore the galaxy &rarr;</a></p>
 
       <!-- 2026-10-06 (Billy): proof line replaces the old abstract pre-headline
            ("Your pick, your materials list, your build plan, matched to what you
@@ -1296,27 +1307,45 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            renderPantryPreview() in app.js from the visitor's saved pantry
            (staples-only baseline for new visitors), bucketed exactly like the
            pantry page rails (0 / 1 / 2 missing). Unit: pantry-section. -->
-      <section class="pantrysec" id="pantry-section" aria-label="Use what you already have">
-        <h2 class="q-title">What can I make with what I already have?</h2>
-        <p class="fine" style="margin:0 0 10px">Tick the clothes and supplies you already own. We rank all 169 builds by what you already cover, and what you would still need.</p>
-        <div class="pantrychips" id="pantry-chips" aria-live="polite">
-          <span class="pchip"><b id="pc-ready">&ndash;</b> Nothing else needed</span>
-          <span class="pchip"><b id="pc-one">&ndash;</b> 1 thing away</span>
-          <span class="pchip"><b id="pc-two">&ndash;</b> 2 things away</span>
-        </div>
-        <p style="margin:12px 0 0"><button class="cta" id="btn-pantry" type="button">Check my pantry</button></p>
-        <p class="fine" style="margin:8px 0 0">Basics like scissors, tape, and cardboard are already assumed.</p>
-      </section>
       <!-- 2026-10-03 (Billy): homepage simplification. "Make it tonight"
            promoted from a tab to its own always-visible section right under
            the hero. JS-rendered by renderTonightSection() from the stored
            idea.tonight predicate (time-only: hands-on <= 30 min AND
-           hands-on + drying <= 120 min). Unit: tonight-section. -->
+           hands-on + drying <= 120 min). Unit: tonight-section.
+           2026-10-06 (Billy): moved above Pantry — the rail is proof, Pantry
+           is utility. Promise → proof → utility. -->
       <section class="tonightsec" id="tonight-section" aria-label="Costumes you can make tonight">
         <h2 class="q-title">Make it tonight</h2>
         <p class="fine" style="margin:0 0 10px">Start after dinner, done before bed. Drying time shown honestly.</p>
         <div class="proofrow" id="row-tonight-live" role="list" aria-label="Costumes you can make tonight"></div>
         <p class="fine" id="row-tonight-live-status" style="margin:8px 0 0" hidden></p>
+      </section>
+      <!-- 2026-10-06 (Lane 2, second wave): Pantry elevation. Strong utility
+           section after the tonight rail. Chip counts are computed live by
+           renderPantryPreview() in app.js from the visitor's saved pantry
+           (staples-only baseline for new visitors), bucketed exactly like the
+           pantry page rails (0 / 1 / 2 missing). Unit: pantry-section.
+           2026-10-06 (Billy): tightened copy, outcome-focused CTA. -->
+      <section class="pantrysec" id="pantry-section" aria-label="Use what you already have">
+        <h2 class="q-title">What can I make with what I already have?</h2>
+        <p class="fine" style="margin:0 0 10px">Tell us what you already own. We&rsquo;ll rank all 169 builds by what you can make &mdash; and what you&rsquo;re still missing.</p>
+        <div class="pantrychips" id="pantry-chips" aria-live="polite">
+          <span class="pchip"><b id="pc-ready">&ndash;</b> Nothing else needed</span>
+          <span class="pchip"><b id="pc-one">&ndash;</b> 1 thing away</span>
+          <span class="pchip"><b id="pc-two">&ndash;</b> 2 things away</span>
+        </div>
+        <p style="margin:12px 0 0"><button class="cta" id="btn-pantry" type="button">See what I can make</button></p>
+        <p class="fine" style="margin:8px 0 0">Basics like scissors, tape, and cardboard are already assumed.</p>
+      </section>
+      <!-- 2026-10-06 (Billy): Galaxy teaser. The map is too distinctive to
+           hide behind the nav — it gets its own visual module. -->
+      <section class="galaxysec" id="galaxy-section" aria-label="Explore the costume galaxy">
+        <h2 class="q-title">169 costumes. One galaxy.</h2>
+        <p class="fine" style="margin:0 0 10px">Zoom, wander, and find something you wouldn&rsquo;t have thought to search for.</p>
+        <a class="galaxypreview" href="/map" aria-label="Explore the costume galaxy">
+          <img src="images/galaxy-preview.webp" alt="The costume galaxy: glowing clusters of Dinosaur Land, Princess Castle, Fright Night, and more" loading="lazy">
+          <span>Explore the galaxy &rarr;</span>
+        </a>
       </section>
       <!-- 2026-10-03 (Billy): homepage simplification. Search moves below
            the tonight rail as a single simple box; the hero chip row is
