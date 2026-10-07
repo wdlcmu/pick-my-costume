@@ -10619,7 +10619,10 @@ function planShare(idea, source, btn, st){
     } catch(_){}
   }
   function copyLink(){
-    doCopy(link, function(ok, msg){
+    /* 2026-10-06 (launch review): clipboard path now copies the full share
+       text with ?s= attribution, mirroring sendShare's copyPath. The bare
+       link lost friend context and share attribution on every desktop share. */
+    doCopy(shareTextFor(idea, sid, "plan", "copy"), function(ok, msg){
       /* 2026-10-01 (Claude fix 1h): the inline status line was easy to miss
          on desktop -- a fixed toast gives the copy real visible feedback. */
       if (ok){ flash("Link copied \u2713"); showToast("Link copied \u2713"); complete("clipboard"); }
@@ -15942,3 +15945,19 @@ function refreshReturnBox(){
    (defer). Set when the whole script parsed and ran: the inline boot-guard
    uses this to detect a failed bundle load and arm retry buttons. */
 window.__pmcBooted = true;
+/* 2026-10-06 (launch review): if the bundle loaded after the 1.5s boot-guard
+   fired, restore any CTA it rewrote to "Couldn't load. Tap to retry" back to
+   its original label so slow connections don't wear the error text forever. */
+(function(){
+  try {
+    var btns = document.querySelectorAll('[data-pmc-retry="1"]');
+    for (var i = 0; i < btns.length; i++){
+      var b = btns[i];
+      var orig = b.getAttribute("data-pmc-orig");
+      if (orig) b.textContent = orig;
+      b.removeAttribute("data-pmc-retry");
+      b.removeAttribute("data-pmc-orig");
+      b.onclick = null;
+    }
+  } catch(_){}
+})();
