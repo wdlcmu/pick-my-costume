@@ -467,7 +467,7 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
    small thumbnails; the hero CTA stays the dominant action on the page. */
 .proofstrip{margin-top:14px}
 /* 2026-09-25: the strip is a horizontal swipe rail, not a fixed row. */
-.proofrow{scroll-snap-type:x mandatory;scroll-padding:0 16px}
+.proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
 .proofrow::-webkit-scrollbar{display:none}
 /* 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
