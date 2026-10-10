@@ -10301,6 +10301,20 @@ function renderEmailCapture(box, idea, source, opts){
 
   function say(msg){ note.textContent = msg; }
   function tracked(sent){ try { Analytics.track("email_instructions_sent", {idea_id: idea.id, sent: sent}); } catch(_){} }
+  function remindFail(reason){
+    /* Honest degrade (2026-10-10): the reminder backend is not wired (or
+       the request failed). Never leave the box ticked with no message --
+       uncheck, say so plainly, and don't retry this session. */
+    try { Analytics.track("reminder_enroll_failed", {reason: reason || "unknown", source: source || "quiz"}); } catch(_){}
+    try {
+      if (remindBox){
+        remindBox.innerHTML = "";
+        remindBox.style.cursor = "default";
+        remindBox.textContent = "Reminders aren't set up yet. Your plan email still sends.";
+      }
+      remindCheck = null;
+    } catch(_){}
+  }
   function enrollReminder(em){
     try {
       fetch("/reminder-signup", {
@@ -10315,8 +10329,10 @@ function renderEmailCapture(box, idea, source, opts){
             remindBox.style.cursor = "default";
             remindBox.textContent = "\u2705 You're on the list \u2014 one email on Oct 27, that's it.";
           }
+        } else {
+          remindFail(j && j.reason);
         }
-      }, function(){});
+      }, function(){ remindFail("network"); });
     } catch(e){}
   }
 
