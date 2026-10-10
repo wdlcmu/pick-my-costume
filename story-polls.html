@@ -152,7 +152,7 @@ function buildStoryLink(){
 function buildCaption(aTitle, bTitle, rawKid){
   var who = cleanKid(rawKid);
   var lead = who ? ("Help us pick " + who + "'s Halloween costume!") : "Help us pick our Halloween costume!";
-  return lead + " Vote A (" + aTitle + ") or B (" + bTitle + ") in the poll - then tap the link if you are still deciding for YOUR kid: the 2-minute quiz picks one from 138 ideas. " + buildStoryLink();
+  return lead + " Vote A (" + aTitle + ") or B (" + bTitle + ") in the poll - then tap the link if you are still deciding for YOUR kid: the 2-minute quiz picks one from 169 ideas. " + buildStoryLink();
 }
 function photoUrl(id){ return "photos/" + id + ".webp"; }
 
@@ -361,7 +361,7 @@ function renderCard(){
     ctx.fillText("pickmycostume.com", W / 2, 1660);
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = "400 40px -apple-system, Segoe UI, Roboto, sans-serif";
-    ctx.fillText("138 ideas, free, no signup", W / 2, 1760);
+    ctx.fillText("169 ideas, free, no signup", W / 2, 1760);
   });
 }
 
