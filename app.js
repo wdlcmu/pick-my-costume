@@ -100,6 +100,13 @@ var Analytics = {
   }
 };
 
+/* Share-timing experiment (2026-10-09): SHARE_PROMPT_TEST = true renders the
+   post-pick share prompt ("Share your costume choice with friends to get
+   their feedback!") above the Share button under the #1 pick, tracking
+   post_pick_share_prompt_displayed / post_pick_share_prompt_clicked.
+   Default OFF; Billy flips this one line to activate. */
+var SHARE_PROMPT_TEST = false;
+
 /* ============ UNIT ANALYTICS FOUNDATION (2026-09-28) ============
    Every content unit (rail, card, collection) on every page logs an
    impression and per-item clicks WITH POSITION. This is the foundation for
@@ -8760,6 +8767,18 @@ function renderResults(results){
     sst.className = "status";
     sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px;text-align:center";
     sbtn.onclick = function(){ planShare(_idea, resolvePlanSource("quiz"), sbtn, sst); };
+    if (typeof SHARE_PROMPT_TEST !== "undefined" && SHARE_PROMPT_TEST) {
+      var sprompt = document.createElement("button");
+      sprompt.type = "button"; sprompt.className = "ghost";
+      sprompt.style.cssText = "display:block;width:100%;margin:0 0 8px;padding:10px;font-size:14px;color:var(--accent,#ff8c1a);text-decoration:underline;cursor:pointer;font-family:inherit;background:transparent;border:0";
+      sprompt.textContent = "Share your costume choice with friends to get their feedback!";
+      try { Analytics.track("post_pick_share_prompt_displayed", {idea_id: _idea.id}); } catch(e){}
+      sprompt.onclick = function(){
+        try { Analytics.track("post_pick_share_prompt_clicked", {idea_id: _idea.id}); } catch(e2){}
+        planShare(_idea, resolvePlanSource("quiz"), sbtn, sst);
+      };
+      swrap.appendChild(sprompt);
+    }
     swrap.appendChild(sbtn); swrap.appendChild(sst);
     box.appendChild(swrap);
   })();
