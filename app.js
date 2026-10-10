@@ -100,12 +100,13 @@ var Analytics = {
   }
 };
 
-/* Share-timing experiment (2026-10-09): SHARE_PROMPT_TEST = true renders the
-   post-pick share prompt ("Share your costume choice with friends to get
-   their feedback!") above the Share button under the #1 pick, tracking
-   post_pick_share_prompt_displayed / post_pick_share_prompt_clicked.
-   Default OFF; Billy flips this one line to activate. */
-var SHARE_PROMPT_TEST = false;
+/* Share-timing experiment (2026-10-09; copy revised 2026-10-10, GPT loop
+   run 21): SHARE_PROMPT_TEST = true renders the post-pick share prompt
+   ("Love your top pick? Share it with friends!") above the primary Share
+   button under the #1 pick, tracking post_pick_share_prompt_displayed /
+   post_pick_share_prompt_clicked. The duplicate ghost Share inside the
+   What's-next block is retired -- single Share CTA per results screen. */
+var SHARE_PROMPT_TEST = true;
 
 /* ============ UNIT ANALYTICS FOUNDATION (2026-09-28) ============
    Every content unit (rail, card, collection) on every page logs an
@@ -8632,14 +8633,14 @@ function buildGalaxyShareCard(results, rname, rslug){
 /* 2026-10-01 (STEP 3): buildReminderBox retired -- the standalone Oct 27
    box is replaced by the results Next block's default-ticked checkbox
    (explicit, honest enrollment via renderEmailCapture's reminder option). */
-/* 2026-10-01 (STEP 3): the ONE Next block on quiz results. Always visible,
-   below "Also made your top 3": Email me this plan (with the default-ticked
-   Oct 27 reminder checkbox), Share, and one "More ways to share"
-   disclosure (no-clone pact, Send to Grandma, Find my +1, Halloween
-   Wrapped). The email Send here is secondary (outlined) so the plan's own
-   Send stays the single orange button. email_submit fires with
-   source "quiz"; Share fires share_click/share_complete with
-   source "quiz" via the same planShare path as the plan panel. */
+/* 2026-10-01 (STEP 3; Share retired 2026-10-10, GPT loop run 21): the ONE
+   Next block on quiz results. Always visible, below "Also made your top 3":
+   Email me this plan (with the default-ticked Oct 27 reminder checkbox),
+   and one "More ways to share" disclosure (no-clone pact, Send to Grandma,
+   Find my +1, Halloween Wrapped). The email Send here is secondary
+   (outlined) so the plan's own Send stays the single orange button.
+   email_submit fires with source "quiz". The primary Share CTA under the
+   #1 pick is now the screen's single share action. */
 /* 2026-10-01 (Claude fix 1a): the share plays ("More ways to share") live in
    ONE place -- inside the plan's share card. This builder is shared by the
    page-level "What's next" block and the committed plan's Next block. */
@@ -8674,29 +8675,20 @@ function buildResultsNextBlock(results){
   wrap.appendChild(h);
   var sub = document.createElement("p");
   sub.style.cssText = "margin:0 0 6px;font-size:14px;color:var(--muted,#cdbcf0)";
-  sub.textContent = "Get the plan, share it, or set the reminder \u2014 pick what helps.";
+  /* 2026-10-10 (GPT loop run 21): single ask -- email is the honest job of
+     this block. The duplicate ghost Share button is retired (the primary
+     Share CTA under the #1 pick is now the one share action on this
+     screen); the "More ways to share" disclosure below is unchanged. */
+  sub.textContent = "Get the plan by email, plus one reminder before the big night.";
   wrap.appendChild(sub);
   /* Email me this plan + the Oct 27 reminder checkbox (unticked by default,
      explicit and honest: one email, then you're off the list). */
   if (typeof renderEmailCapture === "function")
     renderEmailCapture(wrap, idea, resolvePlanSource("quiz"), {label: "Email me this plan", reminder: true, secondary: true});
-  /* Share: one tap, every tap gives visible feedback. The button
-     carries its own label -- the old label div above it rendered "Share"
-     twice (2026-10-01). */
-  var srow = document.createElement("div");
-  srow.style.marginTop = "16px";
-  var sbtn = document.createElement("button");
-  sbtn.type = "button"; sbtn.className = "ghost";
-  sbtn.style.cssText = "min-height:52px;padding:12px 20px;font-size:16px;font-weight:700;border-radius:var(--radius);cursor:pointer;font-family:inherit";
-  sbtn.textContent = "Share";
-  var sst = document.createElement("p");
-  sst.className = "status";
-  sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px";
-  sbtn.onclick = function(){ planShare(idea, resolvePlanSource("quiz"), sbtn, sst); };
-  srow.appendChild(sbtn); srow.appendChild(sst);
-  wrap.appendChild(srow);
-  /* 2026-10-01 (Claude fix 1a): share plays live inside the plan's share
-     card now -- this disclosure is shared, not duplicated. */
+  /* 2026-10-10 (GPT loop run 21): the duplicate ghost Share button is
+     retired -- it fired the same planShare flow as the primary Share CTA
+     under the #1 pick. Two Share buttons on one screen is the cannibalizing
+     bug; the "More ways to share" disclosure (different share plays) stays. */
   var _mws = buildMoreWaysShare(idea, results);
   if (_mws) wrap.appendChild(_mws);
   return wrap;
@@ -8771,7 +8763,7 @@ function renderResults(results){
       var sprompt = document.createElement("button");
       sprompt.type = "button"; sprompt.className = "ghost";
       sprompt.style.cssText = "display:block;width:100%;margin:0 0 8px;padding:10px;font-size:14px;color:var(--accent,#ff8c1a);text-decoration:underline;cursor:pointer;font-family:inherit;background:transparent;border:0";
-      sprompt.textContent = "Share your costume choice with friends to get their feedback!";
+      sprompt.textContent = "Love your top pick? Share it with friends!";
       try { Analytics.track("post_pick_share_prompt_displayed", {idea_id: _idea.id}); } catch(e){}
       sprompt.onclick = function(){
         try { Analytics.track("post_pick_share_prompt_clicked", {idea_id: _idea.id}); } catch(e2){}
@@ -10279,7 +10271,7 @@ function renderEmailCapture(box, idea, source, opts){
      explicit about the opt-in reminder: one email, then off the
      list. Nothing silent, nothing broader. */
   var NOTE_IDLE = opts.reminder
-    ? "Your email gets the plan now. Tick the box for one reminder on Oct 27 \u2014 then you're off the list."
+    ? "Your email gets the plan now. Tick the box for one reminder on Oct 27. Then you're off the list."
     : "We'll only use this to send the plan. Nothing else, ever.";
   note.textContent = NOTE_IDLE;
 
