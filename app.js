@@ -13954,7 +13954,13 @@ function renderTonightSection(){
       meta.className = "proofmeta";
       var eff = "Easy";
       try { if (INSTRUCTIONS[idea.id] && INSTRUCTIONS[idea.id].effort) eff = INSTRUCTIONS[idea.id].effort; } catch(e){}
-      meta.textContent = tonightHandsOn(idea.id) + " min \u00b7 " + eff;
+      /* 2026-10-11 (gpt-loop run 77): drying disclosed on the rail cards,
+         honoring the section's "Drying time shown honestly." promise. 70 of
+         the 126 tonight builds carry drying; hands-on-only understated the
+         real commitment. Zero-drying cards unchanged. */
+      var h = tonightHandsOn(idea.id);
+      var d = (idea && idea.dryMin) || 0;
+      meta.textContent = h + " min" + (d > 0 ? " + " + d + " dry" : "") + " \u00b7 " + eff;
       card.appendChild(img);
       card.appendChild(label);
       card.appendChild(meta);
