@@ -542,7 +542,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\"pill\"><span class=\"pl\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\"pill\"><span class=\"pl\">Effort</span>" + esc(_hw.effort) + "</span>");
-    if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p><p class=\"timenote\">Build times are estimates. Yours may vary.</p>";
+    if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p><p class=\"timenote\">We timed it, but results may vary.</p>";
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\"sizing\">Sizing: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
