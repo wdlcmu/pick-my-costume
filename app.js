@@ -4006,13 +4006,23 @@ function shareUtm(medium, region){
   return "utm_source=share&utm_medium=" + encodeURIComponent(medium || "copy") +
     "&utm_campaign=" + encodeURIComponent(region || "unknown");
 }
-function shareTextFor(idea, sid, origin, medium){
+function shareTextFor(idea, sid, origin, medium, quizFound){
   /* The one canonical share message (2026-09-28 simplification). The panel
      used to offer teaser, plan, micro-quiz, SMS, riddle, guess-game, and
      pantry-dare variants, each with its own builder; what remains is this
      one message: the audience-grounded caption, one ask line, the recipient
-     link, and the shopping list for kid/family picks. */
-  var text = shareCaptionFor(idea) + " " + shareAskLine() +
+     link, and the shopping list for kid/family picks.
+     2026-10-11 (share-honesty audit): this text assumed the quiz context on
+     every path, but rail shares (browsing, no quiz, no commitment) and
+     browse-origin plan shares (committed, no quiz) inherited its claims.
+     quizFound gates the quiz line; rail gets a hedged declaration instead
+     of a false first-person one. Quiz contexts render byte-identical text. */
+  var qf = (typeof quizFound === "boolean") ? quizFound : (origin !== "rail");
+  var cap = (origin === "rail")
+    ? "Thinking of going as " + idea.title + " this Halloween?"
+    : shareCaptionFor(idea);
+  var ask = qf ? shareAskLine() : "What are you going as? Here is the guide: ";
+  var text = cap + " " + ask +
     "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic") +
     "&" + shareUtm(medium, shareRegionSlug(idea));
   /* 2026-10-02 (Billy): the kid/family shopping-list append is out. It buried
@@ -10649,7 +10659,7 @@ function planShare(idea, source, btn, st){
     /* 2026-10-06 (launch review): clipboard path now copies the full share
        text with ?s= attribution, mirroring sendShare's copyPath. The bare
        link lost friend context and share attribution on every desktop share. */
-    doCopy(shareTextFor(idea, sid, "plan", "copy"), function(ok, msg){
+    doCopy(shareTextFor(idea, sid, "plan", "copy", source === "quiz"), function(ok, msg){
       /* 2026-10-01 (Claude fix 1h): the inline status line was easy to miss
          on desktop -- a fixed toast gives the copy real visible feedback. */
       if (ok){ flash("Link copied \u2713"); showToast("Link copied \u2713"); complete("clipboard"); }
@@ -10658,7 +10668,7 @@ function planShare(idea, source, btn, st){
   }
   if (typeof navigator !== "undefined" && navigator.share){
     try {
-      navigator.share({title: "Pick My Costume", text: shareTextFor(idea, sid, "plan", "native")}).then(
+      navigator.share({title: "Pick My Costume", text: shareTextFor(idea, sid, "plan", "native", source === "quiz")}).then(
         function(){ flash("Shared."); complete("native"); },
         function(err){ if (err && err.name === "AbortError") rearm(); else copyLink(); }
       );
