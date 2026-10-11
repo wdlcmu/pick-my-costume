@@ -134,7 +134,7 @@ export function composeEmail(idea, slug) {
   t.push('- Billy, Pick My Costume');
   t.push('');
   t.push('---');
-  t.push('You got this because you tapped "Email me the instructions" on');
+  t.push('You got this because you asked for the plan by email on');
   t.push('pickmycostume.com. Nothing is stored and you are not on any list.');
   t.push('Privacy: ' + privacyUrl);
   t.push('Want one reminder on Oct 27? Tick "Remind me Oct 27" on the');
@@ -223,7 +223,7 @@ export function composeEmail(idea, slug) {
 '</table>' +
 // 9. Footer
 '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;"><tr><td style="padding:16px 8px 0 8px;">' +
-'<p style="margin:0 0 8px 0;' + F + 'font-size:12px;line-height:1.6;color:#8a7a5c;">You got this because you tapped &ldquo;Email me the instructions&rdquo; on pickmycostume.com. Nothing is stored and you are not on any list. <a href="' + privacyUrl + '" style="color:#7a5fc4;">Privacy</a></p>' +
+'<p style="margin:0 0 8px 0;' + F + 'font-size:12px;line-height:1.6;color:#8a7a5c;">You got this because you asked for the plan by email on pickmycostume.com. Nothing is stored and you are not on any list. <a href="' + privacyUrl + '" style="color:#7a5fc4;">Privacy</a></p>' +
 '<p style="margin:0;' + F + 'font-size:12px;line-height:1.6;color:#8a7a5c;">Want one reminder on Oct 27? Tick &ldquo;Remind me Oct 27&rdquo; on the results page. One email, then you are off the list.</p>' +
 '</td></tr></table>' +
 '</td></tr></table></body></html>';
