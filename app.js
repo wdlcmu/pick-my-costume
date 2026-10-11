@@ -52,6 +52,36 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderTicker);
   else renderTicker();
 })();
+/* 2026-10-11 (gpt-loop run 74): Track B approval-day pre-prep. ChatGPT
+   directory-link CTA flag, DARK until the plugin is approved. On approval
+   day: set enabled=true and paste the VERIFIED directory link; the banner
+   copy below is the staged draft and stays Billy-gated at flip time
+   (prototype-1.1/track-b-launch-assets-2026-10-09.md section 2). While the
+   flag is off or the link is empty, NOTHING renders. Note: the Track B
+   packet's "footer link" placement is stale -- the homepage footer was
+   killed 2026-10-01 (Billy), so the banner is the only approval-day
+   placement until he decides otherwise. Revert: delete this block. */
+var CHATGPT_CTA = { enabled: false, url: "" };
+(function(){
+  function renderChatGPTBanner(){
+    try {
+      if (!CHATGPT_CTA.enabled || !CHATGPT_CTA.url) return;
+      var ticker = document.getElementById("ticker");
+      if (!ticker || document.getElementById("chatgpt-banner")) return;
+      var a = document.createElement("a");
+      a.id = "chatgpt-banner";
+      a.className = "ticker chatgpt-banner";
+      a.href = CHATGPT_CTA.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      /* Staged draft copy, Billy-gated at flip time. Colon, not em dash. */
+      a.innerHTML = "<strong>Now in ChatGPT: try it</strong><span>Pick a costume with stuff you already own</span>";
+      ticker.parentNode.insertBefore(a, ticker.nextSibling);
+    } catch(e){}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderChatGPTBanner);
+  else renderChatGPTBanner();
+})();
 /* PostHog analytics: anonymous usage events only. Quiz answers are never sent. */
 /* Internal-traffic marking (analytics only, no UX change). Visiting any page
    with ?internal=1 once sets localStorage pmc_internal=1 on that device
