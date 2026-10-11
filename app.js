@@ -4022,7 +4022,16 @@ function shareTextFor(idea, sid, origin, medium, quizFound){
     ? "Thinking of going as " + idea.title + " this Halloween?"
     : shareCaptionFor(idea);
   var ask = qf ? shareAskLine() : "What are you going as? Here is the guide: ";
-  var text = cap + " " + ask +
+  /* 2026-10-11 (gpt-loop run 71, topic d): the stopwatch story belongs on the
+     share surface too -- the share text is the pre-click pitch the recipient
+     actually reads. Quiz-found plan shares (sender committed) carry
+     "Timed: about X" from the real measured INSTRUCTIONS bank time, slotted
+     after the caption and before the ask. Rail shares (sender only browsing)
+     stay clean: GPT round 2 killed the time line there as a cold-context
+     distraction. Other origins unchanged (not evaluated). */
+  var _sgt = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
+  var timed = (origin === "plan" && qf && _sgt) ? " \u23F1\uFE0F Timed: about " + _sgt : "";
+  var text = cap + timed + " " + ask +
     "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic") +
     "&" + shareUtm(medium, shareRegionSlug(idea));
   /* 2026-10-02 (Billy): the kid/family shopping-list append is out. It buried
