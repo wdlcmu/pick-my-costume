@@ -543,6 +543,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     if (_hw.time) _pills.push("<span class=\"pill\"><span class=\"pl\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\"pill\"><span class=\"pl\">Effort</span>" + esc(_hw.effort) + "</span>");
     if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p><p class=\"timenote\">\u23F1\uFE0F We timed it, but results may vary.</p>";
+    /* 2026-10-10 memorability mandate: stopwatch copy is the live standard
+       on /c/ guides ("Timed: about X" pills + this timenote). Do NOT revert
+       to the old "Build times are estimates" line; the generator is the
+       source of truth and the tree file must match it. */
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\"sizing\">Sizing: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
@@ -643,7 +647,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _sgSlug=" + JSON.stringify(slug) + ";" +
     "var _sgBusy=false;" +
     "function _sgId(){var c=\"abcdefghijklmnopqrstuvwxyz0123456789\",s=\"\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
-    "function _sgText(){return \"🎃 \" + _sgCap + \" What are you going as? Found mine with this 2-minute quiz: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + _sgId() + \"&o=guide\";}" +
+    "function _sgText(){return \"🎃 \" + _sgCap + \" What are you going as? Here is the guide: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + _sgId() + \"&o=guide\";}" +
     "function _sgDone(ok){_sgBusy=false;if(msg)msg.textContent=ok?\"Link copied. Send it to your crew.\":\"Couldn't copy it. Long-press the link instead.\";}" +
     "btn.addEventListener(\"click\",function(){" +
     "if(_sgBusy)return;_sgBusy=true;" +
