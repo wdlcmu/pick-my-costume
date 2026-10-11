@@ -799,7 +799,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var b = document.createElement(\"div\");" +
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\" + SHARER_NAME + \" picked <strong>" + title + "</strong>. What would you pick?</p>\" +" +
-    " \"<p class=\\\"rbanner-sub\\\">" + _rbSub + "</p>\" +"+
+    " \"<p class=\\\"rbanner-sub\\\">\" + _rbSub + \"</p>\" +" +
     " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "})();" +
