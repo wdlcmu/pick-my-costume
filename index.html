@@ -119,6 +119,14 @@ body{
   border-bottom:1px solid rgba(255,140,26,.25)}
 .ticker a{color:#ffd166;font-weight:700;white-space:nowrap}
 @media (min-width:900px){.ticker{margin:0 -32px;padding:7px 32px}}
+/* 2026-10-11 (gpt-loop run 74): Track B pre-prep. Approval-day ChatGPT
+   directory-link banner, dark until the CHATGPT_CTA flag flips. The banner
+   is itself a link, so it needs its own link color and underline-free look;
+   green tint distinguishes it from the amber countdown ticker. */
+.chatgpt-banner{color:#eaf7ec;background:rgba(46,160,67,.14);
+  border-bottom:1px solid rgba(46,160,67,.35);text-decoration:none}
+.chatgpt-banner strong{color:#7ee787}
+.chatgpt-banner span{color:#c9e8d0}
 .sitehead-link{display:flex;align-items:center;gap:10px;min-height:54px;
   color:var(--ink);text-decoration:none;font-weight:800;font-size:18px}
 @media (hover:hover){.sitehead-link:hover{color:var(--ink);text-decoration:none}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
