@@ -645,9 +645,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "if(!btn||btn._sgW)return;btn._sgW=true;" +
     "var _sgCap=" + JSON.stringify(SHARECAP[slug] || "") + ";" +
     "var _sgSlug=" + JSON.stringify(slug) + ";" +
+    "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" ⏱️ Timed: about "+_hw.time):"") + ";" +
     "var _sgBusy=false;" +
     "function _sgId(){var c=\"abcdefghijklmnopqrstuvwxyz0123456789\",s=\"\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
-    "function _sgText(){return \"🎃 \" + _sgCap + \" What are you going as? Here is the guide: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + _sgId() + \"&o=guide\";}" +
+    "function _sgText(){return \"🎃 \" + _sgCap + _sgTime + \" What are you going as? Here is the guide: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + _sgId() + \"&o=guide\";}" +
     "function _sgDone(ok){_sgBusy=false;if(msg)msg.textContent=ok?\"Link copied. Send it to your crew.\":\"Couldn't copy it. Long-press the link instead.\";}" +
     "btn.addEventListener(\"click\",function(){" +
     "if(_sgBusy)return;_sgBusy=true;" +
