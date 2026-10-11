@@ -8679,7 +8679,7 @@ function buildResultsNextBlock(results){
      this block. The duplicate ghost Share button is retired (the primary
      Share CTA under the #1 pick is now the one share action on this
      screen); the "More ways to share" disclosure below is unchanged. */
-  sub.textContent = "Get the plan by email, plus one reminder before the big night.";
+  sub.textContent = "Get the plan by email. Tick the box for one reminder before the big night.";
   wrap.appendChild(sub);
   /* Email me this plan + the Oct 27 reminder checkbox (unticked by default,
      explicit and honest: one email, then you're off the list). */
@@ -10310,7 +10310,7 @@ function renderEmailCapture(box, idea, source, opts){
       if (remindBox){
         remindBox.innerHTML = "";
         remindBox.style.cursor = "default";
-        remindBox.textContent = "Reminders aren't set up yet. Your plan email still sends.";
+        remindBox.textContent = "Reminders aren't set up yet. Check back later for updates.";
       }
       remindCheck = null;
     } catch(_){}
