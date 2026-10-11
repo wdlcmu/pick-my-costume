@@ -423,9 +423,15 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   /* 2026-10-06 (Billy): friend-voice og:description for share arrivals.
      Messenger crawlers fetch the shared URL with ?s=, so the unfurl reads
      like the friend's own recommendation; direct visits keep the
-     guide description. title is esc()d for the meta attribute. */
+     guide description. title is esc()d for the meta attribute.
+     2026-10-11 (gpt-loop run 78, topic d): the stopwatch story belongs on
+     the recipient's first impression too -- the unfurl is what a share
+     recipient reads before clicking. Share arrivals get the measured HOWTO
+     build time (same "Timed: about X" line as the guide Share button).
+     time is bank data, never user input, so no esc() needed. */
+  var _ogTime = (_hw && _hw.time) ? " \u23F1\uFE0F Timed: about " + _hw.time + "." : "";
   var _ogDesc = _s ?
-    "Your friend is going as " + title + " this Halloween. Here is the full guide to make it yourself." :
+    "Your friend is going as " + title + " this Halloween." + _ogTime + " Here is the full guide to make it yourself." :
     _tripleText + blurb;
   /* Split-the-build (2026-09-26): group/family guides get the materials
      divider (sender panel + recipient self-ID banner). Per-slug, same for
