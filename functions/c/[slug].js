@@ -237,8 +237,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        its labels in the share preview (a bare "Medium" pill read as
        meaningless to cold recipients), and "+ drying" is spelled out as
        passive wait -- the bank's time value is hands-on time (see the
-       JSON-LD comment below). */
-    "Time: " + esc(_hw.time).replace(/ \+ drying$/, " of hands-on work + drying time") +
+       JSON-LD comment below).
+       2026-10-11 (gpt-loop run 92, topic d): the canonical unfurl carries
+       the stopwatch honesty mark -- same "Timed: about X" line as the ?s=
+       friend-voice variant (run 78) and the /c/ card pattern (run 91). The
+       unfurl is the recipient's first impression; the flat "Time:" label
+       was the one surface without the mark. */
+    "\u23F1\uFE0F Timed: about " + esc(_hw.time).replace(/ \+ drying$/, " of hands-on work + drying time") +
     " \u00b7 Effort: " + esc(_hw.effort) + ". " : "";
   /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
      ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
