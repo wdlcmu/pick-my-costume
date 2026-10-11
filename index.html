@@ -499,10 +499,12 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .trendsec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18)}
 .trendsec .q-title{margin:0 0 8px}
 .trendgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
-.trendcard{display:block;border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-decoration:none;background:rgba(255,255,255,.03)}
-.trendcard .tt{font-weight:700;color:#fff;font-size:15px}
-.trendcard .tr{color:#ffb84d;font-weight:700;font-size:13px;margin-left:6px}
-.trendcard .tg{display:block;margin-top:6px;font-size:13px;color:var(--muted)}
+.trendcard{display:block;border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;background:rgba(255,255,255,.03);position:relative;padding:0}
+.trendcard img{width:100%;height:104px;object-fit:cover;display:block}
+.trendcard .tpct{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.72);color:#ffb84d;font-weight:700;font-size:12px;padding:3px 8px;border-radius:999px}
+.trendcard .tb{display:block;padding:10px 12px 12px}
+.trendcard .tt{font-weight:700;color:#fff;font-size:14px}
+.trendcard .tg{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
 .trendmore{display:inline-block;margin-top:12px;font-weight:700}
 .featsec{margin-top:18px}
 .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
@@ -1370,11 +1372,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2 class="q-title">What America is searching for</h2>
         <p class="fine" style="margin:0 0 10px">Real costume search data from Pinterest Trends, week ending Oct 5, 2026. Tap one to make it yourself.</p>
         <div class="trendgrid">
-          <a class="trendcard" href="/c/emerald-witch"><span class="tt">Elphaba costume</span><span class="tr">+300%</span><span class="tg">Make it: Emerald Witch</span></a>
-          <a class="trendcard" href="/c/classic-ghost"><span class="tt">Ghost costume</span><span class="tr">+160%</span><span class="tg">Make it: Classic Ghost</span></a>
-          <a class="trendcard" href="/c/superhero-family"><span class="tt">Nightwing costume</span><span class="tr">+150%</span><span class="tg">Make it: Superhero Family</span></a>
-          <a class="trendcard" href="/c/good-witch-bad-witch"><span class="tt">Glinda costume</span><span class="tr">+133%</span><span class="tg">Make it: Good Witch, Bad Witch</span></a>
-          <a class="trendcard" href="/c/fuzzy-monster"><span class="tt">Lorax costume</span><span class="tr">+100%</span><span class="tg">Make it: Fuzzy Monster</span></a>
+          <a class="trendcard" href="/c/emerald-witch"><img src="photos/emerald-witch-256.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="180px" alt="Emerald Witch costume" loading="lazy"><span class="tpct">+300%</span><span class="tb"><span class="tt">Elphaba costume</span><span class="tg">Make it: Emerald Witch</span></span></a>
+          <a class="trendcard" href="/c/classic-ghost"><img src="photos/classic-ghost-256.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="180px" alt="Classic Ghost costume" loading="lazy"><span class="tpct">+160%</span><span class="tb"><span class="tt">Ghost costume</span><span class="tg">Make it: Classic Ghost</span></span></a>
+          <a class="trendcard" href="/c/superhero-family"><img src="photos/superhero-family-256.webp" srcset="photos/superhero-family-256.webp 256w, photos/superhero-family-480.webp 480w" sizes="180px" alt="Superhero Family costume" loading="lazy"><span class="tpct">+150%</span><span class="tb"><span class="tt">Nightwing costume</span><span class="tg">Make it: Superhero Family</span></span></a>
+          <a class="trendcard" href="/c/good-witch-bad-witch"><img src="photos/good-witch-bad-witch-256.webp" srcset="photos/good-witch-bad-witch-256.webp 256w, photos/good-witch-bad-witch-480.webp 480w" sizes="180px" alt="Good Witch, Bad Witch costume" loading="lazy"><span class="tpct">+133%</span><span class="tb"><span class="tt">Glinda costume</span><span class="tg">Make it: Good Witch, Bad Witch</span></span></a>
+          <a class="trendcard" href="/c/fuzzy-monster"><img src="photos/fuzzy-monster-256.webp" srcset="photos/fuzzy-monster-256.webp 256w, photos/fuzzy-monster-480.webp 480w" sizes="180px" alt="Fuzzy Monster costume" loading="lazy"><span class="tpct">+100%</span><span class="tb"><span class="tt">Lorax costume</span><span class="tg">Make it: Fuzzy Monster</span></span></a>
         </div>
         <a class="trendmore" href="/whats-trending">See all of America&rsquo;s searches &rarr;</a>
       </section>
