@@ -669,6 +669,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _bannerScript = "<script>var RECIPIENT_BANNER = " + (RECIPIENT_BANNER ? "true" : "false") + ";" +
     "var GIFT_FROM = " + _gfromJs + ";" +
     "var SHARER_NAME=" + JSON.stringify(_sharerEsc) + ";" +
+    /* 2026-10-11 (gpt-loop run 85, topic d): recipient-banner stopwatch sub-line,
+       pre-computed server-side from the same _hw.time that drives the friend-voice
+       og:description (run 78) and the guide Share button text (run 71). Full time
+       string incl. drying, so the banner can never understate vs the unfurl;
+       falls back to the plain sub-line when a guide has no time data.
+       Generic friend branch only. */
+    "var _rbSub=" + JSON.stringify((_hw&&_hw.time?"⏱️ Timed: about "+_hw.time+". ":"")+"Take the 2-minute quiz to get your own costume.") + ";" +
     "var DRAFTH = " + JSON.stringify(DRAFT_HALVES[slug] || null) + ";" +
     "(function(){" +
     "function _rmSL(){var _sl=document.querySelector('.sharerline');if(_sl)_sl.parentNode.removeChild(_sl);}" +
@@ -792,7 +799,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var b = document.createElement(\"div\");" +
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\" + SHARER_NAME + \" picked <strong>" + title + "</strong>. What would you pick?</p>\" +" +
-    " \"<p class=\\\"rbanner-sub\\\">Take the 2-minute quiz to get your own costume.</p>\" +" +
+    " \"<p class=\\\"rbanner-sub\\\">" + _rbSub + "</p>\" +"+
     " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "})();" +
