@@ -2646,7 +2646,7 @@ function buildInstructions(idea, opts){
     if (_mp){
       var meta = document.createElement("p");
       meta.className = "howto-triple";
-      meta.textContent = "Build time: about " + String(_mp.time).replace(/^~/, "");
+      meta.textContent = "Timed: about " + String(_mp.time).replace(/^~/, "");
       wrap.appendChild(meta);
       var buyh = document.createElement("h4"); buyh.textContent = "What to buy";
       wrap.appendChild(buyh);
