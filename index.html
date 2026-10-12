@@ -261,6 +261,15 @@ body.st-open .sitehead{display:none}
      84px total left 42px/side, still overlapping. 140px total clears it. */
   .hero p.fine.firstonly{max-width:calc(100% - 140px)}
 }
+/* 2026-10-12 (Billy: the stacked pitch + welcome-back "feels weird"):
+   returning visitors with a fresh pick get the welcome-back card as their
+   hero; the first-timer pitch (.firstonly) hides so the page doesn't pitch
+   and welcome back at the same time. Wiring (refreshReturnBox toggles
+   .returning on .hero) already existed; only this rule was missing.
+   Outside the mobile media query: applies at every viewport width.
+   !important beats button.cta's display:inline-block in every engine;
+   the hide is absolute by design. */
+.hero.returning .firstonly{display:none!important}
 /* 2026-09-26: ambient halo pulse behind the celestial. Opacity-only so
    it stays cheap on phones; off entirely under prefers-reduced-motion. */
 .hero .halo{position:absolute;top:-18px;left:50%;width:88px;height:88px;margin-left:-44px;border-radius:50%;background:radial-gradient(circle,rgba(245,238,210,.30) 0%,transparent 70%);animation:haloPulse 4.5s ease-in-out infinite;pointer-events:none}
@@ -1459,17 +1468,18 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <div id="more-body" hidden>
       <p class="fine" style="margin:14px 0 0">Popular costumes</p>
           <div class="proofrow" id="row-trending" role="list" aria-label="Popular costumes this week">
-            <!-- 2026-09-30 delight: no invented numeric ranks. The rail shows
-                 popular costumes; the #1/#2/#3 marks implied a measured
-                 ranking we don't publish, so they're gone. -->
-            <a href="/?idea=snow-sisters&from=rail"><img src="photos/snow-sisters.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w, photos/snow-sisters-960.webp 960w" sizes="128px" alt="Ice Kingdom Crew costume" loading="lazy"><span>Ice Kingdom Crew</span></a>
-            <a href="/?idea=tin-hero&from=rail"><img src="photos/tin-hero.webp" srcset="photos/tin-hero-256.webp 256w, photos/tin-hero-480.webp 480w, photos/tin-hero-960.webp 960w" sizes="128px" alt="The Tin Hero costume" loading="lazy"><span>The Tin Hero</span></a>
-            <a href="/?idea=lost-tourist&from=rail"><img src="photos/lost-tourist.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="128px" alt="Lost Tourist costume" loading="lazy"><span>Lost Tourist</span></a>
-            <a href="/?idea=blue-dog-family&from=rail"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w, photos/blue-dog-family-960.webp 960w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span></a>
+            <!-- 2026-10-12 proof-strip refresh: cards rank by trailing-7-day pick_saved counts
+                 (PostHog, probe traffic excluded). The 🔥 #N marks sit on the true
+                 measured top-3 by saves wherever they land in display order; display order
+                 follows the F/M/F/M lead-subject rhythm with X after. -->
+            <a href="/?idea=bamboo-demon&from=rail"><img src="photos/bamboo-demon.webp" srcset="photos/bamboo-demon-256.webp 256w, photos/bamboo-demon-480.webp 480w, photos/bamboo-demon-960.webp 960w" sizes="128px" alt="Bamboo-Muzzle Demon costume" loading="lazy"><span>Bamboo-Muzzle Demon</span></a>
+            <a href="/?idea=banana&from=rail"><span class="proofbadge">🔥 #1</span><img src="photos/banana.webp" srcset="photos/banana-256.webp 256w, photos/banana-480.webp 480w" sizes="128px" alt="Banana costume" loading="lazy"><span>Banana</span></a>
+            <a href="/?idea=classic-ghost&from=rail"><img src="photos/classic-ghost.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w, photos/classic-ghost-960.webp 960w" sizes="128px" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
+            <a href="/?idea=ninja&from=rail"><span class="proofbadge">🔥 #2</span><img src="photos/ninja.webp" srcset="photos/ninja-256.webp 256w, photos/ninja-480.webp 480w" sizes="128px" alt="Ninja costume" loading="lazy"><span>Ninja</span></a>
+            <a href="/?idea=the-olympians&from=rail"><span class="proofbadge">🔥 #3</span><img src="photos/the-olympians.webp" srcset="photos/the-olympians-256.webp 256w, photos/the-olympians-480.webp 480w, photos/the-olympians-960.webp 960w" sizes="128px" alt="The Olympians costume" loading="lazy"><span>The Olympians</span></a>
             <a href="/?idea=mermaid-crew&from=rail"><img src="photos/mermaid-crew.webp" srcset="photos/mermaid-crew-256.webp 256w, photos/mermaid-crew-480.webp 480w, photos/mermaid-crew-960.webp 960w" sizes="128px" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
+            <a href="/?idea=kart-racers&from=rail"><img src="photos/kart-racers.webp" srcset="photos/kart-racers-256.webp 256w, photos/kart-racers-480.webp 480w, photos/kart-racers-960.webp 960w" sizes="128px" alt="Kart Racers costume" loading="lazy"><span>Kart Racers</span></a>
             <a href="/?idea=ghost-hunters&from=rail"><img src="photos/ghost-hunters.webp" srcset="photos/ghost-hunters-256.webp 256w, photos/ghost-hunters-480.webp 480w" sizes="128px" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
-            <a href="/?idea=little-pig-family&from=rail"><img src="photos/little-pig-family.webp" srcset="photos/little-pig-family-256.webp 256w, photos/little-pig-family-480.webp 480w" sizes="128px" alt="Little Pig Family costume" loading="lazy"><span>Little Pig Family</span></a>
-            <a href="/?idea=breakfast-buffet&from=rail"><img src="photos/breakfast-buffet.webp" srcset="photos/breakfast-buffet-256.webp 256w, photos/breakfast-buffet-480.webp 480w" sizes="128px" alt="Breakfast Buffet costume" loading="lazy"><span>Breakfast Buffet</span></a>
 </div>
       <p class="fine" style="margin:14px 0 0">New costumes</p>
           <div class="proofrow" id="row-new" role="list" aria-label="New costumes this week">
