@@ -12717,9 +12717,25 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
         /* Reddit 2026-09-25: blank name on a personal card sends the generic
            invitation, never "Person 1 is going as ...". o=card is kept so the
            card-vs-generic experiment still attributes. */
+        /* 2026-10-11 (gpt-loop run 99, topic d): personal-card sender payload
+           audit. Quiz plan shares, the guide Share button, og:description and
+           the recipient banner all carry the stopwatch line; the card texts
+           did not. The card recipient is being recruited to BUILD the costume,
+           so the time commitment is the honest ask: "Timed: about X" from the
+           real measured INSTRUCTIONS bank time (full string incl. drying, so
+           the text can never understate vs the guide page), slotted after the
+           caption and before the ask. The ask line drops the quiz claim
+           ("Found mine with this 2-minute quiz") -- the card sender may never
+           have taken the quiz; "Here is the guide" is true on every path.
+           "Want in?" replaces "What are you going as?" -- the recipient was
+           just cast into this group, so asking what they are going as is the
+           wrong question. No pumpkin lead: this is the sender's personal
+           message to a friend, not a broadcast share; the stopwatch carries
+           the emoji. */
+        var _pcTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id] && INSTRUCTIONS[idea.id].time) ? " \u23F1\uFE0F Timed: about " + INSTRUCTIONS[idea.id].time + "." : "";
         var text = fp.rawName
-          ? (fp.name + " is " + roleArt(fp.role) + " in our " + idea.title + " group this Halloween! " + shareAskLine() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
-          : ("Want to do " + idea.title + " this Halloween? " + shareAskLine() + "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
+          ? (fp.name + " is " + roleArt(fp.role) + " in our " + idea.title + " group this Halloween!" + _pcTime + " Want in? Here is the guide: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
+          : ("Want to do " + idea.title + " this Halloween?" + _pcTime + " Want in? Here is the guide: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
         function credited(via){
           rearmShare(); /* the share settled: sent or copied */
           Analytics.track("share_text_copied", {idea_id: idea.id, share_id: sid, via: via, share_origin: "card", cards_id: pcCardsId});
@@ -12739,7 +12755,13 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
             }
           });
         }
-        if (typeof navigator !== "undefined" && navigator.share){
+        /* 2026-10-11 (gpt-loop run 99, topic d): photo hook, mirrored from the
+           canonical sendShare path (2026-10-02, Billy): the card recipient has
+           never seen the site; the costume photo is the hook. Fetch the -480
+           webp, share with files when the platform allows, fall back to
+           text-only on any failure. The clipboard path keeps the text-only
+           version (files have nowhere to paste). */
+        function shareNativeText(){
           navigator.share({title: "Pick My Costume", text: text}).then(function(){
             st2.textContent = "Shared.";
             credited("share_sheet");
@@ -12747,6 +12769,33 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
             if (err && err.name === "AbortError"){ rearmShare(); return; } /* closed the sheet; not an error */
             copyFallback();
           });
+        }
+        if (typeof navigator !== "undefined" && navigator.share){
+          try {
+            if (navigator.canShare){
+              fetch("https://pickmycostume.com/photos/" + idea.id + "-480.webp").then(function(r){
+                if (!r.ok) throw new Error("photo " + r.status);
+                return r.blob();
+              }).then(function(blob){
+                var _pcFile = new File([blob], idea.id + ".webp", {type: "image/webp"});
+                if (navigator.canShare({files: [_pcFile]})){
+                  navigator.share({title: "Pick My Costume", text: text, files: [_pcFile]}).then(function(){
+                    st2.textContent = "Shared.";
+                    credited("share_sheet");
+                  }, function(err){
+                    if (err && err.name === "AbortError"){ rearmShare(); return; }
+                    copyFallback();
+                  });
+                } else {
+                  shareNativeText();
+                }
+              }, function(){ shareNativeText(); });
+            } else {
+              shareNativeText();
+            }
+          } catch(e){
+            shareNativeText();
+          }
         } else {
           copyFallback();
         }
