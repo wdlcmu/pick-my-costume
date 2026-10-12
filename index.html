@@ -98,7 +98,7 @@ html{-webkit-text-size-adjust:100%;overflow-x:clip} /* 2026-09-30: belt-and-susp
 body{
   margin:0; color:var(--ink);
   background:
-    radial-gradient(600px 300px at 50% -60px, #3a2166 0%, transparent 70%),
+    radial-gradient(1100px 420px at 50% -60px, #3a2166 0%, transparent 70%),
     var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   line-height:1.5; min-height:100vh;
@@ -184,7 +184,10 @@ body.st-open .sitehead{display:none}
 /* 2026-09-27: desktop was a 640px phone column floating in dead space.
    On wide screens let the page breathe: wider content well, matching FAQ/how. */
 @media (min-width:900px){
-  .wrap{max-width:1000px;padding:28px 32px 80px}
+  /* 2026-10-12 (Billy): widened again, 1000px still left dead black space on
+     both sides of a desktop monitor. 1240px well + bigger type (below). */
+  .wrap{max-width:1240px;padding:28px 32px 80px}
+  .sitenav a{font-size:15px}
   /* 2026-09-28: hero photo-strip unit removed entirely (the unit was
      rejected, not the picks). Desktop hero returns to a centered single
      column; the moon and headline carry the hero. */
@@ -323,18 +326,22 @@ body.st-open .sitehead{display:none}
    (mosaic hidden). Tiles link to their /c/ guides. Unit: hero-mosaic. */
 #hero-mosaic{display:none}
 @media (min-width:1024px){
-  #s-hero .hero{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:44px;align-items:center;max-width:1140px;text-align:left}
+  /* 2026-10-12 (Billy + GPT rounds): one dominant photo, quieter text column.
+     Was a 2x2 mosaic of four equal photos splitting attention six ways;
+     now bumble-bee carries the entrance with two supporting photos stacked.
+     Container widened to the full 1240px well, type stepped up. */
+  #s-hero .hero{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:48px;align-items:center;max-width:1240px;text-align:left}
   #s-hero .hero .herotext{text-align:left}
-  #s-hero .hero h1{margin-left:0;margin-right:0;max-width:none}
+  #s-hero .hero h1{margin-left:0;margin-right:0;max-width:none;font-size:48px;line-height:1.06}
   #s-hero .hero .honestline{margin-left:0;margin-right:0}
-  #hero-mosaic{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-self:center}
+  #s-hero .hero-sub{font-size:18px;line-height:1.55}
+  #s-hero .hero-proof{font-size:15px}
+  #hero-mosaic{display:grid;grid-template-columns:1.5fr 1fr;grid-template-rows:1fr 1fr;gap:14px;align-self:center}
   #hero-mosaic a{position:relative;display:block;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-  #hero-mosaic a:nth-child(even){transform:translateY(20px)}
-  #hero-mosaic img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
-  #hero-mosaic span{position:absolute;left:8px;right:8px;bottom:8px;font-size:12px;font-weight:700;color:#fff;background:rgba(20,10,30,.6);border-radius:8px;padding:5px 8px;text-align:center;line-height:1.3}
-}
-@media (prefers-reduced-motion:reduce){
-  #hero-mosaic a:nth-child(even){transform:none}
+  #hero-mosaic a:first-child{grid-row:1/3}
+  #hero-mosaic img{display:block;width:100%;height:100%;aspect-ratio:1/1;object-fit:cover}
+  #hero-mosaic a:first-child img{aspect-ratio:auto}
+  #hero-mosaic span{position:absolute;left:8px;right:8px;bottom:8px;font-size:14px;font-weight:700;color:#fff;background:rgba(20,10,30,.6);border-radius:8px;padding:5px 8px;text-align:center;line-height:1.3}
 }
 /* 2026-09-29: Kids zone. One heading over the games chips and the
    kid-favorites rail (were split across the hero and far below). */
@@ -1270,8 +1277,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <button class="cta firstonly" id="btn-start" type="button">Pick my costume</button>
       <div class="firstonly hero-pantry" style="margin-top:10px"><button class="ghost" id="btn-closet-hero" type="button">Use what I already have</button></div>
       <!-- 2026-10-06 (Billy): quiet tertiary link — galaxy is a marquee feature
-           but the hero stays at two buttons. Text link, not a third button. -->
-      <p class="firstonly hero-galaxylink" style="margin:10px auto 0"><a href="/map" style="color:var(--muted);font-size:14px">Explore the galaxy &rarr;</a></p>
+           but the hero stays at two buttons. Text link, not a third button.
+           2026-10-12 (Billy + GPT rounds): REMOVED from the hero. Six elements
+           competed in the first screen; the galaxy keeps its nav link and its
+           preview section below. -->
 
       <!-- 2026-10-06 (Billy): proof line replaces the old abstract pre-headline
            ("Your pick, your materials list, your build plan, matched to what you
@@ -1322,11 +1331,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <div class="hero-mosaic" id="hero-mosaic" aria-label="Popular costume ideas">
         <!-- 2026-09-29: mosaic tiles rotate to photos NOT in the trending
              rail below (snow-sisters, tin-hero, lost-tourist, blue-dog-family).
-             neon-demon-hunter stays out: permanent photo-quality blocklist. -->
-        <a href="/c/baby-dino" aria-label="Baby Dinosaur costume guide"><img fetchpriority="high" src="photos/baby-dino.webp" srcset="photos/baby-dino-256.webp 256w, photos/baby-dino-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Baby Dinosaur costume" loading="eager"><span>Baby Dinosaur</span></a>
-        <a href="/c/bumble-bee" aria-label="Bumble Bee costume guide"><img src="photos/bumble-bee.webp" srcset="photos/bumble-bee-256.webp 256w, photos/bumble-bee-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Bumble Bee costume" loading="eager"><span>Bumble Bee</span></a>
-        <a href="/c/emerald-witch" aria-label="Emerald Witch costume guide"><img src="photos/emerald-witch.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Emerald Witch costume" loading="eager"><span>Emerald Witch</span></a>
-        <a href="/c/walking-taco" aria-label="Walking Taco costume guide"><img src="photos/walking-taco.webp" srcset="photos/walking-taco-256.webp 256w, photos/walking-taco-480.webp 480w" sizes="(min-width:1024px) 280px, 128px" alt="Walking Taco costume" loading="eager"><span>Walking Taco</span></a>
+             neon-demon-hunter stays out: permanent photo-quality blocklist.
+             2026-10-12: one dominant tile (bumble-bee, portrait) + two stacked
+             (baby-dino, emerald-witch). Walking taco dropped here; it stays in
+             the Make it tonight rail below. -->
+        <a href="/c/bumble-bee" aria-label="Bumble Bee costume guide"><img fetchpriority="high" src="photos/bumble-bee.webp" srcset="photos/bumble-bee-256.webp 256w, photos/bumble-bee-480.webp 480w, photos/bumble-bee.webp 1280w" sizes="(min-width:1024px) 480px, 128px" alt="Bumble Bee costume" loading="eager"><span>Bumble Bee</span></a>
+        <a href="/c/baby-dino" aria-label="Baby Dinosaur costume guide"><img src="photos/baby-dino.webp" srcset="photos/baby-dino-256.webp 256w, photos/baby-dino-480.webp 480w, photos/baby-dino.webp 1200w" sizes="(min-width:1024px) 320px, 128px" alt="Baby Dinosaur costume" loading="eager"><span>Baby Dinosaur</span></a>
+        <a href="/c/emerald-witch" aria-label="Emerald Witch costume guide"><img src="photos/emerald-witch.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w, photos/emerald-witch-960.webp 960w" sizes="(min-width:1024px) 320px, 128px" alt="Emerald Witch costume" loading="eager"><span>Emerald Witch</span></a>
 </div>
 </div>
       <!-- 2026-10-06 (Lane 2, second wave): Pantry elevation. Strong secondary
