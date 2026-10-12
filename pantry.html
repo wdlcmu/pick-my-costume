@@ -1146,17 +1146,24 @@ function challengeLink(){
    even when it still needed supplies (the default staples-only state names
    an idea 2 supplies short). Name a fully-makeable idea when one exists;
    otherwise tell the truth about the gap. No em dashes, house voice. */
+/* 2026-10-12 GPT loop run 135: share claims no longer say "tonight".
+   Pantry DATA carries no build times, and the site Tonight promise is
+   time-only (hands-on <=30 min, total <=120 min): some zero-missing picks
+   break it (Block Game Crew 45 min + 1 hr drying, Haunted Animatronics
+   60 min + 1 hr drying). Ownership is the claim this page can verify, so
+   the share texts claim ownership only. Same fix in rematchClaim, the
+   rematch verdict line, and the partner list share below. */
 function challengeClaim(){
   const rows = DATA.ideas.map(score);
   rows.sort((a, b) => (a.missing.length - b.missing.length) || (a.total - b.total));
   const top = rows[0];
   if (!top) return 'What can you make with what is in your house? ';
   if (top.missing.length === 0)
-    return 'I can make ' + top.it.title + ' tonight with stuff already in my house. ' +
+    return 'I can make ' + top.it.title + ' with stuff already in my house. ' +
       'What can you make with yours? ';
   const n = top.missing.length;
   return 'I am ' + n + ' ' + (n === 1 ? 'supply' : 'supplies') +
-    ' away from making ' + top.it.title + ' tonight. What can you make with yours? ';
+    ' away from making ' + top.it.title + '. What can you make with yours? ';
 }
 /* 2026-09-26 challenge rematch: the answerer's kit travels in ?kit= and the
    challenger's kit travels in ?opp=, so the original challenger gets a real
@@ -1178,7 +1185,7 @@ function rematchClaim(){
   const top = rows[0];
   if (!top) return 'I answered your pantry dare. ';
   if (top.missing.length === 0)
-    return 'I can make ' + top.it.title + ' tonight with stuff in my house. Beat that. ';
+    return 'I can make ' + top.it.title + ' with stuff in my house. Beat that. ';
   const n = top.missing.length;
   return 'I am ' + n + ' ' + (n === 1 ? 'supply' : 'supplies') +
     ' away from ' + top.it.title + '. Beat that. ';
@@ -1324,7 +1331,7 @@ function applyChallenge(){
       const friendGap = gap;
       const youGap = scoreAgainst(idea, new Set(oppIds)).missing.length;
       const line = (friendGap === 0 && youGap === 0)
-        ? 'You can both make <b>' + esc(title) + '</b> tonight. First one finished sends a photo.'
+        ? 'You can both make <b>' + esc(title) + '</b>. First one finished sends a photo.'
         : 'Rematch: your friend is <b>' + friendGap + ' ' + (friendGap === 1 ? 'supply' : 'supplies') +
           '</b> away from <b>' + esc(title) + '</b>. You are <b>' + youGap + ' ' +
           (youGap === 1 ? 'supply' : 'supplies') + '</b> away. ' +
@@ -2341,7 +2348,7 @@ document.getElementById('supply-search').addEventListener('input', applySearch);
   if (!btn) return;
   const status = document.getElementById('sharestatus');
   const url = 'https://pickmycostume.com/pantry';
-  const text = 'I ticked what we already own \u2014 see what costumes we can make tonight: ' + url;
+  const text = 'I ticked what we already own \u2014 see what costumes we can make: ' + url;
   const done = function(via){
     if (status){ status.style.display = 'block'; status.textContent = 'Copied \u2014 send it to your partner.'; }
     track('pantry_share', { via: via });
