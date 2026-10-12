@@ -16029,7 +16029,9 @@ function shareLandingHeadline(idea, search){
     try { localStorage.setItem("pmc_returnhero_dismissed_v1", JSON.stringify({ideaId: pk && pk.ideaId, at: Date.now()})); } catch(e){}
     var bx = document.getElementById("returnbox"); if (bx) bx.hidden = true;
     var hEl = document.querySelector(".hero"); if (hEl) hEl.classList.remove("returning");
-    try { track("returnhero_dismissed", {}); } catch(e){}
+    /* 2026-10-12: was track(...) — no such function in this scope (ReferenceError
+       swallowed by the catch), so the event never fired in 90 days. */
+    try { if (typeof Analytics !== "undefined") Analytics.track("returnhero_dismissed", {}); } catch(e){}
     refreshReturnBox();
   });
   refreshReturnBox();
@@ -16064,6 +16066,9 @@ function refreshReturnBox(){
       if (st) st.textContent = "";
       box.hidden = false;
       if (heroEl) heroEl.classList.add("returning");
+      /* 2026-10-12: impression event for the dismiss-rate denominator.
+         Dismissals alone can't form a rate; this pairs with returnhero_dismissed. */
+      try { if (typeof Analytics !== "undefined") Analytics.track("returnhero_shown", {}); } catch(e){}
     }
   }
   /* 2026-09-26 P4: stranded quiz results. pmc_last_v1 exists but no fresh
