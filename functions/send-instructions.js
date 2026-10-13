@@ -272,10 +272,6 @@ export async function onRequestPost(context) {
   if (rateLimited(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
   if (!env.RESEND_API_KEY) {
-    return json({ ok: true, dry_run: true, stage: 'no-key' });
-  }
-  return json({ ok: true, dry_run: true, stage: 'key-present', keylen: String(env.RESEND_API_KEY).length });
-  if (!env.RESEND_API_KEY) {
     // Staged: Resend hasn't been connected yet. Plumbing verified, nothing sent.
     // 2026-10-13: this check moved BEFORE composeEmail. The dry-run answer
     // never needed the composed email, and composing on every dry-run call
@@ -289,6 +285,8 @@ export async function onRequestPost(context) {
 
   const composed = composeEmail(idea, ideaId, mintShareId());
   const subject = cleanHeader(composed.subject);
+  const _c = composeEmail(idea, ideaId, mintShareId());
+  return json({ ok: true, dry_run: true, stage: 'composed', subj: _c.subject.length, text: _c.text.length, html: _c.html.length });
   let res;
   try {
     res = await fetch(RESEND_URL, {
