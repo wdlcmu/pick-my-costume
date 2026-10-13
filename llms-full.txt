@@ -2,7 +2,7 @@
 
 > Complete Markdown text of pickmycostume.com's 169 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
-> Generated: 2026-10-03. Regenerate with gen_llms_full.py when the bank changes.
+> Generated: 2026-10-12. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
@@ -221,6 +221,7 @@ Materials:
 - Pink tights, 1 pair (own, or buy: clothing store)
 - Hair ties and bobby pins, 1 pack (own)
 - Scissors, 1 pair
+- Satin ribbon, 1 short length (optional, for the pro finish; buy: craft store)
 
 Steps:
 1. Measure the waist with the elastic: wrap it snug where the tutu will sit, overlap 1 inch, and cut.
@@ -245,7 +246,7 @@ A: Measure the elastic snug at the waist (not the hips) with a 1-inch overlap, a
 
 URL: https://pickmycostume.com/c/bamboo-demon
 
-Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.
+Pink robe, long dark wig. Anime inspired, Nezuko style.
 
 Build time, effort: 20 min + 10 min drying / Easy
 
@@ -543,7 +544,7 @@ A: Pin the ears to the headband with two safety pins each instead of tape. Pins 
 
 URL: https://pickmycostume.com/c/blue-heeler-pup
 
-Blue-gray hoodie, felt ears, and a painted nose for the littlest pup.
+Blue-gray hoodie, felt ears, and a painted nose for the littlest pup. Bluey inspired.
 
 Build time, effort: 25 min + 1 hr drying / Easy
 
@@ -926,6 +927,7 @@ Materials:
 - Black eyeliner pencil or non-toxic face paint, 1 (buy: toy store)
 - Scissors, 1 pair
 - Tape, 1 roll
+- Pink felt, 1 small triangle (optional, for inner ears; buy: craft store)
 
 Steps:
 1. Cut one paper ear template first, triangles for the cat, rounds for the mouse, and check both against the headbands. Cut two triangle ears from the black craft felt with the scissors.
@@ -1307,6 +1309,7 @@ Materials:
 - Very pale foundation or white non-toxic face paint, 1 (buy: toy store)
 - Dark eyeliner and lipstick, 1 set (own, or buy: dollar store)
 - 2 hair ties (own)
+- Thin black ribbon, 1 short length (optional, for the choker; buy: craft store)
 
 Steps:
 1. Braid the hair into two tight braids with the hair ties.
@@ -1364,7 +1367,7 @@ A: Flannel tied around the waist over a plain tee, jeans, and a middle part. Thr
 
 URL: https://pickmycostume.com/c/demon-boy-band
 
-Matching streetwear-idol outfits with glowing patterns for your whole boy band.
+Matching streetwear-idol outfits with glowing patterns for your whole boy band. Saja Boys inspired.
 
 Build time, effort: 40 min + 2 hrs drying / Easy
 
@@ -1668,7 +1671,7 @@ A: Glue the pink felt in sections and press each for 30 seconds. Felt glued all 
 
 URL: https://pickmycostume.com/c/dragon-rider-duo
 
-A viking rider and a cardboard dragon, ready to fly over the neighborhood.
+A viking rider and a cardboard dragon, ready to fly over the neighborhood. How to Train Your Dragon inspired.
 
 Build time, effort: 60 min + 30 min drying / Medium
 
@@ -1702,7 +1705,7 @@ A: Rider stands in front with arms out like steering, dragon crouches behind wit
 
 URL: https://pickmycostume.com/c/emerald-witch
 
-An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.
+An all-green-everything gown, dramatic makeup, and a pointy hat gone couture. Wicked Elphaba inspired.
 
 Build time, effort: 45 min + 1 hr drying / Medium
 
@@ -1766,7 +1769,7 @@ A: Tape it at four points, top, bottom, and both sides, so it sits flat on the c
 
 URL: https://pickmycostume.com/c/emotion-crew
 
-One loud color per person: each of you is a different emotion.
+One loud color per person: each of you is a different emotion. Inside Out inspired.
 
 Build time, effort: 25 min + 10 min drying / Easy
 
@@ -2084,7 +2087,7 @@ A: Glue them the night before so the fabric glue cures, or pin them with two saf
 
 URL: https://pickmycostume.com/c/galaxy-knights
 
-Robes, belts, and toy energy blades for knights of a far-off galaxy.
+Robes, belts, and toy energy blades for knights of a far-off galaxy. Star Wars inspired.
 
 Build time, effort: 10 min / Easy
 
@@ -2343,7 +2346,7 @@ A: Tape a bobby pin inside the hat and clip it to the hair. Cone hats are top-he
 
 URL: https://pickmycostume.com/c/goth-braids
 
-Black dress, two tight braids, and a stare that ends conversations.
+Black dress, two tight braids, and a stare that ends conversations. The Wednesday Addams look, DIY in minutes.
 
 Build time, effort: 20 min + 10 min drying / Easy
 
@@ -2754,7 +2757,7 @@ A: That is the joke, ketchup wears mustard's blob and mustard wears ketchup's. S
 
 URL: https://pickmycostume.com/c/kpop-demon-huntresses
 
-Matching stage outfits, toy microphones, and demon-hunter poses for three.
+Matching stage outfits, toy microphones, and demon-hunter poses for three. K-Pop Demon Hunters inspired.
 
 Build time, effort: 40 min + 10 min drying / Medium
 
@@ -3217,7 +3220,7 @@ A: A brown paper grocery bag cut into a circle works for one night. Glue paper c
 
 URL: https://pickmycostume.com/c/moonwalk-star
 
-Red jacket, one glitter glove, and the lean everyone attempts.
+Red jacket, one glitter glove, and the lean everyone attempts. Michael Jackson Thriller inspired.
 
 Build time, effort: 25 min + 30 min drying / Easy
 
@@ -3316,7 +3319,7 @@ A: Give the fourth person the dog ears over their colored shirt, the dog role is
 
 URL: https://pickmycostume.com/c/mystery-teens
 
-Color-coded outfits, a toy magnifying glass, and one giant sandwich.
+Color-coded outfits, a toy magnifying glass, and one giant sandwich. Scooby-Doo inspired.
 
 Build time, effort: 20 min / Easy
 
@@ -3378,7 +3381,7 @@ A: Foam. Toy plastic swords snap and leave sharp edges; foam swords survive all-
 
 URL: https://pickmycostume.com/c/night-hero
 
-A dark cowl and a cape cut from an old t-shirt, ready for rooftop patrol.
+A dark felt mask and a cape cut from an old t-shirt, ready for rooftop patrol.
 
 Build time, effort: 35 min / Easy
 
@@ -3442,7 +3445,7 @@ A: No. The all-black outfit plus the forehead wrap already reads as ninja. The s
 
 URL: https://pickmycostume.com/c/numbered-players
 
-Green tracksuits, numbered bibs, and a survival-game attitude.
+Green tracksuits, numbered bibs, and a survival-game attitude. Squid Game inspired.
 
 Build time, effort: 30 min / Easy
 
@@ -3800,7 +3803,7 @@ A: Only if the eyes are fully open with clear peripheral vision. Never wear a ma
 
 URL: https://pickmycostume.com/c/plastic-dream-crew
 
-Head-to-toe pink outfits with plastic accessories for the dream crew.
+Head-to-toe pink outfits with plastic accessories for the dream crew. Barbie inspired.
 
 Build time, effort: 15 min / Easy
 
@@ -4576,7 +4579,7 @@ A: Wrap one strip of white athletic tape around one upper arm over the sleeve an
 
 ---
 
-### Space Crewmate
+### Spaceship Cadet
 
 URL: https://pickmycostume.com/c/space-crewmate
 
@@ -4598,14 +4601,14 @@ Steps:
 2. If you have more than one person, give each a different color.
 3. Wrap the cardboard in aluminum foil for the backpack. Draw vents, dials, and one big red button with the markers. Tape the two backpack straps to the back of the cardboard.
 4. Wear the foil backpack with the straps over your shoulders. Tape the bottom corners snug to the sweatsuit so it does not swing.
-5. Finishing touch: hold one finger to your lips and say sus for the photo.
-6. Optional pro finish: draw a crewmate ID badge on an index card (name, color, and CREW) and tape it to the chest.
+5. Finishing touch: hold one finger to your lips and strike a heroic pose for the photo.
+6. Optional pro finish: draw a mission badge on an index card (name, rank, and MISSION) and tape it to the chest.
 
 Q: How do you keep the foil backpack from swinging?
 A: Tape the bottom corners of the cardboard snug to the sweatsuit after the straps are on. Snug at the bottom stops the swing.
 
 Q: What if more than one person wants to be the same color?
-A: Give each person a different color sweatsuit. The joke lands harder when the group has red, blue, yellow, and one suspicious black.
+A: Give each person a different color sweatsuit. The joke lands harder when the group has red, blue, yellow, and one classic black.
 
 ---
 
@@ -4918,7 +4921,7 @@ A: Use double-wall cardboard from a shipping box, not a cereal box, and keep eac
 
 URL: https://pickmycostume.com/c/the-olympians
 
-Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.
+Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident. The Odyssey on a bedsheet budget.
 
 Build time, effort: 45 min + 10 min drying / Medium
 
@@ -5047,7 +5050,7 @@ A: Use short cardboard strips, about 4 inches, and small pom-poms. Tall strips w
 
 ---
 
-### Tooth and Tooth Fairy
+### Tooth Fairy
 
 URL: https://pickmycostume.com/c/tooth-fairy
 
@@ -5119,7 +5122,7 @@ A: Yes if the glue dries fully: press each tooth for thirty seconds and let the 
 
 URL: https://pickmycostume.com/c/toy-box-crew
 
-A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite.
+A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite. Toy Story inspired.
 
 Build time, effort: 35 min + 30 min drying / Easy
 
@@ -5286,7 +5289,7 @@ A: Scale it to forearm length. A smaller hook carried confidently beats a big on
 
 URL: https://pickmycostume.com/c/web-hero-duo
 
-Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.
+Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude. A Spider-Man inspired duo.
 
 Build time, effort: 25 min + 10 min drying / Easy
 
@@ -5321,7 +5324,7 @@ A: A black eye mask avoids paint near the eyes entirely. If you paint, keep all 
 
 URL: https://pickmycostume.com/c/web-slinger-crew
 
-Red, black, and pink hoodies plus masks. Pick your spider.
+Red and black hoodies plus masks. Pick your spider. Spider-Verse inspired for the whole crew.
 
 Build time, effort: 30 min + 30 min drying / Easy
 
@@ -5354,7 +5357,7 @@ A: White electrical tape peels off clean from most hoodie fabrics. Test a hidden
 
 URL: https://pickmycostume.com/c/web-slinger-kid
 
-Red sweatsuit, tape web lines, big white eye lenses.
+Red sweatsuit, tape web lines, big white eye lenses. A Spider-Man inspired look from the closet.
 
 Build time, effort: 25 min + 10 min drying / Easy
 
@@ -5451,7 +5454,7 @@ A: Two works, but the trio is the iconic number. Recruit a third; the spell need
 
 URL: https://pickmycostume.com/c/wizard
 
-Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional.
+Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional. Hogwarts inspired.
 
 Build time, effort: 20 min + 10 min drying / Easy
 
@@ -5483,7 +5486,7 @@ A: Write silly spells on the pages in marker ('Spell for extra dessert: say plea
 
 URL: https://pickmycostume.com/c/yellow-henchmen
 
-Yellow shirts, blue overalls, and swim goggles for the whole crew.
+Yellow shirts, blue overalls, and swim goggles for the whole crew. Minions inspired.
 
 Build time, effort: 25 min / Easy
 
