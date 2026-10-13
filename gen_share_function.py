@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate functions/c/[slug].js from the IDEAS bank in index.html.
+"""Regenerate functions/c/[slug].js from the IDEAS bank in app.js.
 
 The Pages Function serves /c/<slug> share pages: each unfurls the shared
 costume's own illustration via og:/twitter: meta tags and serves the full
@@ -61,7 +61,7 @@ _PANTRY_EMOJI = _extract_json(src, 'var PANTRY_EMOJI =')
 _PANTRY_STAPLES = _PANTRY_MATS['staples']
 _OPTIONAL_PAREN_RE = re.compile(r'\([^)]*optional', re.I)
 ideas = re.findall(r'\{id:"([^"]+)", title:"([^"]+)", blurb:"([^"]+)"', src)
-assert ideas, "no ideas parsed from index.html"
+assert ideas, "no ideas parsed from app.js"
 data = {slug: {"t": title, "b": blurb} for slug, title, blurb in ideas}
 # Split-the-build (2026-09-26): the 51 group/family ideas get a "Split the
 # build" materials divider on their /c/ guides. Audience is parsed per idea
@@ -283,6 +283,75 @@ for s in data:
 assert set(RELATED) == set(data), "related map missing slugs"
 assert all(len(v) == 5 and all(t in data for t in v) for v in RELATED.values()), \
     "related map must hold 5 valid slugs per idea"
+
+# Theme collection links (2026-10-06, Billy): /c/ guides whose bank tags carry
+# a strong theme (weight >= 2) link the matching collection page inside the
+# "More costumes like this" block. Strongest theme wins; ties break by the
+# fixed theme order so regeneration is deterministic. Collection pages are
+# created in parallel; these URLs are final.
+_THEMECOLL_THEMES = [
+    ("food", "/food-costumes", "food"),
+    ("animals", "/animal-costumes", "animal"),
+    ("dinos", "/dinosaur-costumes", "dinosaur"),
+    ("heroes", "/superhero-costumes", "superhero"),
+]
+_THEMECOLL_MAP = {}
+for _s in data:
+    _best = None
+    for _tag, _url, _label in _THEMECOLL_THEMES:
+        _w = _tagmap.get(_s, {}).get(_tag, 0)
+        if _w >= 2 and (_best is None or _w > _best[0]):
+            _best = (_w, _url, _label)
+    if _best:
+        _THEMECOLL_MAP[_s] = {"u": _best[1], "l": _best[2]}
+assert set(_THEMECOLL_MAP) <= set(data), (
+    "theme collection map has unknown slugs: %s" % (set(_THEMECOLL_MAP) - set(data)))
+
+# Guide share-button captions (2026-10-06, Billy): the /c/ pages are
+# standalone (sendShare lives in the app bundle), so the generator ports
+# shareCaptionFor's audience-grounded default line plus the bank's custom
+# SHARE_CAPTIONS overrides, with the same audience-grounding gates as the
+# app. Emitted as SHARECAP for the inline guide share script.
+_BS = chr(92)
+_APOS = chr(39)
+_RSQ = chr(0x2019)
+_EMD = chr(0x2014)
+_END = chr(0x2013)
+_SHARE_CAPTIONS = _extract_json(src, 'var SHARE_CAPTIONS =')
+_FPV = re.compile(
+    _BS + 'b(we|i|us|our|ours|me|my|mine|let' + _APOS + 's|i' + _APOS + 'm|we'
+    + _APOS + 're|i' + _APOS + 've|we' + _APOS + 've)' + _BS + 'b', re.I)
+def _share_caption(_s):
+    _a = _audmap.get(_s, [])
+    _aud = _a[0] if len(_a) == 1 and _a[0] in ("kid", "family", "couple", "group", "solo") else "solo"
+    _t = data[_s]["t"]
+    if _aud == "kid":
+        _line = "My kid" + _RSQ + "s going as " + _t + " this Halloween."
+    elif _aud in ("family", "couple", "group"):
+        _line = "We" + _RSQ + "re going as " + _t + " this Halloween."
+    else:
+        _line = "I" + _RSQ + "m going as " + _t + " this Halloween."
+    _cap = _SHARE_CAPTIONS.get(_s)
+    if not _cap:
+        return _line
+    _caplow = _cap.lower()
+    if _aud in ("kid", "family"):
+        _first = bool(_FPV.search(_cap))
+        _going = "going as" in _caplow
+        _third = _caplow.startswith("the ") and not _first
+        if (_first or _going) and not _third:
+            return _line
+    if "going as" in _caplow or _t.lower() in _caplow:
+        return _cap
+    return _line + " " + _cap
+SHARECAP = {}
+for _s in data:
+    SHARECAP[_s] = _share_caption(_s)
+assert set(SHARECAP) == set(data), "share caption map missing slugs"
+for _s in data:
+    assert "$" not in SHARECAP[_s], "dollar figure in share caption: " + _s
+    assert _EMD not in SHARECAP[_s] and _END not in SHARECAP[_s], (
+        "em/en dash in share caption: " + _s)
 
 # Primary-material classification (SEO 2026-10-01, Claude 4c): every idea gets
 # a primary material for (a) the SEO title pattern "DIY <T> Costume: <N>-Min
@@ -675,6 +744,21 @@ for _s, _c in PICTURED.items():
     assert "$" not in _c, "dollar figure in pictured caption: " + _s
     assert _s in data and data[_s]["t"], "pictured slug not in bank: " + _s
 
+# Galaxy region per idea (2026-10-13): mirrors app.js shareRegionSlug(),
+# which reads GALAXY_REGION_BY_IDEA[id][1] and falls back to "unknown".
+# The /c/ guide share text carries utm_campaign=<region> for parity with
+# app shares, so the region is parsed from the same app.js map at every
+# regen and can never drift from the app value.
+REGION = {}
+try:
+    _gr = _extract_json(src, 'var GALAXY_REGION_BY_IDEA =')
+    for _s, _v in _gr.items():
+        if isinstance(_v, list) and len(_v) > 1 and _v[1]:
+            REGION[_s] = _v[1]
+except Exception:
+    REGION = {}
+assert len(REGION) >= 100, "region map too small: %d" % len(REGION)
+
 
 # 2026-10-05 (Billy): client-side tick script for the /c/ supply cards.
 # Reads/writes the same pantry2 localStorage the app uses, so ticks carry
@@ -787,6 +871,18 @@ var MATRELLABEL = %s;
 // primary material (deterministic slug order). Singletons render no block.
 var MATRELATED = %s;
 
+// Theme collection page per idea (2026-10-06, Billy): slug ->
+// {u: collection URL, l: theme label} for the strongest bank theme
+// tag (food, animals, dinos, heroes), emitted only when the theme is
+// strong (weight >= 2). Rendered as a collection link inside the
+// "More costumes like this" block.
+var THEMECOLL = %s;
+
+// Guide share-button caption per idea (2026-10-06, Billy): port of
+// shareCaptionFor for the standalone /c/ pages (sendShare lives in the
+// app bundle). Used by the inline guide share script.
+var SHARECAP = %s;
+
 // Answer-first intro paragraph (Claude 5 /c/ half): what it is, build time,
 // difficulty, 3 main materials, who it suits. Plain text; esc()d at use so
 // fetchers and AI assistants read it as static HTML.
@@ -804,6 +900,10 @@ var SEALT = %s;
 // the slug; ideas without the field render nothing -- same as in-app
 // ideaMedia.
 var PICTURED = %s;
+
+// Galaxy region slug per idea (utm_campaign for guide shares), parsed
+// from app.js GALAXY_REGION_BY_IDEA by gen_share_function.py.
+var REGION = %s;
 
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
@@ -940,6 +1040,12 @@ export function onRequest(context) {
   /* Descriptive alt text (Claude 4c): generated from the materials list. */
   var imgAlt = esc(SEALT[slug] || (idea.t + " costume idea"));
   var img = "https://pickmycostume.com/images/og/" + slug + ".jpg";
+  /* 2026-10-12 (Billy): the guide hero used to reuse the og share card,
+     whose 1200x630 cover-crop trimmed heads on portrait photos ("trims
+     the pic on the next screen"). og:image keeps the card; the on-page
+     hero now shows the real photo at natural aspect (focal-fixed cards
+     still protect the share unfurl). */
+  var heroImg = "/photos/" + slug + ".webp";
   /* schema.org HowTo JSON-LD: this page's costume genuinely is a materials
      list plus numbered steps, so this is honest structured data aimed at AI
      assistants parsing the page. (Google retired HowTo rich results in 2023;
@@ -955,8 +1061,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        its labels in the share preview (a bare "Medium" pill read as
        meaningless to cold recipients), and "+ drying" is spelled out as
        passive wait -- the bank's time value is hands-on time (see the
-       JSON-LD comment below). */
-    "Time: " + esc(_hw.time).replace(/ \\+ drying$/, " of hands-on work + drying time") +
+       JSON-LD comment below).
+       2026-10-11 (gpt-loop run 92, topic d): the canonical unfurl carries
+       the stopwatch honesty mark -- same "Timed: about X" line as the ?s=
+       friend-voice variant (run 78) and the /c/ card pattern (run 91). The
+       unfurl is the recipient's first impression; the flat "Time:" label
+       was the one surface without the mark. */
+    "\\u23F1\\uFE0F Timed: about " + esc(_hw.time).replace(/ \\+ drying$/, " of hands-on work + drying time") +
     " \\u00b7 Effort: " + esc(_hw.effort) + ". " : "";
   /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
      ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
@@ -1131,7 +1242,26 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      "Wore this? Show us" invite with a photo-share CTA carrying ?madeit=1
      (a later stream wires the submission flow). Static either way. */
   var IMADEIT = %s;
+  /* Share-timing experiment (2026-10-09): SHARE_PROMPT_TEST = true renders the
+     guide-page share prompt ("Thinking about going as X? Get your friends'
+     opinions!") between FAQs and related guides, tracking
+     guide_share_prompt_displayed / guide_share_prompt_clicked. Default OFF;
+     Billy flips this one line to activate. */
+  var SHARE_PROMPT_TEST = false;
   var _s = _qp.get("s") || "";
+  /* 2026-10-06 (Billy): friend-voice og:description for share arrivals.
+     Messenger crawlers fetch the shared URL with ?s=, so the unfurl reads
+     like the friend's own recommendation; direct visits keep the
+     guide description. title is esc()d for the meta attribute.
+     2026-10-11 (gpt-loop run 78, topic d): the stopwatch story belongs on
+     the recipient's first impression too -- the unfurl is what a share
+     recipient reads before clicking. Share arrivals get the measured HOWTO
+     build time (same "Timed: about X" line as the guide Share button).
+     time is bank data, never user input, so no esc() needed. */
+  var _ogTime = (_hw && _hw.time) ? " \\u23F1\\uFE0F Timed: about " + _hw.time + "." : "";
+  var _ogDesc = _s ?
+    "Your friend is going as " + title + " this Halloween." + _ogTime + " Here is the full guide to make it yourself." :
+    _tripleText + blurb;
   /* Split-the-build (2026-09-26): group/family guides get the materials
      divider (sender panel + recipient self-ID banner). Per-slug, same for
      every visitor: not cloaking. */
@@ -1247,7 +1377,11 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Effort</span>" + esc(_hw.effort) + "</span>");
-    if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p><p class=\\"timenote\\">Build times are estimates. Yours may vary.</p>";
+    if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p><p class=\\"timenote\\">\\u23F1\\uFE0F We timed it, but results may vary.</p>";
+    /* 2026-10-10 memorability mandate: stopwatch copy is the live standard
+       on /c/ guides ("Timed: about X" pills + this timenote). Do NOT revert
+       to the old "Build times are estimates" line; the generator is the
+       source of truth and the tree file must match it. */
     /* Sizing guidance: the fit note every parent asks about. */
     if (_hw.sizing && _UNIQUE_SIZING.has(slug)) _fit = "<p class=\\"sizing\\">Sizing: " + esc(_hw.sizing) + "</p>";
     /* 2026-09-29 named share: "<Name> picked <Costume>" static line, HTML +
@@ -1274,12 +1408,22 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      missing. */
   var _relHtml = "";
   var _rel = RELATED[slug] || [];
+  /* 2026-10-06 (Billy): theme collection link. Guides with a strong
+     bank theme tag link the matching collection page below the kindred
+     list. Static per slug, same for every visitor: not cloaking. */
+  var _themeLink = THEMECOLL[slug] ?
+    "<p class=\\"themelink\\"><a href=\\"" + THEMECOLL[slug].u + "\\">See all " + THEMECOLL[slug].l + " costumes</a></p>" : "";
   if (_rel.length) {
     _relHtml = "<h2>More costumes like this</h2><ul class=\\"rellist\\">" +
       _rel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
-        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
-      "</ul>";
+      "</ul>" + _themeLink +
+      /* 2026-10-06 (Lane 3, Explore Galaxy): "Explore similar ideas" entry
+         point. The /c/ kindred list above links to sibling guides; this
+         opens the Costume Galaxy centered on this costume, whose visible
+         neighborhood is the similarity set. Reuses the themelink style. */
+      "<p class=\\"themelink\\"><a href=\\"/map?similar=" + slug + "\\">Explore similar ideas in the Costume Galaxy \\u2192</a></p>";
   }
   /* Related by material (SEO 2026-10-01, Claude 4c): "More cardboard
      builds" next to "More costumes like this", grouped by primary material
@@ -1294,7 +1438,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       ("More " + PRIMARYMAT[slug] + " builds"));
     _matHtml = "<h2>" + esc(_matLabel) + "</h2><ul class=\\"rellist\\">" +
       _matRel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
-        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>";
   }
@@ -1309,9 +1453,90 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      no-banner control) sees the page exactly as before. Copy mirrors the
      in-app share landing voice (shareLandingHeadline): "Your friend picked
      X. What would you pick?" -- no em dashes, phone-first. */
+
+  /* 2026-10-06 (Billy): guide share button. The /c/ pages are standalone:
+     sendShare lives in the app bundle, so this inlines the equivalent: the
+     canonical caption (SHARECAP) + ask line + ?s=<newid>&o=guide link, via
+     the native sheet on phones and clipboard copy on desktop. Double-tap
+     guarded; the Add to Claude button is untouched. */
+  /* Share-timing experiment prompt (2026-10-09): guide-page placement.
+     Rendered only when SHARE_PROMPT_TEST is true. Clicking fires
+     guide_share_prompt_clicked then delegates to the existing Share button,
+     so share_created still measures conversion. */
+  var _sharePromptHtml = SHARE_PROMPT_TEST ?
+    "<p class=\\"shareprompt\\"><button class=\\"sharepromptbtn\\" id=\\"gshareprompt\\" type=\\"button\\">Thinking about going as " + esc(title) + "? Get your friends' opinions!</button></p>" : "";
+  var _sharePromptScript = SHARE_PROMPT_TEST ?
+    "<script>(function(){" +
+    "var p=document.getElementById(\\"gshareprompt\\");if(!p)return;" +
+    "function _spInt(){try{var q=location.search||\\"\\";if(/[?&]internal=1(?:&|$)/.test(q))return true;if(/[?&](probe|sim)=/.test(q))return true;try{return localStorage.getItem(\\"pmc_internal\\")===\\"1\\";}catch(e){return false;}}catch(e){return false;}}" +
+    "var _spP={slug:" + JSON.stringify(slug) + "};if(_spInt())_spP.internal=true;" +
+    "var _spT=0;function _spS(){try{if(window.posthog&&posthog.capture){posthog.capture(\\"guide_share_prompt_displayed\\",_spP);return;}}catch(e){}if(++_spT<6)setTimeout(_spS,1000);}" +
+    "_spS();" +
+    "p.addEventListener(\\"click\\",function(){try{if(window.posthog&&posthog.capture)posthog.capture(\\"guide_share_prompt_clicked\\",_spP);}catch(e){}var b=document.getElementById(\\"guideshare\\");if(b)b.click();});" +
+    "})();</" + "script>" : "";
+  /* Share parity + measurement (2026-10-13): the guide share text now
+     carries the canonical ask line and the UTM block app shares use
+     (shareTextFor/shareUtm in app.js), with the region from REGION as
+     utm_campaign; the click also fires share_created with the app
+     property names (share_id, idea_id, share_origin=guide, via) when a
+     native share resolves or a copy succeeds. A dismissed sheet fires
+     nothing, mirroring sendShare honesty semantics. One sid is minted
+     per click so the event joins the link the recipient opens. */
+  var _shareScript = "<script>" +
+    "(function(){" +
+    "var btn=document.getElementById(\\"guideshare\\"),msg=document.getElementById(\\"guidesharemsg\\");" +
+    "if(!btn||btn._sgW)return;btn._sgW=true;" +
+    "var _sgCap=" + JSON.stringify(SHARECAP[slug] || "") + ";" +
+    "var _sgSlug=" + JSON.stringify(slug) + ";" +
+    "var _sgRegion=" + JSON.stringify(REGION[slug] || "unknown") + ";" +
+    "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" \\u23f1\\ufe0f Timed: about "+_hw.time):"") + ";" +
+    "var _sgBusy=false;" +
+    "function _sgId(){var c=\\"abcdefghijklmnopqrstuvwxyz0123456789\\",s=\\"\\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
+    "function _sgTrack(sid,via){var _p={share_id:sid,idea_id:_sgSlug,share_origin:\\"guide\\",via:via};var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\\"share_created\\",_p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
+    "function _sgText(sid,medium){return \\"🎃 \\" + _sgCap + _sgTime + \\" What are you going as? Found mine with this 2-minute quiz: https://pickmycostume.com/c/\\" + _sgSlug + \\"?s=\\" + sid + \\"&o=guide&utm_source=share&utm_medium=\\" + medium + \\"&utm_campaign=\\" + _sgRegion;}" +
+    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok)_sgTrack(sid,via);if(msg)msg.textContent=ok?\\"Link copied. Send it to your crew.\\":\\"Couldn't copy it. Long-press the link instead.\\";}" +
+    "btn.addEventListener(\\"click\\",function(){" +
+    "if(_sgBusy)return;_sgBusy=true;" +
+    "var sid=_sgId();" +
+    "if(navigator.share){navigator.share({title:\\"Pick My Costume\\",text:_sgText(sid,\\"native\\")}).then(function(){_sgDone(true,\\"native\\",sid);},function(){_sgBusy=false;});}" +
+    "else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(_sgText(sid,\\"copy\\")).then(function(){_sgDone(true,\\"clipboard\\",sid);},function(){_sgDone(false);});}" +
+    "else{var ta=document.createElement(\\"textarea\\");ta.value=_sgText(sid,\\"copy\\");document.body.appendChild(ta);ta.select();try{document.execCommand(\\"copy\\");_sgDone(true,\\"clipboard\\",sid);}catch(e){_sgDone(false);}if(ta.parentNode)ta.parentNode.removeChild(ta);}" +
+    "});" +
+    "})();" +
+    "</" + "script>";
+
+  /* Recipient-landing measurement (2026-10-13): the /c/ pages are the
+     primary share destination, but unlike the homepage they fired no
+     recipient_landing_viewed, so the main share loop had no denominator.
+     This mirrors the homepage event in app.js: same event name, same
+     property names (idea_id, recipient_channel, via_share_id,
+     share_origin), same genuine-arrival rule (an 8+ char share id, the
+     isGenuineShareArrival rule), same UA channel inference. Fires once
+     per page load, only on genuine share arrivals, independent of the
+     recipient-banner flag. PostHog loads async, so capture retries
+     briefly like the share-prompt script. */
+  var _landingScript = "<script>" +
+    "(function(){" +
+    "var q=location.search||\\"\\";" +
+    "var sm=/[?&]s=([a-z0-9]{8,})/.exec(q);if(!sm)return;" +
+    "var om=/[?&]o=(card|generic_quick|generic|sms|vote|pantryvote|duel|teaser|gift|pair|spin|plan|reveal|micro|block|tryon|party|guess|challengeresult|challenge|match|glow|remix|first|named|living|wrapped|countdown|classroom-quiz|classroom|proxy|grandparent|role|emaillist|noclone|team|guide|pin)(?:&|$)/.exec(q);" +
+    "function _ch(){var ua=navigator.userAgent||\\"\\";if(/WhatsApp\\\\//i.test(ua))return \\"whatsapp\\";if(/Instagram/i.test(ua))return \\"instagram\\";if(/FB_IAB\\\\/MESSENGER/i.test(ua)||/FBAN\\\\/Messenger/i.test(ua))return \\"messenger\\";if(/FBAN\\\\//i.test(ua)||/FB_IAB/i.test(ua))return \\"facebook_iab\\";if(/GSA\\\\//i.test(ua))return \\"google_app\\";if(/Safari\\\\//.test(ua)&&!/(Chrome|CriOS|FxiOS|EdgiOS|OPiOS)\\\\//.test(ua))return \\"safari_unknown\\";if(/Chrome|CriOS/i.test(ua))return \\"chrome\\";return \\"other\\";}" +
+    "var _p={idea_id:" + JSON.stringify(slug) + ",recipient_channel:_ch(),via_share_id:sm[1]};" +
+    "if(om)_p.share_origin=om[1];" +
+    "var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\\"recipient_landing_viewed\\",_p);return;}}catch(e){}if(++_t<10)setTimeout(_try,500);})();" +
+    "})();" +
+    "</" + "script>";
+
   var _bannerScript = "<script>var RECIPIENT_BANNER = " + (RECIPIENT_BANNER ? "true" : "false") + ";" +
     "var GIFT_FROM = " + _gfromJs + ";" +
     "var SHARER_NAME=" + JSON.stringify(_sharerEsc) + ";" +
+    /* 2026-10-11 (gpt-loop run 85, topic d): recipient-banner stopwatch sub-line,
+       pre-computed server-side from the same _hw.time that drives the friend-voice
+       og:description (run 78) and the guide Share button text (run 71). Full time
+       string incl. drying, so the banner can never understate vs the unfurl;
+       falls back to the plain sub-line when a guide has no time data.
+       Generic friend branch only. */
+    "var _rbSub=" + JSON.stringify((_hw&&_hw.time?"\u23f1\ufe0f Timed: about "+_hw.time+". ":"")+"Take the 2-minute quiz to get your own costume.") + ";" +
     "var DRAFTH = " + JSON.stringify(DRAFT_HALVES[slug] || null) + ";" +
     "(function(){" +
     "function _rmSL(){var _sl=document.querySelector('.sharerline');if(_sl)_sl.parentNode.removeChild(_sl);}" +
@@ -1330,7 +1555,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var who = GIFT_FROM ? GIFT_FROM + \\" picked\\" : \\"Someone picked\\";" +
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">\\\\u{1F381} \\" + who + \\" <strong>" + title + "</strong> for you.</p>\\\" +" +
     " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">A starting idea, not a verdict. Take the 2-minute quiz to get your own costume.</p>\\\" +" +
-    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Pick your costume</a>\\\";" +
     "_rmSL();" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
@@ -1394,8 +1619,8 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var b = document.createElement(\\\"div\\\");" +
     "b.className = \\\"rbanner\\\";" +
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">Your friend is going as <strong>" + title + "</strong>.</p>\\\" +" +
-    " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">Take the 2-minute quiz to find YOUR costume to match.</p>\\\" +" +
-    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">Take the 2-minute quiz to pick YOUR costume to match.</p>\\\" +" +
+    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Pick your costume</a>\\\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -1404,7 +1629,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \\\"rbanner\\\";" +
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">Your friend is taking votes on 3 Halloween finalists.</p>\\\" +" +
     " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\"><strong>" + title + "</strong> is one of them. Reply 1, 2, or 3 in the chat with your vote.</p>\\\" +" +
-    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Pick your costume</a>\\\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -1416,7 +1641,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \\\"rbanner\\\";" +
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">Your friend picked <strong>" + title + "</strong> and started a no-clone pact.</p>\\\" +" +
     " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">No matching costumes at the parade. Reply with your kid's costume in the chat, or take the 2-minute quiz to get your own.</p>\\\" +" +
-    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Pick your costume</a>\\\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -1428,15 +1653,15 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \\\"rbanner\\\";" +
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">Your team is going as <strong>" + title + "</strong>.</p>\\\" +" +
     " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">One costume for the whole team. Reply with your kid's shirt size in the team chat, or take the 2-minute quiz to find your own.</p>\\\" +" +
-    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Pick your costume</a>\\\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
     "var b = document.createElement(\\\"div\\\");" +
     "b.className = \\\"rbanner\\\";" +
     "b.innerHTML = \\\"<p class=\\\\\\\"rbanner-line\\\\\\\">\\\" + SHARER_NAME + \\\" picked <strong>" + title + "</strong>. What would you pick?</p>\\\" +" +
-    " \\\"<p class=\\\\\\\"rbanner-sub\\\\\\\">Take the 2-minute quiz to get your own costume.</p>\\\" +" +
-    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Find your costume</a>\\\";" +
+    " \\"<p class=\\\\\\"rbanner-sub\\\\\\">\\" + _rbSub + \\"</p>\\" +" +
+    " \\\"<a class=\\\\\\\"cta rbanner-cta\\\\\\\" href=\\\\\\\"" + quizTargetAttr + "\\\\\\\">Pick your costume</a>\\\";" +
     "main.insertBefore(b, main.firstChild);" +
     "})();" +
     "<" + "/script>";
@@ -1576,7 +1801,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<meta property=\\"og:type\\" content=\\"website\\">" +
     "<meta property=\\"og:url\\" content=\\"https://pickmycostume.com/c/" + slug + "\\">" +
     "<meta property=\\"og:title\\" content=\\"" + _ogTitle + "\\">" +
-    "<meta property=\\"og:description\\" content=\\"" + _tripleText + blurb + "\\">" +
+    "<meta property=\\"og:description\\" content=\\"" + _ogDesc + "\\">" +
     "<meta property=\\"og:image\\" content=\\"" + img + "\\">" +
     "<meta property=\\"og:image:secure_url\\" content=\\"" + img + "\\">" +
     "<meta property=\\"og:image:type\\" content=\\"image/jpeg\\">" +
@@ -1585,14 +1810,18 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<meta property=\\"og:image:alt\\" content=\\"" + imgAlt + "\\">" +
     "<meta name=\\"twitter:card\\" content=\\"summary_large_image\\">" +
     "<meta name=\\"twitter:title\\" content=\\"" + _ogTitle + "\\">" +
-    "<meta name=\\"twitter:description\\" content=\\"" + blurb + "\\">" +
+    "<meta name=\\"twitter:description\\" content=\\"" + _ogDesc + "\\">" +
     "<meta name=\\"twitter:image\\" content=\\"" + img + "\\">" +
     "<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">" +
     _ld +
     "<style>" +
     "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#fdf3e3;background:#160d28;line-height:1.55;}" +
-    ".topbar{background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
-    ".topbar a{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;}" +
+    ".topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
+    ".topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}" +
+    /* 2026-10-06: the "Add to Claude" link was unstyled body text jammed
+       against the wordmark. Real pill button, orange like the site CTA,
+       readable at 390px. */
+    ".topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
     ".topbar a span{color:#ff8c1a;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
@@ -1643,10 +1872,16 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "ol.steps li{counter-increment:step;margin:0 0 4px;padding:10px 0 10px 44px;position:relative;font-size:16px;line-height:1.6;}" +
     "ol.steps li::before{content:counter(step);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:50%%;background:#ff8c1a;color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;}" +
     ".ctawrap{margin:20px 0;}" +
+    ".sharewrap{margin:0 0 6px;}" +
+    ".sharebtn{display:inline-block;background:transparent;border:2px solid #ff8c1a;color:#ff8c1a;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;}.shareprompt{margin:18px 0 4px;text-align:center;}.sharepromptbtn{background:transparent;border:0;color:#ff8c1a;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;text-decoration:underline;padding:8px;}" +
+    /* Print feature (live 2026-10-06, commit e6d18cf6): ported from the
+       hand-edited deployed file 2026-10-09 so regen never drops it again. */
+    ".printbtn{display:inline-block;background:transparent;border:2px solid #cdbcf0;color:#cdbcf0;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;margin-left:10px;}" +
+    ".sharemsg{font-size:14px;color:#cdbcf0;margin-left:10px;}" +
     ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
     ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
-    ".guide img{max-width:100%%;height:auto;border-radius:12px;margin:6px 0;}" +
+    ".guide img{max-width:100%%;height:auto;max-height:82vh;width:auto;display:block;border-radius:12px;margin:6px auto;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
     ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;}" +
@@ -1685,6 +1920,16 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        above: thumb + title side by side. */
     ".relcard a{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;}" +
     ".relcard img{width:56px;height:56px;object-fit:cover;border-radius:8px;flex:none;}" +
+    /* 2026-10-10 (gpt-loop run 42): 390px overflow guard for short-title
+       related-card rows ("More paint builds" clipped at the viewport edge;
+       flex min-width:auto overflow). Wrap decisions unchanged
+       (flex-basis:auto, long titles still single-column); items now shrink
+       instead of overflowing; max-width is the hard cap. */
+    ".relcard{min-width:0;max-width:100%%;}" +
+    ".relcard a{max-width:100%%;}" +
+    ".relcard a span{min-width:0;}" +
+    ".themelink{font-size:15px;margin:12px 0 0;}" +
+    ".themelink a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
     /* 2026-10-01 (Billy): pictured honesty caption -- same type scale as the
        in-app ideaMedia caption. */
     ".pictured{font-size:11px;color:#9a8fb8;margin:-8px 0 12px;}" +
@@ -1692,28 +1937,35 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".crumb a{color:#ff8c1a;text-decoration:none;}" +
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
     ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
+    /* Print stylesheet (live 2026-10-06): ported from the hand-edited
+       deployed file 2026-10-09 so regen never drops it again. The doubled
+       percent below escapes the literal percent for the format below. */
+    "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
     "</style>" +
     "<script>(function(){var s=document.createElement(\\"script\\");s.async=true;s.src=\\"https://us.i.posthog.com/static/array.js\\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\\",{api_host:\\"https://us.i.posthog.com\\",autocapture:false,capture_pageview:false,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\\"click\\",function(e){var t=e.target.closest&&e.target.closest(\\"[data-claude]\\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\\"add_to_claude_clicked\\",{source:\\"guide_page\\"});}catch(_){}}});})();</script>" +
-    "</head><body><div class=\\"topbar\\"><a href=\\"/\\">🎃 Pick My <span>Costume</span></a><a class=\\"claudebtn\\" href=\\"https://pickmycostume.com/mcp\\" data-claude=\\"1\\">Add to Claude</a></div><main class=\\"guide\\">" +
+    "</head><body><div class=\\"topbar\\"><a class=\\"brand\\" href=\\"/\\">🎃 Pick My <span>Costume</span></a><a class=\\"claudebtn\\" href=\\"https://pickmycostume.com/mcp\\" data-claude=\\"1\\">Add to Claude</a></div><main class=\\"guide\\">" +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
-    _introHtml +
-    _triple +
-    _sharerLine +
-    ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
-    "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
-    "<img src=\\"" + img + "\\" alt=\\"" + imgAlt + "\\">" +
+    /* 2026-10-13: first-screen order is title, photo, timed chips, plan CTA, then the intro paragraph. Photo-led arrivals (pins, trend cards, the hero tile) land on the costume itself, not on text above it. */
+    "<img src=\\"" + heroImg + "\\" srcset=\\"/photos/" + slug + "-480.webp 480w, " + heroImg + " 1200w\\" sizes=\\"(max-width:760px) 100vw, 720px\\" alt=\\"" + imgAlt + "\\" onerror=\\"this.onerror=null;this.src='" + img + "'\\">" +
     /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
     "<div class=\\"aiphoto\\">AI-generated concept photo</div>" +
     /* 2026-10-01 (Billy): pictured honesty caption under the hero photo --
        the same caption in-app ideaMedia renders. No pictured field = no
        caption. */
     (PICTURED[slug] ? "<p class=\\"pictured\\">" + esc(PICTURED[slug]) + "</p>" : "") +
+    _triple +
+    "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
+    "<p class=\\"sharewrap\\"><button class=\\"sharebtn\\" id=\\"guideshare\\" type=\\"button\\">Share</button><button class=\\"printbtn\\" id=\\"guideprint\\" type=\\"button\\" onclick=\\"window.print()\\">Print</button><span class=\\"sharemsg\\" id=\\"guidesharemsg\\" role=\\"status\\"></span></p>" +
+    _introHtml +
+    _sharerLine +
+    ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
     _splitHtml +
     "<h2>Steps</h2><ol class=\\"steps\\">" + _steps + "</ol>" +
     _plannerCtaHtml +
     _faqs +
+    _sharePromptHtml +
     _relHtml +
     _matHtml +
     _splitPartnerHtml +
@@ -1726,6 +1978,9 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\\"quizline\\">Want one picked for you? <a href=\\"" + quizTargetAttr + "\\">Take the 2-minute quiz</a> - free, no signup.</p>" +
     "<p class=\\"pinline\\">Saving this idea? <a target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\\">Pin it on Pinterest</a></p>" +
     "<footer class=\\"foot\\"><a href=\\"/\\">Pick My Costume</a> - Built with Muse.</footer>" +
+    _landingScript +
+    _shareScript +
+    _sharePromptScript +
     _bannerScript +
     _splitScript +
     _plannerGuardScript +
@@ -1738,7 +1993,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   });
 }
 ''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
-       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED),
+       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION),
        json.dumps(howto), json.dumps(_PANTRY_MATS), json.dumps(_PANTRY_LABELS), json.dumps(_PANTRY_EMOJI), json.dumps(_CLIENTJS), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
