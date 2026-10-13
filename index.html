@@ -546,15 +546,23 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 @media (prefers-reduced-motion: no-preference){
   .gstar{position:absolute;border-radius:50%;background:#fdf3e3;opacity:.15;animation:gtwinkle 3.8s ease-in-out infinite}
   @keyframes gtwinkle{0%,100%{opacity:.08}50%{opacity:.6}}
+  .gpstar{position:absolute;border-radius:50%;background:#fdf3e3;opacity:.1;box-shadow:0 0 5px 1px rgba(253,243,227,.55);animation:gptwinkle 3.8s ease-in-out infinite}
+  @keyframes gptwinkle{0%,100%{opacity:.05}50%{opacity:.7}}
   .gshoot{position:absolute;top:10px;right:4%;width:90px;height:2px;border-radius:2px;opacity:0;pointer-events:none;background:linear-gradient(to left,rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(-12deg);animation:gshoot 24s linear infinite}
   @keyframes gshoot{0%{opacity:0;transform:rotate(-12deg) translateX(0)}1%{opacity:.9}3.3%{opacity:0;transform:rotate(-12deg) translateX(-320px)}100%{opacity:0;transform:rotate(-12deg) translateX(-320px)}}
 }
 .galaxybg.gpaused .gstar,.galaxybg.gpaused .gshoot{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.gstar,.gshoot{display:none}}
+.gpstars.gpaused .gpstar{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.gstar,.gshoot,.gpstar{display:none}}
 .galaxysec .q-title{margin:0 0 8px}
 .galaxypreview{display:block;margin:12px auto 0;max-width:640px;border-radius:12px;overflow:hidden;border:1px solid var(--line);text-decoration:none;position:relative}
 .galaxypreview img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
 .galaxypreview span{position:absolute;left:12px;right:12px;bottom:12px;display:inline-block;font-weight:700;color:#fff;background:rgba(20,10,30,.72);border-radius:10px;padding:10px 14px;text-align:center}
+/* 2026-10-13 (Billy): twinkle overlay ON the teaser preview photo itself.
+   JS builds ~20 tiny .gpstar dots inside .gpstars, kept in the top ~62% of
+   the frame so none land on the Explore-the-galaxy button bar. Pauses with
+   the section sky via .gpaused; never built under prefers-reduced-motion. */
+.galaxypreview .gpstars{position:absolute;inset:0;pointer-events:none}
 .trendsec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18)}
 .trendsec .q-title{margin:0 0 8px}
 .trendgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
@@ -1643,6 +1651,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="fine" style="margin:0 0 10px">Zoom, wander, and find something you wouldn&rsquo;t have thought to search for.</p>
         <a class="galaxypreview" href="/map" aria-label="Explore the costume galaxy">
           <img src="images/galaxy-preview.webp" alt="The costume galaxy: glowing clusters of Dinosaur Land, Princess Castle, Fright Night, and more" loading="lazy">
+          <div class="gpstars" aria-hidden="true"></div>
           <span>Explore the galaxy &rarr;</span>
         </a>
       </section>
@@ -1708,10 +1717,25 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       var shoot = document.createElement("i");
       shoot.className = "gshoot";
       bg.appendChild(shoot);
+      var gp = sec.querySelector(".gpstars");
+      if (gp) {
+        for (var t = 0; t < 20; t++) {
+          var td = document.createElement("i");
+          td.className = "gpstar";
+          td.style.left = (2 + Math.random() * 96) + "%";
+          td.style.top = (62 * Math.pow(Math.random(), 1.6)).toFixed(2) + "%";
+          var tsz = Math.random() < 0.7 ? 2 : 3;
+          td.style.width = tsz + "px";
+          td.style.height = tsz + "px";
+          td.style.animationDuration = (2 + Math.random() * 3).toFixed(2) + "s";
+          td.style.animationDelay = (-Math.random() * 5).toFixed(2) + "s";
+          gp.appendChild(td);
+        }
+      }
       var inView = true, paused = false;
       function setPaused(){
         var p = document.hidden || !inView;
-        if (p !== paused) { paused = p; bg.classList.toggle("gpaused", p); }
+        if (p !== paused) { paused = p; bg.classList.toggle("gpaused", p); if (gp) gp.classList.toggle("gpaused", p); }
       }
       if ("IntersectionObserver" in window) {
         new IntersectionObserver(function(es){
