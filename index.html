@@ -534,7 +534,23 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .tonightsec{margin-top:18px}
 /* 2026-10-06 (Billy): tonight rail carousel — first card was clipping at the
    viewport edge. Mandatory snap set on .proofrow above. */
-.galaxysec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18)}
+.galaxysec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18);position:relative;overflow:hidden}
+/* 2026-10-13 (Billy): galaxy teaser ambient sky. Background layer only:
+   faint static stars from CSS gradients (so the sky exists with no JS),
+   plus JS-built twinkling stars and one shooting star every ~24s. The
+   heading, copy, and preview photo sit above it and never move. CSS does
+   all the animating; the script only builds stars and toggles a pause
+   class when the section is off-screen or the tab is hidden. */
+.galaxysec>.galaxybg{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 12% 22%,rgba(255,255,255,.5) 0 1.5px,transparent 2.6px),radial-gradient(circle at 84% 14%,rgba(255,255,255,.42) 0 1.5px,transparent 2.6px),radial-gradient(circle at 66% 80%,rgba(255,255,255,.34) 0 1.2px,transparent 2.2px),radial-gradient(circle at 30% 86%,rgba(255,255,255,.3) 0 1.2px,transparent 2.2px),radial-gradient(circle at 47% 9%,rgba(255,255,255,.36) 0 1.2px,transparent 2.2px),radial-gradient(circle at 93% 62%,rgba(255,255,255,.3) 0 1.2px,transparent 2.2px)}
+.galaxysec>*:not(.galaxybg){position:relative;z-index:1}
+@media (prefers-reduced-motion: no-preference){
+  .gstar{position:absolute;border-radius:50%;background:#fdf3e3;opacity:.15;animation:gtwinkle 3.8s ease-in-out infinite}
+  @keyframes gtwinkle{0%,100%{opacity:.08}50%{opacity:.6}}
+  .gshoot{position:absolute;top:10px;right:4%;width:90px;height:2px;border-radius:2px;opacity:0;pointer-events:none;background:linear-gradient(to left,rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(-12deg);animation:gshoot 24s linear infinite}
+  @keyframes gshoot{0%{opacity:0;transform:rotate(-12deg) translateX(0)}1%{opacity:.9}3.3%{opacity:0;transform:rotate(-12deg) translateX(-320px)}100%{opacity:0;transform:rotate(-12deg) translateX(-320px)}}
+}
+.galaxybg.gpaused .gstar,.galaxybg.gpaused .gshoot{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.gstar,.gshoot{display:none}}
 .galaxysec .q-title{margin:0 0 8px}
 .galaxypreview{display:block;margin:12px auto 0;max-width:640px;border-radius:12px;overflow:hidden;border:1px solid var(--line);text-decoration:none;position:relative}
 .galaxypreview img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
@@ -544,9 +560,12 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .trendgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
 .trendcard{display:block;border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;background:rgba(255,255,255,.03);position:relative;padding:0}
 .trendcard img{width:100%;height:104px;object-fit:cover;display:block}
-.trendcard .tbar{display:block;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-top:8px}
-.trendcard .tbar i{display:block;height:100%;background:linear-gradient(90deg,#b46bff,var(--accent))}
-.trendcard .tstat{display:block;margin-top:5px;font-size:12px;color:var(--muted)}
+.trendcard .tmeta{display:flex;align-items:center;gap:8px;margin-top:8px}
+.trendcard .tbar{display:block;flex:1 1 auto;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.trendcard .tbar i{display:block;height:100%;background:linear-gradient(90deg,#b46bff,var(--accent));transition:width .6s ease-out}
+.trendcard .tmom{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:var(--muted);white-space:nowrap}
+.trendcard .tmom .tarr{display:inline-block;line-height:1;font-size:11px;color:#7ce38b}
+@media (prefers-reduced-motion:reduce){.trendcard .tbar i{transition:none}}
 .trendcard .tb{display:block;padding:10px 12px 12px}
 .trendcard .tt{font-weight:700;color:#fff;font-size:14px}
 .trendcard .tg{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
@@ -1533,6 +1552,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-10-06 (Billy): Galaxy teaser. The map is too distinctive to
            hide behind the nav — it gets its own visual module. -->
       <section class="galaxysec" id="galaxy-section" aria-label="Explore the costume galaxy">
+        <div class="galaxybg" aria-hidden="true"></div>
         <h2 class="q-title">169 costumes. One galaxy.</h2>
         <p class="fine" style="margin:0 0 10px">Zoom, wander, and find something you wouldn&rsquo;t have thought to search for.</p>
         <a class="galaxypreview" href="/map" aria-label="Explore the costume galaxy">
@@ -1547,14 +1567,77 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2 class="q-title">What America is searching for</h2>
         <p class="fine" style="margin:0 0 10px">Real costume search data from Pinterest Trends, week ending Oct 5, 2026. Tap one to make it yourself.</p>
         <div class="trendgrid">
-          <a class="trendcard" href="/c/emerald-witch"><img src="photos/emerald-witch-256.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="180px" alt="Emerald Witch costume" loading="lazy"><span class="tb"><span class="tt">Elphaba costume</span><span class="tg">Make it: Emerald Witch</span><span class="tbar"><i style="width:7%"></i></span><span class="tstat">7 &middot; up 300% in 4 weeks</span></span></a>
-          <a class="trendcard" href="/c/classic-ghost"><img src="photos/classic-ghost-256.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="180px" alt="Classic Ghost costume" loading="lazy"><span class="tb"><span class="tt">Ghost costume</span><span class="tg">Make it: Classic Ghost</span><span class="tbar"><i style="width:24%"></i></span><span class="tstat">24 &middot; up 160% in 4 weeks</span></span></a>
-          <a class="trendcard" href="/c/superhero-family"><img src="photos/superhero-family-256.webp" srcset="photos/superhero-family-256.webp 256w, photos/superhero-family-480.webp 480w" sizes="180px" alt="Superhero Family costume" loading="lazy"><span class="tb"><span class="tt">Nightwing costume</span><span class="tg">Make it: Superhero Family</span><span class="tbar"><i style="width:27%"></i></span><span class="tstat">27 &middot; up 150% in 4 weeks</span></span></a>
-          <a class="trendcard" href="/c/good-witch-bad-witch"><img src="photos/good-witch-bad-witch-256.webp" srcset="photos/good-witch-bad-witch-256.webp 256w, photos/good-witch-bad-witch-480.webp 480w" sizes="180px" alt="Good Witch, Bad Witch costume" loading="lazy"><span class="tb"><span class="tt">Glinda costume</span><span class="tg">Make it: Good Witch, Bad Witch</span><span class="tbar"><i style="width:13%"></i></span><span class="tstat">13 &middot; up 133% in 4 weeks</span></span></a>
-          <a class="trendcard" href="/c/fuzzy-monster"><img src="photos/fuzzy-monster-256.webp" srcset="photos/fuzzy-monster-256.webp 256w, photos/fuzzy-monster-480.webp 480w" sizes="180px" alt="Fuzzy Monster costume" loading="lazy"><span class="tb"><span class="tt">Lorax costume</span><span class="tg">Make it: Fuzzy Monster</span><span class="tbar"><i style="width:33%"></i></span><span class="tstat">33 &middot; up 100% in 4 weeks</span></span></a>
+          <a class="trendcard" href="/c/emerald-witch"><img src="photos/emerald-witch-256.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="180px" alt="Emerald Witch costume" loading="lazy"><span class="tb"><span class="tt">Elphaba costume</span><span class="tg">Make it: Emerald Witch</span><span class="tmeta"><span class="tbar"><i style="width:7%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-45deg)">&#8599;</span>300%</span></span></span></a>
+          <a class="trendcard" href="/c/classic-ghost"><img src="photos/classic-ghost-256.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="180px" alt="Classic Ghost costume" loading="lazy"><span class="tb"><span class="tt">Ghost costume</span><span class="tg">Make it: Classic Ghost</span><span class="tmeta"><span class="tbar"><i style="width:24%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-33deg)">&#8599;</span>160%</span></span></span></a>
+          <a class="trendcard" href="/c/superhero-family"><img src="photos/superhero-family-256.webp" srcset="photos/superhero-family-256.webp 256w, photos/superhero-family-480.webp 480w" sizes="180px" alt="Superhero Family costume" loading="lazy"><span class="tb"><span class="tt">Nightwing costume</span><span class="tg">Make it: Superhero Family</span><span class="tmeta"><span class="tbar"><i style="width:27%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-30deg)">&#8599;</span>150%</span></span></span></a>
+          <a class="trendcard" href="/c/good-witch-bad-witch"><img src="photos/good-witch-bad-witch-256.webp" srcset="photos/good-witch-bad-witch-256.webp 256w, photos/good-witch-bad-witch-480.webp 480w" sizes="180px" alt="Good Witch, Bad Witch costume" loading="lazy"><span class="tb"><span class="tt">Glinda costume</span><span class="tg">Make it: Good Witch, Bad Witch</span><span class="tmeta"><span class="tbar"><i style="width:13%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-25deg)">&#8599;</span>133%</span></span></span></a>
+          <a class="trendcard" href="/c/fuzzy-monster"><img src="photos/fuzzy-monster-256.webp" srcset="photos/fuzzy-monster-256.webp 256w, photos/fuzzy-monster-480.webp 480w" sizes="180px" alt="Fuzzy Monster costume" loading="lazy"><span class="tb"><span class="tt">Lorax costume</span><span class="tg">Make it: Fuzzy Monster</span><span class="tmeta"><span class="tbar"><i style="width:33%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-15deg)">&#8599;</span>100%</span></span></span></a>
         </div>
         <a class="trendmore" href="/whats-trending">See all of America&rsquo;s searches &rarr;</a>
       </section>
+<script>
+/* 2026-10-13 (Billy): trends bars + galaxy sky. The trend bars grow from
+   0 to their interest width the first time the strip scrolls into view
+   (the width transition is CSS; this only zeroes and restores widths).
+   The galaxy teaser gets its ambient sky here: twinkling stars and one
+   shooting star, all CSS-animated in the section background layer. This
+   script builds the stars and toggles a pause class when the section is
+   off-screen or the tab is hidden. No animation at all under
+   prefers-reduced-motion: bars render at full width, the galaxy keeps
+   its static CSS-gradient starfield. */
+(function(){
+  try {
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    var bars = document.querySelectorAll("#trends-section .tbar i");
+    var strip = document.getElementById("trends-section");
+    if (bars.length && strip && "IntersectionObserver" in window) {
+      var targets = [];
+      for (var b = 0; b < bars.length; b++) { targets.push(bars[b].style.width); bars[b].style.width = "0%"; }
+      var tio = new IntersectionObserver(function(es){
+        for (var e = 0; e < es.length; e++) {
+          if (es[e].isIntersecting) {
+            for (var i = 0; i < bars.length; i++) bars[i].style.width = targets[i];
+            tio.disconnect();
+          }
+        }
+      }, {threshold: 0.25});
+      tio.observe(strip);
+    }
+    var sec = document.getElementById("galaxy-section");
+    var bg = sec ? sec.querySelector(".galaxybg") : null;
+    if (sec && bg) {
+      for (var s = 0; s < 26; s++) {
+        var st = document.createElement("i");
+        st.className = "gstar";
+        st.style.left = (1 + Math.random() * 97) + "%";
+        st.style.top = (2 + Math.random() * 92) + "%";
+        var sz = Math.random() < 0.7 ? 2 : 3;
+        st.style.width = sz + "px";
+        st.style.height = sz + "px";
+        st.style.animationDuration = (2 + Math.random() * 3).toFixed(2) + "s";
+        st.style.animationDelay = (-Math.random() * 5).toFixed(2) + "s";
+        bg.appendChild(st);
+      }
+      var shoot = document.createElement("i");
+      shoot.className = "gshoot";
+      bg.appendChild(shoot);
+      var inView = true, paused = false;
+      function setPaused(){
+        var p = document.hidden || !inView;
+        if (p !== paused) { paused = p; bg.classList.toggle("gpaused", p); }
+      }
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function(es){
+          for (var e2 = 0; e2 < es.length; e2++) inView = es[e2].isIntersecting;
+          setPaused();
+        }, {threshold: 0.05}).observe(sec);
+      }
+      document.addEventListener("visibilitychange", setPaused);
+    }
+  } catch (e) {}
+})();
+</script>
       <!-- 2026-10-03 (Billy): homepage simplification. Search moves below
            the tonight rail as a single simple box; the hero chip row is
            removed to cut decisions (pinpoint-chips no longer rendered). -->
