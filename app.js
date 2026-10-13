@@ -2157,7 +2157,7 @@ function goWarmFromQ1(){
    Skipped for edit mode, first-mode (pre-filled q1), and resumed quizzes
    (answers already recorded). */
 function renderWelcome(){
-  var box = warmQuizChrome("\uD83C\uDF83 Let's find your costume", "Five quick questions, about two minutes. There are no wrong answers.");
+  var box = warmQuizChrome("\uD83C\uDF83 Let's pick your costume", "Five quick questions, about two minutes. There are no wrong answers.");
   var wlOld = document.getElementById("q-warm-link");
   if (wlOld && wlOld.parentNode) wlOld.parentNode.removeChild(wlOld);
   var b = document.createElement("button");
@@ -5499,8 +5499,8 @@ function pairTextFor(idea, sid){
      audience-aware line (same pattern as shareCaptionFor). */
   var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
   if (aud === "kid" || aud === "family")
-    return "The quiz picked " + idea.title + (aud === "kid" ? " for my kid" : " for our family") + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match: " + link;
-  return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will find YOUR costume to match mine: " + link;
+    return "The quiz picked " + idea.title + (aud === "kid" ? " for my kid" : " for our family") + " this Halloween. Take the 2-minute quiz and it will pick YOUR costume to match: " + link;
+  return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will pick YOUR costume to match mine: " + link;
 }
 /* 2026-09-26 costume roulette experiment ("Can't decide? Let me pick for you"): a zero-question entry point for the undecided. Uniform
    random over all 169 ideas, one tap, no quiz -- the funnel for the
@@ -7007,7 +7007,7 @@ function buildPairShareText(mine, theirs, sid){
   if (mine.id === theirs.id){
     return "Great minds: we both got " + mine.title + " on the costume quiz. Find yours: " + url;
   }
-  return "The quiz gave me " + mine.title + " to match your " + theirs.title + ". Take the quiz and find YOUR costume: " + url;
+  return "The quiz gave me " + mine.title + " to match your " + theirs.title + ". Take the quiz and pick YOUR costume: " + url;
 }
 /* The results-page pair panel. Rendered by renderResults right after the
    hero card, only for genuine share arrivals carrying ?pair=. Mirrors the
@@ -14075,7 +14075,7 @@ function shareLandingHeadline(idea, search){
   if (isShare && isStoreChallenge) return "Your friend can make " + idea.title + ". See what YOU can make.";
   var isPair = /[?&]o=pair(?:&|$)/.test(q);
   var isVote = /[?&]o=vote(?:&|$)/.test(q);
-  if (isShare && isPair) return "Your friend is going as " + idea.title + ". Find YOUR costume to match.";
+  if (isShare && isPair) return "Your friend is going as " + idea.title + ". Pick YOUR costume to match.";
   if (isShare && isVote) return "Your friend wants your vote: is " + idea.title + " the one?";
   var isTryon = /[?&]o=tryon(?:&|$)/.test(q);
   if (isShare && isTryon) return "Your friend tried on " + idea.title + ". Try your own face in it.";
@@ -14905,7 +14905,7 @@ function shareLandingHeadline(idea, search){
     /* 2026-09-26 pair-share: a recipient arriving to match a friend's pick
        gets the match ask on the primary CTA. Unknown slugs keep the default. */
     var _pairFor = (VIA_SHARE_ORIGIN === "pair" && typeof PAIR_IDEA_ID !== "undefined" && PAIR_IDEA_ID) ? pairIdeaById(PAIR_IDEA_ID) : null;
-    b.textContent = (chm || chm2) ? "See what YOU can make" : (_pairFor ? "Find YOUR costume to match" : "What are you going as? Pick my costume");
+    b.textContent = (chm || chm2) ? "See what YOU can make" : (_pairFor ? "Pick YOUR costume to match" : "What are you going as? Pick my costume");
     b.onclick = function(){
       state = {qi: 0, answers: {}};
       clearK("pmc_pick_v1");
@@ -15075,7 +15075,7 @@ function shareLandingHeadline(idea, search){
       pb.id = "pmc-friend-banner";
       pb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
       pb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend is going as " + _pairTheirs.title + ".</p>" +
-        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Take the 2-minute quiz to find YOUR costume to match. When you finish, you will see how you two pair up.</p>";
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">Take the 2-minute quiz to pick YOUR costume to match. When you finish, you will see how you two pair up.</p>";
       pb.onclick = function(){
         state = {qi: 0, answers: {}};
         state.pinpoint = null;
