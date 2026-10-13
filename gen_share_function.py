@@ -981,33 +981,71 @@ function _cTiles(slug){
   }
   return {mats: mats, texts: texts, tiles: tiles};
 }
-/* Static supply-cards HTML. Rendered neutral (all miss, zero count); the
-   inline client script corrects tick state from localStorage before paint.
-   Each card carries the full material text (quantity + buy/make hint) as a
-   sub-line, so the cards are the complete materials list. */
+/* Assumed-basics coverage for the static render (2026-10-13): mirrors the
+   client tick script's matOk() for a fresh visitor, whose tick set is the
+   PANTRY staples seed alone (no saved pantry, no buy ticks). The site
+   model treats basics as already owned, so they count as have in the
+   served HTML too; before this, _cCardsHtml rendered every guide as
+   "You have 0 of N" with every supply under Still need, contradicting the
+   assumed tags on the tiles whenever a supply was a basic (classic-ghost:
+   0 of 3 with all three supplies tagged assumed). */
+function _cAssumedOk(mat, staples){
+  var hasReal = false, g, k, grp, id;
+  for (g = 0; g < mat.length; g++){ grp = mat[g]; for (k = 0; k < grp.length; k++){ if (grp[k]){ hasReal = true; break; } } if (hasReal) break; }
+  for (g = 0; g < mat.length; g++){
+    grp = mat[g]; var gok = false;
+    for (k = 0; k < grp.length; k++){ id = grp[k]; if (id && staples.indexOf(id) >= 0){ gok = true; break; } }
+    if (!gok){
+      var allNull = true;
+      for (k = 0; k < grp.length; k++){ if (grp[k]){ allNull = false; break; } }
+      if (allNull && hasReal) gok = true;
+    }
+    if (!gok) return false;
+  }
+  return true;
+}
+/* Static supply-cards HTML. Rendered with assumed-basics coverage applied
+   (basics count as have, covered tiles render as have, the Still need
+   list holds only uncovered tiles); the inline client script then
+   corrects tick state from localStorage before paint. Each card carries
+   the full material text (quantity + buy/make hint) as a sub-line, so the
+   cards are the complete materials list. */
 function _cCardsHtml(slug, ct){
   if (!ct) return "";
   var staples = PANTRY_MATS.staples || [];
+  var matHave = ct.mats.map(function(m){ return _cAssumedOk(m, staples); });
+  var have = 0;
+  for (var hi = 0; hi < matHave.length; hi++){ if (matHave[hi]) have++; }
+  var total = ct.mats.length;
+  var tileHave = ct.tiles.map(function(t){
+    for (var j = 0; j < t.idxs.length; j++){ if (!matHave[t.idxs[j]]) return false; }
+    return true;
+  });
   var cards = ct.tiles.map(function(t, ti){
     var assumed = t.rep && staples.indexOf(t.rep) >= 0;
+    var okTile = tileHave[ti];
     var sub = t.idxs.map(function(mi){ return esc(ct.texts[mi]); }).join("<br>");
-    return "<button type=\\"button\\" class=\\"ptile miss\\" data-ti=\\"" + ti + "\\" data-label=\\"" + esc(t.label) + "\\" aria-label=\\"" + esc(t.label) + ": missing. Tap to update.\\">" +
-      "<span class=\\"ptbadge\\" aria-hidden=\\"true\\">\\u25CB</span>" +
+    return "<button type=\\"button\\" class=\\"ptile " + (okTile ? "have" : "miss") + "\\" data-ti=\\"" + ti + "\\" data-label=\\"" + esc(t.label) + "\\" aria-label=\\"" + esc(t.label) + ": " + (okTile ? "you have this" : "missing") + ". Tap to update.\\">" +
+      "<span class=\\"ptbadge\\" aria-hidden=\\"true\\">" + (okTile ? "\\u2713" : "\\u25CB") + "</span>" +
       "<span class=\\"ptemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" +
       "<span class=\\"ptlabel\\">" + esc(t.label) + "</span>" +
       "<span class=\\"ptsub\\">" + sub + "</span>" +
       (assumed ? "<span class=\\"ptag\\">assumed</span>" : "") +
       "</button>";
   }).join("");
-  var chips = ct.tiles.map(function(t){
+  var chips = ct.tiles.filter(function(t, ti){ return !tileHave[ti]; }).map(function(t){
     return "<span class=\\"pchip\\"><span class=\\"pmemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" + esc(t.label) + "</span>";
   }).join("");
+  var head = have >= total ? "You have everything for this one. Nothing to buy." :
+    (have === 0 ? "You have 0 of " + total + " things for this." :
+    "You already have " + have + " of " + total + " things for this.");
+  var hideAttr = chips ? "" : " style=\\"display:none\\"";
   return "<div class=\\"closet-badge\\" id=\\"detail-mats\\" data-slug=\\"" + slug + "\\">" +
-    "<p class=\\"closet-line\\" data-role=\\"chead\\">You have 0 of " + ct.mats.length + " things for this.</p>" +
+    "<p class=\\"closet-line\\" data-role=\\"chead\\">" + head + "</p>" +
     "<p class=\\"ptiles-sub\\">Tap a supply to tick what you own.</p>" +
     "<div class=\\"ptiles\\">" + cards + "</div>" +
-    "<p class=\\"closet-need\\" data-role=\\"cneed\\">Still need:</p>" +
-    "<div class=\\"pchips\\" data-role=\\"cchips\\">" + chips + "</div>" +
+    "<p class=\\"closet-need\\" data-role=\\"cneed\\"" + hideAttr + ">Still need:</p>" +
+    "<div class=\\"pchips\\" data-role=\\"cchips\\"" + hideAttr + ">" + chips + "</div>" +
     "<a class=\\"closet-link\\" href=\\"/pantry?for=" + slug + "\\">Update my pantry</a>" +
     "</div>";
 }
