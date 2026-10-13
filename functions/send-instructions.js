@@ -271,13 +271,20 @@ export async function onRequestPost(context) {
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (rateLimited(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
-  const composed = composeEmail(idea, ideaId, mintShareId());
-  const subject = cleanHeader(composed.subject);
-
   if (!env.RESEND_API_KEY) {
     // Staged: Resend hasn't been connected yet. Plumbing verified, nothing sent.
+    // 2026-10-13: this check moved BEFORE composeEmail. The dry-run answer
+    // never needed the composed email, and composing on every dry-run call
+    // was the only heavy work on the valid path -- live, the old order
+    // returned a Cloudflare 502 for every valid request while validation
+    // errors answered fine (fault isolated by A/B against the pre-run177
+    // file, which 502ed identically). Compose now runs only when a send
+    // will actually be attempted.
     return json({ ok: true, dry_run: true });
   }
+
+  const composed = composeEmail(idea, ideaId, mintShareId());
+  const subject = cleanHeader(composed.subject);
   let res;
   try {
     res = await fetch(RESEND_URL, {
