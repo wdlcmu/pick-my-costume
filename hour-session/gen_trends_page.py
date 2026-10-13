@@ -265,7 +265,7 @@ header.top a{display:inline-block;padding:12px 10px;min-height:44px}
 .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
 h1{font-size:32px;margin:8px 0 4px;line-height:1.2}
 .lede{font-size:18px;margin:0 0 8px}
-.cite-line{font-size:13px;color:var(--muted);margin:0 0 28px}
+.cite-line{font-size:13px;color:var(--muted);margin:20px 0 0}
 .cite-line a{color:var(--accent)}
 table{width:100%%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15px}
 th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
@@ -302,24 +302,24 @@ p.a{color:var(--muted);margin:0 0 20px}
   <a class="home-link" href="/">Home</a>
 </header>
 
-<span class="kicker">Real search data</span>
 <h1>What the country is searching for</h1>
 <p class="lede">Which costumes America is actually looking up right now, and which ones we can help you build tonight.</p>
-<p class="cite-line">Source: <a href="%(source_url)s">Pinterest Trends</a>, United States searches, week ending %(week)s. This is national search interest, not our own site traffic (our audience is small, and we do not present it as a trend).</p>
 
 <table id="trends-table">
-  <thead><tr><th>#</th><th>Costume search</th><th>Interest</th><th>4-week change</th><th>Our guide</th></tr></thead>
+  <thead><tr><th>#</th><th>Costume search</th><th>Interest</th><th><span style="white-space:nowrap">4-week</span> change</th><th>Our guide</th></tr></thead>
   <tbody>
       %(table)s
   </tbody>
 </table>
+
+<p class="cite-line">Source: <a href="%(source_url)s">Pinterest Trends</a>, United States searches, week ending %(week)s. This is national search interest, not our own site traffic (our audience is small, and we do not present it as a trend).</p>
 
 <div class="note" id="methodology">
   <h2>How to read this</h2>
   <ul>
     <li><strong>Interest</strong> is Pinterest's normalized search-interest index for the week (their scale, not raw search counts). Bars are relative to this week's leader.</li>
     <li><strong>4-week change</strong> compares this week to four weeks earlier. Everything on the list is climbing into Halloween.</li>
-    <li><strong>Our guide</strong> links to one of our 164 real costume guides when the search matches. <em>No guide yet</em> is an honest gap, and the list doubles as our build backlog. Adjacent matches are labeled as adjacent.</li>
+    <li><strong>Our guide</strong> links to one of our 169 real costume guides when the search matches. <em>No guide yet</em> is an honest gap, and the list doubles as our build backlog. Adjacent matches are labeled as adjacent.</li>
     <li>Pinterest's audience skews toward planners and DIY crafters, so treat this as what craft-minded America is searching, not all of America.</li>
 %(missing_txt)s
   </ul>
@@ -368,9 +368,13 @@ p.a{color:var(--muted);margin:0 0 20px}
     idx = open(index_path, encoding="utf-8").read()
     idx2, n = re.subn(r"Trending searches this week: [^<]*",
                       html.escape(top_line), idx, count=1)
-    assert n == 1, "teaser line not found in index.html"
-    open(index_path, "w", encoding="utf-8").write(idx2)
-    print("teaser synced: %s" % top_line)
+    if n == 1:
+        open(index_path, "w", encoding="utf-8").write(idx2)
+        print("teaser synced: %s" % top_line)
+    else:
+        # 2026-10-01: homepage teaser card became static markup (no
+        # per-week top-term line), so there is nothing to sync. Not an error.
+        print("teaser sync skipped: no top-term line in index.html (static card)")
 
     # final safety: no em/en dashes anywhere
     assert "\u2014" not in page and "\u2013" not in page, "dash leaked into page"
