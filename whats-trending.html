@@ -107,7 +107,7 @@ header.top a{display:inline-block;padding:12px 10px;min-height:44px}
 .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
 h1{font-size:32px;margin:8px 0 4px;line-height:1.2}
 .lede{font-size:18px;margin:0 0 8px}
-.cite-line{font-size:13px;color:var(--muted);margin:0 0 28px}
+.cite-line{font-size:13px;color:var(--muted);margin:20px 0 0}
 .cite-line a{color:var(--accent)}
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15px}
@@ -146,14 +146,12 @@ p.a{color:var(--muted);margin:0 0 20px}
   <a class="home-link" href="/">Home</a>
 </header>
 
-<span class="kicker">Real search data</span>
 <h1>What the country is searching for</h1>
 <p class="lede">Which costumes America is actually looking up right now, and which ones we have a DIY guide for.</p>
-<p class="cite-line">Source: <a href="https://trends.pinterest.com/?country=US">Pinterest Trends</a>, United States searches, week ending Oct 5, 2026. This is national search interest, not our own site traffic (our audience is small, and we do not present it as a trend).</p>
 
 <div class="table-scroll">
 <table id="trends-table">
-  <thead><tr><th>#</th><th>Costume search</th><th>Interest</th><th>4-week change</th><th>Our guide</th></tr></thead>
+  <thead><tr><th>#</th><th>Costume search</th><th>Interest</th><th><span style="white-space:nowrap">4-week</span> change</th><th>Our guide</th></tr></thead>
   <tbody>
       <tr><td class="rank">1</td><td>witch costume</td><td><div class="bar"><i style="width:100%"></i></div></td><td class="up">+224%</td><td class="guide"><a href="/c/emerald-witch">Emerald Witch</a></td></tr>
       <tr><td class="rank">2</td><td>lorax costume</td><td><div class="bar"><i style="width:33%"></i></div></td><td class="up">+100%</td><td class="guide"><a href="/c/fuzzy-monster">Fuzzy Monster</a> <span class="gap">(adjacent)</span></td></tr>
@@ -174,6 +172,8 @@ p.a{color:var(--muted);margin:0 0 20px}
   </tbody>
 </table>
 </div>
+
+<p class="cite-line">Source: <a href="https://trends.pinterest.com/?country=US">Pinterest Trends</a>, United States searches, week ending Oct 5, 2026. This is national search interest, not our own site traffic (our audience is small, and we do not present it as a trend).</p>
 
 <div class="note" id="methodology">
   <h2>How to read this</h2>
