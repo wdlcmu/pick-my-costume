@@ -228,7 +228,7 @@
         <!-- 2026-09-28: distribution. The game is top of funnel: kid plays,
              parent takes the quiz, quiz feeds the share loop. Quiet link,
              never a popup, never mid-game. -->
-        <p class="finish-quiz"><a href="/" id="finishQuiz">Find your costume: take the 2-minute quiz</a></p>
+        <p class="finish-quiz"><a href="/" id="finishQuiz">Pick your costume: take the 2-minute quiz</a></p>
       </section>
     </main>
 </div>
@@ -269,7 +269,7 @@
   /* 2026-09-28: keep ?probe= (and other page params) on outbound guide links
      so QA traffic stays attributable instead of leaking into clean analytics. */
   function withProbe(url){try{var q=location.search||'';if(!q||!/probe=/.test(q))return url;return url+(url.indexOf('?')>=0?'&':'?')+q.replace(/^\?/,'')}catch(e){return url}}
-  /* 2026-09-28 share red-team P2: the finish-screen "Find your costume"
+  /* 2026-09-28 share red-team P2: the finish-screen "Pick your costume"
      CTA used a bare href="/", dropping ?s=&o=game for share recipients.
      Carry the share params forward (same class as the /c/-page fix). */
   function withShare(url){try{var q=location.search||'';var sm=/[?&]s=([a-z0-9]{8})/.exec(q);if(!sm)return url;var om=/[?&]o=([a-z0-9_-]+)/.exec(q);return url+(url.indexOf('?')>=0?'&':'?')+'s='+sm[1]+(om?'&o='+om[1]:'')}catch(e){return url}}
