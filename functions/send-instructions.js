@@ -271,7 +271,10 @@ export async function onRequestPost(context) {
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (rateLimited(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
-  return json({ ok: true, dry_run: true, stage: 'post-ratelimit' });
+  if (!env.RESEND_API_KEY) {
+    return json({ ok: true, dry_run: true, stage: 'no-key' });
+  }
+  return json({ ok: true, dry_run: true, stage: 'key-present', keylen: String(env.RESEND_API_KEY).length });
   if (!env.RESEND_API_KEY) {
     // Staged: Resend hasn't been connected yet. Plumbing verified, nothing sent.
     // 2026-10-13: this check moved BEFORE composeEmail. The dry-run answer
