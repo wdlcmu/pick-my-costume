@@ -769,7 +769,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var b = document.createElement(\"div\");" +
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend is going as <strong>" + title + "</strong>.</p>\" +" +
-    " \"<p class=\\\"rbanner-sub\\\">Take the 2-minute quiz to find YOUR costume to match.</p>\" +" +
+    " \"<p class=\\\"rbanner-sub\\\">Take the 2-minute quiz to pick YOUR costume to match.</p>\" +" +
     " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
@@ -960,7 +960,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<meta property=\"og:image:alt\" content=\"" + imgAlt + "\">" +
     "<meta name=\"twitter:card\" content=\"summary_large_image\">" +
     "<meta name=\"twitter:title\" content=\"" + _ogTitle + "\">" +
-    "<meta name=\"twitter:description\" content=\"" + blurb + "\">" +
+    "<meta name=\"twitter:description\" content=\"" + _ogDesc + "\">" +
     "<meta name=\"twitter:image\" content=\"" + img + "\">" +
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
     _ld +
