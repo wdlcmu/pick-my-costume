@@ -27,6 +27,14 @@ function cmpJoinNames(names) {
 }
 
 function cmpTimeMin(t) {
+  /* Total elapsed minutes: sum every component ("25 min + 1 hr drying" = 85),
+     so the fastest verdict never ignores drying time. */
+  var total = 0, found = false, m, re = /(\d+)\s*(hr|hrs|min)/g;
+  while ((m = re.exec(String(t)))) { found = true; total += +m[1] * (m[2] === 'min' ? 1 : 60); }
+  return found ? total : 999;
+}
+
+function cmpHandsMin(t) {
   var m = String(t).match(/(\d+)/);
   return m ? +m[1] : 999;
 }
@@ -87,9 +95,10 @@ function cmpH2(ids, DB) {
 function cmpBluf(ids, DB) {
   var rows = ids.map(function (id) { return DB[id]; });
   var nWord = ids.length === 2 ? 'Two' : 'Three';
-  var byTime = rows.slice().sort(function (a, b) { return cmpTimeMin(a.time) - cmpTimeMin(b.time); });
+  var byTime = rows.slice().sort(function (a, b) { return (cmpTimeMin(a.time) - cmpTimeMin(b.time)) || (cmpHandsMin(a.time) - cmpHandsMin(b.time)); });
   var fastMin = cmpTimeMin(byTime[0].time);
-  var fastTie = byTime.filter(function (r) { return cmpTimeMin(r.time) === fastMin; });
+  var fastHands = cmpHandsMin(byTime[0].time);
+  var fastTie = byTime.filter(function (r) { return cmpTimeMin(r.time) === fastMin && cmpHandsMin(r.time) === fastHands; });
   var fastLine = fastTie.length === 1
     ? fastTie[0].t + ' is the fastest (' + fastTie[0].time + ')'
     : cmpJoinNames(fastTie.map(function (r) { return r.t; })) + ' tie for fastest (' + fastTie[0].time + ')';
