@@ -12216,6 +12216,12 @@ function buySearchFor(role, idea){
    homepage trending rail (no authoritative export); revisit if real
    traffic data says otherwise. Keys are idea ids; inner keys are
    lowercase role names from CASTS. */
+/* 2026-10-13 (Billy): expanded from the original five ideas to every
+   cast idea. Billy: "I don't know what 'snowflake sprite' and others
+   look like." Every line is grounded in its own guide (title, materials,
+   steps, pictured caption in the bank); roles a guide never dresses are
+   deliberately absent, never invented. Coverage + exception list:
+   hour-session/cast-role-look-coverage-harness.cjs. */
 var ROLE_DIY = {
   "snow-sisters": {
     "ice queen": "Blue dress or a blue top and skirt, then stick snowflake stickers all over it.",
@@ -12252,6 +12258,291 @@ var ROLE_DIY = {
     "papa pig": "Pink clothes, pink felt ears and a snout on a headband.",
     "little pig": "Pink clothes with smaller felt ears and a snout.",
     "dinosaur": "Green or brown clothes, carrying the toy dinosaur."
+  },
+  "under-the-sea": {
+    "clownfish": "Silver or blue clothes with the big cardboard fish cutout taped to your chest.",
+    "crab": "Red shirt and pants, with red mittens or red socks on your hands for claws.",
+    "jellyfish": "Hold the clear umbrella overhead, pastel ribbons taped around its edge dangling as tentacles.",
+    "sea creature": "Silver or blue clothes with the big cardboard fish cutout taped to your chest."
+  },
+  "superhero-family": {
+    "team captain": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+    "strong one": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+    "speedster": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+    "shadow": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+    "inventor": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+    "spark": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+    "superhero": "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest."
+  },
+  "dino-rangers": {
+    "ranger": "Khaki shirt and pants with the sleeves rolled, plus a masking-tape name badge.",
+    "little dino": "Green hoodie with two white paper eye spots on the hood, leading a toy dinosaur on a ribbon leash.",
+    "dino": "Green hoodie with two white paper eye spots on the hood, and a toy dinosaur on a ribbon leash."
+  },
+  "dinosaur-family": {
+    "big dino": "Green sweatsuit with green felt spikes pinned from the hood down the back, and green face paint spots on your cheeks.",
+    "little dino": "Green sweatsuit with green felt spikes pinned from the hood down the back, and green face paint spots on your cheeks.",
+    "dino": "Green sweatsuit with green felt spikes pinned from the hood down the back, and green face paint spots on your cheeks."
+  },
+  "enchanted-castle-crew": {
+    "candelabra": "Gold face paint and a gold headband with three cardboard flame shapes glued on top.",
+    "clock": "A cardboard clock face about 12 inches across, painted cream with painted hands.",
+    "bookish princess": "Yellow fabric wrapped and pinned as a simple gown.",
+    "cursed prince": "Blue jacket and dark pants with a fabric sash.",
+    "teapot": "A white cardboard pot body with a handle and spout, worn over the shoulders."
+  },
+  "mystery-crew": {
+    "team leader": "Orange t-shirt with a matching headband or scarf.",
+    "style icon": "Purple t-shirt with a matching headband or scarf.",
+    "brains": "Blue t-shirt with a matching headband or scarf, carrying the fake magnifying glass.",
+    "goofball": "Red t-shirt with a matching headband or scarf.",
+    "dog": "Dog ears on a headband, with a brown nose painted on in face paint.",
+    "crew member": "A t-shirt in one of the crew colors with a matching headband or scarf."
+  },
+  "soccer-squad": {
+    "ref": "All black: black shirt and black shorts, holding the red card high.",
+    "striker": "Matching jersey or same-color t-shirt, same as the rest of the squad.",
+    "goalie": "Matching jersey or same-color t-shirt, same as the rest of the squad.",
+    "player": "Matching jersey or same-color t-shirt, same as the rest of the squad."
+  },
+  "gloom-bloom": {
+    "gloom": "Black clothes, hair braided tight, and a small black teardrop painted under one eye.",
+    "bloom": "Colorful clothes with fake flowers pinned in the hair and a small flower painted on one cheek.",
+    "guest": "Pick a side: black clothes and braids like Gloom, or colorful clothes with fake flowers like Bloom."
+  },
+  "plumber-duo": {
+    "plumber in red": "Blue overalls over a red t-shirt, red cap with the letter circle on front, and a big bushy painted mustache.",
+    "plumber in green": "Blue overalls over a green t-shirt, green cap with the letter circle on front, and a thinner painted mustache.",
+    "plumber": "Blue overalls over a colored t-shirt and matching cap, with a painted mustache."
+  },
+  "safari-zoo-crew": {
+    "lion": "Solid-color clothes in lion colors, felt ears taped to a plastic headband, and face paint details.",
+    "elephant": "Solid-color clothes in elephant colors, felt ears taped to a plastic headband, and face paint details.",
+    "giraffe": "Solid-color clothes in giraffe colors, felt ears taped to a plastic headband, and face paint details.",
+    "zebra": "Solid-color clothes in zebra colors, felt ears taped to a plastic headband, and face paint details.",
+    "monkey": "Solid-color clothes in monkey colors, felt ears taped to a plastic headband, and face paint details.",
+    "panda": "Solid-color clothes in panda colors, felt ears taped to a plastic headband, and face paint details.",
+    "tiger": "Solid-color clothes in tiger colors, felt ears taped to a plastic headband, and face paint details.",
+    "kangaroo": "Solid-color clothes in kangaroo colors, felt ears taped to a plastic headband, and face paint details.",
+    "zookeeper": "You are the guide: spot each animal through the binoculars and announce its species."
+  },
+  "emoji-crew": {
+    "smiley": "Yellow t-shirt with a big paper plate taped to the chest, a smiling face drawn on it in marker.",
+    "heart-eyes": "Yellow t-shirt with a big paper plate taped to the chest, heart eyes drawn on it in marker.",
+    "laughing-crying": "Yellow t-shirt with a big paper plate taped to the chest, a laughing face with tears drawn on it in marker.",
+    "cool shades": "Yellow t-shirt with a big paper plate taped to the chest, cool shades drawn on it in marker.",
+    "winking": "Yellow t-shirt with a big paper plate taped to the chest, a winking face drawn on it in marker.",
+    "mind-blown": "Yellow t-shirt with a big paper plate taped to the chest, a mind-blown face drawn on it in marker.",
+    "party popper": "Yellow t-shirt with a big paper plate taped to the chest, a party popper face drawn on it in marker."
+  },
+  "breakfast-buffet": {
+    "fried egg": "A fried egg drawn big in marker on a cardboard sign, worn on string over normal clothes.",
+    "bacon": "Bacon strips drawn big in marker on a cardboard sign, worn on string over normal clothes.",
+    "toast": "Buttered toast drawn big in marker on a cardboard sign, worn on string over normal clothes.",
+    "pancake stack": "A pancake stack drawn big in marker on a cardboard sign, worn on string over normal clothes.",
+    "orange juice": "A glass of OJ drawn big in marker on a cardboard sign, worn on string over normal clothes.",
+    "coffee cup": "A coffee mug drawn big in marker on a cardboard sign, worn on string over normal clothes."
+  },
+  "decades-crew": {
+    "50s": "Closet clothes from your own wardrobe, with a hand-lettered decade card taped to your chest.",
+    "60s": "Closet clothes from your own wardrobe, with a hand-lettered decade card taped to your chest.",
+    "70s": "Bell-bottoms and a headband from your closet, with a hand-lettered decade card taped to your chest.",
+    "80s": "Neon clothes and high socks with a scrunchie side-ponytail, plus a hand-lettered decade card taped to your chest.",
+    "90s": "Flannel tied at the waist over closet clothes, with a hand-lettered decade card taped to your chest.",
+    "Y2K": "Closet clothes from your own wardrobe, with a hand-lettered decade card taped to your chest."
+  },
+  "board-game-pieces": {
+    "die": "A white-painted cardboard cube worn over your head, dots added in black marker, over monochrome clothes.",
+    "playing card": "A flat white-painted cardboard board on ribbon straps, card symbols added in black marker, over monochrome clothes.",
+    "pawn": "A cardboard pawn worn over black or white monochrome clothes.",
+    "domino": "A flat black-painted cardboard board on ribbon straps, dots added in white paint, over monochrome clothes.",
+    "chess knight": "A cardboard chess knight worn over black or white monochrome clothes."
+  },
+  "block-game-crew": {
+    "blocky hero": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker.",
+    "blocky villager": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker.",
+    "blocky knight": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker.",
+    "blocky monster": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker."
+  },
+  "web-slinger-crew": {
+    "red spider-hero": "Red hoodie with the hood up, a white tape web grid across the chest, and sunglasses with web tape and painted black eye lenses.",
+    "black spider-hero": "Black hoodie with the hood up, a white tape web grid across the chest, and sunglasses with web tape and painted black eye lenses.",
+    "pink spider-hero": "Pink hoodie with the hood up, a white tape web grid across the chest, and sunglasses with web tape and painted black eye lenses.",
+    "spider-hero": "A hoodie in your spider color with the hood up, a white tape web grid across the chest, and web-patterned sunglasses."
+  },
+  "rain-cloud-rainbow": {
+    "rain cloud": "Gray t-shirt covered in glued cotton-ball clouds, with blue paper raindrops dangling on strings from the hem.",
+    "rainbow": "Rainbow-striped shirt, or a white shirt with rainbow arcs drawn across it in fabric markers."
+  },
+  "doctor-bride": {
+    "the monster": "Dark suit with the collar up, face and neck painted green, and two plastic neck bolts taped to the sides of the neck.",
+    "the bride": "White dress or sheet with the hem torn into strips, dark eye shadow smudged under the eyes, and white streaks sprayed in the hair."
+  },
+  "haunted-portraits": {
+    "haunted ancestor": "Old-fashioned dark clothes, face painted pale gray with white highlights, grayed hair, holding a picture frame around your face.",
+    "gilded portrait": "Old-fashioned dark clothes, face painted pale gray with white highlights, grayed hair, holding a picture frame around your face."
+  },
+  "sun-moon": {
+    "sun": "Head-to-toe yellow with long cardstock rays taped around the neckline and sleeves.",
+    "moon": "Navy or black clothes with a big white paper crescent taped to the chest and silver star stickers scattered over the shirt and arms.",
+    "star": "Navy or black clothes with silver star stickers scattered over the shirt and arms."
+  },
+  "moth-porch-light": {
+    "moth": "Neutral gray, brown, or tan clothes with two big cardboard wings taped to the arms and pipe-cleaner antennae on a headband.",
+    "porch light": "Yellow t-shirt and yellow pants with a cone lampshade popped over your head."
+  },
+  "raptor-ranger": {
+    "ranger": "Khaki shirt and hat, holding the toy dog leash.",
+    "raptor": "Green hoodie or t-shirt with a long green felt tail taped to the back and a painted snout with two black nostril dots."
+  },
+  "cat-mouse": {
+    "cat": "Black felt triangle ears on a headband, with eyeliner whiskers drawn on.",
+    "mouse": "Gray felt round ears on a headband, with eyeliner whiskers drawn on."
+  },
+  "ketchup-mustard": {
+    "ketchup": "Red t-shirt with a big yellow blob pinned to the front, the other condiment color.",
+    "mustard": "Yellow t-shirt with a big red blob pinned to the front, the other condiment color."
+  },
+  "office-couple": {
+    "the boss": "White button-down shirt tucked in, black pants or skirt, and a name tag with your joke job title.",
+    "the assistant": "White button-down shirt tucked in, black pants or skirt, and a name tag with your joke job title.",
+    "coworker": "White button-down shirt tucked in, black pants or skirt, and a name tag with your joke job title."
+  },
+  "burger-joint-couple": {
+    "burger chef": "White apron with a fake mustache stuck on.",
+    "diner owner": "White apron with a curly red wig and costume glasses.",
+    "line cook": "A white apron, the burger joint uniform."
+  },
+  "plug-socket": {
+    "plug": "A gray-painted cardboard panel worn like a sandwich board, with two foam prongs taped along the top edge.",
+    "socket": "A white-painted cardboard panel worn like a sandwich board, with two dark slots and a round outlet face drawn in black marker."
+  },
+  "salt-pepper": {
+    "salt": "All white: white shirt, pants, and hat, with a gray cardboard shaker top taped to the hat and a big S lettered on it.",
+    "pepper": "All black: black shirt, pants, and hat, with a gray cardboard shaker top taped to the hat and a big P lettered on it."
+  },
+  "tooth-fairy": {
+    "tooth": "All-white outfit with a big white cardstock tooth taped to the chest, edged in glitter glue.",
+    "tooth fairy": "White dress or white shirt and skirt, wings made from pantyhose stretched over a coat hanger, and a foil-star wand, with an envelope of play money tucked in a pocket."
+  },
+  "web-hero-duo": {
+    "web hero": "Red shirt and blue pants with white web lines painted or taped over the shirt, a black painted eye mask, and red socks on your hands as web gloves.",
+    "the partner": "Black jacket and black pants with your hair slicked back, no crafting needed."
+  },
+  "player-one-two": {
+    "player one": "A t-shirt with a big iron-on 1 on the front and back, carrying a toy game controller.",
+    "player two": "A t-shirt with a big iron-on 2 on the front and back, carrying a toy game controller.",
+    "player three": "A t-shirt with a big iron-on 3 on the front and back, carrying a toy game controller."
+  },
+  "good-witch-bad-witch": {
+    "good witch": "Pink dress or pink clothes with a cardboard crown colored pink and taped on.",
+    "bad witch": "Black dress or black clothes and a black cone hat, with face and hands painted green."
+  },
+  "headless-horsemen": {
+    "headless rider": "Black cape or black sheet, head tucked low, a jack-o-lantern bucket held at shoulder height like a carried head, and a broom to gallop on.",
+    "pumpkin bearer": "Black cape or black sheet, head tucked low, a jack-o-lantern bucket held at shoulder height like a carried head, and a broom to gallop on.",
+    "night galloper": "Black cape or black sheet, head tucked low, a jack-o-lantern bucket held at shoulder height like a carried head, and a broom to gallop on."
+  },
+  "blue-alien-ohana": {
+    "blue alien": "Blue hoodie with an antenna headband: two blue pipe cleaners standing up, each tipped with a blue pom-pom.",
+    "the girl": "Red t-shirt or dress with white felt leaf shapes pinned across it, dark hair worn down."
+  },
+  "fairy-tale-princesses": {
+    "tiara princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
+    "gown princess": "Your best dress from the closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
+    "crown princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
+    "cape princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
+    "flower princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
+    "princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow."
+  },
+  "robot-crew": {
+    "boxy robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
+    "foil robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
+    "bottle-cap robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
+    "tall robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
+    "round robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
+    "cardboard robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest."
+  },
+  "cereal-crew": {
+    "cereal box": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
+    "spoon": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
+    "milk carton": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
+    "cereal bowl": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
+    "orange juice": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters."
+  },
+  "haunted-animatronics": {
+    "glitchy mascot": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
+    "flickering-eyed bot": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
+    "jerky dancer": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
+    "static singer": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
+    "animatronic": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes."
+  },
+  "goggle-crew": {
+    "tall goggle": "Yellow t-shirt, denim overalls, black gloves, and goggles pushed up on your forehead.",
+    "short goggle": "Yellow t-shirt, denim overalls, black gloves, and goggles pushed up on your forehead.",
+    "one-eyed goggle": "Yellow t-shirt, denim overalls, black gloves, and goggles pushed up on your forehead.",
+    "two-eyed goggle": "Yellow t-shirt, denim overalls, black gloves, and goggles pushed up on your forehead.",
+    "goggle": "Yellow t-shirt, denim overalls, black gloves, and goggles pushed up on your forehead."
+  },
+  "classic-ghost": {
+    "sheet ghost": "A white sheet draped over you with cut-out eye holes and a marker-drawn mouth.",
+    "ghost with glasses": "A white sheet draped over you with cut-out eye holes and a marker-drawn mouth, glasses worn over the sheet.",
+    "tall ghost": "A full-size white sheet draped over you with cut-out eye holes and a marker-drawn mouth.",
+    "tiny ghost": "A twin-size white sheet draped over you with cut-out eye holes and a marker-drawn mouth."
+  },
+  "pbj": {
+    "peanut butter": "Brown t-shirt with a big poster-board bread sign lettered PB taped to the front.",
+    "jelly": "Purple t-shirt with a big poster-board bread sign lettered J taped to the front.",
+    "sandwich": "One half of the sandwich: a colored t-shirt with a big poster-board bread sign taped to the front."
+  },
+  "bacon-eggs": {
+    "bacon": "Dark red or brown shirt with wavy red-brown felt strips pinned down the front.",
+    "eggs": "White shirt with a big white felt oval pinned on and a yellow felt circle pinned on top as the yolk.",
+    "breakfast": "One of the breakfast pair: felt shapes pinned to a shirt, wavy bacon strips or a sunny-side-up egg."
+  },
+  "peas-pod": {
+    "pea": "Green t-shirt under one long green felt pod glued across the whole row, with a small green circle painted on your cheek."
+  },
+  "referee": {
+    "head referee": "Black shirt striped with white athletic tape across the front and back, black pants or shorts, a whistle around your neck, and a yellow flag tucked in a pocket."
+  },
+  "tennis-duo": {
+    "server": "Head-to-toe white with a sweatband tied across your forehead, carrying a toy tennis racket.",
+    "receiver": "Head-to-toe white with a sweatband tied across your forehead, carrying a toy tennis racket.",
+    "tennis player": "Head-to-toe white with a sweatband tied across your forehead, carrying a toy tennis racket."
+  },
+  "bowling-pins": {
+    "bowler": "Black shirt and pants, carrying a toy bowling ball.",
+    "pin": "White shirt and pants with two red tape stripes wrapped around the collar and one around each wrist."
+  },
+  "caped-duo": {
+    "hero": "A sheet cape tied at the neck with a felt emblem glued to the back, and a felt eye mask with ribbon ties.",
+    "sidekick": "A sheet cape tied at the neck with a felt emblem glued to the back, and a felt eye mask with ribbon ties."
+  },
+  "hero-squad": {
+    "red hero": "Red cape pinned at the shoulders, a matching red mask, and a red t-shirt with the team emblem painted on in fabric paint.",
+    "blue hero": "Blue cape pinned at the shoulders, a matching blue mask, and a blue t-shirt with the team emblem painted on in fabric paint.",
+    "green hero": "Green cape pinned at the shoulders, a matching green mask, and a green t-shirt with the team emblem painted on in fabric paint.",
+    "gold hero": "Gold cape pinned at the shoulders, a matching gold mask, and a gold t-shirt with the team emblem painted on in fabric paint.",
+    "hero": "A cape pinned at the shoulders, a matching mask, and a t-shirt in your squad color with the team emblem painted on in fabric paint."
+  },
+  "penguin-huddle": {
+    "penguin": "Black long-sleeve shirt with a white felt oval belly glued on, and a headband with a small orange felt beak."
+  },
+  "prince-princess": {
+    "prince": "Gold paper crown and a cape over dark clothes, carrying a toy scepter.",
+    "princess": "A thrifted gown or long dress with a tiara.",
+    "royal": "Royal dress-up from the guide: a gold crown and cape, or a thrifted gown and tiara."
+  },
+  "dino-herd": {
+    "t-rex": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
+    "raptor": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
+    "triceratops": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
+    "stegosaurus": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
+    "dino": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband."
+  },
+  "robot-ranger": {
+    "robot": "A blue or gray sweatsuit under a foil-wrapped cardboard torso box, dryer-vent hose arms taped at the shoulders, and sticker dials on the chest."
   }
 };
 function roleDiyLine(ideaId, role){
