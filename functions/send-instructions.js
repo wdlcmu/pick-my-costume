@@ -285,8 +285,15 @@ export async function onRequestPost(context) {
 
   const composed = composeEmail(idea, ideaId, mintShareId());
   const subject = cleanHeader(composed.subject);
-  const _c = composeEmail(idea, ideaId, mintShareId());
-  return json({ ok: true, dry_run: true, stage: 'composed', subj: _c.subject.length, text: _c.text.length, html: _c.html.length });
+  try {
+    const r1 = await fetch('https://example.com');
+    var s1 = r1.status;
+  } catch (e) { return json({ ok: false, stage: 'fetch-example-threw', err: String((e && e.message) || e) }); }
+  try {
+    const r2 = await fetch(RESEND_URL);
+    var s2 = r2.status;
+  } catch (e) { return json({ ok: false, stage: 'fetch-resend-threw', err: String((e && e.message) || e) }); }
+  return json({ ok: true, dry_run: true, stage: 'fetched', example: s1, resend: s2 });
   let res;
   try {
     res = await fetch(RESEND_URL, {
