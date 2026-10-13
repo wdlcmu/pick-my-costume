@@ -268,7 +268,6 @@ export async function onRequestPost(context) {
   const idea = INSTRUCTIONS_DATA[ideaId];
   if (!idea) return json({ ok: false, error: 'unknown_idea' }, 404);
 
-  return json({ ok: false, error: 'send_failed' }, 502);
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (rateLimited(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
@@ -297,8 +296,14 @@ export async function onRequestPost(context) {
       body: JSON.stringify({ from: FROM, reply_to: FROM, to: email, subject: subject, text: composed.text, html: composed.html }),
     });
   } catch (e) {
-    return json({ ok: false, error: 'send_failed' }, 502);
+    return json({ ok: false, error: 'send_failed' }, 500);
   }
-  if (!res.ok) return json({ ok: false, error: 'send_failed' }, 502);
+  // 2026-10-13: send_failed answers 500, never 502. Cloudflare replaces a
+  // Pages Function's 502 response with its own plain-text error page, so a
+  // 502 from this handler is indistinguishable from a platform crash (that
+  // substitution is what made every rejected send look like a dead endpoint:
+  // the function was fine, Resend was answering, and the JSON never reached
+  // the visitor). Verified live by bisecting the handler segment by segment.
+  if (!res.ok) return json({ ok: false, error: 'send_failed' }, 500);
   return json({ ok: true });
 }
