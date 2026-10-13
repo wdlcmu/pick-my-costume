@@ -134,7 +134,7 @@ input.txt:focus{border-color:#e07830;outline:none}
 <p class="themetagline" id="ithemetag"></p>
 <div class="costumerow" id="iexamples"></div>
 <div class="btnrow" style="justify-content:center">
-<a class="btn primary" id="quizcta" href="#">Find my costume (2 min)</a>
+<a class="btn primary" id="quizcta" href="#">Pick my costume (2 min)</a>
 </div>
 <p class="linkout">Running the office contest too? <a href="/office-contest-kit">Grab the contest kit</a> for ballots and winners.</p>
 </div>
@@ -208,7 +208,7 @@ function inviteText(theme, date, name){
   var head = "You are invited: " + (name || "Halloween party")
     + (date ? ", " + date : "") + ".";
   return head + " Costume theme: " + th.name + " (" + th.tagline + ")"
-    + " Find your costume in 2 minutes: " + inviteUrl(theme, date, name);
+    + " Pick your costume in 2 minutes: " + inviteUrl(theme, date, name);
 }
 
 function slackText(theme, date, name){
