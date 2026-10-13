@@ -15,11 +15,14 @@
      - each card's .pcard-look equals the exact ROLE_DIY line
      - Send + Try it on still present per card
      - changing Mommy's picker to ice queen swaps her art + look line
-   SAFARI (safari-zoo-crew, choose mode, no ROLE_DIY entry)
-     - cards carry role art (files exist), NO look line is fabricated
-     - picker change to elephant swaps the art
-   HERO (superhero-family, assign mode, no ROLE_DIY entry)
-     - cards carry role art, no look lines
+   SAFARI (safari-zoo-crew, choose mode)
+     - cards carry role art (files exist) AND the verbatim ROLE_DIY look
+       line for the assigned animal (ROLE_DIY covers every cast idea
+       since the 2026-10-13 expansion; coverage + exceptions are guarded
+       by cast-role-look-coverage-harness.cjs)
+     - picker change to elephant swaps the art and the look line
+   HERO (superhero-family, assign mode)
+     - cards carry role art and the verbatim ROLE_DIY look line
    Run: node hour-session/cast-card-visual-harness.cjs
    Exit code 1 on any failure. */
 const fs = require("fs");
@@ -165,7 +168,7 @@ function cardParts(card){
     else ok(has, "role art exists: " + r, f);
   });
 
-  /* ---------- SAFARI smoke (choose mode, no ROLE_DIY) ---------- */
+  /* ---------- SAFARI smoke (choose mode, ROLE_DIY since 2026-10-13) ---------- */
   console.log("safari-zoo-crew:");
   const sbox = buildPanel("safari-zoo-crew");
   await after(300);
@@ -176,15 +179,20 @@ function cardParts(card){
     ok(!!p.img && /^images\/og\/safari-zoo-crew--[a-z0-9-]+\.jpg$/.test(p.img.getAttribute("src") || ""),
       "safari card " + i + " carries role art", p.img && p.img.getAttribute("src"));
     if (p.img) ok(fs.existsSync(path.join(ROOT, p.img.getAttribute("src"))), "safari card " + i + " art exists");
-    ok(!p.look, "safari card " + i + " has NO fabricated look line");
+    var expLook = ["Solid-color clothes in lion colors, felt ears taped to a plastic headband, and face paint details.",
+                   "Solid-color clothes in elephant colors, felt ears taped to a plastic headband, and face paint details."][i];
+    ok(!!p.look, "safari card " + i + " has look line");
+    if (p.look && expLook) ok(p.look.textContent === expLook, "safari card " + i + " look = ROLE_DIY line verbatim", p.look.textContent);
   });
   setRole(sbox, 0, "elephant");
   await after(300);
   const sp0 = cardParts(cards(sbox)[0]);
   ok(sp0.img && sp0.img.getAttribute("src") === "images/og/safari-zoo-crew--elephant.jpg",
     "safari picker change swaps art to elephant", sp0.img && sp0.img.getAttribute("src"));
+  ok(sp0.look && sp0.look.textContent === "Solid-color clothes in elephant colors, felt ears taped to a plastic headband, and face paint details.",
+    "safari picker change swaps look line to elephant", sp0.look && sp0.look.textContent);
 
-  /* ---------- SUPERHERO smoke (assign mode, no ROLE_DIY) ---------- */
+  /* ---------- SUPERHERO smoke (assign mode, ROLE_DIY since 2026-10-13) ---------- */
   console.log("superhero-family:");
   const hbox = buildPanel("superhero-family");
   await after(300);
@@ -195,7 +203,9 @@ function cardParts(card){
     ok(!!p.img && /^images\/og\/superhero-family--[a-z0-9-]+\.jpg$/.test(p.img.getAttribute("src") || ""),
       "hero card " + i + " carries role art", p.img && p.img.getAttribute("src"));
     if (p.img) ok(fs.existsSync(path.join(ROOT, p.img.getAttribute("src"))), "hero card " + i + " art exists");
-    ok(!p.look, "hero card " + i + " has NO fabricated look line");
+    ok(!!p.look, "hero card " + i + " has look line");
+    if (p.look) ok(p.look.textContent === "Red sweatsuit, black felt eye mask on a headband, and a yellow felt initial pinned to your chest.",
+      "hero card " + i + " look = ROLE_DIY line verbatim", p.look.textContent);
   });
 
   console.log("\n" + pass + " passed, " + fail + " failed");
