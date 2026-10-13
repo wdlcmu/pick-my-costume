@@ -67,6 +67,16 @@ function cleanHeader(s) {
   return String(s).replace(/[\r\n]+/g, ' ').slice(0, 140);
 }
 
+// Per-send share id (2026-10-13, run177 spec): same 8-char alphabet as the
+// client _sgId() / newShareId(), so a plan-email share joins the same
+// recipient measurement as every other share surface.
+function mintShareId() {
+  const c = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let s = '';
+  for (let i = 0; i < 8; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
+}
+
 // Hands-on time for the subject: "20 min + 15 min drying" -> "20 min".
 // Also tolerates the old bare format "20 min + drying" -> "20 min".
 function handsOn(time) {
@@ -83,13 +93,19 @@ function firstSentence(intro) {
 }
 
 // Server-side composition. idea = INSTRUCTIONS_DATA entry (+ optional
-// .intro), slug = its key. Returns { subject, text, html, preheader }.
-export function composeEmail(idea, slug) {
+// .intro), slug = its key, shareId = optional per-send share id (minted by
+// the handler; composed here when absent, e.g. direct harness calls).
+// Returns { subject, text, html, preheader }.
+export function composeEmail(idea, slug, shareId) {
   slug = cleanSlug(slug);
   const title = String(idea.t);
   const guideUrl = 'https://pickmycostume.com/c/' + slug;
   const guideUtm = guideUrl + '?utm_source=email&utm_medium=plan&utm_campaign=' + slug;
-  const shareUrl = guideUrl; // plain link for the "Share it" line
+  // "Share it" carries the tracked share URL (2026-10-13, run177 spec):
+  // a forwarded plan email lands in the same recipient context as a
+  // shared link (?s= + o=emaillist, an origin the app already parses).
+  const sid = /^[a-z0-9]{8}$/.test(String(shareId || '')) ? String(shareId) : mintShareId();
+  const shareUrl = guideUrl + '?s=' + sid + '&o=emaillist';
   const browseUtm = 'https://pickmycostume.com/?utm_source=email';
   const photoUrl = 'https://pickmycostume.com/photos/' + slug + '-480.webp';
   const privacyUrl = 'https://pickmycostume.com/privacy';
@@ -255,7 +271,7 @@ export async function onRequestPost(context) {
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (rateLimited(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
-  const composed = composeEmail(idea, ideaId);
+  const composed = composeEmail(idea, ideaId, mintShareId());
   const subject = cleanHeader(composed.subject);
 
   if (!env.RESEND_API_KEY) {
