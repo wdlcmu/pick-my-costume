@@ -12805,6 +12805,34 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
       };
       card.appendChild(head);
       card.appendChild(sub2);
+      /* 2026-10-13 (Billy): "I don't know what 'snowflake sprite' and
+         others look like." A role name alone is a guess, so each card now
+         carries the role's own share-card art (images/og/<idea>--<role>.jpg,
+         the same card the per-role unfurl links use) and, where the bank
+         has one, the role's one-line look from the per-person plan
+         (roleDiyLine). Roles with no card of their own (fillers like
+         "snow friend") fall back to the crew photo, then hide. Ideas
+         without per-role look lines get the visual only -- never an
+         invented description. Rebuilt from currentList() on every
+         render, so the art and line follow picker changes. */
+      var rimg = document.createElement("img");
+      rimg.className = "pcard-role-img";
+      rimg.alt = roleArt(p.role) + " in " + idea.title;
+      rimg.loading = "lazy";
+      rimg.src = "images/og/" + idea.id + "--" + roleSlugFor(p.role) + ".jpg";
+      rimg.onerror = function(){
+        rimg.onerror = function(){ rimg.style.display = "none"; };
+        rimg.src = "photos/" + idea.id + ".webp";
+        pmcSrcset(rimg, idea.id, "340px");
+      };
+      card.appendChild(rimg);
+      var lookLine = roleDiyLine(idea.id, p.role);
+      if (lookLine){
+        var lk = document.createElement("p");
+        lk.className = "pcard-look";
+        lk.textContent = lookLine;
+        card.appendChild(lk);
+      }
       card.appendChild(send);
       /* 2026-09-26: "Try it on" face preview. See yourself in the
          costume. 100% on-device: the photo never leaves the phone. */
