@@ -85,22 +85,25 @@ ok(pageSrc.indexOf('id="btn-start"') >= 0, 'homepage: #btn-start missing');
 (function(){
   var w = src.indexOf('$("btn-start").onclick');
   ok(w >= 0, 'homepage: #btn-start has no wired onclick');
-  /* 2026-09-27 warm-vs-cold: btn-start opens the fork (renderWarmCold); the
-     cold branch must still reach renderQ untouched. */
-  if (w >= 0) ok(src.slice(w, w + 1200).indexOf('renderWarmCold()') >= 0,
-    'homepage: #btn-start onclick does not open the warm/cold fork (renderWarmCold)');
-  if (w >= 0) ok(src.indexOf('function renderWarmCold()') >= 0,
-    'homepage: renderWarmCold missing');
-  var wc = src.indexOf('function renderWarmCold()');
-  if (wc >= 0) ok(src.slice(wc, wc + 1500).indexOf('renderQ()') >= 0,
-    'homepage: warm/cold fork never reaches the cold quiz (renderQ)');
+  /* 2026-10-03: the warm/cold fork was folded into Q1 on 2026-09-29 and the
+     function removed (live app.js: "The quiz starts at Question 1 of 5
+     directly; warm mode branches from the Q1 link instead of an uncounted
+     pre-question"). btn-start must start the quiz directly via renderQ(). */
+  if (w >= 0) ok(src.slice(w, w + 1200).indexOf('renderQ()') >= 0,
+    'homepage: #btn-start onclick does not start the quiz (renderQ)');
+  ok(src.indexOf('function renderWarmCold()') < 0,
+    'homepage: renderWarmCold resurrected without a gate update');
 })();
 /* Proof rail: every card href is /c/<slug> and every slug is a real idea. */
 (function(){
   /* 2026-09-27: Kid favorites rail (JS-rendered, empty in markup) now sits
-     above the trending rail, so target #row-trending by id instead of the
-     first .proofrow in the file. */
-  var pr = pageSrc.search(/<div class="proofrow" id="row-trending"[\s>]/);
+     above the trending rail, so target the rail by id instead of the first
+     .proofrow in the file.
+     2026-10-13: the Billy-approved homepage restructure removed
+     #row-trending (it lived inside the deleted "More" expander). #row-new
+     is the surviving static proof rail: #row-kids and #row-tonight-live are
+     JS-rendered empty shells, and #row-storytime links to tales, not ideas. */
+  var pr = pageSrc.search(/<div class="proofrow" id="row-new"[\s>]/);
   ok(pr >= 0, 'homepage: .proofrow missing');
   if (pr < 0) return;
   var seg = pageSrc.slice(pr, pageSrc.indexOf('</div>', pageSrc.indexOf('</a>', pr)) + 6);
@@ -122,7 +125,9 @@ ok(src.indexOf('$("btn-browse-hero").onclick = openBrowse') >= 0, 'homepage: #bt
    as ?aud= so the galaxy's For: chip arrives visibly selected and filtered
    (Billy's phone catch: Couple arrived unselected). */
 (function(){
-  var m = src.match(/function openBrowse\(\)\{[\s\S]*?\n\}/);
+  /* 2026-10-03: openBrowse takes an optional chipTerm param (chip-tap entry
+     carries the chip's search term); tolerate the parameter list. */
+  var m = src.match(/function openBrowse\([^)]*\)\{[\s\S]*?\n\}/);
   ok(!!m, 'browse: openBrowse function not found');
   if (m){
     ok(m[0].indexOf('?aud=') >= 0, 'browse: openBrowse does not carry ?aud=');
@@ -143,11 +148,22 @@ ok(src.indexOf('$("btn-browse-hero").onclick = openBrowse') >= 0, 'homepage: #bt
 (function(){
   var mapSrc = fs.readFileSync(path.join(__dirname, '..', 'map.html'), 'utf8');
   ok(mapSrc.indexOf("id='tonight-chip'") >= 0 || mapSrc.indexOf('id="tonight-chip"') >= 0, 'galaxy: Tonight chip missing');
-  ok(mapSrc.indexOf("if(q2.tonight==='1') setTonight(true)") >= 0, 'galaxy: boot does not honor ?tonight=1');
+  /* 2026-10-03: S35 chip-scroll (staged, unapproved) moved the ?tonight=1
+     handling into scrollArrivalChip, which now also scrolls the pressed chip
+     into view on mobile. The boot contract stands: ?tonight=1 presses the
+     Tonight chip via setTonight(true). Tolerate both shapes; if S35's change
+     is reverted the old shape still passes. */
+  ok(mapSrc.indexOf("if(q2.tonight==='1') setTonight(true)") >= 0 ||
+     /q2\.tonight==='1'\)\s*\{\s*setTonight\(true\)/.test(mapSrc),
+    'galaxy: boot does not honor ?tonight=1');
   ok(mapSrc.indexOf('function inFilter(it)') >= 0, 'galaxy: inFilter single predicate missing');
   ok(mapSrc.indexOf('function setTonight(on)') >= 0, 'galaxy: setTonight missing');
-  /* app.js: tonight computed once, quiz reads the stored field. */
-  ok(src.indexOf('IDEAS[i].tonight = tonightFor(IDEAS[i].id)') >= 0, 'bank: computeTonight does not store idea.tonight');
+  /* app.js: tonight computed once, quiz reads the stored field.
+     2026-10-03: tonightFor was inlined into the computeTonight loop with the
+     Oct 2 drying-aware boundary (live app.js:
+     "IDEAS[i].tonight = (h !== null && h <= 30 && (h + d) <= 120)").
+     The invariant stands: computed once, stored on the idea. */
+  ok(src.indexOf('IDEAS[i].tonight =') >= 0, 'bank: computeTonight does not store idea.tonight');
   ok(src.indexOf('return !!(idea && idea.tonight)') >= 0, 'quiz: planIsTonightReady does not read idea.tonight');
 })();
 /* 2026-10-01: last-minute page must list only tonight=true ideas. */
@@ -155,15 +171,58 @@ ok(src.indexOf('$("btn-browse-hero").onclick = openBrowse') >= 0, 'homepage: #bt
   var lm = fs.readFileSync(path.join(__dirname, '..', 'last-minute-costumes.html'), 'utf8');
   var cards = lm.match(/data-unit-item="([^"]+)"/g) || [];
   ok(cards.length >= 1, 'last-minute: no cards');
-  /* The strict boolean currently qualifies classic-ghost and emoji-crew only. */
+  /* 2026-10-03: the Oct 2 drying-aware boundary (hands-on <= 30 min AND
+     hands-on + drying <= 120) qualifies 125 ideas; the page's own meta
+     description states the same criterion ("125 Halloween costumes you can
+     start tonight: 30 minutes or less of hands-on work. Drying time shown
+     honestly."). The page must list exactly the tonight set -- no card the
+     bank does not qualify, and no qualified idea missing. it.tonight is the
+     stored bank boolean computed by the gate's own computeTonight eval. */
+  var tonightIds = {};
+  IDEAS.forEach(function(it){ if (it.tonight) tonightIds[it.id] = true; });
+  var pageIds = {};
   cards.forEach(function(c){
     var id = c.match(/"([^"]+)"/)[1];
-    ok(id === 'classic-ghost' || id === 'emoji-crew', 'last-minute: ' + id + ' is not tonight-qualifying');
+    pageIds[id] = true;
+    ok(!!tonightIds[id], 'last-minute: ' + id + ' is on the page but not tonight-qualifying');
+  });
+  Object.keys(tonightIds).forEach(function(id){
+    ok(!!pageIds[id], 'last-minute: tonight-qualifying ' + id + ' is missing from the page');
   });
   ok(lm.indexOf('+ drying') < 0, 'last-minute: page still lists + drying items');
 })();
 /* Pantry entry: link resolves to /pantry. */
 ok(pageSrc.indexOf('href="/pantry"') >= 0, 'homepage: pantry link does not resolve to /pantry');
+
+/* ---------- 1b. approved homepage structure (Billy 2026-10-13) ----------
+ * The Oct 13 restructure deleted the "More" expander, which had buried the
+ * entire FAQ, the tools, and a second trending rail behind one button, and
+ * ended the page on privacy fine print. The approved structure: FAQ is a
+ * visible section, the tools are labeled visible entries, and the page ends
+ * with a real footer. These assertions lock that in; the burial must not
+ * regress. */
+(function(){
+  ok(pageSrc.indexOf('id="faq"') >= 0, 'homepage: FAQ section (#faq) missing');
+  ok(pageSrc.indexOf('Is it really free?') >= 0,
+    'homepage: FAQ lost the "Is it really free?" question');
+  ['Closet refresh', 'Printables', 'Explore the galaxy', 'Halloween plan', 'Role shuffle']
+    .forEach(function(label){
+      ok(pageSrc.indexOf(label) >= 0, 'homepage: Tools entry missing: ' + label);
+    });
+  var foot = pageSrc.indexOf('<footer');
+  ok(foot >= 0, 'homepage: footer missing');
+  if (foot >= 0){
+    var fseg = pageSrc.slice(foot, pageSrc.indexOf('</footer>', foot));
+    ok(fseg.indexOf('href="/about"') >= 0, 'homepage: footer lost the About link');
+    ok(fseg.indexOf('href="/privacy"') >= 0, 'homepage: footer lost the Privacy link');
+    ok(fseg.indexOf('Built with Muse.') >= 0,
+      'homepage: footer lost the "Built with Muse." credit');
+  }
+  ok(pageSrc.indexOf('id="more-body"') < 0 && pageSrc.indexOf('id="more-wrap"') < 0 &&
+     pageSrc.indexOf('id="more-opts"') < 0,
+    'homepage: the removed More expander is back (FAQ/tools burial)');
+  console.log('approved structure: FAQ visible incl. "Is it really free?", 5 tools labeled, footer with About/Privacy/credit, More expander absent');
+})();
 
 /* ---------- 2. /c/ arrival contexts ---------- */
 var hlSrc = extractFn('function shareLandingHeadline(idea, search){');
@@ -399,16 +458,25 @@ console.log('more-like-this rail: render-level tap-through verified');
   ok(/const LS_KEY = 'pantry2'/.test(psrc), 'pantry: storage key is not pantry2');
   ok(/localStorage\.getItem\(LS_KEY/.test(psrc), 'pantry: init does not read the storage key');
   ok(/localStorage\.setItem\(LS_KEY/.test(psrc), 'pantry: toggles do not persist the storage key');
-  ok(psrc.indexOf('We assume every home has scissors, tape, paper and pen, cardboard, socks, and aluminum foil.') >= 0,
-    'pantry: honest hedging note about the 6 assumed staples is gone');
+  /* 2026-10-03: the hedging note moved into the basics-line (2026-09-28:
+     "the assumed-basics list collapses behind one tap -- the page leads with
+     costumes, not a wall of text"). The honesty contract stands: the assumed
+     basics are named and the user can untick any of them. */
+  ok(psrc.indexOf('We assume you have:') >= 0 &&
+     psrc.indexOf('untick any you don') >= 0,
+    'pantry: honest assumed-basics note is gone');
 
-  /* Staples pre-ticked: exactly the 6 staple ids (2026-09-26: unified with
-     index.html's fallback so engaging with the pantry never worsens badges). */
+  /* Staples pre-ticked: exactly the 12 staple ids.
+     2026-10-03: the set grew 6 -> 12 with the Oct 2 Tonight work
+     (staples-only materials); app.js PANTRY_MATS.staples holds the same 12.
+     Assert the full set exactly -- no silent drift. */
   var staples = DATA.pantry.filter(function(p){ return p.staple; }).map(function(p){ return p.id; });
-  ok(staples.length === 6, 'pantry: expected 6 staples, found ' + staples.length);
-  ok(staples.indexOf('scissors') >= 0 && staples.indexOf('tape') >= 0 && staples.indexOf('paper-pen') >= 0 &&
-     staples.indexOf('cardboard') >= 0 && staples.indexOf('socks') >= 0 && staples.indexOf('foil') >= 0,
-    'pantry: staple set is not scissors/tape/paper-pen/cardboard/socks/foil: ' + staples.join(','));
+  var WANT_STAPLES = ['scissors','tape','paper-pen','markers','foil','cardboard',
+    'white-tshirt','tshirt','black-clothes','bedsheet','pillowcase','socks'];
+  ok(staples.length === WANT_STAPLES.length, 'pantry: expected 12 staples, found ' + staples.length);
+  ok(WANT_STAPLES.every(function(id){ return staples.indexOf(id) >= 0; }) &&
+     staples.every(function(id){ return WANT_STAPLES.indexOf(id) >= 0; }),
+    'pantry: staple set is not the 12: ' + staples.join(','));
   ok(psrc.indexOf('|| STAPLES') >= 0,
     'pantry: ticked set does not default to the staples');
 
@@ -421,9 +489,16 @@ console.log('more-like-this rail: render-level tap-through verified');
   ticked = new Set(staples);
   var ghost = pidea('classic-ghost');
   ok(ghost, 'pantry sample: classic-ghost missing from pantry DATA');
+  /* 2026-10-03: bedsheet, markers, and scissors are all staples now, so the
+     staples-only kit covers classic-ghost fully (3 of 3, nothing missing). */
   var r0 = score(ghost);
-  ok(r0.have === 1 && r0.total === 3 && r0.missing.length === 2,
-    'pantry: staples-only score for classic-ghost is ' + r0.have + ' of ' + r0.total + ', expected 1 of 3');
+  ok(r0.have === 3 && r0.total === 3 && r0.missing.length === 0,
+    'pantry: staples-only score for classic-ghost is ' + r0.have + ' of ' + r0.total + ', expected 3 of 3');
+  /* NOTE: capture the staples-only card BEFORE the toggle tests below mutate
+     `ticked` (cardHtml's reqOk closes over the live ticked set). */
+  var html0 = cardHtml(r0, 4);
+  ok(html0.indexOf('class="card zero"') >= 0 && html0.indexOf('mtile miss') < 0,
+    'pantry: staples-only card is not a fully-have card');
   ticked.add('bedsheet'); ticked.add('markers');
   var r1 = score(ghost);
   ok(r1.have === 3 && r1.total === 3 && r1.missing.length === 0,
@@ -433,19 +508,25 @@ console.log('more-like-this rail: render-level tap-through verified');
   ok(r2.have === 2 && r2.missing.length === 1,
     'pantry: untoggling a checkbox did not update counts');
 
-  /* Result cards: X-of-Y requirements, still-need chips, plan link. */
+  /* Result cards: have/miss tiles, honest gap naming, plan link.
+     2026-10-03: the 2026-09-27 card redesign leads with the costume's full
+     build ("here is how you make this", every requirement marked have vs
+     still-need) instead of the coverage-stats "You have X of Y" framing;
+     the gap on 1-2-away cards is named by the "Just need:" line. */
   var html1 = cardHtml(r1, 0);
-  ok(html1.indexOf('You have <b>3 of 3</b> requirements') >= 0, 'pantry: result card missing "you have X of Y"');
-  var html0almost = cardHtml(r0, 0);
-  ok(html0almost.indexOf('Still need:') >= 0, 'pantry: almost-there card lost the still-need chips');
+  ok(html1.indexOf('class="card zero"') >= 0, 'pantry: full card lost the zero-missing class');
+  ok(html1.indexOf('What you need (3)') >= 0, 'pantry: full card lost the needs summary');
+  ok(html1.indexOf('mtile have') >= 0, 'pantry: full card lost the have tiles');
+  var htmlAlmost = cardHtml(r2, 1);
+  ok(htmlAlmost.indexOf('class="card almost"') >= 0, 'pantry: 1-away card lost the almost class');
+  ok(htmlAlmost.indexOf('Just need:') >= 0, 'pantry: almost-there card lost the gap naming');
+  ok(htmlAlmost.indexOf('mtile miss') >= 0, 'pantry: almost-there card lost the miss tile');
   ok(html1.indexOf('How to make it') >= 0, 'pantry: result card lost the "How to make it" link');
   /* 2026-09-26 red-team: the pantry "How to make it" deliberately opens the
      IN-APP idea detail (index.html?pick=) for browse parity, not the static
      /c/ guide. The ?pick= arrival opens openIdeaDetail via s-pantry. Assert
      the deliberate behavior, not the old /c/ expectation. */
   ok(html1.indexOf('href="index.html?pick=classic-ghost"') >= 0, 'pantry: "How to make it" does not open the plan');
-  var html0 = cardHtml(r0, 4);
-  ok(html0.indexOf('You have <b>1 of 3</b> requirements') >= 0, 'pantry: staples-only card missing "you have X of Y"');
 
   /* Honest math untouched: tier thresholds and headline variants. */
   ok(/missing\.length >= 1 && r\.missing\.length <= 2/.test(psrc),
@@ -509,9 +590,13 @@ console.log('more-like-this rail: render-level tap-through verified');
       vamp = ideaById('vampire'), ghost = ideaById('classic-ghost'),
       ndh = ideaById('neon-demon-hunter');
 
-  /* Evidence units. */
-  ok(planMinutes(ghost) === 20, 'roles: classic-ghost plan minutes should be 20, got ' + planMinutes(ghost));
-  ok(planMinutes(ndh) === 60, 'roles: neon-demon-hunter plan minutes should be 60, got ' + planMinutes(ndh));
+  /* Evidence units.
+     2026-10-03: bank times moved with the Oct 2 drying pass -- classic-ghost
+     "10 min" (live last-minute card: "10 min hands-on"), neon-demon-hunter
+     "25 min + 2 hrs drying" (decision-triple pill on /c/ guides; the
+     "DIY this week" quickcard was removed 2026-10-05). */
+  ok(planMinutes(ghost) === 10, 'roles: classic-ghost plan minutes should be 10, got ' + planMinutes(ghost));
+  ok(planMinutes(ndh) === 25, 'roles: neon-demon-hunter plan minutes should be 25, got ' + planMinutes(ndh));
   ok(planIsTonightReady(ghost) === true, 'roles: classic-ghost should be tonight-ready');
   ok(planIsTonightReady(ndh) === false, 'roles: neon-demon-hunter should not be tonight-ready');
 
@@ -580,10 +665,38 @@ console.log('more-like-this rail: render-level tap-through verified');
   ok(rr3[1] !== 'Easiest' && rr3[2] !== 'Easiest',
     'roles: Easiest shown with no difficulty margin');
 
-  /* Neutral fallback: a triple with no defensible role stays labelless. */
-  var nr = resultRoles(asResults(['blue-dog-family', 'gloom-bloom', 'deadpan-diva']));
-  ok(nr[1] === null && nr[2] === null,
-    'roles: neutral fallback broken, got "' + nr[1] + '" / "' + nr[2] + '"');
+  /* Neutral fallback: a triple with no defensible role stays labelless.
+     2026-10-03: the old triple (blue-dog-family/gloom-bloom/deadpan-diva)
+     all became tonight-ready under the Oct 2 drying-aware boundary, so it
+     now legitimately earns Tonight-Ready. Find a currently role-less triple
+     from the pool instead of hardcoding another one that will rot: no
+     tonight evidence, no plot-twist evidence, no difficulty margin, no
+     wildcard margin. */
+  var _nc = IDEAS.filter(function(x){ return !x.tonight; }).slice(0, 30).map(function(x){ return x.id; });
+  /* A couple of extra ideas round out the pool; ideaById guards below skip
+     any id the bank does not have. */
+  ['vampire','tin-hero','snow-sisters','mystery-crew'].forEach(function(id){
+    if (_nc.indexOf(id) < 0) _nc.push(id);
+  });
+  var neutralTriple = null;
+  for (var _a = 0; _a < _nc.length && !neutralTriple; _a++)
+    for (var _b = _a + 1; _b < _nc.length && !neutralTriple; _b++)
+      for (var _c = _b + 1; _c < _nc.length && !neutralTriple; _c++){
+        var _t0 = ideaById(_nc[_a]), _t1 = ideaById(_nc[_b]), _t2 = ideaById(_nc[_c]);
+        if (!_t0 || !_t1 || !_t2) continue;
+        if (planIsTonightReady(_t1) || planIsTonightReady(_t2)) continue;
+        if (planIsPlotTwist(_t1) || planIsPlotTwist(_t2)) continue;
+        if (buildDifficulty(_t0) !== buildDifficulty(_t1) ||
+            buildDifficulty(_t1) !== buildDifficulty(_t2)) continue;
+        if (Math.abs(tagDistance(_t0, _t1) - tagDistance(_t0, _t2)) >= 3) continue;
+        neutralTriple = [_nc[_a], _nc[_b], _nc[_c]];
+      }
+  ok(!!neutralTriple, 'roles: no role-less triple left in the candidate pool (bank moved again)');
+  if (neutralTriple){
+    var nr = resultRoles(asResults(neutralTriple));
+    ok(nr[1] === null && nr[2] === null,
+      'roles: neutral fallback broken for ' + neutralTriple.join('/') + ', got "' + nr[1] + '" / "' + nr[2] + '"');
+  }
   ok(nullSeen > 0, 'roles: fallback path never exercised in the sweep');
 
   /* The fallback copy still exists in renderResults. */
@@ -829,8 +942,11 @@ console.log('more-like-this rail: render-level tap-through verified');
   ok(src.indexOf('_lastZeroQuery') >= 0,
     'search: zero-result dedupe guard missing (would spam per keystroke)');
 
-  /* Honest gaps stay empty: no forced bad aliases. */
-  ['pirate', 'pennywise', 'ghostface', 'lorax', 'carmy', 'encanto',
+  /* Honest gaps stay empty: no forced bad aliases.
+     2026-10-03: 'pirate' left the list -- pirate-captain ("Pirate Captain":
+     striped shirt, cardboard captain hat, treasure map) is a real bank idea,
+     so the term legitimately resolves now. */
+  ['pennywise', 'ghostface', 'lorax', 'carmy', 'encanto',
    'pregnant', 'ninja turtles', 'mirabel', 'aladdin',
    'bonnieclyde', 'sexy', 'mummy', 'beetlejuice', 'strangerthings',
    'skibidi', 'grimace', 'ohio', 'nurse', 'police', 'viking', 'cleopatra',
@@ -987,30 +1103,43 @@ console.log('more-like-this rail: render-level tap-through verified');
   ok(tickedSrc.indexOf('location.search') < 0 && tickedSrc.indexOf('localStorage') >= 0,
     'closet badge: pantryTicked() is not a pure localStorage read');
 
-  /* (e) placement: between the why-line and the howto box. */
+  /* (e) placement: between the why-line and the howto box.
+     2026-10-03: the how-to box is the plan panel now (Oct 1 STEP 1 retired
+     the buildInstructions disclosure); anchor on planBox. The badge still
+     mounts right after the why-line, before the build steps. */
   var cardSrc = extractFn('function buildBrowseDetailCard(idea, whyHead){');
   var iWhy = cardSrc.indexOf('appendChild(wh)'), iBadge = cardSrc.indexOf('buildClosetBadge(idea)'),
-      iHowto = cardSrc.indexOf('buildInstructions(idea');
+      iHowto = cardSrc.indexOf('right.appendChild(planBox)');
   ok(iWhy > 0 && iBadge > 0 && iHowto > 0 && iWhy < iBadge && iBadge < iHowto,
     'closet badge: not mounted between the why-line and the howto box');
 
-  /* (f) analytics payload shape: counts and state only. */
+  /* (f) analytics payload shape: counts and state only.
+     2026-10-03: the Sep 30 tile-grid redesign routes both links through one
+     pantryLink helper with from_state as the live state -- "Check my pantry"
+     fires from empty, "Update my pantry" from the badge's current state
+     (partial or full). Payload shape is unchanged: {idea_id, from_state}. */
   ok(/Analytics\.track\("closet_badge_viewed", \{idea_id: idea\.id, state: st\.state, have_count: st\.have, total_count: st\.total\}\)/.test(badgeSrc),
     'closet badge: closet_badge_viewed payload is not {idea_id, state, have_count, total_count}');
-  var taps = badgeSrc.match(/Analytics\.track\("closet_badge_pantry_tap", \{idea_id: idea\.id, from_state: "[a-z]+"\}\)/g) || [];
-  ok(taps.length === 2 && /from_state: "empty"/.test(taps[0]) && /from_state: "partial"/.test(taps[1]),
-    'closet badge: pantry_tap events should fire from empty and partial states only');
+  ok(/Analytics\.track\("closet_badge_pantry_tap", \{idea_id: idea\.id, from_state: fromState\}\)/.test(badgeSrc),
+    'closet badge: pantry_tap payload is not {idea_id, from_state}');
+  ok(badgeSrc.indexOf('pantryLink("Check my pantry", "pantry-link", "empty")') >= 0,
+    'closet badge: empty-state "Check my pantry" tap missing');
+  ok(badgeSrc.indexOf('pantryLink("Update my pantry", "pantry-link", st.state)') >= 0,
+    'closet badge: non-empty "Update my pantry" tap missing');
   ok(badgeSrc.indexOf('material') < 0 || badgeSrc.indexOf('never material') >= 0,
     'closet badge: badge block mentions material data in a track payload');
 
-  /* (g) copy honesty: verbatim strings, no em/en dashes in the block. */
+  /* (g) copy honesty: verbatim strings, no em/en dashes in the block.
+     2026-10-03: the "Still need:" chips were replaced by the inline tile
+     grid (Sep 30 Billy P0) -- missing supplies render as tappable miss
+     tiles under the "Tap a supply to tick what you own." subline. */
   ["We can check your closet for this one.",
    "Tell us what is already in your house. Takes about a minute, and then every costume shows what you have.",
    "Check my pantry",
    "None of this one is in your pantry yet.",
    "You have everything for this one. Nothing to buy.",
    " things for this.",
-   "Still need: ",
+   "Tap a supply to tick what you own.",
    "Update my pantry"
   ].forEach(function(s){ ok(badgeSrc.indexOf(s) >= 0, 'closet badge: copy missing: ' + s.slice(0, 40)); });
   ok(badgeSrc.indexOf('\u2014') < 0 && badgeSrc.indexOf('\u2013') < 0,
@@ -1059,6 +1188,22 @@ console.log('more-like-this rail: render-level tap-through verified');
     '/c/ related: static /c/<slug> anchors missing');
   ok(fsrc.indexOf('PICTURED[slug]') >= 0 && fsrc.indexOf('class=\\"pictured\\"') >= 0,
     '/c/ hero: pictured caption not rendered under the hero photo');
+    /* 2026-10-01 intro drying fix: intro template must render "N min of hands-on
+       work plus X drying time", never "N min + X drying of hands-on work". */
+    ok(fsrc.indexOf('drying of hands-on work') < 0,
+      '/c/ intro: stale "drying of hands-on work" phrasing present');
+    /* 2026-10-05 (Billy): the "DIY this week" quickcard is gone -- the visual
+       supply cards are the single materials presentation on /c/ guides.
+       The drying-time format assertions are obsolete with it; the cards
+       carry the decision-triple time pills instead. */
+    ok(fsrc.indexOf('DIY this week:') < 0,
+      '/c/ cards: stale "DIY this week" section still present');
+    ok(fsrc.indexOf('detail-mats') >= 0,
+      '/c/ cards: supply-cards mount missing from template');
+    ok(fsrc.indexOf('<noscript>') >= 0,
+      '/c/ cards: noscript materials fallback missing');
+    ok(fsrc.indexOf('HowToSupply') >= 0,
+      '/c/ cards: HowTo JSON-LD supply list missing');
   /* The PICTURED map mirrors the bank's pictured slugs (both from the same
      caption pass); a slug in one but not the other is a desync. */
   var picSlugs = [], re = /"([a-z0-9-]+)": "Pictured:/g, m;
