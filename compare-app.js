@@ -99,9 +99,15 @@ function cmpBluf(ids, DB) {
   var fastMin = cmpTimeMin(byTime[0].time);
   var fastHands = cmpHandsMin(byTime[0].time);
   var fastTie = byTime.filter(function (r) { return cmpTimeMin(r.time) === fastMin && cmpHandsMin(r.time) === fastHands; });
+  var tonightRows = rows.filter(function (r) { return r.tonight; });
   var fastLine = fastTie.length === 1
     ? fastTie[0].t + ' is the fastest (' + fastTie[0].time + ')'
     : cmpJoinNames(fastTie.map(function (r) { return r.t; })) + ' tie for fastest (' + fastTie[0].time + ')';
+  var tonightLine = tonightRows.length === rows.length
+    ? ' Every one can be made tonight with stuff you already own.'
+    : (tonightRows.length
+      ? ' ' + cmpJoinNames(tonightRows.map(function (r) { return r.t; })) + ' can be made tonight with stuff you already own.'
+      : '');
   var kidRows = rows.filter(function (r) { return r.kid; });
   var kidLine = '';
   if (kidRows.length && kidRows.length < rows.length) {
@@ -114,7 +120,7 @@ function cmpBluf(ids, DB) {
     ? ' Every one is rated ' + rows[0].effort + ' in our build guides and links to a full step-by-step below.'
     : ' Each links to a full step-by-step build guide below.';
   return nWord + ' easy DIY costumes, head to head. ' +
-    fastLine + '.' + kidLine + effortLine +
+    fastLine + '.' + tonightLine + kidLine + effortLine +
     ' Numbers come straight from our costume bank, which is what powers the Pick My Costume quiz.';
 }
 
