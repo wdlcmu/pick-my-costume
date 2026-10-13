@@ -94,7 +94,8 @@
    Every link now gets the accent-orange treatment (bold, underlined) so no
    surface can silently regress to browser-default blue. */
 a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
-html{-webkit-text-size-adjust:100%;overflow-x:clip} /* 2026-09-30: belt-and-suspenders with #s-hero clip for the 118vw hero bats */
+html{-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip} /* 2026-09-30: belt-and-suspenders with #s-hero clip for the 118vw hero bats. 2026-10-13: extended to body as well — html-only clip does not stop iOS Safari from panning sideways when content overflows. clip (unlike hidden) never creates a scroll container, so the sticky header still sticks. */
 body{
   margin:0; color:var(--ink);
   background:
@@ -370,6 +371,12 @@ body.st-open .sitehead{display:none}
 #hero-mosaic .hero-dots{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:3;pointer-events:none}
 #hero-mosaic .hero-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.38);box-shadow:0 0 0 1px rgba(20,10,30,.35),0 1px 3px rgba(20,10,30,.35);transition:background .3s ease}
 #hero-mosaic .hero-dots i.on{background:#fff}
+/* 2026-10-13 (Billy bug): the tile must own horizontal drags. Without
+   touch-action, Safari takes a sideways drag on the tile as a page
+   pan/scroll and fires pointercancel, so the swipe nav never receives
+   the gesture. pan-y keeps vertical page scroll native while horizontal
+   drags are delivered to the tile's pointer handlers. */
+#hero-mosaic a{touch-action:pan-y}
 /* 2026-09-29: Kids zone. One heading over the games chips and the
    kid-favorites rail (were split across the hero and far below). */
 .kidszone{max-width:760px;margin:0 auto}
@@ -666,6 +673,19 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 @media (prefers-reduced-motion:reduce){
   #s-quiz.sheet,#quizBackdrop{transition:none}
 }
+/* 2026-10-13 (Billy bug): the hero sky decorations are absolutely
+   positioned, but #s-hero is position:static, so their containing block
+   was the initial containing block (the viewport-sized box at the page
+   origin) and #s-hero's overflow-x:clip never applied to them. Their
+   flights (bats to 118vw, clouds from -36vw to 114vw) therefore expanded
+   the document's scrollable overflow, and iOS Safari let the whole page
+   pan sideways (a horizontal drag on the hero tile dragged the page
+   instead of the photo). .heroskyclip wraps all of them: it is itself
+   positioned against that same initial containing block (inset:0 = the
+   exact geometry the decorations resolve against today, so nothing
+   moves visually) and clips them for real with overflow:hidden, so
+   nothing they do can widen the page. */
+.heroskyclip{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
 /* 2026-09-28: a few bats drift across the hero now and then. Pure CSS,
    pointer-transparent, silhouettes only. Off under reduced-motion. */
 .bat{position:absolute;pointer-events:none;z-index:1;opacity:.75;animation:batFly linear infinite}
@@ -1278,6 +1298,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 
   <!-- HERO -->
   <section class="screen on" id="s-hero">
+    <!-- 2026-10-13: every hero sky decoration lives inside .heroskyclip so
+         their flights can never widen the page (see the CSS note). -->
+    <div class="heroskyclip" aria-hidden="true">
     <div class="bat" style="top:9%;animation-duration:19s;animation-delay:-6s"><svg viewBox="0 0 64 32" width="40" height="20" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
     <div class="bat" style="top:16%;animation-duration:26s;animation-delay:-17s"><svg viewBox="0 0 64 32" width="30" height="15" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
     <div class="bat" style="top:5%;animation-duration:32s;animation-delay:-24s"><svg viewBox="0 0 64 32" width="48" height="24" aria-hidden="true"><path d="M2 17 Q11 7 21 13 Q27 3 32 11 Q37 3 43 13 Q53 7 62 17 Q53 15 49 21 Q43 16 39 23 Q35 19 32 25 Q29 19 25 23 Q21 16 15 21 Q11 15 2 17 Z" fill="#0d0716"/></svg></div>
@@ -1305,6 +1328,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-09-29: shooting star, night only (gated by #s-hero.night). -->
       <span class="heroshoot"></span>
 </div>
+    </div><!-- /heroskyclip -->
     <div class="hero">
       <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
         <div class="halo" id="moon-halo" aria-hidden="true"></div>
