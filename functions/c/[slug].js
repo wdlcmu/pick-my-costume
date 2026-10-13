@@ -705,7 +705,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var who = GIFT_FROM ? GIFT_FROM + \" picked\" : \"Someone picked\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\\u{1F381} \" + who + \" <strong>" + title + "</strong> for you.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">A starting idea, not a verdict. Take the 2-minute quiz to get your own costume.</p>\" +" +
-    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "_rmSL();" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
@@ -770,7 +770,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend is going as <strong>" + title + "</strong>.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">Take the 2-minute quiz to find YOUR costume to match.</p>\" +" +
-    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -779,7 +779,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend is taking votes on 3 Halloween finalists.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\"><strong>" + title + "</strong> is one of them. Reply 1, 2, or 3 in the chat with your vote.</p>\" +" +
-    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -791,7 +791,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your friend picked <strong>" + title + "</strong> and started a no-clone pact.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">No matching costumes at the parade. Reply with your kid's costume in the chat, or take the 2-minute quiz to get your own.</p>\" +" +
-    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -803,7 +803,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">Your team is going as <strong>" + title + "</strong>.</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">One costume for the whole team. Reply with your kid's shirt size in the team chat, or take the 2-minute quiz to find your own.</p>\" +" +
-    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "return;" +
     "}" +
@@ -811,7 +811,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "b.className = \"rbanner\";" +
     "b.innerHTML = \"<p class=\\\"rbanner-line\\\">\" + SHARER_NAME + \" picked <strong>" + title + "</strong>. What would you pick?</p>\" +" +
     " \"<p class=\\\"rbanner-sub\\\">\" + _rbSub + \"</p>\" +" +
-    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Find your costume</a>\";" +
+    " \"<a class=\\\"cta rbanner-cta\\\" href=\\\"" + quizTargetAttr + "\\\">Pick your costume</a>\";" +
     "main.insertBefore(b, main.firstChild);" +
     "})();" +
     "<" + "/script>";
