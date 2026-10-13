@@ -84,7 +84,7 @@
     .basket-item .bemo{font-size:2.2rem;line-height:1}
     .chop-answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:min(100%,650px);margin:0 auto;min-height:200px}
     @media (max-width:560px){.basket{gap:7px;padding:10px;min-height:138px}.basket-item{min-height:96px;font-size:.72rem}.basket-item .bemo{font-size:1.8rem}.chop-answers{gap:7px}}@keyframes drawLink{to{stroke-dashoffset:0}}@keyframes gentleShake{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
-    .finish{justify-content:center;text-align:center;padding-bottom:6vh}.finish h2{font-size:clamp(3.2rem,11vw,6rem);letter-spacing:-.045em}.finish .result{font-family:"Baloo 2";font-size:clamp(1.8rem,6vw,2.6rem);color:var(--teal-dark);margin:14px 0 8px}.finish p{color:var(--muted);font-size:1.12rem;margin:0 auto 28px;max-width:450px}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.finish-quiz{margin:22px auto 0 !important;font-size:1rem !important}.finish-quiz a{color:var(--teal-dark);font-weight:800}
+    .finish{justify-content:center;text-align:center;padding-bottom:6vh}.finish h2{font-size:clamp(3.2rem,11vw,6rem);letter-spacing:-.045em}.finish .result{font-family:"Baloo 2";font-size:clamp(1.8rem,6vw,2.6rem);color:var(--teal-dark);margin:14px 0 8px}.finish p{color:var(--muted);font-size:1.12rem;margin:0 auto 28px;max-width:450px}.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.finish-quiz{margin:22px auto 0 !important;font-size:1rem !important}.finish-quiz a{color:var(--teal-dark);font-weight:800}.loopback{margin:20px auto 0;text-align:center;font-size:1rem;color:var(--muted)}.loopback a{color:var(--teal-dark);font-weight:800}.loopback a:hover{text-decoration:underline}
     /* 2026-09-30: in-game switcher. Compact, quiet, pinned to the top of each
        game screen — far from the answer/piece tap zones, so it can't eat a
        round the way the old mid-run HUD switcher did (removed 2026-09-28
@@ -162,6 +162,7 @@
           <button class="mode-card" id="startChopped"><span class="mode-title">Chopped</span><span class="mode-copy">Mystery basket build-off</span></button>
           <a class="mode-card" href="/storytime" style="text-decoration:none;display:block" aria-label="Storytime — costumes as bedtime stories"><span class="mode-title">📖 Storytime</span><span class="mode-copy">Costumes as bedtime stories</span></a>
 </div>
+        <p class="loopback"><a href="/">Or find your costume</a> with the 2-minute quiz</p>
       </section>
 
       <section class="screen game" id="game" aria-live="polite">
