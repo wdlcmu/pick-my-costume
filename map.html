@@ -54,8 +54,21 @@
   #mapsection { max-width:1100px; margin:14px auto 0; padding:0 12px; }
   #mapwrap { position:relative; height:70vh; min-height:420px; border-radius:18px; overflow:hidden;
     border:1px solid rgba(255,255,255,.14); background:#0b1026; }
-  #mapwrap.exploring { position:fixed; inset:0; z-index:50; height:auto; min-height:0;
+  /* Exploring starts below the slim top bar (#maptopbar, 46px): the bar
+     takes its own strip of the screen and the map fills the rest, so the
+     bar never overlays the galaxy (top-bar fix, 2026-10-13). */
+  #mapwrap.exploring { position:fixed; inset:46px 0 0 0; z-index:50; height:auto; min-height:0;
     border-radius:0; border:none; }
+  /* ---- slim top bar: only while exploring (the fullscreen map) ---- */
+  #maptopbar { display:none; }
+  body:has(#mapwrap.exploring) #maptopbar { display:flex; position:fixed; top:0; left:0; right:0;
+    height:46px; z-index:60; align-items:center; justify-content:space-between; gap:12px;
+    padding:0 14px; background:#160d28; border-bottom:1px solid #4b3486; }
+  #maptopbar .brand { color:#fdf3e3; text-decoration:none; font-weight:800; font-size:16px;
+    white-space:nowrap; }
+  #maptopbar .brand span { color:#ff8c1a; }
+  #maptopbar .quizlink { flex:none; background:#ff8c1a; color:#fff; font-weight:800; font-size:14px;
+    padding:8px 16px; border-radius:999px; text-decoration:none; white-space:nowrap; }
   #map { position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:grab; }
   #map:focus-visible { outline:2px solid #ffd166; outline-offset:-2px; }
   #activate { position:absolute; inset:0; z-index:8; display:flex; flex-direction:column;
@@ -273,6 +286,10 @@
     <a href="/play">Play</a>
   </nav>
 </header>
+<div id="maptopbar">
+  <a class="brand" href="/">&#x1F383; Pick My <span>Costume</span></a>
+  <a class="quizlink" href="/">Pick my costume</a>
+</div>
 <main id="mapmain">
 <!--MAP_SSR_PRE-->
 <div class="page-head">
