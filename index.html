@@ -365,6 +365,11 @@ body.st-open .sitehead{display:none}
    rotator script below the mosaic), so the tile box never changes size.
    Static first paint is the unchanged bumble-bee tile. */
 #hero-mosaic img.hero-fade{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease;pointer-events:none}
+/* 2026-10-13 v2: progress dots cue that the tile rotates. Top-right inside
+   the tile, clear of the caption bar at the bottom. */
+#hero-mosaic .hero-dots{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:3;pointer-events:none}
+#hero-mosaic .hero-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.38);transition:background .3s ease}
+#hero-mosaic .hero-dots i.on{background:#fff}
 /* 2026-09-29: Kids zone. One heading over the games chips and the
    kid-favorites rail (were split across the hero and far below). */
 .kidszone{max-width:760px;margin:0 auto}
@@ -1364,13 +1369,19 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 <script>
 /* 2026-10-13 (Billy): hero photo rotation. The single static hero photo
    felt stale, so the first mosaic tile now crossfades through the top
-   Pinterest-saved costumes and loops back to Bumble Bee, which stays the
-   first paint. Advances every 5s with a 600ms opacity crossfade; the next
-   photo is preloaded before it swaps. Pauses while the tab is hidden and
-   never runs under prefers-reduced-motion. Each photo gets the vertical
-   object-position from og-focal.json (offline face detection) so the
-   cover crop keeps heads in frame. Tile link, alt text, and caption all
-   swap with the photo. */
+   Pinterest-saved costumes. Advances every 5s with a 600ms opacity
+   crossfade; the next photo is preloaded before it swaps. Pauses while
+   the tab is hidden and never runs under prefers-reduced-motion. Tile
+   link, alt text, and caption all swap with the photo.
+   v2 (Billy phone review, same day): landing on the bee every time still
+   felt static, so the tile now jumps (no fade) to a random slide as soon
+   as that photo has preloaded, then rotates on from there; a row of
+   progress dots at the tile top-right cues that it animates. Per-slide
+   object-positions were re-tuned against PIL cover-crop simulations of
+   the real tile aspects (mobile 4/3, desktop tall) so face + the
+   costume-defining body element both read: Pickle 0% -> 35% (the
+   pom-pom tunic was cropped out), Bacon & Eggs 21.7% -> 45% (the egg
+   yolk was cropped out). */
 (function(){
   try {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1384,21 +1395,59 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       {slug:"bumble-bee", title:"Bumble Bee", w:1280, pos:"26.7%"},
       {slug:"block-monster", title:"Block Monster", w:1200, pos:"0%"},
       {slug:"baby-pumpkin", title:"Baby Pumpkin", w:1120, pos:"35.5%"},
-      {slug:"pickle", title:"Pickle", w:1200, pos:"0%"},
+      {slug:"pickle", title:"Pickle", w:1200, pos:"35%"},
       {slug:"haunted-animatronics", title:"Haunted Animatronics", w:1200, pos:"86%"},
-      {slug:"bacon-eggs", title:"Bacon & Eggs", w:1200, pos:"21.7%"},
+      {slug:"bacon-eggs", title:"Bacon & Eggs", w:1200, pos:"45%"},
       {slug:"board-game-pieces", title:"Board Game Pieces", w:1200, pos:"0%"}
     ];
     function srcsetOf(s){ return "photos/" + s.slug + "-256.webp 256w, photos/" + s.slug + "-480.webp 480w, photos/" + s.slug + ".webp " + s.w + "w"; }
     function srcOf(s){ return "photos/" + s.slug + ".webp"; }
+    var dots = document.createElement("div");
+    dots.className = "hero-dots";
+    dots.setAttribute("aria-hidden", "true");
+    var dotEls = [];
+    for (var d = 0; d < slides.length; d++) {
+      var dot = document.createElement("i");
+      if (d === 0) dot.className = "on";
+      dots.appendChild(dot);
+      dotEls.push(dot);
+    }
+    anchor.appendChild(dots);
+    function setDots(idx){
+      for (var j = 0; j < dotEls.length; j++) dotEls[j].className = (j === idx) ? "on" : "";
+    }
+    function showSlide(idx){
+      var s = slides[idx];
+      base.srcset = srcsetOf(s); base.src = srcOf(s);
+      base.alt = s.title + " costume";
+      base.style.objectPosition = "center " + s.pos;
+      anchor.setAttribute("href", "/c/" + s.slug);
+      anchor.setAttribute("aria-label", s.title + " costume guide");
+      caption.textContent = s.title;
+      setDots(idx);
+    }
+    var current = 0, busy = false, next = -1;
+    var startIdx = Math.floor(Math.random() * slides.length);
+    var startPending = startIdx !== 0;
     var ready = {"bumble-bee": true}, bad = {}, i;
     for (i = 1; i < slides.length; i++) {
-      (function(s){
+      (function(s, idx){
         var im = new Image();
-        im.onload = function(){ ready[s.slug] = true; };
-        im.onerror = function(){ bad[s.slug] = true; };
+        im.onload = function(){
+          ready[s.slug] = true;
+          if (startPending && idx === startIdx && !busy && current === 0) {
+            startPending = false;
+            showSlide(idx); /* instant jump, no fade */
+            current = idx;
+            next = stageNext();
+          }
+        };
+        im.onerror = function(){
+          bad[s.slug] = true;
+          if (idx === startIdx) startPending = false;
+        };
         im.sizes = SIZES; im.srcset = srcsetOf(s); im.src = srcOf(s);
-      })(slides[i]);
+      })(slides[i], i);
     }
     var fade = document.createElement("img");
     fade.className = "hero-fade";
@@ -1406,7 +1455,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     fade.setAttribute("aria-hidden", "true");
     fade.sizes = SIZES;
     anchor.insertBefore(fade, caption);
-    var current = 0, busy = false, next = -1;
     function stageNext(){
       for (var k = 1; k <= slides.length; k++) {
         var idx = (current + k) % slides.length, s = slides[idx];
@@ -1428,12 +1476,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       busy = true;
       fade.style.opacity = "1";
       setTimeout(function(){
-        base.srcset = srcsetOf(s); base.src = srcOf(s);
-        base.alt = s.title + " costume";
-        base.style.objectPosition = "center " + s.pos;
-        anchor.setAttribute("href", "/c/" + s.slug);
-        anchor.setAttribute("aria-label", s.title + " costume guide");
-        caption.textContent = s.title;
+        showSlide(next);
       }, 300);
       setTimeout(function(){
         fade.style.transition = "none";
