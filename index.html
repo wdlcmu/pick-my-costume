@@ -359,6 +359,12 @@ body.st-open .sitehead{display:none}
   #hero-mosaic a:first-child img{aspect-ratio:auto}
   #hero-mosaic span{position:absolute;left:8px;right:8px;bottom:8px;font-size:14px;font-weight:700;color:#fff;background:rgba(20,10,30,.6);border-radius:8px;padding:5px 8px;text-align:center;line-height:1.3}
 }
+/* 2026-10-13 (Billy): hero photo rotation. The first mosaic tile crossfades
+   through the top Pinterest-saved costumes. The fade layer is a second img
+   stacked over the base img inside the same tile (built by the inline
+   rotator script below the mosaic), so the tile box never changes size.
+   Static first paint is the unchanged bumble-bee tile. */
+#hero-mosaic img.hero-fade{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease;pointer-events:none}
 /* 2026-09-29: Kids zone. One heading over the games chips and the
    kid-favorites rail (were split across the hero and far below). */
 .kidszone{max-width:760px;margin:0 auto}
@@ -1355,6 +1361,94 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <a href="/c/baby-dino" aria-label="Baby Dinosaur costume guide"><img src="photos/baby-dino.webp" srcset="photos/baby-dino-256.webp 256w, photos/baby-dino-480.webp 480w, photos/baby-dino.webp 1200w" sizes="(min-width:1024px) 320px, 128px" alt="Baby Dinosaur costume" loading="eager"><span>Baby Dinosaur</span></a>
         <a href="/c/emerald-witch" aria-label="Emerald Witch costume guide"><img src="photos/emerald-witch.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w, photos/emerald-witch-960.webp 960w" sizes="(min-width:1024px) 320px, 128px" alt="Emerald Witch costume" loading="eager"><span>Emerald Witch</span></a>
 </div>
+<script>
+/* 2026-10-13 (Billy): hero photo rotation. The single static hero photo
+   felt stale, so the first mosaic tile now crossfades through the top
+   Pinterest-saved costumes and loops back to Bumble Bee, which stays the
+   first paint. Advances every 5s with a 600ms opacity crossfade; the next
+   photo is preloaded before it swaps. Pauses while the tab is hidden and
+   never runs under prefers-reduced-motion. Each photo gets the vertical
+   object-position from og-focal.json (offline face detection) so the
+   cover crop keeps heads in frame. Tile link, alt text, and caption all
+   swap with the photo. */
+(function(){
+  try {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var anchor = document.querySelector("#hero-mosaic a");
+    if (!anchor) return;
+    var base = anchor.querySelector("img");
+    var caption = anchor.querySelector("span");
+    if (!base || !caption) return;
+    var SIZES = "(min-width:1024px) 480px, 100vw";
+    var slides = [
+      {slug:"bumble-bee", title:"Bumble Bee", w:1280, pos:"26.7%"},
+      {slug:"block-monster", title:"Block Monster", w:1200, pos:"0%"},
+      {slug:"baby-pumpkin", title:"Baby Pumpkin", w:1120, pos:"35.5%"},
+      {slug:"pickle", title:"Pickle", w:1200, pos:"0%"},
+      {slug:"haunted-animatronics", title:"Haunted Animatronics", w:1200, pos:"86%"},
+      {slug:"bacon-eggs", title:"Bacon & Eggs", w:1200, pos:"21.7%"},
+      {slug:"board-game-pieces", title:"Board Game Pieces", w:1200, pos:"0%"}
+    ];
+    function srcsetOf(s){ return "photos/" + s.slug + "-256.webp 256w, photos/" + s.slug + "-480.webp 480w, photos/" + s.slug + ".webp " + s.w + "w"; }
+    function srcOf(s){ return "photos/" + s.slug + ".webp"; }
+    var ready = {"bumble-bee": true}, bad = {}, i;
+    for (i = 1; i < slides.length; i++) {
+      (function(s){
+        var im = new Image();
+        im.onload = function(){ ready[s.slug] = true; };
+        im.onerror = function(){ bad[s.slug] = true; };
+        im.sizes = SIZES; im.srcset = srcsetOf(s); im.src = srcOf(s);
+      })(slides[i]);
+    }
+    var fade = document.createElement("img");
+    fade.className = "hero-fade";
+    fade.setAttribute("alt", "");
+    fade.setAttribute("aria-hidden", "true");
+    fade.sizes = SIZES;
+    anchor.insertBefore(fade, caption);
+    var current = 0, busy = false, next = -1;
+    function stageNext(){
+      for (var k = 1; k <= slides.length; k++) {
+        var idx = (current + k) % slides.length, s = slides[idx];
+        if (!bad[s.slug]) {
+          fade.srcset = srcsetOf(s); fade.src = srcOf(s);
+          fade.style.objectPosition = "center " + s.pos;
+          return idx;
+        }
+      }
+      return current;
+    }
+    next = stageNext();
+    function advance(){
+      if (busy || document.hidden) return;
+      if (next === current) return;
+      var s = slides[next];
+      if (bad[s.slug]) { next = stageNext(); return; }
+      if (!ready[s.slug]) return; /* still preloading; retry next tick */
+      busy = true;
+      fade.style.opacity = "1";
+      setTimeout(function(){
+        base.srcset = srcsetOf(s); base.src = srcOf(s);
+        base.alt = s.title + " costume";
+        base.style.objectPosition = "center " + s.pos;
+        anchor.setAttribute("href", "/c/" + s.slug);
+        anchor.setAttribute("aria-label", s.title + " costume guide");
+        caption.textContent = s.title;
+      }, 300);
+      setTimeout(function(){
+        fade.style.transition = "none";
+        fade.style.opacity = "0";
+        void fade.offsetWidth;
+        fade.style.transition = "";
+        current = next;
+        next = stageNext();
+        busy = false;
+      }, 700);
+    }
+    setInterval(advance, 5000);
+  } catch (e) {}
+})();
+</script>
 </div>
       <!-- 2026-10-06 (Lane 2, second wave): Pantry elevation. Strong secondary
            section directly under the hero. Chip counts are computed live by
