@@ -587,7 +587,7 @@ var IDEAS = [
   {id:"neon-demon-hunter", title:"Neon Demon Hunter", blurb:"Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.", why:"Pop star by day, demon hunter by night. The year's biggest costume energy.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,funny:1,scary:1,crafty:1,tv:3,occbar:2,occparty:2}, fit:"U", venue:{bar:2}, rank:1},
   {id:"classic-ghost", title:"Classic Ghost", blurb:"A white sheet with cut-out eyes.", why:"Top five for kids and adults alike. The most universal costume there is.", audience:["kid","solo","family"], budget:["diy","low"], tags:{scary:2,couch:3,simple:3,kid36:2,kid7plus:2,cute:1,occcandy:2,occlowkey:1,occtreat:2}, trending:true, trendLane:"Ghost", trendStat:"a perennial favorite", fit:"U", venue:{bar:1}, rank:2},
   {id:"blue-dog-family", title:"Aussie Dog Family", blurb:"Dog-ear headbands and blue-or-orange shirts: mama, dad, and the pups.", pictured:"Pictured: the mama dog, papa dog, and two pups.", why:"Blue and orange shirts, paper ears, and your kid completely loses it.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":2,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:3, roles:{kid:["a pup","the blue pup"],adult:["dad","mama"]}},
-  {id:"superhero-family", title:"Superhero Family", blurb:"Red sweatsuits, black eye masks, felt logo. The whole family goes super.", pictured:"Pictured: a family of four in matching blue superhero suits with red capes and black eye masks.", why:"Scales from two to six people, and every age knows the movie.", audience:["family"], budget:["low","mid"], tags:{cute:2,funny:1,couch:1,simple:2,heroes:3,tv:2,occparty:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:4},
+  {id:"superhero-family", title:"Superhero Family", blurb:"Red sweatsuits, black eye masks, felt logo. The whole family goes super.", pictured:"Pictured: a family of four in matching red sweatsuits with black felt eye masks and a yellow felt lightning bolt on the chest.", why:"Scales from two to six people, and every age knows the movie.", audience:["family"], budget:["low","mid"], tags:{cute:2,funny:1,couch:1,simple:2,heroes:3,tv:2,occparty:1,occtreat:2}, fit:"U", venue:{bar:1}, rank:4},
   {id:"blue-alien-ohana", title:"Blue Alien Ohana", blurb:"A blue hoodie and an antenna headband turn the kid into the alien.", pictured:"Pictured: the girl and the alien looks.", why:"Everyone knows the alien without you saying a word, and the headband does all the work.", audience:["family","kid"], budget:["diy","low"], tags:{"cute":3,"funny":1,"simple":2,"couch":2,"kidunder3":3,"kid36":2,animals:1,tv:3,occcandy:1,occtreat:2,occparade:2}, fit:"U", venue:{bar:2}, rank:5, roles:{kid:["the alien"],adult:["the girl"]}},
   {id:"emerald-witch", title:"Emerald Witch", blurb:"An all-green-everything gown, dramatic makeup, and a pointy hat gone couture. Wicked Elphaba inspired.", why:"Green is the color of the season, and you can thrift most of it.", audience:["solo"], budget:["mid","diy"], tags:{allout:2,cute:2,scary:1,crafty:1,princess:1,tv:3,occbar:2,occparty:2}, trending:true, trendLane:"Witch", trendStat:"a top pick for adults this year", fit:"F", venue:{bar:2}, rank:6},
   {id:"gloom-bloom", title:"Gloom & Bloom", blurb:"Braids and black for Gloom, color-pop and smiles for Bloom.", pictured:"Pictured: gloom and bloom in black and color.", why:"The deadpan duo: one broods, one sparkles, both nail it.", audience:["group"], budget:["diy","low"], tags:{"funny":1,"scary":2,"simple":2,"couch":2,"kid7plus":2,tv:3,occbar:1,occparty:2}, fit:"F", venue:{bar:2}, rank:7, roles:{kid:["Gloom"],adult:["Bloom"]}},
@@ -11068,8 +11068,11 @@ function buildMediaShareRows(idea){
     if (typeof Analytics !== "undefined" && Analytics.track){
       try { Analytics.track("pin_click", {idea_id: idea.id}); } catch(_){}
     }
+    /* 2026-10-13: the pin URL carries a minted share id (?s=&o=pin), same
+       as every other share surface, so pin-driven arrivals land in the
+       recipient context instead of as bare /c/ visits. */
     var pinUrl = "https://pinterest.com/pin/create/button/" +
-      "?url=" + encodeURIComponent("https://pickmycostume.com/c/" + idea.id) +
+      "?url=" + encodeURIComponent("https://pickmycostume.com/c/" + idea.id + "?s=" + newShareId() + "&o=pin") +
       "&media=" + encodeURIComponent("https://pickmycostume.com/images/og/" + idea.id + ".jpg") +
       "&description=" + encodeURIComponent(idea.title + " - DIY Halloween costume guide from Pick My Costume");
     window.open(pinUrl, "_blank", "noopener");
@@ -13812,8 +13815,13 @@ enhanceStaticRailCards();
    every card opens the full pick flow via openIdeaDetail, exactly like a
    browse card (browse parity: no dead ends).
    2026-09-27: F/M/F/M visual rhythm (lead-subject gender), kid-first.
-   blue-dog-family = the Bluey-ish one, cat-mouse = the Mickey-ish one. */
-var KIDS_RAIL_IDS = ["little-witch","web-slinger-kid","garden-fairy","classic-ghost","snow-sisters","backyard-hero","fairy-tale-princesses","blue-dog-family","baby-dino","cat-mouse","glow-skeleton"];
+   blue-dog-family = the Bluey-ish one, cat-mouse = the Mickey-ish one.
+   2026-10-13: de-duplicated against the rest of the homepage. Little Witch,
+   Classic Ghost, Aussie Dog Family, Baby Dinosaur, and Glow Skeleton already
+   appear in Featured, the Storytime rail, or the Trends strip, so their
+   slots now carry Ladybug, Little Lion, Tiny Firefighter, Little Baker,
+   and The Tin Hero, none pictured anywhere else on the page. */
+var KIDS_RAIL_IDS = ["ladybug","web-slinger-kid","garden-fairy","little-lion","snow-sisters","backyard-hero","fairy-tale-princesses","tiny-firefighter","little-baker","cat-mouse","tin-hero"];
 (function renderKidsRail(){
   var row = document.getElementById("row-kids");
   if (!row) return;
