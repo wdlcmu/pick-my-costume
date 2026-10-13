@@ -95,8 +95,15 @@
     font-size:13px; font-weight:700; padding:8px 16px; border-radius:20px;
     background:rgba(23,29,61,.92); color:#fff; border:1px solid rgba(255,255,255,.35); cursor:pointer; }
   #mapwrap.exploring #doneBtn { display:block; }
-  #hint { position:absolute; left:0; right:0; bottom:16px; z-index:4; text-align:center;
-    font-size:12px; opacity:.55; pointer-events:none; transition:opacity .6s; }
+  /* Done floats at the top right, over the region row's band. Inset the row's
+     scrollport by Done's footprint (12px offset + ~65px wide + gap) so region
+     pills can never slide under it at any width (overlap fix, 2026-10-13). */
+  #chips { margin-right:92px; }
+  /* How-to sits in the empty lower band of the first screen, not on the
+     screen's bottom edge; right inset keeps the text clear of the zoom
+     controls. It still fades on zoom and after 9s (existing JS). */
+  #hint { position:absolute; left:12px; right:68px; bottom:10%; z-index:4; text-align:center;
+    font-size:13px; line-height:1.45; opacity:.65; pointer-events:none; transition:opacity .6s; }
   #filter-empty { position:absolute; left:12px; right:12px; top:50%; z-index:5; text-align:center;
     font-size:14px; pointer-events:none; }
   #nodetip { position:absolute; z-index:8; pointer-events:none; max-width:230px;
@@ -304,7 +311,7 @@
       <p>Pinch or use the buttons to zoom. Tap any costume to open its guide.</p>
       <button id="activateBtn">Tap to explore</button>
     </div>
-    <div id="hint">Zoom in and the stars become photos</div>
+    <div id="hint">Tap a cluster to explore. Zoom in and the stars become costumes.</div>
     <div id="filter-empty" hidden></div>
     <div id="nodetip" hidden></div>
     <div id="card" role="dialog" aria-labelledby="cardTitle" hidden>
