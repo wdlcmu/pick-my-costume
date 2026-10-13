@@ -1402,7 +1402,12 @@ footer a#about-link{display:inline-block;padding:12px 18px}
    the real tile aspects (mobile 4/3, desktop tall) so face + the
    costume-defining body element both read: Pickle 0% -> 35% (the
    pom-pom tunic was cropped out), Bacon & Eggs 21.7% -> 45% (the egg
-   yolk was cropped out). */
+   yolk was cropped out).
+   v3 (Billy phone review, same day): the dots promise a carousel, so
+   the tile now answers a horizontal swipe (pointer events, so mouse
+   drag matches): left = next, right = previous, wrapping at both
+   ends. A tap still follows the tile link; a swipe suppresses that
+   gesture's click. After a manual swipe, auto-rotation holds ~10s. */
 (function(){
   try {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1488,28 +1493,109 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       return current;
     }
     next = stageNext();
-    function advance(){
-      if (busy || document.hidden) return;
-      if (next === current) return;
-      var s = slides[next];
-      if (bad[s.slug]) { next = stageNext(); return; }
-      if (!ready[s.slug]) return; /* still preloading; retry next tick */
+    /* Crossfade the tile to slide idx. Shared by the auto-rotation and
+       manual swipe nav so caption, link, and dots swap identically.
+       Returns false (no-op) when a fade is already running, idx is the
+       current slide, or the photo is bad / not preloaded yet. */
+    function fadeTo(idx){
+      if (busy || idx === current) return false;
+      var s = slides[idx];
+      if (bad[s.slug] || !ready[s.slug]) return false;
       busy = true;
+      fade.srcset = srcsetOf(s); fade.src = srcOf(s);
+      fade.style.objectPosition = "center " + s.pos;
       fade.style.opacity = "1";
       setTimeout(function(){
-        showSlide(next);
+        showSlide(idx);
       }, 300);
       setTimeout(function(){
         fade.style.transition = "none";
         fade.style.opacity = "0";
         void fade.offsetWidth;
         fade.style.transition = "";
-        current = next;
+        current = idx;
         next = stageNext();
         busy = false;
       }, 700);
+      return true;
     }
-    setInterval(advance, 5000);
+    function advance(){
+      if (busy || document.hidden) return;
+      if (next === current) return;
+      var s = slides[next];
+      if (bad[s.slug]) { next = stageNext(); return; }
+      if (!ready[s.slug]) return; /* still preloading; retry next tick */
+      fadeTo(next);
+    }
+    var timer = setInterval(advance, 5000);
+    var resumeTimer = null;
+    /* After a manual swipe, hold auto-rotation for ~10s, then resume. */
+    function pauseAuto(){
+      clearInterval(timer);
+      if (resumeTimer) clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function(){
+        resumeTimer = null;
+        timer = setInterval(advance, 5000);
+      }, 10000);
+    }
+    function manualGo(dir){
+      if (busy) return; /* one gesture, one outcome: no advance mid-fade */
+      var idx = current;
+      for (var k = 1; k <= slides.length; k++) {
+        var cand = (((current + dir * k) % slides.length) + slides.length) % slides.length;
+        if (!bad[slides[cand].slug]) { idx = cand; break; }
+      }
+      if (idx === current) return;
+      pauseAuto();
+      if (!fadeTo(idx)) {
+        /* Target photo has not preloaded yet: swap instantly, like the
+           random-start jump, and hold the busy guard briefly so a
+           bouncing second gesture cannot double-advance. */
+        busy = true;
+        showSlide(idx);
+        current = idx;
+        next = stageNext();
+        setTimeout(function(){ busy = false; }, 350);
+      }
+    }
+    /* Swipe nav (v3): horizontal pointer drag on the tile. Left = next
+       photo, right = previous, wrapping at both ends. The slide changes
+       the moment the drag crosses 40px horizontally (and horizontal
+       beats vertical, so page scroll is never mistaken for a swipe);
+       no preventDefault on move, and the browser fires pointercancel
+       when it takes over a scroll, so vertical scrolling is untouched.
+       The gesture's click is suppressed so a swipe never also follows
+       the link; a tap (under threshold) follows it exactly as before. */
+    var SWIPE_MIN = 40;
+    var pActive = false, pSwiped = false, pStartX = 0, pStartY = 0;
+    anchor.addEventListener("pointerdown", function(e){
+      pActive = true; pSwiped = false;
+      pStartX = e.clientX; pStartY = e.clientY;
+    });
+    anchor.addEventListener("pointermove", function(e){
+      if (!pActive || pSwiped) return;
+      var dx = e.clientX - pStartX, dy = e.clientY - pStartY;
+      if (Math.abs(dx) >= SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) {
+        pSwiped = true;
+        manualGo(dx < 0 ? 1 : -1);
+      }
+    });
+    function pEnd(){
+      pActive = false;
+      /* If this gesture's click never arrives to consume the latch,
+         clear it so a later genuine tap is never eaten. */
+      if (pSwiped) setTimeout(function(){ pSwiped = false; }, 400);
+    }
+    anchor.addEventListener("pointerup", pEnd);
+    anchor.addEventListener("pointercancel", pEnd);
+    anchor.addEventListener("click", function(e){
+      if (pSwiped) {
+        e.preventDefault();
+        e.stopPropagation();
+        pSwiped = false;
+      }
+    }, true);
+    anchor.addEventListener("dragstart", function(e){ e.preventDefault(); });
   } catch (e) {}
 })();
 </script>
