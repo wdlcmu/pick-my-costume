@@ -109,7 +109,9 @@ h1{font-size:32px;margin:8px 0 4px;line-height:1.2}
 .lede{font-size:18px;margin:0 0 8px}
 .cite-line{font-size:13px;color:var(--muted);margin:0 0 28px}
 .cite-line a{color:var(--accent)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15px}
+@media (max-width:560px){th,td{padding:10px 6px}.bar{min-width:38px}table{font-size:14px}.rank{width:24px}.table-scroll table{min-width:340px}}
 th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--bg2)}
 tr:last-child td{border-bottom:none}
@@ -149,6 +151,7 @@ p.a{color:var(--muted);margin:0 0 20px}
 <p class="lede">Which costumes America is actually looking up right now, and which ones we have a DIY guide for.</p>
 <p class="cite-line">Source: <a href="https://trends.pinterest.com/?country=US">Pinterest Trends</a>, United States searches, week ending Oct 5, 2026. This is national search interest, not our own site traffic (our audience is small, and we do not present it as a trend).</p>
 
+<div class="table-scroll">
 <table id="trends-table">
   <thead><tr><th>#</th><th>Costume search</th><th>Interest</th><th>4-week change</th><th>Our guide</th></tr></thead>
   <tbody>
@@ -170,6 +173,7 @@ p.a{color:var(--muted);margin:0 0 20px}
       <tr><td class="rank">16</td><td>pyramid head costume</td><td><div class="bar"><i style="width:2%"></i></div></td><td class="up">+0%</td><td class="guide"><span class="gap">No guide yet</span></td></tr>
   </tbody>
 </table>
+</div>
 
 <div class="note" id="methodology">
   <h2>How to read this</h2>
