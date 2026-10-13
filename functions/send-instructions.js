@@ -285,15 +285,17 @@ export async function onRequestPost(context) {
 
   const composed = composeEmail(idea, ideaId, mintShareId());
   const subject = cleanHeader(composed.subject);
+  const _c = composeEmail(idea, ideaId, mintShareId());
+  let _r;
   try {
-    const r1 = await fetch('https://example.com');
-    var s1 = r1.status;
-  } catch (e) { return json({ ok: false, stage: 'fetch-example-threw', err: String((e && e.message) || e) }); }
-  try {
-    const r2 = await fetch(RESEND_URL);
-    var s2 = r2.status;
-  } catch (e) { return json({ ok: false, stage: 'fetch-resend-threw', err: String((e && e.message) || e) }); }
-  return json({ ok: true, dry_run: true, stage: 'fetched', example: s1, resend: s2 });
+    _r = await fetch(RESEND_URL, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: FROM, reply_to: FROM, to: email, subject: cleanHeader(_c.subject), text: _c.text, html: _c.html }),
+    });
+  } catch (e) { return json({ ok: false, stage: 'real-fetch-threw', err: String((e && e.message) || e) }); }
+  const _t = await _r.text().catch(function () { return ''; });
+  return json({ ok: true, dry_run: true, stage: 'real-fetched', status: _r.status, body: _t.slice(0, 200) });
   let res;
   try {
     res = await fetch(RESEND_URL, {
