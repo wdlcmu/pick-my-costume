@@ -587,6 +587,11 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .moresec{margin-top:20px;text-align:center}
 .morebtn{background:var(--card);color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;min-height:44px}
 #more-body{text-align:left}
+/* 2026-10-13 (Billy): the More expander is retired; tools get their own
+   visible section and the page ends with a real footer. */
+.toolssec{margin-top:18px}
+.toolssec .q-title{margin:0 0 8px}
+.sitefoot{margin-top:28px;border-top:1px solid var(--line);padding-top:14px}
 /* 2026-09-26 (landing refresh): proof-card entrance. A soft staggered
    fade-up on first paint only; the .fresh gate below is retired by JS ~1.2s
    after load, so Discover tab switches (un-hiding a row restarts its cards'
@@ -1622,9 +1627,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            is utility. Promise → proof → utility. -->
       <section class="tonightsec" id="tonight-section" aria-label="Costumes you can make tonight">
         <h2 class="q-title">Make it tonight</h2>
-        <p class="fine" style="margin:0 0 10px">Start after dinner, done before bed. Drying time shown honestly.</p>
+        <p class="fine" style="margin:0 0 10px"><span id="tonight-count">126 costumes</span> you can start after dinner and finish before bed. Drying time shown honestly.</p>
         <div class="proofrow" id="row-tonight-live" role="list" aria-label="Costumes you can make tonight"></div>
-        <p class="fine" id="row-tonight-live-status" style="margin:8px 0 0" hidden></p>
       </section>
       <!-- 2026-10-06 (Lane 2, second wave): Pantry elevation. Strong utility
            section after the tonight rail. Chip counts are computed live by
@@ -1635,13 +1639,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <section class="pantrysec" id="pantry-section" aria-label="Use what you already have">
         <h2 class="q-title">What can I make with what I already have?</h2>
         <p class="fine" style="margin:0 0 10px">Tell us what you already own. We&rsquo;ll rank all 169 builds by what you can make &mdash; and what you&rsquo;re still missing.</p>
+        <p class="fine" style="margin:0 0 8px">Basics like scissors, tape, and cardboard are already assumed.</p>
         <div class="pantrychips" id="pantry-chips" aria-live="polite">
           <span class="pchip"><b id="pc-ready">&ndash;</b> Nothing else needed</span>
           <span class="pchip"><b id="pc-one">&ndash;</b> 1 thing away</span>
           <span class="pchip"><b id="pc-two">&ndash;</b> 2 things away</span>
         </div>
         <p style="margin:12px 0 0"><button class="cta" id="btn-pantry" type="button">See what I can make</button></p>
-        <p class="fine" style="margin:8px 0 0">Basics like scissors, tape, and cardboard are already assumed.</p>
       </section>
       <!-- 2026-10-06 (Billy): Galaxy teaser. The map is too distinctive to
            hide behind the nav — it gets its own visual module. -->
@@ -1650,7 +1654,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2 class="q-title">169 costumes. One galaxy.</h2>
         <p class="fine" style="margin:0 0 10px">Zoom, wander, and find something you wouldn&rsquo;t have thought to search for.</p>
         <a class="galaxypreview" href="/map" aria-label="Explore the costume galaxy">
-          <img src="images/galaxy-preview.webp" alt="The costume galaxy: glowing clusters of Dinosaur Land, Princess Castle, Fright Night, and more" loading="lazy">
+          <img src="images/galaxy-preview-stars.webp" alt="The costume galaxy: glowing star clusters of Dinosaur Land, Princess Castle, and more" loading="lazy">
           <div class="gpstars" aria-hidden="true"></div>
           <span>Explore the galaxy &rarr;</span>
         </a>
@@ -1753,7 +1757,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            removed to cut decisions (pinpoint-chips no longer rendered). -->
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Know what you want?</p>
-        <p class="fine" style="margin:0 0 6px">Search all <span id="hero-search-count">169</span> costumes directly.</p>
+        <p class="fine" style="margin:0 0 6px">Search all costumes directly.</p>
         <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
@@ -1765,7 +1769,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2 class="q-title">Start with a classic</h2>
         <p class="fine" style="margin:0 0 10px">Three easy builds to get you going.</p>
         <div class="featgrid">
-          <a href="/c/classic-ghost" aria-label="Classic Ghost costume guide"><img src="photos/classic-ghost.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="128px" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span><span class="proofmeta">10 min · Easy</span></a>
+          <a href="/c/black-cat" aria-label="Black Cat Burglar costume guide"><img src="photos/black-cat.webp" srcset="photos/black-cat-256.webp 256w, photos/black-cat-480.webp 480w" sizes="128px" alt="Black Cat Burglar costume" loading="lazy"><span>Black Cat Burglar</span><span class="proofmeta">20 min · Easy</span></a>
           <a href="/c/blue-dog-family" aria-label="Aussie Dog Family costume guide"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span><span class="proofmeta">25 min · Easy</span></a>
           <a href="/c/vampire" aria-label="Classic Vampire costume guide"><img src="photos/vampire.webp" srcset="photos/vampire-256.webp 256w, photos/vampire-480.webp 480w" sizes="128px" alt="Classic Vampire costume" loading="lazy"><span>Classic Vampire</span><span class="proofmeta">25 min · Easy</span></a>
         </div>
@@ -1810,7 +1814,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            Cards are JS-rendered from KIDS_RAIL_IDS; each opens the full pick
            flow via openIdeaDetail (browse parity). -->
       <div class="explore">
-        <p class="fine explore-head">More ways to explore</p>
         <p class="fine" style="margin:14px 0 0">Costume games</p><div class="kidbar firstonly" id="kidbar" aria-label="Costume games for kids">
           <a href="/play?game=peekaboo">Peekaboo</a>
           <a href="/play?game=match">Match the pieces</a>
@@ -1818,30 +1821,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
         <p class="fine" style="margin:6px 0 0">Guess who&#8217;s hiding, pair the pieces, or build a costume from a mystery basket.</p>
       <p style="margin:16px 0 0" hidden><button type="button" id="btn-spin" class="ghost">Can&#39;t decide?</button></p>
-      <!-- 2026-10-03 (Billy): homepage simplification. The More expander:
-           trending + new rails, tool tabs, pantry teaser, and FAQ live here.
-           New visitors get quiz -> tonight -> search -> featured; everything
-           else is one tap away. Unit: more-expander. -->
-      <div class="moresec" id="more-wrap" style="margin-top:20px">
-        <button class="morebtn" id="more-btn" type="button" aria-expanded="false" aria-controls="more-body">More: trending, tools, pantry, FAQ &darr;</button>
-        <div id="more-body" hidden>
-      <p class="fine" style="margin:14px 0 0">Popular costumes</p>
-          <div class="proofrow" id="row-trending" role="list" aria-label="Popular costumes this week">
-            <!-- 2026-10-12 proof-strip refresh: cards drawn from trailing-7-day pick_saved
-                 counts (PostHog, probe traffic excluded); display order follows the
-                 F/M/F/M lead-subject rhythm with X after. GPT loop run 128 (2026-10-12):
-                 rank badges removed: the fresh pull showed 11 ideas tied at 1 save each,
-                 so #1/#2/#3 marks were false precision against the honesty standard.
-                 Rank badges return only when a leader's count strictly separates. -->
-            <a href="/?idea=bamboo-demon&from=rail"><img src="photos/bamboo-demon.webp" srcset="photos/bamboo-demon-256.webp 256w, photos/bamboo-demon-480.webp 480w, photos/bamboo-demon-960.webp 960w" sizes="128px" alt="Bamboo-Muzzle Demon costume" loading="lazy"><span>Bamboo-Muzzle Demon</span></a>
-            <a href="/?idea=banana&from=rail"><img src="photos/banana.webp" srcset="photos/banana-256.webp 256w, photos/banana-480.webp 480w" sizes="128px" alt="Banana costume" loading="lazy"><span>Banana</span></a>
-            <a href="/?idea=classic-ghost&from=rail"><img src="photos/classic-ghost.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w, photos/classic-ghost-960.webp 960w" sizes="128px" alt="Classic Ghost costume" loading="lazy"><span>Classic Ghost</span></a>
-            <a href="/?idea=ninja&from=rail"><img src="photos/ninja.webp" srcset="photos/ninja-256.webp 256w, photos/ninja-480.webp 480w" sizes="128px" alt="Ninja costume" loading="lazy"><span>Ninja</span></a>
-            <a href="/?idea=the-olympians&from=rail"><img src="photos/the-olympians.webp" srcset="photos/the-olympians-256.webp 256w, photos/the-olympians-480.webp 480w, photos/the-olympians-960.webp 960w" sizes="128px" alt="The Olympians costume" loading="lazy"><span>The Olympians</span></a>
-            <a href="/?idea=mermaid-crew&from=rail"><img src="photos/mermaid-crew.webp" srcset="photos/mermaid-crew-256.webp 256w, photos/mermaid-crew-480.webp 480w, photos/mermaid-crew-960.webp 960w" sizes="128px" alt="Mermaid Crew costume" loading="lazy"><span>Mermaid Crew</span></a>
-            <a href="/?idea=kart-racers&from=rail"><img src="photos/kart-racers.webp" srcset="photos/kart-racers-256.webp 256w, photos/kart-racers-480.webp 480w, photos/kart-racers-960.webp 960w" sizes="128px" alt="Kart Racers costume" loading="lazy"><span>Kart Racers</span></a>
-            <a href="/?idea=ghost-hunters&from=rail"><img src="photos/ghost-hunters.webp" srcset="photos/ghost-hunters-256.webp 256w, photos/ghost-hunters-480.webp 480w" sizes="128px" alt="Ghost Hunters costume" loading="lazy"><span>Ghost Hunters</span></a>
-</div>
+      <!-- 2026-10-13 (Billy): the More expander is retired. The new-costumes
+           rail, the tool tabs, and the FAQ are visible sections now. The
+           trending rail duplicated the Trends section above and the pantry
+           teaser duplicated the Pantry section, so both are removed. -->
       <p class="fine" style="margin:14px 0 0">New costumes</p>
           <div class="proofrow" id="row-new" role="list" aria-label="New costumes this week">
             <a href="/?idea=beekeeper-bee&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/beekeeper-bee.webp" srcset="photos/beekeeper-bee-256.webp 256w, photos/beekeeper-bee-480.webp 480w, photos/beekeeper-bee-960.webp 960w" sizes="128px" alt="Beekeeper and Bee costume" loading="lazy"><span>Beekeeper &amp; Bee</span></a>
@@ -1850,6 +1833,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <a href="/?idea=little-lifeguard&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/little-lifeguard.webp" srcset="photos/little-lifeguard-256.webp 256w, photos/little-lifeguard-480.webp 480w, photos/little-lifeguard-960.webp 960w" sizes="128px" alt="Little Lifeguard costume" loading="lazy"><span>Little Lifeguard</span></a>
             <a href="/?idea=fossil-hunter&from=rail-new"><span class="proofbadge">✨ New</span><img src="photos/fossil-hunter.webp" srcset="photos/fossil-hunter-256.webp 256w, photos/fossil-hunter-480.webp 480w, photos/fossil-hunter-960.webp 960w" sizes="128px" alt="Fossil Hunter costume" loading="lazy"><span>Fossil Hunter</span></a>
 </div>
+      <section class="toolssec" id="tools-section" aria-label="Costume tools">
+        <h2 class="q-title">Tools</h2>
+        <p class="fine" style="margin:0 0 10px">Little helpers for planning, printing, and deciding.</p>
         <div class="tooltabrow" id="tool-tabs" role="tablist" aria-label="Costume tools" style="margin-top:12px">
           <button class="tooltab" type="button" role="tab" id="toolt-handmedown" aria-selected="false" aria-controls="toolpanel-handmedown" data-item-id="handmedown">♻️ Closet refresh</button>
           <button class="tooltab" type="button" role="tab" id="toolt-flyer" aria-selected="false" aria-controls="toolpanel-flyer" data-item-id="flyer">🖨️ Printables</button>
@@ -1879,8 +1865,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
             <p style="margin:0"><button type="button" id="btn-shuffler-hero" class="textlink">🎲 Shuffle who&rsquo;s who</button></p>
 </div>
 </div>
-        <p style="margin:0 0 4px"><a class="pantry-link" href="/pantry" title="Tick the clothes and materials already in your house, we rank costumes by what you own">👕 What materials or clothes are already in your house?</a></p>
-      <p class="fine" style="margin:6px 0 0">Tick what you own: cardboard, old sheets, face paint, last year&rsquo;s costume. We rank all 169 ideas by what you can build tonight.</p>
+      </section>
   <section id="faq" aria-label="Frequently asked questions" style="margin-top:28px">
     <h2 class="q-title">Good questions</h2>
     <div class="faq-item">
@@ -1926,24 +1911,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     });
   })();
   </script>
-        </div>
-      </div>
-      <script>
-      /* 2026-10-03 (Billy): More expander toggle. One tap reveals the rails,
-         tools, pantry teaser, and FAQ; tapping again collapses. */
-      (function(){
-        var b = document.getElementById("more-btn");
-        var body = document.getElementById("more-body");
-        if (!b || !body) return;
-        b.addEventListener("click", function(){
-          var open = b.getAttribute("aria-expanded") === "true";
-          b.setAttribute("aria-expanded", String(!open));
-          body.hidden = open;
-          b.innerHTML = open ? "More: trending, tools, pantry, FAQ &darr;"
-                            : "Less &uarr;";
-        });
-      })();
-      </script>
       <div id="spin-panel" class="card" style="display:none;margin-top:12px">
         <p class="fine" style="margin:0 0 8px">Here&#39;s a pick for you:</p>
         <div id="spin-media" aria-hidden="true"></div>
@@ -1961,6 +1928,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
 </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
+      <footer class="sitefoot">
+        <p class="fine" style="margin:0 0 6px"><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
+        <p class="fine" style="margin:0">Pick My Costume is an independent project. Built with Muse.</p>
+      </footer>
 </div>
   </section>
 
