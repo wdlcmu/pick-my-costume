@@ -268,6 +268,7 @@ export async function onRequestPost(context) {
   const idea = INSTRUCTIONS_DATA[ideaId];
   if (!idea) return json({ ok: false, error: 'unknown_idea' }, 404);
 
+  return json({ ok: true, dry_run: true, stage: 'post-idea' });
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (rateLimited(ip)) return json({ ok: false, error: 'rate_limited' }, 429);
 
