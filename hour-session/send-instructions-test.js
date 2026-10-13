@@ -122,11 +122,11 @@ function mockReq(payload, ip, raw) {
   global.fetch = async () => ({ ok: false, status: 500 });
   _resetRateLimit();
   r = await j(await onRequestPost({ request: mockReq({ email: 'z@example.com', idea_id: 'tin-hero' }, '3.3.3.3'), env: { RESEND_API_KEY: 're_test123' } }));
-  ok(r.status === 502 && r.body.error === 'send_failed', 'resend 500 -> 502 send_failed');
+  ok(r.status === 500 && r.body.error === 'send_failed', 'resend 500 -> 500 send_failed (never 502: Cloudflare replaces function 502s with its own error page)');
   global.fetch = async () => { throw new Error('down'); };
   _resetRateLimit();
   r = await j(await onRequestPost({ request: mockReq({ email: 'z@example.com', idea_id: 'tin-hero' }, '3.3.3.3'), env: { RESEND_API_KEY: 're_test123' } }));
-  ok(r.status === 502 && r.body.error === 'send_failed', 'fetch throw -> 502 send_failed');
+  ok(r.status === 500 && r.body.error === 'send_failed', 'fetch throw -> 500 send_failed');
   global.fetch = realFetch;
 
   console.log('no storage of addresses');
