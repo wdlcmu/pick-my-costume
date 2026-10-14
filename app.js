@@ -12172,29 +12172,39 @@ function buildCastShareText(idea, list, sid){
      with the flag off the classic link is byte-identical to before. */
   var roleLinks = (ROLE_SHARE_CARDS_ENABLED && aud === "family") ? familyRoleShareLinks(idea, list, sid) : "";
   var castShareUrl = roleLinks || ("https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=generic");
+  /* 2026-10-14 (gpt-loop run 212, topic d): the cast text was the last live
+     sender text with neither the pumpkin lead every other live share
+     builder carries (2026-09-28 standing rule; duel run 198, pair run 205)
+     nor a timed line. The cast recipient is recruited into a group build,
+     so the honest ask carries the real time commitment: the run-99 slot
+     (after the lead and cast list, before the ask) with the settled
+     verbatim form from the INSTRUCTIONS bank time, full string incl.
+     drying so the text can never understate vs the guide page. */
+  var _ctTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
+  var timedSeg = _ctTime ? " \u23F1\uFE0F Timed: about " + _ctTime + "." : "";
   var text;
   if (aud === "kid"){
     var kidLead = "The quiz picked " + idea.title + " for my kid this Halloween.";
     if (anyBlank){
       /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-      text = kidLead + " " + shareAskLine() + castShareUrl;
+      text = kidLead + timedSeg + " " + shareAskLine() + castShareUrl;
     } else {
-      text = kidLead + " " + castLine(list) + ". " + shareAskLine() + castShareUrl;
+      text = kidLead + " " + castLine(list) + "." + timedSeg + " " + shareAskLine() + castShareUrl;
     }
   } else if (anyBlank){
     /* 2026-09-25 social-handoff experiment: reciprocal ask. */
-    text = "Want to do " + idea.title + " this Halloween? " + shareAskLine() + castShareUrl;
+    text = "Want to do " + idea.title + " this Halloween?" + timedSeg + " " + shareAskLine() + castShareUrl;
   } else {
     /* Solo cast reads as "I'm", not "We're" (the proven solo share pattern). */
     var lead = (list.length === 1) ? "I\u2019m thinking of going as " : "We\u2019re thinking of going as ";
     text = lead + idea.title + " this Halloween: " + castLine(list) +
-      ". " + shareAskLine() + castShareUrl;
+      "." + timedSeg + " " + shareAskLine() + castShareUrl;
   }
   /* 2026-10-02 (Billy): shopping-list append removed from all share paths.
      It buried the link and turned shares into chore lists. The recipient
      link lands on the full guide with materials. The cast list above stays;
      that is the planning content. */
-  return text;
+  return emojiLead(text);
 }
 function buildCastPrompt(idea, list){
   var lines = list.map(function(a){
