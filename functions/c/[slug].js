@@ -1040,11 +1040,18 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     _ld +
     "<style>" +
     "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#fdf3e3;background:#160d28;line-height:1.55;}" +
-    ".topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
+    ".topbar{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
     ".topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}" +
+    /* 2026-10-13 (Billy): /c/ pages had no good back click home. The
+       wordmark was a link but easy to miss, so the bar now also carries
+       the orange Pick my costume pill (same as the /map top bar). The
+       two pills sit in .topbtns; flex-wrap drops the group to its own
+       row at phone widths instead of overflowing the bar. */
+    ".topbtns{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto;}" +
     /* 2026-10-06: the "Add to Claude" link was unstyled body text jammed
        against the wordmark. Real pill button, orange like the site CTA,
        readable at 390px. */
+    ".topbar a.homebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
     ".topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
     ".topbar a span{color:#ff8c1a;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
@@ -1167,7 +1174,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
     "</style>" +
     "<script>(function(){var s=document.createElement(\"script\");s.async=true;s.src=\"https://us.i.posthog.com/static/array.js\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\",{api_host:\"https://us.i.posthog.com\",autocapture:false,capture_pageview:false,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\"click\",function(e){var t=e.target.closest&&e.target.closest(\"[data-claude]\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\"add_to_claude_clicked\",{source:\"guide_page\"});}catch(_){}}});})();</script>" +
-    "</head><body><div class=\"topbar\"><a class=\"brand\" href=\"/\">🎃 Pick My <span>Costume</span></a><a class=\"claudebtn\" href=\"https://pickmycostume.com/mcp\" data-claude=\"1\">Add to Claude</a></div><main class=\"guide\">" +
+    "</head><body><div class=\"topbar\"><a class=\"brand\" href=\"/\">🎃 Pick My <span>Costume</span></a><div class=\"topbtns\"><a class=\"homebtn\" href=\"/\">Pick my costume</a><a class=\"claudebtn\" href=\"https://pickmycostume.com/mcp\" data-claude=\"1\">Add to Claude</a></div></div><main class=\"guide\">" +
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
     /* 2026-10-13: first-screen order is title, photo, timed chips, plan CTA, then the intro paragraph. Photo-led arrivals (pins, trend cards, the hero tile) land on the costume itself, not on text above it. */
