@@ -770,6 +770,9 @@ if(!root||!window.PMD)return;
 var D=window.PMD,SLUG=root.getAttribute("data-slug"),MATS=D.mats,TILES=D.tiles,STAPLES=D.staples||[];
 function readTicked(){var s=null;try{s=JSON.parse(localStorage.getItem("pantry2")||localStorage.getItem("pantry3")||"null");}catch(_){}
 var set={};for(var i=0;i<STAPLES.length;i++)set[STAPLES[i]]=1;if(s&&s.length)for(var j=0;j<s.length;j++)set[s[j]]=1;return set;}
+function readOwn(){var s=null;try{s=JSON.parse(localStorage.getItem("pantry2")||localStorage.getItem("pantry3")||"null");}catch(_){}
+var set={};if(s&&s.length)for(var j=0;j<s.length;j++)set[s[j]]=1;
+for(var i=0;i<STAPLES.length;i++)delete set[STAPLES[i]];return set;}
 function saveTicked(set){try{localStorage.setItem("pantry2",JSON.stringify(Object.keys(set)));}catch(_){}}
 function has(set,k){return !!set[k];}
 function buyKey(mi){return "buy:"+SLUG+"#"+mi;}
@@ -791,9 +794,34 @@ btn.className="ptile "+(ok?"have":"miss");
 var badge=btn.querySelector(".ptbadge");if(badge)badge.textContent=ok?"\\u2713":"\\u25CB";
 btn.setAttribute("aria-label",btn.getAttribute("data-label")+": "+(ok?"you have this":"missing")+". Tap to update.");
 if(!ok)missHtml+='<span class="pchip"><span class="pmemo" aria-hidden="true">'+t.e+"</span>"+escH(t.label)+"</span>";}
-for(var mi=0;mi<MATS.length;mi++){if(matOk(MATS[mi],tk,mi))have++;}
+/* Assumption-aware headline (2026-10-13): coverage from the visitor's
+   own ticks is counted apart from coverage that only holds because
+   basics are assumed, and the headline says which is which. Own set =
+   saved pantry ids minus the staples seed (the seed persists into
+   saves, so a staple in the list is still an assumption, never
+   "ticked by you"); buy ticks only ever come from a real tap. For a
+   fresh visitor ownN and mixN are 0 and this paints exactly the
+   static headline from _cCardsHtml. */
+var ownSet=readOwn(),ownN=0,asmN=0,mixN=0;
+for(var mi=0;mi<MATS.length;mi++){var mm=MATS[mi];if(!matOk(mm,tk,mi))continue;
+if(matOk(mm,ownSet,mi)){ownN++;continue;}
+var used=has(ownSet,buyKey(mi)),g3,k3;
+for(g3=0;g3<mm.length&&!used;g3++){for(k3=0;k3<mm[g3].length;k3++){if(mm[g3][k3]&&has(ownSet,mm[g3][k3])){used=true;break;}}}
+if(used)mixN++;else asmN++;}
+var cov=ownN+asmN+mixN,headTxt;
+if(cov===0)headTxt="You have 0 of "+total+" things for this.";
+else if(cov>=total){
+if(asmN===cov)headTxt="Everything here is basics we assume you have. Nothing to buy.";
+else if(ownN===cov)headTxt="You have everything for this one. Nothing to buy.";
+else if(mixN===0)headTxt="You have everything for this one: "+ownN+" ticked by you, "+asmN+" counting basics we assume you have. Nothing to buy.";
+else headTxt="You have everything for this one, from your ticks and basics we assume you have. Nothing to buy.";}
+else{
+if(asmN===cov)headTxt=cov+" of "+total+" things covered, counting basics we assume you have.";
+else if(ownN===cov)headTxt="You already have "+cov+" of "+total+" things for this.";
+else if(mixN===0)headTxt=cov+" of "+total+" things covered: "+ownN+" ticked by you, "+asmN+" counting basics we assume you have.";
+else headTxt=cov+" of "+total+" things covered, from your ticks and basics we assume you have.";}
 var head=root.querySelector("[data-role=chead]");
-if(head)head.textContent=have>=total?"You have everything for this one. Nothing to buy.":(have===0?"You have 0 of "+total+" things for this.":"You already have "+have+" of "+total+" things for this.");
+if(head)head.textContent=headTxt;
 var needP=root.querySelector("[data-role=cneed]"),chips=root.querySelector("[data-role=cchips]");
 if(needP)needP.style.display=missHtml?"":"none";
 if(chips){chips.innerHTML=missHtml;chips.style.display=missHtml?"":"none";}}
@@ -1036,9 +1064,13 @@ function _cCardsHtml(slug, ct){
   var chips = ct.tiles.filter(function(t, ti){ return !tileHave[ti]; }).map(function(t){
     return "<span class=\\"pchip\\"><span class=\\"pmemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" + esc(t.label) + "</span>";
   }).join("");
-  var head = have >= total ? "You have everything for this one. Nothing to buy." :
+  /* Fresh-visitor headline (2026-10-13): the static count is purely
+     assumption-driven (ownN = 0, mixN = 0 in the client composer), so
+     it says so. Must stay word-identical to the client tick script's
+     headline for a fresh visitor. */
+  var head = have >= total ? "Everything here is basics we assume you have. Nothing to buy." :
     (have === 0 ? "You have 0 of " + total + " things for this." :
-    "You already have " + have + " of " + total + " things for this.");
+    have + " of " + total + " things covered, counting basics we assume you have.");
   var hideAttr = chips ? "" : " style=\\"display:none\\"";
   return "<div class=\\"closet-badge\\" id=\\"detail-mats\\" data-slug=\\"" + slug + "\\">" +
     "<p class=\\"closet-line\\" data-role=\\"chead\\">" + head + "</p>" +
