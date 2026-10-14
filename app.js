@@ -6894,9 +6894,24 @@ function buildDuelShareText(mine, theirs, sid, verdict){
   if (v.type === "coop"){
     return emojiLead("The quiz gave me " + mine.title + " and my friend got " + theirs.title + ". Two costumes, one Halloween: " + url);
   }
+  /* 2026-10-13 (gpt-loop run 198, topic d): the share text used to drop the
+     verdict's own grounds. The winner is crowned only on a measured edge
+     (build time >=15 min, else Easy effort), and the on-site panel names
+     that reason, so the text that leaves the site carries it too: verbatim
+     bank time strings in winner order for a time win (never a computed
+     margin), and only the code's fact for an effort win. Tie unchanged. */
+  var grounds = "";
+  if (v.type === "time_win"){
+    var wIdea = v.winner === "mine" ? mine : theirs;
+    var lIdea = v.winner === "mine" ? theirs : mine;
+    var wTime = duelScoreLine(wIdea), lTime = duelScoreLine(lIdea);
+    grounds = " on build time" + ((wTime && lTime) ? " (" + wTime + " vs " + lTime + ")" : "");
+  } else if (v.type === "effort_win"){
+    grounds = v.winner === "mine" ? " because mine is the easy-effort pick" : " because yours is the easy-effort pick";
+  }
   var line;
-  if (v.winner === "mine") line = "Duel done: my " + mine.title + " beats your " + theirs.title + ".";
-  else if (v.winner === "theirs") line = "Duel done: your " + theirs.title + " beats my " + mine.title + ".";
+  if (v.winner === "mine") line = "Duel done: my " + mine.title + " beats your " + theirs.title + grounds + ".";
+  else if (v.winner === "theirs") line = "Duel done: your " + theirs.title + " beats my " + mine.title + grounds + ".";
   else line = "Duel done: my " + mine.title + " vs your " + theirs.title + ". Too close to call.";
   return emojiLead(line + " See the full matchup: " + url);
 }
