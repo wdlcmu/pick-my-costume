@@ -1934,8 +1934,15 @@ function show(id){
           return;
         }
         var lines = shufflerLastDeal.lineup.map(function(a){ return a.name + " is " + a.role; });
+        /* 2026-10-14 (gpt-loop run 233, topic d): the lineup share was the only
+           live group share with no timed mark and no guide link. Add the settled
+           Timed segment from the real bank time (full guide string, omitted when
+           the guide has no bank time) plus the /c/ guide link a role-holder
+           needs to build their piece. Lineup lines and attribution unchanged. */
+        var _sht = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[shufflerLastDeal.idea_id]) ? INSTRUCTIONS[shufflerLastDeal.idea_id].time : null;
         var text = "Our " + shufflerLastDeal.costume + " lineup:\n" + lines.join("\n") +
-          "\n\nDealt with the Pick My Costume who's-who shuffler: https://pickmycostume.com";
+          (_sht ? "\n\n\u23F1\uFE0F Timed: about " + _sht + "." : "") +
+          "\n\nDealt with the Pick My Costume who's-who shuffler: https://pickmycostume.com/c/" + shufflerLastDeal.idea_id;
         Analytics.track("shuffler_shared", {idea_id: shufflerLastDeal.idea_id, group_size: shufflerLastDeal.lineup.length});
         if (navigator.share){
           navigator.share({title: "Our costume lineup", text: text}).catch(function(){});
