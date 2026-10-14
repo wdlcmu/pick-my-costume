@@ -20,6 +20,15 @@
 // Expectations are computed independently from the page's own embedded
 // PMD (mats/tiles/staples) using the client matOk semantics.
 // Exits non-zero on any failure.
+//
+// 2026-10-13 (run 191): the headline wording went assumption-scoped.
+// The static/fresh headline no longer counts assumed basics as owned:
+// partial = "N of M things covered, counting basics we assume you
+// have.", all-covered = "Everything here is basics we assume you have.
+// Nothing to buy." The client re-render is assumption-aware (own ticks
+// counted apart from assumed coverage), and this harness mirrors that
+// composer independently and exercises it with seeded-pantry DOM sims
+// (returning visitor on black-cat and basketball-star).
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -80,14 +89,59 @@ function matOkStaples(mat, staples) {
   return true;
 }
 
-function expected(pmd) {
+// Set-based mirror of the client matOk() (buy ticks included).
+function matOkSet(mat, set, slug, mi) {
+  let hasReal = false;
+  for (const grp of mat) { for (const id of grp) { if (id) { hasReal = true; break; } } if (hasReal) break; }
+  for (const grp of mat) {
+    let gok = grp.some(id => id && set.has(id));
+    if (!gok && grp.every(id => !id) && (set.has('buy:' + slug + '#' + mi) || hasReal)) gok = true;
+    if (!gok) return false;
+  }
+  return true;
+}
+
+// Independent mirror of the client's assumption-aware classification:
+// own = covered by the visitor's own ticks alone (saved ids minus the
+// staples seed, plus buy ticks); asm = covered only via assumed basics;
+// mix = covered only by ticks and assumptions combined.
+function classify(pmd, slug, ownIds) {
+  const staples = pmd.staples || [];
+  const ownSet = new Set((ownIds || []).filter(id => !staples.includes(id)));
+  const fullSet = new Set([...staples, ...ownSet]);
+  let own = 0, asm = 0, mix = 0;
+  pmd.mats.forEach((mat, mi) => {
+    if (!matOkSet(mat, fullSet, slug, mi)) return;
+    if (matOkSet(mat, ownSet, slug, mi)) { own++; return; }
+    const used = ownSet.has('buy:' + slug + '#' + mi)
+      || mat.some(grp => grp.some(id => id && ownSet.has(id)));
+    if (used) mix++; else asm++;
+  });
+  return { own, asm, mix, cov: own + asm + mix, total: pmd.mats.length };
+}
+
+// Word-for-word mirror of the client headline composer.
+function headlineFor(c) {
+  const { own, asm, mix, cov, total } = c;
+  if (cov === 0) return 'You have 0 of ' + total + ' things for this.';
+  if (cov >= total) {
+    if (asm === cov) return 'Everything here is basics we assume you have. Nothing to buy.';
+    if (own === cov) return 'You have everything for this one. Nothing to buy.';
+    if (mix === 0) return 'You have everything for this one: ' + own + ' ticked by you, ' + asm + ' counting basics we assume you have. Nothing to buy.';
+    return 'You have everything for this one, from your ticks and basics we assume you have. Nothing to buy.';
+  }
+  if (asm === cov) return cov + ' of ' + total + ' things covered, counting basics we assume you have.';
+  if (own === cov) return 'You already have ' + cov + ' of ' + total + ' things for this.';
+  if (mix === 0) return cov + ' of ' + total + ' things covered: ' + own + ' ticked by you, ' + asm + ' counting basics we assume you have.';
+  return cov + ' of ' + total + ' things covered, from your ticks and basics we assume you have.';
+}
+
+function expected(pmd, slug) {
   const staples = pmd.staples || [];
   const matHave = pmd.mats.map(m => matOkStaples(m, staples));
   const have = matHave.filter(Boolean).length, total = pmd.mats.length;
   const tileHave = pmd.tiles.map(t => t.idxs.every(mi => matHave[mi]));
-  const head = have >= total ? 'You have everything for this one. Nothing to buy.'
-    : (have === 0 ? 'You have 0 of ' + total + ' things for this.'
-      : 'You already have ' + have + ' of ' + total + ' things for this.');
+  const head = headlineFor(classify(pmd, slug, []));
   const missLabels = pmd.tiles.filter((t, ti) => !tileHave[ti]).map(t => t.e + t.label);
   return { have, total, tileHave, head, missLabels };
 }
@@ -115,6 +169,8 @@ function cardState(doc) {
   const cases = [
     { slug: 'classic-ghost', kind: 'all basics' },
     { slug: 'baby-dino', kind: 'mixed' },
+    { slug: 'black-cat', kind: 'mixed' },
+    { slug: 'vampire', kind: 'mixed' },
     { slug: 'basketball-star', kind: 'no basics' },
   ];
   for (const { slug, kind } of cases) {
@@ -123,7 +179,7 @@ function cardState(doc) {
     ok(status === 200, slug + ' renders 200');
     const pmd = extractPMD(html);
     ok(!!pmd, slug + ' embeds PMD');
-    const exp = expected(pmd);
+    const exp = expected(pmd, slug);
     console.log('    expected: have ' + exp.have + '/' + exp.total + ', miss tiles: ' + exp.missLabels.length);
 
     // --- static HTML state (no scripts run) ---
@@ -171,6 +227,86 @@ function cardState(doc) {
     ok(jt.needHidden === st.needHidden && jt.chipsHidden === st.chipsHidden,
       slug + ' painted Still-need visibility matches static');
     jdom.window.close();
+  }
+
+  // --- returning-visitor sims: seeded pantry, assumption-aware headline ---
+  function paintedHead(html, slug, savedIds) {
+    const card = scriptWith(html, 'window.PMD');
+    const jdom = new JSDOM(html, { url: 'https://pickmycostume.com/c/' + slug, runScripts: 'outside-only' });
+    if (savedIds) jdom.window.localStorage.setItem('pantry2', JSON.stringify(savedIds));
+    jdom.window.eval(card);
+    const h = jdom.window.document.querySelector('[data-role=chead]').textContent;
+    jdom.window.close();
+    return h;
+  }
+  // Pick up to `want` mats not covered by assumed basics whose every
+  // group offers a non-staple id, so the ticks complete them outright
+  // (own coverage, no mixed mats).
+  function pickTickable(pmd, slug, want) {
+    const staples = new Set(pmd.staples || []);
+    const ids = [];
+    let picked = 0;
+    pmd.mats.forEach((mat, mi) => {
+      if (picked >= want) return;
+      if (matOkSet(mat, staples, slug, mi)) return;
+      const mine = [];
+      for (const grp of mat) {
+        const cand = grp.find(id => id && !staples.has(id));
+        if (cand) mine.push(cand);
+        else if (grp.some(id => id)) return;
+      }
+      if (!mine.length) return;
+      if (!matOkSet(mat, new Set(mine), slug, mi)) return;
+      ids.push(...mine); picked++;
+    });
+    return { ids, picked };
+  }
+
+  { // black-cat: tick 2 non-basics on top of 4 assumed -> two-count split
+    const slug = 'black-cat';
+    console.log(slug + ' (returning visitor, 2 own ticks)');
+    const { html } = await render(mod, slug);
+    const pmd = extractPMD(html);
+    const pk = pickTickable(pmd, slug, 2);
+    ok(pk.picked === 2, slug + ' sim: found two tickable non-basic mats', 'picked ' + pk.picked);
+    const cls = classify(pmd, slug, pk.ids);
+    ok(cls.mix === 0 && cls.own === 2 && cls.asm > 0 && cls.cov < cls.total,
+      slug + ' sim: classification is a clean partial two-count split', JSON.stringify(cls));
+    const expH = headlineFor(cls);
+    const got = paintedHead(html, slug, pk.ids);
+    ok(got === expH, slug + ' returning header: "' + expH + '"', 'got "' + got + '"');
+    ok(got.includes('ticked by you') && got.includes('counting basics we assume you have'),
+      slug + ' returning header names both sources');
+  }
+  { // black-cat: tick ALL non-basics -> all covered, but NOT the E wording
+    const slug = 'black-cat';
+    console.log(slug + ' (returning visitor, all non-basics ticked)');
+    const { html } = await render(mod, slug);
+    const pmd = extractPMD(html);
+    const pk = pickTickable(pmd, slug, 99);
+    const cls = classify(pmd, slug, pk.ids);
+    ok(cls.cov === cls.total && cls.own > 0 && cls.asm > 0 && cls.mix === 0,
+      slug + ' sim: all covered with own and assumed parts', JSON.stringify(cls));
+    const expH = headlineFor(cls);
+    const got = paintedHead(html, slug, pk.ids);
+    ok(got === expH, slug + ' all-covered split header: "' + expH + '"', 'got "' + got + '"');
+    ok(!got.startsWith('Everything here is basics'),
+      slug + ' all-covered header is not the pure-assumption E wording when the visitor ticked non-basics');
+  }
+  { // basketball-star: no basics at all -> own ticks get no assumption clause
+    const slug = 'basketball-star';
+    console.log(slug + ' (returning visitor, 1 own tick, zero assumed)');
+    const { html } = await render(mod, slug);
+    const pmd = extractPMD(html);
+    const pk = pickTickable(pmd, slug, 1);
+    ok(pk.picked === 1, slug + ' sim: found one tickable mat', 'picked ' + pk.picked);
+    const cls = classify(pmd, slug, pk.ids);
+    ok(cls.asm === 0 && cls.mix === 0 && cls.own === 1,
+      slug + ' sim: coverage is purely the visitor\'s own tick', JSON.stringify(cls));
+    const expH = headlineFor(cls);
+    const got = paintedHead(html, slug, pk.ids);
+    ok(got === expH, slug + ' own-only header: "' + expH + '"', 'got "' + got + '"');
+    ok(!got.includes('assume'), slug + ' own-only header carries no assumption clause');
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
