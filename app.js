@@ -5498,9 +5498,12 @@ function pairTextFor(idea, sid){
      the Mermaid-class misattribution. Kid/family pair shares get the
      audience-aware line (same pattern as shareCaptionFor). */
   var aud = (typeof voiceAudience === "function") ? voiceAudience(idea) : "solo";
+  /* 2026-10-14 (gpt-loop run 205, topic d): emoji lead, like every other
+     live share builder (2026-09-28 standing rule); words unchanged. No
+     verdict exists sender-side (the friend has not taken the quiz yet). */
   if (aud === "kid" || aud === "family")
-    return "The quiz picked " + idea.title + (aud === "kid" ? " for my kid" : " for our family") + " this Halloween. Take the 2-minute quiz and it will pick YOUR costume to match: " + link;
-  return "I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will pick YOUR costume to match mine: " + link;
+    return emojiLead("The quiz picked " + idea.title + (aud === "kid" ? " for my kid" : " for our family") + " this Halloween. Take the 2-minute quiz and it will pick YOUR costume to match: " + link);
+  return emojiLead("I am going as " + idea.title + " this Halloween. Take the 2-minute quiz and it will pick YOUR costume to match mine: " + link);
 }
 /* 2026-09-26 costume roulette experiment ("Can't decide? Let me pick for you"): a zero-question entry point for the undecided. Uniform
    random over all 169 ideas, one tap, no quiz -- the funnel for the
@@ -7020,9 +7023,20 @@ function buildPairShareText(mine, theirs, sid){
      client linkifies it. */
   var url = "https://pickmycostume.com/c/" + mine.id + "?s=" + sid + "&o=pair&pair=" + mine.id;
   if (mine.id === theirs.id){
-    return "Great minds: we both got " + mine.title + " on the costume quiz. Find yours: " + url;
+    return emojiLead("Great minds: we both got " + mine.title + " on the costume quiz. Find yours: " + url);
   }
-  return "The quiz gave me " + mine.title + " to match your " + theirs.title + ". Take the quiz and pick YOUR costume: " + url;
+  /* 2026-10-14 (gpt-loop run 205, topic d): the share-back used to drop the
+     pair verdict the on-site panel had just shown, and its "to match your"
+     lead asserted a match even when the verdict said Different lanes (the
+     run-198 duel defect family). The verdict now travels verbatim, and the
+     Different-lanes case gets the neutral lead. Identical branch already
+     states its fact, so it gains only the emoji lead every other live
+     share builder carries (2026-09-28 standing rule). */
+  var v = pairVerdict(mine, theirs);
+  var lead = (v.indexOf("Different lanes") === 0)
+    ? "The quiz paired my " + mine.title + " with your " + theirs.title + "."
+    : "The quiz gave me " + mine.title + " to match your " + theirs.title + ".";
+  return emojiLead(lead + " " + v + " Take the quiz and pick YOUR costume: " + url);
 }
 /* The results-page pair panel. Rendered by renderResults right after the
    hero card, only for genuine share arrivals carrying ?pair=. Mirrors the
