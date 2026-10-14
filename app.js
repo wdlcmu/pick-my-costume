@@ -8273,8 +8273,17 @@ function wrShareText(pick, stats, sid){
     : aud === "family" ? "The quiz picked " + pick.title + " for our family this Halloween."
     : (aud === "couple" || aud === "group") ? "We are going as " + pick.title + " this Halloween."
     : "I am going as " + pick.title + " this Halloween.";
+  /* 2026-10-14 (gpt-loop run 226, topic d): this was the last live committed
+     sender text with no time information at all, and the whole Wrapped flow
+     (slides included) carried none either. Same settled segment as the
+     canonical plan share (run 71), cast (run 212), and grandparent (run 219)
+     texts: the pick's own full bank time incl. drying, slotted after the
+     rank clause so the rank hook fires first, omitted when the guide has
+     no bank time (never invent one). Slides unchanged. */
+  var _wrTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[pick.id]) ? INSTRUCTIONS[pick.id].time : null;
+  var _wrTimed = _wrTime ? " \u23F1\uFE0F Timed: about " + _wrTime + "." : "";
   return emojiLead("My 2026 Halloween Wrapped: " + who +
-    " (ranked #" + stats.rank + " of " + stats.total + "). " +
+    " (ranked #" + stats.rank + " of " + stats.total + ")." + _wrTimed + " " +
     /* 2026-09-26 wrapped W1 fix: ?wpick=<idea.id> lets the recipient
        banner name the sharer's pick + rank; older links without it get
        the Wrapped-branded generic banner instead. */
