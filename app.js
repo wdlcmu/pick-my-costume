@@ -6678,8 +6678,17 @@ function grandparentTextFor(idea, sid){
   var lead = (aud === "family")
     ? "Our family is going as " + idea.title + " this Halloween."
     : "The quiz picked " + idea.title + " for my kid this Halloween.";
+  /* 2026-10-14 (gpt-loop run 219, topic d): this was the last live sender
+     text with no time information at all, and its ask is uniquely a
+     build-help ask ("help build it") where the build time is the fact the
+     recipient decides on. Same settled segment as the canonical plan share
+     and the cast text (run 212): full bank string incl. drying, after the
+     lead and before the plan ask, omitted when the guide has no bank time
+     (never invent one). */
+  var _gpTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
+  var timedSeg = _gpTime ? " \u23F1\uFE0F Timed: about " + _gpTime + "." : "";
   var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=grandparent";
-  return emojiLead(lead + " Here is the plan, in case you want to help build it: " + url);
+  return emojiLead(lead + timedSeg + " Here is the plan, in case you want to help build it: " + url);
 }
 function buildGrandparentBox(results){
   var idea = results && results[0] && results[0].idea;
