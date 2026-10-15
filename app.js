@@ -13891,7 +13891,9 @@ function renderPinpointSuggest(q){
 function pinpointOpenIdea(hit, kind){
   pinpointNote("");
   pinpointClearNomatch();
-  Analytics.track("pinpoint_resolved", {kind: kind, query: hit.raw || hit.label, idea: hit.idea, label: hit.label});
+  /* Privacy standard (/privacy): search terms are logged at 30 chars max,
+     matched or not -- cap query and the fuzzy label (which echoes raw text). */
+  Analytics.track("pinpoint_resolved", {kind: kind, query: (hit.raw || hit.label || "").slice(0, 30), idea: hit.idea, label: (hit.label || "").slice(0, 30)});
   openIdeaDetail(hit.idea, "You asked for " + hit.label + ": our DIY take", "s-hero");
 }
 function pinpointTypedGo(){
