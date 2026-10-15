@@ -2492,7 +2492,7 @@ function buildInstructions(idea, opts){
        the weekly plan (cost/time/buy/steps), not a second materials list. */
     var mp = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
     if (mp){
-      lines.push("Build time: about " + String(mp.time).replace(/^~/, ""));
+      lines.push("\u23F1\uFE0F Timed: about " + String(mp.time).replace(/^~/, ""));
       lines.push("", "What to buy:");
       mp.buy.forEach(function(b){ lines.push("- " + b); });
     } else {
@@ -2513,7 +2513,7 @@ function buildInstructions(idea, opts){
        Hypothesis: parents take the build list to the store and share it.
        A "made with" footer turns every copy into a distribution touchpoint.
        Measure: pickmycostume.com referrals from shared build lists. */
-    lines.push("", "Made with Pick My Costume - https://pickmycostume.com");
+    lines.push("", "Made with Pick My Costume - https://pickmycostume.com/c/" + idea.id);
     return lines.join("\n");
   }
   /* 2026-09-25: the quick version. ChatGPT's DIY format beats ours on
