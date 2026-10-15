@@ -5908,7 +5908,14 @@ function spinTextFor(idea, sid){
     var ins = INSTRUCTIONS[idea.id];
     tri = [ins.time].filter(function(x){ return x; }).join(", ");
   }
-  return "The shuffle picked " + idea.title + " for me this Halloween" + (tri ? " (" + tri + ")" : "") + ". Get your pick: " + link;
+  /* 2026-10-14 (gpt-loop run 240, topic d): spin was the last live share
+     builder with no emojiLead (the canonical builder's comment claims every
+     builder carries one) and its bank time rode as a bare parenthetical.
+     Same settled segment as the plan/cast/Wrapped texts: emojiLead plus
+     "Timed: about <full bank time>." GPT round 1 wanted the time dropped
+     for an uncommitted sender; round 2 conceded the recipient is the
+     audience and the timed line is the only hook in the text. */
+  return emojiLead("The shuffle picked " + idea.title + " for me this Halloween." + (tri ? " \u23F1\uFE0F Timed: about " + tri + "." : "") + " Get your pick: " + link);
 }
 function spinIdeaById(id){
   var found = null;
