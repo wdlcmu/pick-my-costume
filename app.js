@@ -6335,20 +6335,30 @@ function daysToHalloween(){
    suppressed on the recipient leg. */
 function nocloneTextFor(idea, sid){
   var aud = voiceAudience(idea);
+  /* 2026-10-15 (gpt-loop run 254, topic d): this was the last live sender
+     text carrying build time as a raw "(time, effort)" parenthetical with
+     no stopwatch mark. GPT round 1 argued drop both (the recipient's job
+     is replying with their own kid's costume, not building the sender's);
+     round 2 conceded the second audience (parents in the class chat who
+     have not chosen yet, for whom the time prices the linked idea, same
+     concession as spin run 240) and split the pair: effort describes only
+     the sender's build and drops, time converts to the settled segment.
+     Round 3 committed the sibling grammar: the lead becomes a complete
+     sentence ending "this Halloween." so the segment follows a full
+     sentence like every other live text, and the colon before the URL
+     drops because the segment ends with a period. Full bank time incl.
+     drying, omitted when the guide has no bank time (never invent one). */
   var lead = (aud === "family")
-    ? "Our family is going as " + idea.title
-    : "My kid is going as " + idea.title;
-  var tri = "";
-  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
-    var ins = INSTRUCTIONS[idea.id];
-    tri = [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
-  }
+    ? "Our family is going as " + idea.title + " this Halloween."
+    : "My kid is going as " + idea.title + " this Halloween.";
+  var _ncTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
+  var timedSeg = _ncTime ? " \u23F1\uFE0F Timed: about " + _ncTime + "." : "";
   var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=noclone";
   var reply = (aud === "family")
     ? "Reply with your family's costume so we do not match."
     : "Reply with your kid's costume so we do not match.";
   return emojiLead("No matching costumes at the class parade this year.") + "\n" +
-    lead + (tri ? " (" + tri + ")" : "") + ": " + url + "\n" +
+    lead + timedSeg + " " + url + "\n" +
     reply;
 }
 function buildNocloneBox(results){
