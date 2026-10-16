@@ -1884,7 +1884,7 @@ function show(id){
            needs to build their piece. Lineup lines and attribution unchanged. */
         var _sht = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[shufflerLastDeal.idea_id]) ? INSTRUCTIONS[shufflerLastDeal.idea_id].time : null;
         var text = "Our " + shufflerLastDeal.costume + " lineup:\n" + lines.join("\n") +
-          (_sht ? "\n\n\u23F1\uFE0F Timed: about " + _sht + "." : "") +
+          (_sht ? "\n\n\u23F1\uFE0F Timed: about " + displayTime(_sht) + "." : "") +
           "\n\nDealt with the Pick My Costume who's-who shuffler: https://pickmycostume.com/c/" + shufflerLastDeal.idea_id;
         Analytics.track("shuffler_shared", {idea_id: shufflerLastDeal.idea_id, group_size: shufflerLastDeal.lineup.length});
         if (navigator.share){
@@ -4110,7 +4110,9 @@ function shareTextFor(idea, sid, origin, medium, quizFound){
      stay clean: GPT round 2 killed the time line there as a cold-context
      distraction. Other origins unchanged (not evaluated). */
   var _sgt = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
-  var timed = (origin === "plan" && qf && _sgt) ? " \u23F1\uFE0F Timed: about " + _sgt : "";
+  /* 2026-10-16 (Billy): share texts strip the drying segment too, same
+     displayTime() rule as every rendered surface. Data keeps it. */
+  var timed = (origin === "plan" && qf && _sgt) ? " \u23F1\uFE0F Timed: about " + displayTime(_sgt) : "";
   var text = cap + timed + " " + ask +
     "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=" + (origin || "generic") +
     "&" + shareUtm(medium, shareRegionSlug(idea));
@@ -5958,7 +5960,7 @@ function spinTextFor(idea, sid){
   var tri = "";
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
-    tri = [ins.time].filter(function(x){ return x; }).join(", ");
+    tri = [displayTime(ins.time)].filter(function(x){ return x; }).join(", ");
   }
   /* 2026-10-14 (gpt-loop run 240, topic d): spin was the last live share
      builder with no emojiLead (the canonical builder's comment claims every
@@ -6404,7 +6406,7 @@ function nocloneTextFor(idea, sid){
     ? "Our family is going as " + idea.title + " this Halloween."
     : "My kid is going as " + idea.title + " this Halloween.";
   var _ncTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
-  var timedSeg = _ncTime ? " \u23F1\uFE0F Timed: about " + _ncTime + "." : "";
+  var timedSeg = _ncTime ? " \u23F1\uFE0F Timed: about " + displayTime(_ncTime) + "." : "";
   var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=noclone";
   var reply = (aud === "family")
     ? "Reply with your family's costume so we do not match."
@@ -6525,7 +6527,7 @@ function grandparentTextFor(idea, sid){
      lead and before the plan ask, omitted when the guide has no bank time
      (never invent one). */
   var _gpTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
-  var timedSeg = _gpTime ? " \u23F1\uFE0F Timed: about " + _gpTime + "." : "";
+  var timedSeg = _gpTime ? " \u23F1\uFE0F Timed: about " + displayTime(_gpTime) + "." : "";
   var url = "https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=grandparent";
   return emojiLead(lead + timedSeg + " Here is the plan, in case you want to help build it: " + url);
 }
@@ -8119,7 +8121,7 @@ function wrShareText(pick, stats, sid){
      rank clause so the rank hook fires first, omitted when the guide has
      no bank time (never invent one). Slides unchanged. */
   var _wrTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[pick.id]) ? INSTRUCTIONS[pick.id].time : null;
-  var _wrTimed = _wrTime ? " \u23F1\uFE0F Timed: about " + _wrTime + "." : "";
+  var _wrTimed = _wrTime ? " \u23F1\uFE0F Timed: about " + displayTime(_wrTime) + "." : "";
   return emojiLead("My 2026 Halloween Wrapped: " + who +
     " (ranked #" + stats.rank + " of " + stats.total + ")." + _wrTimed + " " +
     /* 2026-09-26 wrapped W1 fix: ?wpick=<idea.id> lets the recipient
@@ -8571,7 +8573,7 @@ function renderResults(results){
      rewrites this header and hides nav buttons. Reset for the cold path. */
   document.querySelector("#s-results .progress").textContent = "Your costume";
   ensureHead("results-title", "q-title", {before:"#r-cards"}).innerHTML = "&#127875; Here's what we picked for you";
-  document.querySelector("#s-results p.q-hint").innerHTML = "This is our top pick for you. Tap &ldquo;Plan this costume&rdquo; to save your pick and start planning, or see the other ideas below. We keep your pick on this device, so it is here when you come back.";
+  document.querySelector("#s-results p.q-hint").innerHTML = "Our top pick for you. Tap Plan to save it. More picks are below.";
   $("btn-rtop").style.display = "";
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
      the household in one run, and other audiences have no sibling case. */
@@ -11983,7 +11985,7 @@ function buildCastShareText(idea, list, sid){
      verbatim form from the INSTRUCTIONS bank time, full string incl.
      drying so the text can never understate vs the guide page. */
   var _ctTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]) ? INSTRUCTIONS[idea.id].time : null;
-  var timedSeg = _ctTime ? " \u23F1\uFE0F Timed: about " + _ctTime + "." : "";
+  var timedSeg = _ctTime ? " \u23F1\uFE0F Timed: about " + displayTime(_ctTime) + "." : "";
   var text;
   if (aud === "kid"){
     var kidLead = "The quiz picked " + idea.title + " for my kid this Halloween.";
@@ -12867,7 +12869,7 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
            wrong question. No pumpkin lead: this is the sender's personal
            message to a friend, not a broadcast share; the stopwatch carries
            the emoji. */
-        var _pcTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id] && INSTRUCTIONS[idea.id].time) ? " \u23F1\uFE0F Timed: about " + INSTRUCTIONS[idea.id].time + "." : "";
+        var _pcTime = (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id] && INSTRUCTIONS[idea.id].time) ? " \u23F1\uFE0F Timed: about " + displayTime(INSTRUCTIONS[idea.id].time) + "." : "";
         var text = fp.rawName
           ? (fp.name + " is " + roleArt(fp.role) + " in our " + idea.title + " group this Halloween!" + _pcTime + " Want in? Here is the guide: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card")
           : ("Want to do " + idea.title + " this Halloween?" + _pcTime + " Want in? Here is the guide: https://pickmycostume.com/c/" + idea.id + "?s=" + sid + "&o=card");
@@ -13862,7 +13864,10 @@ $("btn-returnshare").onclick = function(){
   if (!idea) return;
   shareText(idea, $("returnhero-share-status"), $("btn-returnshare"));
 };
-$("btn-browse-hero").onclick = openBrowse;
+/* 2026-10-16 (Billy): Tools tabs cut from the homepage; the browse button
+   went with them. Guarded so the wiring below never throws. */
+var _bbh = $("btn-browse-hero");
+if (_bbh) _bbh.onclick = openBrowse;
 $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
 /* 2026-09-30 delight: the browse filter disclosure defaults to open on
    desktop and closed on phones. Desktop users get the full bar; phone users
@@ -13894,7 +13899,7 @@ $("btn-browse-back").onclick = function(){ show(browseReturnTo); };
 })();
 $("btn-browse-results").onclick = openBrowse;
 /* 2026-10-01: labels point at the galaxy, not the retired in-app grid. */
-$("btn-browse-hero").textContent = "🗺️ Explore the galaxy";
+if (_bbh) _bbh.textContent = "🗺️ Explore the galaxy";
 $("btn-browse-results").textContent = "Wander the galaxy";
 /* Red-team 2026-09-27: every other hardcoded idea count on the page follows
    the live bank too, so the copy can never drift from the shelf. */
