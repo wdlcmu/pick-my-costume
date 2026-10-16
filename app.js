@@ -1731,7 +1731,7 @@ function show(id){
       p.buyList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") +
       (p.ownList.length ? "\n\nCheck at home first:\n" + p.ownList.map(function(m,i){ return (i+1) + ". " + m; }).join("\n") : "") +
       "\n\n-- Pick My Costume";
-    var buildDetails = "\uD83D\uDD28 Build day: " + idea.title + " costume (about " + ins.time + ")" + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\n" +
+    var buildDetails = "\uD83D\uDD28 Build day: " + idea.title + " costume (about " + displayTime(ins.time) + ")" + "\n\nSee the costume: https://pickmycostume.com/c/" + ideaId + "\n\n" +
       "Steps:\n" +
       p.buildSteps.map(function(s,i){ return (i+1) + ". " + s; }).join("\n") +
       "\n\n-- Pick My Costume";
@@ -1754,9 +1754,8 @@ function show(id){
     /* Build */
     h += '<div class="pms"><p class="pdate">Build on ' + plannerFmt(p.buildDay) + '</p>';
     h += '<h3>Build the costume</h3>';
-    h += '<p class="pcount">' + esc(plannerCountText(p.buildDay)) + ' Takes about ' + esc(ins.time) + '.</p>';
+    h += '<p class="pcount">' + esc(plannerCountText(p.buildDay)) + ' Takes about ' + esc(displayTime(ins.time)) + '.</p>';
     h += '<ol>' + p.buildSteps.map(function(s){ return "<li>" + esc(s) + "</li>"; }).join("") + '</ol>';
-    if (p.hasDrying) h += '<p class="pnote">Something needs drying time, so build day is pushed one day earlier. Paint before dinner, not after.</p>';
     h += '<a class="pcal" data-cal="build" href="' + plannerCalUrl("\uD83D\uDD28 Build day: " + idea.title + " costume", p.buildDay < new Date(new Date().setHours(0,0,0,0)) ? new Date() : p.buildDay, buildDetails) + '" target="_blank" rel="noopener">Add build day to calendar</a></div>';
     /* Dress up */
     h += '<div class="pms"><p class="pdate">Dress up ' + plannerFmt(p.hw) + '</p>';
@@ -2483,7 +2482,7 @@ function buildInstructions(idea, opts){
   /* Plain-text build list for the copy button: decision triple, materials,
      numbered steps. */
   function tripleText(){
-    var t = [ins.time, ins.effort].filter(function(x){ return x; });
+    var t = [displayTime(ins.time), ins.effort].filter(function(x){ return x; });
     return t.length ? t.join(" \u00B7 ") : "";
   }
   function buildListText(){
@@ -2492,7 +2491,7 @@ function buildInstructions(idea, opts){
        the weekly plan (cost/time/buy/steps), not a second materials list. */
     var mp = (typeof MAKE_PLANS !== "undefined") ? MAKE_PLANS[idea.id] : null;
     if (mp){
-      lines.push("\u23F1\uFE0F Timed: about " + String(mp.time).replace(/^~/, ""));
+      lines.push("\u23F1\uFE0F Timed: about " + displayTime(String(mp.time).replace(/^~/, "")));
       lines.push("", "What to buy:");
       mp.buy.forEach(function(b){ lines.push("- " + b); });
     } else {
@@ -2561,7 +2560,7 @@ function buildInstructions(idea, opts){
     if (!ins) return wrap;
     var head = document.createElement("p");
     head.className = "howto-triple";
-    head.textContent = "DIY this week: " + ins.time;
+    head.textContent = "DIY this week: " + displayTime(ins.time);
     wrap.appendChild(head);
     /* Content layer 2026-09-25: sizing guidance, the fit note every parent
        asks about, right under the decision triple. */
@@ -2674,7 +2673,7 @@ function buildInstructions(idea, opts){
     if (_mp){
       var meta = document.createElement("p");
       meta.className = "howto-triple";
-      meta.textContent = "\u23F1\uFE0F Timed: about " + String(_mp.time).replace(/^~/, "");
+      meta.textContent = "\u23F1\uFE0F Timed: about " + displayTime(String(_mp.time).replace(/^~/, ""));
       wrap.appendChild(meta);
       var buyh = document.createElement("h4"); buyh.textContent = "What to buy";
       wrap.appendChild(buyh);
@@ -2877,7 +2876,7 @@ function buildInlinePlan(idea){
      and feeds the effort fragments and role computation. */
   var _dek = (typeof ideaEffortKey === "function") ? ideaEffortKey(idea) : null;
   var _ddiff = (_dek && typeof EFFORT_FACTS !== "undefined" && EFFORT_FACTS[_dek]) ? EFFORT_FACTS[_dek].difficulty : ins.effort;
-  var tri = [ins.time, _ddiff].filter(function(x){ return x; }).join(" \u00B7 ");
+  var tri = [displayTime(ins.time), _ddiff].filter(function(x){ return x; }).join(" \u00B7 ");
   if (tri){
     var tp = document.createElement("p");
     tp.className = "howto-triple"; tp.textContent = tri;
@@ -2956,9 +2955,16 @@ function ideaEffortKey(idea){
    fragments and role computation. 2026-10-01: budget removed from the
    display per the no-dollar-figures decision; the bank keeps its internal
    budget tags for scoring only. */
+/* 2026-10-16 (Billy): drying time is off display everywhere. Bank time
+   strings keep the drying segment (Tonight rule, couch scoring, planner
+   build-day offset all still read the data); rendered text strips it. */
+function displayTime(t){
+  if (!t) return t;
+  return String(t).replace(/\s*\+\s*(?:~?[\d.]+\s*(?:min|hrs?)\s*)?drying/i, "").trim();
+}
 function planFacts(idea){
   var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
-  if (ins && ins.time) return {build: ins.time};
+  if (ins && ins.time) return {build: displayTime(ins.time)};
   var _ek = ideaEffortKey(idea);
   return {build: EFFORT_FACTS[_ek].build};
 }
@@ -3153,7 +3159,7 @@ var SHARE_CAPTIONS = {
   "blue-dog-family": "The whole family is going as cartoon dogs. The 4-year-old has completely lost it.",
   "block-game-crew": "We are going as the game. Built from actual boxes in the garage.",
   "bamboo-demon": "Pink kimono. Bamboo muzzle. Not saying a word all night.",
-  "emerald-witch": "Green from head to toe. About 45 minutes plus drying.",
+  "emerald-witch": "Green from head to toe. About 45 minutes.",
   "tin-hero": "The Tin Hero rides again. Cardboard never looked this good.",
   "snow-sisters": "The cold never bothered us anyway. (Sorry. Had to.)",
   "fairy-tale-princesses": "Every princess. One group photo. Zero fights over who is who.",
@@ -4579,7 +4585,7 @@ function buildCantBuyItBox(idea, results){
   hook.textContent = "Sold out, over budget, or it's already 9pm. That's exactly what this plan is for: build " + idea.title + " from what is already in your house.";
   wrap.appendChild(h); wrap.appendChild(hook);
   /* Decision triple: the guide's own time/effort. */
-  var t = [ins.time, ins.effort].filter(function(x){ return x; });
+  var t = [displayTime(ins.time), ins.effort].filter(function(x){ return x; });
   if (t.length){
     var tp = document.createElement("p");
     tp.id = "cantbuyit-triple";
@@ -5927,7 +5933,7 @@ function spinTriple(idea){
   var ins = INSTRUCTIONS[idea.id];
   /* Proof-rail style triple: "25 min · $3-10 · Easy". Middot matches the
      site; no em/en dashes anywhere in user-facing spin copy. */
-  return [ins.time, ins.effort].filter(function(x){ return x; }).join(" · ");
+  return [displayTime(ins.time), ins.effort].filter(function(x){ return x; }).join(" · ");
 }
 function renderSpinResult(idea){
   window.__pmcSpinIdea = idea;
@@ -6093,7 +6099,7 @@ function parseDecideFor(search){
 function proxyTriple(ideaId){
   if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[ideaId]) return "";
   var ins = INSTRUCTIONS[ideaId];
-  return [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
+  return [displayTime(ins.time), ins.effort].filter(function(x){ return x; }).join(", ");
 }
 /* Pure: the invite text the sender copies or shares. Null without a name. */
 function buildProxyInviteText(name, sid){
@@ -6608,7 +6614,7 @@ function duelCoop(mine, theirs){
 function duelTriple(idea){
   if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var ins = INSTRUCTIONS[idea.id];
-    return [ins.time, ins.effort].filter(function(x){ return x; }).join(", ");
+    return [displayTime(ins.time), ins.effort].filter(function(x){ return x; }).join(", ");
   }
   return "";
 }
@@ -6636,7 +6642,7 @@ function duelEasy(idea){
 function duelScoreLine(idea){
   if (typeof INSTRUCTIONS === "undefined" || !INSTRUCTIONS[idea.id]) return "";
   var ins = INSTRUCTIONS[idea.id];
-  return [ins.time].filter(function(x){ return x; }).join(" · ");
+  return [displayTime(ins.time)].filter(function(x){ return x; }).join(" · ");
 }
 function duelVerdictV2(mine, theirs){
   if (mine.id === theirs.id)
@@ -7186,10 +7192,9 @@ function glanceBullets(idea){
   }
   if (hands === null){
     out.push(planFacts(idea).build + " build");
-  } else if (dry > 0){
-    out.push(fmtMin(hands) + " build + " + fmtMin(dry) + " drying");
   } else {
-    out.push(fmtMin(hands) + " build, no drying");
+    /* 2026-10-16 (Billy): drying off display; hands-on build only. */
+    out.push(fmtMin(hands) + " build");
   }
   out.push(idea.tonight ? "Tonight-approved" : "Not a tonight build");
   return out;
@@ -9560,7 +9565,7 @@ function browseCard(idea){
     var bmeta = null;
     if (_bins && _bins.time){
       bmeta = document.createElement("p"); bmeta.className = "bmeta";
-      bmeta.textContent = [_bins.time, _bins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
+      bmeta.textContent = [displayTime(_bins.time), _bins.effort].filter(function(x){ return x; }).join(" \u00B7 ");
     }
     /* 2026-09-30 (Billy spec): this launcher opens the "Keep building this
        costume" plan block — it does not copy anything itself, so the label
@@ -14118,7 +14123,7 @@ function renderTonightSection(){
          real commitment. Zero-drying cards unchanged. */
       var h = tonightHandsOn(idea.id);
       var d = (idea && idea.dryMin) || 0;
-      meta.textContent = h + " min" + (d > 0 ? " + " + d + " dry" : "") + " \u00b7 " + eff;
+      meta.textContent = h + " min" + " \u00b7 " + eff;
       card.appendChild(img);
       card.appendChild(label);
       card.appendChild(meta);
