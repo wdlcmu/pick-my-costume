@@ -309,7 +309,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     var _art = /^the /i.test(title) ? "" : (/^[aeiou]/i.test(title) ? "an " : "a ");
     _desc = "How to make " + _art + title + " costume in " + esc(_hw.time).replace(/\s*\+.*$/, "") +
       ". " + esc(_hw.effort) +
-      " DIY project with a full supplies list, step-by-step guide, and sizing tips.";
+      " DIY project with a full supplies list and a step-by-step guide.";
     if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
   }
   var _ld = "";
