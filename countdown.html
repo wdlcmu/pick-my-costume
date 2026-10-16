@@ -112,7 +112,7 @@ function newShareId(){
 function dayShareText(i, sid){
   var d = COUNTDOWN_DAYS[i];
   sid = sid || newShareId();
-  return {text: "Day " + (i + 1) + " of 12: " + d.title + " (" + d.time + "). "
+  return {text: "\uD83C\uDF83 Day " + (i + 1) + " of 12: " + d.title + ". \u23F1\uFE0F Timed: about " + d.time + ". "
     + "Can your closet beat this one? Take the 2-minute quiz and send me your pick: "
     + "https://pickmycostume.com/c/" + d.slug + "?s=" + sid + "&o=countdown", sid: sid};
 }
