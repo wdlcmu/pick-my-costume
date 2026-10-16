@@ -3145,6 +3145,32 @@ function hasQuizAnswers(){
   for (var k in state.answers) if (Object.prototype.hasOwnProperty.call(state.answers, k)) return true;
   return false;
 }
+/* 2026-10-16 (Billy, results cut round 2): vibe adjectives that can LEAD a
+   bank why ("Cozy, funny, and the chopsticks..."). When a pick does not
+   carry the vibe the visitor chose, that lead-in reads as a fit claim for
+   the wrong vibe (a Scary picker got "Cozy, funny" as bullet 1 for Ramen
+   Bowl, which has no scary tag; the food interest outscored the vibe).
+   stripVibeLead drops a short leading vibe-adjective clause joined by
+   ", and" and keeps the idea-specific reason after it. Anything that does
+   not match the pattern passes through verbatim. */
+var WHY_VIBE_WORDS = /\b(funny|hilarious|silly|scary|spooky|creepy|eerie|cute|adorable|cozy|sweet|chill|grown-up)\b/i;
+function stripVibeLead(why){
+  if (!why) return why;
+  var m = why.match(/^([A-Za-z][A-Za-z ,-]{0,40}?),\s+and\s+(.+)$/);
+  if (!m) return why;
+  if (m[1].split(/[\s,]+/).filter(Boolean).length > 4) return why;
+  if (!WHY_VIBE_WORDS.test(m[1])) return why;
+  var rest = m[2];
+  return rest.charAt(0).toUpperCase() + rest.slice(1);
+}
+/* 2026-10-16 (Billy, results cut round 2): fitReasons now composes ONE line
+   for the result card: the idea's own reason, with the picked-interest
+   reason merged into the same line. The effort/occasion fragment bullet is
+   gone (effort rides in the chips as difficulty), the audience bullet is
+   gone (the whole screen already reflects the audience), and the vibe is
+   only claimed when the idea actually carries the picked vibe tag (the
+   2026-09-27 guard, kept). whyLine itself is untouched (still feeds the
+   AI prompt builder). */
 function fitReasons(scored, idx){
   var idea = scored.idea, out = [];
   function ansLabel(qid){
@@ -3155,32 +3181,12 @@ function fitReasons(scored, idx){
   if (state.pinpoint && state.pinpoint.idea === idea.id){
     out.push("You asked for " + state.pinpoint.label + ": this is our DIY take on it.");
   }
-  out.push(idea.why);
-  /* 2026-10-01 (STEP 1, task C.3): each answer is reflected exactly once.
-     The old composition stacked the whyLine tail ("Picked for a funny
-     vibe...") under separate "Matches the funny vibe you picked." and
-     "Built for your kid." bullets, repeating vibe and audience twice. Now
-     the dynamic build/occasion fragments stand alone, vibe + interest share
-     a single bullet, and the audience gets one. whyLine itself is untouched
-     (still feeds the AI prompt builder). */
-  var v = ((idx||0)%3+3)%3;
-  var dyn = [];
-  var e = (typeof FIT_FRAGMENTS !== "undefined") ? FIT_FRAGMENTS[ideaEffortKey(idea)] : null;
-  var qocc = state.answers.qocc;
-  var otag = (qocc && qocc.tags) ? Object.keys(qocc.tags)[0] : null;
-  var o = (typeof FIT_FRAGMENTS !== "undefined" && otag) ? FIT_FRAGMENTS[otag] : null;
-  if (e) dyn.push(e[v]);
-  if (o) dyn.push(o[v]);
-  if (dyn.length){
-    var dj = dyn.join(", ");
-    out.push(dj.charAt(0).toUpperCase() + dj.slice(1) + ".");
-  }
   var vibe = ansLabel("q2");
-  /* 2026-09-27 pm red-team: only claim the vibe matches when the idea
-     actually carries the picked vibe tag. Snow Sisters (no scary tag)
-     was telling "Scary" pickers "Matches the scary vibe you picked." */
   var vtags = (state.answers.q2 && state.answers.q2.tags) ? Object.keys(state.answers.q2.tags) : [];
   var vibeHit = vtags.some(function(k){ return idea.tags && idea.tags[k]; });
+  var whyText = idea.why || "";
+  if (vibe && !vibeHit) whyText = stripVibeLead(whyText);
+  out.push(whyText);
   var personal = [];
   if (vibe && vibeHit) personal.push("a " + vibe.toLowerCase() + " vibe");
   var interest = ansLabel("qinterest");
@@ -3188,13 +3194,9 @@ function fitReasons(scored, idx){
      interest fragment reads "their interest in ...", not "your". */
   var _kidFlow = state.answers.q1 && state.answers.q1.value === "kid";
   if (interest && interest !== "Surprise me") personal.push((_kidFlow ? "their interest in " : "your interest in ") + interest.toLowerCase());
-  if (personal.length) out.push("Picked for " + personal.join(" and ") + ".");
-  var aud = ansLabel("q1");
-  /* 2026-10-01 (Claude fix 1f): no "Built for your kid." bullet on the kid
-     flow -- the whole page is already about their kid, so the line is
-     filler. Other audiences keep their audience bullet. */
-  if (aud && aud !== "My kid" && AUDIENCE_PHRASE[aud]) out.push("Built for " + AUDIENCE_PHRASE[aud] + ".");
-  return out.slice(0, 4);
+  var line = out.join(" ");
+  if (personal.length) line += " Picked for " + personal.join(" and ") + ".";
+  return [line];
 }
 /* Punchy, group-chat-ready share captions, one per top idea. House voice:
    plainspoken, specific, funny. The loop question is appended by the share
@@ -7213,10 +7215,11 @@ function buildVibeFeedback(idea){
 }
 /* 2026-09-26: buildMakePlan removed; its content (cost/time/buy)
    was merged into the single "Make it this week" build section. */
-/* 2026-10-05: at-a-glance strip. Three honest bullets per result card,
-   derived from bank data only: audience/age fit, build time (hands-on +
-   drying), and tonight-eligibility. "Tonight-approved" appears only when the
-   stored idea.tonight predicate passes (hands-on <= 30 AND total <= 120). */
+/* 2026-10-05: at-a-glance strip. Honest bullets per result card, derived
+   from bank data only: audience/age fit, build time (hands-on only since
+   the 2026-10-16 drying cut), difficulty, and tonight-eligibility.
+   "Tonight-approved" appears only when the stored idea.tonight predicate
+   passes (hands-on <= 30 AND total <= 120). */
 function glanceBullets(idea){
   var out = [];
   var t = idea.tags || {};
@@ -7244,6 +7247,9 @@ function glanceBullets(idea){
     /* 2026-10-16 (Billy): drying off display; hands-on build only. */
     out.push(fmtMin(hands) + " build");
   }
+  /* 2026-10-16 (Billy, results cut round 2): difficulty rides as a chip.
+     The 3-box fact row that repeated it (and the build time) is gone. */
+  out.push(EFFORT_FACTS[ideaEffortKey(idea)].difficulty);
   out.push(idea.tonight ? "Tonight-approved" : "Not a tonight build");
   return out;
 }
@@ -7277,37 +7283,25 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
       _pb.textContent = _pm === 0 ? "Make tonight" : ("Needs " + _pm + (_pm === 1 ? " thing" : " things"));
       _pb.title = "Made from your pantry";
     }
-    if(idx===0){var kc=document.createElement("p");kc.className="rkicker";kc.textContent="\uD83C\uDF83 Your "+new Date().getFullYear()+" Halloween costume";card.appendChild(kc);}
+    /* 2026-10-16 (Billy, results cut round 2): the "YOUR 2026 HALLOWEEN
+       COSTUME" eyebrow is cut. The costume name is the header now. */
     if(idx===0){var tp=document.createElement("span");tp.className="toppick";tp.textContent=role||"Top pick for you";card.appendChild(tp);}
     if(idx>0&&role){var rb=document.createElement("span");rb.className="rolebadge";rb.textContent=role;card.appendChild(rb);}
     /* Role explanatory line: once per role per results screen, rendered by
-       the caller via roleNote; badge-only on repeats. */
-    if(roleNote){var rnn=document.createElement("p");rnn.className="rolenote";rnn.textContent=roleNote;card.appendChild(rnn);}
+       the caller via roleNote; badge-only on repeats. 2026-10-16 (Billy,
+       results cut round 2): not on the hero card -- "The highest-scoring
+       pick for your answers" under a Best Match badge said one thing
+       twice. Runner-up role notes (Easiest, Wildcard) stay. */
+    if(roleNote && idx!==0){var rnn=document.createElement("p");rnn.className="rolenote";rnn.textContent=roleNote;card.appendChild(rnn);}
     var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
     var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
-    /* Fact row: the four questions every recipient asks, answered at a glance. */
-    var _fr = document.createElement("div"); _fr.className = "factrow";
-    var _ek = ideaEffortKey(idea);
-    var _pf = planFacts(idea);
-    var _vibeA = (state.answers.q2 && state.answers.q2.label) ? state.answers.q2.label : "Any";
-    /* 2026-09-27 pm red-team: the value echoes the USER's picked vibe, not the
-       idea's, so the label says "Your vibe" (was "Vibe", which read as an
-       idea fact next to Build/Budget/Difficulty). */
-    [["Your vibe", _vibeA], ["Build", _pf.build], ["Difficulty", EFFORT_FACTS[_ek].difficulty]].forEach(function(f){
-      var _d = document.createElement("div"); _d.className = "fact";
-      var _b = document.createElement("b"); _b.textContent = f[0];
-      var _s = document.createElement("span"); _s.textContent = f[1];
-      _d.appendChild(_b); _d.appendChild(_s); _fr.appendChild(_d);
-    });
-    /* Fit reasons: a grounded list (idea why, effort/occasion fragments, the
-       user's own answers reflected back) replaces the single why paragraph. */
-    var _rs = document.createElement("div"); _rs.className = "fitreasons";
-    var _rb = document.createElement("b"); _rb.textContent = hasQuizAnswers() ? whyHeader() : "Why it's a great pick"; _rs.appendChild(_rb);
-    var _ul = document.createElement("ul");
-    fitReasons(scored, idx).forEach(function(r){
-      var _li = document.createElement("li"); _li.textContent = r; _ul.appendChild(_li);
-    });
-    _rs.appendChild(_ul);
+    /* 2026-10-16 (Billy, results cut round 2): the 3-box fact row is gone.
+       It repeated the chips above it (build time twice). Every fact now
+       lives in the at-a-glance chips only; difficulty joined them there. */
+    /* ONE why line: no header, no bullet list. fitReasons composes it:
+       the idea's own reason with the picked-interest reason merged in. */
+    var _rs = document.createElement("p"); _rs.className = "fitwhy";
+    _rs.textContent = fitReasons(scored, idx)[0] || "";
     var row = document.createElement("div"); row.className = "row";
     var bPick = document.createElement("button"); bPick.type = "button"; bPick.className = "cta";
     bPick.textContent = "Plan this costume";
@@ -7474,7 +7468,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
       _rl.textContent = "Your kid: " + idea.roles.kid[0] + ". You: " + idea.roles.adult[0] + ".";
       card.appendChild(_rl);
     }
-    card.appendChild(_fr); card.appendChild(_rs);
+    card.appendChild(_rs);
     /* 2026-10-01 (Billy): the standalone "Make it this week" disclosure was a
        second CTA competing with the Plan button. The make-it content lives
        inside the plan flow now: tapping "Plan this costume" mounts the full
@@ -7866,7 +7860,11 @@ function renderWarmResults(){
   var name = WARM.name, wearer = WARM.wearer || "solo";
   /* The s-results shell is shared with the cold quiz; renderResults resets
      this header and the nav buttons for the cold path. */
-  document.querySelector("#s-results .progress").textContent = "Your plan";
+  /* 2026-10-16 (Billy, results cut round 2): the shell's "Your plan" label
+     is gone; this screen's title below carries the meaning. The hint,
+     hidden by the cold results path, comes back with warm text. */
+  var _whint = document.querySelector("#s-results p.q-hint");
+  if (_whint) _whint.style.display = "";
   if (WARM.anchor){
     ensureHead("results-title", "q-title", {before:"#r-cards"}).textContent = "\uD83C\uDF83 " + name + " is sorted.";
     document.querySelector("#s-results p.q-hint").textContent = "The costume is decided. Here is the plan around it.";
@@ -8571,9 +8569,12 @@ function renderResults(results){
   box.innerHTML = "";
   /* 2026-09-27: the s-results shell is shared with the warm path, which
      rewrites this header and hides nav buttons. Reset for the cold path. */
-  document.querySelector("#s-results .progress").textContent = "Your costume";
-  ensureHead("results-title", "q-title", {before:"#r-cards"}).innerHTML = "&#127875; Here's what we picked for you";
-  document.querySelector("#s-results p.q-hint").innerHTML = "Our top pick for you. Tap Plan to save it. More picks are below.";
+  /* 2026-10-16 (Billy, results cut round 2): the "Your costume" label and
+     the intro line are cut; the header is two words and the top card speaks
+     for itself. The warm path re-shows the hint with its own text. */
+  ensureHead("results-title", "q-title", {before:"#r-cards"}).textContent = "Your picks";
+  var _rh = document.querySelector("#s-results p.q-hint");
+  _rh.textContent = ""; _rh.style.display = "none";
   $("btn-rtop").style.display = "";
   /* Next-kid rematch shows only for kid-flow results: the family flow plans
      the household in one run, and other audiences have no sibling case. */
