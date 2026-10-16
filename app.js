@@ -2795,6 +2795,108 @@ function planMatLabel(ideaId, fidx, text){
    (pantryMaterialTexts filters optionals), so optional lines keep their raw
    index of -1 and get no pantry-derived label. Called at plan mount and
    again by refreshPlanMats whenever a pantry tile is ticked. */
+/* 2026-10-16 (Billy simple-copy pass, Phase 1): the plan's "You need" list
+   shows short item names only. The bank strings stay intact underneath
+   (planner, email, search-by-owning all keep the full data); this cuts at
+   render time: role/purpose clauses ("for the frosting", "for cape ties"),
+   size specs ("9x12 inches", "about 2 feet"), and source parentheticals go;
+   quantity stays only when it is more than 1, per-person, or a container
+   unit ("1 tube", "1 roll", "1 pair"). Person labels in group guides
+   ("Princess: yellow fabric") cut to the item after the colon; a colon
+   after a real item keeps the item and drops the note. */
+function planDisplayMat(m){
+  var rawAll = String(m);
+  if (rawAll.indexOf(";") >= 0){
+    var depth = 0, chunks = [], cur = "";
+    for (var ci3 = 0; ci3 < rawAll.length; ci3++){
+      var ch = rawAll.charAt(ci3);
+      if (ch === "(") depth++;
+      if (ch === ")") depth = Math.max(0, depth - 1);
+      if (ch === ";" && depth === 0){ chunks.push(cur); cur = ""; }
+      else cur += ch;
+    }
+    chunks.push(cur);
+    if (chunks.length > 1) return chunks.map(function(p){ return planDisplayMat(p); }).join("; ");
+  }
+  var s = rawAll.replace(/\s+/g, " ").trim();
+  var isOpt = /\([^)]*optional/i.test(s);
+  s = s.replace(/\s*\([^)]*\)\s*$/, "");
+  while (/\s*\([^)]*\)\s*$/.test(s)) s = s.replace(/\s*\([^)]*\)\s*$/, "");
+  s = s.trim();
+  var SIZE_SEG = /^(about\s+)?[\d.]+\s*(x\s*[\d.]+\s*)?(inches|inch|feet|foot|cm|mm|yards?|)\s*(each|long|wide|across)?\s*$/i;
+  var SIZE_TOKEN = /\s*(about\s+)?\d+\s*x\s*\d+\s*(inches|inch)?|\s*(about\s+)?[\d.]+\s*(inches|inch|feet|foot|cm|mm|yards?)\b/gi;
+  var UNITS = {sheet:1, sheets:1, pair:1, pairs:1, pack:1, roll:1, tube:1, bottle:1, can:1, box:1, bag:1, bunch:1, coil:1, skein:1, set:1, spool:1, piece:1, pieces:1};
+  var KEEP1 = {tube:1, tubes:1, roll:1, rolls:1, pack:1, packs:1, pair:1, pairs:1, bottle:1, can:1, cans:1, box:1, spool:1};
+  var parts = s.split(/,\s*/);
+  var head = parts[0], rest = parts.slice(1);
+  var colon0 = head.indexOf(": ");
+  if (colon0 > 0 && /\d/.test(head.slice(0, colon0))) rest = [];
+  var qtyVal = null, qtyUnit = "", perPerson = "";
+  var extra = [], orExtra = [];
+  rest.forEach(function(seg){
+    if (/^or\s+/i.test(seg)){ orExtra.push(seg); return; }
+    var pp = /^(\d+(?:\.\d+)?(?:\s*to\s*\d+)?)\s+(pair|pairs)?\s*per\s+(person|kid|grown-up|adult|child)/i.exec(seg);
+    if (pp){ perPerson = pp[1] + (pp[2] ? " " + pp[2] : "") + " per " + pp[3]; return; }
+    if (/per\s+(person|kid|grown-up|adult|child)/i.test(seg) && !/^\d/.test(seg)){ extra.push(seg); return; }
+    var qm = /^([\d.]+(?:\s*to\s*[\d.]+)?)\s*(.*)$/.exec(seg);
+    if (qm && !/^\d+\s*x\s*\d+/.test(seg)){
+      var rem = qm[2].replace(SIZE_TOKEN, "").replace(/\s+/g, " ").trim();
+      var remFirst = rem.split(/\s+/)[0].toLowerCase();
+      if (rem === "" || UNITS[remFirst] || /^(inches|inch|feet|foot|yards?|cm|mm)\b/i.test(rem)){
+        if (!/^(inches|inch|feet|foot|yards?|cm|mm)\b/i.test(rem) && qtyVal === null){
+          qtyVal = qm[1];
+          qtyUnit = rem.split(/\s+or\s+/i)[0];
+        }
+        return;
+      }
+      extra.push(seg);
+      return;
+    }
+    if (SIZE_SEG.test(seg) || /\d+\s*x\s*\d+/.test(seg)) return; /* pure size: drop */
+    extra.push(seg);
+  });
+  if (extra.length) head = head + ", " + extra.join(", ");
+  /* Colon: person label vs item note. */
+  var ci = head.indexOf(": ");
+  if (ci > 0){
+    var pre = head.slice(0, ci), post = head.slice(ci + 2);
+    if (!/\d/.test(pre) && pre.split(/\s+/).length <= 3 && !/^(twin|full|queen|king|size)/i.test(post)) head = post;
+    else head = pre;
+  }
+  /* Role/purpose clause. */
+  var fi2 = head.search(/\s+for\s+/i);
+  if (fi2 > 0) head = head.slice(0, fi2);
+  /* Leading quantity in the head. */
+  var lm = /^([\d.]+(?:\s*to\s*[\d.]+)?)\s+(.+)$/.exec(head);
+  var ppm = lm && /^(.*?)\s+per\s+(person|kid|grown-up|adult|child)$/i.exec(lm[2]);
+  if (ppm){ perPerson = lm[1] + " per " + ppm[2]; head = ppm[1]; lm = null; }
+  if (lm){
+    var rem2 = lm[2], w1 = rem2.split(/\s+/)[0].toLowerCase();
+    if (UNITS[w1]){
+      if (qtyVal === null){ qtyVal = lm[1]; qtyUnit = rem2.split(/\s+/)[0]; }
+      head = rem2.split(/\s+/).slice(1).join(" ").replace(/^(each|of)\s+/i, "");
+    } else if (qtyVal === null){
+      qtyVal = lm[1]; head = rem2;
+    } else head = rem2;
+  }
+  head = head.replace(SIZE_TOKEN, "").replace(/\s+/g, " ").replace(/\s*,\s*$/, "").trim();
+  var kept = "";
+  if (perPerson) kept = perPerson;
+  else if (qtyVal !== null){
+    var v = parseFloat(qtyVal), unitFirst = qtyUnit.split(/\s+/)[0].toLowerCase();
+    var unitTwo = (qtyUnit.split(/\s+/).slice(0, 2).join(" ")).toLowerCase();
+    if (/to/.test(qtyVal) || v > 1) kept = qtyVal + (qtyUnit ? " " + qtyUnit : "");
+    else if (KEEP1[unitFirst] || unitTwo === "sheet of") kept = qtyVal + (qtyUnit ? " " + qtyUnit : "");
+  }
+  var out = head + (kept ? ", " + kept : "");
+  if (orExtra.length) out += ", " + orExtra.map(function(seg){
+    var f = seg.search(/\s+for\s+/i);
+    return f > 0 ? seg.slice(0, f) : seg;
+  }).join(", ");
+  out = out.charAt(0).toUpperCase() + out.slice(1);
+  if (isOpt && !/optional/i.test(out)) out += " (optional)";
+  return out;
+}
 function renderPlanMats(ul, idea){
   ul.innerHTML = "";
   var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
@@ -2807,13 +2909,13 @@ function renderPlanMats(ul, idea){
     var li = document.createElement("li");
     /* The static own/buy parentheticals are superseded by the live label;
        other parentheticals (make:, sizing notes) stay. */
-    var disp = String(m).replace(/\s*\((own|buy)[^)]*\)/gi, "").replace(/\s+/g, " ").trim();
+    var disp = planDisplayMat(m);
     li.appendChild(document.createTextNode(disp));
     var label = planMatLabel(idea.id, fi, m);
     /* 2026-10-01 (Claude fix 1d): one tag per item. A (make: ...) line
        already carries its tag in the text -- stacking the live (own)/(buy:)
        label would read "(make: from a shipping box)(own)". */
-    var hasMake = /\(make:/i.test(disp);
+    var hasMake = /\(make:/i.test(String(m));
     if (label && !hasMake){
       var sp = document.createElement("span");
       sp.className = "ownbuy " + label;
