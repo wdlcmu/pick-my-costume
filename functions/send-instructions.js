@@ -208,7 +208,7 @@ export function composeEmail(idea, slug, shareId) {
 // Opener
 '<tr><td style="padding:12px 28px 0 28px;">' +
 '<p style="margin:0;' + F + 'font-size:15px;line-height:1.6;color:#2b2b2b;">Here is your game plan for the <strong>' + esc(title) + '</strong>. ' +
-'Gather the stuff below, give yourself the full time including drying, and you are set.</p>' +
+'Gather the stuff below, give yourself the full time shown in your plan, and you are set.</p>' +
 '</td></tr>' +
 // 5. Materials checklist
 '<tr><td style="padding:20px 28px 0 28px;">' +
