@@ -562,7 +562,10 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .gpstars.gpaused .gpstar{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){.gstar,.gshoot,.gpstar{display:none}}
 .galaxysec .q-title{margin:0 0 8px}
-.galaxypreview{display:block;margin:12px auto 0;max-width:640px;border-radius:12px;overflow:hidden;border:1px solid var(--line);text-decoration:none;position:relative}
+/* 2026-10-16 (Billy): the preview was capped at 640px and centered, leaving
+   big dark gaps on both sides of the wide desktop section. It now fills the
+   section width (native 16/10 image, no crop). Phone was already full width. */
+.galaxypreview{display:block;margin:12px auto 0;max-width:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);text-decoration:none;position:relative}
 .galaxypreview img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
 .galaxypreview span{position:absolute;left:12px;right:12px;bottom:12px;display:inline-block;font-weight:700;color:#fff;background:rgba(20,10,30,.72);border-radius:10px;padding:10px 14px;text-align:center}
 /* 2026-10-13 (Billy): twinkle overlay ON the teaser preview photo itself.
@@ -1386,39 +1389,19 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            The Trending tab below shows the photos; a text list of names was
            redundant, and its prefix implied a ranking we don't publish. -->
       <!-- 2026-09-26 P4: stranded-results resume. Quiet text-link, shown iff
-           pmc_last_v1 has results but no fresh pick (returnbox hidden). Reuses
-           the btn-return handler verbatim; visibility managed by
-           refreshReturnBox(). -->
+           pmc_last_v1 has results. Calls openSavedResults() in app.js;
+           visibility managed by refreshReturnBox(). (2026-10-16: this link
+           is now the ONLY saved-results path back; the welcome-back strip
+           that used to sit below is cut.) -->
       <p class="fine" id="resume-wrap" style="margin:6px 0 0;text-align:center" hidden><button type="button" class="resume-link" id="btn-resume">See my ideas again</button></p>
       <!-- 2026-09-26: Halloween night weather. Geolocation + Open-Meteo
            forecast for Oct 31. Renders async under the countdown; silent when
            geolocation is denied, the forecast is out of range, or fetch fails. -->
       <p class="fine" id="hw-weather" style="margin:6px 0 0;text-align:center" hidden></p>
-      <!-- 2026-09-26: personalized returning hero. Shown only when a
-           fresh pmc_pick_v1 plus usable pmc_last_v1 exist; the generic
-           first-timer elements (.firstonly) hide for these visitors. One calm
-           share entry point, no nudges. -->
-      <!-- 2026-09-30 delight: welcome-back is a slim strip below the normal
-           hero, not a hero replacement. All wiring ids unchanged. -->
-      <div class="returnhero" id="returnbox" hidden>
-        <button class="returnhero-dismiss" id="btn-returndismiss" type="button" aria-label="Dismiss">×</button>
-        <div class="returnhero-strip">
-          <img class="returnhero-photo" id="returnhero-photo" alt="">
-          <div>
-            <p class="returnhero-kicker">Welcome back</p>
-            <!-- 2026-10-01 (Item 6): the "Still going as X?" heading is rendered by app.js (ensureHead); no heading markup in static HTML. -->
-            <div class="returnhero-actions">
-              <button class="cta" id="btn-return" type="button">See my ideas again</button>
-              <button class="ghost" id="btn-retake" type="button">Retake the quiz</button>
-              <button class="returnhero-share" id="btn-returnshare" type="button">Share</button>
-            </div>
-          </div>
-        </div>
-        <p class="fine" id="returnhero-share-status" role="status" style="margin:8px 0 0"></p>
-        <!-- 2026-09-30: the "Still going as X?" strip reads as tracking without
-             this. Plain one-liner, same voice as the results hint. -->
-        <p class="fine" style="margin:6px 0 0">Kept only on this device, nothing leaves your phone.</p>
-</div>
+      <!-- 2026-10-16 (Billy): the welcome-back strip ("Still going as X?")
+           is REMOVED. It read as an upsell. Returning visitors get the
+           normal hero plus the quiet "See my ideas again" link above
+           (resume-wrap), driven by refreshReturnBox() in app.js. -->
 </div><!-- /herotext -->
       <!-- 2026-09-29: desktop hero mosaic. Real costume photos beside
            the headline at >=1024px; hidden on phone (single column as today).
@@ -1687,7 +1670,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <section class="galaxysec" id="galaxy-section" aria-label="Explore the costume galaxy">
         <div class="galaxybg" aria-hidden="true"></div>
         <h2 class="q-title">169 costumes. One galaxy.</h2>
-        <p class="fine" style="margin:0 0 10px">Zoom, wander, and find something you wouldn&rsquo;t have thought to search for.</p>
+        <p class="fine" style="margin:0 0 10px">Zoom, wander, find something new.</p>
         <a class="galaxypreview" href="/map" aria-label="Explore the costume galaxy">
           <img src="images/galaxy-preview-stars.webp" alt="The costume galaxy: glowing star clusters of Dinosaur Land, Princess Castle, and more" loading="lazy">
           <div class="gpstars" aria-hidden="true"></div>
