@@ -314,7 +314,10 @@ var UnitTrack = (function(){
    the 8+ share paths. Only clears when the shared idea matches the pending
    one: a re-pick updates the marker, so a share of the old pick must not
    cancel the nudge for the new one. The pure core (recoverShouldShow) is
-   unit-tested by hour-session/recover-nudge-gate.js. */
+   unit-tested by hour-session/recover-nudge-gate.js.
+   2026-10-16 (Billy): the banner that consumed this core is REMOVED (it
+   read as an upsell). Core + marker machinery stay; nothing renders a
+   saved-not-shared nudge anymore. */
 function recoverMarkShared(ideaId){
   if (!ideaId) return;
   var rec = load("pmc_recover_v1");
@@ -393,7 +396,10 @@ function quizResumeIndex(){
    the share row. Runs last among the hero banners and yields when the
    recovery or resume banner is showing. Purely additive. The pure core
    (rallyInWindow, rallyCopyFor, rallyShouldShow) is unit-tested by
-   hour-session/halloween-rally-gate.js. */
+   hour-session/halloween-rally-gate.js.
+   2026-10-16 (Billy): the rally banner itself is REMOVED (same
+   saved-not-sent nag pattern as the recovery banner). Core stays for
+   its gate; nothing renders it. */
 var RALLY_SNOOZE_MS = 7*24*60*60*1000;
 function rallyInWindow(nowMs){
   /* Exact calendar gate in the visitor's local time: Oct 25-31 only.
@@ -13831,7 +13837,10 @@ function nextKid(){
   renderQ();
 }
 $("btn-nextkid").onclick = nextKid;
-$("btn-return").onclick = function(){
+/* 2026-10-16 (Billy): the welcome-back strip (btn-return / btn-retake /
+   btn-returnshare) is cut. The saved-results handler lives on as a named
+   function; the quiet "See my ideas again" link (btn-resume) calls it. */
+function openSavedResults(){
   var last = load("pmc_last_v1");
   if (!last || !last.results) return;
   /* Restored quiz results are still quiz results: bring the answers back so
@@ -13845,25 +13854,13 @@ $("btn-return").onclick = function(){
     .map(function(idea){ return {idea: idea, score: 0, contrib: {}}; });
   if (results.length) renderResults(results);
   else $("btn-start").onclick(); /* saved ideas left the bank: fresh quiz, no dead tap */
-};
-/* 2026-09-26 P4: stranded-results resume link. Reuses the btn-return handler
-   verbatim; visibility is managed by refreshReturnBox(). Analytics carries
-   counts only. */
+}
+/* 2026-09-26 P4: stranded-results resume link. Visibility is managed by
+   refreshReturnBox(). Analytics carries counts only. */
 $("btn-resume").onclick = function(){
   var last = load("pmc_last_v1");
   Analytics.track("results_resumed", {result_count: (last && last.results) ? last.results.length : 0});
-  $("btn-return").onclick();
-};
-/* 2026-09-26: returning-hero secondary + one quiet share entry point.
-   Retake runs the same clean quiz start as the hero CTA. */
-$("btn-retake").onclick = function(){ $("btn-start").onclick(); };
-$("btn-returnshare").onclick = function(){
-  var pick = load("pmc_pick_v1");
-  if (!pick || !pick.ideaId) return;
-  var idea = null;
-  for (var k = 0; k < IDEAS.length; k++) if (IDEAS[k].id === pick.ideaId){ idea = IDEAS[k]; break; }
-  if (!idea) return;
-  shareText(idea, $("returnhero-share-status"), $("btn-returnshare"));
+  openSavedResults();
 };
 /* 2026-10-16 (Billy): Tools tabs cut from the homepage; the browse button
    went with them. Guarded so the wiring below never throws. */
@@ -15602,54 +15599,10 @@ function shareLandingHeadline(idea, search){
        did), so bare-share arrivals undercounted recipient opens. */
     if (isGenuineShareArrival(location.search || "")) Analytics.track("recipient_landing_viewed", Object.assign({recipient_channel: recipientChannel()}, viaShareProps()));
   })();
-  /* Saved-not-shared recovery nudge (2026-09-26 afternoon): a return visit
-     with an unshared pick gets one slim banner above the hero. The save must
-     be at least 6h old (someone sharing right away never sees it), the idea
-     must still exist in the bank, and any query string suppresses the banner:
-     share arrivals get the friend banner instead, and ?pick= detail views
-     already have the share row. "Send it now" deep-links to ?pick=<slug>,
-     which opens the same full pick flow with the share buttons; "Not now"
-     snoozes 7 days. Additive: no existing element, event, or experiment is
-     touched. Copy is plain English, no em dashes. */
-  (function(){
-    try {
-      if (location.search) return;
-      var hero = $("s-hero");
-      if (!hero || $("pmc-recover-banner") || $("pmc-friend-banner")) return;
-      var rec = load("pmc_recover_v1");
-      var snoozedAt = load("pmc_recover_snooze_v1");
-      if (!recoverShouldShow(rec, snoozedAt, Date.now())) return;
-      var idea = null;
-      if (typeof IDEAS !== "undefined") IDEAS.forEach(function(it){ if (it.id === rec.ideaId) idea = it; });
-      if (!idea || !idea.title) return;
-      var rb = document.createElement("div");
-      rb.id = "pmc-recover-banner";
-      rb.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
-      var p1 = document.createElement("p");
-      p1.style.cssText = "margin:0 0 10px;font-weight:700;color:#333;line-height:1.4";
-      p1.textContent = "You saved " + idea.title + " but never sent it.";
-      var row = document.createElement("div");
-      row.style.cssText = "display:flex;gap:10px;align-items:stretch;";
-      var go = document.createElement("a");
-      go.href = "/?pick=" + encodeURIComponent(rec.ideaId);
-      go.textContent = "Send it now";
-      go.style.cssText = "flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:17px;color:#2a1500;background:#ff8c1a;border-radius:14px;padding:14px 0;display:block;";
-      go.onclick = function(){ Analytics.track("recovery_nudge_sent", {idea_id: rec.ideaId}); };
-      var no = document.createElement("button");
-      no.type = "button";
-      no.textContent = "Not now";
-      no.style.cssText = "padding:14px 20px;font-size:17px;background:rgba(0,0,0,.04);color:#333;border:2px solid #d8c9ae;border-radius:14px;cursor:pointer;";
-      no.onclick = function(){
-        store("pmc_recover_snooze_v1", Date.now());
-        Analytics.track("recovery_nudge_dismissed", {idea_id: rec.ideaId});
-        if (rb.parentNode) rb.parentNode.removeChild(rb);
-      };
-      row.appendChild(go); row.appendChild(no);
-      rb.appendChild(p1); rb.appendChild(row);
-      hero.insertBefore(rb, hero.firstChild);
-      Analytics.track("recovery_nudge_shown", {idea_id: rec.ideaId});
-    } catch(e){}
-  })();
+  /* 2026-10-16 (Billy): the saved-not-shared recovery banner (saved-not-
+     sent wording, orange send button, snooze button) is REMOVED. It read
+     as an upsell. Nothing renders it now; the pure core (recoverShouldShow)
+     and the pmc_recover_v1 marker stay for their unit gate and state. */
   /* Quiz-abandon resume banner (2026-09-26 evening): a return visit with an
      abandoned quiz gets one slim banner above the hero. Continue restores the
      saved answers and resumes at the first unanswered question; Not now
@@ -15718,58 +15671,10 @@ function shareLandingHeadline(idea, search){
       Analytics.track("quiz_resume_shown", {answered_count: n});
     } catch(e){}
   })();
-  /* Halloween-week sender rally (2026-09-26 evening): during Oct 25-31
-     local, a return visit with a saved pick gets one slim banner above the
-     hero with an honest date-gated line ("Halloween is N days away. Your
-     pick is saved. Send it to the group chat." / "Halloween is today..."
-     on Oct 31). "Send it now" deep-links to ?pick=<slug>, which opens the
-     same full pick flow with the share buttons; "Not now" snoozes 7 days
-     via pmc_rally_snooze_v1. Suppressed by any query string (?s= arrivals
-     keep the friend banner), by an active recovery snooze (no
-     double-nagging), and whenever the friend, recovery, or resume banner
-     is already showing. Yields to every earlier banner; the whole thing
-     vanishes by calendar math on Nov 1. Additive: no existing element,
-     event, or experiment is touched. Copy is plain English, no em dashes. */
-  (function(){
-    try {
-      var rec0 = load("pmc_recover_v1");
-      var rsnooze = load("pmc_recover_snooze_v1");
-      var rallySnooze = load("pmc_rally_snooze_v1");
-      if (!rallyShouldShow(rec0, rsnooze, rallySnooze, location.search, Date.now())) return;
-      var hero = $("s-hero");
-      if (!hero || $("pmc-rally-banner") || $("pmc-friend-banner") || $("pmc-recover-banner") || $("pmc-resume-banner")) return;
-      var idea = null;
-      if (typeof IDEAS !== "undefined") IDEAS.forEach(function(it){ if (it.id === rec0.ideaId) idea = it; });
-      if (!idea || !idea.title) return;
-      var daysOut = daysToHalloween();
-      var rb = document.createElement("div");
-      rb.id = "pmc-rally-banner";
-      rb.style.cssText = "background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;";
-      var p1 = document.createElement("p");
-      p1.style.cssText = "margin:0 0 10px;font-weight:700;color:#333;line-height:1.4";
-      p1.textContent = rallyCopyFor(Date.now());
-      var row = document.createElement("div");
-      row.style.cssText = "display:flex;gap:10px;align-items:stretch;";
-      var go = document.createElement("a");
-      go.href = "/?pick=" + encodeURIComponent(rec0.ideaId);
-      go.textContent = "Send it now";
-      go.style.cssText = "flex:1;text-align:center;text-decoration:none;font-weight:700;font-size:17px;color:#2a1500;background:#ff8c1a;border-radius:14px;padding:14px 0;display:block;";
-      go.onclick = function(){ Analytics.track("rally_nudge_sent", {idea_id: rec0.ideaId, days_out: daysOut}); };
-      var no = document.createElement("button");
-      no.type = "button";
-      no.textContent = "Not now";
-      no.style.cssText = "padding:14px 20px;font-size:17px;background:rgba(0,0,0,.04);color:#333;border:2px solid #d8c9ae;border-radius:14px;cursor:pointer;";
-      no.onclick = function(){
-        store("pmc_rally_snooze_v1", Date.now());
-        Analytics.track("rally_nudge_dismissed", {idea_id: rec0.ideaId, days_out: daysOut});
-        if (rb.parentNode) rb.parentNode.removeChild(rb);
-      };
-      row.appendChild(go); row.appendChild(no);
-      rb.appendChild(p1); rb.appendChild(row);
-      hero.insertBefore(rb, hero.firstChild);
-      Analytics.track("rally_nudge_shown", {idea_id: rec0.ideaId, days_out: daysOut});
-    } catch(e){}
-  })();
+  /* 2026-10-16 (Billy): the Halloween-week sender rally banner (saved-pick
+     rally wording, orange send button) is REMOVED with the recovery
+     banner: same saved-not-sent nag pattern. The pure core
+     (rallyShouldShow / rallyCopyFor) stays for its unit gate. */
   /* Pantry parity (2026-09-25): pantry.html cards deep-link here with
      ?pick=<slug> so a pantry tap opens the SAME full pick flow
      (customization panel, AI plan, share text, claim flow) as a quiz result
@@ -16199,62 +16104,25 @@ function shareLandingHeadline(idea, search){
     document.addEventListener("pointerdown", _wxAsk);
     document.addEventListener("keydown", _wxAsk);
   })();
-  var _dismissBtn = document.getElementById("btn-returndismiss");
-  if (_dismissBtn) _dismissBtn.addEventListener("click", function(){
-    var pk = load("pmc_pick_v1");
-    try { localStorage.setItem("pmc_returnhero_dismissed_v1", JSON.stringify({ideaId: pk && pk.ideaId, at: Date.now()})); } catch(e){}
-    var bx = document.getElementById("returnbox"); if (bx) bx.hidden = true;
-    var hEl = document.querySelector(".hero"); if (hEl) hEl.classList.remove("returning");
-    /* 2026-10-12: was track(...) — no such function in this scope (ReferenceError
-       swallowed by the catch), so the event never fired in 90 days. */
-    try { if (typeof Analytics !== "undefined") Analytics.track("returnhero_dismissed", {}); } catch(e){}
-    refreshReturnBox();
-  });
+  /* 2026-10-16 (Billy): the welcome-back strip and its dismiss button are
+     cut, so the returnhero_dismissed listener is gone with them. */
   refreshReturnBox();
   renderPinpointChips();
   var _ic = document.getElementById("idea-count"); if (_ic) _ic.textContent = IDEAS.length;
 })();
-/* 2026-09-26: personalized returning hero. A fresh pmc_pick_v1 plus
-   usable pmc_last_v1 leads with the saved pick (photo, "Still going as X?").
-   The generic first-timer block hides via .returning on .hero. */
+/* 2026-10-16 (Billy): the personalized returning hero (the "Still going
+   as X?" welcome-back strip) is REMOVED. It sat next to the saved-not-sent
+   banner and read as the same upsell family. The saved pick and last
+   results stay in storage (pmc_pick_v1 / pmc_last_v1, untouched); the
+   quiet "See my ideas again" link under the hero is the path back, and it
+   now shows whenever saved results exist. Name kept: boot + pick saves
+   call refreshReturnBox(). */
 function refreshReturnBox(){
-  var box = $("returnbox");
-  if (!box) return;
-  box.hidden = true;
-  var heroEl = document.querySelector(".hero");
-  if (heroEl) heroEl.classList.remove("returning");
-  var pick = load("pmc_pick_v1");
-  var last = load("pmc_last_v1");
-  var fresh = pick && pick.at && (Date.now() - pick.at) < 300*24*3600*1000;
-  /* 2026-09-28: the welcome-back card is dismissible. A dismissal is
-     tied to the dismissed pick: retaking the quiz and landing a new pick
-     re-shows the card. */
-  var dismissed = load("pmc_returnhero_dismissed_v1");
-  if (dismissed && pick && dismissed.ideaId === pick.ideaId) fresh = false;
-  if (fresh && last && last.results && last.results.length) {
-    var idea = null;
-    for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === pick.ideaId){ idea = IDEAS[i]; break; }
-    if (idea) {
-      var photo = $("returnhero-photo");
-      if (photo){ photo.src = "photos/" + idea.id + ".webp"; pmcSrcset(photo, idea.id, "52px"); photo.alt = idea.title + " costume"; }
-      ensureHead("returnhero-title", "", {before:"#returnbox .returnhero-actions"}).textContent = "Still going as " + idea.title + "?";
-      var st = $("returnhero-share-status");
-      if (st) st.textContent = "";
-      box.hidden = false;
-      if (heroEl) heroEl.classList.add("returning");
-      /* 2026-10-12: impression event for the dismiss-rate denominator.
-         Dismissals alone can't form a rate; this pairs with returnhero_dismissed. */
-      try { if (typeof Analytics !== "undefined") Analytics.track("returnhero_shown", {}); } catch(e){}
-    }
-  }
-  /* 2026-09-26 P4: stranded quiz results. pmc_last_v1 exists but no fresh
-     pick (returnbox hidden) = results with no path back. Show the quiet
-     resume link; it reuses the btn-return handler verbatim. */
   var resumeWrap = $("resume-wrap");
-  if (resumeWrap){
-    var hasLast = !!(last && last.results && last.results.length);
-    resumeWrap.hidden = !(hasLast && box.hidden);
-  }
+  if (!resumeWrap) return;
+  var last = load("pmc_last_v1");
+  var hasLast = !!(last && last.results && last.results.length);
+  resumeWrap.hidden = !hasLast;
 }
 
 /* 2026-09-30 (Week-2 traffic sprint): bundle extracted from index.html to /app.js
