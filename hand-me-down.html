@@ -369,8 +369,8 @@ copyPlan.addEventListener('click', function(){
     "This year's pick: " + it.t + ' - you already own ' + e.exact + ' of ' + e.total + ' parts.\n' +
     'Already have: ' + (have.join(', ') || 'none of the listed parts') + '\n' +
     'Still need: ' + (need.join(', ') || 'nothing but the craft-drawer basics') + '\n' +
-    'Build guide: https://pickmycostume.com/c/' + it.id + '\n' +
-    'Make your own plan: https://pickmycostume.com/hand-me-down?old=' + old.id;
+    'Build guide: https://pickmycostume.com/c/' + it.id + '?src=share-handmedown\n' +
+    'Make your own plan: https://pickmycostume.com/hand-me-down?old=' + old.id + '&src=share-handmedown';
   function done(ok){
     copyStatus.textContent = ok ? 'Copied. Paste it into the family group chat.' : 'Copy failed. Long-press to select the text instead.';
     if (ok) track('handmedown_plan_copied', {old_id: old.id, top_id: it.id});
