@@ -262,7 +262,6 @@ body.st-open .sitehead{display:none}
   .hero .hero-galaxylink{order:7}
   .hero .honestline{order:5}
   #resume-wrap{order:6}
-  #hw-weather{order:7}
   #returnbox{order:8;align-self:stretch}
   /* 2026-10-06: keep the value-prop line clear of the absolute moon.
      The moon zone is 64px from the right (54px moon + 10px offset); the old
@@ -1394,10 +1393,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            is now the ONLY saved-results path back; the welcome-back strip
            that used to sit below is cut.) -->
       <p class="fine" id="resume-wrap" style="margin:6px 0 0;text-align:center" hidden><button type="button" class="resume-link" id="btn-resume">See my ideas again</button></p>
-      <!-- 2026-09-26: Halloween night weather. Geolocation + Open-Meteo
-           forecast for Oct 31. Renders async under the countdown; silent when
-           geolocation is denied, the forecast is out of range, or fetch fails. -->
-      <p class="fine" id="hw-weather" style="margin:6px 0 0;text-align:center" hidden></p>
       <!-- 2026-10-16 (Billy): the welcome-back strip ("Still going as X?")
            is REMOVED. It read as an upsell. Returning visitors get the
            normal hero plus the quiet "See my ideas again" link above
