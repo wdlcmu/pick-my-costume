@@ -116,10 +116,8 @@ function buildCard(){
   var pitch = document.createElement("p"); pitch.className = "pitch";
   pitch.textContent = "Free 2-minute quiz. 169 DIY costume ideas with honest build times. No signup, no ads.";
   var url = document.createElement("p"); url.className = "url"; url.textContent = "pickmycostume.com";
-  var foot = document.createElement("p"); foot.className = "foot";
-  foot.textContent = "Built it? Come show us after Halloween. Same address.";
   card.appendChild(brand); card.appendChild(h); card.appendChild(qr);
-  card.appendChild(pitch); card.appendChild(url); card.appendChild(foot);
+  card.appendChild(pitch); card.appendChild(url);
   return card;
 }
 
