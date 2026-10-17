@@ -1027,6 +1027,14 @@ function viaShareProps(){
   return p;
 }
 /* Inline trending stat: the evidence for the flag, visible with no tap. */
+/* 2026-10-17 (Billy): "Picked N times this week" counts, baked from
+   PostHog (project 624507) on 2026-10-17: quiz_completed appearances plus
+   pick_saved events per idea over the trailing 7 days, probe/sim traffic
+   and 48 known insider/QA devices excluded. Only ideas at 2 or more are
+   listed; result cards show the line only for listed ideas. Refresh by
+   re-pulling the same query, never by hand-editing numbers. */
+var PMC_PICKED_WEEK = {"wizard":5,"tin-hero":5,"banana":4,"cardboard-knight":4,"neon-demon-hunter":3,"ramen-bowl":3,"basketball-star":3,"referee":3,"boxer":3,"baby-pumpkin":2,"cupcake":2,"gloom-bloom":2,"plague-doctor":2,"pizza-slice":2,"pirate-captain":2,"space-crewmate":2,"block-monster":2,"galaxy-knights":2};
+
 function trendStatEl(idea){
   if(!idea.trending || !idea.trendLane || !idea.trendStat) return null;
   var p = document.createElement("p"); p.className = "trendstat";
@@ -3377,6 +3385,30 @@ var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","markers","foil","ca
     IDEAS[i].totalMin = (h === null) ? null : (h + d);
     IDEAS[i].dryMin = d;
   }
+})();
+/* 2026-10-17 (Billy): days-left banner filler (the #days-banner strip under
+   the hero in index.html). Days counted to Oct 31 the same way as the header
+   ticker. The builds number is the live count of idea.tonight ideas
+   (hands-on 30 min or less, total 2 hours or less), so the banner only ever
+   claims what the bank supports. Past Halloween it stays hidden. */
+(function(){
+  /* typeof guard first (same pattern as computeTonight above): this file
+     is also eval'd in DOM-less harnesses that must not crash on it. */
+  if (typeof document === "undefined" || typeof IDEAS === "undefined") return;
+  var bar = document.getElementById("days-banner");
+  if (!bar) return;
+  var now = new Date();
+  var days = Math.ceil((new Date(now.getFullYear(), 9, 31).getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 864e5);
+  if (days < 0) return;
+  var n = 0;
+  for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].tonight) n++;
+  if (!n) return;
+  var dEl = document.getElementById("days-banner-days");
+  var bEl = document.getElementById("days-banner-builds");
+  if (!dEl || !bEl) return;
+  dEl.textContent = days === 0 ? "Halloween is tonight. " : days === 1 ? "1 day to Halloween. " : days + " days to Halloween. ";
+  bEl.textContent = n === 1 ? "1 build still fits tonight." : n + " builds still fit tonight.";
+  bar.hidden = false;
 })();
 function pantryTicked(){
   try {
@@ -7300,6 +7332,11 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
        twice. Runner-up role notes (Easiest, Wildcard) stay. */
     if(roleNote && idx!==0){var rnn=document.createElement("p");rnn.className="rolenote";rnn.textContent=roleNote;card.appendChild(rnn);}
     var _tse=trendStatEl(idea);if(_tse)card.appendChild(_tse);
+    /* 2026-10-17 (Billy): honest pick counts, baked from PostHog (see
+       PMC_PICKED_WEEK). Only ideas picked 2+ times this week get the line;
+       no line at all otherwise, and never a count of 1. */
+    var _pwn = (typeof PMC_PICKED_WEEK !== "undefined" && PMC_PICKED_WEEK) ? (PMC_PICKED_WEEK[idea.id] || 0) : 0;
+    if (_pwn >= 2){ var _pwe = document.createElement("p"); _pwe.className = "pickedweek"; _pwe.textContent = "Picked " + _pwn + " times this week."; card.appendChild(_pwe); }
     var bl = document.createElement("p"); bl.className = "blurb"; bl.textContent = idea.blurb;
     /* 2026-10-16 (Billy, results cut round 2): the 3-box fact row is gone.
        It repeated the chips above it (build time twice). Every fact now
@@ -8570,7 +8607,15 @@ function buildResultsNextBlock(results){
   return wrap;
 }
 
+/* 2026-10-17 (Billy): one-shot flag for the "less popular" re-pick. The
+   toggle sets it right before calling renderResults with ranks 4 to 6;
+   renderResults consumes it, so every other render path (finish, edits,
+   refinements, restores) draws the normal top-picks view. */
+var _altRender = null;
+
 function renderResults(results){
+  var _alt = _altRender; _altRender = null;
+  var _altOff = _alt ? _alt.offset : 0;
   var box = $("r-cards");
   box.innerHTML = "";
   /* 2026-09-27: the s-results shell is shared with the warm path, which
@@ -8578,7 +8623,7 @@ function renderResults(results){
   /* 2026-10-16 (Billy, results cut round 2): the "Your costume" label and
      the intro line are cut; the header is two words and the top card speaks
      for itself. The warm path re-shows the hint with its own text. */
-  ensureHead("results-title", "q-title", {before:"#r-cards"}).textContent = "Your picks";
+  ensureHead("results-title", "q-title", {before:"#r-cards"}).textContent = _alt ? "Less popular picks" : "Your picks";
   var _rh = document.querySelector("#s-results p.q-hint");
   _rh.textContent = ""; _rh.style.display = "none";
   $("btn-rtop").style.display = "";
@@ -8592,7 +8637,7 @@ function renderResults(results){
   var pick = load("pmc_pick_v1");
   var cards = {}; /* idea id -> card element, for picked-panel restore */
   /* Pinpoint: name the match so the #1 never feels arbitrary. */
-  if (state.pinpoint && state.pinpoint.label){
+  if (!_alt && state.pinpoint && state.pinpoint.label){
     var pn = document.createElement("p");
     pn.className = "q-hint"; pn.style.margin = "0 0 10px";
     pn.textContent = "You asked for " + state.pinpoint.label + ": here is our DIY take.";
@@ -8605,8 +8650,8 @@ function renderResults(results){
   hero.className = "hero12";
   /* Result roles: computed labels (Best Match / Easiest / Wildcard); a
      runner-up with no earned role keeps neutral numbering. */
-  var roles = resultRoles(results);
-  var roleLabel = function(i){ return roles[i] || ("No. " + (i + 1)); };
+  var roles = _alt ? [null, null, null] : resultRoles(results);
+  var roleLabel = function(i){ return roles[i] || ("No. " + (_altOff + i + 1)); };
   /* Explanatory line, once per role per results screen: the first card that
      earns a role carries the plain-English note; repeats show the badge only. */
   var seenRoles = {};
@@ -8616,7 +8661,7 @@ function renderResults(results){
     seenRoles[r] = true;
     return ROLE_NOTES[r] || null;
   };
-  var heroCard = buildResultCard(results[0], 0, pick, false, roles[0], roleNote(0), {results: results});
+  var heroCard = buildResultCard(results[0], 0, pick, false, _alt ? roleLabel(0) : roles[0], roleNote(0), {results: results});
   cards[results[0].idea.id] = heroCard;
   hero.appendChild(heroCard);
   box.appendChild(hero);
@@ -8779,7 +8824,7 @@ function renderResults(results){
   var ru = document.createElement("div");
   ru.style.marginTop = "16px";
   var ruH = document.createElement("h3");
-  ruH.textContent = "Also made your top 3";
+  ruH.textContent = _alt ? "Also matched your answers" : "Also made your top 3";
   ru.appendChild(ruH);
   var ruGrid = document.createElement("div");
   ruGrid.className = "bgrid";
@@ -8860,7 +8905,7 @@ function renderResults(results){
     /* 2026-09-29 copy fix: the compact runner-up pair always numbers, so the
        badges read "No. 2" / "No. 3" even when a card also earned a role like
        Tonight-Ready (the role still shows on the full-screen detail). */
-    rbadge.textContent = "No. " + (i + 2);
+    rbadge.textContent = "No. " + (_altOff + i + 2);
     var hint = document.createElement("p");
     hint.className = "status";
     hint.textContent = "Tap to view full screen";
@@ -8903,6 +8948,45 @@ function renderResults(results){
     if (rIdx >= 0) ruToggles[rIdx]();
   }
   box.appendChild(ru);
+  /* 2026-10-17 (Billy): "Show me something less popular" re-pick. Additive
+     and user-invoked only: the default top 3 and the ranking never change.
+     The tap re-scores the same answers, drops the current top 3, and
+     renders the next 3 in the same layout (numbered 4 to 6 via _altRender).
+     In the less-popular view the button walks back to the top picks.
+     Guarded so a results render without quiz answers (saved-pick restore)
+     simply shows no button. */
+  (function(){
+    var wrap = document.createElement("div");
+    wrap.style.cssText = "margin:16px 0 4px;text-align:center";
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "ghost";
+    btn.style.cssText = "padding:10px 16px;font-size:15px;cursor:pointer;font-family:inherit";
+    if (_alt){
+      btn.textContent = "Back to your top picks";
+      btn.onclick = function(){
+        if (!tapGuard("altpicks", 400)) return;
+        _altRender = null;
+        renderResults(scoreIdeas());
+      };
+    } else {
+      var _full = null;
+      try { if (state.answers && state.answers.q1) _full = scoreIdeas(true); } catch(_){ _full = null; }
+      if (!_full || _full.length <= 3) return;
+      btn.textContent = "Show me something less popular";
+      btn.onclick = function(){
+        if (!tapGuard("altpicks", 400)) return;
+        var _topIds = {};
+        _full.slice(0, 3).forEach(function(s){ _topIds[s.idea.id] = 1; });
+        var _next = _full.filter(function(s){ return !_topIds[s.idea.id]; }).slice(0, 3);
+        if (!_next.length) return;
+        _altRender = {offset: 3};
+        try { Analytics.track("less_popular_tapped", {}); } catch(_){}
+        renderResults(_next);
+      };
+    }
+    wrap.appendChild(btn);
+    box.appendChild(wrap);
+  })();
   /* 2026-10-01 (STEP 3): the "More options" toggle and Group vote are
      trimmed from results. */
   /* 2026-10-01 (STEP 3): the no-clone pact and grandparent boxes moved

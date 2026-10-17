@@ -120,6 +120,14 @@ body{
   border-bottom:1px solid rgba(255,140,26,.25)}
 .ticker a{color:#ffd166;font-weight:700;white-space:nowrap}
 @media (min-width:900px){.ticker{margin:0 -32px;padding:7px 32px}}
+/* 2026-10-17 (Billy): days-left banner. Slim strip in normal flow between
+   the hero and the Make it tonight rail, so it can never overlap the hero.
+   Filled by app.js (days to Oct 31 + live tonight-build count); hidden
+   until filled and after Halloween. */
+.daysbanner{margin:18px auto 2px;max-width:760px;text-align:center;font-size:15px;
+  color:var(--ink);background:rgba(255,209,102,.10);
+  border:1px solid rgba(255,209,102,.35);border-radius:12px;padding:10px 14px}
+.daysbanner strong{color:#ffd166}
 /* 2026-10-11 (gpt-loop run 74): Track B pre-prep. Approval-day ChatGPT
    directory-link banner, dark until the CHATGPT_CTA flag flips. The banner
    is itself a link, so it needs its own link color and underline-free look;
@@ -843,6 +851,7 @@ button.lightsheet{color:#241a38;}
 .makeplan ol li{margin-bottom:6px}
 .pantrybadge{display:inline-block;font-size:12px;font-weight:600;line-height:1;color:#a8b0b2;background:transparent;border:1px solid #c9cfd1;border-radius:999px;padding:5px 10px;margin:6px 0 0} /* 2026-09-30: #5b6467 was 2.5:1 on the card bg; #a8b0b2 is 6.9:1, passes 4.5 */
 .trendstat{display:block;font-size:13px;color:#cdbcf0;margin:2px 0 10px}.trendstat a{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.pickedweek{display:block;font-size:13px;color:#ffd166;margin:2px 0 10px}
 .castbox{margin:0 0 16px;padding:14px;background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--radius)}
 .castbox h3{margin:0 0 4px;font-size:20px}
 /* Experiment 1 (2026-09-26, staged): the quick-share card that leads the cast
@@ -1637,6 +1646,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            hands-on + drying <= 120 min). Unit: tonight-section.
            2026-10-06 (Billy): moved above Pantry — the rail is proof, Pantry
            is utility. Promise → proof → utility. -->
+      <!-- 2026-10-17 (Billy): days-left banner. Days to Halloween plus how
+           many builds still fit tonight (idea.tonight, counted live by
+           app.js). Hidden until app.js fills it; stays hidden after
+           Halloween. -->
+      <div class="daysbanner" id="days-banner" hidden>
+        <strong id="days-banner-days"></strong><span id="days-banner-builds"></span>
+      </div>
       <section class="tonightsec" id="tonight-section" aria-label="Costumes you can make tonight">
         <h2 class="q-title">Make it tonight</h2>
         <p class="fine" style="margin:0 0 10px"><span id="tonight-count">126 costumes</span> you can start after dinner and finish before bed.</p>
