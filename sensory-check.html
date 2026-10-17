@@ -249,11 +249,15 @@ function pick(id){
 q.addEventListener("input",doSearch);
 document.getElementById("sharebtn").onclick=function(){
   if(!current)return;
+  /* Loop measurement: mint an anonymous share id so the recipient
+     leg is traceable (same pattern as school-check). */
+  var _ssid="", _abc="abcdefghijklmnopqrstuvwxyz0123456789";
+  for(var _i=0;_i<8;_i++)_ssid+=_abc[Math.floor(Math.random()*_abc.length)];
   var verdict=current.flags.length===0?"looks sensory-friendly from the materials":
     "has "+current.flags.length+" flag"+(current.flags.length>1?"s":"")+": "+
     current.flags.map(function(f){return f.label.toLowerCase();}).join(", ");
-  var text="The sensory check says "+current.t+" "+verdict+". Will your kid's costume survive Halloween night? https://pickmycostume.com/sensory-check?src=share-sensory";
-  ph("sensory_shared",{idea:current.id});
+  var text="The sensory check says "+current.t+" "+verdict+". Will your kid's costume survive Halloween night? https://pickmycostume.com/sensory-check?pick="+encodeURIComponent(current.id)+"&s="+_ssid+"&src=share-sensory";
+  ph("sensory_shared",{idea:current.id,share_id:_ssid,share_origin:"sensory"});
   if(navigator.share){navigator.share({text:text}).catch(function(){});}
   else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert("Copied. Paste it in the parent chat.");},function(){prompt("Copy this:",text);});}
   else{prompt("Copy this:",text);}
@@ -264,6 +268,10 @@ document.getElementById("sharebtn").onclick=function(){
   var id;try{id=decodeURIComponent(m[1]);}catch(e){return;}
   var e=null;for(var i=0;i<INDEX.length;i++){if(INDEX[i].id===id){e=INDEX[i];break;}}
   if(e){pick(e.id);}
+  /* Recipient leg: stamp via_share_id from ?s= so the open traces
+     back to the sender's sensory_shared.share_id. */
+  var vsm=/[?&]s=([a-z0-9]{8,})/.exec(location.search||"");
+  if(vsm)ph("sensory_opened",{idea:id,via_share_id:vsm[1],share_origin:"sensory"});
 })();
 </script>
 </body>
