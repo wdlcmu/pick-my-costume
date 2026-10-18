@@ -8577,6 +8577,84 @@ function buildMoreWaysShare(idea, results){
   items.forEach(function(el){ if (el){ det.appendChild(el); anyItem = true; } });
   return anyItem ? det : null;
 }
+/* 2026-10-18 (Billy, GPT smallest honest version): the Boo card printer.
+   Builds a print-only card at the end of body and calls window.print()
+   with body flagged .boo-printing; a small print stylesheet (injected
+   once, here) hides everything except the card. The card points to
+   pickmycostume.com/?boo=1 so boo arrivals are attributable in PostHog.
+   Black on white with a plain border: cheap to print at home. */
+function printBooCard(idea){
+  var root = document.getElementById("boo-print-root");
+  if (!root){
+    root = document.createElement("div");
+    root.id = "boo-print-root";
+    document.body.appendChild(root);
+    var st = document.createElement("style");
+    st.textContent =
+      "#boo-print-root{display:none}" +
+      "@media print{" +
+      "body.boo-printing>*:not(#boo-print-root){display:none!important}" +
+      "body.boo-printing #boo-print-root{display:block!important}" +
+      "}";
+    document.head.appendChild(st);
+  }
+  root.innerHTML = "";
+  var card = document.createElement("div");
+  card.style.cssText = "border:3px solid #000;border-radius:16px;padding:30px 26px;max-width:620px;margin:0 auto;color:#000;background:#fff;font-family:Arial,Helvetica,sans-serif;text-align:center";
+  var h = document.createElement("div");
+  h.style.cssText = "font-size:44px;font-weight:800;line-height:1.1;margin:0 0 12px";
+  h.textContent = "You've Been BOOED!";
+  card.appendChild(h);
+  var intro = document.createElement("p");
+  intro.style.cssText = "font-size:18px;line-height:1.45;margin:0 0 14px";
+  intro.textContent = "A neighbor left this card on your door. Halloween is more fun when the whole street joins in.";
+  card.appendChild(intro);
+  if (idea && idea.title){
+    var pk = document.createElement("p");
+    pk.style.cssText = "font-size:16px;margin:0 0 16px";
+    pk.textContent = "Our pick this year: " + idea.title;
+    card.appendChild(pk);
+  }
+  var steps = [
+    "Hang this card on your door, so you do not get booed twice.",
+    "Pick a free costume at pickmycostume.com.",
+    "Print a new card and leave it on two more doors."
+  ];
+  var list = document.createElement("div");
+  list.style.cssText = "text-align:left;max-width:440px;margin:0 auto 18px";
+  for (var i = 0; i < steps.length; i++){
+    var row = document.createElement("p");
+    row.style.cssText = "font-size:17px;line-height:1.4;margin:0 0 10px";
+    var num = document.createElement("strong");
+    num.textContent = (i + 1) + ". ";
+    row.appendChild(num);
+    row.appendChild(document.createTextNode(steps[i]));
+    list.appendChild(row);
+  }
+  card.appendChild(list);
+  var qr = document.createElement("img");
+  qr.src = "images/boo-qr.png";
+  qr.alt = "QR code for pickmycostume.com";
+  qr.style.cssText = "display:block;width:170px;height:170px;margin:4px auto 12px";
+  card.appendChild(qr);
+  var url = document.createElement("div");
+  url.style.cssText = "font-size:30px;font-weight:800;letter-spacing:.2px";
+  url.textContent = "pickmycostume.com";
+  card.appendChild(url);
+  var foot = document.createElement("p");
+  foot.style.cssText = "font-size:14px;margin:8px 0 0";
+  foot.textContent = "Free DIY costume ideas for the whole family.";
+  card.appendChild(foot);
+  root.appendChild(card);
+  document.body.classList.add("boo-printing");
+  var done = function(){
+    document.body.classList.remove("boo-printing");
+    window.removeEventListener("afterprint", done);
+  };
+  window.addEventListener("afterprint", done);
+  window.print();
+}
+
 function buildResultsNextBlock(results){
   var idea = results[0].idea;
   var wrap = document.createElement("div");
@@ -8697,6 +8775,29 @@ function renderResults(results){
     }
     swrap.appendChild(sbtn); swrap.appendChild(sst);
     box.appendChild(swrap);
+  })();
+
+  /* 2026-10-18 (Billy): Boo card, a small secondary section under the
+     Share CTA (the Share button and its flow are untouched). Prints a
+     pass-it-on card for a neighbor's door; see printBooCard above. */
+  (function(){
+    var _idea = results[0].idea;
+    var bwrap = document.createElement("div");
+    bwrap.id = "boo-card-cta";
+    bwrap.style.cssText = "margin:12px 0 4px;text-align:center";
+    var bl = document.createElement("p");
+    bl.style.cssText = "margin:0 0 8px;font-size:14px;color:var(--muted,#cdbcf0)";
+    bl.textContent = "Pass it on: print a Boo card for a neighbor's door.";
+    var bb = document.createElement("button");
+    bb.type = "button"; bb.className = "ghost";
+    bb.style.cssText = "width:auto;padding:10px 18px;font-size:14px;font-weight:700;border-radius:var(--radius);cursor:pointer;font-family:inherit";
+    bb.textContent = "Print a Boo card";
+    bb.onclick = function(){
+      try { Analytics.track("boo_card_print", {idea_id: _idea.id}); } catch(e){}
+      printBooCard(_idea);
+    };
+    bwrap.appendChild(bl); bwrap.appendChild(bb);
+    box.appendChild(bwrap);
   })();
 
   /* 2026-10-01 (STEP 3): the visible galaxy line + share card are trimmed
