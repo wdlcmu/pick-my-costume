@@ -4137,8 +4137,14 @@ function shareTextFor(idea, sid, origin, medium, quizFound){
      browse-origin plan shares (committed, no quiz) inherited its claims.
      quizFound gates the quiz line; rail gets a hedged declaration instead
      of a false first-person one. Quiz contexts render byte-identical text. */
-  var qf = (typeof quizFound === "boolean") ? quizFound : (origin !== "rail");
-  var cap = (origin === "rail")
+  /* 2026-10-19 (novel find #2, Billy-approved): browse-card shares join
+     rail in the hedged branch. A browse sender is shortlisting a
+     candidate, not declaring a pick, so the first-person quiz caption
+     would be a false claim for them too. Origin stays "browse" on the
+     link and the events, so card-surface shares measure separately
+     from generic. */
+  var qf = (typeof quizFound === "boolean") ? quizFound : (origin !== "rail" && origin !== "browse");
+  var cap = (origin === "rail" || origin === "browse")
     ? "Thinking of going as " + idea.title + " this Halloween?"
     : shareCaptionFor(idea);
   var ask = qf ? shareAskLine() : "What are you going as? Here is the guide: ";
@@ -9818,8 +9824,7 @@ function browseCard(idea){
     var stShare = document.createElement("p"); stShare.className = "status";
     b.onclick = (function(it, sel){ return function(){ showPromptPreview(sel, buildIdeaPrompt(it), "browse_ai_prompt_copied"); }; })(idea, st);
     bShare.onclick = (function(it, sel, btn){ return function(){
-      var a = (it.audience && it.audience[0]) || "solo";
-      shareText(it, sel, btn, a);
+      shareBrowseCard(it, sel, btn);
     }; })(idea, stShare, bShare);
     var btnRow = document.createElement("div"); btnRow.className = "row"; btnRow.style.marginTop = "10px";
     /* 2026-09-26: the two buttons must sit side by side, never stack.
@@ -13679,6 +13684,15 @@ function shareText(idea, statusEl, btn, audOverride){
      desktop. (audOverride is unused: the canonical text is already
      audience-grounded via shareCaptionFor.) */
   sendShare(idea, "generic", {button: btn, statusEl: statusEl});
+}
+/* 2026-10-19 (novel find #2, Billy-approved): the browse shelf's Share
+   button is a card-surface share, not a generic one. Same canonical
+   sendShare path as shareText; origin "browse" keeps card shares
+   measurable apart from generic, and shareTextFor gives the origin
+   the hedged candidate text (the sender is shortlisting, not
+   declaring a pick). */
+function shareBrowseCard(idea, statusEl, btn){
+  sendShare(idea, "browse", {button: btn, statusEl: statusEl});
 }
 function fallbackCopy(text, done){
   try {
