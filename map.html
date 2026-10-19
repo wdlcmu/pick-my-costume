@@ -142,6 +142,13 @@
   #card p { margin:0 0 8px; font-size:13px; opacity:.85; line-height:1.35; }
   #card a.guide { display:inline-block; font-size:13px; font-weight:700; color:#0b1026;
     background:#ffd166; border-radius:20px; padding:8px 16px; text-decoration:none; }
+  /* ---- costume card share (2026-10-19): sits beside the guide CTA ---- */
+  .cardshare { display:inline-block; font-size:13px; font-weight:700; color:#fff;
+    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.28);
+    border-radius:20px; padding:8px 16px; cursor:pointer; margin-left:8px;
+    min-height:36px; vertical-align:top; }
+  .cardshare:active { background:rgba(255,255,255,.22); }
+  .cardshare:focus-visible { outline:2px solid #ffd166; outline-offset:2px; }
   /* ---- costume card metadata (vibe line + quick-fact chips + vibe tags) ---- */
   .cardmeta .vibe { font-style:italic; font-size:12.5px; opacity:.78; line-height:1.4;
     margin:0 0 8px; }
@@ -339,7 +346,7 @@
         <h2 id="cardTitle"></h2>
         <p id="cardBlurb"></p>
         <div class="cardmeta" id="cardMeta"></div>
-        <a class="guide" id="cardLink" href="#">Plan this costume →</a>
+        <a class="guide" id="cardLink" href="#">Plan this costume →</a><button class="cardshare" id="cardShare" type="button">Share</button>
       </div>
     </div>
     <div id="sheet" hidden>
@@ -351,7 +358,7 @@
           <h2 id="sheetTitle"></h2>
           <p id="sheetBlurb"></p>
           <div class="cardmeta" id="sheetMeta"></div>
-          <a class="guide" id="sheetGuide" href="#">Plan this costume →</a>
+          <a class="guide" id="sheetGuide" href="#">Plan this costume →</a><button class="cardshare" id="sheetCardShare" type="button">Share</button>
         </div>
       </div>
       <button id="sheetMore">See all <span id="sheetN"></span> costumes &#9650;</button>
@@ -1144,6 +1151,9 @@ function paintSheetCostume(it){
   var sg=document.getElementById('sheetGuide');
   sg.href='/?idea='+it.id;
   sg.textContent='Plan this costume \u2192';
+  sheetCostumeId=it.id;
+  var scs=document.getElementById('sheetCardShare');
+  if(scs){ scs.hidden=false; scs.setAttribute('aria-label','Share '+it.title); }
 }
 function paintSheetRegion(rg){
   var flag=flagshipFor(rg);
@@ -1154,6 +1164,9 @@ function paintSheetRegion(rg){
     document.getElementById('sheetBlurb').textContent=SYNOPSES[regionSlug(rg.name)]||'';
     document.getElementById('sheetMeta').innerHTML='';
     document.getElementById('sheetGuide').href='/map/'+regionSlug(rg.name);
+    sheetCostumeId=null;
+    var scs2=document.getElementById('sheetCardShare');
+    if(scs2) scs2.hidden=true;
   }
   document.getElementById('sheetRegion').textContent=rg.name;
   var more=document.getElementById('sheetMore');
@@ -1355,6 +1368,9 @@ function buildSearch(){
 var card=document.getElementById('card');
 var cardX=document.getElementById('cardX');
 var cardPushed=false, cardOpenId=null, selId=null, explorePushed=false;
+/* Costume shown in the phone sheet (2026-10-19): the sheet share button
+   shares this costume; null when the sheet shows a region with no flagship. */
+var sheetCostumeId=null;
 /* Galaxy analytics shim: mirrors app.js Analytics so the head PostHog snippet
    flushes queued events on load. The Galaxy navigates via pushState without
    full page loads, and capture_pageview only fires on initial load, so every
@@ -1428,6 +1444,8 @@ function renderCard(it){
   var a=document.getElementById('cardLink');
   a.href='/?idea='+it.id;
   a.textContent='Plan this costume \u2192';
+  var csb=document.getElementById('cardShare');
+  if(csb) csb.setAttribute('aria-label','Share '+it.title);
   card.hidden=false;
   card.classList.add('open');
 }
@@ -1870,6 +1888,76 @@ function shareRegion(rg, btn){
   };
   copy(text+' '+url, done);
 }
+// ---- costume card share (2026-10-19, novel find #2, Billy-approved) ----
+// Share ONE candidate from the Galaxy card / phone sheet, through the
+// site's existing share loop: the link lands on the costume's /c/ guide
+// with ?s=<sid>&o=galaxy (the guide fires recipient_landing_viewed), and
+// share_created fires with share_origin "galaxy". Event semantics mirror
+// app.js sendShare: a dismissed native sheet is a cancel, not a share;
+// share_created fires only on a resolved share or a successful copy.
+function galaxyShareId(){
+  var c='abcdefghijklmnopqrstuvwxyz0123456789', s='';
+  for(var i=0;i<8;i++) s+=c[Math.floor(Math.random()*c.length)];
+  return s;
+}
+function shareCostume(it, btn){
+  if(!it) return;
+  var sid=galaxyShareId();
+  try{ Analytics.track('share_button_tapped', {share_id:sid, idea_id:it.id, share_origin:'galaxy', via:(navigator.share?'native':'clipboard')}); }catch(e){}
+  function linkFor(medium){
+    return location.origin+'/c/'+it.id+'?s='+sid+'&o=galaxy&utm_source=share&utm_medium='+medium+'&utm_campaign=galaxy';
+  }
+  function textFor(medium){
+    return '\uD83C\uDF83 Thinking of going as '+it.title+' this Halloween? What are you going as? Here is the guide: '+linkFor(medium);
+  }
+  function flash(msg){
+    if(!btn) return;
+    var old=btn.textContent;
+    btn.textContent=msg;
+    setTimeout(function(){ if(btn.textContent===msg) btn.textContent=old; },2000);
+  }
+  function credited(via){
+    try{ Analytics.track('share_created', {share_id:sid, idea_id:it.id, share_origin:'galaxy', via:via}); }catch(e){}
+  }
+  function copyPath(){
+    var t=textFor('copy');
+    var cb=function(ok){
+      if(!ok) return;
+      try{ Analytics.track('share_text_copied', {idea_id:it.id, share_id:sid, share_origin:'galaxy', via:'clipboard'}); }catch(e){}
+      flash('Copied \u2713');
+      credited('clipboard');
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(function(){ cb(true); }, function(){ cb(false); });
+      return;
+    }
+    try{
+      var ta=document.createElement('textarea');
+      ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      var ok=document.execCommand('copy'); document.body.removeChild(ta);
+      cb(!!ok);
+    }catch(e){ cb(false); }
+  }
+  if(navigator.share){
+    try{
+      navigator.share({title:it.title+' \u2014 Pick My Costume', text:textFor('native')}).then(
+        function(){ credited('native'); flash('Shared \u2713'); },
+        function(err){ if(!(err && err.name==='AbortError')) copyPath(); }
+      );
+      return;
+    }catch(e){ /* fall through to copy */ }
+  }
+  copyPath();
+}
+document.getElementById('cardShare').addEventListener('click', function(){
+  var it=cardOpenId && ideaById(cardOpenId);
+  if(it) shareCostume(it, this);
+});
+document.getElementById('sheetCardShare').addEventListener('click', function(){
+  var it=sheetCostumeId && ideaById(sheetCostumeId);
+  if(it) shareCostume(it, this);
+});
 if (EMBEDDED) boot(EMBEDDED);
 else fetch('positions.json').then(function(r){return r.json();}).then(boot);
 
