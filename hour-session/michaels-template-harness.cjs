@@ -298,7 +298,7 @@ let oldPlanWords = 0;
 {
   let fnSrc = fs.readFileSync(SLUG_FN, "utf8");
   fnSrc = fnSrc.replace("export function onRequest", "function onRequest");
-  fnSrc += "\n;globalThis.__onRequest = onRequest; globalThis.__HOWTO = HOWTO;";
+  fnSrc += "\n;globalThis.__onRequest = onRequest; globalThis.__HOWTO = HOWTO; globalThis.__cMatGroup = (typeof _cMatGroup !== 'undefined' ? _cMatGroup : null); globalThis.__cTiles = (typeof _cTiles !== 'undefined' ? _cTiles : null);";
   const csb = {
     console: console, URL: URL, URLSearchParams: URLSearchParams,
     Response: class {
@@ -350,6 +350,33 @@ let oldPlanWords = 0;
     }
   }
   console.log("/c/ pages with grouped cards: " + cPages + "; without cards (fallback): " + cFallback);
+
+  /* classifier regression anchors: canonical tag shapes must classify the
+     same in the generated /c/ classifier as in the plan classifier (the
+     2026-10-22 backslash bug made every buy-tagged tile read as home). */
+  if (csb.__cMatGroup){
+    const CASES = [
+      ["Black shirts, 1 per person (buy: thrift store, or own: from closet)", "buy"],
+      ["White felt, 1 sheet (buy: craft store; paper works too)", "buy"],
+      ["Headbands, 1 per person (buy: dollar store)", "buy"],
+      ["Fabric glue, 1 tube (buy: craft store)", "buy"],
+      ["Scissors, 1 pair (own: household tools)", "tool"],
+      ["Black hoodie (own: from closet)", "home"],
+      ["Cardboard box (make: use what you own)", "home"],
+      ["Hot glue gun (buy: craft store)", "tool"]
+    ];
+    for (const [txt, want] of CASES){
+      ok(csb.__cMatGroup(txt) === want, "/c/ classifier anchor: " + txt.slice(0, 34) + " -> " + want);
+      ok(sb.planMatGroup(txt) === want, "plan classifier anchor: " + txt.slice(0, 34) + " -> " + want);
+    }
+    if (csb.__cTiles){
+      const ct = csb.__cTiles("penguin-huddle");
+      const gs = ct.tiles.map(t => t.g).sort().join(",");
+      ok(gs === "buy,buy,buy,buy,tool", "penguin-huddle tile groups are 4 buy + 1 tool (got " + gs + ")");
+    }
+  } else {
+    ok(false, "/c/ classifier _cMatGroup missing from generated function");
+  }
 }
 
 console.log("group totals across 169: home=" + groupTotals.home +
