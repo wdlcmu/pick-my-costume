@@ -1285,6 +1285,21 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .ownbuy{font-weight:700;font-size:13px;margin-left:6px;white-space:nowrap}
 .ownbuy.own{color:#7ee2a8}
 .ownbuy.buy{color:var(--accent)}
+/* 2026-10-22 (Billy): Michaels-style plan -- at-a-glance strip, three
+   materials groups, check-offs with a live still-needed count. */
+.plan-glance{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.glance-item{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;font-weight:700}
+.plan-need-summary{font-weight:700;font-size:15px;margin:0 0 6px}
+.mat-group-h{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.mat-group{margin:0;padding-left:22px}
+.mat-group li{margin:4px 0}
+.mat-group li.have,.pp-buylist li.have{opacity:.55}
+.mat-group li.have .mat-tick,.pp-buylist li.have .mat-tick{text-decoration:line-through}
+.mat-tick{display:inline-flex;align-items:flex-start;gap:8px;cursor:pointer}
+.mat-tick input{width:17px;height:17px;flex:none;margin:1px 0 0;accent-color:var(--accent)}
+.pp-need{font-weight:700;margin:10px 0 4px}
+.pp-buylist{margin:0;padding-left:22px}
+.pp-buylist li{margin:4px 0}
 </style>
 <meta name="msvalidate.01" content="382DC8027491EB43F86CCCCBB8F8CB6D" />
 </head>
