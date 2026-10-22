@@ -19,6 +19,14 @@ they were a one-off hand generation in the live file (2026-10-12) and a
 regen would have wiped them. Template re-derived from the live file again
 (FAQ wording + counts had drifted ahead of the generator).
 
+2026-10-22 FAQ fix: the "Can I make one of these tonight?" answer now
+carries the verified counts (17 supplies-light, 126 fast; see
+costumes-faq-14-check-2026-10-22.md), and the row chips render
+display_time() -- hands-on time only, drying stripped per Billy's
+display rule -- so a regen matches the live page except for intended
+lines. Before this, a regen silently re-added "+ N drying" to 105
+chips and to the Quick answer block.
+
 2026-10-03 P0 repair (Stream 70): the bank moved from index.html to app.js
 on 2026-10-01, but this generator kept parsing index.html -- both anchors
 at 0 occurrences, asserts passing vacuously (0 == 0). A regen would have
@@ -79,12 +87,23 @@ N = len(ideas)  # dynamic bank count (was hardcoded 164)
 _missing_times = [s for s, _, _ in ideas if not TIMES.get(s)]
 assert not _missing_times, (
     "bank.json instructions have no time for: %s" % _missing_times[:5])
+# 2026-10-22 display rule (Billy, 2026-10-03): displayed drying time is
+# dropped on site copy even though Tonight scoring still counts it. The
+# live hub has always shown hands-on time only, so the chip renders the
+# bank time with its "+ ... drying" suffix stripped. Bank times are
+# "N min" or "N min + M drying" -- assert that shape so a new format
+# fails loudly here instead of being mangled or leaked into the chip.
+assert all(re.fullmatch(r"\d+ min( \+ .+ drying)?", TIMES[s])
+           for s, _, _ in ideas), "unexpected bank time format"
+def display_time(t):
+    return re.sub(r"\s*\+.*drying\s*$", "", t)
 TT = "⏱️ "  # stopwatch + variation selector, as rendered on the live hub
 
 items = "\n".join(
     '      <li><a href="/c/%s">%s</a><span>%s</span>'
     '<span class="tt">%s%s</span></li>' % (
-        s, html.escape(t), html.escape(b), TT, html.escape(TIMES[s]))
+        s, html.escape(t), html.escape(b), TT,
+        html.escape(display_time(TIMES[s])))
     for s, t, b in ideas)
 
 HEAD = """<!DOCTYPE html>
@@ -165,7 +184,7 @@ li .tt{display:block;font-size:13px;color:var(--muted);margin:0 0 12px;}
       "name": "Can I make one of these tonight?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "14 of the 169 are make-tonight or 1-2 supplies away from default household basics. The make-it-tonight page lists all of them."
+        "text": "Yes. 17 of the 169 need nothing new, or just 1 or 2 extra supplies, if you have the basic supplies at home. The closet page lists all 17. Fast builds are a bigger group: 126 of the 169 take 30 minutes or less of work."
       }
     },
     {
@@ -221,7 +240,7 @@ TAIL = """
 <!-- 2026-10-13: the Quick answer top-3 block moved below the list (it used
      to sit above it with two more intro paragraphs). Text verbatim from the
      live page, only the separator normalized to the injector's style. -->
-<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min + drying, black hoodie), <a href="/c/superhero-family">Superhero Family</a> (30 min, matching red sweatsuits), and <a href="/c/gloom-bloom">Gloom & Bloom</a> (15 min + drying, 1 set black clothes from the closet): a spread of the most-built guides in the bank. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
+<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min, black hoodie), <a href="/c/superhero-family">Superhero Family</a> (30 min, matching red sweatsuits), and <a href="/c/gloom-bloom">Gloom & Bloom</a> (15 min, 1 set black clothes from the closet): a spread of the most-built guides in the bank. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
 <p class="home"><a href="/">Back to Pick My Costume</a> and take the 2-minute quiz to get one picked for you.</p>
 <!-- 2026-09-26 red-team distro: hub cross-links, folded into the generator
      2026-09-27. Pantry label matches the page's real title (the rename). -->
@@ -268,7 +287,7 @@ TAIL = """
 </details>
 <details class="faq">
 <summary>Can I make one of these tonight?</summary>
-<p>14 of the 169 are make-tonight or 1-2 supplies away from default household basics. The make-it-tonight page lists all of them.</p>
+<p>Yes. 17 of the 169 need nothing new, or just 1 or 2 extra supplies, if you have the basic supplies at home. The closet page lists all 17. Fast builds are a bigger group: 126 of the 169 take 30 minutes or less of work.</p>
 </details>
 <details class="faq">
 <summary>How do I pick one?</summary>
@@ -286,7 +305,8 @@ for _old, _new in [
     ("all 169 Pick My Costume ideas", "all %d Pick My Costume ideas" % N),
     ("all 169 costume ideas", "all %d costume ideas" % N),
     ("169, A to Z. Every one", "%d, A to Z. Every one" % N),
-    ("14 of the 169 are make-tonight", "14 of the %d are make-tonight" % N),
+    ("17 of the 169 need nothing new", "17 of the %d need nothing new" % N),
+    ("126 of the 169 take 30 minutes", "126 of the %d take 30 minutes" % N),
 ]:
     assert _old in page, "hub template drift: %r missing" % _old
     page = page.replace(_old, _new)

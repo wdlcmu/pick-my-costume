@@ -7,9 +7,9 @@ Inventory-matcher page for the traffic-growth sprint (Tap 4).
 - Reuses real titles/blurbs/ranks from mcp-server/bank.json and real
   time/effort from bank instructions (cost stripped per the 2026-10-01
   cost cleanup: no dollar figures anywhere on the page).
-- Static server-rendered sections (tonight-16, all-164 grid, FAQ) so raw-HTML
+- Static server-rendered sections (tonight-17, all-169 grid, FAQ) so raw-HTML
   crawlers see the internal link graph; the JS matcher enhances on top.
-- Honesty: the only stat is the computed 16-of-164 (verified in-generator).
+- Honesty: the only stat is the computed 17-of-169 (verified in-generator).
 """
 import json, re, os, html as htmllib, sys
 
@@ -28,13 +28,13 @@ OG_IMG = 'https://pickmycostume.com/images/og/classic-ghost.jpg'
 
 FAQ = [
     ("What Halloween costume can I make from clothes I already own?",
-     "Tick off what you own in the matcher above and it ranks all 164 costume ideas by what you can build. "
-     "Out of 164 ideas, 16 are make-tonight or one to two supplies away from default household basics "
+     "Tick off what you own in the matcher above and it ranks all 169 costume ideas by what you can build. "
+     "Out of 169 ideas, 17 need zero to two supplies beyond default household basics "
      "(scissors, tape, markers, cardboard, old clothes, paper). The Classic Ghost needs only an old bedsheet, "
      "a marker, and scissors."),
     ("How many costumes can I make without shopping at all?",
      "Two with just the 12 assumed household basics: the Classic Ghost and the Emoji Crew. "
-     "Fourteen more need just one or two extra supplies, like red paper or glue."),
+     "Fifteen more need just one or two extra supplies, like red paper or glue."),
     ("What is the easiest closet costume for a kid?",
      "The Classic Ghost: 10 minutes, easy. An old bedsheet, a thick black marker, and scissors. "
      "Cut the eye holes small first, you can always widen them."),
@@ -63,16 +63,30 @@ def card_html(slug, title, triple, need=None):
         % (esc(slug), esc(slug), esc(slug), esc(title), esc(title), esc(triple), need_html)
     )
 
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed drying time
+    # is dropped on site copy even though Tonight scoring still counts
+    # it. The live page has always shown hands-on time only, in both the
+    # static card triples and the JS matcher data, so strip the bank
+    # time's "+ ... drying" suffix at build time. Bank times are
+    # "N min" or "N min + M drying"; anything else passes through
+    # unchanged here but is shape-asserted in main().
+    return re.sub(r'\s*\+.*drying\s*$', '', t or '')
+
 def triple_of(ins):
-    return '%s - %s' % (ins.get('time', '?'), ins.get('effort', '?'))
+    return '%s - %s' % (display_time(ins.get('time', '?')), ins.get('effort', '?'))
 
 def main():
     DATA, EMOJI, bank = load_sources()
     supplies = DATA['pantry']  # [{id,label,group,staple}]
     ideas = DATA['ideas']
-    assert len(ideas) == 164, 'idea count drift: %d' % len(ideas)
+    assert len(ideas) == 169, 'idea count drift: %d' % len(ideas)
     assert len(supplies) == 56, 'supply count drift: %d' % len(supplies)
     ins = bank['instructions']
+    _bad_times = [sid for sid, v in ins.items()
+                  if not re.fullmatch(r"\d+ min( \+ .+ drying)?",
+                                      v.get('time', ''))]
+    assert not _bad_times, 'unexpected bank time format: %s' % _bad_times[:5]
     brank = {i['id']: i.get('rank', 999) for i in bank['ideas']}
     btitle = {i['id']: i['title'] for i in bank['ideas']}
 
@@ -93,7 +107,7 @@ def main():
     ticked = set(staples)
     scored = [(gaps_of(it, ticked), brank.get(it['id'], 999), it) for it in ideas]
     tonight = sorted([s for s in scored if s[0] <= 2], key=lambda s: (s[0], s[1]))
-    assert len(tonight) == 16, 'tonight-16 drift: %d' % len(tonight)
+    assert len(tonight) == 17, 'tonight-17 drift: %d' % len(tonight)
     tonight_ids = [it['id'] for _, _, it in tonight]
 
     label_of = {p['id']: p['label'] for p in supplies}
@@ -103,7 +117,7 @@ def main():
         sid = it['id']
         js_ideas[sid] = {
             't': btitle.get(sid, it.get('title') or sid),
-            'time': ins[sid].get('time', ''),
+            'time': display_time(ins[sid].get('time', '')),
             'eff': ins[sid].get('effort', ''), 'rank': brank.get(sid, 999),
             'mats': [[list(g) for g in m['g']] for m in it['mats']],
             'txt': [m['t'] for m in it['mats']],
@@ -138,8 +152,8 @@ def main():
 
     article_schema = json.dumps({
         '@context': 'https://schema.org', '@type': 'Article',
-        'headline': 'Costumes From Your Closet: 164 Costume Ideas Ranked by What You Own',
-        'description': 'Tick off what you already own and see which of 164 Halloween costumes you can make tonight.',
+        'headline': 'Costumes From Your Closet: 169 Costume Ideas Ranked by What You Own',
+        'description': 'Tick off what you already own and see which of 169 Halloween costumes are ready to build from your closet.',
         'author': {'@type': 'Organization', 'name': 'Pick My Costume'},
         'publisher': {'@id': 'https://pickmycostume.com/#organization',
                       'name': 'Pick My Costume', 'url': 'https://pickmycostume.com/'},
@@ -173,7 +187,7 @@ def main():
     out = os.path.join(ROOT, 'costumes-from-your-closet.html')
     open(out, 'w', encoding='utf-8').write(page)
     print('wrote %s (%d bytes)' % (out, len(page)))
-    print('tonight-16:', ', '.join(tonight_ids))
+    print('tonight-17:', ', '.join(tonight_ids))
 
 def build_page(tiles_html, tonight_html, all_html, faq_html, faq_schema,
                article_schema, js_ideas, js_supplies, staples, tonight_ids):
@@ -184,17 +198,17 @@ def build_page(tiles_html, tonight_html, all_html, faq_html, faq_schema,
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Costumes From Your Closet: 164 Costume Ideas Ranked by What You Own | Pick My Costume</title>
-<meta name="description" content="Tick off what you already own and see which of 164 Halloween costumes you can make tonight. 16 are make-tonight or 1 to 2 supplies away from household basics. Free, no signup.">
+<title>Costumes From Your Closet: 169 Costume Ideas Ranked by What You Own | Pick My Costume</title>
+<meta name="description" content="Tick off what you already own and see which of 169 Halloween costumes are ready to build from your closet. 17 need zero to 2 supplies beyond household basics. Free, no signup.">
 <link rel="canonical" href="''' + CANON + '''">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Costumes From Your Closet: 164 Costume Ideas Ranked by What You Own">
-<meta property="og:description" content="What can you make tonight from stuff already in your house? Tick what you own, get your matches.">
+<meta property="og:title" content="Costumes From Your Closet: 169 Costume Ideas Ranked by What You Own">
+<meta property="og:description" content="What can you build from stuff already in your house? Tick what you own, get your matches.">
 <meta property="og:url" content="''' + CANON + '''">
 <meta property="og:image" content="''' + OG_IMG + '''">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Costumes From Your Closet: 164 Costume Ideas Ranked by What You Own">
-<meta name="twitter:description" content="What can you make tonight from stuff already in your house? Tick what you own, get your matches.">
+<meta name="twitter:title" content="Costumes From Your Closet: 169 Costume Ideas Ranked by What You Own">
+<meta name="twitter:description" content="What can you build from stuff already in your house? Tick what you own, get your matches.">
 <meta name="twitter:image" content="''' + OG_IMG + '''">
 <script type="application/ld+json">
 ''' + article_schema + '''
@@ -275,10 +289,10 @@ details.more summary{cursor:pointer;color:var(--accent);font-weight:700;padding:
 </header>
 
 <h1>Costumes From Your Closet</h1>
-<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/emoji-crew">Emoji Crew</a> (15 min, 1 yellow t-shirt per person), <a href="/c/classic-ghost">Classic Ghost</a> (10 min, 1 white flat sheet), and <a href="/c/fairy-tale-princesses">Fairy Tale Princesses</a> (15 min + drying, 1 dress from the closet per person) — ranked by how little you need to shop. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
+<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/emoji-crew">Emoji Crew</a> (15 min, 1 yellow t-shirt per person), <a href="/c/classic-ghost">Classic Ghost</a> (10 min, 1 white flat sheet), and <a href="/c/fairy-tale-princesses">Fairy Tale Princesses</a> (15 min, 1 dress from the closet per person), ranked by how little you need to shop. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
 <p class="byline">Updated September 2026</p>
-<p class="lede">The cheapest costume is the one you never have to shop for. Tick off what you already own and we will show you which of our 164 costume ideas you can make tonight.</p>
-<p class="sub">Out of 164 costume ideas, <strong>16 are make-tonight or one to two supplies away</strong> from default household basics: scissors, tape, markers, paper and pen, aluminum foil, cardboard, a white t-shirt, a plain t-shirt, black clothes, an old bedsheet, a pillowcase, and socks. Every costume below links to its full step-by-step build guide with real times and costs.</p>
+<p class="lede">The cheapest costume is the one you never have to shop for. Tick off what you already own and we will show you which of our 169 costume ideas are ready to build from your closet.</p>
+<p class="sub">Out of 169 costume ideas, <strong>17 need zero to two supplies beyond the default household basics</strong>: scissors, tape, markers, paper and pen, aluminum foil, cardboard, a white t-shirt, a plain t-shirt, black clothes, an old bedsheet, a pillowcase, and socks. Every costume below links to its full step-by-step build guide with real times.</p>
 
 <div class="trend">
 <strong>Trending now:</strong> the <a href="https://pickmycostume.com/c/neon-demon-hunter">Neon Demon Hunter</a>, our top-ranked 2026 idea. Black hoodie and pants from the closet, neon face paint, a foam sword, and glow tattoos. Pairs with the <a href="https://pickmycostume.com/c/kpop-demon-huntresses">Pop Star Demon Huntresses</a> group look for three.
@@ -291,17 +305,17 @@ details.more summary{cursor:pointer;color:var(--accent);font-weight:700;padding:
 <span><strong>Assume my house has the basics.</strong> Scissors, tape, markers, paper and pen, foil, cardboard, white t-shirt, plain t-shirt, black clothes, old bedsheet, pillowcase, socks. Untick to start from zero.</span></label>
 ''' + tiles_html + '''
 <div id="results" aria-live="polite"></div>
-<p class="fine">Every match links to its full build guide with materials, steps, real time, and real cost. Free, no signup.</p>
+<p class="fine">Every match links to its full build guide with materials, steps, real time, and effort level. Free, no signup.</p>
 </div>
 
-<h2><span class="qn">1.</span> Make tonight from household basics</h2>
-<p class="section-note">These are the 16 costumes you can make tonight or with one to two extra supplies, assuming the 12 household basics above. Each links to its full build guide.</p>
+<h2><span class="qn">1.</span> Ready with what you have</h2>
+<p class="section-note">These are the 17 costumes ready to build from the 12 household basics above, or with one to two extra supplies. Each links to its full build guide.</p>
 <div class="cc-grid" id="tonight-grid">
 ''' + tonight_html + '''
 </div>
 
 <h2><span class="qn">2.</span> Browse every costume guide</h2>
-<p class="section-note">All 164 step-by-step build guides, each with real build time and cost.</p>
+<p class="section-note">All 169 step-by-step build guides, each with real build time and effort level.</p>
 <div class="cc-grid" id="all-grid">
 ''' + all_html + '''
 </div>
@@ -434,7 +448,7 @@ function renderResults(){
     else rest.push(s);
   }
   var html = '';
-  html += '<h3 class="bucket-h">Make tonight <span class="cnt">(' + tonight.length + ')</span></h3>';
+  html += '<h3 class="bucket-h">Ready with what you have <span class="cnt">(' + tonight.length + ')</span></h3>';
   if (!tonight.length){
     html += '<div class="empty">Nothing yet. Tick a few things you own, or switch the basics back on.</div>';
   } else {
