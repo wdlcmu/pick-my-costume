@@ -263,8 +263,14 @@ body.st-open .sitehead{display:none}
   /* 2026-10-12: hero photo (first mosaic tile) slots in at order 3,
      between the sub and the CTAs — the desktop entrance move, on phone.
      Everything below shifts down one; relative order unchanged. */
-  #hero-mosaic{order:3}
-  #btn-start{order:4;align-self:center}
+  /* 2026-10-22 (Analytics + Auto-Ship): CTA moves ABOVE the photo on
+     phone. Funnel 7d: 52 homepage visitors -> 24 quiz starts; the 4:3
+     tile (~280px tall at 390px wide) sat between the subline and the
+     only hero button, pushing it below the fold on small phones.
+     Hypothesis: CTA right under the subline -> more quiz starts.
+     Re-check after 7 days or ~100 visits. Desktop order unchanged. */
+  #hero-mosaic{order:4}
+  #btn-start{order:3;align-self:center}
   .hero .hero-pantry{order:5;align-self:center}
   .hero .hero-proof{order:6}
   .hero .hero-galaxylink{order:7}
