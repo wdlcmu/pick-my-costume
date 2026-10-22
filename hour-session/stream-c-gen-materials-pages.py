@@ -3,8 +3,18 @@
 Sources (all real, site-native):
   - pantry.html const DATA  -> 169 ideas {id,title,mats:[{t,g}]}, 56 pantry materials {id,label,group,staple}
   - functions/c/[slug].js   -> canonical /c/ guide data {time,cost,effort} and materials texts {m}
-  - pantry-mats.json         -> cross-check slug universe (164)
-Pages are written to the repo working tree (STAGED, not deployed).
+  - pantry-mats.json         -> cross-check slug universe (169)
+Pages are written to the repo working tree.
+
+2026-10-22 reconciliation (parity audit fix list #2): both pages are
+live. Ported live -> generator (never reverse): triples render
+display_time() (hands-on only; "+ N drying" stripped per Billy's
+display rule -- drying counts in Tonight scoring, never displayed);
+the diy page's tonight line is the live "two hours or less total";
+the tonight page's section note is the live short wording (no
+"(plus drying where noted)" suffix) and two card blurbs are the live
+short versions (fairy-tale-princesses, block-monster). Card order and
+requirement data already matched live and were left alone.
 """
 import json, re, html, os
 
@@ -63,6 +73,13 @@ def mins(time_str):
     if not m: return 10**9
     v = float(m.group(1))
     return v*60 if m.group(2) == 'hr' else v
+
+def display_time(t):
+    # Billy's display rule (2026-10-03): drying counts in Tonight scoring
+    # but is never displayed. Guide times are "N min" or "N min + M drying".
+    assert re.fullmatch(r"\d+ min( \+ .+ drying)?", t or ''), \
+        'unexpected guide time format: %r' % (t,)
+    return re.sub(r"\s*\+.*drying\s*$", "", t)
 
 def reqs_of(idea):
     """Per-requirement data: list of (display_text, [groups of [material ids]]).
@@ -230,7 +247,7 @@ def build_page1():
         ("What household basics do you assume I have?",
          "Scissors, tape, markers, paper and pen, aluminum foil, cardboard, a white t-shirt, a plain t-shirt, black clothes, an old bedsheet, a pillowcase, and socks. These 12 staples are assumed present on this page; the pantry page lets you untick anything you don't actually have."),
         ("Do any costumes need zero extra shopping?",
-         "Yes. Two builds are make-tonight from the household basics alone: the Classic Ghost (a white sheet with cut-out eyes) and the Emoji Crew (a yellow tee, a paper plate, and markers). Fourteen more need just 1 or 2 supplies, so one quick store run covers all 16."),
+         "Yes. Two builds are make-tonight from the household basics alone: the Classic Ghost (a white sheet with cut-out eyes) and the Emoji Crew (a yellow tee, a paper plate, and markers). Fifteen more need just 1 or 2 supplies, so one quick store run covers all 17."),
         ("Can I also filter by build time?",
          "Yes. The build-time chips use the real build times from each costume's guide: show only costumes that take 30 minutes or less, or an hour or less."),
         ("Where do the materials lists come from?",
@@ -262,7 +279,7 @@ def build_page1():
         r = reqs_of(IDEAS[sid])
         rjson = E(json.dumps([{'t': txt, 'g': gs} for txt, gs in r]), quote=True)
         mat_items = ''.join(f'<li>{E(m["t"])}</li>' for m in IDEAS[sid]['mats'])
-        triple = f"{E(CG[sid]['time'])} &middot; {E(CG[sid]['effort'])}"
+        triple = f"{E(display_time(CG[sid]['time']))} &middot; {E(CG[sid]['effort'])}"
         card_html.append(
             f'<article class="ccard" data-slug="{sid}" data-mins="{mn}" data-reqs=\'{rjson}\'>'
             f'<h3><a href="{SITE}/c/{sid}">{E(t)}</a></h3>'
@@ -315,8 +332,8 @@ def build_page1():
 <p class="section-note">If the clock matters more than the craft drawer, start with the costumes built for tonight.</p>
 <div class="answer">
 <h3>Make-it-tonight builds</h3>
-<p>17 of the 169 ideas are <strong>make-tonight or 1-2 supplies away</strong> from default household basics: the Classic Ghost and the Emoji Crew need zero extra shopping. They are tiered by real build time, 15 minutes to 45 minutes.</p>
-<a class="go" href="{SITE}/make-it-tonight-costumes">See the 17 make-it-tonight costumes</a>
+<p>126 of the 169 ideas are <strong>make-tonight</strong>: 30 minutes or less of hands-on work, two hours or less total. The Classic Ghost and the Emoji Crew need zero extra shopping.</p>
+<a class="go" href="{SITE}/last-minute-costumes">See the make-it-tonight costumes</a>
 <a class="quiet" href="{SITE}/pantry">Or tick everything you own on the pantry page &rarr;</a>
 </div>
 
@@ -442,37 +459,38 @@ def build_page1():
 TIER_DEFS = [
     ('15 minutes or less', 15),
     ('20 to 30 minutes', 30),
-    ('45 minutes', 45),
 ]
 
 def build_page2():
     slug = 'make-it-tonight-costumes'
-    title = 'Make-It-Tonight Halloween Costumes: 17 Builds You Can Finish This Evening | Pick My Costume'
-    desc = ('17 Halloween costumes you can make tonight from household basics: 5 take 15 minutes or less, '
-            '9 take 20 to 30 minutes, and 3 take up to 45 minutes. Real build times and step-by-step guides.')
-    mt17 = ['classic-ghost','ninja','emoji-crew','fairy-tale-princesses','salt-pepper',
+    title = 'Make-It-Tonight Halloween Costumes: 14 Builds You Can Finish This Evening | Pick My Costume'
+    desc = ('14 Halloween costumes you can make tonight from household basics: 5 take 15 minutes or less, '
+            'and 9 take 20 to 30 minutes. Real build times and step-by-step guides.')
+    # 2026-10-11: aligned with the standing Tonight rule (hands-on <= 30 min AND
+    # hands-on+drying <= 120). The 45-minute tier (block-game-crew, plug-socket,
+    # night-hero) exceeded 30 min hands-on and was dropped: 17 -> 14 builds.
+    mt14 = ['classic-ghost','ninja','emoji-crew','fairy-tale-princesses','salt-pepper',
             'breakfast-buffet','cereal-crew','decades-crew','ice-cream-cone','player-one-two',
-            'space-crewmate','coffee-cup','ghost-hunters','block-monster',
-            'block-game-crew','plug-socket','night-hero']
-    tiers = {15: [], 30: [], 45: []}
-    for s in mt17:
+            'space-crewmate','coffee-cup','ghost-hunters','block-monster']
+    tiers = {15: [], 30: []}
+    for s in mt14:
         m = mins(CG[s]['time'])
-        tier = 15 if m <= 15 else (30 if m <= 30 else 45)
+        tier = 15 if m <= 15 else 30
         tiers[tier].append(s)
-    assert sum(len(v) for v in tiers.values()) == 17
+    assert sum(len(v) for v in tiers.values()) == 14
     print('tiers:', {k: len(v) for k, v in tiers.items()})
 
     titles = {'classic-ghost': 'Classic Ghost', 'ninja': 'Ninja', 'emoji-crew': 'Emoji Crew',
               'fairy-tale-princesses': 'Fairy Tale Princesses', 'salt-pepper': 'Salt & Pepper'}
     # titles from pantry DATA for the rest
-    for s in mt17:
+    for s in mt14:
         titles[s] = IDEAS[s]['title']
 
     blurbs = {
         'classic-ghost': 'A white sheet, two cut-out eyes, and you are done. The zero-shopping classic.',
         'ninja': 'All black, a belt sash, and a slit headband. Ten minutes and kids go feral for it.',
         'emoji-crew': 'Yellow tee, a drawn-on emoji face, and the whole group matches in minutes.',
-        'fairy-tale-princesses': 'Gold poster-board crowns and plastic gems. Fifteen minutes plus drying.',
+        'fairy-tale-princesses': 'Gold poster-board crowns and plastic gems. Fifteen minutes.',
         'salt-pepper': 'One white tee, one dark tee, cardboard shakers. The couples classic in 15 minutes.',
         'breakfast-buffet': 'Poster board, markers, and string: wear the most important meal of the day.',
         'cereal-crew': 'An empty cereal box front you decorate, worn sandwich-board style. Scales to any group.',
@@ -482,15 +500,12 @@ def build_page2():
         'space-crewmate': 'A cardboard box, colored duct tape, and you are the imposter. Twenty minutes.',
         'coffee-cup': 'A cardboard tube, brown poster board, and a white trash-bag lid. You are a giant coffee cup.',
         'ghost-hunters': 'Name patches, small boxes, and a toy hose. Half an hour to a full team look.',
-        'block-monster': 'Foam blocks or small boxes plus face paint. Thirty minutes plus drying.',
-        'block-game-crew': 'Cardboard boxes and an acrylic paint set: become the game pieces. The biggest build here.',
-        'plug-socket': 'Cardboard, black and white paint. The couples costume that fits together.',
-        'night-hero': 'A dark cowl and a cape cut from an old t-shirt. Rooftop patrol starts at home.',
+        'block-monster': 'Foam blocks or small boxes plus face paint. Thirty minutes.',
     }
 
     def card(s):
         c = CG[s]
-        triple = f"{E(c['time'])} &middot; {E(c['effort'])}"
+        triple = f"{E(display_time(c['time']))} &middot; {E(c['effort'])}"
         mats = ''.join(f'<li>{E(m)}</li>' for m in c['mats'])
         return (f'<article class="ccard">'
                 f'<h3><a href="{SITE}/c/{s}">{E(titles[s])}</a></h3>'
@@ -507,27 +522,27 @@ def build_page2():
         tier_blocks.append(
             f'<div class="tierhead"><h2><span class="qn">&#9201;</span> {label}</h2>'
             f'<span class="count">{len(items)} costume{"" if len(items)==1 else "s"}</span></div>'
-            f'<p class="section-note">Hands-on build time from each costume\'s real guide{" (plus drying where noted)" if t in (15,30,45) else ""}.</p>'
+            f'<p class="section-note">Hands-on build time from each costume\'s real guide.</p>'
             + '\n'.join(card(s) for s in items))
 
     faqs = [
         ("What does \"make it tonight\" mean?",
-         "Buildable this evening from the 12 default household basics (scissors, tape, markers, cardboard, old clothes, paper) plus at most 1 or 2 extra supplies. Two of the 17, the Classic Ghost and the Emoji Crew, need zero extra shopping."),
+         "Buildable this evening from the 12 default household basics (scissors, tape, markers, cardboard, old clothes, paper) plus at most 1 or 2 extra supplies. Two of the 14, the Classic Ghost and the Emoji Crew, need zero extra shopping."),
         ("How many make-tonight costumes are there?",
-         "17 out of the 169 costume ideas on Pick My Costume. Two of them, the Classic Ghost and the Emoji Crew, need zero extra shopping from the household basics. The other 15 need just one quick grab of 1 to 2 supplies, so a single dollar-store or craft-aisle run covers all of them."),
+         "14 out of the 169 costume ideas on Pick My Costume. Two of them, the Classic Ghost and the Emoji Crew, need zero extra shopping from the household basics. The other 12 need just one quick grab of 1 to 2 supplies, so a single dollar-store or craft-aisle run covers all of them."),
         ("What is the fastest costume I can make?",
          "The Classic Ghost and the Ninja, 10 minutes each. The Emoji Crew, Fairy Tale Princesses, and Salt & Pepper take 15 minutes."),
         ("Which make-it-tonight costumes need nothing new?",
          "The Classic Ghost and the Emoji Crew build entirely from the 12 household basics, with zero extra shopping."),
         ("What if I don't have the 1 or 2 extra supplies?",
-         "One quick store run covers all 17. Every costume below lists exactly what it still needs."),
+         "One quick store run covers all 14. Every costume below lists exactly what it still needs."),
     ]
 
     body = f"""{header()}
 <h1>Make-It-Tonight Halloween Costumes</h1>
 <p class="byline">Updated September 2026</p>
-<p class="lede">It's the evening of the party and you have no costume. These <strong>17 builds</strong>, out of the 169 costume ideas on Pick My Costume, are make-tonight or 1-2 supplies away from default household basics. The longest takes 45 minutes.</p>
-<p class="sub">"Tonight" means tonight: real build times from each costume's guide, tiered below. The Classic Ghost and the Emoji Crew need zero extra shopping; the other 15 need one quick grab of 1-2 supplies.</p>
+<p class="lede">It's the evening of the party and you have no costume. These <strong>14 builds</strong>, out of the 169 costume ideas on Pick My Costume, are make-tonight or 1-2 supplies away from default household basics. The longest takes 30 minutes.</p>
+<p class="sub">"Tonight" means tonight: real build times from each costume's guide, tiered below. The Classic Ghost and the Emoji Crew need zero extra shopping; the other 12 need one quick grab of 1-2 supplies.</p>
 
 {''.join(tier_blocks)}
 

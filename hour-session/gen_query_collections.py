@@ -13,6 +13,20 @@ from the bank. This script is the source of truth for:
 Reads build times, effort, and materials from INSTRUCTIONS in app.js so cards
 never drift from the guides. Do not hand-edit the outputs; change this script
 and re-run.
+
+2026-10-22 reconciliation (parity audit fix list #2): the live pages had
+drifted ahead of this generator. Ported live -> generator (never reverse):
+display_time() strips the "+ N drying" suffix from chips and the Quick
+answer (Billy's display rule: drying counts in Tonight scoring, never
+displayed); lede counts render from the real bank size (was hard-coded
+164, bank is 169); the disclaimer regained its stopwatch emoji; titles and
+blurbs now come from mcp-server/bank.json (app.js blurbs still carry
+pre-scrub IP wording on some rows, e.g. toy-box-crew, emerald-witch);
+the glow page's 4th pick is the live haunted-animatronics (not
+demon-boy-band) and its first FAQ answer is the live wording; three FAQ
+answers use the live "anything that has to dry" wording. Two live quirks
+are preserved on purpose in OVERRIDES below (deadpan-diva materials,
+tooth-fairy title) because the job is regen parity, not a live edit.
 """
 import json
 import os
@@ -28,7 +42,7 @@ PAGES = [
         "h1": "Funny Halloween Costume Ideas",
         "title": "Funny Halloween Costumes: 10 DIY Ideas That Get Laughs | Pick My Costume",
         "desc": "Ten funny DIY Halloween costumes with real build times and step-by-step guides: duos, groups, and solos that land the joke.",
-        "lede": "Funny wins the party. Every costume below scored high on funny in our 164-guide bank, and each one has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "lede": "Funny wins the party. Every costume below scored high on funny in our {N}-guide bank, and each one has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
         "quick": [("ketchup-mustard", "Ketchup & Mustard"), ("error-404", "Error 404"), ("lost-tourist", "Lost Tourist")],
         "quick_tail": "the fastest laughs below.",
         "picks": ["ketchup-mustard", "error-404", "walking-taco", "plug-socket",
@@ -48,7 +62,7 @@ PAGES = [
         "h1": "Easy Halloween Costumes for Adults",
         "title": "Easy Halloween Costumes for Adults: 10 Low-Effort DIY Ideas | Pick My Costume",
         "desc": "Ten easy Halloween costumes for adults with real build times and step-by-step guides. Low effort, high readability.",
-        "lede": "You want to look like you tried without actually trying that hard. Every costume below is rated Easy in our 164-guide bank and built for adults, each with a free step-by-step guide: real materials, numbered steps, and honest build times.",
+        "lede": "You want to look like you tried without actually trying that hard. Every costume below is rated Easy in our {N}-guide bank and built for adults, each with a free step-by-step guide: real materials, numbered steps, and honest build times.",
         "quick": [("classic-ghost", "Classic Ghost"), ("crowd-camouflage", "Crowd Camouflage"), ("error-404", "Error 404")],
         "quick_tail": "easy builds that still read as intentional.",
         "picks": ["classic-ghost", "error-404", "scarecrow", "garden-gnome",
@@ -60,7 +74,7 @@ PAGES = [
             ("I do not want to look cheap in front of coworkers.",
              "Pick one hero piece and wear real clothes otherwise. A name tag or a prop does more than a bag of accessories."),
             ("Can I build one of these tonight?",
-             "Most of these, yes. Check the time chip on each card; anything with drying time needs a head start."),
+             "Most of these, yes. Check the time chip on each card; anything that has to dry needs a head start."),
         ],
     },
     {
@@ -68,17 +82,17 @@ PAGES = [
         "h1": "Glow in the Dark Halloween Costume Ideas",
         "title": "Glow in the Dark Halloween Costumes: 4 DIY Ideas | Pick My Costume",
         "desc": "Four glow-in-the-dark DIY Halloween costumes with real build times and step-by-step guides. Visible after dark, built from tape and glow gear.",
-        "lede": "Four costumes that light up after dark, from our 164-guide bank. Each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "lede": "Four costumes that light up after dark, from our {N}-guide bank. Each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
         "quick": [("glow-skeleton", "Glow Skeleton"), ("tin-hero", "The Tin Hero")],
         "quick_tail": "the brightest picks below.",
-        "picks": ["glow-skeleton", "neon-demon-hunter", "tin-hero", "demon-boy-band"],
+        "picks": ["glow-skeleton", "neon-demon-hunter", "tin-hero", "haunted-animatronics"],
         "faqs": [
             ("What makes these costumes glow?",
-             "Glow-in-the-dark tape, glow bracelets, or neon paint. Each guide lists exactly what to get."),
+             "Glow-in-the-dark tape and bracelets, glow-in-the-dark temporary tattoos, and battery tea lights. Each guide lists exactly what to get."),
             ("Are they safe for trick-or-treating?",
              "They are more visible than most costumes, which drivers appreciate. Keep face openings wide and props soft."),
             ("How long does the glow last?",
-             "Glow tape charges in light and fades over a few hours. Hold it under a lamp for 10 minutes before heading out for a recharge."),
+             "Glow tape charges in light and fades over a few hours. Hold it under a lamp for 10 minutes before heading out for a recharge. The battery tea lights in two of the builds stay lit without charging."),
         ],
     },
     {
@@ -86,7 +100,7 @@ PAGES = [
         "h1": "Cute Halloween Costume Ideas",
         "title": "Cute Halloween Costumes: 10 Adorable DIY Ideas | Pick My Costume",
         "desc": "Ten cute DIY Halloween costumes with real build times and step-by-step guides: princesses, fairies, animals, and food cuties.",
-        "lede": "Cute is a strategy. Every costume below scored high on cute in our 164-guide bank, and each one has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "lede": "Cute is a strategy. Every costume below scored high on cute in our {N}-guide bank, and each one has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
         "quick": [("fairy-tale-princesses", "Fairy Tale Princesses"), ("tiny-snail", "Tiny Snail"), ("ladybug", "Ladybug")],
         "quick_tail": "the cutest quick wins below.",
         "picks": ["fairy-tale-princesses", "garden-fairy", "ladybug", "tiny-snail",
@@ -98,7 +112,7 @@ PAGES = [
             ("Are these only for kids?",
              "Most of the picks below are kid and family favorites, but cute scales up. A ladybug or a chipmunk works at any age with the right sizing."),
             ("Can I make one tonight?",
-             "Yes, most of these take 30 minutes or less of hands-on work. Check the time chip on each card; anything with drying time needs a head start."),
+             "Yes, most of these take 30 minutes or less of hands-on work. Check the time chip on each card; anything that has to dry needs a head start."),
         ],
     },
     {
@@ -106,7 +120,7 @@ PAGES = [
         "h1": "Women's Halloween Costume Ideas",
         "title": "Women's Halloween Costumes: 10 DIY Ideas | Pick My Costume",
         "desc": "Ten DIY Halloween costumes for women with real build times and step-by-step guides. Witches, cats, divas, and duos.",
-        "lede": "Ten costumes built for adult women, from our 164-guide bank. Each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "lede": "Ten costumes built for adult women, from our {N}-guide bank. Each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
         "quick": [("black-cat", "Black Cat Burglar"), ("deadpan-diva", "Deadpan Diva"), ("emerald-witch", "Emerald Witch")],
         "quick_tail": "strong solo picks below.",
         "picks": ["emerald-witch", "deadpan-diva", "vampire", "black-cat",
@@ -118,7 +132,7 @@ PAGES = [
             ("What works for a duo or group?",
              "Good Witch Bad Witch and the Witchy Sisters give everyone a distinct role with one shared theme. The Tooth Fairy plus Tooth is a classic couple pick."),
             ("How much time do these take?",
-             "Most are under 30 minutes of hands-on work. Check the time chip on each card; anything with drying time needs a head start."),
+             "Hands-on time runs 15 to 45 minutes. Check the time chip on each card; anything that has to dry needs a head start."),
         ],
     },
     {
@@ -126,7 +140,7 @@ PAGES = [
         "h1": "Homemade Halloween Costume Ideas",
         "title": "Homemade Halloween Costumes: 10 Real DIY Builds | Pick My Costume",
         "desc": "Ten truly homemade Halloween costumes with real build times and step-by-step guides: cardboard builds, closet builds, and paint builds.",
-        "lede": "Actually homemade, not store-bought with a hat. Every costume below is built from cardboard, closet clothes, or craft supplies in our 164-guide bank, each with a free step-by-step guide: real materials, numbered steps, and honest build times.",
+        "lede": "Actually homemade, not store-bought with a hat. Every costume below is built from cardboard, closet clothes, or craft supplies in our {N}-guide bank, each with a free step-by-step guide: real materials, numbered steps, and honest build times.",
         "quick": [("classic-ghost", "Classic Ghost"), ("error-404", "Error 404"), ("tiny-snail", "Tiny Snail")],
         "quick_tail": "the simplest builds below.",
         "picks": ["pizza-slice", "tiny-snail", "cardboard-knight", "robot-crew",
@@ -171,14 +185,45 @@ def load_bank():
         i += 1
     ins = json.loads(src[start:i + 1])
     assert len(ins) >= 100, "instructions parse returned too few: %d" % len(ins)
+    # Titles/blurbs come from mcp-server/bank.json, not app.js: bank.json
+    # carries the IP-scrubbed wording the live pages use (2026-10-22).
+    bank = json.load(open(os.path.join(ROOT, "mcp-server", "bank.json")))
+    bank_ideas = {i["id"]: i for i in bank["ideas"]}
+    assert set(bank_ideas) == set(ideas), "bank.json slugs != app.js slugs"
+    for slug, rec in bank_ideas.items():
+        ideas[slug] = {"title": rec["title"], "blurb": rec["blurb"]}
+    for slug, title in TITLE_OVERRIDES.items():
+        ideas[slug]["title"] = title
     return ideas, ins
+
+
+# Live-page quirks preserved for byte-identical regen (2026-10-22):
+# - The live womens page's tooth-fairy card still carries the older title
+#   "Tooth and Tooth Fairy"; bank.json renamed the idea to "Tooth Fairy".
+# - The live deadpan-diva cards (easy-adult + womens pages) list 4
+#   materials; the guide has since gained a 5th, optional choker ribbon.
+TITLE_OVERRIDES = {"tooth-fairy": "Tooth and Tooth Fairy"}
+NEED_OVERRIDES = {
+    "deadpan-diva": ("Black dress, 1 (own); Very pale foundation or white "
+                     "non-toxic face paint, 1 (buy: toy store); Dark "
+                     "eyeliner and lipstick, 1 set (own, or buy: dollar "
+                     "store); 2 hair ties (own)"),
+}
+
+
+def display_time(t):
+    # Billy's display rule (2026-10-03): drying counts in Tonight scoring
+    # but is never displayed. Bank times are "N min" or "N min + M drying".
+    assert re.fullmatch(r"\d+ min( \+ .+ drying)?", t), \
+        "unexpected bank time format: %r" % t
+    return re.sub(r"\s*\+.*drying\s*$", "", t)
 
 
 def card_html(slug, ideas, ins):
     rec = ideas[slug]
     d = ins[slug]
-    mats = "; ".join(d["m"])
-    time_chip = d["time"]
+    mats = NEED_OVERRIDES.get(slug, "; ".join(d["m"]))
+    time_chip = display_time(d["time"])
     return (
         '<article class="ccard" data-unit-item="%s">\n'
         '<a href="/c/%s"><img src="/photos/%s.webp" alt="%s Halloween costume" loading="lazy" width="400" height="400"></a>\n'
@@ -263,7 +308,7 @@ def page_html(page, ideas, ins):
     key = page["key"]
     cards = "\n".join(card_html(s, ideas, ins) for s in page["picks"])
     quick_links = ", ".join(
-        '<a href="/c/%s">%s</a> (%s)' % (s, esc(t), esc(ins[s]["time"]))
+        '<a href="/c/%s">%s</a> (%s)' % (s, esc(t), esc(display_time(ins[s]["time"])))
         for s, t in page["quick"])
     faq_items = "".join(
         "<details><summary>%s</summary><p>%s</p></details>" % (esc(q), esc(a))
@@ -305,7 +350,7 @@ def page_html(page, ideas, ins):
 <header class="top">
 <a class="brand" href="https://pickmycostume.com/">Pick My <span>Costume</span></a>
 <nav class="sitenav" aria-label="Site" data-unit-id="%s" data-unit-type="intent-sitenav">
-<a href="https://pickmycostume.com/" aria-label="Find my costume — the quiz">Find</a>
+<a href="https://pickmycostume.com/" aria-label="Pick my costume: the quiz">Pick</a>
 <a href="https://pickmycostume.com/map/">Explore</a>
 <a href="https://pickmycostume.com/pantry">Pantry</a>
 <a href="https://pickmycostume.com/play">Play</a>
@@ -316,7 +361,7 @@ def page_html(page, ideas, ins):
 <h1>%s</h1>
 <p class="quick-answer"><strong>Quick answer:</strong> %s. %s Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
 <p class="lede">%s</p>
-<p class="disclaimer">Build times are estimates. Yours may vary.</p>
+<p class="disclaimer">⏱️ We timed it, but results may vary.</p>
 <div id="intent-grid" data-unit-id="%s" data-unit-type="intent-grid">
 <div class="grid">
 %s
@@ -363,7 +408,7 @@ else{note.textContent='Hmm, that didn\\u2019t save. Try again?';}
        esc(page["h1"]), esc(page["desc"]), key, first,
        faq_ld, POSTHOG, CSS,
        key, esc(page["h1"]), quick_links, esc(page["quick_tail"]),
-       esc(page["lede"]), key, cards, key, key, faq_items, TRACKING)
+       esc(page["lede"]).replace("{N}", str(len(ideas))), key, cards, key, key, faq_items, TRACKING)
 
 
 def main():

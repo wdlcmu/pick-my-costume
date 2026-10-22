@@ -1,7 +1,22 @@
 #!/usr/bin/env python3
 """Build 7 static SEO intent pages from bank + pantry materials data.
 Emits <slug>.html at repo root. Regenerate with this script; do not hand-edit outputs.
-Does NOT touch bank data."""
+Does NOT touch bank data.
+
+2026-10-22 reconciliation (parity audit fix list #2): the live pages had
+drifted ahead of this generator. Ported live -> generator (never reverse):
+card chips render display_time() (hands-on only; the "+ N drying" suffix
+is stripped per Billy's display rule -- drying counts in Tonight scoring,
+never displayed); titles/blurbs come from mcp-server/bank.json (app.js
+blurbs still carry pre-scrub IP wording, e.g. galaxy-knights, plastic-
+dream-crew); page picks are the explicit curated PICKS lists below,
+ported from the live pages (the old match/rank selection drifted when
+the bank's cost field was removed on Oct 1, silently reordering cards
+and resetting curated og:images -- og:image is the first pick, so the
+live first picks restore the live og picks: family goggle-crew, no-sew
+office-couple, toddler ninja); the CTA quiz line is the live 2-minute
+wording. The match/rank/force_in fields in PAGES are kept for reference
+only and no longer select anything."""
 import re, os, html, json, datetime
 
 ROOT = os.path.expanduser('~/workspace/builds/pick-my-costume')
@@ -20,17 +35,36 @@ for line in src.split('\n'):
     ideas[m.group(1)] = {'title': m.group(2), 'blurb': m.group(3),
                          'audience': m.group(5), 'tags': tags_m.group(1) if tags_m else ''}
 assert len(ideas) == 169, f'idea count drift: {len(ideas)}'
+# Titles/blurbs come from mcp-server/bank.json (IP-scrubbed wording the
+# live pages use), not app.js (2026-10-22 reconciliation).
+_bank = json.load(open(os.path.join(ROOT, 'mcp-server', 'bank.json'), encoding='utf-8'))
+_bank_ideas = {i['id']: i for i in _bank['ideas']}
+assert set(_bank_ideas) == set(ideas), 'bank.json slugs != app.js slugs'
+for _slug, _rec in _bank_ideas.items():
+    ideas[_slug]['title'] = _rec['title']
+    ideas[_slug]['blurb'] = _rec['blurb']
 
 instr = {}
 for m in re.finditer(r'"([a-z0-9-]+)":\{"m":\[(.*?)\],"s":\["', src):
     mats = re.findall(r'"((?:[^"\\]|\\.)*)"', m.group(2))
     instr.setdefault(m.group(1), {})['m'] = [x.encode().decode('unicode_escape') for x in mats]
-for m in re.finditer(r'"time":"((?:[^"\\]|\\.)*)","cost":"((?:[^"\\]|\\.)*)","effort":"((?:[^"\\]|\\.)*)","sizing":"((?:[^"\\]|\\.)*)"', src):
+for m in re.finditer(r'"time":"((?:[^"\\]|\\.)*)"(?:,"cost":"(?:[^"\\]|\\.)*")?,"effort":"((?:[^"\\]|\\.)*)","sizing":"((?:[^"\\]|\\.)*)"', src):
     pass  # handled below per-id
-for m in re.finditer(r'"([a-z0-9-]+)":\{"m":\[.*?\],"s":\[.*?\],"time":"((?:[^"\\]|\\.)*)","cost":"((?:[^"\\]|\\.)*)","effort":"((?:[^"\\]|\\.)*)","sizing":"((?:[^"\\]|\\.)*)"', src):
-    instr.setdefault(m.group(1), {}).update({'time': m.group(2), 'cost': m.group(3),
+# Hardened 2026-10-15 (GPT loop run 281): whitespace-tolerant (a batch of bank
+# entries uses '] ,"time"' with a stray space, which the old rigid regex
+# silently skipped, emitting blank time/effort chips, e.g. party-pinata) and
+# cost-optional (cost fields were removed from the bank site-wide on Oct 1;
+# the old regex requiring "cost" would have matched NOTHING and blanked
+# every chip on a regen). Cost now parses as '' when absent.
+for m in re.finditer(r'"([a-z0-9-]+)":\{"m":\[.*?\]\s*,\s*"s":\[.*?\]\s*,\s*"time":"((?:[^"\\]|\\.)*)"(?:\s*,\s*"cost":"((?:[^"\\]|\\.)*)")?\s*,\s*"effort":"((?:[^"\\]|\\.)*)"\s*,\s*"sizing":"((?:[^"\\]|\\.)*)"', src):
+    instr.setdefault(m.group(1), {}).update({'time': m.group(2), 'cost': m.group(3) or '',
         'effort': m.group(4), 'sizing': m.group(5).encode().decode('unicode_escape')})
 assert len(instr) == 169
+# Fail loud, never ship blank chips (run 281): every parsed entry must carry
+# a time and an effort, or the build stops here instead of emitting a card
+# with an empty stopwatch chip.
+_missing = [k for k, v in instr.items() if not v.get('time') or not v.get('effort')]
+assert not _missing, f'bank entries missing time/effort after parse: {_missing}'
 
 def minutes(t):
     t = (t or '').lower()
@@ -194,6 +228,11 @@ with real hands-on time. The brush is the costume."""),
         ('What order do I paint in?', 'Base first, let it set, then details. Details painted onto wet base bleed; details painted onto set base stay crisp.'),
         ('How do I keep it from smearing all night?', 'Keep makeup wipes in your pocket because touch-ups are part of the deal, and set the finished paint with a light dusting of translucent powder.'),
       ],
+      # galaxy-knights excluded 2026-10-16 (GPT loop run 309): its only paint
+      # material is an optional hood-shadow tube that no step ever uses, so it
+      # does not lean on the paint job this page promises. Ninja stays: its
+      # steps paint the mask stripe even though its tube is marked optional.
+      exclude={'galaxy-knights'},
       limit=10),
 ]
 
@@ -205,6 +244,13 @@ s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('ph
 document.head.appendChild(s); })();
 </script>"""
 
+def display_time(t):
+    # Billy's display rule (2026-10-03): drying counts in Tonight scoring
+    # but is never displayed. Bank times are "N min" or "N min + M drying".
+    assert re.fullmatch(r"\d+ min( \+ .+ drying)?", t or ''), \
+        f'unexpected bank time format: {t!r}'
+    return re.sub(r"\s*\+.*drying\s*$", "", t)
+
 def card(iid, slug=''):
     i, d = ideas[iid], instr[iid]
     need = need_line(d.get('m', []))
@@ -213,7 +259,7 @@ def card(iid, slug=''):
     return f"""<article class="ccard" data-unit-item="{iid}">
 <a href="/c/{iid}"><img src="/photos/{iid}.webp" alt="{html.escape(i['title'])} Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/{iid}">{html.escape(i['title'])}</a></h3>
-<p class="chips"><span class="chip">⏱ {html.escape(d.get('time',''))} hands-on</span><span class="chip">{html.escape(d.get('effort',''))}</span></p>
+<p class="chips"><span class="chip">⏱ {html.escape(display_time(d.get('time','')))} hands-on</span><span class="chip">{html.escape(d.get('effort',''))}</span></p>
 <p class="need"><strong>You need:</strong> {html.escape(need)}</p>
 <p class="blurb">{html.escape(i['blurb'])}</p>{safety_html}
 <p class="go"><a href="/c/{iid}">Build this costume →</a></p>
@@ -290,7 +336,7 @@ footer a{{color:var(--mut);margin:0 10px}}
 <header class="top">
 <a class="brand" href="https://pickmycostume.com/">Pick My <span>Costume</span></a>
 <nav class="sitenav" aria-label="Site" data-unit-id="{slug}" data-unit-type="intent-sitenav">
-<a href="https://pickmycostume.com/" aria-label="Find my costume: the quiz">Find</a>
+<a href="https://pickmycostume.com/" aria-label="Pick my costume: the quiz">Pick</a>
 <a href="https://pickmycostume.com/map/">Explore</a>
 <a href="https://pickmycostume.com/pantry">Pantry</a>
 <a href="https://pickmycostume.com/play">Play</a>
@@ -331,6 +377,7 @@ else{{rc('error');note.textContent='Hmm, that didn\u2019t save. Try again?';}}
 {faq_html}
 <div class="cta">
 <p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 169 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
+<p>Can&rsquo;t decide? <a href="https://pickmycostume.com/">Pick my costume</a>: the 2-minute quiz that picks your top 3.</p>
 </div>
 </main>
 <footer>
@@ -380,13 +427,24 @@ else{{rc('error');note.textContent='Hmm, that didn\u2019t save. Try again?';}}
 </html>
 """
 
+# Curated page picks, ported verbatim from the live pages 2026-10-22
+# (order matters: it is the card order, and picked[0] is the og:image).
+PICKS = {
+    'white-sheet-costumes': ['classic-ghost', 'little-witch', 'headless-horsemen', 'coffee-cup', 'vampire', 'caped-duo', 'dino-herd', 'pixel-ghost', 'sushi-roll', 'doctor-bride'],
+    'cardboard-box-costumes': ['pizza-slice', 'donut', 'kart-racers', 'ghost-hunters', 'popcorn-bucket', 'block-game-crew', 'robot-crew', 'plug-socket', 'haunted-animatronics', 'party-pinata', 'fairy-tale-princesses', 'good-witch-bad-witch'],
+    'no-sew-costumes': ['office-couple', 'lost-tourist', 'ninja', 'cereal-crew', 'breakfast-buffet', 'crowd-camouflage', 'bowling-pins', 'salt-pepper', 'headless-horsemen', 'bacon-eggs', 'penguin-huddle', 'plug-socket'],
+    'family-costumes': ['goggle-crew', 'classic-ghost', 'emoji-crew', 'dino-rangers', 'bowling-pins', 'mystery-crew', 'fairy-tale-princesses', 'plumber-duo', 'cereal-crew', 'decades-crew', 'mermaid-crew', 'fruit-salad'],
+    'couples-costumes': ['office-couple', 'galaxy-knights', 'prince-princess', 'burger-joint-couple', 'ketchup-mustard', 'salt-pepper', 'cat-mouse', 'plastic-dream-crew', 'plumber-duo', 'bacon-eggs', 'player-one-two', 'pbj'],
+    'toddler-costumes': ['ninja', 'ice-skater', 'classic-ghost', 'banana', 'backyard-hero', 'cheerleader', 'pop-star', 'little-baker', 'cupcake', 'fairy-tale-princesses', 'little-artist', 'fuzzy-monster'],
+    'face-paint-costumes': ['basketball-star', 'ninja', 'boxer', 'gloom-bloom', 'mystery-crew', 'deadpan-diva', 'cat-mouse', 'plumber-duo', 'little-witch', 'good-witch-bad-witch'],
+}
+
 built = []
 for p in PAGES:
-    cands = [iid for iid in ideas if iid in instr and p['match'](ideas[iid], instr[iid]) and photo(iid)]
-    cands = [c for c in cands if c not in p.get('exclude', set())]
-    cands.sort(key=p['rank'])
-    picked = list(p.get('force_in', [])) + [c for c in cands if c not in p.get('force_in', [])]
-    picked = picked[:p['limit']]
+    picked = list(PICKS[p['slug']])
+    assert len(picked) == p['limit'], f"{p['slug']}: PICKS has {len(picked)}, limit {p['limit']}"
+    for _iid in picked:
+        assert _iid in ideas and _iid in instr and photo(_iid), f"{p['slug']}: bad pick {_iid}" 
     wc = len(p['intro'].split())
     assert len(picked) >= 8, f"{p['slug']}: only {len(picked)} matches"
     assert 80 <= wc <= 150, f"{p['slug']}: intro {wc} words"
