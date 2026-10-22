@@ -2906,7 +2906,120 @@ function refreshPlanMats(ideaId){
     for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].id === ideaId){ idea = IDEAS[i]; break; }
   }
   if (!idea) return;
-  for (var n = 0; n < nodes.length; n++) renderPlanMats(nodes[n], idea);
+  for (var n = 0; n < nodes.length; n++){
+    if (nodes[n].className && nodes[n].className.indexOf("plan-mats-grouped") >= 0) renderPlanMatsGrouped(nodes[n], idea);
+    else renderPlanMats(nodes[n], idea);
+  }
+}
+/* 2026-10-22 (Billy): Michaels-style materials split for the plan view.
+   Every material lands in one of three groups -- "Already at home",
+   "Tools", "Buy" -- from the bank string's own source tag: the first of
+   own/make/buy in the trailing parenthetical is the primary signal
+   ("own, or buy: thrift store" is a closet item first; "buy: thrift
+   store, or own: from closet" is a buy first). make: always means the
+   material comes from home stock (closet, boxes, kitchen). A genuine
+   tool noun (scissors, glue gun, ...) overrides a buy tag -- most homes
+   own the tool already, and the check-off below settles it. Untagged
+   lines are the household staples (tape, safety pins, glue) and land in
+   Tools; anything else untagged lands at home. The same rules run in
+   gen_share_function.py for the /c/ guides so the two surfaces agree. */
+var PLAN_TOOL_RE = /\b(scissors|hot glue gun|glue gun|utility knife|craft knife|staple gun|paint ?brush|paintbrush|sewing needle|hole punch|box cutter)\b/i;
+var PLAN_STAPLE_RE = /\b(tape|safety pins?|glue|glue stick|markers?|pencils?|paint ?brush|paintbrush)\b/i;
+function planMatGroup(m){
+  var s = String(m);
+  var parens = [], pm, re = /\(([^)]*)\)/g;
+  while ((pm = re.exec(s))) parens.push(pm[1]);
+  var P = parens.join(" ").toLowerCase();
+  var T = s.replace(/\([^)]*\)/g, "");
+  if (P.indexOf("household tools") >= 0) return "tool";
+  var vm = /\b(own|make|buy)\b/.exec(P);
+  var primary = vm ? vm[1] : null;
+  var isTool = PLAN_TOOL_RE.test(T);
+  if (primary === "own") return isTool ? "tool" : "home";
+  if (primary === "make") return "home";
+  if (primary === "buy") return isTool ? "tool" : "buy";
+  if (isTool || PLAN_STAPLE_RE.test(T)) return "tool";
+  return "home";
+}
+/* Session-only check-off state for the plan's Tools/Buy items:
+   "ideaId#rawIdx" -> true. Pantry ownership pre-ticks via planMatLabel. */
+var planMatTicks = {};
+function renderPlanMatsGrouped(box, idea){
+  box.innerHTML = "";
+  var ins = (typeof INSTRUCTIONS !== "undefined") ? INSTRUCTIONS[idea.id] : null;
+  if (!ins || !ins.m) return;
+  var groups = {home: [], tool: [], buy: []};
+  var fidx = 0;
+  ins.m.forEach(function(m, rawIdx){
+    var isOpt = /\([^)]*optional/i.test(m);
+    var fi = isOpt ? -1 : fidx;
+    if (!isOpt) fidx++;
+    groups[planMatGroup(m)].push({m: m, fi: fi, rawIdx: rawIdx});
+  });
+  var summary = document.createElement("p");
+  summary.className = "plan-need-summary";
+  box.appendChild(summary);
+  var leftSpans = {};
+  var boxes = [];
+  function updateSummary(){
+    var buyLeft = 0, toolLeft = 0;
+    boxes.forEach(function(b){
+      if (b.cb.checked) return;
+      if (b.key === "buy") buyLeft++;
+      else if (b.key === "tool") toolLeft++;
+    });
+    summary.textContent = buyLeft > 0 ?
+      ("You need " + buyLeft + " thing" + (buyLeft === 1 ? "" : "s")) :
+      "Nothing to buy";
+    if (leftSpans.tool) leftSpans.tool.textContent = toolLeft > 0 ? (" \u00B7 " + toolLeft + " to grab") : "";
+    if (leftSpans.buy) leftSpans.buy.textContent = buyLeft > 0 ? (" \u00B7 " + buyLeft + " to get") : "";
+  }
+  [["home", "Already at home"], ["tool", "Tools"], ["buy", "Buy"]].forEach(function(gd){
+    var key = gd[0], items = groups[key];
+    if (!items.length) return;
+    var h = document.createElement("h5");
+    h.className = "mat-group-h";
+    h.appendChild(document.createTextNode(gd[1]));
+    if (key !== "home"){
+      var ls = document.createElement("span");
+      ls.className = "grp-left";
+      h.appendChild(ls);
+      leftSpans[key] = ls;
+    }
+    box.appendChild(h);
+    var ul = document.createElement("ul");
+    ul.className = "mat-group mat-group-" + key;
+    items.forEach(function(it){
+      var li = document.createElement("li");
+      var disp = planDisplayMat(it.m);
+      if (key === "home"){
+        li.textContent = disp;
+      } else {
+        var tkey = idea.id + "#" + it.rawIdx;
+        var pre = planMatTicks[tkey];
+        if (pre === undefined && it.fi >= 0 && planMatLabel(idea.id, it.fi, it.m) === "own") pre = true;
+        var lab = document.createElement("label");
+        lab.className = "mat-tick";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = !!pre;
+        if (cb.setAttribute) cb.setAttribute("aria-label", "I have this: " + disp);
+        lab.appendChild(cb);
+        lab.appendChild(document.createTextNode(disp));
+        li.appendChild(lab);
+        if (pre) li.className = "have";
+        boxes.push({key: key, cb: cb});
+        if (cb.addEventListener) cb.addEventListener("change", function(){
+          planMatTicks[tkey] = cb.checked;
+          li.className = cb.checked ? "have" : "";
+          updateSummary();
+        });
+      }
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+  updateSummary();
 }
 function buildInlinePlan(idea){
   var box = document.createElement("div");
@@ -2936,26 +3049,42 @@ function buildInlinePlan(idea){
      and feeds the effort fragments and role computation. */
   var _dek = (typeof ideaEffortKey === "function") ? ideaEffortKey(idea) : null;
   var _ddiff = (_dek && typeof EFFORT_FACTS !== "undefined" && EFFORT_FACTS[_dek]) ? EFFORT_FACTS[_dek].difficulty : ins.effort;
-  var tri = [displayTime(ins.time), _ddiff].filter(function(x){ return x; }).join(" \u00B7 ");
-  if (tri){
-    var tp = document.createElement("p");
-    tp.className = "howto-triple"; tp.textContent = tri;
-    body.appendChild(tp);
-    /* 2026-10-01 (STEP 1, task B.2): cost is dead site-wide -- the whole
-       cost-basis paragraph goes, not just the number. */
-  }
-  var mh = document.createElement("h4"); mh.textContent = "You need";
-  body.appendChild(mh);
-  var ul = document.createElement("ul");
-  ul.setAttribute("data-plan-mats", idea.id);
-  renderPlanMats(ul, idea);
-  body.appendChild(ul);
-  var sh = document.createElement("h4"); sh.textContent = "Steps";
-  /* 2026-10-01 (Claude fix 1e): safety lines ("Safety: ...") are NOT
-     numbered steps -- they were unreadable as "4. Safety: ..." mid-list.
-     They form a callout ABOVE the numbered steps instead. */
+  /* 2026-10-01 (STEP 1, task B.2): cost is dead site-wide -- the whole
+     cost-basis paragraph goes, not just the number. */
+  /* Steps split early: the glance strip needs the real step count, and
+     safety lines form their own callout above the numbered steps. */
   var safe = [], rest = [];
   ins.s.forEach(function(s){ (/^Safety:\s*/i.test(s) ? safe : rest).push(s); });
+  /* 2026-10-22 (Billy): at-a-glance strip, Michaels-style -- icons and
+     short values, no sentences. Time is hands-on only (displayTime). */
+  var glance = document.createElement("div");
+  glance.className = "plan-glance";
+  var gItems = [];
+  var gTime = displayTime(ins.time);
+  if (gTime) gItems.push(["\u23F1\uFE0F", gTime]);
+  if (_ddiff) gItems.push(["\uD83D\uDCAA", _ddiff]);
+  if (rest.length) gItems.push(["\uD83D\uDCCB", rest.length + (rest.length === 1 ? " step" : " steps")]);
+  gItems.forEach(function(gi){
+    var gsp = document.createElement("span"); gsp.className = "glance-item";
+    var gic = document.createElement("span"); gic.className = "glance-ico";
+    gic.textContent = gi[0];
+    gsp.appendChild(gic);
+    gsp.appendChild(document.createTextNode(gi[1]));
+    glance.appendChild(gsp);
+  });
+  if (gItems.length) body.appendChild(glance);
+  var mh = document.createElement("h4"); mh.textContent = "You need";
+  body.appendChild(mh);
+  /* 2026-10-22 (Billy): materials render in the three Michaels groups
+     (Already at home / Tools / Buy) with a live still-needed count and
+     check-offs, replacing the flat list. data-plan-mats stays the hook
+     refreshPlanMats re-renders into when a pantry tile is ticked. */
+  var mbox = document.createElement("div");
+  mbox.className = "plan-mats-grouped";
+  mbox.setAttribute("data-plan-mats", idea.id);
+  renderPlanMatsGrouped(mbox, idea);
+  body.appendChild(mbox);
+  var sh = document.createElement("h4"); sh.textContent = "Steps";
   if (safe.length){
     var sc = document.createElement("div");
     sc.className = "safety-callout";
@@ -12680,6 +12809,37 @@ function buildPersonPlans(idea, list){
      surface (Oct 16 rule: drying counts in scoring, never shown). */
   diyH.textContent = "Option 2: DIY, " + displayTime(mp.time);
   guide.appendChild(diyH);
+  /* 2026-10-22 (Billy): the DIY buy list gets the Michaels check-off --
+     tick what you already have and the still-needed count updates live. */
+  if (mp.buy && mp.buy.length){
+    var bsum = document.createElement("p"); bsum.className = "pp-need";
+    var bul = document.createElement("ul"); bul.className = "pp-buylist";
+    var bleft = mp.buy.length;
+    var updB = function(){
+      bsum.textContent = bleft > 0 ?
+        ("You need " + bleft + " thing" + (bleft === 1 ? "" : "s")) :
+        "Nothing to buy";
+    };
+    mp.buy.forEach(function(b){
+      var bli = document.createElement("li");
+      var blab = document.createElement("label"); blab.className = "mat-tick";
+      var bcb = document.createElement("input");
+      bcb.type = "checkbox"; bcb.checked = false;
+      if (bcb.setAttribute) bcb.setAttribute("aria-label", "I have this: " + b);
+      blab.appendChild(bcb);
+      blab.appendChild(document.createTextNode(b));
+      bli.appendChild(blab);
+      bul.appendChild(bli);
+      if (bcb.addEventListener) bcb.addEventListener("change", function(){
+        bleft += bcb.checked ? -1 : 1;
+        bli.className = bcb.checked ? "have" : "";
+        updB();
+      });
+    });
+    updB();
+    guide.appendChild(bsum);
+    guide.appendChild(bul);
+  }
   var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
   var tip = null, n = 0;
   mp.steps.forEach(function(s){
