@@ -8,7 +8,7 @@ Reads the snapshot JSON (terms with rank/index/mom4_pct/guide mapping),
 resolves guide titles from mcp-server/bank.json, and writes a fully
 server-rendered HTML page: real links in raw HTML, Article + FAQPage
 JSON-LD, per-item source citation, methodology + skew disclosure,
-Frightgeist 2025 callout with a reserved slot for the 2026 list.
+Frightgeist 2026 callout (published October 14, 2026).
 
 Honesty rules baked in: no invented guides (unmapped terms show
 "No guide yet"), adjacent matches are labeled adjacent, interest is
@@ -54,13 +54,24 @@ GUIDE_MAP = {
 }
 
 # Static historical data: Google Frightgeist 2025 national top 10.
-# Used when the snapshot has no secondary_sources block.
 FRIGHTGEIST_2025_TOP10 = [
     "Rumi (KPop Demon Hunters)", "Zoey (KPop Demon Hunters)",
     "Mira (KPop Demon Hunters)", "Jinu (KPop Demon Hunters)",
     "Baby Saja (KPop Demon Hunters)", "Chicken Jockey (Minecraft)",
     "Labubu", "Derpy the Tiger (KPop Demon Hunters)",
     "Elphaba (Wicked)", "The Lorax",
+]
+
+# Static data: Google Frightgeist 2026 top 10 trending costumes
+# (published October 14, 2026; verified against USA Today, Oct 14, 2026).
+# The 2026 headline list ranks top trending costumes (biggest search
+# spikes), not the most searched overall. Used when the snapshot has
+# no secondary_sources block.
+FRIGHTGEIST_2026_TOP10 = [
+    "Buddy the Unicorn (Buddy)", "NeeDoh", "Nikki (Obsession)",
+    "Agamemnon (The Odyssey)", "Lily Love Braids (Poppy Playtime)",
+    "Oliver Tree", "Verity (Minecraft)", "Carl (Dungeon Crawler Carl)",
+    "Disco Scooby-Doo", "Hazel Hook (Descendants)",
 ]
 
 
@@ -114,7 +125,7 @@ def main():
     missing = snap.get("missing_terms", [])
     sec = snap.get("secondary_sources", {})
     fg_block = sec.get("google_frightgeist_2025", {})
-    fg_top10 = fg_block.get("top10_national", FRIGHTGEIST_2025_TOP10)
+    fg_top10 = fg_block.get("top10_national", FRIGHTGEIST_2026_TOP10)
 
     # --- table rows ---
     rows = []
@@ -152,8 +163,7 @@ def main():
         ("Where does this costume trend data come from?",
          "Pinterest Trends, the public search-trend tool at trends.pinterest.com. "
          "We pull weekly United States search interest for costume terms and rank "
-         "them by Pinterest's interest index. Every refresh re-pulls the latest "
-         "complete week, and the source is cited on every row's page."),
+         "them by Pinterest's interest index."),
         ("Is this your own website's traffic?",
          "No. This is national search interest from Pinterest Trends, not visits "
          "to pickmycostume.com. Our own audience is small, and we do not present "
@@ -171,8 +181,7 @@ def main():
          "all of America. Google's annual Frightgeist ranking covers Google "
          "searches and is linked below."),
         ("How often is this updated?",
-         "Weekly. Each update pulls the latest complete week from Pinterest "
-         "Trends and regenerates this page."),
+         "Weekly, from the latest complete week."),
     ]
     faq_html = []
     faq_schema = []
@@ -327,12 +336,12 @@ p.a{color:var(--muted);margin:0 0 20px}
 
 <div class="fg" id="frightgeist">
   <h2>Also: Google's Frightgeist</h2>
-  <p style="color:var(--muted);font-size:14px;margin:0 0 8px">Google publishes its own costume-search ranking each October at <a href="https://frightgeist.google">frightgeist.google</a>. The 2026 edition is not out yet, so here is last year's national top 10 for comparison:</p>
+  <p style="color:var(--muted);font-size:14px;margin:0 0 8px">Google publishes its own costume-search ranking each October at <a href="https://frightgeist.google">frightgeist.google</a>. The 2026 edition came out on October 14, 2026. Its top 10 trending costumes rank the biggest search spikes this year, not the most searched overall:</p>
   <ol>
 %(fg_items)s
   </ol>
-  <p style="color:var(--muted);font-size:13px;margin:8px 0 0">Source: Google Frightgeist 2025.</p>
-  <div class="slot" id="frightgeist-2026"><strong>Frightgeist 2026:</strong> not published yet (expected mid-October). We will add Google's 2026 ranking here when it drops.</div>
+  <p style="color:var(--muted);font-size:13px;margin:8px 0 0">Source: Google Frightgeist 2026.</p>
+  <div class="slot" id="frightgeist-2026"><strong>Frightgeist 2026:</strong> published October 14, 2026. The list above is its top 10 trending costumes. Last year's top pick was Rumi (KPop Demon Hunters).</div>
 </div>
 
 <h2 class="faq">Questions, answered</h2>
