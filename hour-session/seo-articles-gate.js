@@ -101,8 +101,9 @@ locs.forEach(function(l){
 });
 ok(missing.length === 0, 'sitemap URLs with no local target: ' + missing.slice(0,5).join('; '));
 /* 2026-10-03 (S67): sitemap grew 169 -> 206 as the bank grew (138 -> 164 ideas) plus new intent/collection and /map/ region pages. Verified live 2026-10-03: curl https://pickmycostume.com/sitemap.xml -> HTTP 200 with 206 <url> entries; local tree sitemap.xml also 206 (164 /c/ bank-idea pages + 42 structural/intent//map/ pages). Expectation updated to match verified reality.
-   2026-10-03 (S63 bank+5): sitemap now 217 (169 /c/ bank-idea pages + 48 structural/intent//map/ pages; 6 structural pages added since the 206 count). */
-ok(total === 217, 'sitemap URL count changed: ' + total + ' (expected 217: 169 bank-idea /c/ pages + 48 structural/intent//map/ pages)');
+   2026-10-03 (S63 bank+5): sitemap now 217 (169 /c/ bank-idea pages + 48 structural/intent//map/ pages; 6 structural pages added since the 206 count).
+   2026-10-22 (red-gates repair): sitemap now 224 (169 /c/ bank-idea pages + 55 structural/intent//map/ pages). The 7 added structural pages since 2026-10-03 (e.g. /101-costume-ideas, /compare, /party, /hand-me-down, /baby-halloween-costumes-diy) all resolve to tree files (this gate's own resolve check passes) and return HTTP 200 live (spot-verified 2026-10-22). The sitemap was right; this constant was stale. */
+ok(total === 224, 'sitemap URL count changed: ' + total + ' (expected 224: 169 bank-idea /c/ pages + 55 structural/intent//map/ pages)');
 if (!fails.length) console.log('sitemap: ' + total + '/' + total + ' URLs resolve');
 
 /* ---------- 2. Hub/citation per article ---------- */
