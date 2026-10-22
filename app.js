@@ -772,7 +772,7 @@ var MAKE_PLANS = {
   "classic-ghost": {buy: ["White flat bed sheet (thrifted)"], time: "10 min", steps: ["Drape the sheet and mark the eye spots with a pencil.", "Cut two eye holes, starting small and widening.", "Trim the bottom so it clears the ground."]},
   "blue-dog-family": {buy: ["Felt sheets (blue and orange)", "Plain headbands", "Blue and orange tees"], time: "25 min", steps: ["Cut two triangle ears from felt per person.", "Hot-glue the ears to headbands.", "Pair with blue or orange shirts.", "Draw noses and whiskers with eyeliner."]},
   "superhero-family": {buy: ["Red sweatsuits", "Black felt", "Elastic cord"], time: "30 min", steps: ["Cut a bolt or star logo from black felt per suit.", "Glue each logo to a chest.", "Cut eye masks from felt and thread elastic through.", "Suit up and strike the team pose."]},
-  "blue-alien-ohana": {buy: ["Blue pipe cleaners", "Blue pom-poms", "Headbands", "Red t-shirt or dress (closet, or thrift)", "White felt or paper"], time: "30 min + 30 min drying", steps: ["Alien: twist two blue pipe cleaners around a headband so they stand up, and tape a blue pom-pom to each tip.", "Wear with a blue hoodie; add big black oval eyes with eyeliner.", "Lilo: cut leaf shapes from white felt or paper and pin or glue them across a red t-shirt or dress.", "Wear dark hair down. The alien and Lilo make the ohana."]},
+  "blue-alien-ohana": {buy: ["Blue pipe cleaners", "Blue pom-poms", "Headbands", "Red t-shirt or dress (closet, or thrift)", "White felt or paper"], time: "30 min + 30 min drying", steps: ["Alien: twist two blue pipe cleaners around a headband.", "Tape a blue pom-pom to each tip.", "Wear with a blue hoodie; add big black oval eyes with eyeliner.", "Lilo: cut leaf shapes from white felt or paper.", "Pin the leaves on a red shirt or dress.", "Wear dark hair down. The alien and Lilo make the ohana."]},
   "emerald-witch": {buy: ["Green dress (thrifted)", "Black poster board", "Green face paint", "False lashes"], time: "45 min + 1 hr drying", steps: ["Roll poster board into a tall cone and tape the seam.", "Paint your face, then add black eyeliner and dark lips.", "Stick on the false lashes.", "Wear the dress and tilt the hat."]},
   "gloom-bloom": {buy: ["Black clothes (closet)", "Bright accessories", "Face paint"], time: "15 min + 10 min drying", steps: ["Gloom: braid hair tight, wear all black, paint a frown.", "Bloom: wear your brightest colors and add flower clips.", "Pose back to back for the full contrast."]},
   "deadpan-diva": {buy: ["Pale foundation", "Black lipstick"], time: "15 min + 10 min drying", steps: ["Part hair down the middle and braid two tight braids.", "Apply foundation a few shades lighter than your skin.", "Finish with black lipstick and heavy eyeliner.", "Practice the stare that ends conversations."]},
@@ -900,17 +900,17 @@ var MAKE_PLANS = {
   "daisy": {buy: ["Yellow craft foam", "Brown craft foam", "Green dress", "Headband"], time: "30 min + 1 hr drying", steps: ["Cut 10 to 12 petal shapes from the yellow foam.", "Glue the petals in a ring around the headband, tips pointing out.", "Glue a brown circle in the center.", "Wear the flower headband with the green dress."]},
   "little-baker": {buy: ["White paper or poster board", "Apron", "Toy whisk"], time: "15 min", steps: ["Roll the paper into a tall chef hat and tape the seam.", "Trim the hat band to fit.", "Wear the hat with the apron.", "Carry the toy whisk and offer everyone imaginary cupcakes."]},
   "little-artist": {buy: ["Beret or flat cap", "Cardboard for palette", "Washable paint set", "Old smock or oversized tee"], time: "15 min + 1 hr drying", steps: ["Cut a palette shape from cardboard and paint dabs of color on it.", "Flick a little paint onto the smock for splatters and let dry.", "Wear the beret tilted.", "Carry the palette and a brush."]},
-  "beekeeper-bee": {buy: ["White shirt and pants", "Mesh fabric or mosquito head net", "Wide-brim hat", "Yellow shirt and pants", "Black electrical tape", "Pipe cleaners", "Headband"], time: "25 min + 10 min drying", steps: ["Drape the mesh over the wide-brim hat for the veil, tying it at the neck.", "Wrap black tape stripes around the yellow shirt and pants.", "Tape pipe-cleaner antennae to the headband.", "The adult wears white with the veil, since the mesh limits vision; the smaller of the two wears the stripes with the antennae."]},
+  "beekeeper-bee": {buy: ["White shirt and pants", "Mesh fabric or mosquito head net", "Wide-brim hat", "Yellow shirt and pants", "Black electrical tape", "Pipe cleaners", "Headband"], time: "25 min + 10 min drying", steps: ["Drape the mesh over the wide-brim hat for the veil, tying it at the neck.", "Wrap black tape stripes around the yellow shirt and pants.", "Tape pipe-cleaner antennae to the headband.", "Adults wear the veil, since the mesh limits vision.", "The smaller one wears the stripes with the antennae."]},
   "tetris-duo": {buy: ["Two large cardboard boxes", "Acrylic paint set", "Ribbon for shoulder straps", "Painter's tape"], time: "45 min + 2 hrs drying", steps: ["Cut one L-shaped and one T-shaped tetromino from the cardboard.", "Paint each a bright color and let dry flat.", "Tape ribbon straps to the tops.", "Wear like sandwich boards and click together for photos."]},
   "little-lifeguard": {buy: ["Red t-shirt", "Plastic whistle with lanyard", "Pool noodle", "White duct tape"], time: "20 min + 10 min drying", steps: ["Curve the pool noodle into a ring and tape the joint.", "Wrap white tape bands around the ring for the buoy look.", "Wear the red tee and shorts; the parent holds the whistle for photos.", "Carry the buoy over one shoulder."]},
   "little-prince": {buy: ["Gold cardstock", "Cape fabric", "Wide ribbon for sash", "Stick-on gems"], time: "20 min + 30 min drying", steps: ["Cut and glue the cardstock into a crown band with points.", "Press the gems around the band.", "Drape the cape and tie or glue it at the shoulders, no pins for under-5s.", "Drape the ribbon sash shoulder to hip and wear the crown tilted."]},
   "fossil-hunter": {buy: ["Khaki vest", "Toy magnifying glass", "Canvas pouch or fanny pack", "Cardboard for bones"], time: "25 min", steps: ["Cut chunky bone shapes from the cardboard and shade the edges.", "Tuck the bones into the pouch with tops peeking out.", "Wear the vest with the pouch on the belt.", "Carry the brush and magnifying glass in the vest pockets."]},
-  "milk-cookies": {buy: ["White t-shirt or tunic", "Brown t-shirt or tunic", "White and brown craft felt", "Black marker", "Fabric glue or safety pins"], time: "25 min + 30 min drying", steps: ["Decide who is milk and who is the cookie before cutting anything.", "Milk: cut a white felt carton front, write MILK on it in block letters, and pin it to the white tunic.", "Cookie: pin a big brown felt circle to the brown tunic and glue on felt chips.", "Wear the tunics over regular clothes and pose side by side."]},
+  "milk-cookies": {buy: ["White t-shirt or tunic", "Brown t-shirt or tunic", "White and brown craft felt", "Black marker", "Fabric glue or safety pins"], time: "25 min + 30 min drying", steps: ["Decide who is milk and who is the cookie before cutting anything.", "Milk: cut a white felt carton front.", "Write MILK on it in block letters.", "Pin it to the white tunic.", "Cookie: pin a big brown felt circle to the brown tunic.", "Glue on felt chips.", "Wear the tunics over regular clothes and pose side by side."]},
   "chips-guac": {buy: ["Green t-shirt or tunic", "Tan t-shirt or tunic", "Red, yellow, and tan felt", "Headband", "Fabric glue"], time: "30 min + 20 min drying", steps: ["Guac: glue red and yellow felt dots onto the green tunic.", "Chip: cut a giant tan felt triangle and glue it upright to the headband.", "Let the glue dry flat for 20 minutes before wearing.", "Pose with the guac serving the chip from a bowl."]},
-  "sushi-soy": {buy: ["White t-shirt", "Dark t-shirt", "Orange and black felt", "Cardboard and dark brown paint", "Red paper for cap"], time: "30 min + 1 hr drying", steps: ["Sushi: glue an orange felt salmon rectangle on the white tunic with a black seaweed waistband.", "Soy sauce: cut, paint, and wear a tall cardboard bottle like a sandwich board.", "Fold a red paper cap for the bottle top.", "The sushi dips toward the soy bottle in every photo."]},
-  "burger-fries": {buy: ["Tan t-shirt", "Red t-shirt", "Green, red, yellow, and tan felt", "Paper bowl", "Cardboard, red paint, yellow paper"], time: "35 min + 1 hr drying", steps: ["Burger: glue felt lettuce, tomato, and cheese layers on the tan tunic and wear the felt-covered bowl upside down as the bun.", "Fries: build a red cardboard carton with yellow paper fry sticks poking out.", "Wear the carton like a sandwich board over the red t-shirt.", "Line the carton with a plastic bag and fill it with wrapped candy."]},
-  "donut-coffee": {buy: ["White and brown t-shirts", "Pink and tan felt", "Cardboard for ring and cup", "Brown paint", "White paper for lid"], time: "35 min + 1 hr drying", steps: ["Donut: cover a big cardboard ring with tan fabric, add a pink felt frosting ring with sprinkles, and wear it like a sandwich board.", "Coffee: roll and paint a tall cardboard cup, add a white paper lid.", "Wear the cup over the brown t-shirt.", "Link arms for the full breakfast-date effect."]},
-  "wine-cheese": {buy: ["Burgundy t-shirt", "Yellow t-shirt", "White and burgundy felt", "Fabric glue"], time: "25 min + 30 min drying", steps: ["Wine: glue a white felt wine glass with burgundy wine onto the burgundy tunic.", "Cheese: cut round holes in a yellow felt triangle and pin it over the yellow tunic.", "Raise your glasses together for every photo."]},
+  "sushi-soy": {buy: ["White t-shirt", "Dark t-shirt", "Orange and black felt", "Cardboard and dark brown paint", "Red paper for cap"], time: "30 min + 1 hr drying", steps: ["Sushi: glue an orange felt salmon piece on the white tunic.", "Add a black seaweed waistband.", "Soy sauce: cut, paint, and wear a tall cardboard bottle like a sandwich board.", "Fold a red paper cap for the bottle top.", "The sushi dips toward the soy bottle in every photo."]},
+  "burger-fries": {buy: ["Tan t-shirt", "Red t-shirt", "Green, red, yellow, and tan felt", "Paper bowl", "Cardboard, red paint, yellow paper"], time: "35 min + 1 hr drying", steps: ["Burger: glue felt lettuce, tomato, and cheese on the tan tunic.", "Wear the felt-covered bowl upside down as the bun.", "Fries: build a red cardboard carton with yellow paper fry sticks poking out.", "Wear the carton like a sandwich board over the red t-shirt.", "Line the carton with a plastic bag and fill it with wrapped candy."]},
+  "donut-coffee": {buy: ["White and brown t-shirts", "Pink and tan felt", "Cardboard for ring and cup", "Brown paint", "White paper for lid"], time: "35 min + 1 hr drying", steps: ["Donut: cover a big cardboard ring with tan fabric.", "Add a pink felt frosting ring with sprinkles.", "Wear it like a sandwich board.", "Coffee: roll and paint a tall cardboard cup, add a white paper lid.", "Wear the cup over the brown t-shirt.", "Link arms for the full breakfast-date effect."]},
+  "wine-cheese": {buy: ["Burgundy t-shirt", "Yellow t-shirt", "White and burgundy felt", "Fabric glue"], time: "25 min + 30 min drying", steps: ["Wine: glue a white felt wine glass with burgundy wine onto the burgundy tunic.", "Cheese: cut round holes in a yellow felt triangle.", "Pin it over the yellow tunic.", "Raise your glasses together for every photo."]},
   "kpop-demon-huntresses": {buy: ["Black pants or leggings", "Metallic tops", "Toy microphones", "Cardboard and silver duct tape", "Face paint set"], time: "40 min + 10 min drying", steps: ["Agree on one accent color for all three outfits.", "Build three cardboard swords wrapped in silver duct tape.", "Dress in black with metallic tops and bold face paint stripes.", "Hit one shared pose for every photo."]},
   "goth-braids": {buy: ["Black dress", "Black tights", "Hair ties", "Black eyeliner", "Pale foundation"], time: "20 min + 10 min drying", steps: ["Braid the hair into two tight braids.", "Apply pale foundation and heavy black eyeliner.", "Wear the black dress with tights and dark lipstick.", "Practice the unimpressed stare."]},
   "juke-joint-vampires": {buy: ["Two vintage-style suits", "Plastic vampire fangs", "Fake blood", "Hair gel", "Toy trumpet"], time: "30 min", steps: ["Thrift two vintage-cut suits and press the shirts.", "Slick hair back and fit the fangs.", "Add red pocket squares and a dab of fake blood.", "One of you carries the trumpet everywhere."]},
@@ -12249,7 +12249,11 @@ function getCastState(ideaId, n){
 function buySearchFor(role, idea){
   var r = role.toLowerCase().replace(/^(the|a)\s+/, "");
   var t = idea.title.toLowerCase().replace(/costume(s)?/g, "").trim();
-  return r + " " + t + " costume";
+  /* 2026-10-22: do not repeat a role word the title already carries
+     ("penguin" + "Penguin Huddle" rendered "penguin penguin huddle"). */
+  var tWords = t.split(/\s+/);
+  var rWords = r.split(/\s+/).filter(function(w){ return tWords.indexOf(w) < 0; });
+  return (rWords.join(" ") + " " + t).trim() + " costume";
 }
 /* 2026-09-26 (copy audit fix): role-specific DIY first lines for the
    five highest-traffic group ideas. Traffic ranking is a proxy from the
@@ -12316,13 +12320,13 @@ var ROLE_DIY = {
   },
   "dino-rangers": {
     "ranger": "Khaki shirt and pants with the sleeves rolled, plus a masking-tape name badge.",
-    "little dino": "Green hoodie with two white paper eye spots on the hood, leading a toy dinosaur on a ribbon leash.",
-    "dino": "Green hoodie with two white paper eye spots on the hood, and a toy dinosaur on a ribbon leash."
+    "little dino": "Green hoodie with two white eye spots on the hood, and a toy dinosaur on a ribbon leash.",
+    "dino": "Green hoodie with two white eye spots on the hood, and a toy dinosaur on a ribbon leash."
   },
   "dinosaur-family": {
-    "big dino": "Green sweatsuit with green felt spikes pinned from the hood down the back, and green face paint spots on your cheeks.",
-    "little dino": "Green sweatsuit with green felt spikes pinned from the hood down the back, and green face paint spots on your cheeks.",
-    "dino": "Green sweatsuit with green felt spikes pinned from the hood down the back, and green face paint spots on your cheeks."
+    "big dino": "Green sweats, green felt spikes down the back, and green spots on your cheeks.",
+    "little dino": "Green sweats, green felt spikes down the back, and green spots on your cheeks.",
+    "dino": "Green sweats, green felt spikes down the back, and green spots on your cheeks."
   },
   "enchanted-castle-crew": {
     "candelabra": "Gold face paint and a gold headband with three cardboard flame shapes glued on top.",
@@ -12351,8 +12355,8 @@ var ROLE_DIY = {
     "guest": "Pick a side: black clothes and braids like Gloom, or colorful clothes with fake flowers like Bloom."
   },
   "plumber-duo": {
-    "plumber in red": "Blue overalls over a red t-shirt, red cap with the letter circle on front, and a big bushy painted mustache.",
-    "plumber in green": "Blue overalls over a green t-shirt, green cap with the letter circle on front, and a thinner painted mustache.",
+    "plumber in red": "Blue overalls, red shirt, red cap, and a big painted mustache.",
+    "plumber in green": "Blue overalls, green shirt, green cap, and a thin painted mustache.",
     "plumber": "Blue overalls over a colored t-shirt and matching cap, with a painted mustache."
   },
   "safari-zoo-crew": {
@@ -12367,13 +12371,13 @@ var ROLE_DIY = {
     "zookeeper": "You are the guide: spot each animal through the binoculars and announce its species."
   },
   "emoji-crew": {
-    "smiley": "Yellow t-shirt with a big paper plate taped to the chest, a smiling face drawn on it in marker.",
+    "smiley": "Yellow shirt, a big paper plate on the chest, and a smiling face on it.",
     "heart-eyes": "Yellow t-shirt with a big paper plate taped to the chest, heart eyes drawn on it in marker.",
-    "laughing-crying": "Yellow t-shirt with a big paper plate taped to the chest, a laughing face with tears drawn on it in marker.",
+    "laughing-crying": "Yellow shirt, a big paper plate on the chest, and a laughing face with tears on it.",
     "cool shades": "Yellow t-shirt with a big paper plate taped to the chest, cool shades drawn on it in marker.",
-    "winking": "Yellow t-shirt with a big paper plate taped to the chest, a winking face drawn on it in marker.",
-    "mind-blown": "Yellow t-shirt with a big paper plate taped to the chest, a mind-blown face drawn on it in marker.",
-    "party popper": "Yellow t-shirt with a big paper plate taped to the chest, a party popper face drawn on it in marker."
+    "winking": "Yellow shirt, a big paper plate on the chest, and a winking face on it.",
+    "mind-blown": "Yellow shirt, a big paper plate on the chest, and a mind-blown face on it.",
+    "party popper": "Yellow shirt, a big paper plate on the chest, and a party face on it."
   },
   "breakfast-buffet": {
     "fried egg": "A fried egg drawn big in marker on a cardboard sign, worn on string over normal clothes.",
@@ -12399,41 +12403,41 @@ var ROLE_DIY = {
     "chess knight": "A cardboard chess knight worn over black or white monochrome clothes."
   },
   "block-game-crew": {
-    "blocky hero": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker.",
-    "blocky villager": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker.",
-    "blocky knight": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker.",
-    "blocky monster": "A big cardboard box worn over regular clothes, painted in your character colors with a pixel-style face drawn in black marker."
+    "blocky hero": "A big cardboard box over your clothes, painted in your colors, with a pixel face.",
+    "blocky villager": "A big cardboard box over your clothes, painted in your colors, with a pixel face.",
+    "blocky knight": "A big cardboard box over your clothes, painted in your colors, with a pixel face.",
+    "blocky monster": "A big cardboard box over your clothes, painted in your colors, with a pixel face."
   },
   "web-slinger-crew": {
-    "red spider-hero": "Red hoodie with the hood up, a white tape web grid across the chest, and sunglasses with web tape and painted black eye lenses.",
-    "black spider-hero": "Black hoodie with the hood up, a white tape web grid across the chest, and sunglasses with web tape and painted black eye lenses.",
-    "pink spider-hero": "Pink hoodie with the hood up, a white tape web grid across the chest, and sunglasses with web tape and painted black eye lenses.",
-    "spider-hero": "A hoodie in your spider color with the hood up, a white tape web grid across the chest, and web-patterned sunglasses."
+    "red spider-hero": "Red hoodie, hood up, a white tape web on the chest, and web sunglasses.",
+    "black spider-hero": "Black hoodie, hood up, a white tape web on the chest, and web sunglasses.",
+    "pink spider-hero": "Pink hoodie, hood up, a white tape web on the chest, and web sunglasses.",
+    "spider-hero": "A hoodie in your spider color, hood up, a white tape web on the chest, and web sunglasses."
   },
   "rain-cloud-rainbow": {
     "rain cloud": "Gray t-shirt covered in glued cotton-ball clouds, with blue paper raindrops dangling on strings from the hem.",
     "rainbow": "Rainbow-striped shirt, or a white shirt with rainbow arcs drawn across it in fabric markers."
   },
   "doctor-bride": {
-    "the monster": "Dark suit with the collar up, face and neck painted green, and two plastic neck bolts taped to the sides of the neck.",
-    "the bride": "White dress or sheet with the hem torn into strips, dark eye shadow smudged under the eyes, and white streaks sprayed in the hair."
+    "the monster": "Dark suit, collar up, green face paint, and two plastic bolts on the neck.",
+    "the bride": "White dress or sheet with a torn hem, dark eye shadow, and white streaks in the hair."
   },
   "haunted-portraits": {
-    "haunted ancestor": "Old-fashioned dark clothes, face painted pale gray with white highlights, grayed hair, holding a picture frame around your face.",
-    "gilded portrait": "Old-fashioned dark clothes, face painted pale gray with white highlights, grayed hair, holding a picture frame around your face."
+    "haunted ancestor": "Old dark clothes, pale gray face paint, gray hair, and a picture frame held around your face.",
+    "gilded portrait": "Old dark clothes, pale gray face paint, gray hair, and a picture frame held around your face."
   },
   "sun-moon": {
     "sun": "Head-to-toe yellow with long cardstock rays taped around the neckline and sleeves.",
-    "moon": "Navy or black clothes with a big white paper crescent taped to the chest and silver star stickers scattered over the shirt and arms.",
+    "moon": "Navy or black clothes, a big white paper moon on the chest, and silver star stickers.",
     "star": "Navy or black clothes with silver star stickers scattered over the shirt and arms."
   },
   "moth-porch-light": {
-    "moth": "Neutral gray, brown, or tan clothes with two big cardboard wings taped to the arms and pipe-cleaner antennae on a headband.",
+    "moth": "Gray, brown, or tan clothes, big cardboard wings on the arms, and pipe-cleaner antennae.",
     "porch light": "Yellow t-shirt and yellow pants with a cone lampshade popped over your head."
   },
   "raptor-ranger": {
     "ranger": "Khaki shirt and hat, holding the toy dog leash.",
-    "raptor": "Green hoodie or t-shirt with a long green felt tail taped to the back and a painted snout with two black nostril dots."
+    "raptor": "Green hoodie or shirt, a long green felt tail, and a painted snout."
   },
   "cat-mouse": {
     "cat": "Black felt triangle ears on a headband, with eyeliner whiskers drawn on.",
@@ -12455,18 +12459,18 @@ var ROLE_DIY = {
   },
   "plug-socket": {
     "plug": "A gray-painted cardboard panel worn like a sandwich board, with two foam prongs taped along the top edge.",
-    "socket": "A white-painted cardboard panel worn like a sandwich board, with two dark slots and a round outlet face drawn in black marker."
+    "socket": "A white cardboard panel like a sandwich board, with two dark slots and an outlet face."
   },
   "salt-pepper": {
-    "salt": "All white: white shirt, pants, and hat, with a gray cardboard shaker top taped to the hat and a big S lettered on it.",
-    "pepper": "All black: black shirt, pants, and hat, with a gray cardboard shaker top taped to the hat and a big P lettered on it."
+    "salt": "All white: shirt, pants, and hat, a gray shaker top on the hat, and a big S.",
+    "pepper": "All black: shirt, pants, and hat, a gray shaker top on the hat, and a big P."
   },
   "tooth-fairy": {
     "tooth": "All-white outfit with a big white cardstock tooth taped to the chest, edged in glitter glue.",
-    "tooth fairy": "White dress or white shirt and skirt, wings made from pantyhose stretched over a coat hanger, and a foil-star wand, with an envelope of play money tucked in a pocket."
+    "tooth fairy": "White dress or white shirt and skirt, pantyhose wings, and a foil-star wand."
   },
   "web-hero-duo": {
-    "web hero": "Red shirt and blue pants with white web lines painted or taped over the shirt, a black painted eye mask, and red socks on your hands as web gloves.",
+    "web hero": "Red shirt, blue pants, web lines on the shirt, black eye mask, red sock gloves.",
     "the partner": "Black jacket and black pants with your hair slicked back, no crafting needed."
   },
   "player-one-two": {
@@ -12479,43 +12483,43 @@ var ROLE_DIY = {
     "bad witch": "Black dress or black clothes and a black cone hat, with face and hands painted green."
   },
   "headless-horsemen": {
-    "headless rider": "Black cape or black sheet, head tucked low, a jack-o-lantern bucket held at shoulder height like a carried head, and a broom to gallop on.",
-    "pumpkin bearer": "Black cape or black sheet, head tucked low, a jack-o-lantern bucket held at shoulder height like a carried head, and a broom to gallop on.",
-    "night galloper": "Black cape or black sheet, head tucked low, a jack-o-lantern bucket held at shoulder height like a carried head, and a broom to gallop on."
+    "headless rider": "Black cape or sheet, head tucked low, a pumpkin bucket held up like a head, and a broom.",
+    "pumpkin bearer": "Black cape or sheet, head tucked low, a pumpkin bucket held up like a head, and a broom.",
+    "night galloper": "Black cape or sheet, head tucked low, a pumpkin bucket held up like a head, and a broom."
   },
   "blue-alien-ohana": {
     "blue alien": "Blue hoodie with an antenna headband: two blue pipe cleaners standing up, each tipped with a blue pom-pom.",
     "the girl": "Red t-shirt or dress with white felt leaf shapes pinned across it, dark hair worn down."
   },
   "fairy-tale-princesses": {
-    "tiara princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
-    "gown princess": "Your best dress from the closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
-    "crown princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
-    "cape princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
-    "flower princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow.",
-    "princess": "A dress from your closet with a cereal-box crown painted gold or silver and a hair ribbon tied in a bow."
+    "tiara princess": "A dress from your closet, a gold or silver cereal-box crown, and a hair ribbon.",
+    "gown princess": "Your best dress, a gold or silver cereal-box crown, and a hair ribbon.",
+    "crown princess": "A dress from your closet, a gold or silver cereal-box crown, and a hair ribbon.",
+    "cape princess": "A dress from your closet, a gold or silver cereal-box crown, and a hair ribbon.",
+    "flower princess": "A dress from your closet, a gold or silver cereal-box crown, and a hair ribbon.",
+    "princess": "A dress from your closet, a gold or silver cereal-box crown, and a hair ribbon."
   },
   "robot-crew": {
-    "boxy robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
-    "foil robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
-    "bottle-cap robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
-    "tall robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
-    "round robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest.",
-    "cardboard robot": "Foil-wrapped cardboard torso and head boxes, dials drawn in marker, bottle caps taped on as buttons, and a glow stick power light on the chest."
+    "boxy robot": "Foil cardboard boxes for body and head, marker dials, bottle-cap buttons, and a glow stick light.",
+    "foil robot": "Foil cardboard boxes for body and head, marker dials, bottle-cap buttons, and a glow stick light.",
+    "bottle-cap robot": "Foil cardboard boxes for body and head, marker dials, bottle-cap buttons, and a glow stick light.",
+    "tall robot": "Foil cardboard boxes for body and head, marker dials, bottle-cap buttons, and a glow stick light.",
+    "round robot": "Foil cardboard boxes for body and head, marker dials, bottle-cap buttons, and a glow stick light.",
+    "cardboard robot": "Foil cardboard boxes for body and head, marker dials, bottle-cap buttons, and a glow stick light."
   },
   "cereal-crew": {
-    "cereal box": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
-    "spoon": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
-    "milk carton": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
-    "cereal bowl": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters.",
-    "orange juice": "Solid-color clothes with a decorated cereal box front panel worn like a sandwich board, your invented cereal name in big letters."
+    "cereal box": "Plain clothes, and a cereal box front like a sandwich board with your cereal name on it.",
+    "spoon": "Plain clothes, and a cereal box front like a sandwich board with your cereal name on it.",
+    "milk carton": "Plain clothes, and a cereal box front like a sandwich board with your cereal name on it.",
+    "cereal bowl": "Plain clothes, and a cereal box front like a sandwich board with your cereal name on it.",
+    "orange juice": "Plain clothes, and a cereal box front like a sandwich board with your cereal name on it."
   },
   "haunted-animatronics": {
-    "glitchy mascot": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
-    "flickering-eyed bot": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
-    "jerky dancer": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
-    "static singer": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes.",
-    "animatronic": "A gray-painted cardboard box head with black scuffs and a wide jagged mouth, red LED tea lights glowing in the eye holes, over old clothes with holes."
+    "glitchy mascot": "Gray box head with a jagged mouth, red lights in the eye holes, and old clothes with holes.",
+    "flickering-eyed bot": "Gray box head with a jagged mouth, red lights in the eye holes, and old clothes with holes.",
+    "jerky dancer": "Gray box head with a jagged mouth, red lights in the eye holes, and old clothes with holes.",
+    "static singer": "Gray box head with a jagged mouth, red lights in the eye holes, and old clothes with holes.",
+    "animatronic": "Gray box head with a jagged mouth, red lights in the eye holes, and old clothes with holes."
   },
   "goggle-crew": {
     "tall goggle": "Yellow t-shirt, denim overalls, black gloves, and goggles pushed up on your forehead.",
@@ -12526,7 +12530,7 @@ var ROLE_DIY = {
   },
   "classic-ghost": {
     "sheet ghost": "A white sheet draped over you with cut-out eye holes and a marker-drawn mouth.",
-    "ghost with glasses": "A white sheet draped over you with cut-out eye holes and a marker-drawn mouth, glasses worn over the sheet.",
+    "ghost with glasses": "A white sheet with eye holes and a drawn mouth, and glasses over the sheet.",
     "tall ghost": "A full-size white sheet draped over you with cut-out eye holes and a marker-drawn mouth.",
     "tiny ghost": "A twin-size white sheet draped over you with cut-out eye holes and a marker-drawn mouth."
   },
@@ -12537,14 +12541,14 @@ var ROLE_DIY = {
   },
   "bacon-eggs": {
     "bacon": "Dark red or brown shirt with wavy red-brown felt strips pinned down the front.",
-    "eggs": "White shirt with a big white felt oval pinned on and a yellow felt circle pinned on top as the yolk.",
+    "eggs": "White shirt, a big white felt oval, and a yellow felt yolk on top.",
     "breakfast": "One of the breakfast pair: felt shapes pinned to a shirt, wavy bacon strips or a sunny-side-up egg."
   },
   "peas-pod": {
-    "pea": "Green t-shirt under one long green felt pod glued across the whole row, with a small green circle painted on your cheek."
+    "pea": "Green shirt under one long green felt pod, and a green circle on your cheek."
   },
   "referee": {
-    "head referee": "Black shirt striped with white athletic tape across the front and back, black pants or shorts, a whistle around your neck, and a yellow flag tucked in a pocket."
+    "head referee": "Black shirt with white tape stripes, black pants or shorts, a whistle, and a yellow flag."
   },
   "tennis-duo": {
     "server": "Head-to-toe white with a sweatband tied across your forehead, carrying a toy tennis racket.",
@@ -12556,18 +12560,18 @@ var ROLE_DIY = {
     "pin": "White shirt and pants with two red tape stripes wrapped around the collar and one around each wrist."
   },
   "caped-duo": {
-    "hero": "A sheet cape tied at the neck with a felt emblem glued to the back, and a felt eye mask with ribbon ties.",
-    "sidekick": "A sheet cape tied at the neck with a felt emblem glued to the back, and a felt eye mask with ribbon ties."
+    "hero": "A sheet cape with a felt emblem, and a felt eye mask.",
+    "sidekick": "A sheet cape with a felt emblem, and a felt eye mask."
   },
   "hero-squad": {
-    "red hero": "Red cape pinned at the shoulders, a matching red mask, and a red t-shirt with the team emblem painted on in fabric paint.",
-    "blue hero": "Blue cape pinned at the shoulders, a matching blue mask, and a blue t-shirt with the team emblem painted on in fabric paint.",
-    "green hero": "Green cape pinned at the shoulders, a matching green mask, and a green t-shirt with the team emblem painted on in fabric paint.",
-    "gold hero": "Gold cape pinned at the shoulders, a matching gold mask, and a gold t-shirt with the team emblem painted on in fabric paint.",
-    "hero": "A cape pinned at the shoulders, a matching mask, and a t-shirt in your squad color with the team emblem painted on in fabric paint."
+    "red hero": "Red cape, red mask, and a red shirt with the team emblem.",
+    "blue hero": "Blue cape, blue mask, and a blue shirt with the team emblem.",
+    "green hero": "Green cape, green mask, and a green shirt with the team emblem.",
+    "gold hero": "Gold cape, gold mask, and a gold shirt with the team emblem.",
+    "hero": "A cape, a matching mask, and a team-color shirt with the team emblem."
   },
   "penguin-huddle": {
-    "penguin": "Black long-sleeve shirt with a white felt oval belly glued on, and a headband with a small orange felt beak."
+    "penguin": "Black shirt, white felt belly, and a headband with an orange beak."
   },
   "prince-princess": {
     "prince": "Gold paper crown and a cape over dark clothes, carrying a toy scepter.",
@@ -12575,14 +12579,14 @@ var ROLE_DIY = {
     "royal": "Royal dress-up from the guide: a gold crown and cape, or a thrifted gown and tiara."
   },
   "dino-herd": {
-    "t-rex": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
-    "raptor": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
-    "triceratops": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
-    "stegosaurus": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband.",
-    "dino": "A green poncho with green felt spikes pinned in a row down the back and a stuffed-sock tail pinned at the waistband."
+    "t-rex": "Green poncho, green felt spikes down the back, and a stuffed-sock tail.",
+    "raptor": "Green poncho, green felt spikes down the back, and a stuffed-sock tail.",
+    "triceratops": "Green poncho, green felt spikes down the back, and a stuffed-sock tail.",
+    "stegosaurus": "Green poncho, green felt spikes down the back, and a stuffed-sock tail.",
+    "dino": "Green poncho, green felt spikes down the back, and a stuffed-sock tail."
   },
   "robot-ranger": {
-    "robot": "A blue or gray sweatsuit under a foil-wrapped cardboard torso box, dryer-vent hose arms taped at the shoulders, and sticker dials on the chest."
+    "robot": "Blue or gray sweats, a foil cardboard box body, hose arms, and sticker dials."
   }
 };
 function roleDiyLine(ideaId, role){
@@ -12625,7 +12629,15 @@ function buildPersonPlans(idea, list){
   /* 2026-09-26: the DIY steps are identical for every cast member, so
      repeating the full guide per person was a wall of text. Now each person
      gets just their role line, and the shared guide appears once below. */
-  list.forEach(function(p, i){
+  /* 2026-10-22 (Billy, mentor flag: plan view was a wall of text): when
+     every person has the same role and the same role line (2 penguins,
+     identical text), show ONE card, not N identical cards. */
+  var allSameRole = list.length > 1 && list.every(function(p){
+    return p.role === list[0].role &&
+      roleDiyLine(idea.id, p.role) === roleDiyLine(idea.id, list[0].role);
+  });
+  var cardList = allSameRole ? [list[0]] : list;
+  cardList.forEach(function(p, i){
     var card = document.createElement("div");
     card.className = "personplan personplan-compact";
     var who = document.createElement("h4");
@@ -12635,6 +12647,7 @@ function buildPersonPlans(idea, list){
        the check must be on p.rawName. Roles are unique per cast, so the
        role alone is the clear heading. */
     var label = p.rawName ? (p.name + ": " + p.role) : p.role;
+    if (allSameRole) label = p.role + " \u2014 everyone";
     who.textContent = label;
     card.appendChild(who);
     var roleLine = roleDiyLine(idea.id, p.role);
@@ -12656,17 +12669,16 @@ function buildPersonPlans(idea, list){
   buyH.textContent = "Option 1: Buy";
   guide.appendChild(buyH);
   var buyP = document.createElement("p"); buyP.className = "pp-buy";
-  /* 2026-09-26 (copy audit fix): head-comfort advice only when the
-     costume actually uses headwear. Detected from the guide materials. */
-  var hwWord = headwearWord(idea.id);
-  var buyText = "Search for \u201C" + buySearchFor(list[0].role, idea) + "\u201D. " +
-    "Check the size chart, not just your normal size.";
-  if (hwWord) buyText += " If the " + hwWord + " feels tight after five minutes, it will not survive Halloween night.";
-  buyP.textContent = buyText;
+  /* 2026-10-22 (Billy): one short line. The size-chart sentence and the
+     headwear sentence are gone — sizes were dropped sitewide Oct 16 and
+     the mentor-flagged wall of text does not need either. */
+  buyP.textContent = "Search for \u201C" + buySearchFor(list[0].role, idea) + "\u201D.";
   guide.appendChild(buyP);
   /* DIY option: quick-guide steps */
   var diyH = document.createElement("p"); diyH.className = "pp-opt";
-  diyH.textContent = "Option 2: DIY, " + mp.time;
+  /* 2026-10-22: displayTime strips "+ N min drying" like every other
+     surface (Oct 16 rule: drying counts in scoring, never shown). */
+  diyH.textContent = "Option 2: DIY, " + displayTime(mp.time);
   guide.appendChild(diyH);
   var ul = document.createElement("ul"); ul.className = "howto-quick-steps";
   var tip = null, n = 0;
@@ -12683,24 +12695,8 @@ function buildPersonPlans(idea, list){
     guide.appendChild(tp);
   }
   box.appendChild(guide);
-  /* Easiest version: derived from the real guide, not boilerplate.
-     2026-09-26 (copy audit fix). Easy guides (4 or fewer DIY steps)
-     recommend doing the DIY with the real step count and time. Only
-     longer guides recommend buying, naming real items from the plan. */
-  var easy = document.createElement("p"); easy.className = "pp-easy";
-  var diySteps = mp.steps.filter(function(s){ return !/^optional/i.test(s); });
-  if (diySteps.length > 0 && diySteps.length <= 4){
-    easy.textContent = "Easiest version: skip the store. This one is " + diySteps.length +
-      " step" + (diySteps.length === 1 ? "" : "s") + ", " + mp.time +
-      ". Start here: " + short(diySteps[0]);
-  } else {
-    var buyItems = (mp.buy && mp.buy.length) ? mp.buy.slice(0, 2) : ["the accessory kit"];
-    var buyBit = buyItems.map(function(b){
-      return b.charAt(0).toLowerCase() + b.slice(1);
-    }).join(" and ");
-    easy.textContent = "Easiest version: buy " + buyBit + " and build the rest from clothes you already own.";
-  }
-  box.appendChild(easy);
+  /* 2026-10-22 (Billy): the "Easiest version" box is DELETED. It only
+     repeated the step count, the time, and step 1 of the guide above. */
   return box;
 }
 /* 2026-09-26 (copy audit fix): headwear detection for the Buy copy.
