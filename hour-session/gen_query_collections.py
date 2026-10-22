@@ -23,8 +23,9 @@ displayed); lede counts render from the real bank size (was hard-coded
 blurbs now come from mcp-server/bank.json (app.js blurbs still carry
 pre-scrub IP wording on some rows, e.g. toy-box-crew, emerald-witch);
 the glow page's 4th pick is the live haunted-animatronics (not
-demon-boy-band) and its first FAQ answer is the live wording; three FAQ
-answers use the live "anything that has to dry" wording. Two live quirks
+demon-boy-band) and its first and third FAQ answers are the live
+wording; three FAQ answers use the live "anything that has to dry"
+wording and the womens time answer is the live "15 to 45 minutes" one. Two live quirks
 are preserved on purpose in OVERRIDES below (deadpan-diva materials,
 tooth-fairy title) because the job is regen parity, not a live edit.
 """
