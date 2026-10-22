@@ -75,7 +75,7 @@ footer{margin-top:40px;text-align:center}
       "name": "Where do these rankings come from?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The top 10 comes from Google's Frightgeist, which ranks costumes from Google Search data - the ranking shown is Frightgeist's latest published one, from October 2025. The 'Trending on Pick My Costume' grid is the 8 costumes our own visitors saved and picked most in recent weeks."
+        "text": "The top 10 comes from Google's Frightgeist, which ranks costumes from Google Search data - the ranking shown is Frightgeist's latest published one, from October 2026. The 2026 list ranks the top trending costumes, the biggest search spikes of the year. The 'Trending on Pick My Costume' grid is the 8 costumes our own visitors saved and picked most in recent weeks."
       }
     },
     {
@@ -118,12 +118,26 @@ footer{margin-top:40px;text-align:center}
 <p class="aiphoto-note">Costume photos are AI-generated concept photos.</p>
 
   <h2>🔍 What America is searching for</h2>
-  <p class="section-note">Google Frightgeist: 2025 top 10 (the 2026 list is usually published mid-October).</p>
+  <p class="section-note">Google Frightgeist: 2026 top 10 trending costumes (published October 14, 2026). The 2026 list ranks the biggest search spikes, not the most searched overall.</p>
   <div class="yeartoggle" role="tablist" aria-label="Frightgeist year">
-    <button class="chip on" role="tab" aria-selected="true" data-fy="2025" type="button">2025</button>
+    <button class="chip on" role="tab" aria-selected="true" data-fy="2026" type="button">2026</button>
+    <button class="chip" role="tab" aria-selected="false" data-fy="2025" type="button">2025</button>
     <button class="chip" role="tab" aria-selected="false" data-fy="2024" type="button">2024</button>
 </div>
-  <ol class="trend" id="trend-2025">
+  <p class="section-note" id="frightyear-note">Latest published: October 2026.</p>
+  <ol class="trend" id="trend-2026">
+    <li><span class="rank">1</span><span><span class="trend-name">Buddy the Unicorn</span><br><span class="trend-src">Buddy</span></span></li>
+    <li><span class="rank">2</span><span><span class="trend-name">NeeDoh</span><br><span class="trend-src">Viral squishy toy</span></span></li>
+    <li><span class="rank">3</span><span><span class="trend-name">Nikki</span><br><span class="trend-src">Obsession</span></span></li>
+    <li><span class="rank">4</span><span><span class="trend-name">Agamemnon</span><br><span class="trend-src">The Odyssey</span></span></li>
+    <li><span class="rank">5</span><span><span class="trend-name">Lily Love Braids</span><br><span class="trend-src">Poppy Playtime</span></span></li>
+    <li><span class="rank">6</span><span><span class="trend-name">Oliver Tree</span><br><span class="trend-src">Musician</span></span></li>
+    <li><span class="rank">7</span><span><span class="trend-name">Verity</span><br><span class="trend-src">Minecraft</span></span></li>
+    <li><span class="rank">8</span><span><span class="trend-name">Carl</span><br><span class="trend-src">Dungeon Crawler Carl</span></span></li>
+    <li><span class="rank">9</span><span><span class="trend-name">Disco Scooby-Doo</span><br><span class="trend-src">Scooby-Doo</span></span></li>
+    <li><span class="rank">10</span><span><span class="trend-name">Hazel Hook</span><br><span class="trend-src">Descendants</span></span></li>
+  </ol>
+  <ol class="trend" id="trend-2025" hidden>
     <li><span class="rank">1</span><span><span class="trend-name">Rumi</span><br><span class="trend-src">KPop Demon Hunters</span></span></li>
     <li><span class="rank">2</span><span><span class="trend-name">Zoey</span><br><span class="trend-src">KPop Demon Hunters</span></span></li>
     <li><span class="rank">3</span><span><span class="trend-name">Mira</span><br><span class="trend-src">KPop Demon Hunters</span></span></li>
@@ -167,7 +181,7 @@ footer{margin-top:40px;text-align:center}
 
   <div class="method">
     <h3>Where this comes from</h3>
-    <p><strong>National trends:</strong> Google's <a href="https://frightgeist.withgoogle.com/">Frightgeist</a>, which ranks costumes from Google Search data. The top 10 above is Frightgeist's latest published ranking (October 2025). We update this page when Google publishes new rankings.</p>
+    <p><strong>National trends:</strong> Google's <a href="https://frightgeist.withgoogle.com/">Frightgeist</a>, which ranks costumes from Google Search data. The top 10 above is Frightgeist's latest published ranking (October 2026). We update this page when Google publishes new rankings.</p>
     <p><strong>On-site trends:</strong> the 8 costumes our visitors saved and picked most in recent weeks. No fake counts, no made-up names.</p>
     <p style="margin:0">See a trending costume you like? Take the 2-minute quiz and we will match you with the one that fits your group, budget, and how much effort you want to spend.</p>
 </div>
@@ -184,7 +198,7 @@ footer{margin-top:40px;text-align:center}
 <h2>Common questions</h2>
 <details class="faq">
 <summary>Where do these rankings come from?</summary>
-<p>The top 10 comes from Google&#x27;s Frightgeist, which ranks costumes from Google Search data - the ranking shown is Frightgeist&#x27;s latest published one, from October 2025. The &#x27;Trending on Pick My Costume&#x27; grid is the 8 costumes our own visitors saved and picked most in recent weeks.</p>
+<p>The top 10 comes from Google&#x27;s Frightgeist, which ranks costumes from Google Search data - the ranking shown is Frightgeist&#x27;s latest published one, from October 2026. The 2026 list ranks the top trending costumes, the biggest search spikes of the year. The &#x27;Trending on Pick My Costume&#x27; grid is the 8 costumes our own visitors saved and picked most in recent weeks.</p>
 </details>
 <details class="faq">
 <summary>How often is this page updated?</summary>
@@ -211,9 +225,10 @@ footer{margin-top:40px;text-align:center}
 <script>
 (function(){
   var btns = document.querySelectorAll("[data-fy]");
-  var lists = {"2025": document.getElementById("trend-2025"), "2024": document.getElementById("trend-2024")};
+  var lists = {"2026": document.getElementById("trend-2026"), "2025": document.getElementById("trend-2025"), "2024": document.getElementById("trend-2024")};
   var note = document.getElementById("frightyear-note");
-  var notes = {"2025": "Latest published: October 2025.",
+  var notes = {"2026": "Latest published: October 2026.",
+               "2025": "Published October 2025.",
                "2024": "Published October 2024. Compare: 2024 was Beetlejuice and Deadpool; 2025 went all-in on KPop Demon Hunters."};
   for (var i = 0; i < btns.length; i++){
     (function(btn){
