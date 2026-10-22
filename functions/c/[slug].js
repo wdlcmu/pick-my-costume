@@ -164,13 +164,13 @@ function _cMatGroup(text){
   var P = parens.join(" ").toLowerCase();
   var T = s.replace(/\([^)]*\)/g, "");
   if (P.indexOf("household tools") >= 0) return "tool";
-  var vm = /(own|make|buy)/.exec(P);
+  var vm = /\b(own|make|buy)\b/.exec(P);
   var primary = vm ? vm[1] : null;
-  var isTool = /(scissors|hot glue gun|glue gun|utility knife|craft knife|staple gun|paint ?brush|paintbrush|sewing needle|hole punch|box cutter)/i.test(T);
+  var isTool = /\b(scissors|hot glue gun|glue gun|utility knife|craft knife|staple gun|paint ?brush|paintbrush|sewing needle|hole punch|box cutter)\b/i.test(T);
   if (primary === "own") return isTool ? "tool" : "home";
   if (primary === "make") return "home";
   if (primary === "buy") return isTool ? "tool" : "buy";
-  if (isTool || /(tape|safety pins?|glue|glue stick|markers?|pencils?|paint ?brush|paintbrush)/i.test(T)) return "tool";
+  if (isTool || /\b(tape|safety pins?|glue|glue stick|markers?|pencils?|paint ?brush|paintbrush)\b/i.test(T)) return "tool";
   return "home";
 }
 /* Merged tile list for a slug: [{rep, idxs:[material indices], e, label}].
