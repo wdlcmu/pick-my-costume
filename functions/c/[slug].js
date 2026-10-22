@@ -149,6 +149,30 @@ function _cTileBits(mat, texts, i){
   }
   return {e: "🛒", label: _cShortName(texts[i]) || "Item", rep: null};
 }
+/* Michaels-style materials groups (2026-10-22, Billy): every material
+   lands in "home" (Already at home), "tool" (Tools), or "buy" (Buy) from
+   the bank string's own source tag -- the first of own/make/buy in the
+   parentheticals is the primary signal; a genuine tool noun overrides a
+   buy tag; untagged household staples land in Tools. Same rules as
+   app.js planMatGroup so the /c/ guides and the app plan never disagree. */
+var _CGROUP_ORDER = {home: 0, tool: 1, buy: 2};
+var _CGROUP_LABEL = {home: "Already at home", tool: "Tools", buy: "Buy"};
+function _cMatGroup(text){
+  var s = String(text);
+  var parens = [], pm, re = /\(([^)]*)\)/g;
+  while ((pm = re.exec(s))) parens.push(pm[1]);
+  var P = parens.join(" ").toLowerCase();
+  var T = s.replace(/\([^)]*\)/g, "");
+  if (P.indexOf("household tools") >= 0) return "tool";
+  var vm = /(own|make|buy)/.exec(P);
+  var primary = vm ? vm[1] : null;
+  var isTool = /(scissors|hot glue gun|glue gun|utility knife|craft knife|staple gun|paint ?brush|paintbrush|sewing needle|hole punch|box cutter)/i.test(T);
+  if (primary === "own") return isTool ? "tool" : "home";
+  if (primary === "make") return "home";
+  if (primary === "buy") return isTool ? "tool" : "buy";
+  if (isTool || /(tape|safety pins?|glue|glue stick|markers?|pencils?|paint ?brush|paintbrush)/i.test(T)) return "tool";
+  return "home";
+}
 /* Merged tile list for a slug: [{rep, idxs:[material indices], e, label}].
    Returns null when pantry data is missing or misaligned (fail safe). */
 function _cTiles(slug){
@@ -165,6 +189,12 @@ function _cTiles(slug){
     var t = {rep: bits.rep, idxs: [i], e: bits.e, label: bits.label};
     seen[key] = t; tiles.push(t);
   }
+  /* Group-annotate and stable-sort the tiles (Already at home, Tools,
+     Buy) so _cCardsHtml can head each run and window.PMD carries the
+     same order the static HTML renders -- the client tick script pairs
+     .ptile buttons with TILES by index, so the two must never drift. */
+  tiles.forEach(function(t){ t.g = _cMatGroup(texts[t.idxs[0]]); });
+  tiles.sort(function(a, b){ return _CGROUP_ORDER[a.g] - _CGROUP_ORDER[b.g]; });
   return {mats: mats, texts: texts, tiles: tiles};
 }
 /* Assumed-basics coverage for the static render (2026-10-13): mirrors the
@@ -207,18 +237,27 @@ function _cCardsHtml(slug, ct){
     for (var j = 0; j < t.idxs.length; j++){ if (!matHave[t.idxs[j]]) return false; }
     return true;
   });
-  var cards = ct.tiles.map(function(t, ti){
+  /* Tiles arrive group-sorted from _cTiles; head each run with its
+     Michaels group label (Already at home / Tools / Buy). The headings
+     are plain grid children -- the client tick script selects .ptile
+     only, in TILES order, and is unaffected. */
+  var cards = "", lastG = null;
+  ct.tiles.forEach(function(t, ti){
+    if (t.g !== lastG){
+      lastG = t.g;
+      cards += "<p class=\"ptgroup\">" + _CGROUP_LABEL[t.g] + "</p>";
+    }
     var assumed = t.rep && staples.indexOf(t.rep) >= 0;
     var okTile = tileHave[ti];
     var sub = t.idxs.map(function(mi){ return esc(ct.texts[mi]); }).join("<br>");
-    return "<button type=\"button\" class=\"ptile " + (okTile ? "have" : "miss") + "\" data-ti=\"" + ti + "\" data-label=\"" + esc(t.label) + "\" aria-label=\"" + esc(t.label) + ": " + (okTile ? "you have this" : "missing") + ". Tap to update.\">" +
+    cards += "<button type=\"button\" class=\"ptile " + (okTile ? "have" : "miss") + "\" data-ti=\"" + ti + "\" data-label=\"" + esc(t.label) + "\" aria-label=\"" + esc(t.label) + ": " + (okTile ? "you have this" : "missing") + ". Tap to update.\">" +
       "<span class=\"ptbadge\" aria-hidden=\"true\">" + (okTile ? "\u2713" : "\u25CB") + "</span>" +
       "<span class=\"ptemo\" aria-hidden=\"true\">" + t.e + "</span>" +
       "<span class=\"ptlabel\">" + esc(t.label) + "</span>" +
       "<span class=\"ptsub\">" + sub + "</span>" +
       (assumed ? "<span class=\"ptag\">assumed</span>" : "") +
       "</button>";
-  }).join("");
+  });
   var chips = ct.tiles.filter(function(t, ti){ return !tileHave[ti]; }).map(function(t){
     return "<span class=\"pchip\"><span class=\"pmemo\" aria-hidden=\"true\">" + t.e + "</span>" + esc(t.label) + "</span>";
   }).join("");
@@ -605,6 +644,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\"pill\"><span class=\"pl\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\"pill\"><span class=\"pl\">Effort</span>" + esc(_hw.effort) + "</span>");
+    if (_hw.s && _hw.s.length) _pills.push("<span class=\"pill\"><span class=\"pl\">Steps</span>" + _hw.s.length + "</span>");
     if (_pills.length) _triple = "<p class=\"triple\">" + _pills.join("") + "</p><p class=\"timenote\">\u23F1\uFE0F We timed it, but results may vary.</p>";
     /* 2026-10-10 memorability mandate: stopwatch copy is the live standard
        on /c/ guides ("Timed: about X" pills + this timenote). Do NOT revert
@@ -1075,6 +1115,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".closet-line{font-weight:700;font-size:15px;color:#fdf3e3;}" +
     ".ptiles-sub{margin:0 0 10px;color:#cdbcf0;font-size:14px;}" +
     ".ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px;}" +
+    ".ptgroup{grid-column:1/-1;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#ff8c1a;margin:8px 0 0;}" +
     ".ptile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:10px 6px;text-align:center;font:inherit;cursor:pointer;border:2px solid #4b3486;border-radius:14px;background:rgba(0,0,0,.18);color:#fdf3e3;}" +
     ".ptile .ptemo{font-size:36px;line-height:1.1;}" +
     ".ptile .ptlabel{font-size:11px;line-height:1.25;overflow-wrap:anywhere;}" +
