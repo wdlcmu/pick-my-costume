@@ -1,0 +1,89 @@
+{
+  "cards": [
+    {
+      "big": "5.3%",
+      "label": "of quiz runs pick The Tin Hero",
+      "sub": "the most-picked costume of 2026",
+      "board": "Halloween 2026"
+    },
+    {
+      "big": "151",
+      "label": "of 169 ideas are DIY",
+      "sub": "build it, do not buy it",
+      "board": "DIY Halloween Costumes"
+    },
+    {
+      "big": "49",
+      "label": "kid costumes with zero scary ones",
+      "sub": "gentle picks for little ones",
+      "board": "Kids Halloween Costumes"
+    },
+    {
+      "big": "4 to 1",
+      "label": "funny beats scary",
+      "sub": "106 funny ideas, 30 scary ones",
+      "board": "Halloween 2026"
+    },
+    {
+      "big": "57",
+      "label": "ideas made for kids",
+      "sub": "the biggest shelf in the closet",
+      "board": "Kids Halloween Costumes"
+    },
+    {
+      "big": "36",
+      "label": "family costumes",
+      "sub": "one theme for the whole crew",
+      "board": "Family Halloween Costumes"
+    },
+    {
+      "big": "5.0%",
+      "label": "pick Aussie Dog Family",
+      "sub": "the number 2 most-picked of 2026",
+      "board": "Family Halloween Costumes"
+    },
+    {
+      "big": "119",
+      "label": "low-budget ideas",
+      "sub": "the cheap shelf is the deep shelf",
+      "board": "DIY Halloween Costumes"
+    }
+  ],
+  "stats": {
+    "total": 169,
+    "diy": 151,
+    "low": 119,
+    "kid": 57,
+    "gentle": 49,
+    "group": 45,
+    "family": 36,
+    "couple": 38,
+    "funny": 106,
+    "cute": 103,
+    "scary": 30,
+    "food": 31,
+    "animals": 20
+  },
+  "demand": [
+    {
+      "id": "tin-hero",
+      "pct": 5.3
+    },
+    {
+      "id": "blue-dog-family",
+      "pct": 5.0
+    },
+    {
+      "id": "snow-sisters",
+      "pct": 3.9
+    },
+    {
+      "id": "block-game-crew",
+      "pct": 3.6
+    },
+    {
+      "id": "breakfast-buffet",
+      "pct": 2.9
+    }
+  ]
+}
