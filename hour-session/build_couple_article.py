@@ -24,21 +24,53 @@ import json, re, html, sys, os
 from related_cards import inject_related_cards  # P0 growth: related cards + quiz CTA + pin link
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INDEX = os.path.join(ROOT, "index.html")
+APP_JS = os.path.join(ROOT, "app.js")  # bank moved from index.html to app.js 2026-10-01
 BANK = os.path.join(ROOT, "mcp-server", "bank.json")
 OUT = os.path.join(ROOT, "hour-session", "couple-halloween-costumes-2026.html")
 SITE = "https://pickmycostume.com"
 DATE = "2026-09-27"
 
 # ---------- load real data ----------
-src = open(INDEX, encoding="utf-8").read()
-m = re.search(r'var INSTRUCTIONS = (\{.*?\n\});', src, re.S)
-if not m:
-    sys.exit("INSTRUCTIONS block not found in index.html")
-INST = json.loads(m.group(1))
+# Family B repair 2026-10-22: the bank moved from index.html to app.js on
+# 2026-10-01, so the old index.html regex died with "INSTRUCTIONS block
+# not found in index.html". Parse app.js with the brace-matching pattern
+# already proven in gen_share_function.py / gen_sitemap.py.
+def _parse_instructions(src):
+    marker = "var INSTRUCTIONS ="
+    i = src.index("{", src.index(marker) + len(marker))
+    depth, in_str, esc = 0, False, False
+    for j in range(i, len(src)):
+        ch = src[j]
+        if in_str:
+            if esc: esc = False
+            elif ch == "\\": esc = True
+            elif ch == '"': in_str = False
+        else:
+            if ch == '"': in_str = True
+            elif ch == "{": depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    seg = re.sub(r",\s*([\}\]])", r"\1", src[i:j + 1])
+                    return json.loads(seg)
+    raise ValueError("INSTRUCTIONS object not balanced in app.js")
+
+src = open(APP_JS, encoding="utf-8").read()
+assert "var IDEAS = [" in src and "var INSTRUCTIONS = {" in src, \
+    "bank anchors missing in app.js: bank moved again?"
+INST = _parse_instructions(src)
 bank_raw = json.load(open(BANK, encoding="utf-8"))
 BANK_IDEAS = {i["id"]: i for i in (bank_raw if isinstance(bank_raw, list) else bank_raw.get("ideas"))}
-assert len(INST) == 138 and len(BANK_IDEAS) == 138, (len(INST), len(BANK_IDEAS))
+BANK_COUNT = len(BANK_IDEAS)
+assert BANK_COUNT >= 100, "bank parse looks vacuous: %d ideas" % BANK_COUNT
+assert len(INST) == BANK_COUNT and set(INST) == set(BANK_IDEAS), \
+    (len(INST), BANK_COUNT)
+
+def display_time(t):
+    # Display rule (Billy, 2026-10-03): displayed time is hands-on only.
+    # Drying still counts in Tonight scoring, never in displayed copy.
+    # Same strip as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
 
 def esc(s):
     return html.escape(s, quote=False)
@@ -64,15 +96,11 @@ def nostoretrip(pid, s):
 
 def triple(pid):
     t = INST[pid]
-    return "%s - %s - %s" % (t["time"], t["cost"], t["effort"])
+    return "%s - %s" % (display_time(t["time"]), t["effort"])
 
 def minutes(pid):
     mm = re.match(r"\s*(\d+)\s*min", INST[pid]["time"])
     return int(mm.group(1))
-
-def cost_max(pid):
-    mm = re.match(r"\$(\d+)-(\d+)", INST[pid]["cost"])
-    return int(mm.group(2))
 
 def materials_text(pid):
     return " ".join(INST[pid]["m"]).lower()
@@ -207,7 +235,6 @@ def build_article(cfg):
     for x in hm + hs:
         nodash(x)
     hmm = re.match(r"\s*(\d+)\s*min", INST[hp]["time"])
-    cm = re.match(r"\$(\d+)-(\d+)", INST[hp]["cost"])
     howto_ld = {
         "@context": "https://schema.org",
         "@type": "HowTo",
@@ -218,8 +245,6 @@ def build_article(cfg):
         "publisher": {"@id": SITE + "/#organization"},
         "datePublished": DATE,
         "totalTime": "PT%sM" % hmm.group(1),
-        "estimatedCost": {"@type": "MonetaryAmount", "currency": "USD",
-                          "minValue": int(cm.group(1)), "maxValue": int(cm.group(2))},
         "supply": [{"@type": "HowToSupply", "name": x} for x in hm],
         "step": [{"@type": "HowToStep", "text": x} for x in hs],
     }
@@ -359,14 +384,14 @@ def build_article(cfg):
 <a class="go" href="%(site)s/">Take the 2-minute quiz</a>
 <p><button type="button" class="go ghost" id="shareBtn">Share this guide</button></p>
 <p class="fine" id="shareNote" role="status"></p>
-<p class="fine">Or start from what you already own: <a href="%(site)s/pantry">check what your closet can build</a>. Browse all <a href="%(site)s/costumes">138 costume guides</a>.</p>
+<p class="fine">Or start from what you already own: <a href="%(site)s/pantry">check what your closet can build</a>. Browse all <a href="%(site)s/costumes">%(bank_count)s costume guides</a>.</p>
 </div>
 
 <h2>FAQ</h2>
 %(faq_visible)s
 
 <div class="footer">
-<p><a href="%(site)s/">Pick My Costume</a> &middot; <a href="%(site)s/costumes">Browse all 138 costume guides</a> &middot; <a href="%(site)s/pantry">What your closet can build</a></p>
+<p><a href="%(site)s/">Pick My Costume</a> &middot; <a href="%(site)s/costumes">Browse all %(bank_count)s costume guides</a> &middot; <a href="%(site)s/pantry">What your closet can build</a></p>
 <p class="fine">Built with Muse. Made by Billy Litner.</p>
 </div>
 </div>
@@ -376,7 +401,7 @@ def build_article(cfg):
 </html>
 """ % {
         "title": esc(cfg["title"]), "meta_desc": esc(cfg["meta_desc"]), "og_desc": esc(cfg["og_desc"]),
-        "og_img": cfg["og_img"], "site": SITE, "slug": slug,
+        "og_img": cfg["og_img"], "site": SITE, "slug": slug, "bank_count": BANK_COUNT,
         "article_ld": json.dumps(article_ld, indent=2),
         "faq_ld": json.dumps(faq_ld, indent=2),
         "howto_ld": json.dumps(howto_ld, indent=2),
@@ -419,18 +444,18 @@ def build_article(cfg):
 # Parent queries: "couple halloween costume ideas", "couple halloween costumes 2026",
 # "matching couples costumes", "funny couple halloween costumes"
 # ============================================================================
-COUPLE_COUNT = len(COUPLE)  # 27, asserted into copy below
+COUPLE_COUNT = len(COUPLE)  # computed from the bank, asserted into copy below
 
 POOL = {
-    "office-couple": "Ten minutes, $2 to $5. White button-downs, joke name tags, and a toy teapot.",
-    "cat-mouse": "Fifteen minutes, $3 to $6. Felt ears and tails, drawn whiskers, chase each other all night.",
-    "plug-socket": "Forty-five minutes, $3 to $6. A craftier build: cardboard prongs on one head, a foam socket on the other.",
-    "salt-pepper": "Fifteen minutes plus drying, $2 to $5. All white, all black, cardboard shaker tops and big letters.",
-    "beekeeper-bee": "Twenty-five minutes, $3 to $10. White suit and mesh veil for the beekeeper, yellow and black stripes for the bee.",
-    "sun-moon": "Forty minutes, $5 to $8. Yellow rays for the Sun, a silver-starred crescent for the Moon.",
-    "burger-joint-couple": "Ten minutes, $8 to $15. Two aprons, a fake mustache, and a curly red wig. Fast-food owners.",
-    "web-hero-duo": "Twenty-five minutes, $3 to $8. A red-and-blue hero with a web pattern and a partner in a black jacket and mask.",
-    "dragon-rider-duo": "Sixty minutes, $5 to $10. A gray felt dragon tunic with cardboard wings and foam eyes, plus a rider in a faux-fur vest.",
+    "office-couple": "Ten minutes. White button-downs, joke name tags, and a toy teapot.",
+    "cat-mouse": "Fifteen minutes. Felt ears and tails, drawn whiskers, chase each other all night.",
+    "plug-socket": "Forty-five minutes. A craftier build: cardboard prongs on one head, a foam socket on the other.",
+    "salt-pepper": "Fifteen minutes. All white, all black, cardboard shaker tops and big letters.",
+    "beekeeper-bee": "Twenty-five minutes. White suit and mesh veil for the beekeeper, yellow and black stripes for the bee.",
+    "sun-moon": "Forty minutes. Yellow rays for the Sun, a silver-starred crescent for the Moon.",
+    "burger-joint-couple": "Ten minutes. Two aprons, a fake mustache, and a curly red wig. Fast-food owners.",
+    "web-hero-duo": "Twenty-five minutes. A red-and-blue hero with a web pattern and a partner in a black jacket and mask.",
+    "dragon-rider-duo": "Sixty minutes. A gray felt dragon tunic with cardboard wings and foam eyes, plus a rider in a faux-fur vest.",
 }
 TABLE = {
     "funny|quick": "office-couple",
@@ -457,10 +482,10 @@ print("couples article: 9/9 picker combos verified (couple audience, time budget
 C = {
     "slug": "couple-halloween-costumes-2026",
     "title": "Couple Halloween Costumes 2026: Ideas for Two",
-    "meta_desc": "Couple Halloween costume ideas for 2026: 27 two-person costumes with real build times and costs, from funny food pairs to cute classics to 2026 pop culture.",
-    "og_desc": "27 two-person Halloween costumes with real build times: 10 to 60 minutes, $2 to $20.",
+    "meta_desc": "Couple Halloween costume ideas for 2026: %d two-person costumes with real build times, from funny food pairs to cute classics to 2026 pop culture." % COUPLE_COUNT,
+    "og_desc": "%d two-person Halloween costumes with real build times: 10 to 60 minutes." % COUPLE_COUNT,
     "og_img": "office-couple.jpg",  # matches howto_pid (red-team rule)
-    "lede": "Short answer: the best couples costume is one where BOTH people are readable. Every pick below is a two-person idea from the Pick My Costume bank of 138 costumes, and %d of them are tagged for couples. Real build times and costs are shown up front." % COUPLE_COUNT,
+    "lede": "Short answer: the best couples costume is one where BOTH people are readable. Every pick below is a two-person idea from the Pick My Costume bank of %d costumes, and %d of them are tagged for couples. Real build times are shown up front." % (BANK_COUNT, COUPLE_COUNT),
     "sub": "I am a dad. My wife and I have been the couple in the last-minute food costumes, and the trick is simple: pick the idea where both costumes take the same amount of effort. Nobody should be taping cotton balls while the other person puts on a t-shirt.",
     "picker_title": "The 60-second picker",
     "picker_note": "Pick a vibe and a time budget. Every result takes no more than the time you picked.",
@@ -477,65 +502,65 @@ C = {
          [
              ("You have ten minutes", "office-couple",
               "White button-downs, black pants, joke job titles written on name tags. One person carries a toy teapot all evening, the other carries a clipboard or a stack of papers.",
-              "Ten minutes, $2 to $5, almost everything from the closet. The name tags are the only thing you might need to buy, and index cards with safety pins from home do the job."),
+              "Ten minutes, almost everything from the closet. The name tags are the only thing you might need to buy, and index cards with safety pins from home do the job."),
              ("You have fifteen minutes", "salt-pepper",
               "Salt wears all white, Pepper wears all black. Cardboard shaker tops painted gray ride on hats, with a big S and a big P lettered on. The letters do all the work: four inches minimum.",
-              "Fifteen minutes plus drying, $2 to $5. The classic duo, and it photographs well because the contrast is the whole design."),
+              "Fifteen minutes. The classic duo, and it photographs well because the contrast is the whole design."),
              ("You have a whole craft session", "moth-porch-light",
               "One person is the moth: gray clothes, big cardboard wings, pipe-cleaner antennae on a headband. The other is the porch light: yellow shirt and pants with a cone lampshade on top.",
-              "Forty minutes, $5 to $10. The craftier end of the scale, but the joke lands every time the moth hovers around the light."),
+              "Forty minutes. The craftier end of the scale, but the joke lands every time the moth hovers around the light."),
          ]),
         ("2", "What vibe is the party getting?",
          "Match the costume to the room. Funny wins at bars, cute wins at house parties, spooky wins when the host loves horror.",
          [
              ("Funny", "ketchup-mustard",
               "Red shirt, yellow shirt, big paper blobs pinned on the front. Decide who is ketchup and who is mustard before you start cutting. It avoids the only argument this costume can cause.",
-              "Fifteen minutes, $5 to $12. Funny, comfortable, and nobody has to paint their face."),
+              "Fifteen minutes. Funny, comfortable, and nobody has to paint their face."),
              ("Cute", "rain-cloud-rainbow",
               "One person glues cotton balls over a gray shirt and hangs blue paper raindrops from string at the hem. The other wears the rainbow shirt. Blue face paint for one rain streak is optional, it works fine without it.",
-              "Thirty minutes plus drying, $4 to $10. Cute, cozy, and the cloud person gets to sit still while the glue dries."),
+              "Thirty minutes. Cute, cozy, and the cloud person gets to sit still while the glue dries."),
              ("A little spooky", "doctor-bride",
               "Green face paint and neck bolts over a dark suit for the Doctor; white dress and white hair spray for the Bride. Keep the paint away from the eyes and wash it off the same night.",
-              "Twenty-five minutes, $5 to $12. The one couples idea here with real spook in it, and it is a movie night favorite."),
+              "Twenty-five minutes. The one couples idea here with real spook in it, and it is a movie night favorite."),
          ]),
         ("3", "Who are you going with?",
          "Partner, best friend, siblings: the duo changes with the relationship.",
          [
              ("Your partner", "beekeeper-bee",
               "The beekeeper: white long-sleeve shirt and pants, wide-brim hat, mesh veil. The bee: yellow shirt and pants with black electrical tape stripes and pipe-cleaner antennae.",
-              "Twenty-five minutes, $3 to $10. Sweet without being cheesy, and the veil photographs like a real uniform."),
+              "Twenty-five minutes. Sweet without being cheesy, and the veil photographs like a real uniform."),
              ("Your best friend", "player-one-two",
               "Two matching t-shirts with big 1 and 2 iron-on letters, front and back, plus toy game controllers. Pin the letters in place and check the mirror before the iron goes down.",
-              "Twenty minutes, $3 to $8. The best-friend duo: gamers get it instantly, everyone else still reads the numbers."),
+              "Twenty minutes. The best-friend duo: gamers get it instantly, everyone else still reads the numbers."),
              ("Your sibling", "plumber-duo",
               "Blue overalls over a red shirt and a green shirt, caps with big M and L stickers, painted mustaches. The red brother gets the bushy one, the green brother gets the thinner one.",
-              "Fifteen minutes, $5 to $12. Built for pairs who are actually family, and it survives rough play."),
+              "Fifteen minutes. Built for pairs who are actually family, and it survives rough play."),
          ]),
         ("4", "2026 pop culture duos",
          "This year's couples costumes come from what everyone watched this year.",
          [
              ("The one that takes a whole evening", "dragon-rider-duo",
               "One person is the dragon: gray felt tunic, cardboard wings and tail, craft-foam eyes on a headband. The other is the rider: brown t-shirt, dark pants, faux-fur vest or brown scarf. The rider's costume is mostly closet.",
-              "Sixty minutes, $5 to $10. The dragon half is the craft project; the rider half takes ten minutes, which keeps it fair."),
+              "Sixty minutes. The dragon half is the craft project; the rider half takes ten minutes, which keeps it fair."),
              ("Hero and partner", "web-hero-duo",
               "One person in a red-and-blue sweatsuit with a painted white web pattern, the partner in a black jacket and black pants with a mask. Both outfits pull straight from closets.",
-              "Twenty-five minutes, $3 to $8. A hero and a partner in crime, and the web paint is the only thing you touch up."),
+              "Twenty-five minutes. A hero and a partner in crime, and the web paint is the only thing you touch up."),
              ("The bathrobe epic", "galaxy-knights",
               "Bathrobes over dark pants, belts at the waist, hoods up, toy energy blades. Carry the blades unlit until the photo, and keep them pointed up or down, never at faces.",
-              "Ten minutes, $8 to $20. The toy blade is most of the budget, and ten minutes is the whole build."),
+              "Ten minutes. The toy blade is most of the budget, and ten minutes is the whole build."),
          ]),
     ],
     "faqs": [
         ("What are good couples Halloween costumes for 2026?",
-         "Salt and Pepper: 15 minutes, $2 to $5. All white and all black with cardboard shaker tops and big S and P letters. The 2026 pop culture picks come from what everyone watched this year: the Dragon Rider Duo is 60 minutes and $5 to $10, and the Galaxy Knights are 10 minutes and $8 to $20."),
+         "Salt and Pepper: 15 minutes. All white and all black with cardboard shaker tops and big S and P letters. The 2026 pop culture picks come from what everyone watched this year: the Dragon Rider Duo is 60 minutes, and the Galaxy Knights are 10 minutes."),
         ("What is an easy last-minute couples costume?",
-         "The Office Couple: 10 minutes, $2 to $5. White button-downs, joke name tags, a toy teapot and a clipboard. Ketchup and Mustard is another fast one: 15 minutes, $5 to $12."),
+         "The Office Couple: 10 minutes. White button-downs, joke name tags, a toy teapot and a clipboard. Ketchup and Mustard is another fast one: 15 minutes."),
         ("How do we make a couples costume that reads in photos?",
          "Pick high contrast. Salt and Pepper works because black versus white reads from across the room. Big letters help too: the M and L on the Plumber Duo caps, the 1 and 2 on the Player One and Two shirts."),
         ("Can we DIY both costumes from the closet?",
          "The Office Couple is almost entirely closet: white button-downs, black pants, index cards for name tags, a teapot from the kitchen. Salt and Pepper needs gray paint or a marker, which is the one thing to check for. The pantry page shows what your closet can build."),
         ("What is a cute couples costume that is not cheesy?",
-         "Rain Cloud and Rainbow: 30 minutes plus drying, $4 to $10. One of you is the cloud, one is the rainbow, and it is cozy enough to wear all night."),
+         "Rain Cloud and Rainbow: 30 minutes. One of you is the cloud, one is the rainbow, and it is cozy enough to wear all night."),
     ],
     "howto_pid": "office-couple",
     "howto_title": "Office Couple Halloween costume",
