@@ -311,6 +311,48 @@ for _s in data:
 assert set(_THEMECOLL_MAP) <= set(data), (
     "theme collection map has unknown slugs: %s" % (set(_THEMECOLL_MAP) - set(data)))
 
+# Audience hub links (2026-10-23 hub discoverability fix): every guide
+# links to its matching /c/ audience hub inside the "More costumes like
+# this" block, so the hubs stop being a closed island. Mapping is
+# mechanically provable, and asserted here at generation time:
+# - couples: bank audience "couple" -- asserted EQUAL to the guide list
+#   published on functions/c/couples.js itself.
+# - family: bank audience "family" -- asserted EQUAL to the guide list
+#   published on functions/c/family.js itself.
+# - last-minute: ONLY the guides listed on functions/c/last-minute.js
+#   itself (that page's own list is the proof; no time inference).
+_HUB_SLUGS = {"couples", "family", "last-minute"}
+
+
+def _hub_listed(hub):
+    _p = os.path.join(ROOT, "functions", "c", hub + ".js")
+    _src = open(_p, encoding="utf-8").read()
+    return set(re.findall(r'href="/c/([a-z0-9-]+)"', _src)) - _HUB_SLUGS
+
+
+assert _hub_listed("couples") == {s for s in data if "couple" in _audmap[s]}, \
+    "couples hub list != bank couple audience"
+assert _hub_listed("family") == {s for s in data if "family" in _audmap[s]}, \
+    "family hub list != bank family audience"
+_LM_LISTED = _hub_listed("last-minute")
+assert _LM_LISTED <= set(data), "last-minute hub lists unknown slugs"
+HUBLINKS = {}
+for _s in data:
+    _links = []
+    if "couple" in _audmap[_s]:
+        _links.append({"u": "/c/couples", "l": "couples"})
+    if "family" in _audmap[_s]:
+        _links.append({"u": "/c/family", "l": "family"})
+    if _s in _LM_LISTED:
+        _links.append({"u": "/c/last-minute", "l": "last-minute"})
+    if _links:
+        HUBLINKS[_s] = _links
+assert set(HUBLINKS) <= set(data), "hub link map has unknown slugs"
+assert sum(1 for v in HUBLINKS.values() for x in v if x["u"] == "/c/couples") == 38
+assert sum(1 for v in HUBLINKS.values() for x in v if x["u"] == "/c/family") == 36
+assert sum(1 for v in HUBLINKS.values() for x in v
+           if x["u"] == "/c/last-minute") == len(_LM_LISTED) == 103
+
 # Guide share-button captions (2026-10-06, Billy): the /c/ pages are
 # standalone (sendShare lives in the app bundle), so the generator ports
 # shareCaptionFor's audience-grounded default line plus the bank's custom
@@ -909,6 +951,13 @@ var MATRELATED = %s;
 // strong (weight >= 2). Rendered as a collection link inside the
 // "More costumes like this" block.
 var THEMECOLL = %s;
+
+// Audience hub links per idea (2026-10-23): slug -> [{u, l}] for the
+// /c/ audience hubs this guide belongs to (couples / family by bank
+// audience, last-minute by the hub page's own published list; the
+// mapping is asserted in gen_share_function.py). Rendered as hub links
+// inside the "More costumes like this" block.
+var HUBLINKS = %s;
 
 // Guide share-button caption per idea (2026-10-06, Billy): port of
 // shareCaptionFor for the standalone /c/ pages (sendShare lives in the
@@ -1527,12 +1576,19 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      list. Static per slug, same for every visitor: not cloaking. */
   var _themeLink = THEMECOLL[slug] ?
     "<p class=\\"themelink\\"><a href=\\"" + THEMECOLL[slug].u + "\\">See all " + THEMECOLL[slug].l + " costumes</a></p>" : "";
+  /* 2026-10-23 hub discoverability fix: audience hub link(s) for this
+     guide (couples / family / last-minute), same themelink style as the
+     theme collection link above. Static per slug, same for every
+     visitor: not cloaking. */
+  var _hubLinks = (HUBLINKS[slug] || []).map(function(h){
+    return "<p class=\\"themelink\\"><a href=\\"" + h.u + "\\">See all " + h.l + " costumes</a></p>";
+  }).join("");
   if (_rel.length) {
     _relHtml = "<h2>More costumes like this</h2><ul class=\\"rellist\\">" +
       _rel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
         "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"eager\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
-      "</ul>" + _themeLink +
+      "</ul>" + _themeLink + _hubLinks +
       /* 2026-10-06 (Lane 3, Explore Galaxy): "Explore similar ideas" entry
          point. The /c/ kindred list above links to sibling guides; this
          opens the Costume Galaxy centered on this costume, whose visible
@@ -2128,7 +2184,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   });
 }
 ''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
-       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION),
+       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(HUBLINKS), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION),
        json.dumps(howto), json.dumps(_PANTRY_MATS), json.dumps(_PANTRY_LABELS), json.dumps(_PANTRY_EMOJI), json.dumps(_CLIENTJS), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
