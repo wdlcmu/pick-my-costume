@@ -8,18 +8,18 @@ Pattern follows hour-session/build_couple_article.py exactly:
 same CSS, header, 60-second picker, answer blocks, HowTo box, final CTA,
 FAQ, footer, Article+FAQPage+HowTo JSON-LD.
 
-Angle: the zero-budget, pantry-first, make-tonight cluster (42 ideas in the
-bank at <=20 min, <=$8, Easy). Not kid/audience specific, not couples, not
+Angle: the pantry-first, make-tonight cluster (ideas in the bank at
+<=20 min and Easy; the count is computed at build time, never typed). Not kid/audience specific, not couples, not
 groups - the urgency query is the keyword. Does not cannibalize the existing
 group-costumes.html hub or the three staged siblings.
 
 Hard rules enforced by this script:
 - zero em/en dashes in user-facing text (nodash fails loudly)
 - every pick id exists in the bank and has INSTRUCTIONS (1:1)
-- every time/cost/effort figure comes from INSTRUCTIONS, never hand-typed
+- every time/effort figure comes from INSTRUCTIONS, never hand-typed
 - picker combos: vibe tag meets threshold, build time <= the chosen time
   budget (asserted, not claimed)
-- the 42-idea cluster count is computed from the bank, never hand-typed
+- the cluster count is computed from the bank, never hand-typed
 - the og time range ("5 to 20 minutes") is computed from the page's own
   picks and asserted into the copy
 - section-2 "closet" honesty: every pick must have >=2 (own) materials
@@ -36,21 +36,53 @@ import json, re, html, sys, os
 from related_cards import inject_related_cards  # P0 growth: related cards + quiz CTA + pin link
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INDEX = os.path.join(ROOT, "index.html")
+APP_JS = os.path.join(ROOT, "app.js")  # bank moved from index.html to app.js 2026-10-01
 BANK = os.path.join(ROOT, "mcp-server", "bank.json")
 OUT = os.path.join(ROOT, "hour-session", "last-minute-halloween-costumes-2026.html")
 SITE = "https://pickmycostume.com"
 DATE = "2026-09-27"
 
 # ---------- load real data ----------
-src = open(INDEX, encoding="utf-8").read()
-m = re.search(r'var INSTRUCTIONS = (\{.*?\n\});', src, re.S)
-if not m:
-    sys.exit("INSTRUCTIONS block not found in index.html")
-INST = json.loads(m.group(1))
+# Family B repair 2026-10-22: the bank moved from index.html to app.js on
+# 2026-10-01, so the old index.html regex died with "INSTRUCTIONS block
+# not found in index.html". Parse app.js with the brace-matching pattern
+# already proven in gen_share_function.py / gen_sitemap.py.
+def _parse_instructions(src):
+    marker = "var INSTRUCTIONS ="
+    i = src.index("{", src.index(marker) + len(marker))
+    depth, in_str, esc = 0, False, False
+    for j in range(i, len(src)):
+        ch = src[j]
+        if in_str:
+            if esc: esc = False
+            elif ch == "\\": esc = True
+            elif ch == '"': in_str = False
+        else:
+            if ch == '"': in_str = True
+            elif ch == "{": depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    seg = re.sub(r",\s*([\}\]])", r"\1", src[i:j + 1])
+                    return json.loads(seg)
+    raise ValueError("INSTRUCTIONS object not balanced in app.js")
+
+src = open(APP_JS, encoding="utf-8").read()
+assert "var IDEAS = [" in src and "var INSTRUCTIONS = {" in src, \
+    "bank anchors missing in app.js: bank moved again?"
+INST = _parse_instructions(src)
 bank_raw = json.load(open(BANK, encoding="utf-8"))
 BANK_IDEAS = {i["id"]: i for i in (bank_raw if isinstance(bank_raw, list) else bank_raw.get("ideas"))}
-assert len(INST) == 138 and len(BANK_IDEAS) == 138, (len(INST), len(BANK_IDEAS))
+BANK_COUNT = len(BANK_IDEAS)
+assert BANK_COUNT >= 100, "bank parse looks vacuous: %d ideas" % BANK_COUNT
+assert len(INST) == BANK_COUNT and set(INST) == set(BANK_IDEAS), \
+    (len(INST), BANK_COUNT)
+
+def display_time(t):
+    # Display rule (Billy, 2026-10-03): displayed time is hands-on only.
+    # Drying still counts in Tonight scoring, never in displayed copy.
+    # Same strip as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
 
 def esc(s):
     return html.escape(s, quote=False)
@@ -76,22 +108,21 @@ def nostoretrip(pid, s):
 
 def triple(pid):
     t = INST[pid]
-    return "%s - %s - %s" % (t["time"], t["cost"], t["effort"])
+    return "%s - %s" % (display_time(t["time"]), t["effort"])
 
 def minutes(pid):
     mm = re.match(r"\s*(\d+)\s*min", INST[pid]["time"])
     return int(mm.group(1))
 
-def cost_max(pid):
-    mm = re.match(r"\$(\d+)-(\d+)", INST[pid]["cost"])
-    return int(mm.group(2))
-
 def materials_text(pid):
     return " ".join(INST[pid]["m"]).lower()
 
-# the last-minute cluster: <=20 min, cost max <=$8, Easy - computed, never typed
+# the last-minute cluster: <=20 min and Easy - computed, never typed.
+# (The pre-2026-10-01 cluster also filtered on the bank's cost field,
+# removed in the Oct 1 cost cleanup; time + effort is the whole contract
+# now, per the Family C fix shape in the 2026-10-22 parity audit.)
 CLUSTER = sorted(pid for pid in INST
-                 if minutes(pid) <= 20 and cost_max(pid) <= 8 and INST[pid]["effort"] == "Easy")
+                 if minutes(pid) <= 20 and INST[pid]["effort"] == "Easy")
 print("last-minute cluster in bank:", len(CLUSTER))
 
 CSS = """<style>
@@ -223,7 +254,6 @@ def build_article(cfg):
     for x in hm + hs:
         nodash(x)
     hmm = re.match(r"\s*(\d+)\s*min", INST[hp]["time"])
-    cm = re.match(r"\$(\d+)-(\d+)", INST[hp]["cost"])
     howto_ld = {
         "@context": "https://schema.org",
         "@type": "HowTo",
@@ -234,8 +264,6 @@ def build_article(cfg):
         "publisher": {"@id": SITE + "/#organization"},
         "datePublished": DATE,
         "totalTime": "PT%sM" % hmm.group(1),
-        "estimatedCost": {"@type": "MonetaryAmount", "currency": "USD",
-                          "minValue": int(cm.group(1)), "maxValue": int(cm.group(2))},
         "supply": [{"@type": "HowToSupply", "name": x} for x in hm],
         "step": [{"@type": "HowToStep", "text": x} for x in hs],
     }
@@ -375,14 +403,14 @@ def build_article(cfg):
 <a class="go" href="%(site)s/">Take the 2-minute quiz</a>
 <p><button type="button" class="go ghost" id="shareBtn">Share this guide</button></p>
 <p class="fine" id="shareNote" role="status"></p>
-<p class="fine">Or start from what you already own: <a href="%(site)s/pantry">check what your closet can build</a>. Browse all <a href="%(site)s/costumes">138 costume guides</a>.</p>
+<p class="fine">Or start from what you already own: <a href="%(site)s/pantry">check what your closet can build</a>. Browse all <a href="%(site)s/costumes">%(bank_count)s costume guides</a>.</p>
 </div>
 
 <h2>FAQ</h2>
 %(faq_visible)s
 
 <div class="footer">
-<p><a href="%(site)s/">Pick My Costume</a> &middot; <a href="%(site)s/costumes">Browse all 138 costume guides</a> &middot; <a href="%(site)s/pantry">What your closet can build</a></p>
+<p><a href="%(site)s/">Pick My Costume</a> &middot; <a href="%(site)s/costumes">Browse all %(bank_count)s costume guides</a> &middot; <a href="%(site)s/pantry">What your closet can build</a></p>
 <p class="fine">Built with Muse. Made by Billy Litner.</p>
 </div>
 </div>
@@ -392,7 +420,7 @@ def build_article(cfg):
 </html>
 """ % {
         "title": esc(cfg["title"]), "meta_desc": esc(cfg["meta_desc"]), "og_desc": esc(cfg["og_desc"]),
-        "og_img": cfg["og_img"], "site": SITE, "slug": slug,
+        "og_img": cfg["og_img"], "site": SITE, "slug": slug, "bank_count": BANK_COUNT,
         "article_ld": json.dumps(article_ld, indent=2),
         "faq_ld": json.dumps(faq_ld, indent=2),
         "howto_ld": json.dumps(howto_ld, indent=2),
@@ -437,15 +465,15 @@ def build_article(cfg):
 # halloween costumes", "last minute diy halloween costumes", "halloween
 # costume night before", "zero budget halloween costumes"
 # ============================================================================
-CLUSTER_COUNT = len(CLUSTER)  # 42, asserted into copy below
+CLUSTER_COUNT = len(CLUSTER)  # asserted into copy below
 
 POOL = {
-    "banana": "Ten minutes, $2 to $5. A yellow sweat set plus a green felt stem on a headband. The funniest thing in the room for the least effort.",
-    "referee": "Twenty minutes, $2 to $5. A black tee, white tape stripes, a dollar-store whistle. Instant authority at any party.",
-    "classic-ghost": "Ten minutes, $3 to $8. A white sheet and a thick black marker. The oldest costume there is, and it still works.",
-    "zombie-coworker": "Twenty minutes, $3 to $8. An old button-down, an old tie, pale face paint, a coffee mug. Monday morning energy, Halloween edition.",
-    "prince-princess": "Ten minutes, $5 to $10. A crown or tiara, a cape of fabric, a dress or suit from the thrift store. Royalty in one aisle.",
-    "ice-cream-cone": "Twenty minutes, $2 to $6. A white tee scoop, a paper-hat cone, dot stickers for sprinkles. The sweet one.",
+    "banana": "Ten minutes. A yellow sweat set plus a green felt stem on a headband. The funniest thing in the room for the least effort.",
+    "referee": "Twenty minutes. A black tee, white tape stripes, a whistle. Instant authority at any party.",
+    "classic-ghost": "Ten minutes. A white sheet and a thick black marker. The oldest costume there is, and it still works.",
+    "zombie-coworker": "Twenty minutes. An old button-down, an old tie, pale face paint, a coffee mug. Monday morning energy, Halloween edition.",
+    "prince-princess": "Ten minutes. A crown or tiara, a cape of fabric, a dress or suit from the thrift store. Royalty in one aisle.",
+    "ice-cream-cone": "Twenty minutes. A white tee scoop, a paper-hat cone, dot stickers for sprinkles. The sweet one.",
 }
 TABLE = {
     "funny|quick": "banana",
@@ -468,10 +496,10 @@ print("last-minute article: 6/6 picker combos verified (time budget, vibe tag)")
 C = {
     "slug": "last-minute-halloween-costumes-2026",
     "title": "Easy Last-Minute DIY Halloween Costumes 2026",
-    "meta_desc": "Last-minute Halloween costume ideas for 2026: 42 easy DIY builds, each 20 minutes or less. Real build times and costs for every pick.",
-    "og_desc": "42 easy DIY builds: 5 to 20 minutes, most cost $8 or less.",
+    "meta_desc": "Last-minute Halloween costume ideas for 2026: %d easy DIY builds, each 20 minutes or less. Real build times for every pick." % CLUSTER_COUNT,
+    "og_desc": "%d easy DIY builds: 5 to 20 minutes." % CLUSTER_COUNT,
     "og_img": "crowd-camouflage.jpg",  # matches howto_pid (red-team rule)
-    "lede": "Short answer: you are not out of time. The Pick My Costume bank holds %d easy DIY costumes that each take 20 minutes or less, and every pick on this page shows its real build time and cost up front." % CLUSTER_COUNT,
+    "lede": "Short answer: you are not out of time. The Pick My Costume bank holds %d easy DIY costumes that each take 20 minutes or less, and every pick on this page shows its real build time up front." % CLUSTER_COUNT,
     "sub": "I am a dad, which means I have dressed a small human at 5 PM on October 31. The rule for last minute: pick the costume where the first thing you grab is a shirt you already own. Paint and glue come second. Every block below names the one thing you might have to buy, if anything.",
     "picker_title": "The 60-second picker",
     "picker_note": "Pick a vibe and a time limit. Every result fits inside the time you picked.",
@@ -488,69 +516,69 @@ C = {
          [
              ("You have five minutes", "crowd-camouflage",
               "Gray hoodie, dark pants, gray beanie. The whole joke is a blank adhesive name tag stuck on your chest: it says nothing, and that is the point.",
-              "Five minutes, $2 to $5. The name tag is the only thing you might have to buy, and a dollar store run takes longer than the costume. Check the mirror once so the tag sits straight."),
+              "Five minutes. The name tag is the only thing you might have to buy, and a store run takes longer than the costume. Check the mirror once so the tag sits straight."),
              ("You have five minutes and a ball", "basketball-star",
               "A basketball jersey or numbered tank top, basketball shorts, and eye black under both eyes. Carry a basketball.",
-              "Five minutes, $3 to $8. If you do not own a jersey, a numbered tank top from the drawer reads exactly the same from six feet away."),
+              "Five minutes. If you do not own a jersey, a numbered tank top from the drawer reads exactly the same from six feet away."),
              ("You have ten minutes", "classic-ghost",
               "A white sheet draped over the wearer, eye spots marked with a thick black marker while the sheet is on. Marking blind never lines up, so do it with the sheet draped.",
-              "Ten minutes, $3 to $8. Twin flat sheet for small kids, full size for tweens and adults. No sewing, no cutting."),
+              "Ten minutes. Twin flat sheet for small kids, full size for tweens and adults. No sewing, no cutting."),
              ("You have ten minutes and a yellow sweatsuit", "banana",
               "Yellow sweatshirt and sweatpants, a green felt stem on a headband. Put the sweatsuit on first, then cut and place the stem.",
-              "Ten minutes, $2 to $5. The stem is the whole build: felt, headband, fabric glue. The rest is the closet."),
+              "Ten minutes. The stem is the whole build: felt, headband, fabric glue. The rest is the closet."),
          ]),
         ("2", "Built from the closet",
          "For these, the first thing you grab is clothes you already own. Each block names the one item you might have to buy, because last-minute honesty matters.",
          [
              ("Monday morning, but Halloween", "zombie-coworker",
               "An old button-down you can cut up, an old tie, a coffee mug from home. Pale face paint and dark eye makeup finish it.",
-              "Twenty minutes, $3 to $8. The face paint and eye makeup are the only things to buy, and they come from a drugstore or toy store. The shirt and tie come from the closet, which is the point."),
+              "Twenty minutes. The face paint and eye makeup are the only things to buy, and they come from a drugstore or toy store. The shirt and tie come from the closet, which is the point."),
              ("You own the uniform already", "referee",
               "Black t-shirt, black pants, horizontal stripes torn from white athletic tape across the front and back. A plastic whistle on a lanyard.",
-              "Twenty minutes, $2 to $5. The whistle and the tape are the only things to buy. Press the tape strips firmly so they survive the night."),
+              "Twenty minutes. The whistle and the tape are the only things to buy. Press the tape strips firmly so they survive the night."),
              ("The black dress does the work", "deadpan-diva",
               "A black dress, two tight braids, very pale foundation, dark eyeliner and lipstick. The deadpan face is required equipment.",
-              "Fifteen minutes, $3 to $8. The pale foundation or white face paint is the one thing to buy if you do not have it. Everything else lives in a drawer."),
+              "Fifteen minutes. The pale foundation or white face paint is the one thing to buy if you do not have it. Everything else lives in a drawer."),
          ]),
         ("3", "Food costumes, the last-minute classic",
          "Food costumes forgive a late start: the whole design is one big readable shape, and felt or paper does the job.",
          [
              ("For the pair who cooks together", "bacon-eggs",
               "Bacon wears the dark red shirt, eggs wear the white shirt. Red-brown felt stripes on one, a white felt circle with a yellow yolk on the other. Safety pins, not glue, so the shirts survive.",
-              "Twenty minutes, $3 to $6. Felt or construction paper both work. The duo version of this is a classic, and it photographs well."),
+              "Twenty minutes. Felt or construction paper both work. The duo version of this is a classic, and it photographs well."),
              ("The pun costume", "deviled-egg",
               "A white t-shirt with a yellow felt yolk on the front, red felt devil horns on a red headband, red pipe cleaners, and red face paint or lipstick.",
-              "Twenty minutes, $3 to $8. The yolk, the horns, and the red details tell the whole joke. Cut paper stands in for felt if the craft store is closed."),
+              "Twenty minutes. The yolk, the horns, and the red details tell the whole joke. Cut paper stands in for felt if the craft store is closed."),
              ("For the parent running on fumes", "coffee-cup",
               "A white trash bag or white sheet as the cup body, a cardboard tube or cylinder, brown paper for the lid, a brown marker for the logo.",
-              "Twenty minutes, $2 to $5. Most of this is a recycling bin, which is why it is on the list. The marker is the one thing to buy."),
+              "Twenty minutes. Most of this is a recycling bin, which is why it is on the list. The marker is the one thing to buy."),
              ("The sweet one", "ice-cream-cone",
               "White t-shirt as the scoop, a tan paper party hat as the cone, colored dot stickers or paper dots as sprinkles, brown marker crosshatch on the cone.",
-              "Twenty minutes, $2 to $6. The sprinkles are the whole costume. Kids get this one instantly."),
+              "Twenty minutes. The sprinkles are the whole costume. Kids get this one instantly."),
          ]),
         ("4", "When the whole group procrastinated",
          "Group costumes at the last minute only work if everyone wears their own clothes. These three hand every person the same short job.",
          [
              ("Everyone grabs a cereal box", "cereal-crew",
               "Solid-color clothes per person, one empty cereal box each, flattened and worn on the front with invented cereal names lettered on. String or tape holds it up.",
-              "Twenty minutes, $2 to $4. Flatten the box along the side seam before cutting: a flat box cuts cleanly, a 3D box wobbles. Every person invents their own cereal name."),
+              "Twenty minutes. Flatten the box along the side seam before cutting: a flat box cuts cleanly, a 3D box wobbles. Every person invents their own cereal name."),
              ("The cartoon gang", "mystery-crew",
               "One colored t-shirt per person: orange, purple, blue, red. A dog-ears headband for the dog, a fake magnifying glass for the brains, a brown face-paint nose for the dog.",
-              "Fifteen minutes, $2 to $6. Thrift the shirts or pull from closets; the colors are the whole costume. The magnifying glass can be a paper circle taped to a stick."),
+              "Fifteen minutes. Thrift the shirts or pull from closets; the colors are the whole costume. The magnifying glass can be a paper circle taped to a stick."),
              ("Everyone picks a decade", "decades-crew",
               "Everyone wears their own closet clothes dressed to a decade, and pins a hand-lettered decade card on: 70s, 80s, 90s. Hair gel does a lot of work here.",
-              "Twenty minutes, $2 to $5. The cards cost nothing and the closet does the rest. The funniest decade wins."),
+              "Twenty minutes. The cards are already in the drawer and the closet does the rest. The funniest decade wins."),
          ]),
     ],
     "faqs": [
         ("What is the easiest last-minute Halloween costume?",
-         "Crowd Camouflage: 5 minutes, $2 to $5. A gray hoodie, dark pants, a gray beanie, and one blank adhesive name tag. The tag stays blank, and that is the joke. The name tag is the only thing you might have to buy."),
+         "Crowd Camouflage: 5 minutes. A gray hoodie, dark pants, a gray beanie, and one blank adhesive name tag. The tag stays blank, and that is the joke. The name tag is the only thing you might have to buy."),
         ("Can I make a Halloween costume in 10 minutes with no sewing?",
-         "Yes. The Classic Ghost is 10 minutes and $3 to $8: a white sheet draped over the wearer, eye spots marked with a thick black marker while the sheet is on. No sewing, no cutting. The Banana is another 10-minute build at $2 to $5."),
+         "Yes. The Classic Ghost is 10 minutes: a white sheet draped over the wearer, eye spots marked with a thick black marker while the sheet is on. No sewing, no cutting. The Banana is another 10-minute build."),
         ("What can I build from my closet without a costume store?",
-         "The Zombie Coworker: 20 minutes, $3 to $8. An old button-down, an old tie, and a coffee mug all come from home; the only store items are pale face paint and dark eye makeup. The Referee is the same story: black clothes from the closet, a whistle and athletic tape from the store."),
+         "The Zombie Coworker: 20 minutes. An old button-down, an old tie, and a coffee mug all come from home; the only store items are pale face paint and dark eye makeup. The Referee is the same story: black clothes from the closet, a whistle and athletic tape from the store."),
         ("What is a good last-minute group costume when everyone procrastinated?",
-         "The Cereal Crew: 20 minutes, $2 to $4. Everyone wears solid-color clothes and decorates an empty cereal box with an invented cereal name. The Mystery Crew is the other fast group pick: 15 minutes, $2 to $6, one colored t-shirt per person."),
+         "The Cereal Crew: 20 minutes. Everyone wears solid-color clothes and decorates an empty cereal box with an invented cereal name. The Mystery Crew is the other fast group pick: 15 minutes, one colored t-shirt per person."),
         ("Is it too late to DIY a Halloween costume the night before?",
          "No. Most of the builds on this page take 20 minutes or less, and the fastest take 5. If the glue or paint needs drying time, pick one of the short closet builds instead, like the Crowd Camouflage or the Classic Ghost."),
     ],
@@ -600,11 +628,6 @@ _C_GROUP = [pid for (_lbl, pid, _c1, _c2) in C["sections"][3][3]]
 for _pid in _C_GROUP:
     assert "group" in BANK_IDEAS[_pid]["audience"], "group claim false for %s" % _pid
 print("last-minute article: section-4 group audience verified (%d builds)" % len(_C_GROUP))
-
-# cost honesty: the og says "most cost $8 or less" - assert the actual share
-_C_UNDER8 = sum(1 for pid in _C_ALL if cost_max(pid) <= 8)
-assert _C_UNDER8 / len(_C_ALL) >= 0.8, "cost claim drift: %d/%d under $8" % (_C_UNDER8, len(_C_ALL))
-print("last-minute article: cost claim verified (%d/%d picks $8 or less)" % (_C_UNDER8, len(_C_ALL)))
 
 if __name__ == "__main__":
     build_article(C)
