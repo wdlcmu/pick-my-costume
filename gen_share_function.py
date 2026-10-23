@@ -1530,7 +1530,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   if (_rel.length) {
     _relHtml = "<h2>More costumes like this</h2><ul class=\\"rellist\\">" +
       _rel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
-        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"eager\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>" + _themeLink +
       /* 2026-10-06 (Lane 3, Explore Galaxy): "Explore similar ideas" entry
@@ -1552,7 +1552,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       ("More " + PRIMARYMAT[slug] + " builds"));
     _matHtml = "<h2>" + esc(_matLabel) + "</h2><ul class=\\"rellist\\">" +
       _matRel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
-        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"eager\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>";
   }
@@ -1974,6 +1974,11 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".ptile.miss .ptbadge{border:2px solid #ff8c1a;color:#ff8c1a;}" +
     ".ptile .ptag{font-size:10px;color:#cdbcf0;border:1px solid #4b3486;border-radius:10px;padding:2px 7px;white-space:nowrap;}" +
     ".ptile:active{background:rgba(255,255,255,.06);}" +
+    /* 2026-10-23 guide mobile QA fix-now #1: phone supply cards were
+       squeezed into 3 skinny columns (~110px wide at 390px) and the
+       words wrapped into tall thin stacks. Full-width stacked cards
+       on small screens; desktop grid unchanged. */
+    "@media (max-width:560px){.ptiles{grid-template-columns:1fr;}.ptile{min-height:0;padding:12px;}.ptile .ptlabel{font-size:13px;}.ptile .ptsub{font-size:12px;}}" +
     ".pchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px;}" +
     ".pchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 10px;border:1px dashed #4b3486;border-radius:999px;color:#fdf3e3;}" +
     ".pchip .pmemo{font-size:16px;}" +
@@ -2018,6 +2023,14 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".rbanner-line{font-size:17px;font-weight:700;color:#fdf3e3;margin:0 0 6px;line-height:1.4;}" +
     ".rbanner-sub{font-size:15px;color:#cdbcf0;margin:0 0 14px;line-height:1.45;}" +
     ".rbanner .cta{margin:0;}" +
+    /* 2026-10-23 guide mobile QA fix-now #2: the .ghost class (the
+       'Splitting the shopping?' splitopen button, the stepper + / -
+       buttons, and the copy buttons) had NO rule in this stylesheet,
+       so those buttons fell back to the browser default: a plain
+       white strip with small dark text on the dark page. Style it
+       like the page's other secondary buttons (sharebtn family). */
+    ".ghost{display:inline-block;background:rgba(255,140,26,.08);border:2px solid #ff8c1a;color:#ff8c1a;font-weight:700;font-size:15px;padding:10px 18px;border-radius:12px;cursor:pointer;font-family:inherit;}" +
+    ".ghost:active{background:rgba(255,140,26,.16);}" +
     ".splitwrap{margin:18px 0;padding:16px;border:1px dashed #4b3486;border-radius:14px;background:#211540;}" +
     ".splitwrap .splitopen{width:100%%;}" +
     ".splitq{font-size:16px;font-weight:700;margin:0 0 8px;}" +
@@ -2041,7 +2054,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* 2026-10-01 (Billy): related thumbnail cards. Overrides the pill link
        above: thumb + title side by side. */
     ".relcard a{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;}" +
-    ".relcard img{width:56px;height:56px;object-fit:cover;border-radius:8px;flex:none;}" +
+    ".relcard img{width:56px;height:56px;object-fit:cover;border-radius:8px;flex:none;background:#2a1c52;}" +
     /* 2026-10-10 (gpt-loop run 42): 390px overflow guard for short-title
        related-card rows ("More paint builds" clipped at the viewport edge;
        flex min-width:auto overflow). Wrap decisions unchanged
