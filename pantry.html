@@ -2299,9 +2299,9 @@ document.getElementById('supply-search').addEventListener('input', applySearch);
   if (!btn) return;
   const status = document.getElementById('sharestatus');
   const url = 'https://pickmycostume.com/pantry';
-  const text = 'I ticked what we already own \u2014 see what costumes we can make: ' + url;
+  const text = 'I ticked what we already own. See what costumes we can make: ' + url;
   const done = function(via){
-    if (status){ status.style.display = 'block'; status.textContent = 'Copied \u2014 send it to your partner.'; }
+    if (status){ status.style.display = 'block'; status.textContent = 'Copied. Send it to your partner.'; }
     track('pantry_share', { via: via });
   };
   btn.addEventListener('click', function(){
