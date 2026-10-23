@@ -14,6 +14,18 @@ fix, challengeLink kit+pick+sid), and the 2026-09-27 cold-user QA fixes
 ported from direct pantry.html edits into TEMPLATE on 2026-09-27 so the next
 regen no longer wipes them. NEVER edit pantry.html directly; change
 TEMPLATE and regenerate.
+
+2026-10-22 reconciliation (generator-parity fix list #4): the live hero
+"Timed: about N min" labels are now in TEMPLATE (times from the bank
+INSTRUCTIONS time fields, hands-on only: classic-ghost 10, ninja 10
+("10 min + 10 min drying" stripped), breakfast-buffet 25); the hero audit
+comment reads "the other two" (proven from DATA under staples-only:
+classic-ghost misses 0, ninja 1, breakfast-buffet 1 -- there are only 3
+hero costumes); the /classroom footer link is GONE (that page does not
+exist, live returns 404 -- do not re-add); and the 2026-10-12 share-claim
+fix (share texts no longer say "tonight") is ported into TEMPLATE.
+After these ports a regen differs from the prior live page ONLY by the
+two bank title fixes (Spaceship Cadet, Tooth Fairy).
 """
 import json, re, collections, html as htmllib, os
 
@@ -341,6 +353,25 @@ put("Dark pants, 1 (own)", o('black-clothes'), L)
 put("Solid-color sweatsuit, any color (own)", o('sweatsuit'), E)
 put("Fuzzy one-piece pajamas or sweatsuit, 1", o(N,'sweatsuit'), E)
 put("Plain sweatsuit in one solid color, red recommended (make: from closet)", o('sweatsuit'), E)
+# 2026-09-30: cost-honesty sweep rewrote 15 material strings to buy-first
+# ("buy: ..., or own: from closet"). Color-specific outfits are not pantry
+# staples, so they map to X (honestly "still need") — same convention as
+# "Red sweatsuit (make: from closet)" -> X above. The one generic entry
+# ("Plain sweatsuit in one solid color") keeps the ownable sweatsuit slot.
+put("Plain sweatsuit in one solid color, red recommended, 1 set", o('sweatsuit'), E)
+put("Matching red sweatsuits, 1 per person", X, E)
+put("Red sweatsuit, 1", X, E)
+put("Red sweatsuit or red shirt and pants, 1 set", X, E)
+put("Hero: red and blue sweatsuit, or red shirt with blue pants, 1 set", X, E)
+put("Hoodies in red, black, and pink, 1 per person", X, E)
+put("Yellow sweatshirt and sweatpants, 1 set", X, E)
+put("Yellow t-shirts, 1 per person", X, E)
+put("1 solid bright color outfit per person: yellow, blue, red, green, purple, or orange", X, E)
+put("Solid-color tops in assigned colors, 1 per person", X, E)
+put("Solid-color outfits in fruit colors (red, yellow, green, orange), 1 set per person", X, E)
+put("All-pink outfit per person: dress, suit, or sweatsuit, 1 set each", X, E)
+put("Plastic play accessories: phone, tiara, handbag, 1 per person", X, E)
+put("Red jumpsuits or red shirts and pants for the Things, 2 sets", X, E)
 put("White sweatshirt and sweatpants", o('sweatsuit'), E)
 put("Black sweatshirt and sweatpants (own, or buy: clothing store)", o('black-clothes'), E)
 put("Black sweatshirt and sweatpants (make: from closet)", o('black-clothes'), E)
@@ -1441,10 +1472,14 @@ def main():
     data = {'pantry': PANTRY, 'groups': GROUPS, 'ideas': ideas}
     data_json = json.dumps(data, separators=(',', ':'))
     html_out = TEMPLATE.replace('__DATA__', data_json).replace('__COUNT__', str(len(ideas)))
-    # ---- 2026-09-30 GEO batch: static FAQ + make-tonight list for no-JS
-    # crawlers (PerplexityBot et al. see zero client-rendered content).
-    # Injected here, never by hand-editing pantry.html (generator output).
-    # Regenerate the staged source files when the bank changes.
+    # ---- 2026-09-30 GEO batch: static answer block + make-tonight list
+    # for no-JS crawlers (PerplexityBot et al. see zero client-rendered
+    # content). Injected here, never by hand-editing pantry.html
+    # (generator output). Regenerate the staged source files when the
+    # bank changes.
+    # 2026-10-17 (Billy): the FAQ block and its FAQPage schema are GONE
+    # (page must scan in 30 seconds). The staged answer block is now one
+    # short line plus the basics line; do not re-add a FAQ here.
     _GEO_STAGED = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                '..', 'hidden_files', 'seo-sprint', 'geo-staged')
     def _geo_read(name):
@@ -1452,19 +1487,18 @@ def main():
             return _f.read()
     _faq_block = re.sub(r'<!-- STAGED CHANGE.*?-->\s*', '',
                         _geo_read('pantry-faq-block.html'), flags=re.S)
-    _faq_schema = re.sub(r'^//[^\n]*\n', '',
-                         _geo_read('pantry-faq-schema.jsonld'), flags=re.M)
     _tonight_static = re.sub(r'<!-- STAGED CHANGE.*?-->\s*', '',
                              _geo_read('pantry-static-tonight.html'), flags=re.S)
     assert 'id="geo-answer"' in _faq_block and 'id="geo-tonight-static"' in _tonight_static
-    assert 'FAQPage' in _faq_schema
-    _geo_css = ('.geo-answer,.geo-faq,.geo-tonight-static{margin:20px 0}'
-                '.geo-answer h2,.geo-faq h2,.geo-tonight-static h2{font-size:22px;margin:0 0 8px}'
+    assert 'geo-faq' not in _faq_block and 'FAQPage' not in _faq_block, 'FAQ block must not come back (2026-10-17 cut)'
+    _geo_css = ('.geo-answer,.geo-tonight-static{margin:20px 0}'
+                '.geo-answer h2,.geo-tonight-static h2{font-size:22px;margin:0 0 8px}'
                 '.geo-answer p,.geo-tonight-static p{line-height:1.55}'
-                '.geo-faq details{margin:8px 0}'
-                '.geo-faq summary{cursor:pointer;font-weight:700}'
                 '.geo-tonight-static ul{margin:8px 0 16px;padding-left:20px}'
                 '.geo-tonight-static h3{font-size:16px;margin:14px 0 4px}'
+                # 2026-10-04: default blue links are unreadable on the dark
+                # pantry background; use the accent for the tonight list.
+                '.geo-tonight-static a{color:var(--accent);font-weight:600}'
                 '.geo-all-guides{margin:20px 0}'
                 '.geo-all-guides h2{font-size:22px;margin:0 0 8px}'
                 '.geo-all-guides details{margin:8px 0}'
@@ -1500,10 +1534,9 @@ def main():
     )
     html_out = html_out.replace('.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n</style>',
                                 '.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}\n' + _geo_css + '\n</style>', 1)
-    html_out = html_out.replace('</style>\n</head>', '</style>\n' + _faq_schema + '\n</head>', 1)
     html_out = html_out.replace('<p class="fresh">Updated for Halloween 2026</p>',
                                 '<p class="fresh">Updated for Halloween 2026</p>\n' + _faq_block + '\n' + _tonight_static + '\n' + _all_guides + '\n' + _browse_more, 1)
-    assert 'id="geo-answer"' in html_out and 'id="geo-tonight-static"' in html_out and 'FAQPage' in html_out and 'id="geo-all-guides"' in html_out, 'GEO injection failed'
+    assert 'id="geo-answer"' in html_out and 'id="geo-tonight-static"' in html_out and 'FAQPage' not in html_out and 'id="geo-faq"' not in html_out and 'id="geo-all-guides"' in html_out, 'GEO injection failed'
     # Chopped preservation guard (2026-09-29): the game must survive
     # every regen. Refuse to write output that dropped it.
     for _marker in ('id="chopped"', 'function chopNewRound', 'function chopReveal',
@@ -1592,6 +1625,11 @@ TEMPLATE = r"""<!DOCTYPE html>
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
   .brand{color:var(--ink);text-decoration:none;font-weight:800;font-size:17px}
   .brand span{color:var(--accent)}
+  .homebtn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;
+    color:var(--ink);text-decoration:none;border:1px solid var(--line);
+    border-radius:999px;padding:8px 14px;background:var(--card)}
+  .hstrip{margin:2px 0 10px}
+  .hstrip .tphoto span small{display:block;font-weight:600;font-size:11.5px;color:var(--muted);margin-top:2px}
   .proto{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 10px}
   h1{font-size:34px;line-height:1.1;margin:18px 0 8px;letter-spacing:-.5px}
   .sub{color:var(--muted);font-size:16px;line-height:1.5;margin:0 0 20px}
@@ -1813,9 +1851,30 @@ TEMPLATE = r"""<!DOCTYPE html>
 <div class="wrap">
   <div class="topbar">
     <a class="brand" href="/">Pick My <span>Costume</span></a>
+    <a class="homebtn" href="/" aria-label="Back to the Pick My Costume homepage">&#8962; Home</a>
   </div>
 
   <h1>What can you make tonight from stuff already in your house?</h1>
+  <!-- 2026-09-30: visual hero strip, real photos of make-tonight costumes
+       right under the headline. Static, no JS. Badges are honest per the
+       pantry audit: classic-ghost needs nothing; the other two need one
+       quick supply grab. Regenerate the strip if the audit changes. -->
+  <section class="hstrip" aria-label="Costumes you can make tonight">
+    <div class="tphotos">
+      <a class="tphoto" href="/c/classic-ghost">
+        <img src="photos/classic-ghost.webp" alt="Classic Ghost costume" loading="eager" width="400" height="300">
+        <span>Classic Ghost<small>Nothing to buy · ⏱️ Timed: about 10 min</small></span>
+      </a>
+      <a class="tphoto" href="/c/ninja">
+        <img src="photos/ninja.webp" alt="Ninja costume" loading="eager" width="400" height="300">
+        <span>Ninja<small>1 supply away · ⏱️ Timed: about 10 min</small></span>
+      </a>
+      <a class="tphoto" href="/c/breakfast-buffet">
+        <img src="photos/breakfast-buffet.webp" alt="Breakfast Buffet group costume" loading="eager" width="400" height="300">
+        <span>Breakfast Buffet<small>1 supply away · ⏱️ Timed: about 25 min</small></span>
+      </a>
+    </div>
+  </section>
   <p class="sub">We assume your home has the basics, so these costumes lead. Tick anything else you own below and the list reshuffles around your stuff.</p>
   <p class="fresh">Updated for Halloween 2026</p>
 
@@ -1827,7 +1886,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 
   <!-- 2026-09-28: the assumed-basics list collapses behind one tap --
        the page leads with costumes, not a wall of text. -->
-  <p class="basics-line">We assume you have: <span id="basicsline"></span> &mdash; untick any you don&rsquo;t actually have in the grid below.</p>
+  <p class="basics-line">We assume you have: <span id="basicsline"></span>; untick any you don&rsquo;t actually have in the grid below.</p>
   <!-- 2026-09-25: the opening leads with the alive number, not a dead
        "0 you can make tonight". With just the assumed basics, the count is
        already real the moment the page loads. -->
@@ -1886,7 +1945,7 @@ TEMPLATE = r"""<!DOCTYPE html>
   <p class="foot">More games: <a href="/play?game=peekaboo">Peekaboo</a> and <a href="/play?game=match">Match the pieces</a></p>
 
   <p class="foot">Tap a costume to see the full build guide with materials and steps.</p>
-  <p class="foot">Free, no signup. Built with Muse. <a href="/classroom">Planning costumes for a classroom? Whole-class planner</a></p>
+  <p class="foot">Free, no signup. Built with Muse.</p>
 </div>
 
 <script>
@@ -2056,7 +2115,7 @@ function matBits(m){
    Audit the rest the same way before adding new supplies. */
 /* 2026-09-26 pantry thumbnails: per-idea emoji shown as an instant tile behind
    the lazy photo. Generated by hour-session/gen_idea_emoji.py; re-run it and
-   paste the output here if ideas change. Covers all 164 ideas; unknown ids get 🎃. */
+   paste the output here if ideas change. Covers all 169 ideas; unknown ids get 🎃. */
 const IDEA_EMOJI = {
   "astronaut": "🧑‍🚀",
   "baby-dino": "🐣",
@@ -2417,17 +2476,24 @@ function challengeLink(){
    even when it still needed supplies (the default staples-only state names
    an idea 2 supplies short). Name a fully-makeable idea when one exists;
    otherwise tell the truth about the gap. No em dashes, house voice. */
+/* 2026-10-12 GPT loop run 135: share claims no longer say "tonight".
+   Pantry DATA carries no build times, and the site Tonight promise is
+   time-only (hands-on <=30 min, total <=120 min): some zero-missing picks
+   break it (Block Game Crew 45 min, Haunted Animatronics
+   60 min). Ownership is the claim this page can verify, so
+   the share texts claim ownership only. Same fix in rematchClaim, the
+   rematch verdict line, and the partner list share below. */
 function challengeClaim(){
   const rows = DATA.ideas.map(score);
   rows.sort((a, b) => (a.missing.length - b.missing.length) || (a.total - b.total));
   const top = rows[0];
   if (!top) return 'What can you make with what is in your house? ';
   if (top.missing.length === 0)
-    return 'I can make ' + top.it.title + ' tonight with stuff already in my house. ' +
+    return 'I can make ' + top.it.title + ' with stuff already in my house. ' +
       'What can you make with yours? ';
   const n = top.missing.length;
   return 'I am ' + n + ' ' + (n === 1 ? 'supply' : 'supplies') +
-    ' away from making ' + top.it.title + ' tonight. What can you make with yours? ';
+    ' away from making ' + top.it.title + '. What can you make with yours? ';
 }
 /* 2026-09-26 challenge rematch: the answerer's kit travels in ?kit= and the
    challenger's kit travels in ?opp=, so the original challenger gets a real
@@ -2449,7 +2515,7 @@ function rematchClaim(){
   const top = rows[0];
   if (!top) return 'I answered your pantry dare. ';
   if (top.missing.length === 0)
-    return 'I can make ' + top.it.title + ' tonight with stuff in my house. Beat that. ';
+    return 'I can make ' + top.it.title + ' with stuff in my house. Beat that. ';
   const n = top.missing.length;
   return 'I am ' + n + ' ' + (n === 1 ? 'supply' : 'supplies') +
     ' away from ' + top.it.title + '. Beat that. ';
@@ -2595,7 +2661,7 @@ function applyChallenge(){
       const friendGap = gap;
       const youGap = scoreAgainst(idea, new Set(oppIds)).missing.length;
       const line = (friendGap === 0 && youGap === 0)
-        ? 'You can both make <b>' + esc(title) + '</b> tonight. First one finished sends a photo.'
+        ? 'You can both make <b>' + esc(title) + '</b>. First one finished sends a photo.'
         : 'Rematch: your friend is <b>' + friendGap + ' ' + (friendGap === 1 ? 'supply' : 'supplies') +
           '</b> away from <b>' + esc(title) + '</b>. You are <b>' + youGap + ' ' +
           (youGap === 1 ? 'supply' : 'supplies') + '</b> away. ' +
@@ -2995,7 +3061,7 @@ function renderGroups(){
       window._phT = setTimeout(function(){ track('pantry_materials_changed', { ticked_count: ticked.size }); }, 1500);
       /* 2026-09-30 Tab 6 fix 3 (tap lag): the checkbox tile's own class
          flipped synchronously above -- defer the full render() a frame so the
-         164-card rebuild can't block the tick's paint. */
+         169-card rebuild can't block the tick's paint. */
       requestAnimationFrame(() => setTimeout(() => { render(); }, 0));
     });
   });
@@ -3199,7 +3265,7 @@ function renderFocus(){
       }
       /* 2026-09-30 Tab 6 fix 3 (tap lag): paint the tapped tile synchronously
          FIRST -- class, badge, emoji -- then defer the renderGroups()/render()
-         rebuild a frame so the 164-card rebuild can't block the tile's own
+         rebuild a frame so the 169-card rebuild can't block the tile's own
          paint. One change covers the dead-tap fix and the tap-lag fix. */
       let tileOkNow = true;
       for (const e of tileEntries()){ if (!reqOk(e.m, it.id, e.i)){ tileOkNow = false; break; } }
@@ -3268,7 +3334,7 @@ function render(){
     const tp = document.getElementById('tickpulse');
     if (!tp) return;
     if (t0.length || t1.length) {
-      tp.innerHTML = 'Now: ' + t0.length + ' tonight · ' + t1.length + ' almost — <a href="#tier1">see them</a>';
+      tp.innerHTML = 'Now: ' + t0.length + ' tonight · ' + t1.length + ' almost: <a href="#tier1">see them</a>';
       tp.style.display = 'block';
     } else { tp.innerHTML = ''; tp.style.display = 'none'; }
   })();
@@ -3612,14 +3678,14 @@ document.getElementById('supply-search').addEventListener('input', applySearch);
   if (!btn) return;
   const status = document.getElementById('sharestatus');
   const url = 'https://pickmycostume.com/pantry';
-  const text = 'I ticked what we already own \u2014 see what costumes we can make tonight: ' + url;
+  const text = 'I ticked what we already own \u2014 see what costumes we can make: ' + url;
   const done = function(via){
     if (status){ status.style.display = 'block'; status.textContent = 'Copied \u2014 send it to your partner.'; }
     track('pantry_share', { via: via });
   };
   btn.addEventListener('click', function(){
     if (navigator.share) {
-      navigator.share({ title: 'Pick My Costume \u2014 pantry', text: text, url: url }).catch(function(){});
+      navigator.share({ title: 'Pick My Costume pantry', text: text, url: url }).catch(function(){});
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(function(){ done('clipboard'); }, function(){});
     } else { fallbackCopy(text, function(){ done('fallback'); }); }
