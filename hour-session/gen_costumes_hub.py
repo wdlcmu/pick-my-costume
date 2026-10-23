@@ -244,9 +244,6 @@ TAIL = """
 <p class="home"><a href="/">Back to Pick My Costume</a> and take the 2-minute quiz to get one picked for you.</p>
 <!-- 2026-09-26 red-team distro: hub cross-links, folded into the generator
      2026-09-27. Pantry label matches the page's real title (the rename). -->
-<!-- 2026-09-27 red-team hubs: the three collection links pointed at
-     /c/family, /c/couples, /c/last-minute -- all 404. Collections actually
-     live at /collections/<name> and the couples article is its own page. -->
 <p class="home" style="margin-top:10px">Explore: <a href="/family-costumes">Family costumes</a> &middot; <a href="/couples-costumes">Couples costumes</a> &middot; <a href="/last-minute-costumes">Last-minute costumes</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/compare">Compare easy costumes</a> &middot; <a href="/group-costumes">Group packs</a> &middot; <a href="/pantry">What you already own</a> &middot; <a href="/c/couples">Couples costume ideas</a> &middot; <a href="/c/family">Family costume ideas</a> &middot; <a href="/c/last-minute">Last-minute costume ideas</a></p>
 <script>
 /* 2026-09-27 attribution: carry a validated ?src= (collection/print/share)
