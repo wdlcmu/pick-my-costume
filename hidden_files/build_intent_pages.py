@@ -171,6 +171,7 @@ day-of surprises."""),
       match=lambda i, d: '"family"' in i['audience'],
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
       limit=12,
+      hub=('/c/family', 'See all 36 family costumes'),
       faqs=[
         ("Which family member's costume should we build first?", 'The smallest. Fit the toddler or baby while they are still in a good mood, then scale the adult versions off the same simple base.'),
         ('Do we all have to match exactly?', 'No. One repeated color, hat, or prop reads as a group in photos. Matching exactly multiplies the work; a shared element is enough.'),
@@ -189,6 +190,7 @@ evening is going to take."""),
       match=lambda i, d: '"couple"' in i['audience'],
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
       limit=12,
+      hub=('/c/couples', 'See all 38 couples costumes'),
       faqs=[
         ('What makes a couples costume actually work?', 'A joke a stranger gets in three seconds: ketchup and mustard, plug and socket, sun and moon. If you have to explain it, pick a different pair.'),
         ('How do we avoid one person being the boring half?', 'Pick the pair where both halves are equally recognizable, and agree on the effort level in advance. One elaborate half next to a thrown-together half reads as a mistake, not a duo.'),
@@ -378,7 +380,7 @@ else{{rc('error');note.textContent='Hmm, that didn\u2019t save. Try again?';}}
 <div class="cta">
 <p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 169 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
 <p>Can&rsquo;t decide? <a href="https://pickmycostume.com/">Pick my costume</a>: the 2-minute quiz that picks your top 3.</p>
-</div>
+{hub_line}</div>
 </main>
 <footer>
 <a href="/about">About</a><a href="/about#faq">FAQ</a><a href="mailto:hello@pickmycostume.com">Contact</a>
@@ -461,8 +463,13 @@ for p in PAGES:
     faq_json = '<script type="application/ld+json">\n' + json.dumps(faq_ld, ensure_ascii=False) + '\n</script>'
     assert len(p['faqs']) >= 3, p['slug']
     intro_html = html.escape(' '.join(p['intro'].split()))
+    # Optional per-page hub link (2026-10-23): one added line in the .cta
+    # box, only on pages whose PAGES entry sets hub=(path, text). Pages
+    # without it render byte-identical to before ({hub_line} sits where
+    # the newline before </div> already was).
+    hub_line = ('<p><a href="%s">%s</a></p>\n' % p['hub']) if p.get('hub') else ''
     page = TEMPLATE.format(title=p['title'], desc=p['desc'], slug=p['slug'], og=picked[0],
-                           faq_html=faq_html, faq_json=faq_json,
+                           faq_html=faq_html, faq_json=faq_json, hub_line=hub_line,
                            h1=p['title'].split(':')[0], intro=intro_html, cards=cards, ph=PH_SNIPPET)
     assert 'Pumpkin King and Stitched Bride' not in page
     out = os.path.join(ROOT, p['slug'] + '.html')
