@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 """Generate whats-trending.html from a Pinterest Trends weekly snapshot.
 
-Usage: python3 gen_trends_page.py [--data hidden_files/search-data-recon/data-week-2026-09-26.json]
+Usage: python3 gen_trends_page.py --data hidden_files/search-data-recon/data-week-YYYY-MM-DD.json
                                    [--out whats-trending.html]
+
+--data is REQUIRED and has no default (2026-10-22 fix): the old default
+pointed at the 2026-09-26 snapshot, so a bare run would silently regress
+whats-trending.html to September data (and the 2025 Frightgeist list).
+The weekly refresh always passes its fresh snapshot explicitly, so
+failing closed here breaks no real caller and makes a stale-default
+regression impossible. Pick the snapshot deliberately, e.g. the one
+the live page used: data-week-2026-10-19.json.
 
 Reads the snapshot JSON (terms with rank/index/mom4_pct/guide mapping),
 resolves guide titles from mcp-server/bank.json, and writes a fully
@@ -92,8 +100,11 @@ def fmt_week(week_ending):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--data", default=os.path.join(
-        ROOT, "hidden_files", "search-data-recon", "data-week-2026-09-26.json"))
+    ap.add_argument("--data", required=True, help=(
+        "weekly Pinterest snapshot JSON to build from, e.g. "
+        "hidden_files/search-data-recon/data-week-2026-10-19.json. "
+        "Required, no default: a bare run must never silently fall back "
+        "to a stale snapshot and regress whats-trending.html"))
     ap.add_argument("--out", default=os.path.join(ROOT, "whats-trending.html"))
     args = ap.parse_args()
 
