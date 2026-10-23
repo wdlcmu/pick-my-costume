@@ -169,13 +169,17 @@ def _meta_desc(title, hw):
     # over the 155-char limit); the full time incl. drying is on the page.
     ht = re.sub(r'\s*\+.*$', '', _esc_len(hw["time"]))
     d = ("How to make %s%s costume in %s. %s DIY project "
-         "with a full supplies list, step-by-step guide, and sizing tips."
+         "with a full supplies list and a step-by-step guide."
          % (art, t, ht, _esc_len(hw["effort"])))
     if len(d) > 155:
         d = d.replace("a full supplies list", "a supplies list")
     return d
+# Floor lowered 110 -> 100 on 2026-10-16 (gpt-loop run 323): the sizing-tips
+# phrase was dropped from every meta description (only 31 of 169 guides render
+# a sizing paragraph, so the claim was false on 138), shortening the shortest
+# descriptions to ~105 chars. Google imposes no minimum meta length.
 _bad_desc = [(s, len(_meta_desc(data[s]["t"], _instructions[s]))) for s in data
-             if not 110 <= len(_meta_desc(data[s]["t"], _instructions[s])) <= 155]
+             if not 100 <= len(_meta_desc(data[s]["t"], _instructions[s])) <= 155]
 assert not _bad_desc, "meta description outside 120-155 chars: %s" % (_bad_desc[:10],)
 # Sourced-facts layer (AI-citation checklist item #10, audited 2026-09-26):
 # one audited external citation per guide, on safety-relevant steps only.
@@ -991,6 +995,30 @@ function _cTileBits(mat, texts, i){
   }
   return {e: "🛒", label: _cShortName(texts[i]) || "Item", rep: null};
 }
+/* Michaels-style materials groups (2026-10-22, Billy): every material
+   lands in "home" (Already at home), "tool" (Tools), or "buy" (Buy) from
+   the bank string's own source tag -- the first of own/make/buy in the
+   parentheticals is the primary signal; a genuine tool noun overrides a
+   buy tag; untagged household staples land in Tools. Same rules as
+   app.js planMatGroup so the /c/ guides and the app plan never disagree. */
+var _CGROUP_ORDER = {home: 0, tool: 1, buy: 2};
+var _CGROUP_LABEL = {home: "Already at home", tool: "Tools", buy: "Buy"};
+function _cMatGroup(text){
+  var s = String(text);
+  var parens = [], pm, re = /\(([^)]*)\)/g;
+  while ((pm = re.exec(s))) parens.push(pm[1]);
+  var P = parens.join(" ").toLowerCase();
+  var T = s.replace(/\([^)]*\)/g, "");
+  if (P.indexOf("household tools") >= 0) return "tool";
+  var vm = /\\b(own|make|buy)\\b/.exec(P);
+  var primary = vm ? vm[1] : null;
+  var isTool = /\\b(scissors|hot glue gun|glue gun|utility knife|craft knife|staple gun|paint ?brush|paintbrush|sewing needle|hole punch|box cutter)\\b/i.test(T);
+  if (primary === "own") return isTool ? "tool" : "home";
+  if (primary === "make") return "home";
+  if (primary === "buy") return isTool ? "tool" : "buy";
+  if (isTool || /\\b(tape|safety pins?|glue|glue stick|markers?|pencils?|paint ?brush|paintbrush)\\b/i.test(T)) return "tool";
+  return "home";
+}
 /* Merged tile list for a slug: [{rep, idxs:[material indices], e, label}].
    Returns null when pantry data is missing or misaligned (fail safe). */
 function _cTiles(slug){
@@ -1007,6 +1035,12 @@ function _cTiles(slug){
     var t = {rep: bits.rep, idxs: [i], e: bits.e, label: bits.label};
     seen[key] = t; tiles.push(t);
   }
+  /* Group-annotate and stable-sort the tiles (Already at home, Tools,
+     Buy) so _cCardsHtml can head each run and window.PMD carries the
+     same order the static HTML renders -- the client tick script pairs
+     .ptile buttons with TILES by index, so the two must never drift. */
+  tiles.forEach(function(t){ t.g = _cMatGroup(texts[t.idxs[0]]); });
+  tiles.sort(function(a, b){ return _CGROUP_ORDER[a.g] - _CGROUP_ORDER[b.g]; });
   return {mats: mats, texts: texts, tiles: tiles};
 }
 /* Assumed-basics coverage for the static render (2026-10-13): mirrors the
@@ -1049,18 +1083,27 @@ function _cCardsHtml(slug, ct){
     for (var j = 0; j < t.idxs.length; j++){ if (!matHave[t.idxs[j]]) return false; }
     return true;
   });
-  var cards = ct.tiles.map(function(t, ti){
+  /* Tiles arrive group-sorted from _cTiles; head each run with its
+     Michaels group label (Already at home / Tools / Buy). The headings
+     are plain grid children -- the client tick script selects .ptile
+     only, in TILES order, and is unaffected. */
+  var cards = "", lastG = null;
+  ct.tiles.forEach(function(t, ti){
+    if (t.g !== lastG){
+      lastG = t.g;
+      cards += "<p class=\\"ptgroup\\">" + _CGROUP_LABEL[t.g] + "</p>";
+    }
     var assumed = t.rep && staples.indexOf(t.rep) >= 0;
     var okTile = tileHave[ti];
     var sub = t.idxs.map(function(mi){ return esc(ct.texts[mi]); }).join("<br>");
-    return "<button type=\\"button\\" class=\\"ptile " + (okTile ? "have" : "miss") + "\\" data-ti=\\"" + ti + "\\" data-label=\\"" + esc(t.label) + "\\" aria-label=\\"" + esc(t.label) + ": " + (okTile ? "you have this" : "missing") + ". Tap to update.\\">" +
+    cards += "<button type=\\"button\\" class=\\"ptile " + (okTile ? "have" : "miss") + "\\" data-ti=\\"" + ti + "\\" data-label=\\"" + esc(t.label) + "\\" aria-label=\\"" + esc(t.label) + ": " + (okTile ? "you have this" : "missing") + ". Tap to update.\\">" +
       "<span class=\\"ptbadge\\" aria-hidden=\\"true\\">" + (okTile ? "\\u2713" : "\\u25CB") + "</span>" +
       "<span class=\\"ptemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" +
       "<span class=\\"ptlabel\\">" + esc(t.label) + "</span>" +
       "<span class=\\"ptsub\\">" + sub + "</span>" +
       (assumed ? "<span class=\\"ptag\\">assumed</span>" : "") +
       "</button>";
-  }).join("");
+  });
   var chips = ct.tiles.filter(function(t, ti){ return !tileHave[ti]; }).map(function(t){
     return "<span class=\\"pchip\\"><span class=\\"pmemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" + esc(t.label) + "</span>";
   }).join("");
@@ -1137,7 +1180,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        friend-voice variant (run 78) and the /c/ card pattern (run 91). The
        unfurl is the recipient's first impression; the flat "Time:" label
        was the one surface without the mark. */
-    "\\u23F1\\uFE0F Timed: about " + esc(_hw.time).replace(/ \\+ drying$/, " of hands-on work + drying time") +
+    "\\u23F1\\uFE0F Timed: about " + esc(_hw.time).replace(/\\s*\\+.*$/, "") +
     " \\u00b7 Effort: " + esc(_hw.effort) + ". " : "";
   /* SEO meta description (2026-09-30, fix list P2-11): the old triple+blurb
      ran 54-157 chars with 147 of 164 under 120. This template lands 120-155
@@ -1149,9 +1192,9 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _desc = blurb;
   if (_hw && _hw.time && _hw.effort) {
     var _art = /^the /i.test(title) ? "" : (/^[aeiou]/i.test(title) ? "an " : "a ");
-    _desc = "How to make " + _art + title + " costume in " + esc(_hw.time) +
+    _desc = "How to make " + _art + title + " costume in " + esc(_hw.time).replace(/\s*\+.*$/, "") +
       ". " + esc(_hw.effort) +
-      " DIY project with a full supplies list, step-by-step guide, and sizing tips.";
+      " DIY project with a full supplies list and a step-by-step guide.";
     if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
   }
   var _ld = "";
@@ -1328,7 +1371,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      recipient reads before clicking. Share arrivals get the measured HOWTO
      build time (same "Timed: about X" line as the guide Share button).
      time is bank data, never user input, so no esc() needed. */
-  var _ogTime = (_hw && _hw.time) ? " \\u23F1\\uFE0F Timed: about " + _hw.time + "." : "";
+  var _ogTime = (_hw && _hw.time) ? " \\u23F1\\uFE0F Timed: about " + String(_hw.time).replace(/\s*\+.*$/, "") + "." : "";
   var _ogDesc = _s ?
     "Your friend is going as " + title + " this Halloween." + _ogTime + " Here is the full guide to make it yourself." :
     _tripleText + blurb;
@@ -1443,10 +1486,11 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        labels (a bare "Medium" pill read as meaningless to cold recipients),
        and "+ drying" is spelled out as passive wait, matching the share
        preview text. Reversible: restore the bare _t.map line. */
-    var _timeText = esc(_hw.time).replace(/ \\+ drying$/, " of hands-on work + drying time");
+    var _timeText = esc(_hw.time).replace(/\s*\+.*$/, "");
     var _pills = [];
     if (_hw.time) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Time</span>" + _timeText + "</span>");
     if (_hw.effort) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Effort</span>" + esc(_hw.effort) + "</span>");
+    if (_hw.s && _hw.s.length) _pills.push("<span class=\\"pill\\"><span class=\\"pl\\">Steps</span>" + _hw.s.length + "</span>");
     if (_pills.length) _triple = "<p class=\\"triple\\">" + _pills.join("") + "</p><p class=\\"timenote\\">\\u23F1\\uFE0F We timed it, but results may vary.</p>";
     /* 2026-10-10 memorability mandate: stopwatch copy is the live standard
        on /c/ guides ("Timed: about X" pills + this timenote). Do NOT revert
@@ -1559,7 +1603,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _sgCap=" + JSON.stringify(SHARECAP[slug] || "") + ";" +
     "var _sgSlug=" + JSON.stringify(slug) + ";" +
     "var _sgRegion=" + JSON.stringify(REGION[slug] || "unknown") + ";" +
-    "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" \\u23f1\\ufe0f Timed: about "+_hw.time):"") + ";" +
+    "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" \\u23f1\\ufe0f Timed: about "+String(_hw.time).replace(/\s*\+.*$/,"")):"") + ";" +
     "var _sgBusy=false;" +
     "function _sgId(){var c=\\"abcdefghijklmnopqrstuvwxyz0123456789\\",s=\\"\\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
     "function _sgTrack(sid,via){var _p={share_id:sid,idea_id:_sgSlug,share_origin:\\"guide\\",via:via};var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\\"share_created\\",_p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
@@ -1606,7 +1650,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        string incl. drying, so the banner can never understate vs the unfurl;
        falls back to the plain sub-line when a guide has no time data.
        Generic friend branch only. */
-    "var _rbSub=" + JSON.stringify((_hw&&_hw.time?"\u23f1\ufe0f Timed: about "+_hw.time+". ":"")+"Take the 2-minute quiz to get your own costume.") + ";" +
+    "var _rbSub=" + JSON.stringify((_hw&&_hw.time?"\u23f1\ufe0f Timed: about "+String(_hw.time).replace(/\s*\+.*$/,"")+". ":"")+"Take the 2-minute quiz to get your own costume.") + ";" +
     "var DRAFTH = " + JSON.stringify(DRAFT_HALVES[slug] || null) + ";" +
     "(function(){" +
     "function _rmSL(){var _sl=document.querySelector('.sharerline');if(_sl)_sl.parentNode.removeChild(_sl);}" +
@@ -1917,6 +1961,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".closet-line{font-weight:700;font-size:15px;color:#fdf3e3;}" +
     ".ptiles-sub{margin:0 0 10px;color:#cdbcf0;font-size:14px;}" +
     ".ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px;}" +
+    ".ptgroup{grid-column:1/-1;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#ff8c1a;margin:8px 0 0;}" +
     ".ptile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;padding:10px 6px;text-align:center;font:inherit;cursor:pointer;border:2px solid #4b3486;border-radius:14px;background:rgba(0,0,0,.18);color:#fdf3e3;}" +
     ".ptile .ptemo{font-size:36px;line-height:1.1;}" +
     ".ptile .ptlabel{font-size:11px;line-height:1.25;overflow-wrap:anywhere;}" +
@@ -2019,7 +2064,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        percent below escapes the literal percent for the format below. */
     "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
     "</style>" +
-    "<script>(function(){var s=document.createElement(\\"script\\");s.async=true;s.src=\\"https://us.i.posthog.com/static/array.js\\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\\",{api_host:\\"https://us.i.posthog.com\\",autocapture:false,capture_pageview:false,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\\"click\\",function(e){var t=e.target.closest&&e.target.closest(\\"[data-claude]\\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\\"add_to_claude_clicked\\",{source:\\"guide_page\\"});}catch(_){}}});})();</script>" +
+    "<script>(function(){var s=document.createElement(\\"script\\");s.async=true;s.src=\\"https://us.i.posthog.com/static/array.js\\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\\",{api_host:\\"https://us.i.posthog.com\\",autocapture:false,capture_pageview:true,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\\"click\\",function(e){var t=e.target.closest&&e.target.closest(\\"[data-claude]\\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\\"add_to_claude_clicked\\",{source:\\"guide_page\\"});}catch(_){}}});})();</script>" +
     "</head><body><div class=\\"topbar\\"><a class=\\"brand\\" href=\\"/\\">🎃 Pick My <span>Costume</span></a><div class=\\"topbtns\\"><a class=\\"homebtn\\" href=\\"/\\">Pick my costume</a><a class=\\"claudebtn\\" href=\\"https://pickmycostume.com/mcp\\" data-claude=\\"1\\">Add to Claude</a></div></div><main class=\\"guide\\">" +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
