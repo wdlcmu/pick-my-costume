@@ -248,7 +248,7 @@ def main():
     "url": "https://pickmycostume.com/"
   },
   "datePublished": "2026-09-30",
-  "dateModified": "2026-09-30",
+  "dateModified": "%(modified)s",
   "mainEntityOfPage": {
     "@type": "WebPage",
     "@id": "%(page_url)s"
@@ -369,6 +369,11 @@ p.a{color:var(--muted);margin:0 0 20px}
         "page_url": PAGE_URL,
         "og_image": OG_IMAGE,
         "week": week,
+        # FIX 2026-10-23: dateModified tracks the
+        # snapshot's week-ending date instead of the hard-coded publish
+        # date, so every weekly refresh moves it honestly. datePublished
+        # stays 2026-09-30 (the page's true first publish date).
+        "modified": snap["week_ending"],
         "source_url": html.escape(snap.get("source_url", "https://trends.pinterest.com/?country=US")),
         "table": table,
         "missing_txt": ("    " + missing_txt) if missing_txt else "",
