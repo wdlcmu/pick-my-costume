@@ -6,7 +6,7 @@ plain text links ("Read the full step-by-step guide") and buried the quiz
 CTA in the footer block. This module injects, just before the final CTA
 block, a tasteful "More costume guides" card grid (3-4 contextual /c/<slug>
 cards with the guide's own og image, real time/cost/effort) plus an explicit
-"Find my costume" quiz CTA card.
+"Pick my costume" quiz CTA card.
 
 Usage from a builder:
     from related_cards import inject_related_cards
@@ -37,6 +37,28 @@ MARKER = "<!-- pmc-related-cards-v1 -->"
 _bank = None
 _inst = None
 
+def _parse_instructions(src):
+    # Brace-matching parse, the pattern proven in gen_share_function.py.
+    marker = "var INSTRUCTIONS ="
+    i = src.index("{", src.index(marker) + len(marker))
+    depth, in_str, esc = 0, False, False
+    for j in range(i, len(src)):
+        ch = src[j]
+        if in_str:
+            if esc: esc = False
+            elif ch == "\\": esc = True
+            elif ch == '"': in_str = False
+        else:
+            if ch == '"': in_str = True
+            elif ch == "{": depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    seg = re.sub(r",\s*([\}\]])", r"\1", src[i:j + 1])
+                    return json.loads(seg)
+    raise ValueError("INSTRUCTIONS object not balanced in app.js")
+
+
 def _load():
     global _bank, _inst
     if _bank is None:
@@ -44,11 +66,11 @@ def _load():
         ideas = raw if isinstance(raw, list) else raw.get("ideas")
         _bank = {i["id"]: i for i in ideas}
     if _inst is None:
-        src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
-        m = re.search(r'var INSTRUCTIONS = (\{.*?\n\});', src, re.S)
-        if not m:
-            raise RuntimeError("INSTRUCTIONS block not found in index.html")
-        _inst = json.loads(m.group(1))
+        # Family B repair 2026-10-22: the bank moved from index.html to
+        # app.js on 2026-10-01; the old index.html regex raised
+        # "INSTRUCTIONS block not found in index.html" for every caller.
+        src = open(os.path.join(ROOT, "app.js"), encoding="utf-8").read()
+        _inst = _parse_instructions(src)
     return _bank, _inst
 
 def nodash(s):
@@ -77,9 +99,15 @@ CSS = """<style>
 .pmc-pin a{color:#cdbcf0;font-size:14px}
 </style>"""
 
+def display_time(t):
+    # Display rule (Billy, 2026-10-03): displayed time is hands-on only;
+    # drying counts in Tonight scoring, never in displayed copy.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
+
+
 def _triple(pid, inst):
     t = inst[pid]
-    return "%s - %s - %s" % (t["time"], t["cost"], t["effort"])
+    return "%s - %s" % (display_time(t["time"]), t["effort"])
 
 def cards_block(picks):
     """picks: list of (slug, title, triple) tuples, 3-4 items."""
@@ -95,9 +123,9 @@ def cards_block(picks):
             '<img src="%s/images/og/%s.jpg" alt="%s costume" loading="lazy" width="1200" height="630">'
             '<span class="pmc-t"><strong>%s</strong><span>%s</span></span></a>'
             % (SITE, slug, SITE, slug, _esc(title), _esc(title), _esc(triple)))
-    quiz_head = nodash("Find my costume")
+    quiz_head = nodash("Pick my costume")
     quiz_sub = nodash("Answer a few questions and get your pick in 2 minutes. Free, no signup.")
-    note = nodash("Step-by-step builds for the picks on this page, with real times and costs.")
+    note = nodash("Step-by-step builds for the picks on this page, with real build times.")
     block = (
         MARKER + "\n" + CSS + "\n"
         '<div class="pmc-rel">\n'
@@ -169,7 +197,7 @@ def inject_related_cards(page):
     for slug, title, triple in tuples:
         assert ("/c/%s" % slug) in page, slug
         assert ("images/og/%s.jpg" % slug) in page, slug
-    assert "Find my costume" in page
+    assert "Pick my costume" in page
     assert 'href="%s/"' % SITE in page
     assert "\u2014" not in block and "\u2013" not in block
     return page
