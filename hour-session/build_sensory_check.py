@@ -87,6 +87,17 @@ FLAGS = [
 COMPILED = [(k, re.compile(rx), label, why, fix) for k, rx, label, why, fix in FLAGS]
 
 
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed drying time
+    # is dropped on site copy even though Tonight scoring still counts
+    # it. The live page has always shown hands-on time only, so strip
+    # the bank time's "+ ... drying" suffix at build time. Bank times
+    # are "N min" or "N min + M drying"; anything else passes through
+    # unchanged here but is shape-asserted in main().
+    # Ported verbatim from gen_closet.py / gen_costumes_hub.py.
+    return re.sub(r'\s*\+.*drying\s*$', '', t or '')
+
+
 def compute_flags(idea, ins):
     text = (" ".join(ins.get("m", [])) + " " + idea.get("blurb", "")).lower()
     for phrase, glued in SANITIZE:
@@ -104,9 +115,9 @@ TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Is This Costume Sensory-Friendly? | Pick My Costume</title>
-<meta name="description" content="Pick a Halloween costume and check it for the stuff that bugs sensory-sensitive kids: face paint, masks, itchy fabric, noise. Built from our 138-idea costume bank.">
+<meta name="description" content="Pick a Halloween costume and check it for the stuff that bugs sensory-sensitive kids: face paint, masks, itchy fabric, noise. Built from our 169-idea costume bank.">
 <meta property="og:title" content="Is This Costume Sensory-Friendly?">
-<meta property="og:description" content="Check any of our 138 costumes against the usual sensory irritants: face paint, masks, itchy fabric, whistles. With one-line fixes.">
+<meta property="og:description" content="Check any of our 169 costumes against the usual sensory irritants: face paint, masks, itchy fabric, whistles. With one-line fixes.">
 <meta property="og:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">
 <meta property="og:type" content="website">
 <script type="application/ld+json">
@@ -176,10 +187,10 @@ a.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
     </div>
   </div>
   <div class="disclaimer">
-    <b>Honest fine print.</b> This check scans our own 138-idea costume bank: its materials lists and blurbs. It is not medical advice, and it cannot know your child. When in doubt, ask the kid.
+    <b>Honest fine print.</b> This check scans our own 169-idea costume bank: its materials lists and blurbs. It is not medical advice, and it cannot know your child. When in doubt, ask the kid.
   </div>
   <div class="method">
-    How we check: we scan the costume's materials and blurb for face coverings, head pressure, itch, noise, and drape words, and list everything we find with a one-line fix. __CALM__ of 164 ideas carry zero flags.
+    How we check: we scan the costume's materials and blurb for face coverings, head pressure, itch, noise, and drape words, and list everything we find with a one-line fix. __CALM__ of 169 ideas carry zero flags.
   </div>
 </div>
 __FAQ_HTML__
@@ -226,7 +237,7 @@ function pick(id){
   document.getElementById("ctitle").textContent=e.t;
   document.getElementById("cblurb").textContent=e.b;
   document.getElementById("triple").innerHTML=
-    "<span>"+esc(e.time)+"</span><span>"+esc(e.cost)+"</span><span>"+esc(e.effort)+"</span>";
+    "<span>"+esc(e.time)+"</span><span>"+esc(e.effort)+"</span>";
   var fh="";
   e.flags.forEach(function(f){fh+='<div class="flag"><b>'+esc(f.label)+'</b><span>'+esc(f.why)+'</span><span class="fix">Fix: '+esc(f.fix)+'</span></div>';});
   if(e.flags.length===0){fh+='<div class="clear">Checked: no mask, face paint, beard, goggles, wig, helmet, crown, itchy fabric, whistle, cape, or wings words in the materials.</div>';}
@@ -239,11 +250,15 @@ function pick(id){
 q.addEventListener("input",doSearch);
 document.getElementById("sharebtn").onclick=function(){
   if(!current)return;
+  /* Loop measurement: mint an anonymous share id so the recipient
+     leg is traceable (same pattern as school-check). */
+  var _ssid="", _abc="abcdefghijklmnopqrstuvwxyz0123456789";
+  for(var _i=0;_i<8;_i++)_ssid+=_abc[Math.floor(Math.random()*_abc.length)];
   var verdict=current.flags.length===0?"looks sensory-friendly from the materials":
     "has "+current.flags.length+" flag"+(current.flags.length>1?"s":"")+": "+
     current.flags.map(function(f){return f.label.toLowerCase();}).join(", ");
-  var text="The sensory check says "+current.t+" "+verdict+". Will your kid's costume survive Halloween night? https://pickmycostume.com/sensory-check?src=share-sensory";
-  ph("sensory_shared",{idea:current.id});
+  var text="The sensory check says "+current.t+" "+verdict+". Will your kid's costume survive Halloween night? https://pickmycostume.com/sensory-check?pick="+encodeURIComponent(current.id)+"&s="+_ssid+"&src=share-sensory";
+  ph("sensory_shared",{idea:current.id,share_id:_ssid,share_origin:"sensory"});
   if(navigator.share){navigator.share({text:text}).catch(function(){});}
   else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert("Copied. Paste it in the parent chat.");},function(){prompt("Copy this:",text);});}
   else{prompt("Copy this:",text);}
@@ -254,6 +269,10 @@ document.getElementById("sharebtn").onclick=function(){
   var id;try{id=decodeURIComponent(m[1]);}catch(e){return;}
   var e=null;for(var i=0;i<INDEX.length;i++){if(INDEX[i].id===id){e=INDEX[i];break;}}
   if(e){pick(e.id);}
+  /* Recipient leg: stamp via_share_id from ?s= so the open traces
+     back to the sender's sensory_shared.share_id. */
+  var vsm=/[?&]s=([a-z0-9]{8,})/.exec(location.search||"");
+  if(vsm)ph("sensory_opened",{idea:id,via_share_id:vsm[1],share_origin:"sensory"});
 })();
 </script>
 </body>
@@ -291,9 +310,13 @@ def main():
         bank = json.load(f)
     ideas = bank["ideas"]
     ins = bank["instructions"]
-    assert len(ideas) == 138, "bank drift: %d ideas" % len(ideas)
+    assert len(ideas) == 169, "bank drift: %d ideas" % len(ideas)
     ids = [i["id"] for i in ideas]
-    assert len(set(ids)) == 138, "duplicate ids"
+    assert len(set(ids)) == 169, "duplicate ids"
+    _bad_times = [iid for iid, v in ins.items()
+                  if not re.fullmatch(r"\d+ min( \+ .+ drying)?",
+                                      v.get('time', ''))]
+    assert not _bad_times, 'unexpected bank time format: %s' % _bad_times[:5]
 
     index = []
     for idea in sorted(ideas, key=lambda i: i["id"]):
@@ -304,7 +327,7 @@ def main():
             "id": iid,
             "t": idea["title"],
             "b": idea["blurb"],
-            "time": e.get("time", ""),
+            "time": display_time(e.get("time", "")),
             "cost": e.get("cost", ""),
             "effort": e.get("effort", ""),
             "flags": [{"k": k, "label": l, "why": w, "fix": f}
