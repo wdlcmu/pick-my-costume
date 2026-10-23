@@ -3,9 +3,31 @@
 # 2026-09-27 (new-ideas stream d).
 #
 # Every number on the page is computed from the LIVE bank (mcp-server/bank.json)
-# or from the verified 138-idea demand-sim report. The generator FAILS LOUDLY
-# on any drift (missing demand id, zero stat, changed idea count) so the page
-# can never publish a stale or invented number.
+# or quoted from the demand-sim report behind DEMAND_TOP5 below. The generator
+# FAILS LOUDLY on any drift (missing demand id, zero stat, bank below the
+# non-vacuous floor, idea/instruction slug-set mismatch) so the page can
+# never publish a stale or invented number.
+#
+# Repair note (2026-10-22, Family A slice 4): the hard-coded "expected
+# 138" check froze this page when the bank grew to 169 on Oct 3; the
+# count is now derived (>= 100 floor + slug-set equality, the
+# build_aisle_dupes.py pattern) and every bank-count string in the
+# template copy renders from the derived count (__COUNT__).
+# DEMAND_TOP5 percentages were NOT touched: they are quoted sim output,
+# not bank counts (see the provenance comment at DEMAND_TOP5).
+#
+# Verify-trends fix (2026-10-22, verifier-sweep REAL-DEFECT): the live
+# page was hand-updated Oct 16 and is AHEAD of this generator in four
+# places; all four are now ported back into the generator so a regen
+# can never silently revert them: (1) DEMAND_TOP5 frozen at the live
+# page's percentages (see the comment there); (2) the meta description
+# reads "DIY stats", not "DIY and budget stats"; (3) the stat grid's
+# third cell is "low-budget ideas" (derived low count), not "cute
+# picks" — same swap in the stat-card data's last card; (4) the
+# gentle-kid cards are locked to the trio the page FAQ names. After
+# these ports a regen differs from the live page ONLY in bank-derived
+# numbers/titles/audiences (the stale diy/low/kid/gentle/vibe/kid-line
+# stats, the snow-sisters bank title, and its bank "class" audience).
 #
 # Byte-inert: writes trends-2026.html + trends-stat-data.json only. No edits to
 # any live file, no inbound links, not in sitemap.xml.
@@ -16,9 +38,9 @@ import json, os, re, sys, html
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-FAQ_QA_TRENDS = [('Where do the trend numbers come from?', 'Counts come straight from our live idea bank of 164 costumes: audience, budget, and vibe tags on every idea. The top 5 come from a demand simulation: 100,000 quiz runs against the same bank, counting which idea lands at number one. Percentages are shares of those simulated runs. This is our own data, not a national survey.'), ("What does 'picked most' mean?", "The Tin Hero landed at number one on 5.3% of 100,000 simulated quiz runs - more than any other idea. It means our quiz's scoring picks it most often, not that real shoppers bought it most."), ('Are these national Halloween trends?', "No. These are trends inside our own costume bank and quiz simulation. For national search trends, see our trending page, which cites Google's Frightgeist rankings."), ('How many ideas are good for little kids?', "Dozens of the 164 ideas are made for kids, and most of them have nothing scary at all. The 'For little kids' section above names three gentle favorites: Baby Dinosaur, Backyard Superhero, and Ballerina.")]
-FAQ_JSONLD_TRENDS = '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "Where do the trend numbers come from?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Counts come straight from our live idea bank of 164 costumes: audience, budget, and vibe tags on every idea. The top 5 come from a demand simulation: 100,000 quiz runs against the same bank, counting which idea lands at number one. Percentages are shares of those simulated runs. This is our own data, not a national survey."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "What does \'picked most\' mean?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "The Tin Hero landed at number one on 5.3% of 100,000 simulated quiz runs - more than any other idea. It means our quiz\'s scoring picks it most often, not that real shoppers bought it most."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "Are these national Halloween trends?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "No. These are trends inside our own costume bank and quiz simulation. For national search trends, see our trending page, which cites Google\'s Frightgeist rankings."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "How many ideas are good for little kids?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Dozens of the 164 ideas are made for kids, and most of them have nothing scary at all. The \'For little kids\' section above names three gentle favorites: Baby Dinosaur, Backyard Superhero, and Ballerina."\n      }\n    }\n  ]\n}\n</script>'
-FAQ_VISIBLE_TRENDS = '<section class="pmc-faq" id="pmc-faq">\n<style>\n.pmc-faq{margin:32px 0}\n.pmc-faq h2{font-size:22px;margin:0 0 8px}\n.pmc-faq details{margin:8px 0;border:1px solid rgba(140,140,160,.4);border-radius:10px;padding:10px 14px}\n.pmc-faq summary{cursor:pointer;font-weight:700}\n.pmc-faq p{margin:8px 0 4px;line-height:1.55}\n</style>\n<h2>Common questions</h2>\n<details class="faq">\n<summary>Where do the trend numbers come from?</summary>\n<p>Counts come straight from our live idea bank of 164 costumes: audience, budget, and vibe tags on every idea. The top 5 come from a demand simulation: 100,000 quiz runs against the same bank, counting which idea lands at number one. Percentages are shares of those simulated runs. This is our own data, not a national survey.</p>\n</details>\n<details class="faq">\n<summary>What does &#x27;picked most&#x27; mean?</summary>\n<p>The Tin Hero landed at number one on 5.3% of 100,000 simulated quiz runs - more than any other idea. It means our quiz&#x27;s scoring picks it most often, not that real shoppers bought it most.</p>\n</details>\n<details class="faq">\n<summary>Are these national Halloween trends?</summary>\n<p>No. These are trends inside our own costume bank and quiz simulation. For national search trends, see our trending page, which cites Google&#x27;s Frightgeist rankings.</p>\n</details>\n<details class="faq">\n<summary>How many ideas are good for little kids?</summary>\n<p>Dozens of the 164 ideas are made for kids, and most of them have nothing scary at all. The &#x27;For little kids&#x27; section above names three gentle favorites: Baby Dinosaur, Backyard Superhero, and Ballerina.</p>\n</details>\n</section>'
+FAQ_QA_TRENDS = [('Where do the trend numbers come from?', 'Counts come straight from our live idea bank of __COUNT__ costumes: audience, budget, and vibe tags on every idea. The top 5 come from a demand simulation: 100,000 quiz runs against the same bank, counting which idea lands at number one. Percentages are shares of those simulated runs. This is our own data, not a national survey.'), ("What does 'picked most' mean?", "The Tin Hero landed at number one on 5.3% of 100,000 simulated quiz runs - more than any other idea. It means our quiz's scoring picks it most often, not that real shoppers bought it most."), ('Are these national Halloween trends?', "No. These are trends inside our own costume bank and quiz simulation. For national search trends, see our trending page, which cites Google's Frightgeist rankings."), ('How many ideas are good for little kids?', "Dozens of the __COUNT__ ideas are made for kids, and most of them have nothing scary at all. The 'For little kids' section above names three gentle favorites: Baby Dinosaur, Backyard Superhero, and Ballerina.")]
+FAQ_JSONLD_TRENDS = '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "Where do the trend numbers come from?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Counts come straight from our live idea bank of __COUNT__ costumes: audience, budget, and vibe tags on every idea. The top 5 come from a demand simulation: 100,000 quiz runs against the same bank, counting which idea lands at number one. Percentages are shares of those simulated runs. This is our own data, not a national survey."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "What does \'picked most\' mean?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "The Tin Hero landed at number one on 5.3% of 100,000 simulated quiz runs - more than any other idea. It means our quiz\'s scoring picks it most often, not that real shoppers bought it most."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "Are these national Halloween trends?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "No. These are trends inside our own costume bank and quiz simulation. For national search trends, see our trending page, which cites Google\'s Frightgeist rankings."\n      }\n    },\n    {\n      "@type": "Question",\n      "name": "How many ideas are good for little kids?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Dozens of the __COUNT__ ideas are made for kids, and most of them have nothing scary at all. The \'For little kids\' section above names three gentle favorites: Baby Dinosaur, Backyard Superhero, and Ballerina."\n      }\n    }\n  ]\n}\n</script>'
+FAQ_VISIBLE_TRENDS = '<section class="pmc-faq" id="pmc-faq">\n<style>\n.pmc-faq{margin:32px 0}\n.pmc-faq h2{font-size:22px;margin:0 0 8px}\n.pmc-faq details{margin:8px 0;border:1px solid rgba(140,140,160,.4);border-radius:10px;padding:10px 14px}\n.pmc-faq summary{cursor:pointer;font-weight:700}\n.pmc-faq p{margin:8px 0 4px;line-height:1.55}\n</style>\n<h2>Common questions</h2>\n<details class="faq">\n<summary>Where do the trend numbers come from?</summary>\n<p>Counts come straight from our live idea bank of __COUNT__ costumes: audience, budget, and vibe tags on every idea. The top 5 come from a demand simulation: 100,000 quiz runs against the same bank, counting which idea lands at number one. Percentages are shares of those simulated runs. This is our own data, not a national survey.</p>\n</details>\n<details class="faq">\n<summary>What does &#x27;picked most&#x27; mean?</summary>\n<p>The Tin Hero landed at number one on 5.3% of 100,000 simulated quiz runs - more than any other idea. It means our quiz&#x27;s scoring picks it most often, not that real shoppers bought it most.</p>\n</details>\n<details class="faq">\n<summary>Are these national Halloween trends?</summary>\n<p>No. These are trends inside our own costume bank and quiz simulation. For national search trends, see our trending page, which cites Google&#x27;s Frightgeist rankings.</p>\n</details>\n<details class="faq">\n<summary>How many ideas are good for little kids?</summary>\n<p>Dozens of the __COUNT__ ideas are made for kids, and most of them have nothing scary at all. The &#x27;For little kids&#x27; section above names three gentle favorites: Baby Dinosaur, Backyard Superhero, and Ballerina.</p>\n</details>\n</section>'
 # NOTE: FAQ_VISIBLE_TRENDS and FAQ_JSONLD_TRENDS must stay in sync (same Q&A).
 
 
@@ -27,13 +49,20 @@ BANK_PATH = os.path.join(REPO, 'mcp-server', 'bank.json')
 PAGE_PATH = os.path.join(REPO, 'trends-2026.html')
 DATA_PATH = os.path.join(REPO, 'hour-session', 'trends-stat-data.json')
 
-# From the 138-idea demand sim (gate.js N=100,000, 2026-09-27).
-# Ids must exist in the live bank; percentages are quoted verbatim.
+# LIVE-FROZEN 2026-10-22: percentages copied verbatim from the live
+# page (hand-updated Oct 16), which is the published demand claim.
+# These constants previously quoted the Sep 27 138-idea demand sim
+# (5.8 / 4.6 / 3.9 / 3.7 / 2.9); a regen would have silently reverted
+# the live percentages to that stale sim. This freeze is NOT a fresh
+# sim and NOT a claim these are the 169-bank numbers: replace them
+# only with a demand sim re-run on the current bank (parity rollup
+# Call 6, still open). The page FAQ already quotes 5.3% for tin-hero,
+# agreeing with the live page. Ids must exist in the live bank.
 DEMAND_TOP5 = [
-    ('tin-hero', 5.8),
-    ('blue-dog-family', 4.6),
+    ('tin-hero', 5.3),
+    ('blue-dog-family', 5.0),
     ('snow-sisters', 3.9),
-    ('block-game-crew', 3.7),
+    ('block-game-crew', 3.6),
     ('breakfast-buffet', 2.9),
 ]
 
@@ -50,8 +79,17 @@ def main():
     by_id = {x['id']: x for x in ideas}
 
     total = len(ideas)
-    if total != 138:
-        fail('expected 138 ideas, bank has %d; regenerate constants' % total)
+    # Bank size is derived, never hard-coded: the == 138 check froze
+    # this page when the bank grew to 169 on Oct 3. Non-vacuous floor +
+    # slug-set equality, following the repaired build_aisle_dupes.py
+    # pattern.
+    if total < 100:
+        fail('expected at least 100 ideas, bank has %d; refusing to publish' % total)
+    _ids = [x['id'] for x in ideas]
+    if len(set(_ids)) != len(_ids):
+        fail('duplicate idea ids in bank')
+    if set(bank.get('instructions', {})) != set(_ids):
+        fail('bank idea/instruction slug sets differ')
 
     def has_budget(i, b):
         return b in (i.get('budget') or [])
@@ -96,12 +134,22 @@ def main():
                        'blurb': x.get('blurb') or '',
                        'audience': x.get('audience') or []})
 
-    # Three gentle kid examples, deterministic (sorted by id).
-    gentle_kids = sorted([x for x in ideas
-                          if has_aud(x, 'kid') and not has_tag(x, 'scary')],
-                         key=lambda z: z['id'])[:3]
-    if len(gentle_kids) < 3:
-        fail('fewer than 3 gentle kid ideas')
+    # Three gentle kid examples: LOCKED to the curated trio the page
+    # FAQ names verbatim (Baby Dinosaur, Backyard Superhero,
+    # Ballerina), in page order — 2026-10-22 verify-trends fix
+    # (parity rollup Call 7, option A). The old sorted-by-id first-3
+    # rule drifted when Oct 3 adds (amazon-warrior, baby-pumpkin)
+    # sorted earlier, which would have swapped the cards away from
+    # the FAQ promise. Fail loud if a locked id stops being a
+    # gentle kid idea in the bank.
+    gentle_kids = []
+    for _gid in ['baby-dino', 'backyard-hero', 'ballerina']:
+        _gx = by_id.get(_gid)
+        if _gx is None or not (has_aud(_gx, 'kid')
+                               and not has_tag(_gx, 'scary')):
+            fail('locked gentle kid id %s missing or no longer gentle'
+                 % _gid)
+        gentle_kids.append(_gx)
 
     # ---- page copy (dash-linted below) ----
     def esc(s):
@@ -152,11 +200,11 @@ def main():
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>2026 Halloween Costume Trends: What Families Are Actually Making</title>
-<meta name="description" content="The 2026 Halloween costume trends from 100,000 simulated quiz runs: the 5 most-picked costumes, DIY and budget stats, and gentle picks for little kids.">
+<meta name="description" content="The 2026 Halloween costume trends from 100,000 simulated quiz runs: the 5 most-picked costumes, DIY stats, and gentle picks for little kids.">
 <link rel="canonical" href="https://pickmycostume.com/trends-2026">
 <meta property="og:type" content="article">
 <meta property="og:title" content="What 2026 is actually wearing for Halloween">
-<meta property="og:description" content="The 5 most-picked costumes from 100,000 simulated quiz runs, plus the real numbers behind 138 costume ideas.">
+<meta property="og:description" content="The 5 most-picked costumes from 100,000 simulated quiz runs, plus the real numbers behind __COUNT__ costume ideas.">
 <meta property="og:url" content="https://pickmycostume.com/trends-2026">
 <meta property="og:image" content="https://pickmycostume.com/images/og/tin-hero.jpg">
 <script>
@@ -227,8 +275,8 @@ footer a{color:var(--muted);display:inline-block;padding:12px 10px}
 </header>
 <p class="kicker">Pick My Costume &middot; 2026 trends</p>
 <h1>What 2026 is actually wearing for Halloween</h1>
-<div class="honest">Every number on this page comes from our own 164-idea costume bank and a simulated run of our quiz. Not a national survey. Just what the data says.</div>
-<a class="cta" href="https://pickmycostume.com/?src=share-trends">Find your costume in 2 minutes</a>
+<div class="honest">Every number on this page comes from our own __COUNT__-idea costume bank and a simulated run of our quiz. Not a national survey. Just what the data says.</div>
+<a class="cta" href="https://pickmycostume.com/?src=share-trends">Pick your costume in 2 minutes</a>
 <p><button type="button" class="cta ghost" id="shareBtn">Share these trends</button></p>
 <p class="sharenote" id="shareNote" role="status"></p>
 
@@ -286,6 +334,16 @@ footer a{color:var(--muted);display:inline-block;padding:12px 10px}
     page = page.replace('</head>', FAQ_JSONLD_TRENDS + '\n</head>', 1)
     page = page.replace('<div class="method">', FAQ_VISIBLE_TRENDS + '\n\n<div class="method">', 1)
     page = page.replace('</body>', SHARE_JS + '</body>')
+
+    # Derived bank count into every count string in the template copy
+    # (og:description, honest line, FAQ blocks). Guard first: the
+    # placeholder must never appear in bank-derived data.
+    if '__COUNT__' in json.dumps({'demand': demand, 'stats': stats,
+                                  'gentle': gentle_kids}, ensure_ascii=False):
+        fail('count placeholder found in bank data')
+    page = page.replace('__COUNT__', str(total))
+    if '__COUNT__' in page:
+        fail('count placeholder not replaced')
 
     if DASH_RE.search(page):
         bad = DASH_RE.findall(page)
