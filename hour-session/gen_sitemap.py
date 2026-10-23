@@ -55,6 +55,16 @@ NOINDEX_PATHS = {"/links", "/mcp", "/flyer", "/privacy", "/school-check",
 # even if present in the input.
 RETIRED_REDIRECTS = {"/halloween-costume-ideas-quiz"}
 
+# Audience hub pages under /c/ (2026-10-23 hub discoverability fix): these
+# are separate Pages Functions (functions/c/<hub>.js), NOT bank ideas, so
+# the bank-slug loop below never re-adds them and the entries loop drops
+# every /c/ URL. They must be explicit entries or every regen deletes
+# them from the sitemap. lastmod = the hub function file's mtime, the
+# same "file on disk is the served page" rule used for static pages.
+HUBS = [("couples", "functions/c/couples.js"),
+        ("family", "functions/c/family.js"),
+        ("last-minute", "functions/c/last-minute.js")]
+
 NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 ET.register_namespace("", NS)
 
@@ -205,6 +215,9 @@ for loc, cf, pr in entries:
         unmapped.append(loc)
         lastmod = old_lastmod.get(loc, today)
     add_url(loc, lastmod, cf, pr)
+for hub, hub_file in HUBS:
+    add_url(SITE + "/c/" + hub, utc_date(os.path.join(ROOT, hub_file)),
+            "monthly", "0.8")
 for slug in sorted(slugs):
     add_url(SITE + "/c/" + slug, c_lastmod[SITE + "/c/" + slug],
             "monthly", "0.8")
@@ -221,6 +234,8 @@ t2 = ET.parse(SRC)
 locs = [u.find("{%s}loc" % NS).text for u in t2.getroot().findall("{%s}url" % NS)]
 missing = [s for s in slugs if SITE + "/c/" + s not in locs]
 assert not missing, "sitemap missing slugs: %s" % missing
+missing_hubs = [h for h, _f in HUBS if SITE + "/c/" + h not in locs]
+assert not missing_hubs, "sitemap missing hub pages: %s" % missing_hubs
 from collections import Counter
 dates = Counter(u.find("{%s}lastmod" % NS).text
                 for u in t2.getroot().findall("{%s}url" % NS))
