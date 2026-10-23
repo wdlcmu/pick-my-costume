@@ -34,9 +34,9 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/decades-crew">Decades Crew</a><span>Each person picks a decade and dresses from their own closet.</span></li>
       <li><a href="/c/dino-rangers">Dino Rangers</a><span>Khaki outfits for the grown-ups, dino hoods for the kids. Leash a toy raptor.</span></li>
       <li><a href="/c/dinosaur-family">Dinosaur Family</a><span>Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.</span></li>
-      <li><a href="/c/dragon-rider-duo">Dragon Rider Duo</a><span>A viking rider and a cardboard dragon, ready to fly over the neighborhood.</span></li>
+      <li><a href="/c/dragon-rider-duo">Dragon Rider Duo</a><span>A viking rider and a cardboard dragon, ready to fly over the neighborhood. How to Train Your Dragon inspired.</span></li>
       <li><a href="/c/emoji-crew">Emoji Crew</a><span>Everyone picks an emoji: a yellow tee plus a big printed face.</span></li>
-      <li><a href="/c/emotion-crew">Emotion Crew</a><span>One loud color per person: each of you is a different emotion.</span></li>
+      <li><a href="/c/emotion-crew">Emotion Crew</a><span>One loud color per person: each of you is a different emotion. Inside Out inspired.</span></li>
       <li><a href="/c/enchanted-castle-crew">Enchanted Castle Crew</a><span>The bookish princess, the cursed prince, the talking candelabra, the talking clock, the talking teapot: pick your role.</span></li>
       <li><a href="/c/fairy-tale-princesses">Fairy Tale Princesses</a><span>A dress or a crown from the closet. Every princess works.</span></li>
       <li><a href="/c/fruit-salad">Fruit Salad Crew</a><span>Each person picks a fruit color, wears it head to toe with a leaf hat.</span></li>
@@ -55,12 +55,12 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/soccer-squad">Soccer Squad</a><span>Jerseys for the players, black for the ref, one red card.</span></li>
       <li><a href="/c/superhero-family">Superhero Family</a><span>Red sweatsuits, black eye masks, felt logo. The whole family goes super.</span></li>
       <li><a href="/c/tall-hat-crew">Tall Hat Crew</a><span>A striped stovepipe hat, a bow tie, and two wild blue-haired Things.</span></li>
-      <li><a href="/c/the-olympians">The Olympians</a><span>Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.</span></li>
-      <li><a href="/c/toy-box-crew">Toy Box Crew</a><span>A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite.</span></li>
+      <li><a href="/c/the-olympians">The Olympians</a><span>Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident. The Odyssey on a bedsheet budget.</span></li>
+      <li><a href="/c/toy-box-crew">Toy Box Crew</a><span>A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite. Toy Story inspired.</span></li>
       <li><a href="/c/under-the-sea">Under the Sea</a><span>Jellyfish from an umbrella with ribbon tentacles, crab from red clothes and claw mittens, plus fish, seaweed, and waves.</span></li>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/couples">Couples Halloween costume ideas</a> &middot; <a href="/c/last-minute">Last-minute Halloween costumes</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
-<footer>Built with Muse. Made by Billy Litner.</footer>
+<footer>Built with Muse.</footer>
 </main></body></html>
 `;
 
