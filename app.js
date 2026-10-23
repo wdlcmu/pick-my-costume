@@ -2115,37 +2115,21 @@ function goWarmFromQ1(){
   state.warmMode = true;
   renderWarmCapture();
 }
-/* 2026-10-05: game-like pacing. Fresh quizzes open on a welcome screen
-   before Q1; the "Let's start" button advances to the first question.
-   Presentation only: no scoring, bank, or question-semantic changes.
-   Skipped for edit mode, first-mode (pre-filled q1), and resumed quizzes
-   (answers already recorded). */
-function renderWelcome(){
-  var box = warmQuizChrome("\uD83C\uDF83 Let's pick your costume", "Five quick questions, about two minutes. There are no wrong answers.");
-  var wlOld = document.getElementById("q-warm-link");
-  if (wlOld && wlOld.parentNode) wlOld.parentNode.removeChild(wlOld);
-  var b = document.createElement("button");
-  b.type = "button";
-  b.className = "cta q-welcome-cta";
-  b.textContent = "Let's start";
-  b.setAttribute("aria-label", "Start the costume quiz");
-  b.onclick = function(){
-    if (!tapGuard("qopt", 400)) return;
-    state.welcomed = true;
-    renderQ();
-  };
-  box.appendChild(b);
-  try { Analytics.track("quiz_welcome_shown", viaShareProps()); } catch(_){}
-}
+/* 2026-10-23 (Billy dogfood): the welcome screen is GONE. It sat between
+   every fresh-start tap and Q1 ("Let's pick your costume" plus a
+   "Let's start" button) and cost a tap at the funnel's weakest step
+   (52 visitors -> 24 quiz starts in the Oct 22 7-day funnel). renderQ
+   now falls straight through to Q1 for fresh quizzes; resume, edit-mode,
+   first-mode, and next-kid flows never showed it and are unchanged.
+   quiz_started still fires at the entry tap, exactly as before;
+   quiz_welcome_shown no longer fires. The reassurance line moved onto
+   Q1 itself (see the q-reassure block in renderQ). The screen dated
+   from 2026-10-05 ("game-like pacing"). */
 function renderQ(){
   /* 2026-09-30: a tapped option keeps :focus, and on touch devices the
      browser paints it stuck-highlighted; clear it on question change. */
   try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(_blur){}
   var order = flowOrder();
-  if (!state.welcomed && !state.editQid && state.qi === 0 && Object.keys(state.answers).length === 0){
-    renderWelcome();
-    return;
-  }
   var qid = order[state.qi];
   var q = qById(qid);
   /* 2026-10-05: no "Question X of Y" anxiety text; the thin bar carries the
@@ -2185,6 +2169,8 @@ function renderQ(){
      render; it is re-added below only for q1. */
   var wlOld = document.getElementById("q-warm-link");
   if (wlOld && wlOld.parentNode) wlOld.parentNode.removeChild(wlOld);
+  var raOld = document.getElementById("q-reassure");
+  if (raOld && raOld.parentNode) raOld.parentNode.removeChild(raOld);
   var current = state.answers[qid];
   var opts = q.options;
   /* 2026-09-28: visual-first quiz. Option buttons render as
@@ -2298,6 +2284,16 @@ function renderQ(){
     };
     box.appendChild(b);
   });
+  /* 2026-10-23: the reassurance that used to live on the removed welcome
+     card rides on Q1 itself as a small helper line under the question.
+     Edit mode skips it: that detour already names itself. */
+  if (qid === "q1" && !state.editQid) {
+    var ra = document.createElement("p");
+    ra.id = "q-reassure";
+    ra.className = "q-hint";
+    ra.textContent = "Five quick questions. No wrong answers.";
+    box.parentNode.insertBefore(ra, box);
+  }
   /* 2026-10-01: "Already have one" moved out of the "who" tile grid (it is
      not a who). A text link under the grid reaches the same warm branch;
      the 5-question count stays honest and nobody pays an extra tap. */
@@ -7898,6 +7894,9 @@ function warmQuizChrome(title, hint){
   $("q-hint").textContent = hint;
   var pb = $("q-proxybanner"); if (pb) pb.style.display = "none";
   var box = $("q-opts"); box.innerHTML = "";
+  /* 2026-10-23: the Q1 helper line (renderQ) must not linger here. */
+  var raStale = document.getElementById("q-reassure");
+  if (raStale && raStale.parentNode) raStale.parentNode.removeChild(raStale);
   /* 2026-09-28: the main quiz renders emoji tiles into #q-opts; the warm
      rows keep the old full-width look, so reset the classes here. */
   box.className = "opts";
@@ -16082,8 +16081,9 @@ function shareLandingHeadline(idea, search){
   }
   /* 2026-10-05: ?quiz=1 deep link. The SEO entry pages ("101 Costume Ideas",
      "Last-Minute Costumes") funnel into the quiz with a "Pick my costume"
-     CTA pointing here. Opens the quiz sheet on load; the welcome screen
-     shows first, then Q1. Mirrors the other quiz entry points. */
+     CTA pointing here. Opens the quiz sheet on load, directly on Q1
+     (2026-10-23: the welcome screen is gone). Mirrors the other quiz
+     entry points. */
   (function(){
     if (!/[?&]quiz=1/.test(location.search || "")) return;
     state = {qi: 0, answers: {}};
