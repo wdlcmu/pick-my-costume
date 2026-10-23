@@ -2,7 +2,7 @@
 
 > Complete Markdown text of pickmycostume.com's 169 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
-> Generated: 2026-10-22. Regenerate with gen_llms_full.py when the bank changes.
+> Generated: 2026-10-23. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
@@ -216,9 +216,10 @@ Steps:
 6. Pin the wavy strips down the front of the dark shirt.
 7. Pin the white oval to the white shirt.
 8. Pin the yellow circle on top of the oval.
-9. Put on the shirts.
-10. For photos, the bacon stands just behind the egg.
-11. Optional pro finish: cut the bacon strips with a wavy line, not straight.
+9. Safety: Pin from inside the shirt. Pin backs must face cloth, not skin.
+10. Put on the shirts.
+11. For photos, the bacon stands just behind the egg.
+12. Optional pro finish: cut the bacon strips with a wavy line, not straight.
 
 Q: How do you make the fried egg read clearly?
 A: Scale is everything: the white oval should cover most of the shirt chest, with the yellow yolk circle about a third of its size, pinned on top center.
@@ -587,10 +588,11 @@ Steps:
 4. Match ear color to shirt color.
 5. Pin the ears to each headband.
 6. Pin a white felt belly spot to the front of each t-shirt.
-7. Pull on the blue or orange t-shirts.
-8. Put on the headbands.
-9. Decide who is mama, dad, and the pups.
-10. Optional pro finish: stuff an old sock with tissue and pin it at the back waistband as a tail.
+7. Safety: Pin ears and spots from inside. Pin backs must face cloth, not skin.
+8. Pull on the blue or orange t-shirts.
+9. Put on the headbands.
+10. Decide who is mama, dad, and the pups.
+11. Optional pro finish: stuff an old sock with tissue and pin it at the back waistband as a tail.
 
 Q: How do you tell the family members apart?
 A: Match the show: blue shirt for the dad dog, orange for the mom dog, mix for the pups. Add a white belly spot to the pups only, the audience reads it instantly.
@@ -1074,12 +1076,13 @@ Steps:
 2. Open the box along the side seam.
 3. Flatten it before cutting.
 4. Cut the front panel off an empty cereal box.
-5. Keep it large.
-6. Decorate the panel with the markers.
-7. Draw a mascot, add a prize burst, and write the name big.
-8. Tape string to the top corners of each panel.
-9. Wear the panel over a plain shirt like a sandwich board.
-10. Optional pro finish: add a prize-inside burst and a fake nutrition joke in the corner.
+5. Safety: Cut the box panel slowly. Keep fingers clear of the scissors.
+6. Keep it large.
+7. Decorate the panel with the markers.
+8. Draw a mascot, add a prize burst, and write the name big.
+9. Tape string to the top corners of each panel.
+10. Wear the panel over a plain shirt like a sandwich board.
+11. Optional pro finish: add a prize-inside burst and a fake nutrition joke in the corner.
 
 Q: What makes a fake cereal name funny?
 A: Puns on the person's name or a group in-joke, in big block letters across the top. 'Captain Crunch' structure: [Title] + [Crunch/O's/Flakes].
@@ -1189,9 +1192,10 @@ Steps:
 8. Glue one pair of ears to each headband.
 9. Wear the letter sweaters with the ear headbands.
 10. Draw three whisker dots and a nose on each cheek.
-11. Line up tallest to shortest.
-12. Sing one note together for the photo.
-13. Optional pro finish: stuff each cheek with a cotton ball for the group photo.
+11. Safety: Let an adult use the iron. Keep the eyeliner clear of the eyes.
+12. Line up tallest to shortest.
+13. Sing one note together for the photo.
+14. Optional pro finish: stuff each cheek with a cotton ball for the group photo.
 
 Q: Which chipmunk is which?
 A: Red + A is the leader, blue + S is the cool one, green + T is the chubby one. Line up tallest to shortest in that order and the reference lands.
@@ -1295,13 +1299,14 @@ Steps:
 2. Then cut the head hole small.
 3. Stretch the bag over the head to test before cutting bigger.
 4. Cut the holes in the white trash bag for head and arms.
-5. This is the cup.
-6. A head hole cut too big slides off the shoulders.
-7. Draw a coffee shop logo on the front with brown marker.
-8. Make the lid: cut a brown paper circle bigger than your head, with a sip hole.
-9. Wear the bag.
-10. Put the lid hat on top.
-11. Optional pro finish: cut a cardboard sleeve, write a coffee-shop pun on it, and tape it around the torso.
+5. Safety: Cut the head hole wide enough. The wearer must see and breathe with ease.
+6. This is the cup.
+7. A head hole cut too big slides off the shoulders.
+8. Draw a coffee shop logo on the front with brown marker.
+9. Make the lid: cut a brown paper circle bigger than your head, with a sip hole.
+10. Wear the bag.
+11. Put the lid hat on top.
+12. Optional pro finish: cut a cardboard sleeve, write a coffee-shop pun on it, and tape it around the torso.
 
 Q: How do you keep a trash-bag costume from looking like a trash bag?
 A: The lid and the logo do all the work. A brown lid hat plus a big drawn logo reads as coffee cup; without them it reads as trash bag.
@@ -1399,10 +1404,11 @@ Steps:
 3. Mark where your eyes are while wearing it.
 4. Take it off.
 5. Cut the eye holes small first, then widen.
-6. Cut the bottom edge in waves.
-7. Glue the red pom-pom on top as the cherry.
-8. Fluff the pillowcase edges like frosting swirls.
-9. Optional pro finish: dot the pillowcase with fabric markers for sprinkles.
+6. Safety: Cut the eye holes wide. Your child must see and breathe with ease.
+7. Cut the bottom edge in waves.
+8. Glue the red pom-pom on top as the cherry.
+9. Fluff the pillowcase edges like frosting swirls.
+10. Optional pro finish: dot the pillowcase with fabric markers for sprinkles.
 
 Q: How do you keep the pillowcase frosting on your head?
 A: It drapes, no attachment needed if the pillowcase is adult-size on a kid. For adults, pin it to a headband at the forehead so it does not slide.
@@ -1695,11 +1701,12 @@ Materials:
 Steps:
 1. Pull the Hawaiian shirt and fanny pack from the closet.
 2. Clip or pin the plush tail to your waistband at the back.
-3. Hang the toy camera around your neck.
-4. Put on the sunglasses.
-5. Ask strangers to take your picture.
-6. Complain about the meteor.
-7. Optional pro finish: tuck a folded paper map into the fanny pack and let it stick out.
+3. Safety: Use the clip if you can. Pin backs must face cloth, not skin.
+4. Hang the toy camera around your neck.
+5. Put on the sunglasses.
+6. Ask strangers to take your picture.
+7. Complain about the meteor.
+8. Optional pro finish: tuck a folded paper map into the fanny pack and let it stick out.
 
 Q: How do you attach the tail so it stays on?
 A: Clip or pin it to the waistband at the back center with two safety pins through the tail's seam. One pin spins; two pins hold.
@@ -1803,13 +1810,14 @@ Steps:
 1. Draw the donut circle on the cardboard first.
 2. Check it fits over the head: about 30 inches across, hole about 12 inches.
 3. Cut the center hole smaller than the head first, then widen.
-4. A too-big hole slides off the shoulders.
-5. Paint it pink.
-6. Let it dry.
-7. Glue on felt sprinkles or stickers in bright colors.
-8. Attach ribbon to the top.
-9. Wear it like a sandwich board.
-10. Optional pro finish: paint a thin brown ring around the center hole.
+4. Safety: Cut the cardboard slowly. Keep fingers clear of the scissors.
+5. A too-big hole slides off the shoulders.
+6. Paint it pink.
+7. Let it dry.
+8. Glue on felt sprinkles or stickers in bright colors.
+9. Attach ribbon to the top.
+10. Wear it like a sandwich board.
+11. Optional pro finish: paint a thin brown ring around the center hole.
 
 Q: How do you wear a big cardboard donut comfortably?
 A: Hang it from two ribbon straps like a sandwich board at waist height, not neck height. Waist height clears doorways and lets the arms move.
@@ -2003,9 +2011,10 @@ Steps:
 4. Write it big on poster board.
 5. Paint a simple face design in the matching color.
 6. Mist hair with the matching color spray if you like.
-7. Wear the full one-color outfit with the emotion sign.
-8. Group up in a row like the control panel.
-9. Optional pro finish: paint each face design in the matching outfit color only.
+7. Safety: Use the spray outside or near fresh air. Keep paint clear of the eyes.
+8. Wear the full one-color outfit with the emotion sign.
+9. Group up in a row like the control panel.
+10. Optional pro finish: paint each face design in the matching outfit color only.
 
 Q: How do you stop two people picking the same emotion?
 A: Assign emotions before anyone shops: Joy, Sadness, Anger, Fear, Disgust, Anxiety, Envy, Embarrassment, Ennui. First come first served, written on a list.
@@ -2035,12 +2044,13 @@ Steps:
 1. Cut one paper spike first.
 2. Check the size on the vest shoulder.
 3. Cut 6 to 8 felt spikes with the paper template.
-4. Glue the spikes along the vest shoulders and back.
-5. Let it dry 15 minutes.
-6. Write 'Emotional Support Dinosaur.
-7. Do not pet.' on the badge.
-8. Pin it on and refuse all pets.
-9. Optional pro finish: write the badge words in all caps, with 'Do not pet.' smaller below.
+4. Safety: Cut the felt spikes slowly. Keep fingers clear of the scissors.
+5. Glue the spikes along the vest shoulders and back.
+6. Let it dry 15 minutes.
+7. Write 'Emotional Support Dinosaur.
+8. Do not pet.' on the badge.
+9. Pin it on and refuse all pets.
+10. Optional pro finish: write the badge words in all caps, with 'Do not pet.' smaller below.
 
 Q: Will fabric glue hold spikes through a night of hugs?
 A: Yes if you glue the night before so it cures fully. Same-day glue is still tacky by party time and spikes slide.
@@ -2145,13 +2155,14 @@ Steps:
 1. Cut one paper spike first.
 2. Check the size on the jacket shoulder.
 3. Cut 6 to 8 felt spikes, all from the template.
-4. Glue the spikes in a row along the shoulders of the jacket.
-5. Let it dry 15 minutes.
-6. Write 'Last seen 66 million years ago' on the badge.
-7. Pin on the badge.
-8. Put on the party hat.
-9. Work the room.
-10. Optional pro finish: write the badge words in neat block letters.
+4. Safety: Cut each felt spike with care. Keep fingers clear of the scissors.
+5. Glue the spikes in a row along the shoulders of the jacket.
+6. Let it dry 15 minutes.
+7. Write 'Last seen 66 million years ago' on the badge.
+8. Pin on the badge.
+9. Put on the party hat.
+10. Work the room.
+11. Optional pro finish: write the badge words in neat block letters.
 
 Q: Will the spikes survive on a blazer all night?
 A: Yes if you glue them the night before and let the glue cure. Same-day glue peels when the jacket moves.
@@ -2256,12 +2267,13 @@ Steps:
 1. Each person picks a fruit.
 2. Wear that color head to toe.
 3. Cut leaf shapes from green felt.
-4. Glue one leaf to each headband.
-5. Press for 30 seconds.
-6. Let the glue set fully before wearing.
-7. Everyone wears their headband.
-8. Take the fruit salad group photo.
-9. Optional pro finish: snip a center vein down each felt leaf.
+4. Safety: Let an adult snip the felt leaves. Keep fingers clear of the scissors.
+5. Glue one leaf to each headband.
+6. Press for 30 seconds.
+7. Let the glue set fully before wearing.
+8. Everyone wears their headband.
+9. Take the fruit salad group photo.
+10. Optional pro finish: snip a center vein down each felt leaf.
 
 Q: How many fruits make a good salad?
 A: Four to six. Three looks thin, more than six gets hard to photograph. Assign the biggest person the watermelon.
@@ -2512,12 +2524,13 @@ Steps:
 1. Gloom: wear the black clothes.
 2. Braid the hair tightly.
 3. Paint a small black teardrop under one eye.
-4. Bloom: wear the colorful clothes.
-5. Pin the fake flowers in the hair.
-6. Paint a small flower on one cheek.
-7. Keep it clear of the eyes.
-8. Stand side by side: Gloom frowns, Bloom smiles big.
-9. Optional pro finish: pin the bloom flowers all on one side.
+4. Safety: Keep the face paint clear of eyes. Test paint on skin first.
+5. Bloom: wear the colorful clothes.
+6. Pin the fake flowers in the hair.
+7. Paint a small flower on one cheek.
+8. Keep it clear of the eyes.
+9. Stand side by side: Gloom frowns, Bloom smiles big.
+10. Optional pro finish: pin the bloom flowers all on one side.
 
 Q: How do you paint a teardrop that does not smear?
 A: Paint it small under one eye with a thin brush, not a finger, and let it set before touching the face. Fingers smudge; brushes stay sharp.
@@ -2764,11 +2777,12 @@ Steps:
 1. Paint each face pale gray.
 2. Add white highlights on the cheekbones and nose.
 3. Gray the hair with the hair powder.
-4. Dress in old-fashioned dark clothes from the closet.
-5. Hold the frame up around the face like a living portrait.
-6. Pose together in a row of frames for photos.
-7. Keep the face paint light around the eyes.
-8. Optional pro finish: dust the hair with gray powder and add white highlights on the cheekbones.
+4. Safety: Keep face paint light near the eyes. Spray hair outside or near fresh air.
+5. Dress in old-fashioned dark clothes from the closet.
+6. Hold the frame up around the face like a living portrait.
+7. Pose together in a row of frames for photos.
+8. Keep the face paint light around the eyes.
+9. Optional pro finish: dust the hair with gray powder and add white highlights on the cheekbones.
 
 Q: How do you hold the frame up all night?
 A: You do not: use it for photos only, and set it down between shots. Holding a frame for hours is exhausting; the portrait pose is a photo bit.
@@ -2868,7 +2882,8 @@ Steps:
 6. You can add paint, but you cannot take it off.
 7. Let it dry fully before attaching.
 8. Pin or glue one bun half to each side.
-9. Optional pro finish: add a white paper vendor hat.
+9. Safety: Pin the bun halves from inside. Pin backs must face cloth, not skin.
+10. Optional pro finish: add a white paper vendor hat.
 
 Q: How do you make the bun halves stay on the shoulders?
 A: Pin each half at the shoulder seam with two safety pins from inside the shirt. They sit like epaulettes, stable all night, no glue on skin.
@@ -3348,10 +3363,11 @@ Steps:
 8. Tape them to the headband as ears.
 9. Thread the pink string through the holes.
 10. Tie the cup gently in front of the nose.
-11. Dab a little pink blush on each person's cheeks.
-12. Hand the little brother a toy dinosaur.
-13. Now he is the pig who brings the dinosaur.
-14. Optional pro finish: draw two small black nostril dots on the bottom of each cup snout.
+11. Safety: Let an adult poke the cup holes. Tie the cup loose in front. Keep the nose and mouth clear.
+12. Dab a little pink blush on each person's cheeks.
+13. Hand the little brother a toy dinosaur.
+14. Now he is the pig who brings the dinosaur.
+15. Optional pro finish: draw two small black nostril dots on the bottom of each cup snout.
 
 Q: How do you tie the snout on without it hurting?
 A: Thread the pink string through the holes and tie it loosely behind the head with a bow, never a knot. It should rest against the nose, not press into it, if it leaves a mark, it is too tight.
@@ -3423,11 +3439,12 @@ Steps:
 3. Cut a triangle fin about 8 inches tall from the gray felt.
 4. Cut a jagged row of teeth from the white felt.
 5. Glue the teeth inside the hood edge so they show around the face.
-6. Glue the fin to the back of the hoodie, low between the shoulders.
-7. Let the fabric glue dry flat for 30 minutes.
-8. Zip the gray hoodie over a white t-shirt.
-9. Pull the hood up.
-10. Optional pro finish: glue two small black felt dots on the hood as eyes above the teeth.
+6. Safety: Let an adult cut the felt. Keep the hood teeth clear of eyes.
+7. Glue the fin to the back of the hoodie, low between the shoulders.
+8. Let the fabric glue dry flat for 30 minutes.
+9. Zip the gray hoodie over a white t-shirt.
+10. Pull the hood up.
+11. Optional pro finish: glue two small black felt dots on the hood as eyes above the teeth.
 
 Q: How do the teeth stay glued to the hood?
 A: Fabric glue on the inside hood edge, pressed flat for 30 seconds per tooth, then left to dry flat for 30 minutes. Do not wear the hoodie until the glue is fully set or the teeth peel off.
@@ -3455,10 +3472,11 @@ Materials:
 Steps:
 1. Pin the cape at the shoulders, or tie it with ribbon.
 2. Paint the nose, chin, and forehead lightly green with a fingertip or sponge.
-3. Use non-toxic kids' green face paint only.
-4. Pull on the black-and-white striped tights and the pointy witch hat.
-5. Carry a branch from the yard as a broom if one is handy.
-6. Optional pro finish: tie the ribbon in a bow at the front of the cape instead of a safety pin.
+3. Safety: Tie the cape loose at the neck. Keep face paint clear of the eyes.
+4. Use non-toxic kids' green face paint only.
+5. Pull on the black-and-white striped tights and the pointy witch hat.
+6. Carry a branch from the yard as a broom if one is handy.
+7. Optional pro finish: tie the ribbon in a bow at the front of the cape instead of a safety pin.
 
 Q: How much green face paint for a little witch?
 A: Just the nose, chin, and forehead dabbed on lightly with a fingertip or sponge. A fully green face looks great for ten minutes and then smears on everything they touch.
@@ -3560,12 +3578,13 @@ Steps:
 1. Sketch the cheek detail on paper first.
 2. Paint one small matching detail per person: scales, a seaweed swirl, or an anchor.
 3. Cut a red paper body, legs, and claws.
-4. Tape them to the smallest person's shirt.
-5. Or hand them the toy crab instead.
-6. The sea king carries the plastic trident prop.
-7. Everyone else picks one accessory, like the shell necklace.
-8. Stand tall for the crew photo.
-9. Optional pro finish: dab the accent face paint along the cheekbones through a fishnet stocking as a stencil.
+4. Safety: Keep face paint clear of the eyes. Cut the paper crab slowly.
+5. Tape them to the smallest person's shirt.
+6. Or hand them the toy crab instead.
+7. The sea king carries the plastic trident prop.
+8. Everyone else picks one accessory, like the shell necklace.
+9. Stand tall for the crew photo.
+10. Optional pro finish: dab the accent face paint along the cheekbones through a fishnet stocking as a stencil.
 
 Q: What if we cannot find sea-colored shirts?
 A: Any solid tee works with the accessories doing the work. The trident plus the shell necklace plus one painted detail reads as mermaid crew on any color.
@@ -3672,15 +3691,16 @@ Steps:
 1. Draw both wing ovals on the box first.
 2. Have the moth hold their arms out to check the span.
 3. Cut two large oval wing shapes from the cardboard.
-4. Buy the pipe cleaners, markers, and cone lampshade.
-5. Draw eye spots and scalloped edges on the wings.
-6. Tape one wing to each arm of the plain shirt and pants.
-7. Bend the pipe cleaners into feathery antennae.
-8. Tape them to the headband.
-9. Put on the yellow t-shirt and yellow pants.
-10. Pop the cone lampshade over the head like a hat.
-11. Stand next to the moth with arms out, buzzing.
-12. Optional pro finish: curl the wing tips slightly forward and tape them so they cup inward.
+4. Safety: Cut the cardboard wings slowly. Keep fingers clear of the scissors.
+5. Buy the pipe cleaners, markers, and cone lampshade.
+6. Draw eye spots and scalloped edges on the wings.
+7. Tape one wing to each arm of the plain shirt and pants.
+8. Bend the pipe cleaners into feathery antennae.
+9. Tape them to the headband.
+10. Put on the yellow t-shirt and yellow pants.
+11. Pop the cone lampshade over the head like a hat.
+12. Stand next to the moth with arms out, buzzing.
+13. Optional pro finish: curl the wing tips slightly forward and tape them so they cup inward.
 
 Q: How do the wings stay on the arms?
 A: Tape one wing to each sleeve of the neutral shirt with two strips of tape per wing. Tape on fabric holds for an evening; tape the wings to the sleeves, not to skin.
@@ -3711,9 +3731,10 @@ Steps:
 3. Each person puts on their color's t-shirt and a matching headband or scarf.
 4. The brains carries the fake magnifying glass.
 5. Paint a brown nose on the dog with the brown face paint.
-6. Group the four humans in a line, dog in front.
-7. All point at something suspicious for the classic pose.
-8. Optional pro finish: write each person's role on a small paper name tag.
+6. Safety: Keep face paint clear of the eyes. Tie scarves loose, never tight.
+7. Group the four humans in a line, dog in front.
+8. All point at something suspicious for the classic pose.
+9. Optional pro finish: write each person's role on a small paper name tag.
 
 Q: How do you assign the colors so people get the joke?
 A: Orange leader, purple style icon, blue brains, red goofball, and the dog wears the ears. Assign before anyone dresses so no two people grab the same color.
@@ -3779,10 +3800,11 @@ Steps:
 4. Let it dry 2 hours.
 5. Style the hair up with gel, or mist it with neon hair spray.
 6. Put on the neon eyeliner or glow tattoos on cheeks and arms.
-7. Wear the black jacket over the hoodie.
-8. Carry the foam sword prop.
-9. Keep the painted side facing out.
-10. Optional pro finish: charge the neon paint under bright light before heading out.
+7. Safety: Use the hair spray near fresh air. Keep eyeliner clear of the eyes.
+8. Wear the black jacket over the hoodie.
+9. Carry the foam sword prop.
+10. Keep the painted side facing out.
+11. Optional pro finish: charge the neon paint under bright light before heading out.
 
 Q: Does neon fabric paint actually glow?
 A: It glows under blacklight and looks electric in daylight. Under normal indoor light it is just bright. For true night glow, add glow-in-the-dark tape accents.
@@ -3925,12 +3947,13 @@ Steps:
 2. Pull the white button-down shirts and black pants or skirts from the closet.
 3. Write joke job titles on the name tags.
 4. Pin them on the shirts.
-5. One person carries the toy teapot all evening.
-6. The other carries a clipboard or a stack of papers.
-7. Tuck the shirts in.
-8. Straighten each other's collars.
-9. Introduce yourselves by your fake titles to everyone you meet.
-10. Optional pro finish: write the fake titles in a dead-serious font, like 'Regional Teapot Manager'.
+5. Safety: Pin name tags from inside the shirt. Pin backs must face cloth, not skin.
+6. One person carries the toy teapot all evening.
+7. The other carries a clipboard or a stack of papers.
+8. Tuck the shirts in.
+9. Straighten each other's collars.
+10. Introduce yourselves by your fake titles to everyone you meet.
+11. Optional pro finish: write the fake titles in a dead-serious font, like 'Regional Teapot Manager'.
 
 Q: What are good joke job titles?
 A: Pick titles that match the props: 'Director of Teapot Operations' for the teapot carrier, 'VP of Paperwork' for the clipboard holder. Specific beats random.
@@ -3994,16 +4017,17 @@ Steps:
 1. Draw the bread shape on the poster board first.
 2. Hold it against the t-shirt to check the size.
 3. Cut two big bread shapes from the white poster board.
-4. Cut big, then trim after the fitting.
-5. Buy the brown t-shirt, purple t-shirt, and poster board if needed.
-6. Write PB in big letters on one bread shape.
-7. Write J on the other.
-8. Tape or string one bread sign to the front of the brown t-shirt.
-9. Tape or string the other to the front of the purple t-shirt.
-10. Stand pressed together all evening, bread sides out.
-11. The brown-shirt person is the peanut butter.
-12. The purple-shirt person is the jelly.
-13. Optional pro finish: draw a wavy crust edge around each bread shape with a tan marker.
+4. Safety: Cut the poster board slowly. Keep fingers clear of the scissors.
+5. Cut big, then trim after the fitting.
+6. Buy the brown t-shirt, purple t-shirt, and poster board if needed.
+7. Write PB in big letters on one bread shape.
+8. Write J on the other.
+9. Tape or string one bread sign to the front of the brown t-shirt.
+10. Tape or string the other to the front of the purple t-shirt.
+11. Stand pressed together all evening, bread sides out.
+12. The brown-shirt person is the peanut butter.
+13. The purple-shirt person is the jelly.
+14. Optional pro finish: draw a wavy crust edge around each bread shape with a tan marker.
 
 Q: Which side is peanut butter and which is jelly?
 A: Brown shirt is peanut butter, purple shirt is jelly. Label the bread signs 'PB' and 'J' big enough to read from ten feet away so nobody has to ask.
@@ -4073,15 +4097,16 @@ Steps:
 1. Cut one paper belly first.
 2. Check it against a shirt.
 3. Cut an oval white belly from the felt for each person.
-4. Buy the white felt, orange felt, headbands, and fabric glue.
-5. Cut a small orange triangle beak for each headband.
-6. Glue one beak to the front of each headband.
-7. Glue the white bellies to the front of the black shirts.
-8. Let the fabric glue dry for 30 minutes.
-9. Each person puts on the black shirt and the beak headband.
-10. Tuck hands into the sleeves as flippers.
-11. Waddle shoulder to shoulder in the huddle.
-12. Optional pro finish: cut two small orange felt feet and tape them over the toes of dark shoes.
+4. Safety: Cut the felt slowly. Keep fingers clear of the scissors.
+5. Buy the white felt, orange felt, headbands, and fabric glue.
+6. Cut a small orange triangle beak for each headband.
+7. Glue one beak to the front of each headband.
+8. Glue the white bellies to the front of the black shirts.
+9. Let the fabric glue dry for 30 minutes.
+10. Each person puts on the black shirt and the beak headband.
+11. Tuck hands into the sleeves as flippers.
+12. Waddle shoulder to shoulder in the huddle.
+13. Optional pro finish: cut two small orange felt feet and tape them over the toes of dark shoes.
 
 Q: How big should the white belly be?
 A: An oval that covers the chest from collarbone to waistband. Too small reads as a badge; chest-size reads as a penguin belly instantly.
@@ -4112,10 +4137,11 @@ Steps:
 4. Space them in a loose grid so no bare patches show.
 5. Let the fabric glue dry flat for 30 minutes.
 6. Paint the face.
-7. Draw on a smug grin with one raised eyebrow.
-8. Wear the tunic over regular clothes.
-9. Stand tall.
-10. Optional pro finish: add a darker green felt band at the top and bottom of the tunic.
+7. Safety: Keep the green paint clear of eyes. Wash the paint off that night.
+8. Draw on a smug grin with one raised eyebrow.
+9. Wear the tunic over regular clothes.
+10. Stand tall.
+11. Optional pro finish: add a darker green felt band at the top and bottom of the tunic.
 
 Q: Bubble wrap or pom-poms for the bumps?
 A: Pom-poms look better and stay put; bubble wrap pops when people hug you and goes flat by midnight. If you use bubble wrap, pop it yourself first for a dimpled texture that lasts.
@@ -4222,11 +4248,12 @@ Steps:
 2. Let it dry 1 hour.
 3. Arrange the pepperoni on the triangle dry first.
 4. Cut red felt circles.
-5. Glue them spread out.
-6. Add the brown crust strip along the wide end.
-7. Tape two string loops to the back so it wears like a sandwich board.
-8. Keep the crust at the top and the point at the bottom.
-9. Optional pro finish: add green felt peppers and white felt cheese drips along the top edge.
+5. Safety: Let an adult cut the felt circles. Keep fingers clear of the scissors.
+6. Glue them spread out.
+7. Add the brown crust strip along the wide end.
+8. Tape two string loops to the back so it wears like a sandwich board.
+9. Keep the crust at the top and the point at the bottom.
+10. Optional pro finish: add green felt peppers and white felt cheese drips along the top edge.
 
 Q: How do you make it read as pizza, not just yellow?
 A: The crust strip along the bottom is the key, a yellow shirt with pepperoni is ambiguous, with a crust it is pizza. Add the crust.
@@ -4368,18 +4395,19 @@ Materials:
 Steps:
 1. Mark the panel size against each wearer before cutting.
 2. Cut two cardboard panels, each about 2 feet square, one per person.
-3. Cut big, then trim later.
-4. Buy the gray and white paint and the craft foam.
-5. Plug: paint one panel gray.
-6. Draw two prongs on the craft foam.
-7. Cut them out.
-8. Tape the prongs sticking up from the top edge.
-9. Socket: paint the other panel white.
-10. Draw two dark slots and a round outlet face on it.
-11. Tape string to the back corners of each panel.
-12. Hang the panels like sandwich boards.
-13. The plug person stands next to the socket person.
-14. Optional pro finish: paint a small lightning bolt where the two panels meet.
+3. Safety: Cut the cardboard panels slowly. Keep fingers clear of the scissors.
+4. Cut big, then trim later.
+5. Buy the gray and white paint and the craft foam.
+6. Plug: paint one panel gray.
+7. Draw two prongs on the craft foam.
+8. Cut them out.
+9. Tape the prongs sticking up from the top edge.
+10. Socket: paint the other panel white.
+11. Draw two dark slots and a round outlet face on it.
+12. Tape string to the back corners of each panel.
+13. Hang the panels like sandwich boards.
+14. The plug person stands next to the socket person.
+15. Optional pro finish: paint a small lightning bolt where the two panels meet.
 
 Q: How do the panels stay on?
 A: Fix string to the back corners of each panel with tape so they hang like sandwich boards, front and back. Two strings per panel, not one, so nothing spins around.
@@ -4410,12 +4438,13 @@ Steps:
 2. Stick or tape them to the front of the red cap and the green cap.
 3. Each brother wears blue overalls over their colored t-shirt and cap.
 4. Paint on a mustache with the brown face paint.
-5. The red brother gets a big bushy one.
-6. The green brother gets a thinner one.
-7. Roll the overall cuffs once.
-8. Strike the jump pose with a fist in the air.
-9. Talk about fixing pipes all night.
-10. Optional pro finish: roll the overall cuffs once and scuff the knees with a little brown face paint.
+5. Safety: Paint mustaches clear of the eyes. Test the paint on skin first.
+6. The red brother gets a big bushy one.
+7. The green brother gets a thinner one.
+8. Roll the overall cuffs once.
+9. Strike the jump pose with a fist in the air.
+10. Talk about fixing pipes all night.
+11. Optional pro finish: roll the overall cuffs once and scuff the knees with a little brown face paint.
 
 Q: How do you tell the two plumbers apart?
 A: Red shirt and cap with an 'M' circle for the older brother, green with an 'L' for the younger. The cap letters are the tell, get them on straight and centered.
@@ -4515,11 +4544,12 @@ Steps:
 4. Tape the inside edges of the holes so the cardboard does not scratch.
 5. Blow up the yellow or white balloons.
 6. Tie them in a cluster.
-7. Tie the cluster to a string ring on top of the box.
-8. Step into the box.
-9. Pull the string straps over your shoulders.
-10. Carry the popcorn crown carefully through doorways.
-11. Optional pro finish: glue a few popcorn pieces to the rim, like it is overflowing.
+7. Safety: Let an adult cut the box holes. Keep balloons whole and away from toddlers.
+8. Tie the cluster to a string ring on top of the box.
+9. Step into the box.
+10. Pull the string straps over your shoulders.
+11. Carry the popcorn crown carefully through doorways.
+12. Optional pro finish: glue a few popcorn pieces to the rim, like it is overflowing.
 
 Q: Balloons or tissue paper for the popcorn?
 A: Tissue paper, crumpled white tissue looks like popcorn and weighs nothing. Balloons pop and squeak all night.
@@ -4625,7 +4655,8 @@ Steps:
 8. Or draw rainbow arcs across a white shirt with the markers.
 9. Stand side by side: cloud arms out wide, rainbow peeking out behind.
 10. Add one blue rain streak on a cheek if you like.
-11. Optional pro finish: hang the raindrops at staggered lengths, not all even.
+11. Safety: Keep the blue paint clear of eyes. Use just one light streak.
+12. Optional pro finish: hang the raindrops at staggered lengths, not all even.
 
 Q: How many cotton balls for a full cloud shirt?
 A: Most of a dollar-store bag, plan on 40 to 60 for an adult shirt, 25 to 35 for a kid. Skimpy clouds show gray through the middle and read as lint, not weather.
@@ -4668,8 +4699,9 @@ Steps:
 13. Tape the egg on top of the noodles.
 14. Stick the chopsticks in at an angle.
 15. Wear the bowl rim like a hat, with string under the chin.
-16. Slurp loudly for effect.
-17. Optional pro finish: glue two wooden chopsticks crossed at the top of the noodles.
+16. Safety: Tie the chin string loose. Your child must lift it off with ease.
+17. Slurp loudly for effect.
+18. Optional pro finish: glue two wooden chopsticks crossed at the top of the noodles.
 
 Q: How do you wear the bowl so it does not fall off?
 A: Wear the bowl rim like a hat with string tied under the chin, noodles and egg on top. Keep the string snug but loose enough to slip a finger under.
@@ -4851,9 +4883,10 @@ Steps:
 13. Each person slides into a torso box.
 14. Hold or tie the small box on the head.
 15. Tie the elastic string under the chin to keep the head box on.
-16. Crack a glow stick.
-17. Tape it to the chest as a power light.
-18. Optional pro finish: give each robot a name badge, like 'UNIT 7' or 'BEEP BOOP'.
+16. Safety: Tie the chin string loose. Cut eye holes wide so all can see.
+17. Crack a glow stick.
+18. Tape it to the chest as a power light.
+19. Optional pro finish: give each robot a name badge, like 'UNIT 7' or 'BEEP BOOP'.
 
 Q: How do you keep a robot crew looking like a crew?
 A: Same silver, same box proportions, different button layouts. Uniform base plus unique details, that is the crew formula.
@@ -5199,13 +5232,14 @@ Steps:
 1. Dress in the plain sweatsuit.
 2. With more than one person, give each a different color.
 3. Wrap the cardboard in aluminum foil for the backpack.
-4. Draw vents, dials, and one big red button with the markers.
-5. Tape the two backpack straps to the back of the cardboard.
-6. Wear the foil backpack, straps over your shoulders.
-7. Tape the bottom corners snug to the sweatsuit so it does not swing.
-8. Hold one finger to your lips.
-9. Strike a heroic pose for the photo.
-10. Optional pro finish: draw a mission badge on an index card and tape it to the chest.
+4. Safety: Trim the foil cardboard with care. Keep fingers clear of the scissors.
+5. Draw vents, dials, and one big red button with the markers.
+6. Tape the two backpack straps to the back of the cardboard.
+7. Wear the foil backpack, straps over your shoulders.
+8. Tape the bottom corners snug to the sweatsuit so it does not swing.
+9. Hold one finger to your lips.
+10. Strike a heroic pose for the photo.
+11. Optional pro finish: draw a mission badge on an index card and tape it to the chest.
 
 Q: How do you keep the foil backpack from swinging?
 A: Tape the bottom corners of the cardboard snug to the sweatsuit after the straps are on. Snug at the bottom stops the swing.
@@ -5237,8 +5271,9 @@ Steps:
 4. Cut the yarn into 12-inch strands.
 5. Glue them across the shirt in wavy rows like spaghetti.
 6. Glue 3 to 4 brown pom-poms on top as meatballs.
-7. Let it dry completely before wearing.
-8. Optional pro finish: glue a few small white pom-poms in the yarn as parmesan.
+7. Safety: Let an adult use the hot glue. Keep pom-poms away from toddlers.
+8. Let it dry completely before wearing.
+9. Optional pro finish: glue a few small white pom-poms in the yarn as parmesan.
 
 Q: Can you wash the shirt after?
 A: No. The glued yarn does not survive the washing machine. Treat it as a single-use costume shirt, so use a thrifted one you do not mind retiring.
@@ -5478,10 +5513,11 @@ Steps:
 5. Iron-on letters cannot be removed.
 6. Things: wear the red jumpsuits with the blue wigs.
 7. Iron or tape Thing 1 and Thing 2 onto the chests.
-8. The Things bounce and cause trouble.
-9. The cat looks worried.
-10. That is the whole photo.
-11. Optional pro finish: add white gloves for the Things and a red ribbon tail on the cat.
+8. Safety: Let an adult use the iron. Keep hands clear of the hot plate.
+9. The Things bounce and cause trouble.
+10. The cat looks worried.
+11. That is the whole photo.
+12. Optional pro finish: add white gloves for the Things and a red ribbon tail on the cat.
 
 Q: How do you make the tall hat from poster board?
 A: Roll the poster board into a tall cone and tape the seam, then cut a wide circle with a hole for the brim and tape it to the base. Paint or tape on the red stripes.
@@ -6052,12 +6088,13 @@ Steps:
 4. Hold it against the sunglasses to check the size before painting.
 5. Stick white stickers or tape in a web pattern across each pair of sunglasses.
 6. Draw two black eye lenses on top.
-7. Let them dry flat for 30 minutes.
-8. Make the chest webs: stick short white tape strips in a web grid on each hoodie.
-9. Wear the hoodie with the hood up.
-10. Put on the web sunglasses.
-11. Each person picks their own web-shooting pose for the group shot.
-12. Optional pro finish: run short white tape strips down the outside of each sleeve.
+7. Safety: Leave a clear gap to see through. Push glasses up for dim light walks.
+8. Let them dry flat for 30 minutes.
+9. Make the chest webs: stick short white tape strips in a web grid on each hoodie.
+10. Wear the hoodie with the hood up.
+11. Put on the web sunglasses.
+12. Each person picks their own web-shooting pose for the group shot.
+13. Optional pro finish: run short white tape strips down the outside of each sleeve.
 
 Q: Sunglasses or swim goggles for the eye lenses?
 A: Swim goggles stay on better, especially for kids running around. Sunglasses work for photos but slide off during the night.
