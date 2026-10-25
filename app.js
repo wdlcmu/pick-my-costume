@@ -136,7 +136,7 @@ var Analytics = {
    button under the #1 pick, tracking post_pick_share_prompt_displayed /
    post_pick_share_prompt_clicked. The duplicate ghost Share inside the
    What's-next block is retired -- single Share CTA per results screen. */
-var SHARE_PROMPT_TEST = true;
+var SHARE_PROMPT_TEST = false;
 
 /* ============ UNIT ANALYTICS FOUNDATION (2026-09-28) ============
    Every content unit (rail, card, collection) on every page logs an
@@ -8881,7 +8881,12 @@ function renderResults(results){
   /* 2026-10-04: elevated Share at the emotional moment. A primary CTA
      directly under the #1 pick (before runners-up and the What's-next
      block), firing the same planShare flow as the What's-next button.
-     Label is just "Share". */
+     Label was just "Share". 2026-10-23 (Analytics + Auto-Ship): label is
+     now "Share this pick" and the duplicate ghost prompt above it is
+     retired (SHARE_PROMPT_TEST = false) -- one share CTA, named object.
+     RE-SHIPPED 2026-10-24 (Analytics + Auto-Ship): the 2026-10-23 fix was
+     overwritten live by a later stale-base app.js deploy; this restores it
+     on top of the current live file, no other changes. */
   (function(){
     var _idea = results[0].idea;
     var swrap = document.createElement("div");
@@ -8890,7 +8895,7 @@ function renderResults(results){
     var sbtn = document.createElement("button");
     sbtn.type = "button"; sbtn.className = "cta";
     sbtn.style.cssText = "width:100%;min-height:56px;font-size:17px;font-weight:800;border-radius:var(--radius);cursor:pointer;font-family:inherit";
-    sbtn.textContent = "Share";
+    sbtn.textContent = "Share this pick";
     var sst = document.createElement("p");
     sst.className = "status";
     sst.style.cssText = "margin:6px 0 0;font-size:13px;min-height:18px;text-align:center";
