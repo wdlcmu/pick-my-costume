@@ -146,7 +146,13 @@ header.top a{display:inline-block;padding:12px 10px;min-height:44px}
 .grid .ccard{margin:0}
 a{color:var(--accent)}
 .basics{font-size:13px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:16px 0}
-</style>
+</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 </head>
 <body>
 <div class="wrap">
