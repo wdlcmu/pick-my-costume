@@ -3,7 +3,7 @@
 
 The mechanic: one host picks a costume theme + date and sends ONE link to the
 work or friend group chat. Every attendee opens the link and lands on a pretty
-invite card with a "Find my costume" quiz CTA. 1 share -> N visits, and it is a
+invite card with a "Pick my costume" quiz CTA. 1 share -> N visits, and it is a
 brand-new social graph vs the existing loops (family lineup, classroom,
 office contest kit organizer tools).
 
@@ -112,7 +112,13 @@ for t in THEMES:
 with open(os.path.join(BASE, "mcp-server", "bank.json")) as f:
     bank = json.load(f)
 bank_ids = {i["id"] for i in bank["ideas"]}
-assert len(bank["ideas"]) == 138
+# Bank size is derived, never hard-coded: the == 138 assert froze this
+# generator when the bank grew to 169 on Oct 3. Non-vacuous floor +
+# duplicate-id check, following the repaired build_aisle_dupes.py
+# pattern. The per-spot membership asserts below are the content check.
+assert len(bank["ideas"]) >= 100, \
+    "bank yielded only %d ideas" % len(bank["ideas"])
+assert len(bank_ids) == len(bank["ideas"]), "duplicate idea ids"
 for t in THEMES:
     for slug, title in t["spots"]:
         assert slug in bank_ids, "spot slug not in bank: %r" % slug
@@ -211,6 +217,7 @@ input.txt:focus{border-color:#e07830;outline:none}
 .linkout{font-size:14px;color:#6b5b4c;margin:18px 0}
 .linkout a{color:#e07830}
 .hidden{display:none!important}
+footer{margin-top:40px;text-align:center;color:#777;font-size:13px;}
 </style>
 </head>
 <body>
@@ -261,7 +268,7 @@ __THEME_CARDS__
 <p class="themetagline" id="ithemetag"></p>
 <div class="costumerow" id="iexamples"></div>
 <div class="btnrow" style="justify-content:center">
-<a class="btn primary" id="quizcta" href="#">Find my costume (2 min)</a>
+<a class="btn primary" id="quizcta" href="#">Pick my costume (2 min)</a>
 </div>
 <p class="linkout">Running the office contest too? <a href="/office-contest-kit">Grab the contest kit</a> for ballots and winners.</p>
 </div>
@@ -277,6 +284,7 @@ __THEME_CARDS__
 <p class="note">RSVPs live in your group chat or email, not here. This page just makes the invite pretty and hands everyone a costume quiz.</p>
 </div>
 
+<footer>Built with Muse.</footer>
 </div>
 <script>
 /* Pure functions below are unit-tested by hour-session/verify-party.cjs.
@@ -335,7 +343,7 @@ function inviteText(theme, date, name){
   var head = "You are invited: " + (name || "Halloween party")
     + (date ? ", " + date : "") + ".";
   return head + " Costume theme: " + th.name + " (" + th.tagline + ")"
-    + " Find your costume in 2 minutes: " + inviteUrl(theme, date, name);
+    + " Pick your costume in 2 minutes: " + inviteUrl(theme, date, name);
 }
 
 function slackText(theme, date, name){
@@ -591,7 +599,7 @@ export async function onRequest(context) {
   var who = name ? name : "Halloween party";
   var title = esc(who + " \u00b7 " + th.name);
   var desc = esc((date ? date + ". " : "") + th.tagline +
-                 " Find your costume in 2 minutes.");
+                 " Pick your costume in 2 minutes.");
   var img = th.img
     ? "https://pickmycostume.com/images/og/" + th.img + ".jpg"
     : DEFAULT_OG_IMAGE;
