@@ -80,7 +80,13 @@ def main():
     DATA, EMOJI, bank = load_sources()
     supplies = DATA['pantry']  # [{id,label,group,staple}]
     ideas = DATA['ideas']
-    assert len(ideas) == 169, 'idea count drift: %d' % len(ideas)
+    # Bank size is derived, never hard-coded: the == 169 assert froze this
+    # generator at the next bank growth, and with no duplicate check a
+    # duplicated id passed it silently. Floor + duplicate-id check,
+    # following the repaired build_aisle_dupes.py pattern.
+    assert len(ideas) >= 100, 'bank yielded only %d ideas' % len(ideas)
+    _ids = [i['id'] for i in ideas]
+    assert len(set(_ids)) == len(_ids), 'duplicate idea ids'
     assert len(supplies) == 56, 'supply count drift: %d' % len(supplies)
     ins = bank['instructions']
     _bad_times = [sid for sid, v in ins.items()
