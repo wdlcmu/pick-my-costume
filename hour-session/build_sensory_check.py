@@ -162,7 +162,13 @@ button.btn.share{background:#1c1a17;color:#fff}
 a.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
 .method{margin-top:28px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
 .disclaimer{background:#f7f3ea;border-radius:12px;padding:14px;margin-top:16px;font-size:14px}
-</style>
+footer{margin-top:40px;font-size:13px;color:#777;}</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -275,7 +281,7 @@ document.getElementById("sharebtn").onclick=function(){
   if(vsm)ph("sensory_opened",{idea:id,via_share_id:vsm[1],share_origin:"sensory"});
 })();
 </script>
-</body>
+<footer>Built with Muse.</footer></body>
 </html>
 """
 
@@ -310,9 +316,12 @@ def main():
         bank = json.load(f)
     ideas = bank["ideas"]
     ins = bank["instructions"]
-    assert len(ideas) == 169, "bank drift: %d ideas" % len(ideas)
+    # Bank size is derived, never hard-coded: the == 169 assert froze this
+    # generator at the next bank growth. Non-vacuous floor + duplicate-id
+    # check, following the repaired build_aisle_dupes.py pattern.
+    assert len(ideas) >= 100, "bank yielded only %d ideas" % len(ideas)
     ids = [i["id"] for i in ideas]
-    assert len(set(ids)) == 169, "duplicate ids"
+    assert len(set(ids)) == len(ids), "duplicate ids"
     _bad_times = [iid for iid, v in ins.items()
                   if not re.fullmatch(r"\d+ min( \+ .+ drying)?",
                                       v.get('time', ''))]
