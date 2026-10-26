@@ -11,6 +11,14 @@ by this script).
 
 Fails loudly on: missing labels, ideas without mats, </script> in data,
 template placeholder missing, non-idempotent output.
+
+2026-10-22 reconciliation (parity fix list #9): the template carries the
+live page's share attribution verbatim -- the copied plan's build-guide
+link ends "?src=share-handmedown" and its make-your-own-plan link ends
+"&src=share-handmedown" -- and the Quick answer shows Fairy Tale
+Princesses at its display time "15 min" (bank time "15 min + 1 hr
+drying" with the drying suffix stripped, per Billy's 2026-10-03 display
+rule). Do not remove either: a regen must reproduce the live page.
 """
 import json, os, sys
 
