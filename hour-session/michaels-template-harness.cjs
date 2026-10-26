@@ -252,12 +252,12 @@ for (const idea of IDEAS){
   const mp = sb.MAKE_PLANS["penguin-huddle"];
   ok(ppBoxes.length === mp.buy.length, "penguin: DIY check-off has " + ppBoxes.length + " boxes, buy list " + mp.buy.length);
   const need = findAll(box, "pp-need");
-  ok(need.length === 1 && need[0].textContent === "You need " + mp.buy.length + " things",
+  ok(need.length === 1 && need[0].textContent === "For the quick version, you need " + mp.buy.length + " thing" + (mp.buy.length === 1 ? "" : "s"),
      "penguin: pp summary '" + (need[0] && need[0].textContent) + "'");
   if (ppBoxes.length && need.length){
     ppBoxes[0].checked = true; ppBoxes[0].fire("change");
     const leftAfter = mp.buy.length - 1;
-    ok(need[0].textContent === "You need " + leftAfter + " thing" + (leftAfter === 1 ? "" : "s"),
+    ok(need[0].textContent === "For the quick version, you need " + leftAfter + " thing" + (leftAfter === 1 ? "" : "s"),
        "penguin: pp summary after tick '" + need[0].textContent + "'");
   }
   ok(!/Easiest version/i.test(box.textContent), "penguin: no Easiest box (09c18c3)");
