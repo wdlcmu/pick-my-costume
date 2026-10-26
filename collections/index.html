@@ -26,11 +26,17 @@ ul{list-style:none;margin:0;padding:0;display:grid;gap:12px;}
 .quizbox p{margin:0 0 12px;font-size:16px;}
 .quizbox a{display:inline-block;background:#7c3aed;color:#fff;font-weight:700;padding:12px 24px;border-radius:10px;text-decoration:none;}
 .more{margin-top:24px;text-align:center;}
-.more a{color:#0a6cff;}
-</style>
+.more a{color:#0a6cff;}.topbar{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}.topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}.topbtns{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto;}.topbar a.homebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}.topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}.topbar a span{color:#ff8c1a;}footer{margin-top:40px;font-size:13px;color:#777;}
+</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 </head>
 <body>
-<div class="wrap">
+<div class="topbar"><a class="brand" href="/">🎃 Pick My <span>Costume</span></a><div class="topbtns"><a class="homebtn" href="/">Pick my costume</a><a class="claudebtn" href="https://pickmycostume.com/mcp">Add to Claude</a></div></div><div class="wrap">
 <h1>Costume collections</h1>
 <p class="lede">Curated costume sets for every kind of Halloween crunch. Each collection has six costumes with free step-by-step build guides.</p>
 <ul>
@@ -44,7 +50,7 @@ ul{list-style:none;margin:0;padding:0;display:grid;gap:12px;}
 <p>Want a personal match instead? Take the 2-minute quiz.</p>
 <a href="/?src=collection-index">Take the quiz</a>
 </div>
-<p class="more"><a href="/costumes">Browse all 169 costume guides</a></p>
+<p class="more"><a href="/costumes">Browse all 169 costume guides</a></p><footer>Built with Muse.</footer>
 </div>
 </body>
 </html>
