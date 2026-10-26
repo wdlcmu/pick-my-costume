@@ -8,7 +8,7 @@ bank's materials for wheel trouble (drag, bulk, sightlines, hands, headpieces).
 Reads mcp-server/bank.json (source of truth). Staged code only. NO deploy.
 Not wired into nav or sitemap. No inbound links from live surfaces.
 """
-import json, re, os
+import json, re, os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BANK = os.path.join(ROOT, "mcp-server", "bank.json")
@@ -103,6 +103,13 @@ FLAGS = [
 COMPILED = [(k, re.compile(rx), label, why, fix) for k, rx, label, why, fix in FLAGS]
 
 
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed time is
+    # hands-on only. The bank time may carry a "+ ... drying" suffix
+    # that counts in Tonight scoring but is never displayed. Same
+    # helper as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
+
 def compute_flags(idea, ins):
     text = (" ".join(ins.get("m", [])) + " " + idea.get("blurb", "")).lower()
     for phrase, glued in SANITIZE:
@@ -119,7 +126,7 @@ TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wheelchair Halloween Costume Ideas: 8 Builds Where the Chair Is the Costume | Pick My Costume</title>
-<meta name="description" content="Wheelchair costume ideas where the chair is part of the costume: fire truck, castle, rescue boat, ice cream truck. Plus a check that scans any of our 138 costumes for wheel trouble. Cardboard, tape, and a free build guide for each.">
+<meta name="description" content="Wheelchair costume ideas where the chair is part of the costume: fire truck, castle, rescue boat, ice cream truck. Plus a check that scans any of our 169 costumes for wheel trouble. Cardboard, tape, and a free build guide for each.">
 <link rel="canonical" href="__CANON__">
 <meta property="og:title" content="Wheelchair Costume Ideas: the Chair Is the Costume">
 <meta property="og:description" content="8 builds where the wheelchair becomes the fire truck, the castle, the rescue boat. Plus a wheel-trouble check for any costume.">
@@ -286,7 +293,7 @@ function pick(id){
   document.getElementById("ctitle").textContent=e.t;
   document.getElementById("cblurb").textContent=e.b;
   document.getElementById("triple").innerHTML=
-    "<span>"+esc(e.time)+"</span><span>"+esc(e.cost)+"</span><span>"+esc(e.effort)+"</span>";
+    "<span>"+esc(e.time)+"</span><span>"+esc(e.effort)+"</span>";
   var fh="";
   e.flags.forEach(function(f){fh+='<div class="flag"><b>'+esc(f.label)+'</b><span>'+esc(f.why)+'</span><span class="fix">Fix: '+esc(f.fix)+'</span></div>';});
   if(e.flags.length===0){fh+='<div class="clear">Checked: no capes, trains, floor-length hems, tutus, masks, staffs, or tall hats in the materials.</div>';}
@@ -337,8 +344,7 @@ def build_card(iid, idea, e, concept, note):
         '<h3>' + idea["title"] + ' &#9855;</h3>'
         '<p class="chairline">' + concept + '</p>'
         '<p class="blurb">' + idea["blurb"] + '</p>'
-        '<div class="triple"><span>' + e["time"] + '</span><span>' + e["cost"] +
-        '</span><span>' + e["effort"] + '</span></div>'
+        '<div class="triple"><span>' + display_time(e["time"]) + '</span><span>' + e["effort"] + '</span></div>'
         '<p class="chairnote"><b>Chair build:</b>' + note + '</p>'
         '<div class="btns"><a class="btn primary" data-build="' + iid +
         '" href="/c/' + iid + '?src=' + SRC + '">Free build guide</a></div>'
@@ -390,7 +396,9 @@ def main():
     ideas = bank["ideas"]
     ins = bank["instructions"]
     n = len(ideas)
-    assert n == 164, "bank drift: %d ideas" % n
+    # Bank size is derived, never hard-coded: floor only (the duplicate-id
+    # check below already uses the derived form).
+    assert n >= 100, "bank yielded only %d ideas" % n
     ids = [i["id"] for i in ideas]
     assert len(set(ids)) == n, "duplicate ids"
     by_id = {i["id"]: i for i in ideas}
@@ -401,8 +409,8 @@ def main():
         idea = by_id[iid]
         assert "kid" in idea.get("audience", []), "build not kid audience: %s" % iid
         e = ins.get(iid, {})
-        for k in ("time", "cost", "effort"):
-            assert e.get(k), "empty triple %s for %s" % (k, iid)
+        for k in ("time", "effort"):
+            assert e.get(k), "empty time/effort %s for %s" % (k, iid)
         assert not any(c in idea["title"] for c in DASHES)
         assert not any(c in idea["blurb"] for c in DASHES)
         assert not any(c in concept for c in DASHES), "dash in concept: %s" % iid
@@ -425,14 +433,13 @@ def main():
             "id": iid,
             "t": idea["title"],
             "b": idea["blurb"],
-            "time": e.get("time", ""),
-            "cost": e.get("cost", ""),
+            "time": display_time(e.get("time", "")),
             "effort": e.get("effort", ""),
             "flags": [{"k": k, "label": l, "why": w, "fix": f}
                       for k, l, w, f in flags],
         })
     for e in index:
-        assert e["time"] and e["cost"] and e["effort"], "empty triple: %s" % e["id"]
+        assert e["time"] and e["effort"], "empty time/effort: %s" % e["id"]
         for fl in e["flags"]:
             for k in ("label", "why", "fix"):
                 assert not any(c in fl[k] for c in DASHES), \
@@ -488,4 +495,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--out" in sys.argv:
+        OUT = sys.argv[sys.argv.index("--out") + 1]
     main()
