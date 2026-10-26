@@ -90,7 +90,7 @@ export async function onRequest(context) {
   var who = name ? name : "Halloween party";
   var title = esc(who + " \u00b7 " + th.name);
   var desc = esc((date ? date + ". " : "") + th.tagline +
-                 " Find your costume in 2 minutes.");
+                 " Pick your costume in 2 minutes.");
   var img = th.img
     ? "https://pickmycostume.com/images/og/" + th.img + ".jpg"
     : DEFAULT_OG_IMAGE;
