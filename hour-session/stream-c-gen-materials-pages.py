@@ -65,7 +65,10 @@ IDEAS = {x['id']: x for x in PANTRY['ideas']}
 MAT_LABEL = {x['id']: x['label'] for x in PANTRY['pantry']}
 STAPLES = {x['id'] for x in PANTRY['pantry'] if x.get('staple')}
 GROUPS = PANTRY['groups']
-assert len(IDEAS) == 169, len(IDEAS)
+# Bank size is derived, never hard-coded: floor + a raw-list vs dict size
+# check (the IDEAS dict would collapse a duplicate id silently).
+assert len(IDEAS) >= 100, len(IDEAS)
+assert len(PANTRY['ideas']) == len(IDEAS), 'duplicate idea ids in pantry data'
 assert set(IDEAS) == set(CG), 'slug universe mismatch'
 
 def mins(time_str):
