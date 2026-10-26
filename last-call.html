@@ -122,7 +122,7 @@
    "name": "Can I make one of these tonight?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Costumes marked Make tonight take 30 minutes or less, are rated easy. Each one links to its full build guide."
+    "text": "Costumes marked Make tonight take 30 minutes or less of hands-on work, are rated easy, and need no drying time. Each one links to its full build guide."
    }
   }
  ]
@@ -188,7 +188,7 @@
 </details>
 <details class="faq">
 <summary>Can I make one of these tonight?</summary>
-<p>Costumes marked Make tonight take 30 minutes or less, are rated easy. Each one links to its full build guide.</p>
+<p>Costumes marked Make tonight take 30 minutes or less of hands-on work, are rated easy, and need no drying time. Each one links to its full build guide.</p>
 </details>
 </section>
   <footer>Built with Muse. &middot; <a href="https://pickmycostume.com/?src=share-lastcall">pickmycostume.com</a></footer>
@@ -241,7 +241,7 @@
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
   function cardHTML(r){
-    var badge = r.tonight ? '<span class="tonightbadge">MAKE TONIGHT</span>' : '';
+    var badge = r.tonight ? '<span class="tonightbadge">MAKE TONIGHT · NO DRYING</span>' : '';
     return '<article class="card">' + badge +
       '<h2>' + esc(r.title) + '</h2>' +
       '<div class="triple"><span class="tchip">' + esc(r.time) + '</span>' +
