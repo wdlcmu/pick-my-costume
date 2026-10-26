@@ -182,6 +182,7 @@ day-of surprises."""),
       rank=lambda iid: (minutes(instr[iid].get('time')), cost_lo(instr[iid].get('cost'))),
       limit=12,
       hub=('/c/family', 'See all 36 family costumes'),
+      more=[('/mommy-and-me-halloween-costumes', 'Mommy and me costumes')],
       faqs=[
         ("Which family member's costume should we build first?", 'The smallest. Fit the toddler or baby while they are still in a good mood, then scale the adult versions off the same simple base.'),
         ('Do we all have to match exactly?', 'No. One repeated color, hat, or prop reads as a group in photos. Matching exactly multiplies the work; a shared element is enough.'),
@@ -390,7 +391,7 @@ else{{rc('error');note.textContent='Hmm, that didn\u2019t save. Try again?';}}
 <div class="cta">
 <p><strong>Own the supplies already?</strong> <a href="/pantry">Check the Pantry</a> to see which of all 169 costumes you can make tonight from what is in your house. Or <a href="/map/">wander the costume galaxy</a>.</p>
 <p>Can&rsquo;t decide? <a href="https://pickmycostume.com/">Pick my costume</a>: the 2-minute quiz that picks your top 3.</p>
-{hub_line}</div>
+{hub_line}{more_line}</div>
 </main>
 <footer>
 <a href="/about">About</a><a href="/about#faq">FAQ</a><a href="mailto:hello@pickmycostume.com">Contact</a>
@@ -478,8 +479,16 @@ for p in PAGES:
     # without it render byte-identical to before ({hub_line} sits where
     # the newline before </div> already was).
     hub_line = ('<p><a href="%s">%s</a></p>\n' % p['hub']) if p.get('hub') else ''
+    # Optional per-page "more ideas" link list (Item 53, 2026-10-24): one
+    # added line in the .cta box, only on pages whose PAGES entry sets
+    # more=[(path, text), ...]. Pages without it render byte-identical to
+    # before ({more_line} sits directly after {hub_line}, no new newline).
+    more_line = ''
+    if p.get('more'):
+        more_links = ' &middot; '.join('<a href="%s">%s</a>' % (u, t) for u, t in p['more'])
+        more_line = '<p>More ideas: %s</p>\n' % more_links
     page = TEMPLATE.format(title=p['title'], desc=p['desc'], slug=p['slug'], og=picked[0],
-                           faq_html=faq_html, faq_json=faq_json, hub_line=hub_line,
+                           faq_html=faq_html, faq_json=faq_json, hub_line=hub_line, more_line=more_line,
                            h1=p['title'].split(':')[0], intro=intro_html, cards=cards, ph=PH_SNIPPET)
     assert 'Pumpkin King and Stitched Bride' not in page
     out = os.path.join(ROOT, p['slug'] + '.html')
