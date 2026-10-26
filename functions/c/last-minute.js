@@ -41,9 +41,9 @@ var HTML = `<!DOCTYPE html>
   document.head.appendChild(s);
 })();
 </script>
-<style>body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#222;background:#fff;}.wrap{max-width:720px;margin:0 auto;padding:32px 20px 64px;}.crumbs{font-size:14px;color:#777;margin:0 0 14px;}.crumbs a{color:#e07b00;font-weight:700;text-decoration:none;}h1{font-size:28px;margin:0 0 8px;}.lede{font-size:16px;color:#555;margin:0 0 20px;}ul{list-style:none;margin:0;padding:0;}li{padding:9px 0;border-bottom:1px solid #eee;font-size:16px;line-height:1.45;}li a{font-weight:700;color:#e07b00;text-decoration:none;}li a:hover{text-decoration:underline;}li span{display:block;color:#555;font-size:14px;margin-top:2px;}.home{margin-top:28px;font-size:15px;}.home a{color:#e07b00;font-weight:700;}.quizcta{display:inline-block;margin:6px 0 22px;background:#ff8c1a;color:#2a1500;font-weight:800;font-size:17px;text-decoration:none;padding:14px 26px;border-radius:14px;}footer{margin-top:40px;font-size:13px;color:#777;}</style>
+<style>body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#222;background:#fff;}.wrap{max-width:720px;margin:0 auto;padding:32px 20px 64px;}.crumbs{font-size:14px;color:#777;margin:0 0 14px;}.crumbs a{color:#e07b00;font-weight:700;text-decoration:none;}h1{font-size:28px;margin:0 0 8px;}.lede{font-size:16px;color:#555;margin:0 0 20px;}ul{list-style:none;margin:0;padding:0;}li{padding:9px 0;border-bottom:1px solid #eee;font-size:16px;line-height:1.45;}li a{font-weight:700;color:#e07b00;text-decoration:none;}li a:hover{text-decoration:underline;}li span{display:block;color:#555;font-size:14px;margin-top:2px;}.home{margin-top:28px;font-size:15px;}.home a{color:#e07b00;font-weight:700;}.quizcta{display:inline-block;margin:6px 0 22px;background:#ff8c1a;color:#2a1500;font-weight:800;font-size:17px;text-decoration:none;padding:14px 26px;border-radius:14px;}footer{margin-top:40px;font-size:13px;color:#777;}.topbar{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}.topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}.topbtns{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto;}.topbar a.homebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}.topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}.topbar a span{color:#ff8c1a;}</style>
 </head>
-<body><main class="wrap">
+<body><div class="topbar"><a class="brand" href="/">🎃 Pick My <span>Costume</span></a><div class="topbtns"><a class="homebtn" href="/">Pick my costume</a><a class="claudebtn" href="https://pickmycostume.com/mcp">Add to Claude</a></div></div><main class="wrap">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Pick My Costume</a> &rsaquo; <a href="/costumes">All costume guides</a> &rsaquo; Last-minute Halloween costumes</nav>
 <h1>Last-minute Halloween costumes</h1>
 <p class="lede">Need a costume tonight? Every idea here builds in 25 minutes or less, most in 20. Each guide lists what you need, the steps, and the real time and cost. Free, no signup.</p>
@@ -56,12 +56,12 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/backyard-hero">Backyard Superhero</a><span>Short cape plus a first initial on the chest, mask optional.</span></li>
       <li><a href="/c/bacon-eggs">Bacon &amp; Eggs</a><span>Wavy bacon stripes and a sunny-side-up egg yolk.</span></li>
       <li><a href="/c/ballerina">Ballerina</a><span>A tulle tutu tied onto elastic, a leotard, and a neat ballerina bun.</span></li>
-      <li><a href="/c/bamboo-demon">Bamboo-Muzzle Demon</a><span>Pink robe, long dark wig. Anime inspired, Nezuko style.</span></li>
+      <li><a href="/c/bamboo-demon">Bamboo-Muzzle Demon</a><span>Pink robe, long dark wig, and a cardboard bamboo muzzle tied with ribbon.</span></li>
       <li><a href="/c/banana">Banana</a><span>Yellow sweatsuit with a green felt stem hat.</span></li>
       <li><a href="/c/basketball-star">Basketball Star</a><span>Jersey, shorts, eye-black stripes, and a ball that never leaves your hand.</span></li>
       <li><a href="/c/beekeeper-bee">Beekeeper &amp; Bee</a><span>One goes as the beekeeper in white with a mesh veil; the other wears yellow and black stripes with antennae.</span></li>
       <li><a href="/c/black-cat">Black Cat Burglar</a><span>Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.</span></li>
-      <li><a href="/c/blue-heeler-pup">Blue Heeler Pup</a><span>Blue-gray hoodie, felt ears, and a painted nose for the littlest pup. Bluey inspired.</span></li>
+      <li><a href="/c/blue-heeler-pup">Blue Heeler Pup</a><span>Blue-gray hoodie, felt ears, and a painted nose for the littlest pup.</span></li>
       <li><a href="/c/bowling-pins">Bowling Pins</a><span>White outfits with red neck stripes, plus one bowler in black.</span></li>
       <li><a href="/c/boxer">Boxer</a><span>Bathrobe, toy gloves, bruise makeup, and entrance music.</span></li>
       <li><a href="/c/breakfast-buffet">Breakfast Buffet</a><span>Everyone picks a breakfast: egg, bacon, toast, pancake, OJ, coffee. Cardboard signs over normal clothes.</span></li>
@@ -74,7 +74,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/chipmunk-trio">Chipmunk Trio</a><span>Letter sweaters, felt ears, and whiskers for a singing trio of chipmunks.</span></li>
       <li><a href="/c/classic-ghost">Classic Ghost</a><span>A white sheet with cut-out eyes.</span></li>
       <li><a href="/c/vampire">Classic Vampire</a><span>Black cape, fangs, slicked hair.</span></li>
-      <li><a href="/c/wizard">Classic Wizard</a><span>Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional. Hogwarts inspired.</span></li>
+      <li><a href="/c/wizard">Classic Wizard</a><span>Tall black pointy hat, flowing plain black robe, tall straight wooden staff, gray beard optional.</span></li>
       <li><a href="/c/coffee-cup">Coffee Cup</a><span>White trash bag over a cardboard tube, brown lid hat.</span></li>
       <li><a href="/c/cowboy-duo">Cowboy and Cowgirl</a><span>Denim, cardboard hats, and bandanas for the pair that rides together.</span></li>
       <li><a href="/c/crowd-camouflage">Crowd Camouflage</a><span>Gray hoodie, dark pants, blank expression. Vanish into any crowd.</span></li>
@@ -86,7 +86,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/dino-tourist">Dino Tourist</a><span>Hawaiian shirt, dino tail, camera around your neck, and a fanny pack. The meteor missed this one.</span></li>
       <li><a href="/c/dinosaur-family">Dinosaur Family</a><span>Matching dino-hoodie sweatsuits for the whole crew, spikes down every back.</span></li>
       <li><a href="/c/emoji-crew">Emoji Crew</a><span>Everyone picks an emoji: a yellow tee plus a big printed face.</span></li>
-      <li><a href="/c/emotion-crew">Emotion Crew</a><span>One loud color per person: each of you is a different emotion. Inside Out inspired.</span></li>
+      <li><a href="/c/emotion-crew">Emotion Crew</a><span>One loud color per person: each of you is a different emotion.</span></li>
       <li><a href="/c/emotional-support-dinosaur">Emotional Support Dinosaur</a><span>Dino-spike vest over normal clothes with a badge that says Emotional Support Dinosaur. Do not pet.</span></li>
       <li><a href="/c/error-404">Error 404</a><span>Wear all black with a blank white page taped to your chest; carry a phone with a cracked-screen prop.</span></li>
       <li><a href="/c/extinct-party-animal">Extinct Party Animal</a><span>Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago.</span></li>
@@ -96,13 +96,13 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/fruit-salad">Fruit Salad Crew</a><span>Each person picks a fruit color, wears it head to toe with a leaf hat.</span></li>
       <li><a href="/c/fuzzy-gremlin">Fuzzy Gremlin Plush</a><span>A furry brown onesie, big felt ears, and googly eyes.</span></li>
       <li><a href="/c/fuzzy-monster">Fuzzy Monster</a><span>A pastel fuzzy sweatsuit with giant googly eyes and an oversized stitched smile.</span></li>
-      <li><a href="/c/galaxy-knights">Galaxy Knights</a><span>Robes, belts, and toy energy blades for knights of a far-off galaxy. Star Wars inspired.</span></li>
+      <li><a href="/c/galaxy-knights">Galaxy Knights</a><span>Robes, belts, and toy energy blades for knights of a far-off galaxy.</span></li>
       <li><a href="/c/garden-fairy">Garden Fairy</a><span>Tulle wings, a flower crown, and a wand: the backyard turns into a fairy tale.</span></li>
       <li><a href="/c/gloom-bloom">Gloom &amp; Bloom</a><span>Braids and black for Gloom, color-pop and smiles for Bloom.</span></li>
       <li><a href="/c/glow-skeleton">Glow Skeleton</a><span>Black sweats with glow-in-the-dark bone tape, plus glow bracelets.</span></li>
       <li><a href="/c/goggle-crew">Goggle Crew</a><span>Yellow tees, denim overalls, goggles, black gloves.</span></li>
       <li><a href="/c/good-witch-bad-witch">Good Witch, Bad Witch</a><span>Green face paint and black for one, pink gown and crown for the other.</span></li>
-      <li><a href="/c/goth-braids">Goth Girl with Braids</a><span>Black dress, two tight braids, and a stare that ends conversations. The Wednesday Addams look, DIY in minutes.</span></li>
+      <li><a href="/c/goth-braids">Goth Girl with Braids</a><span>Black dress, two tight braids, and a stare that ends conversations.</span></li>
       <li><a href="/c/haunted-portraits">Haunted Portraits</a><span>Gray makeup, old-timey clothes, hold a gilt frame.</span></li>
       <li><a href="/c/headless-horsemen">Headless Horsemen</a><span>Black capes, jack-o-lanterns held at shoulder height, group gallop.</span></li>
       <li><a href="/c/hot-dog">Hot Dog</a><span>Tan foam pool noodle bun, red shirt for the dog, mustard squiggle.</span></li>
@@ -121,14 +121,14 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/lost-tourist">Lost Tourist</a><span>Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder.</span></li>
       <li><a href="/c/mermaid-crew">Mermaid Crew</a><span>The mermaid, the prince, the sea king, the sea witch, or the crab: pick your role.</span></li>
       <li><a href="/c/milk-cookies">Milk &amp; Cookies</a><span>White carton tunic for one, brown cookie with felt chips for the other.</span></li>
-      <li><a href="/c/moonwalk-star">Moonwalking Pop Star</a><span>Red jacket, one glitter glove, and the lean everyone attempts. Michael Jackson Thriller inspired.</span></li>
+      <li><a href="/c/moonwalk-star">Moonwalking Pop Star</a><span>Red jacket, one glitter glove, and the lean everyone attempts.</span></li>
       <li><a href="/c/mystery-crew">Mystery Crew</a><span>Assign the leader, the style icon, the brains, the goofball, and one very good dog.</span></li>
-      <li><a href="/c/mystery-teens">Mystery-Solving Teens</a><span>Color-coded outfits, a toy magnifying glass, and one giant sandwich. Scooby-Doo inspired.</span></li>
+      <li><a href="/c/mystery-teens">Mystery-Solving Teens</a><span>Color-coded outfits, a toy magnifying glass, and one giant sandwich.</span></li>
       <li><a href="/c/neon-demon-hunter">Neon Demon Hunter</a><span>Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.</span></li>
       <li><a href="/c/ninja">Ninja</a><span>All black with a belt sash and a slit headband.</span></li>
       <li><a href="/c/office-couple">Office Couple</a><span>White shirts, name tags, and a teapot. The office&#x27;s finest.</span></li>
       <li><a href="/c/pbj">Peanut Butter &amp; Jelly</a><span>One in brown with a PB label, one in purple with a J label.</span></li>
-      <li><a href="/c/plastic-dream-crew">Plastic Dream Crew</a><span>Head-to-toe pink outfits with plastic accessories for the dream crew. Barbie inspired.</span></li>
+      <li><a href="/c/plastic-dream-crew">Plastic Dream Crew</a><span>Head-to-toe pink outfits with plastic accessories for the dream crew.</span></li>
       <li><a href="/c/player-one-two">Player One &amp; Two</a><span>Matching tees with 1 and 2, toy controllers in hand, ready for co-op.</span></li>
       <li><a href="/c/plumber-duo">Plumber Duo</a><span>Overalls, red and green caps and shirts, drawn mustaches.</span></li>
       <li><a href="/c/pocket-plush">Pocket Plush Monster</a><span>A fuzzy one-piece, giant ears, a stitched smile, and an oversized collector tag.</span></li>
@@ -147,10 +147,10 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/doctor-bride">The Doctor &amp; the Bride</a><span>Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.</span></li>
       <li><a href="/c/tin-hero">The Tin Hero</a><span>Red and gold plus a glowing chest circle: the suit does the talking.</span></li>
       <li><a href="/c/tiny-firefighter">Tiny Firefighter</a><span>Red sweats, a plastic helmet, and a toy hose.</span></li>
-      <li><a href="/c/web-slinger-kid">Web Hero</a><span>Red sweatsuit, tape web lines, big white eye lenses. A Spider-Man inspired look from the closet.</span></li>
-      <li><a href="/c/web-hero-duo">Web Hero Duo</a><span>Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude. A Spider-Man inspired duo.</span></li>
+      <li><a href="/c/web-slinger-kid">Web Hero</a><span>Red sweatsuit, tape web lines, big white eye lenses.</span></li>
+      <li><a href="/c/web-hero-duo">Web Hero Duo</a><span>Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.</span></li>
       <li><a href="/c/wine-cheese">Wine &amp; Cheese</a><span>Burgundy wine glass tunic for one, yellow cheese wedge with holes for the other.</span></li>
-      <li><a href="/c/yellow-henchmen">Yellow Henchmen Crew</a><span>Yellow shirts, blue overalls, and swim goggles for the whole crew. Minions inspired.</span></li>
+      <li><a href="/c/yellow-henchmen">Yellow Henchmen Crew</a><span>Yellow shirts, blue overalls, and swim goggles for the whole crew.</span></li>
       <li><a href="/c/zombie-coworker">Zombie Coworker</a><span>Torn button-down, loosened tie, pale makeup, coffee mug.</span></li>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/family">Family Halloween costume ideas</a> &middot; <a href="/c/couples">Couples Halloween costume ideas</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
