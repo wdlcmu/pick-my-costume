@@ -229,7 +229,13 @@ header.top a{display:inline-block;padding:12px 10px;min-height:44px}
 .footer a{color:var(--muted);display:inline-block;padding:12px 10px}
 ol.steps{margin:8px 0;padding-left:20px;color:var(--muted)}
 ol.steps li{margin:6px 0;color:var(--ink)}
-</style>
+</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 </head>
 <body>
 <div class="wrap">
