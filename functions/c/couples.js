@@ -41,9 +41,9 @@ var HTML = `<!DOCTYPE html>
   document.head.appendChild(s);
 })();
 </script>
-<style>body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#222;background:#fff;}.wrap{max-width:720px;margin:0 auto;padding:32px 20px 64px;}.crumbs{font-size:14px;color:#777;margin:0 0 14px;}.crumbs a{color:#e07b00;font-weight:700;text-decoration:none;}h1{font-size:28px;margin:0 0 8px;}.lede{font-size:16px;color:#555;margin:0 0 20px;}ul{list-style:none;margin:0;padding:0;}li{padding:9px 0;border-bottom:1px solid #eee;font-size:16px;line-height:1.45;}li a{font-weight:700;color:#e07b00;text-decoration:none;}li a:hover{text-decoration:underline;}li span{display:block;color:#555;font-size:14px;margin-top:2px;}.home{margin-top:28px;font-size:15px;}.home a{color:#e07b00;font-weight:700;}.quizcta{display:inline-block;margin:6px 0 22px;background:#ff8c1a;color:#2a1500;font-weight:800;font-size:17px;text-decoration:none;padding:14px 26px;border-radius:14px;}footer{margin-top:40px;font-size:13px;color:#777;}</style>
+<style>body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#222;background:#fff;}.wrap{max-width:720px;margin:0 auto;padding:32px 20px 64px;}.crumbs{font-size:14px;color:#777;margin:0 0 14px;}.crumbs a{color:#e07b00;font-weight:700;text-decoration:none;}h1{font-size:28px;margin:0 0 8px;}.lede{font-size:16px;color:#555;margin:0 0 20px;}ul{list-style:none;margin:0;padding:0;}li{padding:9px 0;border-bottom:1px solid #eee;font-size:16px;line-height:1.45;}li a{font-weight:700;color:#e07b00;text-decoration:none;}li a:hover{text-decoration:underline;}li span{display:block;color:#555;font-size:14px;margin-top:2px;}.home{margin-top:28px;font-size:15px;}.home a{color:#e07b00;font-weight:700;}.quizcta{display:inline-block;margin:6px 0 22px;background:#ff8c1a;color:#2a1500;font-weight:800;font-size:17px;text-decoration:none;padding:14px 26px;border-radius:14px;}footer{margin-top:40px;font-size:13px;color:#777;}.topbar{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}.topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}.topbtns{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto;}.topbar a.homebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}.topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}.topbar a span{color:#ff8c1a;}</style>
 </head>
-<body><main class="wrap">
+<body><div class="topbar"><a class="brand" href="/">🎃 Pick My <span>Costume</span></a><div class="topbtns"><a class="homebtn" href="/">Pick my costume</a><a class="claudebtn" href="https://pickmycostume.com/mcp">Add to Claude</a></div></div><main class="wrap">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Pick My Costume</a> &rsaquo; <a href="/costumes">All costume guides</a> &rsaquo; Couples Halloween costume ideas</nav>
 <h1>Couples Halloween costume ideas</h1>
 <p class="lede">Two-person costumes that read as a pair: duos, food pairs, and opposites. Each guide lists what you need, the steps, and how long it takes. Free, no signup.</p>
@@ -59,8 +59,8 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/chips-guac">Chips &amp; Guac</a><span>Green guac tunic with red tomato dots for one, giant triangle chip hat for the other.</span></li>
       <li><a href="/c/cowboy-duo">Cowboy and Cowgirl</a><span>Denim, cardboard hats, and bandanas for the pair that rides together.</span></li>
       <li><a href="/c/donut-coffee">Donut &amp; Coffee</a><span>Pink frosted ring tunic for one, takeout coffee cup for the other.</span></li>
-      <li><a href="/c/dragon-rider-duo">Dragon Rider Duo</a><span>A viking rider and a cardboard dragon, ready to fly over the neighborhood. How to Train Your Dragon inspired.</span></li>
-      <li><a href="/c/galaxy-knights">Galaxy Knights</a><span>Robes, belts, and toy energy blades for knights of a far-off galaxy. Star Wars inspired.</span></li>
+      <li><a href="/c/dragon-rider-duo">Dragon Rider Duo</a><span>A viking rider and a cardboard dragon, ready to fly over the neighborhood.</span></li>
+      <li><a href="/c/galaxy-knights">Galaxy Knights</a><span>Robes, belts, and toy energy blades for knights of a far-off galaxy.</span></li>
       <li><a href="/c/haunted-portraits">Haunted Portraits</a><span>Gray makeup, old-timey clothes, hold a gilt frame.</span></li>
       <li><a href="/c/juke-joint-vampires">Juke-Joint Vampires</a><span>Sharp vintage suits, fangs, and a trumpet one of you never puts down.</span></li>
       <li><a href="/c/ketchup-mustard">Ketchup &amp; Mustard</a><span>Red bottle tunic and cap for one, yellow for the other.</span></li>
@@ -69,7 +69,7 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/moth-porch-light">Moth and Porch Light</a><span>One wears neutrals with cardboard wings; the other wears yellow and carries a lampshade.</span></li>
       <li><a href="/c/office-couple">Office Couple</a><span>White shirts, name tags, and a teapot. The office&#x27;s finest.</span></li>
       <li><a href="/c/pbj">Peanut Butter &amp; Jelly</a><span>One in brown with a PB label, one in purple with a J label.</span></li>
-      <li><a href="/c/plastic-dream-crew">Plastic Dream Crew</a><span>Head-to-toe pink outfits with plastic accessories for the dream crew. Barbie inspired.</span></li>
+      <li><a href="/c/plastic-dream-crew">Plastic Dream Crew</a><span>Head-to-toe pink outfits with plastic accessories for the dream crew.</span></li>
       <li><a href="/c/player-one-two">Player One &amp; Two</a><span>Matching tees with 1 and 2, toy controllers in hand, ready for co-op.</span></li>
       <li><a href="/c/plug-socket">Plug and Socket</a><span>Cardboard plug and outlet worn front and back.</span></li>
       <li><a href="/c/plumber-duo">Plumber Duo</a><span>Overalls, red and green caps and shirts, drawn mustaches.</span></li>
@@ -83,9 +83,9 @@ var HTML = `<!DOCTYPE html>
       <li><a href="/c/sushi-soy">Sushi &amp; Soy Sauce</a><span>White rice tunic with orange fish sash for one, dark soy bottle for the other.</span></li>
       <li><a href="/c/tennis-duo">Tennis Duo</a><span>All-white outfits, headbands, toy rackets, and a tube of balls.</span></li>
       <li><a href="/c/doctor-bride">The Doctor &amp; the Bride</a><span>Green face paint and neck bolts for one; tall streaked wig and torn gown for the other.</span></li>
-      <li><a href="/c/the-olympians">The Olympians</a><span>Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident. The Odyssey on a bedsheet budget.</span></li>
+      <li><a href="/c/the-olympians">The Olympians</a><span>Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.</span></li>
       <li><a href="/c/tooth-fairy">Tooth Fairy</a><span>One all-white with a cardboard tooth outline; the other adds wings and an envelope of tooth money.</span></li>
-      <li><a href="/c/web-hero-duo">Web Hero Duo</a><span>Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude. A Spider-Man inspired duo.</span></li>
+      <li><a href="/c/web-hero-duo">Web Hero Duo</a><span>Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.</span></li>
       <li><a href="/c/wine-cheese">Wine &amp; Cheese</a><span>Burgundy wine glass tunic for one, yellow cheese wedge with holes for the other.</span></li>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/family">Family Halloween costume ideas</a> &middot; <a href="/c/last-minute">Last-minute Halloween costumes</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
