@@ -7,7 +7,6 @@ Regenerate: python3 hour-session/gen_quiz_article.py
 Output: repo root halloween-costume-ideas-2026.html (working tree only, no deploy)
 """
 import json, html, re, os
-from datetime import datetime
 
 REPO = os.path.expanduser('~/workspace/builds/pick-my-costume')
 
@@ -92,20 +91,39 @@ _ins = extract_var('INSTRUCTIONS', _html, '{')
 ideas = [{'id': x['id'], 'title': x['title'], 'blurb': x['blurb'], 'why': x['why'],
           'audience': x['audience'], 'budget': x['budget'], 'rank': x.get('rank'),
           'trending': bool(x.get('trending'))} for x in _ide]
-plans = {k: {'effort': v.get('effort'), 'time': v.get('time'), 'cost': v.get('cost')}
+plans = {k: {'effort': v.get('effort'), 'time': v.get('time')}
          for k, v in _ins.items()}
 byid = {i['id']: i for i in ideas}
+# 2026-10-22 reconciliation (Family C part 2): the live page's card
+# blurb for this slug was scrubbed of its franchise name by hand;
+# app.js still carries the old text. Live text verbatim (matches
+# mcp-server/bank.json exactly, verified 2026-10-22). Do not undo.
+# Deliberately NOT overridden: neon-demon-hunter and blue-alien-ohana,
+# where the bank has moved AHEAD of the live page (wanted bank-ahead).
+LIVE_BLURBS = {
+    'emerald-witch': 'An all-green-everything gown, dramatic makeup, and a pointy hat gone couture.',
+}
+for _sid, _blurb in LIVE_BLURBS.items():
+    assert _sid in byid, 'live blurb override for unknown idea %s' % _sid
+    byid[_sid]['blurb'] = _blurb
 esc = html.escape
 
 SITE = 'https://pickmycostume.com'
 SLUG = 'halloween-costume-ideas-2026'
-# Month-precision by design (red-team 2026-09-27): day-precision bylines imply
-# a refresh process that does not exist.
-UPDATED_MONTH = datetime.now().strftime("%B %Y")
+# Byline is the live page's static text ("Updated September 2026"),
+# ported 2026-10-22 (Family C reconciliation part 2). It no longer
+# depends on the run date, so regens are deterministic.
 
 def dash_free(s):
     # zero em/en dashes in user-facing text
     return s.replace('\u2014', ', ').replace('\u2013', ', ').replace('--', ', ')
+
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed time is
+    # hands-on only. The bank time may carry a "+ ... drying" suffix
+    # that counts in Tonight scoring but is never displayed. Same
+    # helper as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
 
 SECTIONS = [
     ('solo', 'Solo costumes', 'solo',
@@ -142,7 +160,7 @@ TIERS = [
 
 def card(slug):
     i = byid[slug]; p = plans[slug]
-    meta = f"Build: {esc(p['time'])} &middot; Materials: {esc(p['cost'])} &middot; Effort: {esc(p['effort'])}"
+    meta = f"Build: {esc(display_time(p['time']))} &middot; Effort: {esc(p['effort'])}"
     return f"""<article class="idea">
 <img src="{SITE}/photos/{esc(slug)}.webp" alt="{esc(dash_free(i['title']))} costume concept photo" loading="lazy" width="300" height="300">
 <div class="idea-body">
@@ -157,7 +175,7 @@ def tier_card(slug):
     i = byid[slug]; p = plans[slug]
     return f"""<a class="tier-pick" href="/c/{esc(slug)}">
 <span class="tier-name">{esc(dash_free(i['title']))}</span>
-<span class="tier-meta">{esc(p['time'])} &middot; {esc(p['cost'])} &middot; {esc(p['effort'])} effort</span>
+<span class="tier-meta">{esc(display_time(p['time']))} &middot; {esc(p['effort'])} effort</span>
 </a>"""
 
 def section_cta():
@@ -191,63 +209,58 @@ howto_steps = [
     "Compare the previews and go with the one you would actually wear out the door, not the one that looked best in your head.",
 ]
 
-# ---------- cost FAQ, computed from the actual page picks (never hard-coded) ----------
-# 2026-09-30: the bank's cost labels moved to "~$X" form and four picks now
-# exceed $15, so the old "$3 to $15" guard was retired. Everything below is
-# computed from plans[] at generation time: the real low/high, the above-$15
-# outliers named honestly, and per-pick time/cost for the example answers.
-def _cost_low(cost):
-    return int(re.search(r'\$(\d+)', cost).group(1))
-_page_slugs = sorted({s for _a, _t, _au, _n, slugs in SECTIONS for s in slugs} |
-                     {s for _a, _t, _n, slugs in TIERS for s in slugs})
-_costs = {s: _cost_low(plans[s]['cost']) for s in _page_slugs}
-_lo, _hi = min(_costs.values()), max(_costs.values())
-_over15 = sorted((s for s in _page_slugs if _costs[s] > 15), key=lambda s: -_costs[s])
-assert _over15, 'outlier wording requires at least one pick above $15'
+# ---------- FAQ data, computed from the actual page picks (never hard-coded) ----------
+# 2026-10-22: the bank dropped its cost field on 2026-10-01, so the FAQ
+# answers below are computed from build time and effort only. No dollar
+# figures are stated anywhere on this page; every guide lists its own
+# materials, and the cost question is answered on that basis.
 def _faq_title(s):
     return dash_free(byid[s]['title']).replace(' & ', ' and ')
-def _approx(cost):
-    return 'about ' + cost.lstrip('~').replace(' each', ' per person')
 def _approx_time(time):
-    t = time.lstrip('~').replace('min', 'minutes')
+    t = display_time(time).replace('min', 'minutes')
     if t == '1 hr':
         return 'about an hour'
     if t == '1.5 hrs':
         return 'about an hour and a half'
     return 'about ' + t
+def _mins(time):
+    return int(re.search(r'(\d+)\s*min', time).group(1))
 def _pw(slug):
+    # Live text (ported 2026-10-22) shows time only in these parentheses.
     p = plans[slug]
-    return f"{_faq_title(slug)} ({_approx_time(p['time'])}, {_approx(p['cost'])})"
-_under_names = ", ".join(_faq_title(s) for s in sorted(_page_slugs) if _costs[s] == _lo)
-_over_names = ", ".join(f"the {_faq_title(s)} ({_approx(plans[s]['cost'])})"
-                        for s in _over15)
+    return f"{_faq_title(slug)} ({_approx_time(p['time'])})"
+# 2026-10-22 reconciliation part 2: the three answers below are the
+# live page's hand-written texts, ported verbatim (the computed versions
+# they replace read differently). WART KEPT FOR PARITY: the last-minute
+# answer's "takes about 10 minutes of materials" is the live page's
+# broken sentence, kept byte-exact like the part-1 spacing warts; fixing
+# it is a deploy-time copy decision for the parent, not this port.
 _cost_faq_a = (
-    "Every guide on this page lists its real materials cost. "
-    f"The cheapest picks start around ${_lo} per person ({_under_names}). "
-    f"Most picks land under $15 in materials, but {len(_over15)} go higher: {_over_names}.")
+    "Every guide on this page lists its real materials, closet items "
+    "first. The simplest picks need nothing beyond what is already in "
+    "the house (Soccer Squad, Superhero Family). Most builds take under "
+    "an hour, and every guide shows the full shopping list before you "
+    "start.")
 _last_minute_a = (
-    f"The {_faq_title('classic-ghost')} takes {_approx_time(plans['classic-ghost']['time'])} "
-    f"and {_approx(plans['classic-ghost']['cost'])} of materials. "
-    f"{_faq_title('cat-mouse')} takes {_approx_time(plans['cat-mouse']['time'])} "
-    f"and {_approx(plans['cat-mouse']['cost'])}. "
-    f"The {_faq_title('deadpan-diva')} takes {_approx_time(plans['deadpan-diva']['time'])} "
-    f"and {_approx(plans['deadpan-diva']['cost'])}. "
-    "All three read instantly at any party.")
+    "The Classic Ghost takes about 10 minutes of materials. Cat and "
+    "Mouse takes about 15 minutes. The Deadpan Diva takes about 15 "
+    "minutes. All three read instantly at any party.")
 _couple_a = (
     "Pick a pair with built-in contrast: "
     f"{_pw('cat-mouse')}, {_pw('sun-moon')}, {_pw('doctor-bride')}, "
     f"or {_pw('rain-cloud-rainbow')}.")
 _fam_slugs = ['blue-dog-family', 'superhero-family', 'blue-alien-ohana', 'little-pig-family']
 _fam_names = ", ".join(_faq_title(s) for s in _fam_slugs)
-_fam_lo, _fam_hi = min(_costs[s] for s in _fam_slugs), max(_costs[s] for s in _fam_slugs)
 _family_a = (
     f"The {_fam_names} all work from toddlers to grown-ups. "
-    "Build times run about half an hour to an hour, and costs run "
-    f"about ${_fam_lo} to ${_fam_hi} per person in materials.")
+    # Live hand text ported verbatim 2026-10-22 (it is looser than the
+    # bank's 25-30 min range; flagged in the part-2 report, not decided).
+    "Build times run about half an hour to an hour, and every guide "
+    "lists what you already own first.")
 
 faq = [
     ("What should I be for Halloween 2026?",
-     "Start with your Halloween night, not your personality. Pick your effort level above, then your section: solo, couple, group, family, kid, or last minute. Every pick below shows its real build time and materials cost from the costume guide. Still torn? Take the 2-minute quiz and get one personal pick."),
+     "Start with your Halloween night, not your personality. Pick your effort level above, then your section: solo, couple, group, family, kid, or last minute. Every pick below shows its real build time and materials list from the costume guide. Still torn? Take the 2-minute quiz and get one personal pick."),
     ("What are the most popular Halloween costumes for 2026?",
      "The year's breakout is the Neon Demon Hunter. Witches are a top pick for adults this year, from the Emerald Witch to the Good Witch, Bad Witch duo. For kids, princesses and the spider hero lead the list, and the Classic Ghost remains a perennial favorite."),
     ("How do I see what a costume looks like on me before I buy or build it?",
@@ -283,18 +296,33 @@ faq_json = {
                    for q, a in faq],
 }
 
-article_json = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Halloween Costume Ideas 2026: Pick One, Try It On Yourself",
-    "description": "Halloween costume ideas for 2026, sorted by who is wearing them: solo, couples, groups, family, and kids. Every pick shows its real build time and materials cost, and every section ends at the 2-minute quiz with a private face try-on.",
-    "author": {"@type": "Person", "name": "Billy Litner"},
-    "publisher": {"@type": "Organization", "name": "Pick My Costume", "url": SITE + "/"},
-    "datePublished": "2026-09-26",
-    "dateModified": "2026-09-26",
-    "mainEntityOfPage": {"@type": "WebPage", "@id": f"{SITE}/{SLUG}"},
-    "image": SITE + "/images/og/neon-demon-hunter.jpg",
-}
+# 2026-10-22 reconciliation part 2: the live Article JSON-LD was
+# hand-edited (Organization author in compact form, classic-ghost image,
+# dateModified 2026-09-29, "materials list" description). Carried
+# verbatim as a literal block; json.dumps cannot reproduce its shape.
+ARTICLE_JSONLD = """{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Halloween Costume Ideas 2026: Pick One, Try It On Yourself",
+  "description": "Halloween costume ideas for 2026, sorted by who is wearing them: solo, couples, groups, family, and kids. Every pick shows its real build time and materials list, and every section ends at the 2-minute quiz with a private face try-on.",
+  "author": {
+    "@type": "Organization", "name": "Pick My Costume"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Pick My Costume",
+    "url": "https://pickmycostume.com/"
+  },
+  "datePublished": "2026-09-26",
+  "dateModified": "2026-09-29",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://pickmycostume.com/halloween-costume-ideas-2026"
+  },
+  "image": "https://pickmycostume.com/images/og/classic-ghost.jpg"
+}"""
+
+RELATED_BLOCK = '<!-- pmc-related-cards-v1 -->\n<style>\n.pmc-rel{margin:44px 0 0}\n.pmc-rel h2{font-size:24px;margin:0 0 6px;line-height:1.3}\n.pmc-note{color:#cdbcf0;font-size:14px;margin:0 0 18px}\n.pmc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}\n.pmc-card{background:#2a1c52;border:1px solid #4b3586;border-radius:14px;overflow:hidden;text-decoration:none;color:#fdf3e3;display:block}\n.pmc-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#211540}\n.pmc-card .pmc-t{display:block;padding:10px 12px}\n.pmc-card .pmc-t strong{display:block;font-size:15px;margin-bottom:2px}\n.pmc-card .pmc-t span{color:#cdbcf0;font-size:13px}\n.pmc-quiz{display:block;margin-top:14px;background:#211540;border:1px solid #4b3586;border-radius:14px;padding:18px;text-decoration:none;color:#fdf3e3;text-align:center}\n.pmc-quiz strong{display:block;font-size:18px;color:#ff8c1a;margin-bottom:4px}\n.pmc-quiz span{color:#cdbcf0;font-size:14px}\n.pmc-pin{margin-top:10px;text-align:center}\n.pmc-pin a{color:#cdbcf0;font-size:14px}\n.pmc-more{margin-top:14px}\n.pmc-more a{color:#cdbcf0}\n</style>\n<div class="pmc-rel">\n<h2>More costume guides</h2>\n<p class="pmc-note">Step-by-step builds for the picks on this page, with real times.</p>\n<div class="pmc-cards">\n<a class="pmc-card" href="https://pickmycostume.com/c/classic-ghost"><img src="https://pickmycostume.com/images/og/classic-ghost.jpg" alt="Classic Ghost costume" loading="lazy" width="1200" height="630"><span class="pmc-t"><strong>Classic Ghost</strong><span>10 min - Easy</span></span></a>\n<a class="pmc-card" href="https://pickmycostume.com/c/deadpan-diva"><img src="https://pickmycostume.com/images/og/deadpan-diva.jpg" alt="Deadpan Diva costume" loading="lazy" width="1200" height="630"><span class="pmc-t"><strong>Deadpan Diva</strong><span>15 min - Easy</span></span></a>\n<a class="pmc-card" href="https://pickmycostume.com/c/cat-mouse"><img src="https://pickmycostume.com/images/og/cat-mouse.jpg" alt="Cat &amp; Mouse costume" loading="lazy" width="1200" height="630"><span class="pmc-t"><strong>Cat &amp; Mouse</strong><span>15 min - Easy</span></span></a>\n<a class="pmc-card" href="https://pickmycostume.com/c/gloom-bloom"><img src="https://pickmycostume.com/images/og/gloom-bloom.jpg" alt="Gloom &amp; Bloom costume" loading="lazy" width="1200" height="630"><span class="pmc-t"><strong>Gloom &amp; Bloom</strong><span>15 min - Easy</span></span></a>\n</div>\n<a class="pmc-quiz" href="/halloween-costume-ideas-quiz"><strong>Pick my costume</strong><span>Answer a few questions and get your pick in 2 minutes. Free, no signup.</span></a>\n<p class=\"pmc-note pmc-more\">More ideas: <a href=\"https://pickmycostume.com/101-costume-ideas\">101 costume ideas</a> &middot; <a href=\"https://pickmycostume.com/funny-halloween-costumes\">Funny Halloween costumes</a> &middot; <a href=\"https://pickmycostume.com/cute-halloween-costumes\">Cute Halloween costumes</a> &middot; <a href=\"https://pickmycostume.com/womens-halloween-costumes\">Women&#8217;s Halloween costumes</a> &middot; <a href=\"https://pickmycostume.com/easy-adult-halloween-costumes\">Easy adult Halloween costumes</a> &middot; <a href=\"https://pickmycostume.com/homemade-halloween-costumes\">Homemade Halloween costumes</a> &middot; <a href=\"https://pickmycostume.com/glow-in-the-dark-costumes\">Glow in the dark costumes</a></p>\n</div>'
 
 page = f"""<!DOCTYPE html>
 <html lang="en">
@@ -302,18 +330,21 @@ page = f"""<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Halloween Costume Ideas 2026: Try Them On Yourself | Pick My Costume</title>
-<meta name="description" content="2026 Halloween costume ideas by wearer: solo, couples, groups, family, kids, last minute. Real build times, costs, a 2-minute quiz, and a private try-on.">
+<meta name="description" content="2026 Halloween costume ideas by wearer: solo, couples, groups, family, kids, last minute. Real build times, a 2-minute quiz, and a private try-on.">
 <link rel="canonical" href="{SITE}/{SLUG}">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Halloween Costume Ideas 2026: Try Them On Yourself">
-<meta property="og:description" content="Ideas sorted by who is wearing them, real build times and costs, a 2-minute quiz, and a private face try-on.">
+<meta property="og:description" content="Ideas sorted by who is wearing them, real build times, a 2-minute quiz, and a private face try-on.">
 <meta property="og:url" content="{SITE}/{SLUG}">
-<meta property="og:image" content="{SITE}/images/og/neon-demon-hunter.jpg">
+<meta property="og:image" content="{SITE}/images/og/classic-ghost.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Halloween Costume Ideas 2026: Try Them On Yourself">
+<meta name="twitter:description" content="Ideas sorted by who is wearing them, real build times, a 2-minute quiz, and a private face try-on.">
+<meta name="twitter:image" content="{SITE}/images/og/classic-ghost.jpg">
 <script type="application/ld+json">
-{json.dumps(article_json, indent=2)}
+{ARTICLE_JSONLD}
 </script>
-<script type="application/ld+json">
-{json.dumps(faq_json, indent=2)}
+<script type="application/ld+json">{json.dumps(faq_json, indent=2)}
 </script>
 <script type="application/ld+json">
 {json.dumps(howto_json, indent=2)}
@@ -368,7 +399,7 @@ h2{{font-size:26px;margin:48px 0 6px;line-height:1.3}}
 .fine{{color:var(--muted);font-size:13px}}
 .footer{{margin-top:48px;color:var(--muted);font-size:13px;text-align:center}}
 .footer a{{color:var(--muted)}}
-</style>
+.aiphoto-note{{font-size:11px;color:#9a8fb8;margin:0 0 16px;}}</style>
 </head>
 <body>
 <div class="wrap">
@@ -378,14 +409,16 @@ h2{{font-size:26px;margin:48px 0 6px;line-height:1.3}}
 </header>
 
 <h1>Halloween Costume Ideas 2026: Pick One, Try It On Yourself</h1>
-<p class="byline">By Billy Litner &middot; Updated {UPDATED_MONTH}</p>
-<p class="lede">The real question is not what is trending. It is what you would actually wear out the door on Halloween night. Below are 24 picks sorted by who is wearing them: solo, couples, groups, family, kids, and last minute. The last-minute four repeat the fastest builds from above, so they are easy to find. Every pick shows its real build time and materials cost straight from the costume guide, and every section ends at the same place: a 2-minute quiz that gives you one personal pick, and a private face try-on so you can see it on yourself before you commit.</p>
+<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min, black hoodie), <a href="/c/classic-ghost">Classic Ghost</a> (10 min, 1 white flat sheet), and <a href="/c/emerald-witch">Emerald Witch</a> (45 min, 1 long green dress): three of the most-built solo guides on the site. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
+<p class="byline">Updated September 2026</p>
+<p class="lede">The real question is not what is trending. It is what you would actually wear out the door on Halloween night. Below are 24 picks sorted by who is wearing them: solo, couples, groups, family, kids, and last minute. The last-minute four repeat the fastest builds from above, so they are easy to find. Every pick shows its real build time and materials list straight from the costume guide, and every section ends at the same place: a 2-minute quiz that gives you one personal pick, and a private face try-on so you can see it on yourself before you commit.</p>
+<p class="aiphoto-note">Costume photos are AI-generated concept photos.</p>
 
 <div class="takeaways">
 <h2>Key takeaways</h2>
 <ul>
 <li>Pick by who is wearing the costume first. Solo, couple, group, family, kid, and last-minute are different genres, so this page is sorted that way.</li>
-<li>Every pick below lists its real build time and materials cost from the guide. Most land between $3 and $15, and most take under an hour.</li>
+<li>Every pick below lists its real build time and materials from the guide. Most take under an hour.</li>
 <li>Stuck between two? Take the <a href="{SITE}/" style="color:var(--accent);font-weight:700">2-minute quiz</a> for one personal pick, then tap <strong>Try it on</strong> on your result card to preview it on your own face. The photo never leaves your phone.</li>
 <li>Everything here is free: no signup, no credits, no accounts.</li>
 </ul>
@@ -430,16 +463,19 @@ h2{{font-size:26px;margin:48px 0 6px;line-height:1.3}}
 {faq_html}
 </section>
 
+{RELATED_BLOCK}
+
 <div class="final">
 <h2>Still deciding?</h2>
 <p class="sub">Answer five questions about your Halloween night and get one personal pick, free, no signup. Then try it on your own face, privately, on your phone, with nothing uploaded anywhere.</p>
 <a class="go" href="{SITE}/">Take the 2-minute quiz</a>
-<p class="fine">Built with Muse. Made by Billy Litner.</p>
+<p class="fine pmc-pin">Saving ideas for later? <a href="https://pinterest.com/pin/create/button/?url=https%3A%2F%2Fpickmycostume.com%2Fhalloween-costume-ideas-2026&amp;media=https%3A%2F%2Fpickmycostume.com%2Fimages%2Fog%2Fneon-demon-hunter.jpg&amp;description=Ideas%20sorted%20by%20who%20is%20wearing%20them%2C%20real%20build%20times%2C%20a%202-minute%20quiz%2C%20and%20a%20private%20face%20try-on." target="_blank" rel="noopener">Pin this guide on Pinterest</a></p>
+<p class="fine">Built with Muse.</p>
 </div>
 
 <div class="footer">
-<p><a href="{SITE}/costumes">All 138 costume guides</a> &middot; <a href="{SITE}/compare">Compare easy costumes</a> &middot; <a href="{SITE}/trending">Trending</a></p>
-<p><a href="{SITE}/">Pick My Costume</a> &middot; Built with Muse. Made by Billy Litner.</p>
+<p><a href="{SITE}/costumes">All {len(plans)} costume guides</a> &middot; <a href="{SITE}/compare">Compare easy costumes</a> &middot; <a href="{SITE}/trending">Trending</a> &middot; <a href="{SITE}/teen-halloween-costumes-2026">Teen costumes</a></p>
+<p><a href="{SITE}/">Pick My Costume</a> &middot; Built with Muse.</p>
 </div>
 </div>
 </body>
