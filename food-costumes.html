@@ -228,7 +228,13 @@ ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr
 .collections-strip a{color:#0a6cff;text-decoration:none;margin:0 6px;white-space:nowrap;}
 .more{margin-top:24px;text-align:center;}
 .more a{color:#0a6cff;}
-</style>
+footer{margin-top:40px;font-size:13px;color:#777;}</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -276,6 +282,6 @@ ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr
 <p class="cs-links"><a href="/animal-costumes">Animal costumes</a> <a href="/dinosaur-costumes">Dinosaur costumes</a> <a href="/superhero-costumes">Superhero costumes</a> <a href="/last-minute-costumes">Last-minute costumes</a> <a href="/toddler-costumes">Toddler costumes</a> <a href="/family-costumes">Family costumes</a> <a href="/easy-diy-halloween-costumes-for-kids">Easy DIY kids costumes</a> <a href="/costumes-from-your-closet">Closet costumes</a></p>
 </div>
 <p class="more"><a href="/costumes">Browse all 169 costume guides</a></p>
-</div>
+<footer>Built with Muse.</footer></div>
 </body>
 </html>
