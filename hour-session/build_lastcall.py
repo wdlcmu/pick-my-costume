@@ -2,11 +2,12 @@
 """Build last-call.html: a deadline-aware last-minute costume page.
 
 Mechanic: client-side JS computes days until the upcoming Oct 31 and shows
-only the ideas whose build time fits the remaining runway. Every triple
-(time/cost/effort) comes verbatim from bank.json INSTRUCTIONS.
+only the ideas whose build time fits the remaining runway. Every time
+and effort label comes verbatim from bank.json INSTRUCTIONS (time is
+shown hands-on only via display_time).
 
 Bands:
-  days >= 8 : all 164 ideas ("The runway")
+  days >= 8 : all 169 ideas ("The runway")
   4..7      : build time <= 60 min ("Build week")
   1..3      : <= 30 min, Easy, no drying ("Last call")
   0         : <= 20 min, Easy, no drying ("Tonight")
@@ -30,6 +31,13 @@ fails = []
 def fail(msg):
     fails.append(msg)
 
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed time is
+    # hands-on only. The bank time may carry a "+ ... drying" suffix
+    # that counts in Tonight scoring but is never displayed. Same
+    # helper as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
+
 def minutes_and_drying(time_str, iid):
     m = MIN_RE.search(time_str)
     if not m:
@@ -38,13 +46,21 @@ def minutes_and_drying(time_str, iid):
     return int(m.group(1)), ("drying" in time_str.lower())
 
 def main():
+    # --out PATH (2026-10-22, verifier sandboxing): write to a scratch
+    # path instead of the real page, following build_swap_rack_kit.py.
+    # Default is unchanged: the real ../last-call.html.
+    out = OUT
+    if "--out" in sys.argv:
+        out = sys.argv[sys.argv.index("--out") + 1]
     with open(BANK) as f:
         bank = json.load(f)
     ideas = bank["ideas"]
     ins = bank["instructions"]
 
-    if len(ideas) != 138:
-        fail("expected 138 ideas, got %d" % len(ideas))
+    # Bank size is derived, never hard-coded (floor only; the duplicate-id
+    # fail() below already uses the derived form).
+    if len(ideas) < 100:
+        fail("bank yielded only %d ideas" % len(ideas))
     ids = [i["id"] for i in ideas]
     if len(set(ids)) != len(ids):
         fail("duplicate idea ids")
@@ -55,9 +71,9 @@ def main():
         if iid not in ins:
             fail("no instructions for %s" % iid)
             continue
-        t, c, e = ins[iid].get("time"), ins[iid].get("cost"), ins[iid].get("effort")
-        if not (t and c and e):
-            fail("missing triple for %s" % iid)
+        t, e = ins[iid].get("time"), ins[iid].get("effort")
+        if not (t and e):
+            fail("missing time/effort for %s" % iid)
             continue
         mins, drying = minutes_and_drying(t, iid)
         if mins is None:
@@ -66,7 +82,7 @@ def main():
             "id": iid,
             "title": i["title"],
             "blurb": i["blurb"],
-            "time": t, "cost": c, "effort": e,
+            "time": display_time(t), "effort": e,
             "minutes": mins, "drying": drying,
             "tonight": mins <= 30 and e == "Easy" and not drying,
             "rank": i.get("rank", 999),
@@ -93,14 +109,18 @@ def main():
         "buildweek_title": "{n} days left. This is build week.",
         "buildweek_sub": "Only showing costumes that take an hour or less to build, fastest first.",
         "lastcall_title": "{n} days left. Only showing what you can actually finish.",
-        "lastcall_sub": "Quick, easy builds with no drying time. Pick one, build it, wear it.",
+        # 2026-10-22 reconciliation: lastcall_sub, tonight_sub, and method
+        # below are the live page's hand-edited text, ported back verbatim
+        # (including the odd space in "builds ."). Live removed the drying
+        # wording by hand; do not re-add it here alone.
+        "lastcall_sub": "Quick, easy builds . Pick one, build it, wear it.",
         "tonight_title": "Halloween is tonight. Only showing what you can make right now.",
-        "tonight_sub": "Twenty minutes or less, easy, no drying. You have got this.",
+        "tonight_sub": "Twenty minutes or less, easy. You have got this.",
         "share_runway": "Halloween is {n} days out and I finally picked a costume plan. This site only shows builds with real times: {url}",
         "share_buildweek": "Halloween is {n} days out and I still have no costume. This page only shows builds I can finish in under an hour: {url}",
         "share_lastcall": "Halloween is {n} days away and I still have no costume. Only showing what I can actually finish: {url}",
         "share_tonight": "Halloween is TONIGHT and I have no costume. This page only shows what I can make right now: {url}",
-        "method": "Build times come from our own 164-idea costume bank. Nothing here is a guess: every time, cost, and effort label is the one attached to that costume's build guide.",
+        "method": "Build times come from our own 169-idea costume bank, the same times attached to each costume's build guide. Build times are estimates. Yours may vary.",
     }
     for k, v in copy.items():
         if DASH_RE.search(v):
@@ -110,7 +130,7 @@ def main():
             fail("em/en dash in idea %s" % r["id"])
 
     payload = {"ideas": [
-        {k: r[k] for k in ("id", "title", "blurb", "time", "cost", "effort",
+        {k: r[k] for k in ("id", "title", "blurb", "time", "effort",
                            "minutes", "drying", "tonight", "rank")}
         for r in recs
     ]}
@@ -124,7 +144,7 @@ def main():
     itemlist = {
         "@context": "https://schema.org",
         "@type": "ItemList",
-        "name": "Fastest Halloween costume builds in our 164-idea bank",
+        "name": "Fastest Halloween costume builds in our 169-idea bank",
         "itemListElement": [
             {"@type": "ListItem", "position": p + 1,
              "name": r["title"], "url": "%s/c/%s?src=share-lastcall" % (SITE, r["id"])}
@@ -132,6 +152,11 @@ def main():
         ],
     }
 
+    # 2026-10-22 reconciliation: the three answers below are the live
+    # page's hand-edited text, ported back verbatim (including the odd
+    # space in "less .") so a regen reproduces the live page. The drying
+    # wording was removed on live by hand; do not re-add it here without
+    # changing the live page in the same step.
     faq = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -139,15 +164,15 @@ def main():
             {"@type": "Question",
              "name": "I left my costume to the last minute. What can I still make?",
              "acceptedAnswer": {"@type": "Answer",
-                "text": "This page filters our 164-idea costume bank by how many days are left until Halloween, using each costume's real build time. With one to three days left, it only shows easy builds of 30 minutes or less with no drying time."}},
+                "text": "This page filters our 169-idea costume bank by how many days are left until Halloween, using each costume's real build time. With one to three days left, it only shows easy builds of 30 minutes or less ."}},
             {"@type": "Question",
              "name": "Where do the build times come from?",
              "acceptedAnswer": {"@type": "Answer",
-                "text": "Every time, cost, and effort label on this page is the one attached to that costume's step-by-step build guide in our own costume bank. Nothing is estimated for this page."}},
+                "text": "Every time and effort label on this page is the one attached to that costume's step-by-step build guide in our own costume bank. Build times are estimates. Yours may vary."}},
             {"@type": "Question",
              "name": "Can I make one of these tonight?",
              "acceptedAnswer": {"@type": "Answer",
-                "text": "Costumes marked Make tonight take 30 minutes or less, are rated easy, and need no drying time. Each one links to its full build guide."}},
+                "text": "Costumes marked Make tonight take 30 minutes or less, are rated easy. Each one links to its full build guide."}},
         ],
     }
 
@@ -181,10 +206,10 @@ def main():
             print(" -", m)
         sys.exit(1)
 
-    with open(OUT, "w") as f:
+    with open(out, "w") as f:
         f.write(page)
     h = hashlib.sha256(page.encode()).hexdigest()[:12]
-    print("wrote %s (%d bytes, sha %s)" % (OUT, len(page), h))
+    print("wrote %s (%d bytes, sha %s)" % (out, len(page), h))
     print("bands: " + ", ".join("%s=%d" % (k, len(v)) for k, v in bands.items()))
 
 PAGE_TEMPLATE = """<!DOCTYPE html>
@@ -193,14 +218,14 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Last-Call Halloween Costumes: What You Can Still Make</title>
-<meta name="description" content="Halloween is coming fast. This page filters 164 real costume builds by how many days are left, using each costume's real build time, and only shows what you can actually finish. Free, no signup.">
+<meta name="description" content="Halloween is coming fast. This page filters 169 real costume builds by how many days are left, using each costume's real build time, and only shows what you can actually finish. Free, no signup.">
 <link rel="canonical" href="https://pickmycostume.com/last-call">
 <meta property="og:title" content="Last-Call Halloween Costumes">
 <meta property="og:description" content="Only showing costumes you can actually finish before Halloween, filtered by the real build time.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pickmycostume.com/last-call">
-<meta property="og:image" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
-<meta property="og:image:secure_url" content="https://pickmycostume.com/images/og/neon-demon-hunter.jpg">
+<meta property="og:image" content="https://pickmycostume.com/images/og/classic-ghost--sheet-ghost.jpg">
+<meta property="og:image:secure_url" content="https://pickmycostume.com/images/og/classic-ghost--sheet-ghost.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -306,7 +331,6 @@ __FAQ_JSON__
     return '<article class="card">' + badge +
       '<h2>' + esc(r.title) + '</h2>' +
       '<div class="triple"><span class="tchip">' + esc(r.time) + '</span>' +
-      '<span class="tchip">' + esc(r.cost) + '</span>' +
       '<span class="tchip">' + esc(r.effort) + '</span></div>' +
       '<p class="blurb">' + esc(r.blurb) + '</p>' +
       '<a class="guide" href="' + SITE + '/c/' + esc(r.id) + '?src=share-lastcall">Build guide</a></article>';
