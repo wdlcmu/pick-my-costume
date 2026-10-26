@@ -34,7 +34,9 @@ for line in src.split('\n'):
     tags_m = re.search(r'tags:\{([^}]*)\}', line)
     ideas[m.group(1)] = {'title': m.group(2), 'blurb': m.group(3),
                          'audience': m.group(5), 'tags': tags_m.group(1) if tags_m else ''}
-assert len(ideas) == 169, f'idea count drift: {len(ideas)}'
+# Bank size is derived, never hard-coded: floor only (the slug-set
+# equality against bank.json below is the content check).
+assert len(ideas) >= 100, f'bank yielded only {len(ideas)} ideas'
 # Titles/blurbs come from mcp-server/bank.json (IP-scrubbed wording the
 # live pages use), not app.js (2026-10-22 reconciliation).
 _bank = json.load(open(os.path.join(ROOT, 'mcp-server', 'bank.json'), encoding='utf-8'))
@@ -59,7 +61,8 @@ for m in re.finditer(r'"time":"((?:[^"\\]|\\.)*)"(?:,"cost":"(?:[^"\\]|\\.)*")?,
 for m in re.finditer(r'"([a-z0-9-]+)":\{"m":\[.*?\]\s*,\s*"s":\[.*?\]\s*,\s*"time":"((?:[^"\\]|\\.)*)"(?:\s*,\s*"cost":"((?:[^"\\]|\\.)*)")?\s*,\s*"effort":"((?:[^"\\]|\\.)*)"\s*,\s*"sizing":"((?:[^"\\]|\\.)*)"', src):
     instr.setdefault(m.group(1), {}).update({'time': m.group(2), 'cost': m.group(3) or '',
         'effort': m.group(4), 'sizing': m.group(5).encode().decode('unicode_escape')})
-assert len(instr) == 169
+assert len(instr) >= 100, f'instructions yielded only {len(instr)} entries'
+assert set(instr) == set(ideas), 'instruction slugs != idea slugs'
 # Fail loud, never ship blank chips (run 281): every parsed entry must carry
 # a time and an effort, or the build stops here instead of emitting a card
 # with an empty stopwatch chip.
@@ -88,7 +91,14 @@ def need_line(mats, n=2):
         x = re.sub(r'\s*\(make:.*$', '', x).strip()
         x = re.sub(r'\s*\(own:.*$', '', x).strip()
         bits.append(x[:70])
-    return '; '.join(bits)
+    line = '; '.join(bits)
+    # Truncation note (2026-10-24, needs-count packet L4): the card shows
+    # only the first n bank lines, so say how many more the guide lists,
+    # in the DIY-by-materials page's pattern ("... and N more"). N counts
+    # bank lines not shown; it is appended only when lines were cut.
+    if len(mats) > n:
+        line += f' and {len(mats) - n} more'
+    return line
 
 # ---------- page definitions ----------
 # NOTE 2026-10-04: last-minute-costumes.html is NOT built by this script anymore.
