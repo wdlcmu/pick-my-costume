@@ -6,14 +6,14 @@ loop is household coordination, not viral friend-quizzes - and the site had
 no acquisition channel. Group/theme searches ("classroom halloween themes",
 "couple costume ideas diy", "trunk or treat group") peak Oct 1-15, and the
 bank already holds 70+ couple/family/group ideas. This hub packages them as
-six themed packs with photos, the decision triple, and plain anchors to the
+six themed packs with photos, the decision time and effort, and plain anchors to the
 /c/ guides - the same static-page playbook as costumes.html (no JS, crawlable,
 zero interaction with the running share-message A/B/C/D experiment).
 
 Re-run after any bank change (add/remove/rename idea):
     python3 hour-session/gen_group_hub.py
-The builder FAILS LOUDLY on: missing idea ids, missing time/cost/effort
-triples, missing photos, or duplicate pack slugs.
+The builder FAILS LOUDLY on: missing idea ids, missing time/effort
+pairs, missing photos, or duplicate pack slugs.
 """
 import html
 import os
@@ -38,23 +38,43 @@ PACKS = [
      "lede": "Two kids, zero fights over who is who. Each sibling's costume is its own thing.",
      "ideas": ["snow-sisters", "good-witch-bad-witch", "cat-mouse", "dragon-rider-duo", "blue-alien-ohana", "chipmunk-trio"]},
     {"slug": "teen-crews", "title": "Teen crews",
-     "lede": "Group costumes that do not look childish and do not cost $60 per person.",
+     "lede": "Group costumes that do not look childish and build from what is at home.",
      "ideas": ["web-slinger-crew", "demon-boy-band", "haunted-animatronics", "headless-horsemen", "the-olympians", "galaxy-knights"]},
 ]
 
-src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+src = open(os.path.join(ROOT, "app.js"), encoding="utf-8").read()  # bank moved index.html -> app.js 2026-10-01
 QUIZ_IDS = {"q1", "q2", "q4", "q5kid", "qocc", "qinterest"}
 ideas = {}
 for s, t, b in re.findall(r'\{id:"([^"]+)", title:"([^"]+)", blurb:"([^"]+)"', src):
     if s not in QUIZ_IDS:
         ideas[s] = (t, b)
 
+# 2026-10-22 reconciliation (Family C part 2): the live page's blurbs were
+# scrubbed of franchise names by hand; app.js still carries the old text,
+# so a plain regen RE-ADDS the scrubbed names. The texts below are the
+# live page's blurbs verbatim (they match mcp-server/bank.json exactly,
+# verified 2026-10-22 for all 8 slugs). Ported live -> generator so a
+# regen can never reintroduce a scrubbed name. Do not undo.
+LIVE_BLURBS = {
+    "emotion-crew": "One loud color per person: each of you is a different emotion.",
+    "numbered-players": "Green tracksuits, numbered bibs, and a survival-game attitude.",
+    "toy-box-crew": "A cowboy sheriff, a space ranger, and the rest of the toy box: pick your favorite.",
+    "dragon-rider-duo": "A viking rider and a cardboard dragon, ready to fly over the neighborhood.",
+    "web-slinger-crew": "Red, black, and pink hoodies plus masks. Pick your spider.",
+    "demon-boy-band": "Matching streetwear-idol outfits with glowing patterns for your whole boy band.",
+    "the-olympians": "Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.",
+    "galaxy-knights": "Robes, belts, and toy energy blades for knights of a far-off galaxy.",
+}
+for _sid, _blurb in LIVE_BLURBS.items():
+    assert _sid in ideas, "live blurb override for unknown idea %s" % _sid
+    ideas[_sid] = (ideas[_sid][0], _blurb)
+
 m = re.search(r'INSTRUCTIONS = \{(.*?)\n\};', src, re.S)
 triples = {}
-for s, ti, co, ef in re.findall(
-        r'"([a-z0-9-]+)":\{"m":\[.*?"time":"([^"]+)",\s*"cost":"([^"]+)",\s*"effort":"([^"]+)"',
+for s, ti, ef in re.findall(
+        r'"([a-z0-9-]+)":\{"m":\[.*?"time":"([^"]+)",\s*"effort":"([^"]+)"',
         m.group(1), re.S):
-    triples[s] = (ti, co, ef)
+    triples[s] = (ti, ef)
 
 slugs = [p["slug"] for p in PACKS]
 assert len(slugs) == len(set(slugs)), "duplicate pack slugs"
@@ -62,20 +82,27 @@ assert len(slugs) == len(set(slugs)), "duplicate pack slugs"
 for p in PACKS:
     for sid in p["ideas"]:
         assert sid in ideas, "pack %s: idea %s not in bank" % (p["slug"], sid)
-        assert sid in triples, "pack %s: idea %s missing time/cost/effort" % (p["slug"], sid)
+        assert sid in triples, "pack %s: idea %s missing time/effort" % (p["slug"], sid)
         photo = os.path.join(ROOT, "photos", sid + ".webp")
         assert os.path.isfile(photo), "pack %s: missing photo %s" % (p["slug"], photo)
 
 
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed time is
+    # hands-on only. The bank time may carry a "+ ... drying" suffix
+    # that counts in Tonight scoring but is never displayed. Same
+    # helper as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
+
 def card(sid):
     title, blurb = ideas[sid]
-    ti, co, ef = triples[sid]
+    ti, ef = triples[sid]
     L = []
     L.append('      <article class="card">')
     L.append('        <a href="/c/%s"><img src="/photos/%s.webp" alt="%s" loading="lazy" width="600" height="600"></a>' % (sid, sid, html.escape(title, quote=True)))
     L.append('        <div class="cardbody">')
     L.append('          <h3><a href="/c/%s">%s</a></h3>' % (sid, html.escape(title)))
-    L.append('          <p class="triple">%s &middot; %s &middot; %s</p>' % (html.escape(ti), html.escape(co), html.escape(ef)))
+    L.append('          <p class="triple">%s &middot; %s</p>' % (html.escape(display_time(ti)), html.escape(ef)))  # time shown hands-on only (display rule); cost segment dropped 2026-10-13 (run 162): dollar content dead since Oct 1 cleanup
     L.append('          <p class="blurb">%s</p>' % html.escape(blurb))
     L.append('          <p class="cta"><a href="/c/%s">Build guide</a></p>' % sid)
     L.append('        </div>')
@@ -134,7 +161,7 @@ FAQ_JSONLD = r'''<script type="application/ld+json">
       "name": "How do group costume packs work?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Each pack is one theme your whole crew builds from what is at home. Open any idea for its free build guide with the real time, cost, and materials up front - no matching outfits to buy."
+        "text": "Each pack is one theme your whole crew builds from what is at home. Open any idea for its free build guide with the timed build time and materials up front - no matching outfits to buy."
       }
     },
     {
@@ -155,10 +182,10 @@ FAQ_JSONLD = r'''<script type="application/ld+json">
     },
     {
       "@type": "Question",
-      "name": "How much do group costumes cost?",
+      "name": "What does each build guide show?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Every build guide lists its own materials cost. Most of our 164 ideas cost $10 or less in materials, and each guide shows its exact number before you start."
+        "text": "Every guide lists its materials and its timed build time up front, so the whole crew knows the plan before anyone starts."
       }
     }
   ]
@@ -175,7 +202,7 @@ FAQ_VISIBLE = r'''<section class="pmc-faq" id="pmc-faq">
 <h2>Common questions</h2>
 <details class="faq">
 <summary>How do group costume packs work?</summary>
-<p>Each pack is one theme your whole crew builds from what is at home. Open any idea for its free build guide with the real time, cost, and materials up front - no matching outfits to buy.</p>
+<p>Each pack is one theme your whole crew builds from what is at home. Open any idea for its free build guide with the timed build time and materials up front - no matching outfits to buy.</p>
 </details>
 <details class="faq">
 <summary>What is a good couples costume?</summary>
@@ -186,10 +213,23 @@ FAQ_VISIBLE = r'''<section class="pmc-faq" id="pmc-faq">
 <p>The classroom and trunk-or-treat sections have big-group themes where one base idea scales to the whole group, with room for everyone to be a little different.</p>
 </details>
 <details class="faq">
-<summary>How much do group costumes cost?</summary>
-<p>Every build guide lists its own materials cost. Most of our 164 ideas cost $10 or less in materials, and each guide shows its exact number before you start.</p>
+<summary>What does each build guide show?</summary>
+<p>Every guide lists its materials and its timed build time up front, so the whole crew knows the plan before anyone starts.</p>
 </details>
 </section>'''
+# PostHog Form A (688 B): the intent-form snippet, copied byte-for-byte
+# from family-costumes.html - self-contained, defines its own _phq queue
+# and track(); pageview-only posture. Fused to the </style> line below so
+# the page gains exactly 688 B with no separator bytes (Packet C staging,
+# remaining-pages packet 2026-10-24; footer + footer CSS already present).
+POSTHOG_SNIPPET = """<script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>"""
+
 # NOTE: FAQ_VISIBLE and FAQ_JSONLD must stay in sync (same Q&A).
 
 
@@ -200,19 +240,25 @@ page_lines.append('<head>')
 page_lines.append('<meta charset="utf-8">')
 page_lines.append('<meta name="viewport" content="width=device-width, initial-scale=1">')
 page_lines.append('<title>Group Halloween Costume Ideas: DIY Packs for Couples, Families and Classrooms</title>')
-page_lines.append('<meta name="description" content="Group costume packs for Halloween: couples, families, classrooms, trunk-or-treat teams, siblings, and teen crews. Every pack has free DIY build guides with time, cost, and materials.">')
+page_lines.append('<meta name="description" content="Group costume packs for Halloween: couples, families, classrooms, trunk-or-treat teams, siblings, and teen crews. Every pack has free DIY build guides with timed build times and materials lists.">')
 page_lines.append('<link rel="canonical" href="https://pickmycostume.com/group-costumes">')
 page_lines.append('<meta property="og:title" content="Group costume packs - Pick My Costume">')
 page_lines.append('<meta property="og:description" content="Couples, families, classrooms, trunk-or-treat teams, siblings, teen crews: a theme your whole group can build from what is at home.">')
 page_lines.append('<meta property="og:type" content="website">')
+page_lines.append('<meta property="og:url" content="https://pickmycostume.com/group-costumes">')
+page_lines.append('<meta property="og:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">')
+page_lines.append('<meta name="twitter:card" content="summary_large_image">')
+page_lines.append('<meta name="twitter:title" content="Group costume packs - Pick My Costume">')
+page_lines.append('<meta name="twitter:description" content="Couples, families, classrooms, trunk-or-treat teams, siblings, teen crews: a theme your whole group can build from what is at home.">')
+page_lines.append('<meta name="twitter:image" content="https://pickmycostume.com/images/og/emoji-crew.jpg">')
 page_lines.append(FAQ_JSONLD)
 page_lines.append('<style>')
 page_lines.append(CSS)
-page_lines.append('</style>')
+page_lines.append('</style>' + POSTHOG_SNIPPET)
 page_lines.append('</head>')
 page_lines.append('<body><main class="wrap">')
 page_lines.append('<h1>Group costume packs</h1>')
-page_lines.append('<p class="lede">Costume season is a group project. Each pack is one theme your whole crew builds from what is at home - every idea links to a free build guide with the time, cost, and materials up front. No matching outfits to buy.</p>')
+page_lines.append('<p class="lede">Costume season is a group project. Each pack is one theme your whole crew builds from what is at home - every idea links to a free build guide with the timed build time and materials up front. No matching outfits to buy.</p>')
 page_lines.append('<nav class="packs" aria-label="Costume packs">')
 page_lines.append('<a href="#couples">Couples</a><a href="#families">Families</a><a href="#classrooms">Classrooms</a><a href="#trunk-or-treat">Trunk-or-treat</a><a href="#siblings">Siblings</a><a href="#teen-crews">Teen crews</a>')
 page_lines.append('</nav>')
@@ -220,9 +266,13 @@ page_lines.append(sections)
 page_lines.append(FAQ_VISIBLE)
 page_lines.append('<div class="quiz-cta">')
 page_lines.append('<p>Still deciding? Take the 2-minute quiz and get one picked for you.</p>')
-page_lines.append('<a href="/">Find your costume</a>')
+page_lines.append('<a href="/">Pick your costume</a>')
 page_lines.append('</div>')
-page_lines.append('<p class="home"><a href="/costumes">Browse all 164 costume guides A-Z</a></p>')
+page_lines.append('<p class="home"><a href="/costumes">Browse all 169 costume guides A-Z</a></p>')
+# 2026-10-04: hub cross-link mesh (redteam-distro-hubs gate). Sibling hubs
+# (costumes, trending, compare) all carry an Explore line; group-costumes
+# was missing it, breaking the /pantry, /trending, /compare inbound links.
+page_lines.append('<p class="home">Explore: <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/compare">Compare easy costumes</a> &middot; <a href="/pantry">What you already own</a></p>')
 page_lines.append('<footer>Built with Muse.</footer>')
 page_lines.append('</main></body></html>')
 page = "\n".join(page_lines) + "\n"
