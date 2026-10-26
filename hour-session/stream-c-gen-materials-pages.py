@@ -348,6 +348,7 @@ def build_page1():
 <p>The 2-minute quiz picks 3 costume ideas from the bank of 169, free, no signup.</p>
 <a class="go" href="{SITE}/">Take the quiz</a>
 <p class="fine">Prefer to browse? <a href="{SITE}/costumes\">Browse all 169 guides</a> &middot; <a href="{SITE}/easy-last-minute-halloween-costumes">Last-minute picks</a></p>
+<p class="fine">More ideas: <a href="{SITE}/no-sew-costumes">No-sew costumes</a> &middot; <a href="{SITE}/cardboard-box-costumes">Cardboard box costumes</a> &middot; <a href="{SITE}/white-sheet-costumes">White sheet costumes</a> &middot; <a href="{SITE}/face-paint-costumes">Face paint costumes</a> &middot; <a href="{SITE}/hand-me-down">Hand-me-down costumes</a></p>
 </div>
 {footer()}
 <script>
