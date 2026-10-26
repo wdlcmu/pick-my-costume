@@ -157,6 +157,12 @@ def main():
     # space in "less .") so a regen reproduces the live page. The drying
     # wording was removed on live by hand; do not re-add it here without
     # changing the live page in the same step.
+    # 2026-10-24 Item 91 / tonight QA T2: the third answer DOES now carry
+    # the drying wording, and the card badge reads "MAKE TONIGHT ·
+    # NO DRYING" in PAGE_TEMPLATE: /last-call's tonight set is the
+    # stricter Easy + no-drying set (56), not the site-wide 126, and the
+    # page now says so. Generator and page changed in the same step;
+    # the tonight flag rule itself is unchanged.
     faq = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -172,7 +178,7 @@ def main():
             {"@type": "Question",
              "name": "Can I make one of these tonight?",
              "acceptedAnswer": {"@type": "Answer",
-                "text": "Costumes marked Make tonight take 30 minutes or less, are rated easy. Each one links to its full build guide."}},
+                "text": "Costumes marked Make tonight take 30 minutes or less of hands-on work, are rated easy, and need no drying time. Each one links to its full build guide."}},
         ],
     }
 
@@ -327,7 +333,7 @@ __FAQ_JSON__
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
   function cardHTML(r){
-    var badge = r.tonight ? '<span class="tonightbadge">MAKE TONIGHT</span>' : '';
+    var badge = r.tonight ? '<span class="tonightbadge">MAKE TONIGHT · NO DRYING</span>' : '';
     return '<article class="card">' + badge +
       '<h2>' + esc(r.title) + '</h2>' +
       '<div class="triple"><span class="tchip">' + esc(r.time) + '</span>' +
