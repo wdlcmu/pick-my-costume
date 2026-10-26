@@ -10878,6 +10878,19 @@ function planShare(idea, source, btn, st){
   try { Analytics.track("share_click", {idea_id: idea.id, source: source}); } catch(_){}
   var rearm = (typeof armShareOnce === "function") ? armShareOnce(btn) : function(){};
   if (!rearm) return; /* double-tap: a share is already in flight */
+  /* 2026-10-25 (fleet measurement pilot, Experiment 1): close the tap leg
+     of the share chain on the primary result-page path. sendShare has
+     carried share_button_tapped since Oct 3, but "Share this pick" runs
+     through planShare, whose share_click carries no share_id, so a tap
+     here could never be joined to its share_created. One event per genuine
+     attempt (after the double-tap guard). Additive only: no existing event
+     or payload changes. Joins on share_id to share_created and, downstream,
+     recipient_landing_viewed (the arrival leg, live since September). */
+  try {
+    var _siProps = {share_id: sid, idea_id: idea.id, share_origin: "plan", surface: "result", source: source, via: (typeof navigator !== "undefined" && navigator.share) ? "native" : "clipboard"};
+    try { var _qa = state.answers && state.answers.q1; var _aud = _qa ? (_qa.value || _qa.id || _qa.key || _qa.label) : null; if (_aud) _siProps.audience = _aud; } catch(_e2){}
+    Analytics.track("share_intent", _siProps);
+  } catch(_){}
   function flash(msg){
     if (st) st.textContent = msg;
     else if (btn){
