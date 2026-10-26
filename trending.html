@@ -63,7 +63,13 @@ ol.trend li{background:var(--card);border:1px solid var(--line);border-radius:va
 .method p{margin:0 0 8px;font-size:14px;color:var(--muted)}
 .method a{color:var(--accent)}
 footer{margin-top:40px;text-align:center}
-.aiphoto-note{font-size:11px;color:#9a8fb8;margin:0 0 16px;}</style>
+.aiphoto-note{font-size:11px;color:#9a8fb8;margin:0 0 16px;}</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 <!-- trending FAQ: static section, outside the weekly-regen touch zones (card grid, datelines, og:image) -->
 <script type="application/ld+json">
 {
