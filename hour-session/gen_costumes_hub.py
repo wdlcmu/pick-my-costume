@@ -27,6 +27,16 @@ display rule -- so a regen matches the live page except for intended
 lines. Before this, a regen silently re-added "+ N drying" to 105
 chips and to the Quick answer block.
 
+2026-10-23 blurb reconciliation: the live hub carried IP-scrubbed
+wording on 21 rows that neither app.js nor bank.json carried, so a
+regen silently regressed them (found by the stale-comment cleanup's
+scratch gate). The live wording was ported back into app.js IDEAS
+(the origin: bank.json is built from app.js by
+mcp-server/scripts/build-bank.mjs), bank.json was rebuilt locally
+only (frozen: not deployed, not pushed), and a scratch regen now
+reproduces the live page byte-for-byte. See
+costumes-blurb-reconciliation-2026-10-23.md.
+
 2026-10-03 P0 repair (Stream 70): the bank moved from index.html to app.js
 on 2026-10-01, but this generator kept parsing index.html -- both anchors
 at 0 occurrences, asserts passing vacuously (0 == 0). A regen would have
@@ -59,11 +69,15 @@ assert "var INSTRUCTIONS = {" in src, "P0: INSTRUCTIONS anchor missing in app.js
 QUIZ_IDS = {"q1", "q2", "q4", "q5kid", "qocc", "qinterest"}
 # Row data (id/title/blurb/time) comes from mcp-server/bank.json: the
 # 2026-10-12 one-off that added the stopwatch times built the live rows
-# from bank.json, and its blurbs carry the IP-scrubbed wording. app.js
-# blurbs still carry pre-scrub text on some rows (e.g. bamboo-demon,
-# blue-heeler-pup), so the old app.js parse silently regressed them on
-# regen (caught 2026-10-13). app.js is still cross-checked below so a
-# bank move fails loudly instead of emitting a stale hub.
+# from bank.json. bank.json is NOT the origin, though: it is built from
+# app.js IDEAS by mcp-server/scripts/build-bank.mjs, so blurb wording
+# must be fixed in app.js and bank.json rebuilt, never edited here or
+# in bank.json alone. (An earlier version of this comment claimed
+# bank.json carried IP-scrubbed wording app.js lacked; that was
+# inverted by 2026-10-23, when bank.json == app.js on all rows and the
+# live hub alone carried the scrubbed wording on 21 rows — reconciled
+# 2026-10-23, see the docstring note.) app.js is still cross-checked
+# below so a bank move fails loudly instead of emitting a stale hub.
 _bank = json.load(open(os.path.join(ROOT, "mcp-server", "bank.json"),
                       encoding="utf-8"))
 ideas = [(i["id"], i["title"], i["blurb"]) for i in _bank["ideas"]]
@@ -156,7 +170,7 @@ li .tt{display:block;font-size:13px;color:var(--muted);margin:0 0 12px;}
 .quick-answer{font-size:15.5px;line-height:1.6;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:26px 0 0;}
 .quick-answer a{color:var(--accent);font-weight:700;}
 .home{margin-top:28px;font-size:15px;color:var(--muted);}
-.home a{color:var(--accent);font-weight:700;}
+.home a{color:var(--accent);font-weight:700;}footer{margin-top:40px;font-size:13px;color:var(--muted);}
 </style>
 <script type="application/ld+json">
 {
@@ -197,6 +211,12 @@ li .tt{display:block;font-size:13px;color:var(--muted);margin:0 0 12px;}
     }
   ]
 }
+</script><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
 </script>
 </head>
 <body><main class="wrap">
@@ -240,7 +260,7 @@ TAIL = """
 <!-- 2026-10-13: the Quick answer top-3 block moved below the list (it used
      to sit above it with two more intro paragraphs). Text verbatim from the
      live page, only the separator normalized to the injector's style. -->
-<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min, black hoodie), <a href="/c/superhero-family">Superhero Family</a> (30 min, matching red sweatsuits), and <a href="/c/gloom-bloom">Gloom & Bloom</a> (15 min, 1 set black clothes from the closet): a spread of the most-built guides in the bank. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
+<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min, black hoodie) (not a tonight build — needs 2 hrs drying), <a href="/c/superhero-family">Superhero Family</a> (30 min, matching red sweatsuits), and <a href="/c/gloom-bloom">Gloom & Bloom</a> (15 min, 1 set black clothes from the closet): a spread of the most-built guides in the bank. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
 <p class="home"><a href="/">Back to Pick My Costume</a> and take the 2-minute quiz to get one picked for you.</p>
 <!-- 2026-09-26 red-team distro: hub cross-links, folded into the generator
      2026-09-27. Pantry label matches the page's real title (the rename). -->
@@ -291,7 +311,7 @@ TAIL = """
 <p>Take the 2-minute quiz and get one personal pick, or browse A-Z and open anything that catches your eye.</p>
 </details>
 </section>
-</main></body></html>
+<footer>Built with Muse.</footer></main></body></html>
 """
 
 page = HEAD + items + TAIL
