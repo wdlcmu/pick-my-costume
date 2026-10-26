@@ -8,6 +8,8 @@ from the bank. This script is the source of truth for:
   - glow-in-the-dark-costumes.html      ("glow in the dark halloween costumes")
   - cute-halloween-costumes.html        ("cute halloween costumes")
   - womens-halloween-costumes.html      ("womens halloween costumes")
+  - mens-halloween-costumes.html        ("mens halloween costumes")
+  - college-halloween-costumes.html     ("college halloween costumes")
   - homemade-halloween-costumes.html    ("homemade halloween costumes")
 
 Reads build times, effort, and materials from INSTRUCTIONS in app.js so cards
@@ -134,6 +136,47 @@ PAGES = [
              "Good Witch Bad Witch and the Witchy Sisters give everyone a distinct role with one shared theme. The Tooth Fairy plus Tooth is a classic couple pick."),
             ("How much time do these take?",
              "Hands-on time runs 15 to 45 minutes. Check the time chip on each card; anything that has to dry needs a head start."),
+        ],
+    },
+    {
+        "key": "mens-halloween-costumes",
+        "h1": "Men's Halloween Costume Ideas",
+        "title": "Men's Halloween Costumes: 10 DIY Ideas | Pick My Costume",
+        "desc": "Ten DIY Halloween costumes for men with real build times and step-by-step guides. Pirates, wizards, boxers, and gnomes.",
+        "lede": "Ten costumes built for adult men, from our {N}-guide bank. Every one is rated Easy, and each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "quick": [("error-404", "Error 404"), ("boxer", "Boxer"), ("pirate-captain", "Pirate Captain")],
+        "quick_tail": "fast, funny, and classic picks below.",
+        "picks": ["pirate-captain", "error-404", "boxer", "zombie-coworker",
+                  "wizard", "chill-painter", "vampire", "scarecrow",
+                  "astronaut", "garden-gnome"],
+        "faqs": [
+            ("I want funny, not scary. What should I pick?",
+             "Start with Error 404 or the Garden Gnome. Both read instantly and land as a joke, not a scare."),
+            ("What if I have a beard?",
+             "Two picks turn a beard into the costume: the Garden Gnome draws a white beard, and the Classic Wizard lists a gray beard as optional."),
+            ("How much time do these take?",
+             "Hands-on time runs 10 to 30 minutes. Check the time chip on each card; anything that has to dry needs a head start."),
+        ],
+    },
+    {
+        "key": "college-halloween-costumes",
+        "h1": "College Halloween Costume Ideas",
+        "title": "College Halloween Costumes: 10 DIY Ideas | Pick My Costume",
+        "desc": "Ten DIY Halloween costumes for college students with real build times and step-by-step guides. Hoodie jokes, pun costumes, and group builds.",
+        "lede": "Ten costumes built for college students, from our {N}-guide bank. Every one is rated Easy, and each has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "quick": [("error-404", "Error 404"), ("crowd-camouflage", "Crowd Camouflage"), ("ketchup-mustard", "Ketchup & Mustard")],
+        "quick_tail": "the fastest dorm builds below.",
+        "picks": ["error-404", "crowd-camouflage", "yellow-henchmen",
+                  "plastic-dream-crew", "numbered-players", "deviled-egg",
+                  "player-one-two", "ketchup-mustard", "referee",
+                  "raptor-barista"],
+        "faqs": [
+            ("We want to go as a group. What scales?",
+             "The Yellow Henchmen Crew, Plastic Dream Crew, and Numbered Players fit any group size: one shared look, one part per person. For two people, Ketchup & Mustard and Player One & Two are built as pairs."),
+            ("I live in a dorm. What can I actually build?",
+             "Start with what is already in your closet. Error 404 is a black hoodie and a sheet of paper, Crowd Camouflage is a gray hoodie, and the Referee builds its stripes from tape on a black tee. No sewing, and nothing needs a work table."),
+            ("How much time do these take?",
+             "Hands-on time runs 5 to 30 minutes. Check the time chip on each card; anything that has to dry needs a head start."),
         ],
     },
     {
