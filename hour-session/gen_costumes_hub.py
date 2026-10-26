@@ -260,7 +260,7 @@ TAIL = """
 <!-- 2026-10-13: the Quick answer top-3 block moved below the list (it used
      to sit above it with two more intro paragraphs). Text verbatim from the
      live page, only the separator normalized to the injector's style. -->
-<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min, black hoodie) (not a tonight build — needs 2 hrs drying), <a href="/c/superhero-family">Superhero Family</a> (30 min, matching red sweatsuits), and <a href="/c/gloom-bloom">Gloom & Bloom</a> (15 min, 1 set black clothes from the closet): a spread of the most-built guides in the bank. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
+<p class="quick-answer"><strong>Quick answer:</strong> <a href="/c/neon-demon-hunter">Neon Demon Hunter</a> (25 min, black hoodie) (not a tonight build; needs 2 hrs drying), <a href="/c/superhero-family">Superhero Family</a> (30 min, matching red sweatsuits), and <a href="/c/gloom-bloom">Gloom & Bloom</a> (15 min, 1 set black clothes from the closet): a spread of the most-built guides in the bank. Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
 <p class="home"><a href="/">Back to Pick My Costume</a> and take the 2-minute quiz to get one picked for you.</p>
 <!-- 2026-09-26 red-team distro: hub cross-links, folded into the generator
      2026-09-27. Pantry label matches the page's real title (the rename). -->
