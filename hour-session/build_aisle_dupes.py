@@ -294,7 +294,7 @@ ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr
 .more{margin-top:24px;text-align:center;}
 .more a{color:#0a6cff;}
 @media (max-width:560px){ul{grid-template-columns:1fr;}}
-</style>
+footer{margin-top:40px;font-size:13px;color:#777;}</style>
 <script type="application/ld+json">%s</script>
 </head>
 <body>
@@ -372,7 +372,7 @@ function fallbackCopy(){
 }
 document.getElementById("sharebtn").addEventListener("click", doShare);
 </script>
-</body>
+<footer>Built with Muse.</footer></body>
 </html>
 """ % (
         esc(COPY["title"]), esc(COPY["desc"]), PAGE_URL,
