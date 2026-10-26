@@ -14200,7 +14200,10 @@ function pinpointTypedGo(){
   }
   pinpointOpenIdea({label: res.label, idea: res.idea, raw: raw}, res.kind === "fuzzy" ? "typed-fuzzy" : "typed");
 }
-function pinpointGo(){ pinpointTypedGo(); }
+/* 2026-10-23 (QA P3, 2026-10-04): the search Go button had no tapGuard, so a
+   double-tap (or double Enter) double-fired pinpoint_resolved analytics and
+   the openIdeaDetail navigation. Guard the bounce like every other flow. */
+function pinpointGo(){ if (!tapGuard("pinpointgo", 800)) return; pinpointTypedGo(); }
 $("pinpoint-go").onclick = pinpointGo;
 $("pinpoint-input").addEventListener("keydown", function(ev){ if (ev.key === "Enter"){ ev.preventDefault(); pinpointGo(); } });
 /* Typing again clears the honest-note state so a stale closest-3 can't linger. */
