@@ -139,7 +139,30 @@ CSS = ("body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;ma
        ".home a{color:#e07b00;font-weight:700;}"
        ".quizcta{display:inline-block;margin:6px 0 22px;background:#ff8c1a;color:#2a1500;"
        "font-weight:800;font-size:17px;text-decoration:none;padding:14px 26px;border-radius:14px;}"
-       "footer{margin-top:40px;font-size:13px;color:#777;}")
+       "footer{margin-top:40px;font-size:13px;color:#777;}"
+       # 2026-10-24 (N2 header parity): guide .topbar rules copied
+       # verbatim from gen_share_function.py lines 1989-2002.
+
+       ".topbar{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}"
+       ".topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}"
+       ".topbtns{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto;}"
+       ".topbar a.homebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}"
+       ".topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}"
+       ".topbar a span{color:#ff8c1a;}")
+
+
+# 2026-10-24 (N2 header parity): guide top bar markup, per the staged fix
+# packet hub-header-grounding-2026-10-24.md section 5 (guide generator
+# gen_share_function.py line 2137). Emoji in \u escape form per the house
+# byte-level lesson; verify with repr. Packet section 5 string omits the
+# guide's data-claude="1" attribute; that omission is kept knowingly
+# (the hubs have no data-claude click handler) and is named in the
+# staging report, not silent.
+TOPBAR = ('<div class="topbar"><a class="brand" href="/">\U0001F383 Pick My '
+          '<span>Costume</span></a><div class="topbtns">'
+          '<a class="homebtn" href="/">Pick my costume</a>'
+          '<a class="claudebtn" href="https://pickmycostume.com/mcp">Add to Claude</a>'
+          '</div></div>')
 
 
 def js_escape(s):
@@ -256,6 +279,10 @@ def build_hub(slug, cfg):
                 html.escape(cfg["lede"]),
                 rows,
                 explore))
+
+    # 2026-10-24 (N2): the bar spans full width, outside .wrap, as on guides.
+    assert page.count("<body><main") == 1, "body anchor drifted in " + slug
+    page = page.replace("<body><main", "<body>" + TOPBAR + "<main", 1)
 
     # Billy's rule: no em/en dashes in user-facing copy.
     assert "\u2014" not in page and "\u2013" not in page, "dash slipped into " + slug
