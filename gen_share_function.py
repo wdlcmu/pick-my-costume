@@ -2129,6 +2129,12 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".relcard a span{min-width:0;}" +
     ".themelink{font-size:15px;margin:12px 0 0;}" +
     ".themelink a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
+    /* 2026-09-30 (Billy, approved; restored 2026-10-25): AI honesty label
+       under the hero photo -- same type scale as the in-app ideaMedia
+       tag. The rule was lost from the generator and the generated file
+       with no documented removal (verifier slice 11, 2026-10-22); the
+       print rule below still hides the label when printing. */
+    ".aiphoto{font-size:11px;color:#9a8fb8;margin:4px 0 12px;}" +
     /* 2026-10-01 (Billy): pictured honesty caption -- same type scale as the
        in-app ideaMedia caption. */
     ".pictured{font-size:11px;color:#9a8fb8;margin:-8px 0 12px;}" +
