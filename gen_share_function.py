@@ -839,7 +839,7 @@ for(b=0;b<TILES.length;b++){t=TILES[b];btn=btns[b];if(!btn)continue;var ok=tileO
 btn.className="ptile "+(ok?"have":"miss");
 var badge=btn.querySelector(".ptbadge");if(badge)badge.textContent=ok?"\\u2713":"\\u25CB";
 btn.setAttribute("aria-label",btn.getAttribute("data-label")+": "+(ok?"you have this":"missing")+". Tap to update.");
-if(!ok)missHtml+='<span class="pchip"><span class="pmemo" aria-hidden="true">'+t.e+"</span>"+escH(t.label)+"</span>";}
+if(!ok)missHtml+='<span class="pchip"><span class="pmemo" aria-hidden="true">'+t.e+"</span>"+escH(t.label)+(t.idxs.length>1?" ("+t.idxs.length+" things)":"")+"</span>";}
 /* Assumption-aware headline (2026-10-13): coverage from the visitor's
    own ticks is counted apart from coverage that only holds because
    basics are assumed, and the headline says which is which. Own set =
@@ -1154,7 +1154,7 @@ function _cCardsHtml(slug, ct){
       "</button>";
   });
   var chips = ct.tiles.filter(function(t, ti){ return !tileHave[ti]; }).map(function(t){
-    return "<span class=\\"pchip\\"><span class=\\"pmemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" + esc(t.label) + "</span>";
+    return "<span class=\\"pchip\\"><span class=\\"pmemo\\" aria-hidden=\\"true\\">" + t.e + "</span>" + esc(t.label) + (t.idxs.length > 1 ? " (" + t.idxs.length + " things)" : "") + "</span>";
   }).join("");
   /* Fresh-visitor headline (2026-10-13): the static count is purely
      assumption-driven (ownN = 0, mixN = 0 in the client composer), so
@@ -1586,7 +1586,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   if (_rel.length) {
     _relHtml = "<h2>More costumes like this</h2><ul class=\\"rellist\\">" +
       _rel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
-        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"eager\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>" + _themeLink + _hubLinks +
       /* 2026-10-06 (Lane 3, Explore Galaxy): "Explore similar ideas" entry
@@ -1608,7 +1608,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       ("More " + PRIMARYMAT[slug] + " builds"));
     _matHtml = "<h2>" + esc(_matLabel) + "</h2><ul class=\\"rellist\\">" +
       _matRel.map(function(s){ return "<li class=\\"relcard\\"><a href=\\"/c/" + s + "\\">" +
-        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"eager\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
+        "<img src=\\"/photos/" + s + "-256.webp\\" loading=\\"lazy\\" decoding=\\"async\\" onerror=\\"this.onerror=null;this.src='/photos/" + s + ".webp'\\" alt=\\"" + esc(IDEAS[s].t) + " costume" + "\\">" +
         "<span>" + esc(IDEAS[s].t) + "</span></a></li>"; }).join("") +
       "</ul>";
   }
@@ -1962,6 +1962,14 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "a.addEventListener('click',function(ev){if(!_tgOk('plancta'))ev.preventDefault();});})(links[i]);}" +
     "})();" +
     " <" + "/script>";
+  /* 2026-10-24 Item 59 (ship queue; GPT loop run 633): countdown arrivals
+     (?o=countdown, minted by the /countdown share text) get one small strip
+     back to /countdown, closing the share loop. Conditional only, with
+     inline styles and no new CSS rule, so every other arrival renders
+     byte-identically to before. No Day N: there is no slug-to-day map. */
+  var _cdStrip = (_qp.get("o") === "countdown")
+    ? "<p class=\\"cdstrip\\" style=\\"background:#2a1c52;border:1px solid #4b3486;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:15px;line-height:1.45;color:#fdf3e3;\\">This pick is in the 12-day costume countdown. <a href=\\"/countdown\\" style=\\"color:#ff8c1a;font-weight:700;text-decoration:none;\\">See the countdown</a></p>"
+    : "";
   var html = "<!DOCTYPE html>" +
     "<html lang=\\"en\\"><head><meta charset=\\"utf-8\\">" +
     "<title>" + seoTitle + "</title>" +
@@ -2135,6 +2143,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "</style>" +
     "<script>(function(){var s=document.createElement(\\"script\\");s.async=true;s.src=\\"https://us.i.posthog.com/static/array.js\\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\\",{api_host:\\"https://us.i.posthog.com\\",autocapture:false,capture_pageview:true,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\\"click\\",function(e){var t=e.target.closest&&e.target.closest(\\"[data-claude]\\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\\"add_to_claude_clicked\\",{source:\\"guide_page\\"});}catch(_){}}});})();</script>" +
     "</head><body><div class=\\"topbar\\"><a class=\\"brand\\" href=\\"/\\">🎃 Pick My <span>Costume</span></a><div class=\\"topbtns\\"><a class=\\"homebtn\\" href=\\"/\\">Pick my costume</a><a class=\\"claudebtn\\" href=\\"https://pickmycostume.com/mcp\\" data-claude=\\"1\\">Add to Claude</a></div></div><main class=\\"guide\\">" +
+    _cdStrip +
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
     /* 2026-10-13: first-screen order is title, photo, timed chips, plan CTA, then the intro paragraph. Photo-led arrivals (pins, trend cards, the hero tile) land on the costume itself, not on text above it. */
