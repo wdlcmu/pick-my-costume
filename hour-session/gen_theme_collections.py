@@ -34,8 +34,8 @@ NEW_COLLECTIONS = [
         "key": "food-costumes",
         "tag": "food",
         "expected": 31,
-        "h1": "Food Halloween costumes",
-        "title": "Food Halloween Costumes 2026 - Pick My Costume",
+        "h1": "How to Make Food Costumes",
+        "title": "How to Make Food Costumes: 31 DIY Ideas | Pick My Costume",
         "desc": "31 food Halloween costumes you can build at home, from walking tacos to ramen bowls. Every one has a free step-by-step build guide.",
         "lede": "Hungry for a costume idea? These 31 food costumes turn snacks, meals, and grocery runs into Halloween gold, and every one has a free step-by-step build guide. Pick your craving, or take the 2-minute quiz and get your match.",
         "jsonld_name": "31 food Halloween costumes with free DIY build guides",
@@ -54,8 +54,8 @@ NEW_COLLECTIONS = [
         "key": "dinosaur-costumes",
         "tag": "dinos",
         "expected": 13,
-        "h1": "Dinosaur Halloween costumes",
-        "title": "Dinosaur Halloween Costumes 2026 - Pick My Costume",
+        "h1": "How to Make a Dinosaur Costume",
+        "title": "How to Make a Dinosaur Costume: 13 DIY Builds for Kids and Adults | Pick My Costume",
         "desc": "13 dinosaur Halloween costumes, from baby dinos to a full fossil-hunter crew. Every one has a free step-by-step build guide.",
         "lede": "Rawr means I love you in dinosaur. These 13 dino costumes run from babies to full herds, and each one has a free step-by-step build guide. Pick your species, or take the 2-minute quiz and get your match.",
         "jsonld_name": "13 dinosaur Halloween costumes with free DIY build guides",
@@ -66,7 +66,7 @@ NEW_COLLECTIONS = [
         "expected": 14,
         "h1": "Superhero Halloween costumes",
         "title": "Superhero Halloween Costumes 2026 - Pick My Costume",
-        "desc": "14 DIY superhero Halloween costumes, from web-slingers to caped duos. Every one has a free step-by-step build guide.",
+        "desc": "14 DIY superhero Halloween costumes, from web heroes to caped duos. Every one has a free step-by-step build guide.",
         "lede": "Every hero needs an origin story. These 14 superhero costumes are all DIY builds, and each one has a free step-by-step guide. Pick your powers, or take the 2-minute quiz and get your match.",
         "jsonld_name": "14 superhero Halloween costumes with free DIY build guides",
     },
@@ -103,7 +103,11 @@ def parse_bank(src):
             continue  # quiz question records, not bank ideas
         order.append(slug)
         ideas[slug] = {"title": m.group(2), "blurb": m.group(3)}
-    assert len(ideas) == 169, "expected 169 bank ideas, got %d" % len(ideas)
+    # Bank size is derived, never hard-coded: floor + duplicate check on
+    # the parse-order list (the ideas dict would collapse a duplicate id
+    # silently, so the count alone cannot see one).
+    assert len(ideas) >= 100, "bank yielded only %d ideas" % len(ideas)
+    assert len(set(order)) == len(order), "duplicate idea ids in parse"
     members = {}
     for m in re.finditer(r"(food|animals|dinos|heroes):\d", src):
         tag = m.group(1)
@@ -119,10 +123,34 @@ def parse_bank(src):
         members[tag] = [s for s in order if s in set(members[tag]) and not (s in seen or seen.add(s))]
     ins = {}
     for m in re.finditer(
-            r'"([a-z0-9-]+)":\{"m":\[.*?"time":"([^"]+)","cost":"[^"]+","effort":"([^"]+)"',
+            r'"([a-z0-9-]+)":\{"m":\[.*?"time":"([^"]+)","effort":"([^"]+)"',
             src):
         ins[m.group(1)] = {"time": m.group(2), "effort": m.group(3)}
+    # 2026-10-22 reconciliation (Family C part 2): the live theme pages
+    # carry franchise-scrubbed blurbs that app.js still lacks, so a plain
+    # regen RE-ADDS the scrubbed names. The texts below are the live
+    # pages' blurbs verbatim (each matches mcp-server/bank.json exactly,
+    # verified 2026-10-22). Ported live -> generator; do not undo.
+    LIVE_BLURBS = {
+        "blue-heeler-pup": "Blue-gray hoodie, felt ears, and a painted nose for the littlest pup.",
+        "web-slinger-crew": "Red, black, and pink hoodies plus masks. Pick your spider.",
+        "web-hero-duo": "Red-blue sweatsuit plus web mask; partner gets the black jacket and attitude.",
+        "the-olympians": "Bedsheet togas, gold rope belts, laurel crowns. Pick your god: lightning bolt, owl, or trident.",
+        "web-slinger-kid": "Red sweatsuit, tape web lines, big white eye lenses.",
+        "night-hero": "A dark cowl and a cape cut from an old t-shirt, ready for rooftop patrol.",
+    }
+    for _sid, _blurb in LIVE_BLURBS.items():
+        assert _sid in ideas, "live blurb override for unknown idea %s" % _sid
+        ideas[_sid]["blurb"] = _blurb
     return order, ideas, members, ins
+
+
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed time is
+    # hands-on only. The bank time may carry a "+ ... drying" suffix
+    # that counts in Tonight scoring but is never displayed. Same
+    # helper as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
 
 
 def esc(s):
@@ -164,7 +192,7 @@ def page_html(col, items, ideas, ins):
     first_slug = items[0][0]
     cards = []
     for slug, title in items:
-        tri = "%s, %s" % (ins[slug]["time"], ins[slug]["effort"])
+        tri = "%s, %s" % (display_time(ins[slug]["time"]), ins[slug]["effort"])
         rec = ideas[slug]
         cards.append(
             '<li class="card">'
@@ -208,7 +236,13 @@ ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr
 %s
 .more{margin-top:24px;text-align:center;}
 .more a{color:#0a6cff;}
-</style>
+footer{margin-top:40px;font-size:13px;color:#777;}</style><script>
+var _phq=[];
+function track(name, props){ try { if (window.posthog && posthog.capture) posthog.capture(name, props || {}); else _phq.push([name, props || {}]); } catch (e) {} }
+(function(){ var s=document.createElement('script'); s.async=true; s.src='https://us.i.posthog.com/static/array.js';
+s.onload=function(){ try { if (window.posthog && posthog.init){ posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7',{api_host:'https://us.i.posthog.com',autocapture:false,capture_pageview:true,disable_session_recording:true}); _phq.splice(0).forEach(function(e){ try{posthog.capture(e[0],e[1]);}catch(x){} }); } } catch(e){} };
+document.head.appendChild(s); })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -223,7 +257,7 @@ ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr
 </div>
 %s
 <p class="more"><a href="/costumes">Browse all 169 costume guides</a></p>
-</div>
+<footer>Built with Muse.</footer></div>
 </body>
 </html>
 """ % (esc(col["title"]), esc(col["desc"]), col["key"],
