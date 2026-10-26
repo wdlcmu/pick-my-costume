@@ -2,7 +2,7 @@
 
 > Complete Markdown text of pickmycostume.com's 169 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
-> Generated: 2026-10-23. Regenerate with gen_llms_full.py when the bank changes.
+> Generated: 2026-10-24. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
@@ -328,13 +328,14 @@ Materials:
 Steps:
 1. Put on the yellow sweatshirt and sweatpants.
 2. Cut a stem shape from green felt, about 4 inches tall.
-3. Hold the stem against the headband.
-4. Check it in a mirror.
-5. Glue the stem to the headband.
-6. Let it dry flat.
-7. Wear the headband.
-8. You are a banana.
-9. Optional pro finish: glue a small brown felt tip at the bottom front of the sweatshirt.
+3. Safety: Let an adult cut the felt stem. Keep fingers clear of the scissors.
+4. Hold the stem against the headband.
+5. Check it in a mirror.
+6. Glue the stem to the headband.
+7. Let it dry flat.
+8. Wear the headband.
+9. You are a banana.
+10. Optional pro finish: glue a small brown felt tip at the bottom front of the sweatshirt.
 
 Q: How big should the banana stem be?
 A: About 4 inches tall and 2 inches wide. Bigger looks cartoonish in a good way; smaller disappears.
@@ -4475,12 +4476,13 @@ Steps:
 2. Lay them on the pajama chest to check the size and spacing.
 3. Glued felt cannot be moved, so check first.
 4. Cut two white felt eyes and a stitched-look smile from the black felt.
-5. Glue them to the chest of the fuzzy pajamas.
-6. Write a collector number like 'No.
-7. 001' on the large shipping tag.
-8. Tie the tag to the wrist or waistband with string.
-9. Wear the fuzzy pajamas with the felt ears and tag showing.
-10. Optional pro finish: draw the smile with dashed lines using a white fabric marker.
+5. Safety: Let an adult cut the felt. Pin backs must face cloth, not skin.
+6. Glue them to the chest of the fuzzy pajamas.
+7. Write a collector number like 'No.
+8. 001' on the large shipping tag.
+9. Tie the tag to the wrist or waistband with string.
+10. Wear the fuzzy pajamas with the felt ears and tag showing.
+11. Optional pro finish: draw the smile with dashed lines using a white fabric marker.
 
 Q: How do the ears stay on the hood?
 A: Fabric glue with the hood laid flat, left to dry for 30 minutes before wearing. For a same-night build, safety-pin them from inside the hood instead, pins hold immediately.
@@ -5043,14 +5045,15 @@ Steps:
 1. Salt dresses all in white.
 2. Pepper dresses all in black.
 3. Cut two shaker tops from cardboard: a short wide dome each.
-4. Make them big enough to sit on a hat.
-5. Paint them gray.
-6. Dot holes on top like a real shaker.
-7. Let them dry.
-8. Tape each top to a hat so it rides on your head.
-9. Letter the caps big, 4-inch letters at least.
-10. Write a big S on Salt's shaker and a big P on Pepper's.
-11. Optional pro finish: carry real salt and pepper shakers and offer to 'season' people's costumes.
+4. Safety: Cut the cardboard domes slowly. Keep fingers clear of the scissors.
+5. Make them big enough to sit on a hat.
+6. Paint them gray.
+7. Dot holes on top like a real shaker.
+8. Let them dry.
+9. Tape each top to a hat so it rides on your head.
+10. Letter the caps big, 4-inch letters at least.
+11. Write a big S on Salt's shaker and a big P on Pepper's.
+12. Optional pro finish: carry real salt and pepper shakers and offer to 'season' people's costumes.
 
 Q: How do you make the shaker tops?
 A: Cut a short wide cylinder or dome from cardboard that fits over a hat, tape it shut, paint it gray, and dot holes on top like a real shaker.
