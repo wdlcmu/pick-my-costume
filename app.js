@@ -7862,7 +7862,7 @@ function buildConstraintRefinement(){
   if (fellBack){
     var fnote = document.createElement("p");
     fnote.className = "constraint-fallback";
-    fnote.textContent = "Too few matches — showing closest picks.";
+    fnote.textContent = "Too few matches: showing closest picks.";
     wrap.appendChild(fnote);
   }
   return wrap;
