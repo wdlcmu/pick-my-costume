@@ -33,31 +33,51 @@ const DEFAULT_IDS = ['classic-ghost', 'vampire'];
 const MAXPICK = 3;
 
 /* ---------------- load bank ---------------- */
+/* 2026-10-22 parser fix (generator parity audit, Family D): the old
+   extractors anchored on a newline terminator ("\n];" / "\n};"), which
+   matched the bank's old pretty-printed layout. INSTRUCTIONS is now one
+   giant line that ends "}};" on the same line, so the "\n};" search
+   skipped its real terminator and captured ~50 KB of following code
+   (MAKE_PLANS and beyond); the eval then died with
+   "SyntaxError: Unexpected token ';'" at the captured ';'. IDEAS still
+   ends in "\n];" by luck, not by contract. All three bank literals are
+   now read with one balanced scan from the opening bracket — the same
+   approach as the working gen_question_pages.js extractor — hardened to
+   ignore brackets inside quoted strings, so a bracket in costume copy
+   cannot end a literal early. */
+function extractLiteral(src, decl, openCh, closeCh) {
+  const start = src.indexOf(decl);
+  if (start < 0) throw new Error(decl + 'not found in app.js');
+  const open = src.indexOf(openCh, start);
+  if (open < 0) throw new Error(decl + 'has no opening ' + openCh + ' in app.js');
+  let depth = 0, quote = null, esc = false, end = -1;
+  for (let i = open; i < src.length; i++) {
+    const ch = src[i];
+    if (quote) {
+      if (esc) esc = false;
+      else if (ch === '\\') esc = true;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'") { quote = ch; continue; }
+    if (ch === openCh) depth++;
+    else if (ch === closeCh) { depth--; if (!depth) { end = i; break; } }
+  }
+  if (end < 0) throw new Error(decl + 'unbalanced in app.js');
+  return eval('(' + src.slice(open, end + 1) + ')');
+}
 function extractVar(src, name) {
-  const m = src.match(new RegExp('var ' + name + ' = \\[([\\s\\S]*?)\\n\\];'));
-  if (!m) throw new Error('var ' + name + ' not found in index.html');
-  return eval('([' + m[1] + '\n])');
+  return extractLiteral(src, 'var ' + name + ' = ', '[', ']');
 }
 function extractObj(src, name) {
-  const m = src.match(new RegExp('var ' + name + ' = \\{([\\s\\S]*?)\\n\\};'));
-  if (!m) throw new Error('var ' + name + ' not found in index.html');
-  return eval('({' + m[1] + '\n})');
+  return extractLiteral(src, 'var ' + name + ' = ', '{', '}');
 }
 const indexHtml = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
 const IDEAS = extractVar(indexHtml, 'IDEAS');
 const INS = extractObj(indexHtml, 'INSTRUCTIONS');
-/* PINPOINT_MAP is a single giant line ending "},};" — a balanced-brace scan,
-   since the \n}; anchor used for the others overshoots. */
+/* PINPOINT_MAP is a single giant line ending "},};" — same balanced scan. */
 function extractBalanced(src, decl) {
-  const start = src.indexOf(decl);
-  if (start < 0) throw new Error(decl + ' not found in index.html');
-  let brace = src.indexOf('{', start), depth = 0, end = brace;
-  for (; end < src.length; end++) {
-    const ch = src[end];
-    if (ch === '{') depth++;
-    else if (ch === '}') { depth--; if (!depth) break; }
-  }
-  return eval('(' + src.slice(brace, end + 1) + ')');
+  return extractLiteral(src, decl, '{', '}');
 }
 const PINPOINT = extractBalanced(indexHtml, 'var PINPOINT_MAP = ');
 const byId = {};
