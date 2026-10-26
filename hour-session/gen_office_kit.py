@@ -18,13 +18,14 @@ The page has three jobs:
 
 Re-run after any bank change (add/remove/rename idea):
     python3 hour-session/gen_office_kit.py
-The builder FAILS LOUDLY on: missing idea ids, missing time/cost/effort
-triples, non-Easy effort in an office pack, over-30-minute builds in the
+The builder FAILS LOUDLY on: missing idea ids, missing time/effort
+pairs, non-Easy effort in an office pack, over-30-minute builds in the
 under-30 pack, missing photos, duplicate pack slugs, or em/en dashes.
 """
 import html
 import os
 import re
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -43,7 +44,7 @@ PACKS = [
      "ideas": ["deviled-egg", "hot-dog", "pickle", "donut"]},
 ]
 
-src = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+src = open(os.path.join(ROOT, "app.js"), encoding="utf-8").read()  # bank moved index.html -> app.js 2026-10-01
 QUIZ_IDS = {"q1", "q2", "q4", "q5kid", "qocc", "qinterest"}
 ideas = {}
 for s, t, b in re.findall(r'\{id:"([^\"]+)\", title:"([^\"]+)\", blurb:"([^\"]+)"', src):
@@ -52,10 +53,10 @@ for s, t, b in re.findall(r'\{id:"([^\"]+)\", title:"([^\"]+)\", blurb:"([^\"]+)
 
 m = re.search(r'INSTRUCTIONS = \{(.*?)\n\};', src, re.S)
 triples = {}
-for s, ti, co, ef in re.findall(
-        r'"([a-z0-9-]+)":\{"m":\[.*?"time":"([^\"]+)",\s*"cost":"([^\"]+)",\s*"effort":"([^\"]+)"',
+for s, ti, ef in re.findall(
+        r'"([a-z0-9-]+)":\{"m":\[.*?"time":"([^\"]+)",\s*"effort":"([^\"]+)"',
         m.group(1), re.S):
-    triples[s] = (ti, co, ef)
+    triples[s] = (ti, ef)
 
 slugs = [p["slug"] for p in PACKS]
 assert len(slugs) == len(set(slugs)), "duplicate pack slugs"
@@ -63,8 +64,8 @@ assert len(slugs) == len(set(slugs)), "duplicate pack slugs"
 for p in PACKS:
     for sid in p["ideas"]:
         assert sid in ideas, "pack %s: idea %s not in bank" % (p["slug"], sid)
-        assert sid in triples, "pack %s: idea %s missing time/cost/effort" % (p["slug"], sid)
-        ti, co, ef = triples[sid]
+        assert sid in triples, "pack %s: idea %s missing time/effort" % (p["slug"], sid)
+        ti, ef = triples[sid]
         assert ef == "Easy", "pack %s: idea %s is effort %r, office packs must be Easy" % (p["slug"], sid, ef)
         if p["slug"] == "under-30":
             mm = re.match(r"(\d+)\s*min", ti)
@@ -74,15 +75,22 @@ for p in PACKS:
         assert os.path.isfile(photo), "pack %s: missing photo %s" % (p["slug"], photo)
 
 
+def display_time(t):
+    # 2026-10-22 display rule (Billy, 2026-10-03): displayed time is
+    # hands-on only. The bank time may carry a "+ ... drying" suffix
+    # that counts in Tonight scoring but is never displayed. Same
+    # helper as gen_costumes_hub.py / gen_closet.py.
+    return re.sub(r"\s*\+.*drying\s*$", "", t or "")
+
 def card(sid):
     title, blurb = ideas[sid]
-    ti, co, ef = triples[sid]
+    ti, ef = triples[sid]
     L = []
     L.append('      <article class="card">')
     L.append('        <a href="/c/%s"><img src="/photos/%s.webp" alt="%s" loading="lazy" width="600" height="600"></a>' % (sid, sid, html.escape(title, quote=True)))
     L.append('        <div class="cardbody">')
     L.append('          <h3><a href="/c/%s">%s</a></h3>' % (sid, html.escape(title)))
-    L.append('          <p class="triple">%s &middot; %s &middot; %s</p>' % (html.escape(ti), html.escape(co), html.escape(ef)))
+    L.append('          <p class="triple">%s &middot; %s</p>' % (html.escape(display_time(ti)), html.escape(ef)))
     L.append('          <p class="blurb">%s</p>' % html.escape(blurb))
     L.append('          <p class="cta"><a href="/c/%s">Build guide</a></p>' % sid)
     L.append('        </div>')
@@ -294,7 +302,7 @@ page_lines.append('</head>')
 page_lines.append('<body><main class="wrap">')
 page_lines.append('<h1>The office Halloween contest kit</h1>')
 page_lines.append('<p id="countline"></p>')
-page_lines.append('<p class="lede">Sixteen costumes that survive the office: easy builds, no fake blood, no full-face masks, nothing that beeps during standup. Every idea links to a free build guide with the time, cost, and materials up front. Plus a printable ballot and a Slack announcement you can paste as-is.</p>')
+page_lines.append('<p class="lede">Sixteen costumes that survive the office: easy builds, no fake blood, no full-face masks, nothing that beeps during standup. Every idea links to a free build guide with the time and materials up front. Plus a printable ballot and a Slack announcement you can paste as-is.</p>')
 page_lines.append('<nav class="packs" aria-label="Costume packs">')
 page_lines.append('<a href="#desk-classics">Desk-job classics</a><a href="#coworker-duos">Coworker duos</a><a href="#under-30">Under 30 minutes</a><a href="#meeting-safe">Meeting-safe funny</a><a href="#contest-kit">Contest kit</a>')
 page_lines.append('</nav>')
@@ -321,7 +329,7 @@ page_lines.append('<div class="quiz-cta">')
 page_lines.append('<p>Still deciding? Take the 2-minute quiz and get one picked for you.</p>')
 page_lines.append('<a href="/?src=collection-office">Find your costume</a>')
 page_lines.append('</div>')
-page_lines.append('<p class="home"><a href="/group-costumes">Group costume packs</a> &middot; <a href="/costumes">Browse all 164 costume guides A-Z</a></p>')
+page_lines.append('<p class="home"><a href="/group-costumes">Group costume packs</a> &middot; <a href="/costumes">Browse all 169 costume guides A-Z</a></p>')
 page_lines.append('<footer>Built with Muse.</footer>')
 page_lines.append('</main>')
 page_lines.append('<script>')
@@ -333,10 +341,17 @@ page = "\n".join(page_lines) + "\n"
 for ch in ("\u2014", "\u2013"):
     assert ch not in page, "em/en dash leaked into page"
 assert "collection-office" in page
-# The LANDING_SRC allowlist in index.html accepts collection-[a-z-]+; verify it still does.
-assert re.search(r'src=\(collection-\[a-z-\]\+\)', src), "index.html ?src= allowlist changed; office attribution would break"
+# The LANDING_SRC allowlist (moved index.html -> app.js in the 2026-10-01 bundle split)
+# accepts collection-[a-z-]+; verify it still does.
+assert re.search(r'src=\(\(\?:collection\|print\|share\)-\[a-z-\]\+\)', src), "?src= allowlist changed; office attribution would break"
+assert 'collection-office' in page or 'src=collection-office' in page
 
 out = os.path.join(ROOT, "office-costumes.html")
+# 2026-10-22 (slice 12): --out <path> writes to a sandbox path instead of
+# the real page, so verifiers can prove idempotence without rewriting the
+# live file in place. Default (no flag) is byte-identical to before.
+if "--out" in sys.argv:
+    out = sys.argv[sys.argv.index("--out") + 1]
 open(out, "w", encoding="utf-8").write(page)
 n = sum(len(p["ideas"]) for p in PACKS)
 print("wrote %s (%d packs, %d idea slots)" % (out, len(PACKS), n))
