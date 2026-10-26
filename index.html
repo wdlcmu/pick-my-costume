@@ -151,10 +151,10 @@ body{
    name never wraps mid-phrase and the nav never squeezes it. */
 @media (max-width:899px){
   .sitehead{flex-wrap:wrap;gap:0 12px;padding-top:8px;padding-bottom:4px}
-  .sitehead-link{min-height:0}
+  .sitehead-link{min-height:44px}
   .sitehead-name{white-space:nowrap}
   .sitenav{margin-left:0;flex:1 1 100%;justify-content:space-between}
-  .sitenav a{padding:8px 4px;font-size:13px}
+  .sitenav a{padding:12px 6px;font-size:13px;min-height:44px;box-sizing:border-box;display:flex;align-items:center}
 }
 /* 2026-10-01 Section 2: the costume-detail top row (Back/Home,
    progress, "Costume detail") used a negative-margin bleed that assumes
@@ -1402,6 +1402,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-10-06 (Billy): moat-forward hero. The old headline sold a generic
            quiz; the product's edge is matching real builds to what you own. -->
       <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Tell us who it&rsquo;s for. We pick a costume you can make.</p>
+      <p class="tminus" id="tminus" style="display:none"></p>
       <button class="cta firstonly" id="btn-start" type="button">Pick my costume</button>
       <!-- 2026-10-16 (Billy): cut the "Use what I already have" hero button. One button only. The closet flow still lives in the quiz and Pantry. -->
       <!-- 2026-10-06 (Billy): quiet tertiary link — galaxy is a marquee feature
@@ -1716,13 +1717,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <section class="trendsec" id="trends-section" aria-label="What America is searching for">
         <h2 class="q-title">What America is searching for</h2>
         <p class="fine" style="margin:0 0 4px">Ranked by how fast searches are climbing.</p>
-        <p class="fine" style="margin:0 0 10px">Real costume search data from Pinterest Trends, week ending Oct 19, 2026. Bars show 4-week search growth. Tap one to make it yourself.</p>
+        <p class="fine" style="margin:0 0 10px">Real costume search data from Pinterest Trends, week ending Oct 20, 2026. Bars show 4-week search growth. Tap one to make it yourself.</p>
         <div class="trendgrid">
-          <a class="trendcard" href="/c/emerald-witch"><img src="photos/emerald-witch-256.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="180px" alt="Emerald Witch costume" loading="lazy"><span class="tb"><span class="tt">Elphaba costume</span><span class="tg">Make it: Emerald Witch</span><span class="tmeta"><span class="tbar"><i style="width:100%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-45deg)">&#8599;</span>250%</span></span></span></a>
-          <a class="trendcard" href="/c/classic-ghost"><img src="photos/classic-ghost-256.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="180px" alt="Classic Ghost costume" loading="lazy"><span class="tb"><span class="tt">Ghost costume</span><span class="tg">Make it: Classic Ghost</span><span class="tmeta"><span class="tbar"><i style="width:68%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-33deg)">&#8599;</span>171%</span></span></span></a>
-          <a class="trendcard" href="/c/superhero-family"><img src="photos/superhero-family-256.webp" srcset="photos/superhero-family-256.webp 256w, photos/superhero-family-480.webp 480w" sizes="180px" alt="Superhero Family costume" loading="lazy"><span class="tb"><span class="tt">Nightwing costume</span><span class="tg">Make it: Superhero Family</span><span class="tmeta"><span class="tbar"><i style="width:65%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-30deg)">&#8599;</span>162%</span></span></span></a>
-          <a class="trendcard" href="/c/good-witch-bad-witch"><img src="photos/good-witch-bad-witch-256.webp" srcset="photos/good-witch-bad-witch-256.webp 256w, photos/good-witch-bad-witch-480.webp 480w" sizes="180px" alt="Good Witch, Bad Witch costume" loading="lazy"><span class="tb"><span class="tt">Glinda costume</span><span class="tg">Make it: Good Witch, Bad Witch</span><span class="tmeta"><span class="tbar"><i style="width:50%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-25deg)">&#8599;</span>125%</span></span></span></a>
-          <a class="trendcard" href="/c/fuzzy-monster"><img src="photos/fuzzy-monster-256.webp" srcset="photos/fuzzy-monster-256.webp 256w, photos/fuzzy-monster-480.webp 480w" sizes="180px" alt="Fuzzy Monster costume" loading="lazy"><span class="tb"><span class="tt">Lorax costume</span><span class="tg">Make it: Fuzzy Monster</span><span class="tmeta"><span class="tbar"><i style="width:33%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-15deg)">&#8599;</span>82%</span></span></span></a>
+          <a class="trendcard" href="/c/emerald-witch"><img src="photos/emerald-witch-256.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w" sizes="180px" alt="Emerald Witch costume" loading="lazy"><span class="tb"><span class="tt">Elphaba costume</span><span class="tg">Make it: Emerald Witch</span><span class="tmeta"><span class="tbar"><i style="width:100%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-45deg)">&#8599;</span>300%</span></span></span></a>
+          <a class="trendcard" href="/c/classic-ghost"><img src="photos/classic-ghost-256.webp" srcset="photos/classic-ghost-256.webp 256w, photos/classic-ghost-480.webp 480w" sizes="180px" alt="Classic Ghost costume" loading="lazy"><span class="tb"><span class="tt">Ghost costume</span><span class="tg">Make it: Classic Ghost</span><span class="tmeta"><span class="tbar"><i style="width:62%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-33deg)">&#8599;</span>186%</span></span></span></a>
+          <a class="trendcard" href="/c/superhero-family"><img src="photos/superhero-family-256.webp" srcset="photos/superhero-family-256.webp 256w, photos/superhero-family-480.webp 480w" sizes="180px" alt="Superhero Family costume" loading="lazy"><span class="tb"><span class="tt">Nightwing costume</span><span class="tg">Make it: Superhero Family</span><span class="tmeta"><span class="tbar"><i style="width:48%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-30deg)">&#8599;</span>144%</span></span></span></a>
+          <a class="trendcard" href="/c/good-witch-bad-witch"><img src="photos/good-witch-bad-witch-256.webp" srcset="photos/good-witch-bad-witch-256.webp 256w, photos/good-witch-bad-witch-480.webp 480w" sizes="180px" alt="Good Witch, Bad Witch costume" loading="lazy"><span class="tb"><span class="tt">Glinda costume</span><span class="tg">Make it: Good Witch, Bad Witch</span><span class="tmeta"><span class="tbar"><i style="width:50%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-25deg)">&#8599;</span>150%</span></span></span></a>
+          <a class="trendcard" href="/c/fuzzy-monster"><img src="photos/fuzzy-monster-256.webp" srcset="photos/fuzzy-monster-256.webp 256w, photos/fuzzy-monster-480.webp 480w" sizes="180px" alt="Fuzzy Monster costume" loading="lazy"><span class="tb"><span class="tt">Lorax costume</span><span class="tg">Make it: Fuzzy Monster</span><span class="tmeta"><span class="tbar"><i style="width:28%"></i></span><span class="tmom"><span class="tarr" style="transform:rotate(-15deg)">&#8599;</span>83%</span></span></span></a>
         </div>
         <a class="trendmore" href="/whats-trending">See all of America&rsquo;s searches &rarr;</a>
       </section>
@@ -1957,7 +1958,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="status" id="spin-status" style="margin:8px 0 0"></p>
 </div>
 </div>
-      <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone, and we only track anonymous usage stats.</p>
+      <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone. We only track anonymous usage stats.</p>
       <footer class="sitefoot">
         <p class="fine" style="margin:0 0 6px"><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
         <p class="fine" style="margin:0">Pick My Costume is an independent project. Built with Muse.</p>
