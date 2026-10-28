@@ -1280,8 +1280,15 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        line, byte-identical to the collection pages, on /c/baby-pumpkin only
        (the #2 /c/ page by traffic; the collection pages it was modelled on
        got ~0 visits). Placed immediately after the intro paragraph, the
-       guide-page lede, so the Nov 2 experiment read covers this page too. */
-    (slug === "baby-pumpkin" ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"/?\" style=\"font-weight:700\">Take the 2-minute quiz \u2192</a> Free. No signup.</p>" : "") +
+       guide-page lede, so the Nov 2 experiment read covers this page too.
+       Extended 2026-10-28 (analytics-autoship): same line on the other
+       guide pages with real 7d traffic (PostHog, PMC hosts, filtered) —
+       classic-ghost, haunted-animatronics, boxer, cardboard-knight,
+       pickle, ghost-hunters, coffee-cup, ramen-bowl. Baby-pumpkin's own
+       rendering is unchanged, so its Nov 2 read stays clean; the new
+       pages get their own re-check on Nov 4. Halloween is Oct 31, so
+       waiting a day per page would waste the season. */
+    (["baby-pumpkin","classic-ghost","haunted-animatronics","boxer","cardboard-knight","pickle","ghost-hunters","coffee-cup","ramen-bowl"].indexOf(slug) >= 0 ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"/?\" style=\"font-weight:700\">Take the 2-minute quiz \u2192</a> Free. No signup.</p>" : "") +
     _sharerLine +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
