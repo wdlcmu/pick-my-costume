@@ -1276,6 +1276,12 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\"ctawrap\"><a class=\"cta plancta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a><span class=\"ctasub\">No signup \u00b7 2 minutes.</span></p>" +
     "<p class=\"sharewrap\"><button class=\"sharebtn\" id=\"guideshare\" type=\"button\">Share</button><button class=\"printbtn\" id=\"guideprint\" type=\"button\" onclick=\"window.print()\">Print</button><span class=\"sharemsg\" id=\"guidesharemsg\" role=\"status\"></span></p>" +
     _introHtml +
+    /* Halloween experiment extension (2026-10-28): the Item 132 quiz-entry
+       line, byte-identical to the collection pages, on /c/baby-pumpkin only
+       (the #2 /c/ page by traffic; the collection pages it was modelled on
+       got ~0 visits). Placed immediately after the intro paragraph, the
+       guide-page lede, so the Nov 2 experiment read covers this page too. */
+    (slug === "baby-pumpkin" ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"/?\" style=\"font-weight:700\">Take the 2-minute quiz \u2192</a> Free. No signup.</p>" : "") +
     _sharerLine +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
