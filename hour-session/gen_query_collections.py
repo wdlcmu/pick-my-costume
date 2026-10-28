@@ -11,6 +11,7 @@ from the bank. This script is the source of truth for:
   - mens-halloween-costumes.html        ("mens halloween costumes")
   - college-halloween-costumes.html     ("college halloween costumes")
   - homemade-halloween-costumes.html    ("homemade halloween costumes")
+  - goth-halloween-costumes.html        ("goth halloween costumes")
 
 Reads build times, effort, and materials from INSTRUCTIONS in app.js so cards
 never drift from the guides. Do not hand-edit the outputs; change this script
@@ -30,6 +31,16 @@ wording; three FAQ answers use the live "anything that has to dry"
 wording and the womens time answer is the live "15 to 45 minutes" one. Two live quirks
 are preserved on purpose in OVERRIDES below (deadpan-diva materials,
 tooth-fairy title) because the job is regen parity, not a live edit.
+
+2026-10-28: the Item 132 quiz-entry line (shipped to the live pages
+2026-10-26 as a post-generation edit) is now emitted by page_html()
+itself, between the lede and the disclaimer, byte-identical to the
+shipped line; verified regen parity on all 8 existing pages (the line
+was the only diff). Same run: added the goth page, the documented
+missing hub (Oct 3 query research; Oct 25 not-indexed audit). Picks are
+the bank's true goth shelf only: the three named goth guides, the
+Macabre Goth Couple, the Gloom half of Gloom & Bloom, and the vampire /
+macabre wing (Classic Vampire, Juke-Joint Vampires, Plague Doctor).
 """
 import json
 import os
@@ -197,6 +208,26 @@ PAGES = [
              "The Classic Ghost or Error 404. One is a sheet with eye holes, the other is a hoodie and paper. Both take 10 minutes."),
             ("What about cardboard builds with kids?",
              "The Pizza Slice, Tiny Snail, and Cardboard Knight are built for exactly that: big cardboard, kid-safe steps, and paint."),
+        ],
+    },
+    {
+        "key": "goth-halloween-costumes",
+        "h1": "Goth Halloween Costume Ideas",
+        "title": "Goth Halloween Costumes: 8 DIY Ideas | Pick My Costume",
+        "desc": "Eight goth DIY Halloween costumes with real build times and step-by-step guides: black dresses, tight braids, vampires, and one very calm couple.",
+        "lede": "Black dresses, pale makeup, and stares that end conversations. Every costume below is a goth look from our {N}-guide bank, and each one has a free step-by-step build guide with real materials, numbered steps, and honest build times.",
+        "quick": [("deadpan-diva", "Deadpan Diva"), ("gloom-bloom", "Gloom & Bloom"), ("goth-braids", "Goth Girl with Braids")],
+        "quick_tail": "the fastest goth looks below.",
+        "picks": ["deadpan-diva", "goth-braids", "goth-schoolgirl",
+                  "macabre-couple", "gloom-bloom", "vampire",
+                  "juke-joint-vampires", "plague-doctor"],
+        "faqs": [
+            ("What makes a costume read as goth?",
+             "Black clothing, pale makeup, and a calm stare. The look is mostly attitude: one dark outfit worn like you mean it does more than a pile of accessories."),
+            ("Is there a goth costume for a kid?",
+             "Yes. The Goth Schoolgirl pairs a plaid skirt and black cardigan with braided pigtails and pale makeup. For a duo, Gloom & Bloom puts one wearer in braids and black while the other goes bright."),
+            ("Can I build one of these tonight?",
+             "Most of them, yes. The Deadpan Diva and Gloom & Bloom take about 15 minutes of hands-on work. Check the time chip on each card; anything that has to dry needs a head start."),
         ],
     },
 ]
@@ -405,6 +436,7 @@ def page_html(page, ideas, ins):
 <h1>%s</h1>
 <p class="quick-answer"><strong>Quick answer:</strong> %s. %s Tap any name for its full build guide: materials list, numbered steps, and safety notes.</p>
 <p class="lede">%s</p>
+<p style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?" style="font-weight:700">Take the 2-minute quiz →</a> Free. No signup.</p>
 <p class="disclaimer">⏱️ We timed it, but results may vary.</p>
 <div id="intent-grid" data-unit-id="%s" data-unit-type="intent-grid">
 <div class="grid">
