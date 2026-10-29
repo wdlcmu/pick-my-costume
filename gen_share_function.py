@@ -1330,6 +1330,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _sharer = _nm || "Your friend";
   var _sharerEsc = esc(_sharer);
   _qp.delete("nm");
+  /* 2026-10-29 SHARE-5: the gift sender's first name (?gfrom=) is captured
+     into _gfromJs here, before the top-CTA target is built, then scrubbed
+     from _qp like nm=/for=/partner=: a sender-typed name must not ride
+     into homepage URLs or PostHog pageview URLs. The banner script below
+     reuses this captured value; app.js never reads gfrom on landing. */
+  var _gfromJs = JSON.stringify(esc((_qp.get("gfrom") || "").slice(0, 24)));
+  _qp.delete("gfrom");
   /* 2026-09-27 role share cards (MagicShot.ai novel-scout steal): the family
      cast share mints one unfurl link per family member role
      (?o=role&role=<role-slug>). The role is allowlist-validated against
@@ -1481,9 +1488,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   var _gift = _qp.get("gift") === "1";
   if (_s && !_gift && !_oNoDuel) _qz.set("duel", slug);
   /* 2026-09-26 gift experiment: ?gfrom= carries the sender's first name
-     (sender-typed, length-capped). HTML-escaped here, JSON-encoded below so
-     it lands safely inside the injected script's string literal. */
-  var _gfromJs = JSON.stringify(esc((_qp.get("gfrom") || "").slice(0, 24)));
+     (sender-typed, length-capped). It was captured into _gfromJs above,
+     before _qp.delete("gfrom") scrubbed it from the top-CTA target
+     (SHARE-5); HTML-escaped and JSON-encoded there, so it lands safely
+     inside the injected script's string literal. */
   var quizTarget = "/?" + _qz.toString();
   var quizTargetAttr = quizTarget.replace(/&/g, "&amp;");
   /* Static guide body: the same HTML for every visitor (curl fetchers, AI
