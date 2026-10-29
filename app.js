@@ -10998,43 +10998,14 @@ function printPlan(idea, planEl){
   try { Analytics.track("plan_print", {idea_id: idea.id}); } catch(e){}
   window.print();
 }
-function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
-  /* opts (2026-10-01, Claude fix 1a): on the quiz results page the plan's
-     Next block absorbs the page-level "What's next" block --
-     {reminder: true} adds the Oct 27 reminder checkbox to the email capture,
-     and {moreShare: fn} appends the shared "More ways to share" disclosure
-     inside the plan's share card. Browse/detail mounts pass no opts. */
+/* 2026-10-29 (SHARE-1 fix): the plan "Next" block -- email capture,
+   calendar, print, and the ONE plan Share card -- extracted verbatim from
+   mountPlanFirstPanel so the cast plan path renders the SAME block from the
+   SAME builders (no second share implementation). planEl is the print
+   source (may be null). withAi=false skips the "Customize with AI" link for
+   callers that already carry their own AI plan box (the cast panel does). */
+function buildPlanNextBlock(idea, source, returnTo, opts, planEl, withAi){
   opts = opts || {};
-  planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
-  /* 2026-10-01 (STEP 1): the shared commit/plan/share component, reworked.
-     One full-width orange "Plan this costume" button (owned by the card;
-     it morphs in place to the confirmed state on tap). The plan expands
-     directly below it, exactly once. After the plan, ONE "Next" block,
-     always visible (no collapsed <details>): email capture shown open,
-     "Add to my calendar" as a ghost button, ONE share card with ONE Share
-     button, and "Customize with AI" as a text link. Deleted: the
-     "How to make it \u2192" button, the "Going as X? Share it." line, the
-     "Preview text" disclosure and the other Share buttons, "Check against
-     your closet" (the pantry tiles already do this), and the "Keep building
-     your costume" disclosure. One-orange-button rule: the committed-state
-     button is a ghost, the copy-plan button is secondary, and only the
-     email Send keeps the accent fill -- at most one filled orange CTA is
-     ever visible at one scroll position in this component. */
-  var source = resolvePlanSource(srcHint);
-  var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
-  if (_cast && typeof buildCastPanel === "function"){
-    var shareBox = document.createElement("div");
-    var aiPlanBox = document.createElement("div");
-    planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
-    return;
-  }
-  /* 1. The plan itself, exactly once. */
-  var _planEl = null;
-  if (typeof buildInlinePlan === "function"){
-    _planEl = buildInlinePlan(idea);
-    planBox.appendChild(_planEl);
-  }
-  /* 2. One "Next" block, always visible. */
   var next = document.createElement("div");
   next.className = "plan-next";
   /* E17 lesson: taps inside the pick card must not re-run doPick. */
@@ -11064,11 +11035,11 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
      materials + steps the user needs at the store or workbench had no
      paper path (email was the only way to keep the plan). Ghost button;
      printPlan uses the same print-root pattern as printBooCard. */
-  if (_planEl) {
+  if (planEl) {
     var pr = document.createElement("button");
     pr.type = "button"; pr.className = "ghost"; pr.textContent = "Print this plan";
     pr.addEventListener("click", function(e){ e.stopPropagation(); });
-    pr.onclick = function(){ printPlan(idea, _planEl); };
+    pr.onclick = function(){ printPlan(idea, planEl); };
     next.appendChild(pr);
   }
   /* (c) ONE share card with ONE Share button. 2026-10-01 (Claude fix 1a):
@@ -11083,7 +11054,7 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
   /* (d) "Customize with AI" as a text link (not orange): opens the existing
      Copy-costume-plan panel in place. The link hides after one tap: one
      panel per guide. */
-  if (typeof showPromptPreview === "function" && typeof buildIdeaPrompt === "function"){
+  if (withAi && typeof showPromptPreview === "function" && typeof buildIdeaPrompt === "function"){
     var aiLink = document.createElement("button");
     aiLink.type = "button"; aiLink.className = "textlink"; aiLink.textContent = "Customize with AI";
     aiLink.addEventListener("click", function(e){ e.stopPropagation(); });
@@ -11096,7 +11067,56 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
     };
     next.appendChild(aiLink);
   }
-  planBox.appendChild(next);
+  return next;
+}
+function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
+  /* opts (2026-10-01, Claude fix 1a): on the quiz results page the plan's
+     Next block absorbs the page-level "What's next" block --
+     {reminder: true} adds the Oct 27 reminder checkbox to the email capture,
+     and {moreShare: fn} appends the shared "More ways to share" disclosure
+     inside the plan's share card. Browse/detail mounts pass no opts. */
+  opts = opts || {};
+  planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
+  /* 2026-10-01 (STEP 1): the shared commit/plan/share component, reworked.
+     One full-width orange "Plan this costume" button (owned by the card;
+     it morphs in place to the confirmed state on tap). The plan expands
+     directly below it, exactly once. After the plan, ONE "Next" block,
+     always visible (no collapsed <details>): email capture shown open,
+     "Add to my calendar" as a ghost button, ONE share card with ONE Share
+     button, and "Customize with AI" as a text link. Deleted: the
+     "How to make it \u2192" button, the "Going as X? Share it." line, the
+     "Preview text" disclosure and the other Share buttons, "Check against
+     your closet" (the pantry tiles already do this), and the "Keep building
+     your costume" disclosure. One-orange-button rule: the committed-state
+     button is a ghost, the copy-plan button is secondary, and only the
+     email Send keeps the accent fill -- at most one filled orange CTA is
+     ever visible at one scroll position in this component. */
+  var source = resolvePlanSource(srcHint);
+  var _cast = (typeof CASTS !== "undefined") ? CASTS[idea.id] : null;
+  if (_cast && typeof buildCastPanel === "function"){
+    var shareBox = document.createElement("div");
+    var aiPlanBox = document.createElement("div");
+    planBox.appendChild(buildCastPanel(idea, _cast, shareBox, aiPlanBox));
+    /* 2026-10-29 (SHARE-1 fix): cast plans used to end at the cast panel --
+       no plan Share card, no plan email, no calendar, no print. Render the
+       same Next block the single-role plan renders, after the cast/roles
+       section, from the same builders (buildPlanNextBlock). The cast panel
+       keeps its own "Share my costume" row in view and its own AI plan box,
+       so this block skips the "Customize with AI" link (withAi=false); its
+       print source is the idea's inline plan, built for print only (the
+       cast panel already shows the per-person plans on screen). */
+    var _castPrintEl = (typeof buildInlinePlan === "function") ? buildInlinePlan(idea) : null;
+    planBox.appendChild(buildPlanNextBlock(idea, source, returnTo, opts, _castPrintEl, false));
+    return;
+  }
+  /* 1. The plan itself, exactly once. */
+  var _planEl = null;
+  if (typeof buildInlinePlan === "function"){
+    _planEl = buildInlinePlan(idea);
+    planBox.appendChild(_planEl);
+  }
+  /* 2. One "Next" block, always visible. */
+  planBox.appendChild(buildPlanNextBlock(idea, source, returnTo, opts, _planEl, true));
 }
 function showPromptPreview(container, text, eventName, noScroll, xprops, title){
   container.innerHTML = "";
@@ -13212,8 +13232,14 @@ function buildCastPanel(idea, cast, shareBox, aiPlanBox){
     line.appendChild(document.createTextNode(castLine(list) + "."));
     /* Live preview above the form mirrors the share text on every keystroke.
        buildCastShareText is pure (no analytics), so a constant preview sid is
-       safe here; the card is display-only and never copied or sent. */
-    livePrevText.textContent = buildCastShareText(idea, currentList(), "preview");
+       safe here. 2026-10-29 (SHARE-6): the card is display-only, but its text
+       can still be hand-copied -- and it used to carry a copyable /c/ link
+       with the placeholder code s=preview, which half-degrades on the
+       recipient side. Show the link shape with no code value instead, so
+       the preview is obviously a preview; the real Share action below is
+       unchanged and still mints a fresh 8-char code. */
+    livePrevText.textContent = buildCastShareText(idea, currentList(), "preview")
+      .replace(/https:\/\/pickmycostume\.com\/c\/\S+/g, "pickmycostume.com/c/" + idea.id + "?s=\u2026");
     /* The share text and the AI prompt ARE the cast list  --  rebuilt from the
        current inputs every time, so the preview is always what gets sent. */
     if (!shareHandle){
