@@ -5177,12 +5177,13 @@ function buildGlowupStep(idea){
    URL shape: ?s=<sid>&o=first&first=<name>. */
 var FIRST_HALLOWEEN_ENABLED = false;
 var FIRST_NAME = null; /* current first-mode baby name: entry input, or the ?first= payload */
-/* Pure: the sanitized baby name, or null. Letters, spaces, apostrophes,
-   hyphens; 1-24 chars, must start with a letter. Capitalization is kept
+/* Pure: the sanitized baby name, or null. Letters (incl. Latin accented
+   letters), spaces, apostrophes, hyphens; 1-24 chars, must start with a
+   letter. Capitalization is kept
    for the share text. Extracted pure so the verifier can assert it. */
 function firstNameClean(raw){
   var t = String(raw == null ? "" : raw).replace(/\s+/g, " ").trim();
-  if (!/^[A-Za-z][A-Za-z' -]{0,23}$/.test(t)) return null;
+  if (!/^[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF][A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF' -]{0,23}$/.test(t)) return null;
   return t;
 }
 /* Tiny HTML escaper for the name inside banner innerHTML. Local (not the
@@ -5463,13 +5464,15 @@ function buildRemixStep(idea){
 var NAMED_RESULT_ENABLED = false;
 var NAMED_PICK = null; /* {name: string|null, idea: idea} or null, parsed at load */
 /* Pure: the sanitized sharer name, or null. Same shape as firstNameClean:
-   letters, spaces, apostrophes, hyphens; 1-24 chars, starts with a letter.
+   letters (incl. Latin accented letters), spaces, apostrophes, hyphens;
+   1-24 chars, starts with a letter. Matches the /c/ recipient cleaner
+   (SHARE-4, 2026-10-29): O'Brien and José survive both ends intact.
    The name is optional: null is the honest nameless fallback (the banner
    and share text fall back to "my"/"your friend", never an invented name).
    Extracted pure so the verifier can assert it. */
 function namedNameClean(raw){
   var t = String(raw == null ? "" : raw).replace(/\s+/g, " ").trim();
-  if (!/^[A-Za-z][A-Za-z' -]{0,23}$/.test(t)) return null;
+  if (!/^[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF][A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF' -]{0,23}$/.test(t)) return null;
   return t;
 }
 /* Tiny HTML escaper for the name inside banner innerHTML. Local (not the
