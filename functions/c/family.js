@@ -99,7 +99,9 @@ export function onRequest(context) {
   return new Response(HTML, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
-      "Cache-Control": "public, max-age=3600"
+      "Cache-Control": "public, max-age=3600",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin"
     }
   });
 }
