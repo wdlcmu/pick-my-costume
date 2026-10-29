@@ -1192,7 +1192,7 @@ export function onRequest(context) {
   var slug = context.params.slug || "";
   if (ALIASES[slug]) slug = ALIASES[slug]; /* renamed slug -> canonical */
   var idea = IDEAS[slug];
-  if (!idea) return new Response(NOTFOUND_HTML, { status: 404, headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store" } });
+  if (!idea) return new Response(NOTFOUND_HTML, { status: 404, headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "strict-origin-when-cross-origin" } });
   var title = esc(idea.t), blurb = esc(idea.b);
   /* SEO title (Claude 4c, 2026-10-01): targets "how to make" searches --
      "DIY Pizza Slice Costume: 45-Min Cardboard Build (Step-by-Step)".
@@ -1995,7 +1995,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<style>" +
     "body{font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;margin:0;color:#fdf3e3;background:#160d28;line-height:1.55;}" +
     ".topbar{display:flex;flex-wrap:wrap;row-gap:8px;align-items:center;justify-content:space-between;gap:12px;background:#160d28;border-bottom:1px solid #4b3486;padding:10px 20px;position:sticky;top:0;z-index:5;}" +
-    ".topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;}" +
+    ".topbar a.brand{color:#fdf3e3;text-decoration:none;font-weight:800;font-size:16px;white-space:nowrap;flex:none;display:inline-flex;align-items:center;min-height:44px;}" +
     /* 2026-10-13 (Billy): /c/ pages had no good back click home. The
        wordmark was a link but easy to miss, so the bar now also carries
        the orange Pick my costume pill (same as the /map top bar). The
@@ -2005,8 +2005,8 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* 2026-10-06: the "Add to Claude" link was unstyled body text jammed
        against the wordmark. Real pill button, orange like the site CTA,
        readable at 390px. */
-    ".topbar a.homebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
-    ".topbar a.claudebtn{display:inline-block;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
+    ".topbar a.homebtn{display:inline-flex;align-items:center;box-sizing:border-box;min-height:44px;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
+    ".topbar a.claudebtn{display:inline-flex;align-items:center;box-sizing:border-box;min-height:44px;flex:none;background:#ff8c1a;color:#fff;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;}" +
     ".topbar a span{color:#ff8c1a;}" +
     ".guide{max-width:640px;margin:0 auto;padding:20px 20px 48px;}" +
     "h1{font-size:30px;margin:0 0 10px;letter-spacing:-0.01em;}" +
@@ -2047,7 +2047,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".pchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 10px;border:1px dashed #4b3486;border-radius:999px;color:#fdf3e3;}" +
     ".pchip .pmemo{font-size:16px;}" +
     ".closet-need{color:#cdbcf0;font-size:13px;}" +
-    ".closet-link{font-size:13px;color:#ff8c1a;text-decoration:underline;cursor:pointer;}" +
+    ".closet-link{font-size:13px;color:#ff8c1a;text-decoration:underline;cursor:pointer;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".qtip{font-size:15px;color:#cdbcf0;font-style:italic;margin:10px 0 0;}" +
     "details.faq{border:1px solid #4b3486;border-radius:10px;margin:8px 0;background:#211540;}" +
     "details.faq summary{font-weight:700;font-size:16px;padding:12px 14px;cursor:pointer;list-style:none;}" +
@@ -2070,17 +2070,17 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".printbtn{display:inline-block;background:transparent;border:2px solid #cdbcf0;color:#cdbcf0;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;margin-left:10px;}" +
     ".sharemsg{font-size:14px;color:#cdbcf0;margin-left:10px;}" +
     ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
-    ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
+    ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".cta{display:inline-block;background:#ff8c1a;color:#fff;font-weight:700;padding:14px 22px;border-radius:12px;text-decoration:none;font-size:17px;}" +
     ".guide img{max-width:100%%;height:auto;max-height:82vh;width:auto;display:block;border-radius:12px;margin:6px auto;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
     ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
-    ".quizline a{color:#ff8c1a;font-weight:700;}" +
+    ".quizline a{color:#ff8c1a;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".pinline{font-size:14px;color:#cdbcf0;margin:10px 0 0;}" +
     ".sharerline{font-size:16px;color:#cdbcf0;margin:2px 0 12px;}" +
     ".ctasub{display:block;font-size:14px;color:#cdbcf0;margin-top:10px;}" +
     ".quickcard .qmats{margin:12px 0;}" +
-    ".pinline a{color:#ff8c1a;font-weight:700;}" +
+    ".pinline a{color:#ff8c1a;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".splitpartner-line{font-size:15px;color:#cdbcf0;margin:6px 0 0;}" +
     ".safesrc{font-size:14px;color:#cdbcf0;}" +
     ".rbanner{background:#2a1c52;border:1px solid #4b3486;border-radius:14px;padding:16px 16px 18px;margin:0 0 18px;}" +
@@ -2114,7 +2114,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".madeit-line{font-size:16px;color:#cdbcf0;margin:0 0 14px;line-height:1.55;}" +
     ".rellist{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;}" +
     ".rellist li{margin:0;}" +
-    ".rellist a{display:inline-block;padding:8px 14px;border:1px solid #4b3486;border-radius:999px;color:#ff8c1a;text-decoration:none;font-size:15px;font-weight:600;}" +
+    ".rellist a{display:inline-flex;align-items:center;box-sizing:border-box;min-height:44px;padding:8px 14px;border:1px solid #4b3486;border-radius:999px;color:#ff8c1a;text-decoration:none;font-size:15px;font-weight:600;}" +
     /* 2026-10-01 (Billy): related thumbnail cards. Overrides the pill link
        above: thumb + title side by side. */
     ".relcard a{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;}" +
@@ -2128,7 +2128,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".relcard a{max-width:100%%;}" +
     ".relcard a span{min-width:0;}" +
     ".themelink{font-size:15px;margin:12px 0 0;}" +
-    ".themelink a{color:#ff8c1a;font-weight:700;text-decoration:none;}" +
+    ".themelink a{color:#ff8c1a;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     /* 2026-09-30 (Billy, approved; restored 2026-10-25): AI honesty label
        under the hero photo -- same type scale as the in-app ideaMedia
        tag. The rule was lost from the generator and the generated file
@@ -2139,9 +2139,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
        in-app ideaMedia caption. */
     ".pictured{font-size:11px;color:#9a8fb8;margin:-8px 0 12px;}" +
     ".crumb{font-size:13px;color:#cdbcf0;margin:0 0 8px;}" +
-    ".crumb a{color:#ff8c1a;text-decoration:none;}" +
+    ".crumb a{color:#ff8c1a;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
+    ".guide p[style] a{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" + /* ADV-3 (2026-10-29): the Item 132 early quiz line is the only inline-styled paragraph link on a guide; give it a full 44px tap target too. */
     ".foot{margin:40px 0 0;padding-top:18px;border-top:1px solid #4b3486;text-align:center;font-size:14px;color:#cdbcf0;}" +
-    ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;}" +
+    ".foot a{color:#ff8c1a;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     /* Print stylesheet (live 2026-10-06): ported from the hand-edited
        deployed file 2026-10-09 so regen never drops it again. The doubled
        percent below escapes the literal percent for the format below. */
@@ -2164,6 +2165,8 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" href=\\"" + targetAttr + "\\">" + _ctaLabel + "</a><span class=\\"ctasub\\">No signup \\u00b7 2 minutes.</span></p>" +
     "<p class=\\"sharewrap\\"><button class=\\"sharebtn\\" id=\\"guideshare\\" type=\\"button\\">Share</button><button class=\\"printbtn\\" id=\\"guideprint\\" type=\\"button\\" onclick=\\"window.print()\\">Print</button><span class=\\"sharemsg\\" id=\\"guidesharemsg\\" role=\\"status\\"></span></p>" +
     _introHtml +
+    /* Item 132 early quiz line (reconciled 2026-10-29, ADV-2/3/4 lane): live carried this line on exactly 9 guides while the tree carried it on none; the gated set below is the live-verified set (full 169-guide live scan 2026-10-29). Do not widen or drop without a live scan. */
+    ((["baby-pumpkin","boxer","cardboard-knight","classic-ghost","coffee-cup","ghost-hunters","haunted-animatronics","pickle","ramen-bowl"].indexOf(slug) >= 0) ? "<p style=\\"margin:14px 0 18px;font-size:17px\\">Can't pick? <a href=\\"/?\\" style=\\"font-weight:700\\">Take the 2-minute quiz →</a> Free. No signup.</p>" : "") +
     _sharerLine +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\\"storyline\\"><a href=\\"/storytime?costume=" + slug + "\\">See this costume in a story</a></p>" : "") +
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
@@ -2194,7 +2197,9 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   return new Response(html, {
     headers: {
       "Content-Type": "text/html;charset=utf-8",
-      "Cache-Control": "max-age=0, must-revalidate"
+      "Cache-Control": "max-age=0, must-revalidate",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin"
     }
   });
 }
