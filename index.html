@@ -118,7 +118,7 @@ body{
   margin:0 -16px;padding:7px 16px;font-size:13px;font-weight:600;
   color:#ffd166;background:rgba(255,140,26,.10);
   border-bottom:1px solid rgba(255,140,26,.25)}
-.ticker a{color:#ffd166;font-weight:700;white-space:nowrap}
+.ticker a{color:#ffd166;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
 @media (min-width:900px){.ticker{margin:0 -32px;padding:7px 32px}}
 /* 2026-10-17 (Billy): days-left banner. Slim strip in normal flow between
    the hero and the Make it tonight rail, so it can never overlap the hero.
@@ -601,7 +601,7 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .trendcard .tb{display:block;padding:10px 12px 12px}
 .trendcard .tt{font-weight:700;color:#fff;font-size:14px}
 .trendcard .tg{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
-.trendmore{display:inline-block;margin-top:12px;font-weight:700}
+.trendmore{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;font-weight:700}
 .featsec{margin-top:18px}
 .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
 .featgrid a{display:block;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
@@ -1147,7 +1147,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 /* Pinpoint capture: optional "who exactly?" input on the hero. Zero question
    tax: it never becomes a quiz question, it just boosts one idea to #1. */
 .pinpoint{margin:14px 0 4px;max-width:340px;margin-left:auto;margin-right:auto}
-.pinpoint-row{display:flex;gap:8px;align-items:stretch}.pinpoint-row input{flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;border:2px solid var(--line);border-radius:var(--radius);font-size:16px;font-family:inherit;background:var(--card);color:var(--ink)}.pinpoint-go{flex:0 0 auto;padding:0 16px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit}
+.pinpoint-row{display:flex;gap:8px;align-items:stretch}.pinpoint-row input{flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;border:2px solid var(--line);border-radius:var(--radius);font-size:16px;font-family:inherit;background:var(--card);color:var(--ink)}.pinpoint-go{flex:0 0 auto;min-height:44px;padding:0 16px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit}
 .pinpoint input:focus{outline:none;border-color:var(--accent)}
 .pinpoint-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px}
 .pinpoint-chips button{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
