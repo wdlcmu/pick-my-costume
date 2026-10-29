@@ -222,8 +222,8 @@ function shareDay(i){
     document.getElementById("grid-title").textContent = "The 12 days (locked until Oct 20)";
     for (var i = 0; i < 12; i++) lockedCard(i);
   } else if (st.mode === "live") {
-    var daysLeft = 12 - st.today;
-    dl.textContent = daysLeft === 1 ? "Last day: Halloween" : daysLeft + " days to Halloween";
+    var daysLeft = 11 - st.today;
+    dl.textContent = daysLeft <= 1 ? "Last day: Halloween" : daysLeft + " days to Halloween";
     openCard(st.today, true);
     document.getElementById("grid-title").textContent = "Every day so far";
     for (var j = 0; j <= st.today; j++) { if (j !== st.today) openCard(j, false); }
