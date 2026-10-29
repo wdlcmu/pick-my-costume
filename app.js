@@ -8841,6 +8841,17 @@ function printBooCard(idea){
   window.print();
 }
 
+/* 2026-10-29 (analytics-autoship, ADV-1 / Item 149): the Oct 27, 2026
+   reminder offer is live only until midnight PT at the end of Oct 27
+   (Oct 28 07:00 UTC). After that instant the offer must never render:
+   the date has passed and reminder addresses cannot be stored with the
+   current Resend key (audience count 0, probed Oct 28). The plan email
+   path does not depend on this gate. Re-opening a reminder for a future
+   season means moving this deadline AND fixing reminder storage first. */
+function pmcReminderLive(){
+  return Date.now() < Date.UTC(2026, 9, 28, 7, 0, 0);
+}
+
 function buildResultsNextBlock(results){
   var idea = results[0].idea;
   var wrap = document.createElement("div");
@@ -8856,7 +8867,12 @@ function buildResultsNextBlock(results){
      this block. The duplicate ghost Share button is retired (the primary
      Share CTA under the #1 pick is now the one share action on this
      screen); the "More ways to share" disclosure below is unchanged. */
-  sub.textContent = "Get the plan by email. Tick the box for one reminder before the big night.";
+  /* 2026-10-29 (analytics-autoship, ADV-1): the Oct 27 reminder date has
+     passed and reminder storage is not wired (Item 149), so the sub-line
+     no longer promises a reminder. The plan email itself is unchanged. */
+  sub.textContent = pmcReminderLive()
+    ? "Get the plan by email. Tick the box for one reminder before the big night."
+    : "Get the plan by email.";
   wrap.appendChild(sub);
   /* Email me this plan + the Oct 27 reminder checkbox (unticked by default,
      explicit and honest: one email, then you're off the list). */
@@ -10522,7 +10538,7 @@ function renderEmailCapture(box, idea, source, opts){
      block), and the copy now says so plainly. The results variant is
      explicit about the opt-in reminder: one email, then off the
      list. Nothing silent, nothing broader. */
-  var NOTE_IDLE = opts.reminder
+  var NOTE_IDLE = (opts.reminder && pmcReminderLive())
     ? "Your email gets the plan now. Tick the box for one reminder on Oct 27. Then you're off the list."
     : "We'll only use this to send the plan. Nothing else, ever.";
   note.textContent = NOTE_IDLE;
@@ -10532,7 +10548,7 @@ function renderEmailCapture(box, idea, source, opts){
      states exactly what the one email is, and the promise "one email,
      then you're off the list" is preserved. */
   var remindCheck = null, remindBox = null, alreadyReminded = false;
-  if (opts.reminder){
+  if (opts.reminder && pmcReminderLive()){
     try { alreadyReminded = localStorage.getItem("pmc_reminded") === "1"; } catch(e){}
     remindBox = document.createElement("label");
     remindBox.style.cssText = "display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;font-size:14px;cursor:pointer;line-height:1.45";
