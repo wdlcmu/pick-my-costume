@@ -1321,11 +1321,12 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   _qp.delete("partner");
   /* 2026-09-29 named-share variant (index.html NAMED_RESULT_ENABLED): the
      sharer name arrives as ?nm= (URL shape ?s=<sid>&o=named&named=<id>&nm=<name>).
-     Sanitized to letters/spaces/hyphens, 20 chars max; rendered in page HTML
+     Sanitized to letters (incl. Latin accented letters), spaces, hyphens,
+     and apostrophes, 20 chars max; rendered in page HTML
      and og meta only -- never into card pixels (the ROLE_CARDS invariant).
      Scrubbed from the top CTA target like probe=/for=/partner=: the name must
      not leak into homepage URLs or PostHog pageviews. */
-  var _nm = (_qp.get("nm") || "").replace(/[^A-Za-z \\-]/g, "").trim().slice(0, 20);
+  var _nm = (_qp.get("nm") || "").replace(/[^A-Za-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u00FF' \\-]/g, "").trim().slice(0, 20);
   var _sharer = _nm || "Your friend";
   var _sharerEsc = esc(_sharer);
   _qp.delete("nm");
