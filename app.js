@@ -9373,7 +9373,7 @@ function renderResults(results){
    Turtles...). A dead query fires a search_zero_results PostHog event so
    the gap list feeds itself. */
 
-var SEARCH_STOPWORDS = ["costume","costumes","halloween","idea","ideas","diy","outfit","outfits","2026","show","me","my","for","and","with","please","the","a","an"];
+var SEARCH_STOPWORDS = ["costume","costumes","halloween","idea","ideas","diy","outfit","outfits","2026","show","me","my","for","and","with","please","the","a","an","what","can","i","do","does","make","made","using","use","used","from","have","has","stuff","home","at","on","in","of","to","it","is","any","some","just","get","how","you","your"];
 
 function normalizeSearch(q){
   var s = (q || "").toLowerCase();
@@ -9661,7 +9661,19 @@ var SEARCH_ALIASES = {
   "alien": ["blue-alien-ohana"],
   "space": ["astronaut","space-crewmate"],
   "robot": ["robot-crew","robot-ranger"],
-  "sports": ["basketball-star","soccer-squad","tennis-duo","referee","boxer"]
+  "sports": ["basketball-star","soccer-squad","tennis-duo","referee","boxer"],
+  /* --- Owned-item builds (2026-10-30, vs-AI retrieval fix): the words are
+     what people own, the lists are the builds that really start from that
+     item. Hoodie order leads with the dedicated hoodie page's four builds,
+     then every other idea whose guide materials name a hoodie, by rank.
+     Black dress = the dedicated page's four builds, in page order.
+     Bedsheet = every build whose materials name a bedsheet or a flat sheet
+     worn as one, the Classic Ghost first. --- */
+  "hoodie": ["baby-dino","little-shark","blue-alien-ohana","web-slinger-crew","neon-demon-hunter","dino-rangers","raptor-ranger","crowd-camouflage","error-404","raptor-barista","blue-heeler-pup"],
+  "hoodies": ["baby-dino","little-shark","blue-alien-ohana","web-slinger-crew","neon-demon-hunter","dino-rangers","raptor-ranger","crowd-camouflage","error-404","raptor-barista","blue-heeler-pup"],
+  "blackdress": ["deadpan-diva","goth-braids","macabre-couple","good-witch-bad-witch"],
+  "bedsheet": ["classic-ghost","pixel-ghost","little-witch","vampire","the-olympians","sushi-roll","dino-herd"],
+  "bedsheets": ["classic-ghost","pixel-ghost","little-witch","vampire","the-olympians","sushi-roll","dino-herd"]
 };
 
 /* Popular right now: blended ranking (2026-09-25 audience correction).
@@ -9733,7 +9745,10 @@ var SEARCH_SUGGESTIONS = [
   {label:"Doll couple", q:"barbie ken", w:70},
   {label:"Ghost hunters", q:"ghostbusters", w:68},
   {label:"Space crewmate", q:"among us", w:66},
-  {label:"Decades", q:"decades", w:64}
+  {label:"Decades", q:"decades", w:64},
+  {label:"Hoodie builds", q:"hoodie", w:38},
+  {label:"Black dress", q:"black dress", w:36},
+  {label:"Bedsheet ghost", q:"bedsheet", w:34}
 ];
 
 function prettyAliasKey(k){
@@ -9756,7 +9771,9 @@ function prettyAliasKey(k){
     "breakfastbuffet":"Breakfast Buffet","losttourist":"Lost Tourist",
     "barbieken":"Doll couple","barbieandken":"Doll couple","scoobygang":"Mystery gang",
     "whereswaldo":"Crowd camouflage","fivenightsatfreddys":"Haunted pizzeria",
-    "amongus":"Space crewmate","brideoffrankenstein":"Monster bride"
+    "amongus":"Space crewmate","brideoffrankenstein":"Monster bride",
+    "hoodie":"Hoodie builds","hoodies":"Hoodie builds","blackdress":"Black dress",
+    "bedsheet":"Bedsheet builds","bedsheets":"Bedsheet builds"
   };
   if (labels[k]) return labels[k];
   return k.charAt(0).toUpperCase() + k.slice(1);
@@ -9815,6 +9832,31 @@ function aliasHit(key){
   return null;
 }
 
+/* Owned-material text for an idea (2026-10-30, vs-AI retrieval fix): the
+   pantry item ids (PANTRY_MATS, the structured port of pantry.html) plus the
+   guide's own material lines (INSTRUCTIONS). Both sources are typeof-guarded
+   because test harnesses extract this block without them. This is what lets
+   "cardboard and tape" and "white t-shirt" match the builds that really use
+   those things, instead of a leftover word emptying the search. */
+function ideaMatText(idea){
+  var parts = [];
+  if (typeof PANTRY_MATS !== "undefined" && PANTRY_MATS.mats && PANTRY_MATS.mats[idea.id]){
+    var flat = [];
+    PANTRY_MATS.mats[idea.id].forEach(function(item){
+      item.forEach(function(grp){ grp.forEach(function(x){ if (x) flat.push(x); }); });
+    });
+    parts.push(flat.join(" ").replace(/-/g, " "));
+  }
+  if (typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id] && INSTRUCTIONS[idea.id].m){
+    parts.push(INSTRUCTIONS[idea.id].m.join(" "));
+  }
+  return parts.join(" ").toLowerCase();
+}
+function matHas(idea, phrase){
+  var t = ideaMatText(idea);
+  return t.indexOf(phrase) >= 0 || t.indexOf(phrase.replace(/-/g, " ")) >= 0;
+}
+
 /* Structured attribute filters: parsed from the query, mapped to the bank's
    real tags (budget/audience/venue/fit/plan data), never to title text. */
 function planBuyText(idea){
@@ -9838,12 +9880,14 @@ var SEARCH_ATTRS = [
   {keys:["cute"], test:function(i){ return vibeOkFor("cute", i.tags); }},
   {keys:["easy","simple"], test:function(i){ return buildDifficulty(i) <= 2; }},
   {keys:["last minute","quick","fast","tonight"], test:function(i){ return !!i.tonight; }},
-  {keys:["cardboard"], test:function(i){ return planBuyText(i).indexOf("cardboard") >= 0; }},
-  {keys:["closet"], test:function(i){ return (i.budget || []).indexOf("diy") >= 0; }},
+  {keys:["cardboard"], test:function(i){ return matHas(i, "cardboard"); }},
+  {keys:["tape"], test:function(i){ return matHas(i, "tape"); }},
+  {keys:["white t shirt","white tshirt","white tee"], test:function(i){ return matHas(i, "white t-shirt"); }},
+  {keys:["already have","at home","closet"], test:function(i){ return (i.budget || []).indexOf("diy") >= 0; }},
   {keys:["face paint","makeup"], test:function(i){ var t = planBuyText(i); return t.indexOf("paint") >= 0 || t.indexOf("makeup") >= 0; }},
-  {keys:["no sew"], test:function(i){ return buildDifficulty(i) <= 2; }},
+  {keys:["no sew","no sewing"], test:function(i){ return buildDifficulty(i) <= 2; }},
   {keys:["bar","club"], test:function(i){ return (i.venue && i.venue.bar === 2) || ((i.tags || {}).occbar || 0) > 0; }},
-  {keys:["work party","office"], test:function(i){ return ((i.tags || {}).occparty || 0) > 0; }},
+  {keys:["office appropriate","work party","office","desk"], test:function(i){ return ((i.tags || {}).occparty || 0) > 0; }},
   {keys:["trick or treat"], test:function(i){ return ((i.tags || {}).occtreat || 0) > 0; }},
   {keys:["school parade","class party","parade"], test:function(i){ return ((i.tags || {}).occparade || 0) > 0; }},
   {keys:["dog","dogs","pet","pets","puppy"], test:function(i){ return ((i.tags || {}).animals || 0) > 0; }}

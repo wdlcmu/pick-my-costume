@@ -1268,19 +1268,52 @@ var SEARCH_KEYS={  // extra match words per region so "scary"/"dino" find their 
   'silly-street':'silly funny cute goofy cozy'
 };
 var AUD_LABELS={kid:'Kid',couple:'Couple',fam:'Family',grown:'Grown-up'};
+/* Owned-material words per idea (2026-10-30, vs-AI retrieval fix): generated
+   from the bank's own data (PANTRY_MATS item ids + guide material lines in
+   app.js) so "hoodie", "bedsheet" and "cardboard" find the builds that really
+   start from those items. Regenerate when the bank's materials change. */
+var SEARCH_MATS={"neon-demon-hunter":"hoodie","classic-ghost":"bedsheet sheet","superhero-family":"tape","blue-alien-ohana":"hoodie tape","emerald-witch":"cardboard","deadpan-diva":"black dress","safari-zoo-crew":"tape","fairy-tale-princesses":"cardboard tape","tin-hero":"cardboard tape","good-witch-bad-witch":"cardboard tape black dress","soccer-squad":"tape","block-game-crew":"cardboard","web-slinger-crew":"tape","mermaid-crew":"cardboard tape","little-pig-family":"tape","enchanted-castle-crew":"cardboard","bumble-bee":"tape","baby-dino":"hoodie tape","little-shark":"hoodie","ramen-bowl":"cardboard tape","tiny-snail":"cardboard tape","bamboo-demon":"cardboard tape","emoji-crew":"cardboard tape","robot-crew":"cardboard tape","cereal-crew":"cardboard tape","decades-crew":"tape","under-the-sea":"cardboard tape","dino-rangers":"hoodie tape","board-game-pieces":"cardboard tape","rain-cloud-rainbow":"tape","doctor-bride":"bedsheet sheet tape","breakfast-buffet":"cardboard","ghost-hunters":"cardboard tape","haunted-animatronics":"cardboard","headless-horsemen":"tape","haunted-portraits":"cardboard","garden-gnome":"cardboard tape","black-cat":"tape","block-monster":"cardboard tape","space-crewmate":"cardboard tape","sun-moon":"tape","moth-porch-light":"cardboard tape","raptor-ranger":"tape","cat-mouse":"tape","plug-socket":"cardboard tape","lost-tourist":"tape","tooth-fairy":"tape","web-hero-duo":"tape","plague-doctor":"cardboard","crowd-camouflage":"hoodie","error-404":"tape","the-olympians":"bedsheet sheet cardboard tape","safari-photographer":"cardboard tape","snow-sisters":"white t-shirt white tee tape","sushi-roll":"bedsheet sheet white t-shirt white tee","deviled-egg":"white t-shirt white tee tape","pizza-slice":"cardboard tape","popcorn-bucket":"cardboard tape","ice-cream-cone":"white t-shirt white tee tape","pbj":"tape","bacon-eggs":"white t-shirt white tee","referee":"tape","cheerleader":"tape","tennis-duo":"cardboard white t-shirt white tee","bowling-pins":"tape","cardboard-knight":"cardboard tape","ninja":"tape","caped-duo":"bedsheet sheet","astronaut":"tape","robot-ranger":"cardboard tape","pixel-ghost":"bedsheet sheet","spaghetti-meatball":"white t-shirt white tee","donut":"cardboard","coffee-cup":"bedsheet sheet cardboard","salt-pepper":"cardboard white t-shirt white tee tape","toy-box-crew":"cardboard white t-shirt white tee tape","demon-boy-band":"white t-shirt white tee","dragon-rider-duo":"cardboard tape","numbered-players":"white t-shirt white tee","kart-racers":"cardboard tape","raptor-barista":"hoodie","garden-fairy":"cardboard tape","butterfly":"cardboard tape","pop-star":"jeans","little-baker":"tape","little-artist":"cardboard","beekeeper-bee":"tape","tetris-duo":"cardboard tape","little-lifeguard":"tape","fossil-hunter":"cardboard","web-slinger-kid":"tape","milk-cookies":"white t-shirt white tee","sushi-soy":"cardboard white t-shirt white tee tape","burger-fries":"cardboard tape","donut-coffee":"cardboard white t-shirt white tee tape","kpop-demon-huntresses":"cardboard tape","goth-braids":"black dress","pirate-captain":"cardboard","cowboy-duo":"cardboard tape jeans","smores-duo":"white t-shirt white tee","scarecrow":"jeans","yellow-henchmen":"jeans","mystery-teens":"jeans","pumpkin-king-bride":"cardboard","macabre-couple":"black dress","party-pinata":"cardboard tape","wayfinder-princess":"cardboard","chill-painter":"cardboard jeans","amazon-warrior":"cardboard"};
+var SEARCH_STOP={costume:1,costumes:1,halloween:1,idea:1,ideas:1,diy:1,outfit:1,outfits:1,what:1,can:1,i:1,do:1,make:1,using:1,use:1,used:1,from:1,have:1,stuff:1,home:1,at:1,with:1,for:1,the:1,a:1,an:1,and:1,me:1,my:1,please:1,show:1,just:1,some:1,any:1,by:1,step:1,steps:1,accessories:1,accessory:1,how:1,appropriate:1};
+var SEARCH_SYN={bedsheet:['sheet'],sheets:['bedsheet','sheet'],sheet:['bedsheet'],hoodies:['hoodie'],dresses:['dress'],shirts:['shirt'],tshirt:['t-shirt']};
+function searchVariants(tok){
+  var out=[tok];
+  if(tok.length>3 && tok.slice(-1)==='s') out.push(tok.slice(0,-1));
+  (SEARCH_SYN[tok]||[]).forEach(function(s){ if(out.indexOf(s)<0) out.push(s); });
+  return out;
+}
 function searchCostumes(q){
-  q=q.toLowerCase();
+  q=q.toLowerCase().trim();
+  if(!q) return [];
+  /* Token path: every content word must hit the idea's index text (title,
+     blurb, why-line, vibes, region, audience, owned-material words). The old
+     search matched the whole typed phrase as one substring, so any ask
+     longer than a title ("costume with a hoodie", "tape and cardboard")
+     returned nothing at all. */
+  var toks=q.replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(function(t){ return t && !SEARCH_STOP[t]; });
   var out=[];
   for(var m=0;m<data.ideas.length;m++){ var it=data.ideas[m];
     var rg=data.regions[it.cluster];
-    var idx=(it.title+' '+it.blurb+' '+(rg?rg.name:'')+' '+
-             (rg?(SEARCH_KEYS[regionSlug(rg.name)]||''):'')+' '+(it.aud||[]).join(' ')).toLowerCase();
+    var idx=(it.title+' '+it.blurb+' '+(it.why||'')+' '+((it.vibes||[]).join(' '))+' '+(rg?rg.name:'')+' '+
+             (rg?(SEARCH_KEYS[regionSlug(rg.name)]||''):'')+' '+(it.aud||[]).join(' ')+' '+(SEARCH_MATS[it.id]||'')+' '+(it.tonight?'tonight last minute quick':'')+' '+(it.diff==='Easy'?'easy simple no sew no sewing':'')).toLowerCase();
     var ti=it.title.toLowerCase(), score=0;
     if(ti===q) score=100;
     else if(ti.indexOf(q)===0) score=80;
     else if(ti.indexOf(q)>=0) score=60;
     else if(idx.indexOf(q)>=0) score=40;
-    else continue;
+    if(!score && toks.length){
+      var hits=0, titleHits=0, all=true;
+      for(var ti2=0;ti2<toks.length;ti2++){
+        var vs=searchVariants(toks[ti2]), hit=false, thit=false;
+        for(var vi=0;vi<vs.length;vi++){
+          if(idx.indexOf(vs[vi])>=0) hit=true;
+          if(ti.indexOf(vs[vi])>=0) thit=true;
+        }
+        if(!hit){ all=false; break; }
+        hits++; if(thit) titleHits++;
+      }
+      if(all) score=30+titleHits*10+hits;
+    }
+    if(!score) continue;
     var inF=inFilter(it);
     out.push({it:it, score:score+(inF?10:0), out:!inF});
   }
