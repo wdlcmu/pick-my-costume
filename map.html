@@ -267,6 +267,7 @@
     padding:10px 14px; cursor:pointer; min-height:44px; border-bottom:1px solid rgba(255,255,255,.07); }
   .gs-item .gs-t { display:block; font-size:14px; font-weight:600; }
   .gs-item .gs-m { display:block; font-size:11px; opacity:.6; }
+  .gs-item .gs-u { display:block; font-size:11px; font-weight:700; color:#ffd166; }
   .gs-item.sel, .gs-item:hover { background:rgba(255,209,102,.15); }
   .gs-empty { padding:12px 14px; font-size:13px; opacity:.7; }
   /* ---- visible all-ideas index, grouped by region ---- */
@@ -1348,6 +1349,20 @@ function buildSearch(){
     if(!exploring) enterExplore(true);
     flyToVisible(it.x, it.y, fitScale()*3.4, 600, function(){ openCard(it); });
   }
+  /* Owned items a Galaxy query names (the retrieval fix's set): each label
+     is checked against SEARCH_MATS for the idea, whose values carry the
+     matching words ("bedsheet sheet", "white t-shirt white tee"). */
+  var GALAXY_OWNED=[["hoodie","hoodie"],["black dress","black dress"],["bedsheet","bedsheet"],["cardboard","cardboard"],["tape","tape"],["white t-shirt","white t-shirt"],["white tee","white t-shirt"]];
+  function galaxyUsesLine(q, it){
+    var mats=' '+(SEARCH_MATS[it.id]||'')+' ';
+    var used=[], seen={};
+    for(var i=0;i<GALAXY_OWNED.length;i++){
+      var phrase=GALAXY_OWNED[i][0], label=GALAXY_OWNED[i][1];
+      if(seen[label]) continue;
+      if(q.indexOf(phrase)>=0 && mats.indexOf(' '+label+' ')>=0){ seen[label]=1; used.push(label); }
+    }
+    return used.length ? 'Uses your '+used.join(' and ') : null;
+  }
   function renderDD(q){
     dd.textContent=''; items=[]; selIdx=-1;
     var res=searchCostumes(q);
@@ -1364,6 +1379,13 @@ function buildSearch(){
       var rg=data.regions[r2.it.cluster];
       meta.textContent=(rg?rg.name:'')+(r2.out?' \u00B7 '+(AUD_LABELS[(r2.it.aud||[])[0]]||''):'');
       b.appendChild(t); b.appendChild(meta);
+      /* 2026-10-30 "show the match": when the query names owned items, say
+         which ones this build uses, from SEARCH_MATS (the Galaxy's own
+         owned-material data, generated from the guides). The Galaxy embeds
+         no full material lists, so no still-need line is claimed here;
+         the homepage search cards carry the full line. */
+      var _gu=galaxyUsesLine(q, r2.it);
+      if(_gu){ var us=document.createElement('span'); us.className='gs-u'; us.textContent=_gu; b.appendChild(us); }
       b.addEventListener('click', function(){ goItem(r2.it); });
       b.addEventListener('mousemove', function(){
         for(var i=0;i<items.length;i++) items[i].el.classList.remove('sel');

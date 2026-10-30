@@ -9948,9 +9948,123 @@ function parseSearch(q){
     });
   }
   var hint = (aliasKey && aliasHow && aliasHow !== "exact") ? ("showing results for \"" + prettyAliasKey(aliasKey) + "\"") : "";
+  var owned = searchOwnedTerms(norm, key, attrs);
   return {aliasIds: aliasIds, aliasKey: aliasKey, aliasHow: aliasHow,
           filters: attrs.filters, textTokens: textTokens, hint: hint,
-          norm: norm, key: key};
+          norm: norm, key: key, owned: owned.terms, closet: owned.closet};
+}
+
+/* Owned items/materials a search query names (2026-10-30, vs-AI "show the
+   match" build; the SPEC registered in the post-retrieval re-test, product
+   5/10). This is the retrieval fix's own set, nothing new: the owned-item
+   aliases (hoodie / black dress / bedsheet), the material attribute keys
+   (cardboard / tape / white t-shirt), and the closet phrasing keys
+   ("already have" / "at home" / "closet"). Search result cards use it to
+   show WHICH of the named items each build uses and what is still needed,
+   computed from the same guide-materials data the filters already read
+   (PANTRY_MATS + INSTRUCTIONS via pantryMaterialTexts / matHas). */
+var SEARCH_OWNED_TERMS = [
+  {id: "hoodie", label: "hoodie", pantry: ["hoodie"], phrases: ["hoodie"]},
+  {id: "black-dress", label: "black dress", pantry: [], phrases: ["black dress", "black gown"]},
+  {id: "bedsheet", label: "bedsheet", pantry: ["bedsheet"], phrases: ["bedsheet", "flat sheet"]},
+  {id: "cardboard", label: "cardboard", pantry: ["cardboard"], phrases: ["cardboard", "cereal box"]},
+  {id: "tape", label: "tape", pantryPrefix: "tape", phrases: ["tape"]},
+  {id: "white-tshirt", label: "white t-shirt", pantry: ["white-tshirt"], phrases: ["white t-shirt", "white tshirt", "white tee"]}
+];
+function searchOwnedTerms(norm, key, attrs){
+  var terms = [], seen = {};
+  function add(t){ if (!seen[t.id]){ seen[t.id] = 1; terms.push(t); } }
+  var toks = norm.split(" ").map(function(t){ return singularize(t); });
+  SEARCH_OWNED_TERMS.forEach(function(t){
+    if (t.id === "hoodie" && toks.indexOf("hoodie") >= 0) add(t);
+    else if (t.id === "bedsheet" && toks.indexOf("bedsheet") >= 0) add(t);
+    else if (t.id === "black-dress" && key.indexOf("blackdress") >= 0) add(t);
+    else if (t.id === "cardboard" && attrs.matched.indexOf("cardboard") >= 0) add(t);
+    else if (t.id === "tape" && attrs.matched.indexOf("tape") >= 0) add(t);
+    else if (t.id === "white-tshirt" && attrs.matched.indexOf("white t shirt") >= 0) add(t);
+  });
+  var closet = attrs.matched.indexOf("already have") >= 0 ||
+               attrs.matched.indexOf("at home") >= 0 ||
+               attrs.matched.indexOf("closet") >= 0;
+  return {terms: terms, closet: closet};
+}
+/* Does one guide material (its PANTRY_MATS groups + its instruction text)
+   use this owned term? Same sources matHas reads, per material instead of
+   per idea. Black dress has no pantry id (its builds encode it as an
+   unmapped/buy item), so its phrase check on the guide text is the proof. */
+function matUsesTerm(mat, lowText, t){
+  var g, k, id;
+  if (mat){
+    for (g = 0; g < mat.length; g++){
+      for (k = 0; k < mat[g].length; k++){
+        id = mat[g][k];
+        if (!id) continue;
+        if (t.pantry && t.pantry.indexOf(id) >= 0) return true;
+        if (t.pantryPrefix && id.indexOf(t.pantryPrefix) === 0) return true;
+      }
+    }
+  }
+  for (var p = 0; p < t.phrases.length; p++){
+    if (lowText.indexOf(t.phrases[p]) >= 0) return true;
+  }
+  return false;
+}
+/* The match line for one search result card, or null when the query named
+   no owned items/materials (or this build uses none of them, for a
+   specific-term query). Plain shape, proven by the Oct 29 MCP owning
+   answer that won Q2: what of yours it uses, then what is still needed.
+   Still-need names are the guide's own materials (shortMaterialName),
+   capped at 3 plus a count, so the line stays one short line. For a
+   closet query the owned set is the site's own assumed staples
+   (PANTRY_MATS.staples, the same set the MCP owning answer assumed) and
+   "uses" names up to 3 of the build's staple materials. */
+function searchMatchLine(idea, spec){
+  if (!spec || typeof PANTRY_MATS === "undefined" || !PANTRY_MATS.mats) return null;
+  var list = PANTRY_MATS.mats[idea.id];
+  if (!list || !list.length) return null;
+  var texts = (typeof pantryMaterialTexts === "function") ? pantryMaterialTexts(idea.id) : [];
+  if (!texts.length) return null;
+  var uses = [], need = [], i, nm;
+  function pushNeed(name){
+    if (!name) return;
+    var low = name.toLowerCase();
+    for (var d = 0; d < need.length; d++) if (need[d].toLowerCase() === low) return;
+    need.push(name);
+  }
+  if (spec.owned && spec.owned.length){
+    var usedLabels = [];
+    for (i = 0; i < texts.length; i++){
+      var low = texts[i].toLowerCase(), hit = null;
+      for (var ti = 0; ti < spec.owned.length; ti++){
+        if (matUsesTerm(list[i], low, spec.owned[ti])){ hit = spec.owned[ti]; break; }
+      }
+      if (hit){ if (usedLabels.indexOf(hit.label) < 0) usedLabels.push(hit.label); }
+      else pushNeed(shortMaterialName(texts[i]));
+    }
+    if (!usedLabels.length) return null;
+    uses = usedLabels;
+  } else if (spec.closet){
+    var tk = new Set(PANTRY_MATS.staples || []);
+    for (i = 0; i < list.length; i++){
+      if (typeof pantryMatOk === "function" && pantryMatOk(list[i], tk, idea.id, i)){
+        nm = null;
+        for (var g2 = 0; g2 < list[i].length && !nm; g2++){
+          for (var k2 = 0; k2 < list[i][g2].length; k2++){
+            var id2 = list[i][g2][k2];
+            if (id2 && typeof PANTRY_LABELS !== "undefined" && PANTRY_LABELS[id2]){ nm = PANTRY_LABELS[id2].split(" (")[0].split(" / ")[0].toLowerCase(); break; }
+          }
+        }
+        if (!nm) nm = shortMaterialName(texts[i]);
+        if (nm && uses.indexOf(nm) < 0 && uses.length < 3) uses.push(nm);
+      } else pushNeed(shortMaterialName(texts[i]));
+    }
+    if (!uses.length && !need.length) return null;
+    if (!uses.length) return null;
+  } else return null;
+  var line = "Uses your " + uses.join(", ") + ".";
+  if (!need.length) return line + " Still need: nothing else.";
+  var shown = need.slice(0, 3), extra = need.length - shown.length;
+  return line + " Still need: " + shown.join(", ") + (extra > 0 ? " + " + extra + " more" : "") + ".";
 }
 
 /* Type-ahead suggestions: 2+ chars, up to 6, prefix match then popularity. */
@@ -10033,7 +10147,7 @@ function browseHits(idea){
    "New this week" badge on the browse shelf so returners see something
    changed. Retire the list when the next batch ships. */
 var NEW_THIS_WEEK = ["beekeeper-bee","tetris-duo","little-lifeguard","little-prince","fossil-hunter"];
-function browseCard(idea){
+function browseCard(idea, spec){
     var card = document.createElement("div");
     card.className = "bcard";
     var img = document.createElement("img");
@@ -10084,6 +10198,15 @@ function browseCard(idea){
     var _tse2=trendStatEl(idea);if(_tse2)card.appendChild(_tse2);
     card.appendChild(h); card.appendChild(p);
     if (bmeta) card.appendChild(bmeta);
+    /* 2026-10-30 "show the match": on an owning/material search, the card
+       itself says which of the named items this build uses and what is
+       still needed (searchMatchLine). No line on any other search. */
+    var _bml = spec ? searchMatchLine(idea, spec) : null;
+    if (_bml){
+      var bmatch = document.createElement("p"); bmatch.className = "bmatch";
+      bmatch.textContent = _bml;
+      card.appendChild(bmatch);
+    }
     card.appendChild(btnRow); card.appendChild(stShare); card.appendChild(st);
     /* E20 parity: tapping the card body (not the buttons) opens the full
        pick flow. Buttons keep their own handlers; the closest("button") /
@@ -10151,12 +10274,12 @@ function renderBrowse(){
      feel like they did something. */
   var near = near1.concat(near2);
   near = near.slice(0, exact.length < 6 ? Math.min(near.length, 6 - exact.length) : 0);
-  exact.forEach(function(idea){ grid.appendChild(browseCard(idea)); });
+  exact.forEach(function(idea){ grid.appendChild(browseCard(idea, _spec)); });
   if (near.length){
     var _bh = document.createElement("p"); _bh.className = "bclose";
     _bh.textContent = "Close matches";
     grid.appendChild(_bh);
-    near.forEach(function(idea){ grid.appendChild(browseCard(idea)); });
+    near.forEach(function(idea){ grid.appendChild(browseCard(idea, _spec)); });
   }
   if (!exact.length && !near.length){
     var _be = document.createElement("p"); _be.className = "bempty";
