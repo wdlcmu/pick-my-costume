@@ -10047,11 +10047,20 @@ function searchMatchLine(idea, spec){
     var tk = new Set(PANTRY_MATS.staples || []);
     for (i = 0; i < list.length; i++){
       if (typeof pantryMatOk === "function" && pantryMatOk(list[i], tk, idea.id, i)){
+        /* Name the staple that actually satisfies this material (an OR
+           group like [hoodie, black-clothes] is satisfied by the ticked
+           black clothes, so the line must not claim the hoodie). */
         nm = null;
         for (var g2 = 0; g2 < list[i].length && !nm; g2++){
           for (var k2 = 0; k2 < list[i][g2].length; k2++){
             var id2 = list[i][g2][k2];
-            if (id2 && typeof PANTRY_LABELS !== "undefined" && PANTRY_LABELS[id2]){ nm = PANTRY_LABELS[id2].split(" (")[0].split(" / ")[0].toLowerCase(); break; }
+            if (id2 && tk.has(id2) && typeof PANTRY_LABELS !== "undefined" && PANTRY_LABELS[id2]){ nm = PANTRY_LABELS[id2].split(" (")[0].split(" / ")[0].toLowerCase(); break; }
+          }
+        }
+        for (var g3 = 0; g3 < list[i].length && !nm; g3++){
+          for (var k3 = 0; k3 < list[i][g3].length; k3++){
+            var id3 = list[i][g3][k3];
+            if (id3 && typeof PANTRY_LABELS !== "undefined" && PANTRY_LABELS[id3]){ nm = PANTRY_LABELS[id3].split(" (")[0].split(" / ")[0].toLowerCase(); break; }
           }
         }
         if (!nm) nm = shortMaterialName(texts[i]);
