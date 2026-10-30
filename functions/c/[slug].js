@@ -604,6 +604,14 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      before _qp.delete("gfrom") scrubbed it from the top-CTA target
      (SHARE-5); HTML-escaped and JSON-encoded there, so it lands safely
      inside the injected script's string literal. */
+  /* 2026-10-30 analytics fix: a plain visit carries no share context, so
+     _qz is empty and every quiz-bound link landed on "/?" -- the hero,
+     with the quiz still one more tap away. In the Oct 24-30 PostHog
+     window every quiz start fired on / and guide-referred starts were
+     zero. Plain visits now get the homepage's own ?quiz=1 deep link
+     (app.js, 2026-10-05), so the tap opens the quiz on arrival. Share
+     arrivals (any _qz param present) keep the exact prior target. */
+  if (_qz.toString() === "") _qz.set("quiz", "1");
   var quizTarget = "/?" + _qz.toString();
   var quizTargetAttr = quizTarget.replace(/&/g, "&amp;");
   /* Static guide body: the same HTML for every visitor (curl fetchers, AI
@@ -1287,7 +1295,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\"sharewrap\"><button class=\"sharebtn\" id=\"guideshare\" type=\"button\">Share</button><button class=\"printbtn\" id=\"guideprint\" type=\"button\" onclick=\"window.print()\">Print</button><span class=\"sharemsg\" id=\"guidesharemsg\" role=\"status\"></span></p>" +
     _introHtml +
     /* Item 132 early quiz line (reconciled 2026-10-29, ADV-2/3/4 lane): live carried this line on exactly 9 guides while the tree carried it on none; the gated set below is the live-verified set (full 169-guide live scan 2026-10-29). Do not widen or drop without a live scan. */
-    ((["baby-pumpkin","boxer","cardboard-knight","classic-ghost","coffee-cup","ghost-hunters","haunted-animatronics","pickle","ramen-bowl"].indexOf(slug) >= 0) ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"/?\" style=\"font-weight:700\">Take the 2-minute quiz →</a> Free. No signup.</p>" : "") +
+    ((["baby-pumpkin","boxer","cardboard-knight","classic-ghost","coffee-cup","ghost-hunters","haunted-animatronics","pickle","ramen-bowl"].indexOf(slug) >= 0) ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"" + quizTargetAttr + "\" style=\"font-weight:700\">Take the 2-minute quiz →</a> Free. No signup.</p>" : "") +
     _sharerLine +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
