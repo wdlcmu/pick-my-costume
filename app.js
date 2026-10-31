@@ -8977,7 +8977,19 @@ function renderResults(results){
       };
       swrap.appendChild(sprompt);
     }
-    swrap.appendChild(sbtn); swrap.appendChild(sst);
+    /* 2026-10-31 (competitor-funnel-scan): one helper line under the
+       Share button naming the recipient + the reason, per the Oct 24
+       steal that was staged only because live != local then (live ==
+       local tonight, verified byte-for-byte). BuzzFeed's costume
+       quizzes put the recipient + compare motive inside the result
+       copy; ours asked with no motive at all, and completed shares
+       were 0 of 10 pick-savers in the 7 days to Oct 31. This is a
+       static line, NOT the retired clickable ghost prompt above the
+       button (SHARE_PROMPT_TEST stays false): one CTA, said once. */
+    var shp = document.createElement("p");
+    shp.style.cssText = "margin:6px 0 0;font-size:13px;text-align:center;color:var(--muted,#cdbcf0)";
+    shp.textContent = "Send it to your group chat. See what they get.";
+    swrap.appendChild(sbtn); swrap.appendChild(shp); swrap.appendChild(sst);
     box.appendChild(swrap);
   })();
 
