@@ -2977,8 +2977,15 @@ function renderPlanMatsGrouped(box, idea){
       if (b.key === "buy") buyLeft++;
       else if (b.key === "tool") toolLeft++;
     });
-    summary.textContent = buyLeft > 0 ?
-      ("You need " + buyLeft + " thing" + (buyLeft === 1 ? "" : "s")) :
+    /* 2026-10-31 (SPEC-PMC-PLANCOUNT-1): the headline counts EVERY unchecked
+       thing under it -- Buy items still to get PLUS Tools still to grab.
+       The old buy-only count read "You need 6 things" over a 7-item list
+       whenever a tool was not already owned (Plague Doctor's glue gun;
+       bank-wide: 84 of 169 ideas, incl. 3 that read "Nothing to buy" with
+       tools still to grab). Group sub-counts below stay split. */
+    var totalLeft = buyLeft + toolLeft;
+    summary.textContent = totalLeft > 0 ?
+      ("You need " + totalLeft + " thing" + (totalLeft === 1 ? "" : "s")) :
       "Nothing to buy";
     if (leftSpans.tool) leftSpans.tool.textContent = toolLeft > 0 ? (" \u00B7 " + toolLeft + " to grab") : "";
     if (leftSpans.buy) leftSpans.buy.textContent = buyLeft > 0 ? (" \u00B7 " + buyLeft + " to get") : "";
