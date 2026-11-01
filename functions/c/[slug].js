@@ -98,6 +98,11 @@ var PICTURED = {"blue-dog-family": "Pictured: the mama dog, papa dog, and two pu
 // from app.js GALAXY_REGION_BY_IDEA by gen_share_function.py.
 var REGION = {"neon-demon-hunter": "pop-culture-plaza", "classic-ghost": "fright-night", "blue-dog-family": "pop-culture-plaza", "superhero-family": "hero-headquarters", "blue-alien-ohana": "pop-culture-plaza", "emerald-witch": "pop-culture-plaza", "gloom-bloom": "fright-night", "deadpan-diva": "fright-night", "safari-zoo-crew": "animal-kingdom", "fairy-tale-princesses": "princess-castle", "tin-hero": "hero-headquarters", "good-witch-bad-witch": "princess-castle", "fuzzy-monster": "silly-street", "pocket-plush": "silly-street", "soccer-squad": "sports-arena", "glow-skeleton": "fright-night", "block-game-crew": "pop-culture-plaza", "web-slinger-crew": "hero-headquarters", "mermaid-crew": "princess-castle", "little-pig-family": "pop-culture-plaza", "enchanted-castle-crew": "princess-castle", "bumble-bee": "animal-kingdom", "baby-dino": "dinosaur-land", "little-lion": "animal-kingdom", "tiny-firefighter": "hero-headquarters", "little-shark": "animal-kingdom", "walking-taco": "food-court", "ramen-bowl": "food-court", "tiny-snail": "animal-kingdom", "little-witch": "princess-castle", "spider": "fright-night", "backyard-hero": "hero-headquarters", "pickle": "food-court", "vampire": "fright-night", "bamboo-demon": "pop-culture-plaza", "emoji-crew": "silly-street", "robot-crew": "silly-street", "cereal-crew": "food-court", "decades-crew": "silly-street", "under-the-sea": "animal-kingdom", "dino-rangers": "dinosaur-land", "board-game-pieces": "pop-culture-plaza", "rain-cloud-rainbow": "silly-street", "doctor-bride": "fright-night", "breakfast-buffet": "food-court", "ghost-hunters": "pop-culture-plaza", "haunted-animatronics": "fright-night", "mystery-crew": "pop-culture-plaza", "headless-horsemen": "fright-night", "haunted-portraits": "fright-night", "goggle-crew": "pop-culture-plaza", "garden-gnome": "princess-castle", "black-cat": "animal-kingdom", "block-monster": "pop-culture-plaza", "space-crewmate": "pop-culture-plaza", "sun-moon": "silly-street", "moth-porch-light": "silly-street", "raptor-ranger": "dinosaur-land", "cat-mouse": "animal-kingdom", "ketchup-mustard": "food-court", "plumber-duo": "pop-culture-plaza", "office-couple": "pop-culture-plaza", "burger-joint-couple": "food-court", "plug-socket": "silly-street", "lost-tourist": "silly-street", "tooth-fairy": "princess-castle", "web-hero-duo": "hero-headquarters", "plague-doctor": "fright-night", "crowd-camouflage": "silly-street", "error-404": "silly-street", "zombie-coworker": "fright-night", "the-olympians": "hero-headquarters", "safari-photographer": "animal-kingdom", "player-one-two": "pop-culture-plaza", "dinosaur-family": "dinosaur-land", "snow-sisters": "princess-castle", "sushi-roll": "food-court", "deviled-egg": "food-court", "pizza-slice": "food-court", "popcorn-bucket": "food-court", "ice-cream-cone": "food-court", "pbj": "food-court", "bacon-eggs": "food-court", "peas-pod": "food-court", "basketball-star": "sports-arena", "referee": "sports-arena", "boxer": "sports-arena", "cheerleader": "sports-arena", "tennis-duo": "sports-arena", "bowling-pins": "sports-arena", "cardboard-knight": "hero-headquarters", "ninja": "fright-night", "caped-duo": "hero-headquarters", "hero-squad": "hero-headquarters", "astronaut": "silly-street", "robot-ranger": "silly-street", "penguin-huddle": "animal-kingdom", "prince-princess": "princess-castle", "dino-herd": "dinosaur-land", "pixel-ghost": "fright-night", "spaghetti-meatball": "food-court", "cupcake": "food-court", "banana": "food-court", "hot-dog": "food-court", "donut": "food-court", "coffee-cup": "food-court", "salt-pepper": "food-court", "fruit-salad": "food-court", "wizard": "fright-night", "toy-box-crew": "pop-culture-plaza", "demon-boy-band": "pop-culture-plaza", "dragon-rider-duo": "pop-culture-plaza", "numbered-players": "pop-culture-plaza", "emotion-crew": "pop-culture-plaza", "kart-racers": "pop-culture-plaza", "tall-hat-crew": "pop-culture-plaza", "chipmunk-trio": "pop-culture-plaza", "galaxy-knights": "pop-culture-plaza", "plastic-dream-crew": "pop-culture-plaza", "extinct-party-animal": "dinosaur-land", "dino-tourist": "dinosaur-land", "raptor-barista": "dinosaur-land", "emotional-support-dinosaur": "dinosaur-land", "garden-fairy": "princess-castle", "ballerina": "princess-castle", "butterfly": "animal-kingdom", "pop-star": "silly-street", "ice-skater": "sports-arena", "ladybug": "animal-kingdom", "daisy": "silly-street", "little-baker": "food-court", "little-artist": "silly-street", "beekeeper-bee": "animal-kingdom", "tetris-duo": "pop-culture-plaza", "little-lifeguard": "hero-headquarters", "little-prince": "princess-castle", "fossil-hunter": "dinosaur-land", "web-slinger-kid": "hero-headquarters", "milk-cookies": "food-court", "chips-guac": "food-court", "sushi-soy": "food-court", "burger-fries": "food-court", "donut-coffee": "food-court", "wine-cheese": "food-court", "kpop-demon-huntresses": "pop-culture-plaza", "goth-braids": "fright-night", "juke-joint-vampires": "fright-night", "blue-heeler-pup": "animal-kingdom", "baby-pumpkin": "silly-street", "pirate-captain": "silly-street", "cowboy-duo": "silly-street", "smores-duo": "food-court", "scarecrow": "animal-kingdom", "yellow-henchmen": "pop-culture-plaza", "mystery-teens": "pop-culture-plaza", "pumpkin-king-bride": "pop-culture-plaza", "moonwalk-star": "silly-street", "witchy-sisters": "pop-culture-plaza", "macabre-couple": "fright-night", "party-pinata": "silly-street", "fuzzy-gremlin": "silly-street", "rescue-pups": "animal-kingdom", "wayfinder-princess": "princess-castle", "chill-painter": "silly-street", "goth-schoolgirl": "fright-night", "jester-villainess": "silly-street", "night-hero": "hero-headquarters", "amazon-warrior": "hero-headquarters", "toothy-plush": "silly-street"};
 
+// Hero photo pixel dimensions per idea (SPEC-PMC-DIM10-CLS-1): parsed
+// from each photo's WebP header by gen_share_function.py so the hero
+// <img> can reserve its aspect box before the photo loads.
+var HERODIMS = {"neon-demon-hunter": [1120, 2240], "classic-ghost": [800, 533], "blue-dog-family": [1920, 1280], "superhero-family": [1200, 800], "blue-alien-ohana": [1200, 800], "emerald-witch": [1200, 800], "gloom-bloom": [1200, 800], "deadpan-diva": [1200, 800], "safari-zoo-crew": [1920, 1280], "fairy-tale-princesses": [1200, 800], "tin-hero": [1200, 800], "good-witch-bad-witch": [1200, 800], "fuzzy-monster": [1280, 1920], "pocket-plush": [1200, 1800], "soccer-squad": [1200, 800], "glow-skeleton": [1200, 1600], "block-game-crew": [1200, 800], "web-slinger-crew": [1200, 800], "mermaid-crew": [1200, 800], "little-pig-family": [1200, 800], "enchanted-castle-crew": [1920, 1280], "bumble-bee": [1280, 1920], "baby-dino": [1200, 800], "little-lion": [1200, 800], "tiny-firefighter": [1200, 800], "little-shark": [1200, 800], "walking-taco": [1200, 1800], "ramen-bowl": [1200, 800], "tiny-snail": [1200, 800], "little-witch": [1200, 800], "spider": [1920, 1280], "backyard-hero": [1200, 800], "pickle": [1200, 1800], "vampire": [1200, 800], "bamboo-demon": [1200, 800], "emoji-crew": [1200, 800], "robot-crew": [1200, 800], "cereal-crew": [1200, 800], "decades-crew": [1200, 800], "under-the-sea": [1200, 800], "dino-rangers": [1200, 800], "board-game-pieces": [1200, 800], "rain-cloud-rainbow": [1200, 800], "doctor-bride": [1200, 800], "breakfast-buffet": [800, 533], "ghost-hunters": [1200, 800], "haunted-animatronics": [1200, 800], "mystery-crew": [1200, 800], "headless-horsemen": [1920, 1280], "haunted-portraits": [1920, 1280], "goggle-crew": [1200, 800], "garden-gnome": [1200, 800], "black-cat": [1200, 800], "block-monster": [1200, 800], "space-crewmate": [1200, 800], "sun-moon": [1200, 800], "moth-porch-light": [1200, 800], "raptor-ranger": [1200, 800], "cat-mouse": [1200, 800], "ketchup-mustard": [1200, 800], "plumber-duo": [1200, 800], "office-couple": [1200, 800], "burger-joint-couple": [1200, 800], "plug-socket": [1200, 800], "lost-tourist": [1200, 800], "tooth-fairy": [1200, 800], "web-hero-duo": [1200, 800], "plague-doctor": [1200, 1800], "crowd-camouflage": [1200, 800], "error-404": [1200, 1600], "zombie-coworker": [1200, 800], "the-olympians": [1920, 1280], "safari-photographer": [1200, 800], "player-one-two": [1200, 800], "dinosaur-family": [1200, 800], "snow-sisters": [1200, 800], "sushi-roll": [1200, 1800], "deviled-egg": [1120, 2240], "pizza-slice": [1200, 800], "popcorn-bucket": [1200, 800], "ice-cream-cone": [1200, 1800], "pbj": [1200, 800], "bacon-eggs": [1200, 1800], "peas-pod": [1200, 800], "basketball-star": [1200, 1600], "referee": [1200, 1800], "boxer": [1200, 800], "cheerleader": [1200, 1800], "tennis-duo": [1200, 800], "bowling-pins": [1920, 1280], "cardboard-knight": [1920, 1280], "ninja": [1200, 800], "caped-duo": [1200, 800], "hero-squad": [1200, 800], "astronaut": [1200, 800], "robot-ranger": [1200, 800], "penguin-huddle": [1200, 800], "prince-princess": [1200, 800], "dino-herd": [1200, 800], "pixel-ghost": [1200, 800], "spaghetti-meatball": [1200, 800], "cupcake": [1200, 2400], "banana": [1200, 800], "hot-dog": [1200, 800], "donut": [1200, 800], "coffee-cup": [800, 1067], "salt-pepper": [1200, 800], "fruit-salad": [1200, 800], "wizard": [1920, 1280], "toy-box-crew": [1200, 800], "demon-boy-band": [1920, 1280], "dragon-rider-duo": [1920, 1280], "numbered-players": [1920, 1280], "emotion-crew": [1200, 800], "kart-racers": [1920, 1280], "tall-hat-crew": [1920, 1280], "chipmunk-trio": [1200, 800], "galaxy-knights": [1920, 1280], "plastic-dream-crew": [1920, 1280], "extinct-party-animal": [1200, 1800], "dino-tourist": [1200, 1800], "raptor-barista": [1200, 1800], "emotional-support-dinosaur": [1200, 1800], "garden-fairy": [1200, 800], "ballerina": [1200, 800], "butterfly": [1200, 800], "pop-star": [1200, 800], "ice-skater": [1200, 800], "ladybug": [1200, 800], "daisy": [1200, 800], "little-baker": [1200, 800], "little-artist": [1200, 800], "beekeeper-bee": [1920, 1280], "tetris-duo": [1920, 1280], "little-lifeguard": [1920, 1280], "little-prince": [1920, 1280], "fossil-hunter": [1920, 1280], "web-slinger-kid": [1600, 1600], "milk-cookies": [1120, 2240], "chips-guac": [1120, 2240], "sushi-soy": [1120, 2240], "burger-fries": [1120, 2240], "donut-coffee": [1120, 2240], "wine-cheese": [1120, 2240], "kpop-demon-huntresses": [1120, 2240], "goth-braids": [1120, 2240], "juke-joint-vampires": [1120, 2240], "blue-heeler-pup": [1120, 2240], "baby-pumpkin": [1120, 2240], "pirate-captain": [1120, 2240], "cowboy-duo": [1120, 2240], "smores-duo": [1120, 2240], "scarecrow": [1120, 2240], "yellow-henchmen": [1120, 2240], "mystery-teens": [1120, 2240], "pumpkin-king-bride": [1120, 2240], "moonwalk-star": [1120, 2240], "witchy-sisters": [1120, 2240], "macabre-couple": [1120, 2240], "party-pinata": [1120, 2240], "fuzzy-gremlin": [1120, 2240], "rescue-pups": [1200, 800], "wayfinder-princess": [1120, 2240], "chill-painter": [1120, 2240], "goth-schoolgirl": [1200, 800], "jester-villainess": [1200, 800], "night-hero": [1200, 800], "amazon-warrior": [1200, 800], "toothy-plush": [1200, 800]};
+
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
 // each page's costume genuinely is a materials list plus steps); the
@@ -320,6 +325,22 @@ export function onRequest(context) {
      hero now shows the real photo at natural aspect (focal-fixed cards
      still protect the share unfurl). */
   var heroImg = "/photos/" + slug + ".webp";
+  /* SPEC-PMC-DIM10-CLS-1 (staged 2026-10-31): reserve the hero photo's
+     box in the initial HTML so the page does not shift when the photo
+     loads. The width/height attributes alone do NOT reserve anything
+     here: the .guide img rule sets width:auto, which overrides the
+     attribute and leaves the pre-load box at 0x0 (measured). The
+     operative part is the inline style: a definite width of
+     min(100 pct, 82vh * W/H) -- the same two clamps the loaded image's
+     used size already obeys (container width, and the .guide img
+     max-height:82vh acting through the aspect ratio) -- plus
+     aspect-ratio, so the pre-load box is pixel-identical to the
+     loaded box in every case, tall portraits included (verified
+     2026-10-31 on landscape, portrait, and max-height-clamped
+     guides at 390px and 1280px). No HERODIMS entry = the pre-fix
+     tag, unchanged. */
+  var _hd = HERODIMS[slug];
+  var _heroAttrs = _hd ? " width=\"" + _hd[0] + "\" height=\"" + _hd[1] + "\" style=\"aspect-ratio:" + _hd[0] + "/" + _hd[1] + ";width:min(100%," + (Math.round(82000 * _hd[0] / _hd[1]) / 1000) + "vh)\"" : "";
   /* schema.org HowTo JSON-LD: this page's costume genuinely is a materials
      list plus numbered steps, so this is honest structured data aimed at AI
      assistants parsing the page. (Google retired HowTo rich results in 2023;
@@ -604,14 +625,6 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      before _qp.delete("gfrom") scrubbed it from the top-CTA target
      (SHARE-5); HTML-escaped and JSON-encoded there, so it lands safely
      inside the injected script's string literal. */
-  /* 2026-10-30 analytics fix: a plain visit carries no share context, so
-     _qz is empty and every quiz-bound link landed on "/?" -- the hero,
-     with the quiz still one more tap away. In the Oct 24-30 PostHog
-     window every quiz start fired on / and guide-referred starts were
-     zero. Plain visits now get the homepage's own ?quiz=1 deep link
-     (app.js, 2026-10-05), so the tap opens the quiz on arrival. Share
-     arrivals (any _qz param present) keep the exact prior target. */
-  if (_qz.toString() === "") _qz.set("quiz", "1");
   var quizTarget = "/?" + _qz.toString();
   var quizTargetAttr = quizTarget.replace(/&/g, "&amp;");
   /* Static guide body: the same HTML for every visitor (curl fetchers, AI
@@ -781,6 +794,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      native share resolves or a copy succeeds. A dismissed sheet fires
      nothing, mirroring sendShare honesty semantics. One sid is minted
      per click so the event joins the link the recipient opens. */
+  /* 2026-10-31 (Lane 4): a successful guide clipboard share now also
+     fires share_text_copied with the app's property names. Before this
+     it fired only share_created, so guide copies were invisible in the
+     share_text_copied line (85 season events, every one from the app). */
   var _shareScript = "<script>" +
     "(function(){" +
     "var btn=document.getElementById(\"guideshare\"),msg=document.getElementById(\"guidesharemsg\");" +
@@ -791,9 +808,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" \u23f1\ufe0f Timed: about "+String(_hw.time).replace(/\s*\+.*$/,"")):"") + ";" +
     "var _sgBusy=false;" +
     "function _sgId(){var c=\"abcdefghijklmnopqrstuvwxyz0123456789\",s=\"\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
-    "function _sgTrack(sid,via){var _p={share_id:sid,idea_id:_sgSlug,share_origin:\"guide\",via:via};var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\"share_created\",_p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
+    "function _sgTrackEv(name,p){var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(name,p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
+    "function _sgTrack(sid,via){_sgTrackEv(\"share_created\",{share_id:sid,idea_id:_sgSlug,share_origin:\"guide\",via:via});}" +
     "function _sgText(sid,medium){return \"🎃 \" + _sgCap + _sgTime + \" What are you going as? Found mine with this 2-minute quiz: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + sid + \"&o=guide&utm_source=share&utm_medium=\" + medium + \"&utm_campaign=\" + _sgRegion;}" +
-    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok)_sgTrack(sid,via);if(msg)msg.textContent=ok?\"Link copied. Send it to your crew.\":\"Couldn't copy it. Long-press the link instead.\";}" +
+    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok){_sgTrack(sid,via);if(via===\"clipboard\")_sgTrackEv(\"share_text_copied\",{idea_id:_sgSlug,share_id:sid,share_origin:\"guide\",via:\"clipboard\"});}if(msg)msg.textContent=ok?\"Link copied. Send it to your crew.\":\"Couldn't copy it. Long-press the link instead.\";}" +
     "btn.addEventListener(\"click\",function(){" +
     "if(_sgBusy)return;_sgBusy=true;" +
     "var sid=_sgId();" +
@@ -823,6 +841,27 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _p={idea_id:" + JSON.stringify(slug) + ",recipient_channel:_ch(),via_share_id:sm[1]};" +
     "if(om)_p.share_origin=om[1];" +
     "var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\"recipient_landing_viewed\",_p);return;}}catch(e){}if(++_t<10)setTimeout(_try,500);})();" +
+    "})();" +
+    "</" + "script>";
+
+  /* Guide funnel measurement (2026-10-31, Lane 4 instrumentation truth):
+     app.js has long described an "existing guide_viewed ->
+     guide_cta_clicked funnel on /c/ pages", but no capture call existed in
+     production -- guide_viewed fired only on 2026-10-01 (10 events,
+     including genuine Pinterest arrivals) and never again: a lost edit,
+     the same failure mode as the print rule and the AI label before it.
+     This restores the funnel IN THE GENERATOR so regen cannot drop it:
+     guide_viewed once per load; guide_cta_clicked on the plan CTAs
+     (placement top/bottom by DOM order) and on the exit card's doors
+     (placement exitcard, cta plan/related/quiz). Internal marking mirrors
+     the share-prompt script so QA traffic stays excludable. */
+  var _guideTrackScript = "<script>" +
+    "(function(){" +
+    "function _gtInt(){try{var q=location.search||\"\";if(/[?&]internal=1(?:&|$)/.test(q))return true;if(/[?&](probe|sim)=/.test(q))return true;try{return localStorage.getItem(\"pmc_internal\")==\"1\";}catch(e){return false;}}catch(e){return false;}}" +
+    "var _gtSlug=" + JSON.stringify(slug) + ";" +
+    "function _gtCap(name,extra){var p={slug:_gtSlug,idea_id:_gtSlug};for(var k in extra)p[k]=extra[k];if(_gtInt())p.internal=true;var t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(name,p);return;}}catch(e){}if(++t<10)setTimeout(_try,500);})();}" +
+    "_gtCap(\"guide_viewed\",{});" +
+    "document.addEventListener(\"click\",function(e){var t=e.target&&e.target.closest?e.target.closest(\"a.plancta,[data-gx]\"):null;if(!t)return;var gx=t.getAttribute(\"data-gx\");if(gx){_gtCap(\"guide_cta_clicked\",{cta:gx,placement:\"exitcard\"});return;}var links=document.querySelectorAll(\"a.plancta\"),idx=-1;for(var i=0;i<links.length;i++){if(links[i]===t){idx=i;break;}}_gtCap(\"guide_cta_clicked\",{cta:\"plan\",placement:idx===0?\"top\":(idx===1?\"bottom\":\"other\")});});" +
     "})();" +
     "</" + "script>";
 
@@ -1078,6 +1117,30 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      request time so ?s= (when present) is carried into the deep link. */
   var _plannerCtaHtml =
     "<p class=\"ctawrap\"><a class=\"cta plancta\" href=\"" + _plannerAttr + "\">Start this costume in the planner</a></p>";
+  /* Guide exits (2026-10-31, Lane 4): search readers land on one guide,
+     read, and leave -- of guide entrants essentially none started the
+     quiz and only a handful saved the costume (Baby Pumpkin: 23
+     entrants, 3 saved; PostHog Oct 2026). On the ten most-read guides
+     (PostHog season pageviews, public, ex-Washington) the lone planner
+     CTA after the Steps becomes a compact exit card: the same planner
+     deep link first, then three costumes like this, then the quiz as a
+     quiet line. Every other guide renders _plannerCtaHtml exactly as
+     before. Do not widen GUIDE_EXIT_TOP10 without fresh PostHog
+     numbers. */
+  var GUIDE_EXIT_TOP10 = ["baby-pumpkin", "cardboard-knight", "pickle", "coffee-cup", "classic-ghost", "boxer", "haunted-animatronics", "ghost-hunters", "ramen-bowl", "plug-socket"];
+  var _exitCardHtml = _plannerCtaHtml;
+  if (GUIDE_EXIT_TOP10.indexOf(slug) >= 0) {
+    var _gxRel = (RELATED[slug] || []).slice(0, 3).map(function(rs){
+      return "<a data-gx=\"related\" href=\"/c/" + rs + "\">" + esc(IDEAS[rs].t) + "</a>";
+    }).join(" &middot; ");
+    _exitCardHtml =
+      "<div class=\"exitcard\">" +
+      "<p class=\"exithead\">What next?</p>" +
+      "<p class=\"ctawrap\"><a class=\"cta plancta\" data-gx=\"plan\" href=\"" + _plannerAttr + "\">Start this costume in the planner</a><span class=\"ctasub\">Save it, check what you already own, and get the steps by email.</span></p>" +
+      (_gxRel ? "<p class=\"exitrel\">More like this: " + _gxRel + "</p>" : "") +
+      "<p class=\"exitquiz\">Rather have one picked for you? <a data-gx=\"quiz\" href=\"" + quizTargetAttr + "\">Take the 2-minute quiz</a> - free, no signup.</p>" +
+      "</div>";
+  }
   /* 2026-10-03 Stream 17: tapGuard for the plan-flow CTAs (standing rule
      2026-09-27). Both the top CTA and the new bottom planner CTA open the
      app plan flow; a finger bounce must not double-fire the entry. */
@@ -1204,6 +1267,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".guide img{max-width:100%;height:auto;max-height:82vh;width:auto;display:block;border-radius:12px;margin:6px auto;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
     ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
+    ".exitcard{border:2px solid #4b3486;border-radius:14px;background:#211540;padding:16px;margin:20px 0;}" +
+    ".exitcard .ctawrap{margin:0;}" +
+    ".exithead{font-size:17px;font-weight:800;margin:0 0 10px;}" +
+    ".exitrel{font-size:15px;color:#cdbcf0;margin:12px 0 0;}" +
+    ".exitrel a{color:#ff8c1a;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
+    ".exitquiz{font-size:15px;color:#cdbcf0;margin:2px 0 0;}" +
+    ".exitquiz a{color:#ff8c1a;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".pinline{font-size:14px;color:#cdbcf0;margin:10px 0 0;}" +
     ".sharerline{font-size:16px;color:#cdbcf0;margin:2px 0 12px;}" +
@@ -1275,7 +1345,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* Print stylesheet (live 2026-10-06): ported from the hand-edited
        deployed file 2026-10-09 so regen never drops it again. The doubled
        percent below escapes the literal percent for the format below. */
-    "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
+    "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.exitcard,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
     "</style>" +
     "<script>(function(){var s=document.createElement(\"script\");s.async=true;s.src=\"https://us.i.posthog.com/static/array.js\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\",{api_host:\"https://us.i.posthog.com\",autocapture:false,capture_pageview:true,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\"click\",function(e){var t=e.target.closest&&e.target.closest(\"[data-claude]\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\"add_to_claude_clicked\",{source:\"guide_page\"});}catch(_){}}});})();</script>" +
     "</head><body><div class=\"topbar\"><a class=\"brand\" href=\"/\">🎃 Pick My <span>Costume</span></a><div class=\"topbtns\"><a class=\"homebtn\" href=\"/\">Pick my costume</a><a class=\"claudebtn\" href=\"https://pickmycostume.com/mcp\" data-claude=\"1\">Add to Claude</a></div></div><main class=\"guide\">" +
@@ -1283,7 +1353,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<nav class=\"crumb\" aria-label=\"Breadcrumb\"><a href=\"/\">Home</a> &rsaquo; <a href=\"/costumes\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
     /* 2026-10-13: first-screen order is title, photo, timed chips, plan CTA, then the intro paragraph. Photo-led arrivals (pins, trend cards, the hero tile) land on the costume itself, not on text above it. */
-    "<img src=\"" + heroImg + "\" srcset=\"/photos/" + slug + "-480.webp 480w, " + heroImg + " 1200w\" sizes=\"(max-width:760px) 100vw, 720px\" alt=\"" + imgAlt + "\" onerror=\"this.onerror=null;this.src='" + img + "'\">" +
+    "<img src=\"" + heroImg + "\"" + _heroAttrs + " srcset=\"/photos/" + slug + "-480.webp 480w, " + heroImg + " 1200w\" sizes=\"(max-width:760px) 100vw, 720px\" alt=\"" + imgAlt + "\" onerror=\"this.onerror=null;this.src='" + img + "'\">" +
     /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
     "<div class=\"aiphoto\">AI-generated concept photo</div>" +
     /* 2026-10-01 (Billy): pictured honesty caption under the hero photo --
@@ -1295,13 +1365,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\"sharewrap\"><button class=\"sharebtn\" id=\"guideshare\" type=\"button\">Share</button><button class=\"printbtn\" id=\"guideprint\" type=\"button\" onclick=\"window.print()\">Print</button><span class=\"sharemsg\" id=\"guidesharemsg\" role=\"status\"></span></p>" +
     _introHtml +
     /* Item 132 early quiz line (reconciled 2026-10-29, ADV-2/3/4 lane): live carried this line on exactly 9 guides while the tree carried it on none; the gated set below is the live-verified set (full 169-guide live scan 2026-10-29). Do not widen or drop without a live scan. */
-    ((["baby-pumpkin","boxer","cardboard-knight","classic-ghost","coffee-cup","ghost-hunters","haunted-animatronics","pickle","ramen-bowl"].indexOf(slug) >= 0) ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"" + quizTargetAttr + "\" style=\"font-weight:700\">Take the 2-minute quiz →</a> Free. No signup.</p>" : "") +
+    ((["baby-pumpkin","boxer","cardboard-knight","classic-ghost","coffee-cup","ghost-hunters","haunted-animatronics","pickle","ramen-bowl"].indexOf(slug) >= 0) ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"/?\" style=\"font-weight:700\">Take the 2-minute quiz →</a> Free. No signup.</p>" : "") +
     _sharerLine +
     ((["little-witch","classic-ghost","glow-skeleton","fuzzy-monster","neon-demon-hunter","baby-dino","bumble-bee","walking-taco","blue-alien-ohana","emerald-witch"].indexOf(slug) >= 0) ? "<p class=\"storyline\"><a href=\"/storytime?costume=" + slug + "\">See this costume in a story</a></p>" : "") +
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
     _splitHtml +
     "<h2>Steps</h2><ol class=\"steps\">" + _steps + "</ol>" +
-    _plannerCtaHtml +
+    _exitCardHtml +
     _faqs +
     _sharePromptHtml +
     _relHtml +
@@ -1317,6 +1387,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\"pinline\">Saving this idea? <a target=\"_blank\" rel=\"noopener\" href=\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\">Pin it on Pinterest</a></p>" +
     "<footer class=\"foot\"><a href=\"/\">Pick My Costume</a> - Built with Muse.</footer>" +
     _landingScript +
+    _guideTrackScript +
     _shareScript +
     _sharePromptScript +
     _bannerScript +
