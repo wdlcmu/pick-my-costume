@@ -679,6 +679,188 @@ function pinpointThemeIdeas(raw){
   return [];
 }
 
+/* ================= ASK SENTENCES (Addendum 914 fix, 2026-11-01) =====
+   The pinpoint matcher above hears NAMES. People also ask in sentences:
+   "a costume for my toddler", "no sew costume for my kid", "vampire for
+   my toddler". Those asks carry an audience and constraints, and the bank
+   HAS fits for them (57 kid, 38 couple, 126 tonight-true of 169) -- the
+   old panel answered "We don't have that one yet" anyway (false absence,
+   SPEC-1), and when a name token fired inside a sentence it served the
+   name and never read the audience (confident misfits, SPEC-2).
+   This layer reads the sentence around the name:
+   - pinpointAskSignals: audience + constraint vocabulary -> bank tests.
+   - pinpointAskResolve: wraps pinpointResolve. A name match that fits
+     the sentence is served as before (with a breadth count when the ask
+     was broad, SPEC-3). A name match that violates the sentence is a
+     "misfit": the panel names the misfit and offers the closest bank
+     fit instead. A no-name sentence with signals resolves against the
+     bank's own audience/constraint fields ("fits"). A sentence whose
+     signals match nothing in the bank is "nofits" -- the wording names
+     the matcher limit, never a bank absence. Only a signal-free ask can
+     still land on the honest nomatch ("Batman", "unicorn").
+   Pure functions over IDEAS; the node gate for this layer is
+   ask-sentence-fix-2026-11-01/ask-gate.cjs (probe-verbatim cases). */
+function pinpointAskSignals(raw){
+  var t = " " + (raw || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim() + " ";
+  function has(p){ return t.indexOf(" " + p + " ") !== -1; }
+  var sig = { aud: null, audWord: "", tests: [], parts: [] };
+  /* Audience. Order matters: an explicit couple ask beats the solo words
+     inside it ("couples costume for me and my wife"); an age or a toddler
+     word beats family/group; husband/wife as the single wearer is solo. */
+  var ageM = t.match(/ ([0-9]{1,2}) year old /);
+  var age = ageM ? parseInt(ageM[1], 10) : null;
+  if (has("couple") || has("couples") || has("two people") ||
+      / me and my (wife|husband|partner|boyfriend|girlfriend) /.test(t) ||
+      / (wife|husband|partner) and i /.test(t)){
+    sig.aud = "couple"; sig.audWord = "couple";
+  } else if (has("toddler") || has("toddlers") || has("baby") || has("babies") ||
+             has("infant") || has("preschooler") || (age !== null && age <= 4)){
+    sig.aud = "toddler"; sig.audWord = "toddler";
+  } else if (has("kid") || has("kids") || has("child") || has("children") ||
+             has("daughter") || has("son") || has("boy") || has("girl") ||
+             (age !== null && age <= 12)){
+    sig.aud = "kid"; sig.audWord = "kid";
+  } else if (has("family")){
+    sig.aud = "family"; sig.audWord = "family";
+  } else if (has("group") || has("coworkers") || has("colleagues") ||
+             has("friends") || has("team") || has("squad") ||
+             / (two|three|four|five|six|seven|eight|nine|ten) people /.test(t) ||
+             / [0-9]+ people /.test(t)){
+    sig.aud = "group"; sig.audWord = "group";
+  } else if (has("adult") || has("adults") || has("husband") || has("wife") ||
+             has("dad") || has("mom") ||
+             has("father") || has("mother") || has("myself") ||
+             /* "a man"/"a woman" only with the article: bare "man" is a
+                hero name ("Spider-Man" -> "spider man"), not an audience. */
+             / (a|an) (man|woman) /.test(t) ||
+             has("grown up") || has("grownup") || t.indexOf(" for me ") !== -1){
+    sig.aud = "solo"; sig.audWord = "grown-up";
+  }
+  if (sig.aud) sig.parts.push("for a " + (sig.aud === "solo" ? "grown-up" : sig.audWord));
+  /* Constraints. Negated scary is read first so "not scary" never trips
+     the scary filter. Tests use the bank's own fields, the same ones the
+     browse shelf's SEARCH_ATTRS read (idea.tonight, tags, budget,
+     buildDifficulty / vibeOkFor). */
+  var notScary = / not (too )?scary /.test(t) || / n t scary /.test(t) ||
+                 / no scary /.test(t) || / not spooky /.test(t) || / not (too )?spooky /.test(t);
+  if (has("tonight") || has("last minute") || has("today")){
+    sig.tests.push({ test: function(i){ return !!i.tonight; },
+      part: "you can make tonight", problem: "it is not a make-tonight build" });
+  }
+  if (has("no sew") || has("no sewing") || has("nosew")){
+    sig.tests.push({ test: function(i){ return (((i.tags || {}).simple || 0) >= 2) || buildDifficulty(i) <= 2; },
+      part: "no sewing", problem: "it is not one of our no-sew builds" });
+  }
+  if (notScary){
+    sig.tests.push({ test: function(i){ return !((i.tags || {}).scary > 0); },
+      part: "not scary", problem: "it is one of our scary ones" });
+  } else if (has("scary") || has("spooky")){
+    sig.tests.push({ test: function(i){ return vibeOkFor("scary", i.tags); },
+      part: "scary", problem: "it is not one of our scary ones" });
+  }
+  if (has("closet") || has("already have") || has("at home")){
+    sig.tests.push({ test: function(i){ return (i.budget || []).indexOf("diy") >= 0; },
+      part: "from stuff at home", problem: "it is not a from-the-closet build" });
+  }
+  if (has("cheap")){
+    sig.tests.push({ test: function(i){ var b = i.budget || []; return b.indexOf("low") >= 0 || b.indexOf("diy") >= 0; },
+      part: "cheap to make", problem: "it is not one of our cheap builds" });
+  }
+  if (has("easy") || has("simple")){
+    sig.tests.push({ test: function(i){ return buildDifficulty(i) <= 2; },
+      part: "easy to make", problem: "it is not one of our easy builds" });
+  }
+  sig.tests.forEach(function(x){ sig.parts.push(x.part); });
+  sig.desc = sig.parts.join(", ");
+  sig.hasAny = !!(sig.aud || sig.tests.length);
+  return sig;
+}
+/* Does this idea fit the audience the sentence named? Kid fit allows a
+   family/group costume with a real kid role (the Mermaid Crew case the
+   QA passed); toddler fit needs an under-3 tag or a 3-6 tag plus a kid
+   role, so a group crew with no kid tags at all (Web Hero Crew) fails. */
+function pinpointAskAudFit(aud, idea){
+  var a = idea.audience || [], tags = idea.tags || {};
+  var kidRole = a.indexOf("kid") !== -1 || !!((idea.roles || {}).kid && (idea.roles || {}).kid.length);
+  if (aud === "toddler") return (tags.kidunder3 || 0) > 0 || ((tags.kid36 || 0) > 0 && kidRole);
+  if (aud === "kid") return a.indexOf("kid") !== -1 || (kidRole && ((tags.kid36 || 0) > 0 || (tags.kid7plus || 0) > 0));
+  if (aud === "solo") return a.indexOf("solo") !== -1;
+  /* Couple/family/group stay strict audience membership -- the same
+     tests the browse shelf's SEARCH_ATTRS use -- so a breadth count in
+     the answer always equals the bank's own audience count (38 couple,
+     36 family, 45 group). Only kid/toddler widen, via real kid roles. */
+  if (aud === "couple") return a.indexOf("couple") !== -1;
+  if (aud === "family") return a.indexOf("family") !== -1;
+  if (aud === "group") return a.indexOf("group") !== -1;
+  return true;
+}
+function pinpointAskPool(sig){
+  return IDEAS.filter(function(idea){
+    if (sig.aud && !pinpointAskAudFit(sig.aud, idea)) return false;
+    for (var i = 0; i < sig.tests.length; i++) if (!sig.tests[i].test(idea)) return false;
+    return true;
+  });
+}
+function pinpointAskViolations(sig, idea){
+  var out = [];
+  if (sig.aud && !pinpointAskAudFit(sig.aud, idea)){
+    var names = {solo: "grown-ups", kid: "kids", family: "families", group: "groups", couple: "couples"};
+    var who = (idea.audience || []).map(function(x){ return names[x] || x; }).join(" and ");
+    out.push("it is a costume for " + who + ", not a " + sig.audWord + " fit");
+  }
+  sig.tests.forEach(function(x){ if (!x.test(idea)) out.push(x.problem); });
+  return out;
+}
+/* Closest bank fit for a misfit ask: the fitting idea the name matcher
+   scores highest; ties and zero scores fall back to bank rank order. */
+function pinpointAskBestAlt(raw, pool, excludeId){
+  if (!pool.length) return null;
+  var inPool = {};
+  pool.forEach(function(i){ inPool[i.id] = i; });
+  /* Score on the name words only: stopwords ("for", "my", "costume")
+     otherwise let a blurb's stray "for" pick the "closest" fit. */
+  var stop = {for: 1, the: 1, and: 1, my: 1, a: 1, an: 1, costume: 1, costumes: 1,
+              please: 1, want: 1, need: 1, get: 1, with: 1, that: 1, this: 1, me: 1};
+  var nameOnly = (raw || "").toLowerCase().split(/[^a-z0-9]+/).filter(function(w){ return w && !stop[w]; }).join(" ");
+  var scored = pinpointScore(nameOnly || raw);
+  for (var i = 0; i < scored.length; i++){
+    if (scored[i].score > 0 && inPool[scored[i].idea.id] && scored[i].idea.id !== excludeId) return scored[i].idea;
+  }
+  var sorted = pool.slice().sort(function(a, b){ return (a.rank || 999) - (b.rank || 999); });
+  for (var j = 0; j < sorted.length; j++) if (sorted[j].id !== excludeId) return sorted[j];
+  return sorted[0] || null;
+}
+function pinpointAskResolve(raw){
+  var sig = pinpointAskSignals(raw);
+  var res = pinpointResolve(raw);
+  if (res.kind === "match" || res.kind === "fuzzy"){
+    if (!sig.hasAny) return res;
+    var idea = matchIdeaById(res.idea);
+    if (!idea) return res;
+    var problems = pinpointAskViolations(sig, idea);
+    var pool = pinpointAskPool(sig);
+    if (!problems.length){
+      /* Fits: serve as before; a broad ask also gets its breadth (SPEC-3). */
+      if (pool.length > 1) return {kind: res.kind, label: res.label, idea: res.idea, breadth: pool.length, desc: sig.desc};
+      return res;
+    }
+    var alt = pinpointAskBestAlt(raw, pool, res.idea);
+    return {kind: "misfit", label: res.label, idea: res.idea,
+            alt: alt ? alt.id : null, problems: problems,
+            audWord: sig.audWord, desc: sig.desc, count: pool.length};
+  }
+  if (sig.hasAny){
+    var fits = pinpointAskPool(sig).slice().sort(function(a, b){ return (a.rank || 999) - (b.rank || 999); });
+    if (fits.length){
+      return {kind: "fits", idea: fits[0].id,
+              alts: fits.slice(1, 4).map(function(i){ return i.id; }),
+              count: fits.length, desc: sig.desc, label: sig.desc};
+    }
+    return {kind: "nofits", desc: sig.desc};
+  }
+  return res;
+}
+
 
 /* ================= CONFIG: IDEAS =================
    Standing rule (2026-09-25): a two-character costume is never
@@ -14505,7 +14687,48 @@ function pinpointTypedGo(){
   hidePinpointSuggest();
   var raw = $("pinpoint-input") ? $("pinpoint-input").value.trim() : "";
   if (!raw) return;
-  var res = pinpointResolve(raw);
+  var res = (typeof pinpointAskResolve === "function") ? pinpointAskResolve(raw) : pinpointResolve(raw);
+  if (res.kind === "fits"){
+    /* Addendum 914 SPEC-1: a sentence ask with real bank fits opens the
+       top fit, framed as one of N so the breadth is honest (SPEC-3). */
+    pinpointNote(""); pinpointClearNomatch();
+    try { Analytics.track("pinpoint_resolved", {kind: "typed-fits", query: (raw || "").slice(0, 30), idea: res.idea, label: ""}); } catch(_f){}
+    openIdeaDetail(res.idea, "One of " + res.count + " costumes in our bank that fit: " + res.desc, "s-hero");
+    return;
+  }
+  if (res.kind === "misfit"){
+    /* Addendum 914 SPEC-2: name the misfit, offer the closest real fit
+       and the asked-for costume as an explicit "anyway" choice. */
+    try { Analytics.track("pinpoint_misfit", {query: (raw || "").slice(0, 30), idea: res.idea, alt: res.alt || ""}); } catch(_m){}
+    var mIdea = matchIdeaById(res.idea);
+    pinpointNote("Careful: " + (mIdea ? mIdea.title : res.label) + " is not a fit here: " + res.problems.join("; ") + ".");
+    var mbox = pinpointNomatchBox();
+    mbox.innerHTML = ""; mbox.style.display = "";
+    if (res.alt){
+      var aIdea = matchIdeaById(res.alt);
+      if (aIdea){
+        var ab = document.createElement("button");
+        ab.type = "button"; ab.textContent = aIdea.title + " (fits)";
+        ab.onclick = function(){ pinpointOpenIdea({label: aIdea.title, idea: aIdea.id, raw: raw}, "typed-misfit-alt"); };
+        mbox.appendChild(ab);
+      }
+    }
+    if (mIdea){
+      var ob = document.createElement("button");
+      ob.type = "button"; ob.textContent = mIdea.title + " anyway";
+      ob.onclick = function(){ pinpointOpenIdea({label: res.label, idea: res.idea, raw: raw}, "typed-misfit-anyway"); };
+      mbox.appendChild(ob);
+    }
+    return;
+  }
+  if (res.kind === "nofits"){
+    /* Signals heard, bank has no fit for that combo: say exactly that --
+       a matcher/bank-fit limit for the combo, never a false absence. */
+    try { Analytics.track("pinpoint_nomatch", {query: (raw || "").slice(0, 30)}); } catch(_n){}
+    pinpointNote("We heard you, but nothing in our bank fits all of that (" + res.desc + "). Try dropping one part, or take the 2-minute quiz.");
+    pinpointClearNomatch();
+    return;
+  }
   if (res.kind === "nomatch"){
     /* 2026-09-30 (P0 fix batch): log unmatched searches anonymously
        (term only, 30 chars max) so the weekly top-misses list feeds itself. */
@@ -14544,6 +14767,13 @@ function pinpointTypedGo(){
       };
       box.appendChild(sb);
     }
+    return;
+  }
+  if (res.breadth){
+    /* Addendum 914 SPEC-3: a fitting but broad ask says it is one of N. */
+    pinpointNote(""); pinpointClearNomatch();
+    try { Analytics.track("pinpoint_resolved", {kind: res.kind === "fuzzy" ? "typed-fuzzy" : "typed", query: (raw || "").slice(0, 30), idea: res.idea, label: (res.label || "").slice(0, 30)}); } catch(_b){}
+    openIdeaDetail(res.idea, "You asked for " + res.label + ": our DIY take. One of " + res.breadth + " costumes in our bank that fit: " + res.desc, "s-hero");
     return;
   }
   pinpointOpenIdea({label: res.label, idea: res.idea, raw: raw}, res.kind === "fuzzy" ? "typed-fuzzy" : "typed");

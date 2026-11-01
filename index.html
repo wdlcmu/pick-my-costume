@@ -1883,7 +1883,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <div class="pinpoint" id="pinpoint" style="margin-top:16px">
         <p class="fine" style="margin:0 0 6px">Know what you want?</p>
         <p class="fine" style="margin:0 0 6px">Search all costumes directly.</p>
-        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
+        <div class="pinpoint-row"><input id="pinpoint-input" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="80" aria-label="Who exactly do you want to be?"><button class="pinpoint-go" id="pinpoint-go" type="button" aria-label="Find this costume">&rarr;</button></div>
         <p class="pinpoint-note" id="pinpoint-note"></p>
       </div>
       <!-- 2026-10-03 (Billy): homepage simplification. Three featured guides
@@ -2436,7 +2436,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 <div class="askp-overlay" id="askp-panel" hidden>
   <div class="askp-sheet" role="dialog" aria-modal="true" aria-labelledby="askp-title">
     <div class="askp-head"><h2 id="askp-title">Who exactly do you want to be?</h2><button type="button" class="askp-close" id="askp-close" aria-label="Close the ask panel">&times;</button></div>
-    <p class="askp-sub">Type a character or costume name. The match runs against our own costume bank, right on this page, the same match the search box up top makes.</p>
+    <p class="askp-sub">Type a costume name, or ask in a sentence: "no sew for my toddler". The match runs against our own costume bank, right on this page, the same match the search box up top makes.</p>
     <div class="askp-chips" id="askp-chips">
       <button type="button">vampire</button>
       <button type="button">ghost</button>
@@ -2444,7 +2444,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <button type="button">mermaid</button>
     </div>
     <div class="askp-row">
-      <input id="askp-q" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?">
+      <input id="askp-q" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="80" aria-label="Who exactly do you want to be?">
       <button type="button" class="askp-go" id="askp-go">Ask</button>
     </div>
     <div id="askp-answer" aria-live="polite"></div>
@@ -2473,16 +2473,68 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       out.appendChild(el("p","askp-note","The costume bank is still loading. Give it a second and try again."));
       return;
     }
-    var res=pinpointResolve(raw);
+    var res=(typeof pinpointAskResolve==="function")?pinpointAskResolve(raw):pinpointResolve(raw);
     if(res.kind==="match"||res.kind==="fuzzy"){
       var idea=matchIdeaById(res.idea);
       out.appendChild(el("p","askp-note","You asked for "+res.label+": our DIY take."));
+      if(res.breadth) out.appendChild(el("p","askp-note","It is one of "+res.breadth+" costumes in our bank that fit: "+res.desc+"."));
       if(idea&&typeof warmPairCard==="function") out.appendChild(warmPairCard(idea,"You asked for "+res.label+": this is our DIY take on it."));
       var acts=el("div","askp-actions");
       var plan=el("button","askp-plan","Open the full plan");
       plan.type="button";
       plan.addEventListener("click",function(){ openPlan({label:res.label, idea:res.idea, raw:raw}, res.kind==="fuzzy"?"typed-fuzzy":"typed"); });
       acts.appendChild(plan); out.appendChild(acts);
+      return;
+    }
+    if(res.kind==="fits"){
+      /* Addendum 914 SPEC-1: the sentence had real bank fits all along. */
+      try{ Analytics.track("pinpoint_resolved",{kind:"typed-fits",query:(raw||"").slice(0,30),idea:res.idea,label:""}); }catch(e){}
+      out.appendChild(el("p","askp-note","We have "+res.count+" costumes in our bank that fit: "+res.desc+". Here is one:"));
+      var fidea=matchIdeaById(res.idea);
+      if(fidea&&typeof warmPairCard==="function") out.appendChild(warmPairCard(fidea,"One of "+res.count+" fits for: "+res.desc+"."));
+      var facts=el("div","askp-actions");
+      var fplan=el("button","askp-plan","Open the full plan"); fplan.type="button";
+      fplan.addEventListener("click",function(){ openPlan({label:raw, idea:res.idea, raw:raw},"typed-fits"); });
+      facts.appendChild(fplan);
+      (res.alts||[]).forEach(function(id){
+        var ai=matchIdeaById(id); if(!ai) return;
+        var b=el("button","askp-alt",ai.title); b.type="button";
+        b.addEventListener("click",function(){ openPlan({label:ai.title, idea:ai.id, raw:raw},"typed-fits-alt"); });
+        facts.appendChild(b);
+      });
+      out.appendChild(facts);
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      return;
+    }
+    if(res.kind==="misfit"){
+      /* Addendum 914 SPEC-2: name the misfit, serve the closest real fit. */
+      try{ Analytics.track("pinpoint_misfit",{query:(raw||"").slice(0,30),idea:res.idea,alt:res.alt||""}); }catch(e){}
+      var midea=matchIdeaById(res.idea);
+      out.appendChild(el("p","askp-note","Careful: "+(midea?midea.title:res.label)+" is not a fit here: "+res.problems.join("; ")+"."));
+      var aidea=res.alt?matchIdeaById(res.alt):null;
+      if(aidea&&typeof warmPairCard==="function"){
+        out.appendChild(el("p","askp-note","The closest fit in our bank:"));
+        out.appendChild(warmPairCard(aidea,"A "+res.audWord+" fit from our bank, instead of "+(midea?midea.title:res.label)+"."));
+      }
+      var macts=el("div","askp-actions");
+      if(aidea){
+        var aplan=el("button","askp-plan","Open the full plan"); aplan.type="button";
+        aplan.addEventListener("click",function(){ openPlan({label:aidea.title, idea:aidea.id, raw:raw},"typed-misfit-alt"); });
+        macts.appendChild(aplan);
+      }
+      if(midea){
+        var ob=el("button","askp-alt","See "+midea.title+" anyway"); ob.type="button";
+        ob.addEventListener("click",function(){ openPlan({label:res.label, idea:res.idea, raw:raw},"typed-misfit-anyway"); });
+        macts.appendChild(ob);
+      }
+      out.appendChild(macts);
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      return;
+    }
+    if(res.kind==="nofits"){
+      try{ Analytics.track("pinpoint_nomatch",{query:(raw||"").slice(0,30)}); }catch(e){}
+      out.appendChild(el("p","askp-note","We heard you, but nothing in our bank fits all of that ("+res.desc+"). Try dropping one part, or take the 2-minute quiz below."));
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
       return;
     }
     /* nomatch: the hero box's own honest path, word for word */
