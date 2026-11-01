@@ -34,23 +34,63 @@
 /* 2026-10-04: Halloween countdown ticker (novel-finds 2026-10-04). Pure date
    math, no server call. Shows days until Oct 31; since the 2026-11-01
    countdown fleet pass it rolls to next year's Halloween once this year's
-   has passed, so the bar is never dark for a full year. */
+   has passed, so the bar is never dark for a full year. Ticking upgrade
+   (same pass): the bar is a live clock, ticking every second (days,
+   hours, minutes, seconds) to the end of Halloween; Halloween itself
+   keeps the classic line. Reduced motion: one static day count. */
 (function(){
+  function cdUnit(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+  function cdTick(ms, tail) {
+    var s = Math.floor(ms / 1000);
+    var d = Math.floor(s / 86400); s -= d * 86400;
+    var h = Math.floor(s / 3600); s -= h * 3600;
+    var m = Math.floor(s / 60); var sec = s - m * 60;
+    var seg = [];
+    if (d > 0) seg.push(cdUnit(d, "day"));
+    if (d > 0 || h > 0) seg.push(cdUnit(h, "hour"));
+    seg.push(cdUnit(m, "minute"));
+    seg.push(cdUnit(sec, "second"));
+    return seg.join(", ") + " until " + tail;
+  }
+  function dayMsg(now) {
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var hw = new Date(now.getFullYear(), 9, 31);
+    if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
+    var days = Math.round((hw.getTime() - today.getTime()) / 864e5);
+    var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    return days > 1 ? days + " days until Halloween, " + dateText + "."
+      : days === 1 ? "Tomorrow is Halloween, " + dateText + "."
+      : "Happy Halloween! Tonight is the night";
+  }
+  var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var lastLabel = "";
+  var started = false;
   function renderTicker(){
     var bar = document.getElementById("ticker");
     var txt = document.getElementById("ticker-text");
     if (!bar || !txt) return;
     var now = new Date();
+    var label = dayMsg(now);
+    if (RM) {
+      txt.textContent = label;
+      bar.hidden = false;
+      return;
+    }
+    if (label !== lastLabel) { lastLabel = label; bar.setAttribute("aria-label", label); txt.setAttribute("aria-hidden", "true"); }
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var hw = new Date(now.getFullYear(), 9, 31);
-    if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31); // past Halloween: roll to next year
-    var days = Math.round((hw.getTime() - today.getTime()) / 864e5);
-    var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-    var msg = days > 1 ? days + " days until Halloween, " + dateText + "."
-      : days === 1 ? "Tomorrow is Halloween, " + dateText + "."
-      : "Happy Halloween! Tonight is the night";
+    if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
+    var msg;
+    if (today.getTime() === hw.getTime()) {
+      msg = "Happy Halloween! Tonight is the night";
+    } else {
+      var end = new Date(hw.getFullYear(), 10, 1);
+      var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+      msg = cdTick(end - now, "Halloween, " + dateText + ".");
+    }
     txt.textContent = msg;
     bar.hidden = false;
+    if (!started) { started = true; setInterval(renderTicker, 1000); }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderTicker);
   else renderTicker();
