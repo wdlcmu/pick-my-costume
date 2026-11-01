@@ -2,7 +2,7 @@
 
 > Complete Markdown text of pickmycostume.com's 169 Halloween costume build guides,
 > generated from the site's idea bank on the date below. Free, no signup, no ads.
-> Generated: 2026-10-26. Regenerate with gen_llms_full.py when the bank changes.
+> Generated: 2026-11-01. Regenerate with gen_llms_full.py when the bank changes.
 
 ## Site summary
 
@@ -138,12 +138,12 @@ Materials:
 - Scissors, 1 pair
 
 Steps:
-1. Lightly stuff the onesie arms and legs.
+1. Lightly stuff the arms and legs, between layers. Never put stuffing against the skin.
 2. Cut leaf shapes from the green felt.
 3. Pin the leaves around the collar.
 4. Roll the brown felt into a stem.
 5. Pin the stem to the top of the hood or a soft hat.
-6. Safety: Keep all pins on the outside of the onesie where you can see them, and never pin near the baby's skin. Skip small parts a baby could pull off.
+6. Safety: Keep all pins on the outside of the onesie where you can see them, and never pin near the baby's skin. Skip small parts a baby could pull off. Check every pin stays closed before and during wear. Feel the baby's neck often. Take the stuffing out if they feel hot.
 7. Optional pro finish: photograph the pumpkin in a laundry basket lined with a blanket.
 
 Q: How do you keep a baby warm in just a onesie?
@@ -733,7 +733,7 @@ Steps:
 1. Pull on the athletic shorts, sneakers, and bathrobe.
 2. Hood up.
 3. Safety: Keep the face paint clear of the eyes.
-4. Dab purple and yellow face paint on one cheekbone and around one eye.
+4. Dab purple and yellow face paint on one cheekbone, below one eye, never on the eyelid.
 5. Use one bruise only.
 6. Five bruises reads as accident.
 7. Keep all paint clear of the eyes.
@@ -1009,9 +1009,10 @@ Steps:
 8. Add rivet dots and edge lines with the black marker.
 9. Tape the plates together so they hinge at the shoulders.
 10. Wrap the pool noodle in gray duct tape for the sword.
-11. Put the armor on over dark clothes.
-12. Carry the noodle sword.
-13. Optional pro finish: tape a red crepe-paper plume to the helmet top.
+11. Safety: Swing the noodle sword in open space only. Never swing it at faces.
+12. Put the armor on over dark clothes.
+13. Carry the noodle sword.
+14. Optional pro finish: tape a red crepe-paper plume to the helmet top.
 
 Q: How do you keep cardboard armor from falling apart?
 A: Gray duct tape hinges at the shoulders and sides, tape both sides of each joint. The tape is the armor's skeleton; the cardboard is just the skin.
@@ -1269,7 +1270,7 @@ Steps:
 8. Check the wearer can see through both holes.
 9. Widen a little at a time.
 10. Optional pro finish: tape a square of black tulle behind each hole.
-11. Safety: Trim the bottom so the hem clears the ground by several inches, a dragging hem is what trips a kid on a dark sidewalk. Keep nothing tight around the neck.
+11. Safety: Trim the bottom so the hem clears the ground by several inches, a dragging hem is what trips a kid on a dark sidewalk. Keep nothing tight around the neck. Keep the sheet away from candles and open flames.
 12. Draw a wavy or smiling mouth below the eyes.
 13. Drape the sheet back on and go.
 
@@ -1298,9 +1299,9 @@ Materials:
 Steps:
 1. Cut the arm holes first.
 2. Then cut the head hole small.
-3. Stretch the bag over the head to test before cutting bigger.
+3. Hold the bag up to test the size. Never pull it over the head.
 4. Cut the holes in the white trash bag for head and arms.
-5. Safety: Cut the head hole wide enough. The wearer must see and breathe with ease.
+5. Safety: Cut the head hole wide enough. The wearer must see and breathe with ease. Wear the bag over clothes, never on bare skin. Use a white sheet for kids under 8. Take it off if you feel hot.
 6. This is the cup.
 7. A head hole cut too big slides off the shoulders.
 8. Draw a coffee shop logo on the front with brown marker.
@@ -2745,7 +2746,7 @@ Steps:
 6. Small eye holes make a blind hazard.
 7. Paint the box gray with black scuffs and cracks.
 8. Glue one red LED tea light inside each eye hole.
-9. Safety: Make the eye holes large, and never wear the box near stairs or traffic, since side vision is limited.
+9. Safety: Make the eye holes large, and never wear the box near stairs or traffic, since side vision is limited. Walk with a partner who can see clearly. Take the box off if you feel hot.
 10. Wear the box over the head, eyes lined up with the holes.
 11. Wear the old clothes with holes underneath.
 12. Move in short jerky steps.
@@ -4405,8 +4406,8 @@ Steps:
 9. Tape the prongs sticking up from the top edge.
 10. Socket: paint the other panel white.
 11. Draw two dark slots and a round outlet face on it.
-12. Tape string to the back corners of each panel.
-13. Hang the panels like sandwich boards.
+12. Let the paint dry fully first. Then tape string to the back corners of each panel.
+13. Hang the panels like sandwich boards, strings over the shoulders. Never loop string around the neck.
 14. The plug person stands next to the socket person.
 15. Optional pro finish: paint a small lightning bolt where the two panels meet.
 
@@ -4699,11 +4700,11 @@ Steps:
 11. Paint a yellow yolk dot on it.
 12. Let it dry.
 13. Tape the egg on top of the noodles.
-14. Stick the chopsticks in at an angle.
+14. Stick the chopsticks in at an angle, tips pointing up.
 15. Wear the bowl rim like a hat, with string under the chin.
 16. Safety: Tie the chin string loose. Your child must lift it off with ease.
 17. Slurp loudly for effect.
-18. Optional pro finish: glue two wooden chopsticks crossed at the top of the noodles.
+18. Optional pro finish: tape two wooden chopsticks crossed at the top of the noodles. Point the tips up, away from faces.
 
 Q: How do you wear the bowl so it does not fall off?
 A: Wear the bowl rim like a hat with string tied under the chin, noodles and egg on top. Keep the string snug but loose enough to slip a finger under.
