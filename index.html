@@ -366,7 +366,19 @@ body.st-open .sitehead{display:none}
   #s-hero .hero .honestline{margin-left:0;margin-right:0}
   #s-hero .hero-sub{font-size:18px;line-height:1.55}
   #s-hero .hero-proof{font-size:15px}
-  #hero-mosaic{display:grid;grid-template-columns:1.5fr 1fr;grid-template-rows:1fr 1fr;gap:14px;align-self:center}
+  /* SPEC-PMC-DIM10-CLS-2 (2026-11-01): fixed desktop mosaic box. The grid
+     had no definite height, so its height came from the current slide
+     photo's natural aspect: 528px (Block Monster / Haunted Animatronics),
+     578px (Bumble Bee / Bacon & Eggs), 770px (Baby Pumpkin) at 1280px.
+     Every photo load, the random-start jump, and every ~5s rotation swap
+     resized the mosaic and shifted .herotext + the tonight section
+     (desktop 6.5s CLS median ~0.132, worst single shift 0.407 — Dim 10
+     re-grade 2026-11-01, measured on live bytes). Pin the box to the
+     first-paint Bumble Bee geometry (656/578 at 1280px; the ratio scales
+     with the column at any desktop width). Photos keep object-fit:cover
+     inside the fixed box, so a swap can no longer move the page.
+     Desktop-only rule: the phone tile keeps its own aspect-ratio:4/3. */
+  #hero-mosaic{display:grid;grid-template-columns:1.5fr 1fr;grid-template-rows:1fr 1fr;gap:14px;align-self:center;aspect-ratio:656/578}
   #hero-mosaic a{position:relative;display:block;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
   #hero-mosaic a:first-child{grid-row:1/3}
   #hero-mosaic img{display:block;width:100%;height:100%;aspect-ratio:1/1;object-fit:cover}
@@ -683,6 +695,17 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
    Collapse it whenever a non-hero screen is showing. */
 body:has(#s-hero:not(.on)) .wrap{padding-bottom:10px}
 .screen.on{display:block;animation:fadein .22s ease-out}
+/* SPEC-PMC-DIM10-CLS-2 (2026-11-01): the hero screen fades with opacity
+   only, never a transform. fadein's translateY made #s-hero a containing
+   block for .heroskyclip while it ran, so the sky layer covered the full
+   ~5,000px section and its clouds sat at 4%/10% of that height; when the
+   animation ended the containing block reverted to the viewport box and
+   the clouds jumped (a 0.0306 layout shift in nearly every desktop load,
+   Dim 10 re-grade 2026-11-01). With no transform the clip is
+   viewport-anchored from the first frame — the settled state every
+   visitor already sees — and nothing moves. Other screens keep fadein. */
+#s-hero.on{animation:fadeinopacity .22s ease-out}
+@keyframes fadeinopacity{from{opacity:0}to{opacity:1}}
 /* 2026-09-28: the quiz opens as a bottom sheet over the homepage
    (house rule: keep the homepage and the moon visible while taking the quiz).
    The sheet overlays whichever screen sits underneath; closing it returns
@@ -1033,6 +1056,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
      later rule wins, so placing it earlier would silently fail (QA 2026-09-26). */
   .proofstrip.fresh .proofrow a{animation:none}
   .screen.on{animation:none}
+  #s-hero.on{animation:none} /* SPEC-PMC-DIM10-CLS-2: the ID rule above outranks .screen.on, so the reduced-motion still must be restated here */
   .proofrow{transition:none}
 }
 .fine{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
