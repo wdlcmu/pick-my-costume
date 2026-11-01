@@ -32,19 +32,22 @@
 })();
 
 /* 2026-10-04: Halloween countdown ticker (novel-finds 2026-10-04). Pure date
-   math, no server call. Shows days until Oct 31 of the current year; hidden
-   entirely once Halloween has passed. */
+   math, no server call. Shows days until Oct 31; since the 2026-11-01
+   countdown fleet pass it rolls to next year's Halloween once this year's
+   has passed, so the bar is never dark for a full year. */
 (function(){
   function renderTicker(){
     var bar = document.getElementById("ticker");
     var txt = document.getElementById("ticker-text");
     if (!bar || !txt) return;
     var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var hw = new Date(now.getFullYear(), 9, 31);
-    var days = Math.ceil((hw.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 864e5);
-    if (days < 0) return; // past Halloween: stay hidden
-    var msg = days > 1 ? days + " days until Halloween"
-      : days === 1 ? "Tomorrow is Halloween"
+    if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31); // past Halloween: roll to next year
+    var days = Math.round((hw.getTime() - today.getTime()) / 864e5);
+    var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    var msg = days > 1 ? days + " days until Halloween, " + dateText + "."
+      : days === 1 ? "Tomorrow is Halloween, " + dateText + "."
       : "Happy Halloween! Tonight is the night";
     txt.textContent = msg;
     bar.hidden = false;

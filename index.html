@@ -1350,11 +1350,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <!-- 2026-10-04: Halloween countdown ticker (novel-finds 2026-10-04, costumes.com
        steal). Slim persistent bar above the site header, NOT the hero: Billy cut
        the hero countdown on Oct 3 for hero slimness; this is the site-top ticker
-       pattern instead. JS-computed days until Oct 31; hidden entirely after
-       Halloween. Feeds the quiz funnel, which ends at the Oct 27 reminder. -->
-  <div class="ticker" id="ticker" hidden>
+       pattern instead. JS-computed days until Oct 31; rolls to next year's
+       Halloween after Oct 31 (2026-11-01 countdown fleet pass). The span's
+       static text is the Nov 1, 2026 count, so the number shows with no JS.
+       Feeds the quiz funnel, which ends at the Oct 27 reminder. -->
+  <div class="ticker" id="ticker">
     <span aria-hidden="true">&#127875;</span>
-    <span id="ticker-text"></span>
+    <span id="ticker-text">364 days until Halloween, Sunday, October 31, 2027.</span>
     <a href="/" id="ticker-cta">Pick my costume &rarr;</a>
   </div>
 
