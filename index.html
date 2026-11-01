@@ -552,6 +552,14 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .pchip b{font-size:15px;color:var(--ink)}
 .pantrysec button.cta{width:100%}
 .tonightsec{margin-top:18px}
+/* SPEC-PMC-DIM10-CLS-1 (staged 2026-10-31, post-Halloween ship): the
+   tonight rail (#row-tonight-live) is empty in the HTML and filled by
+   app.js after parse; its late fill grew the section and pushed the
+   page (desktop long-settle CLS up to 0.85, Dim 10 grade 2026-10-31).
+   Reserve the rail's measured final height up front: 292.66px
+   border-box at both 390px and 1280px (12 cards, local probe
+   2026-10-31), rounded up to 293px. */
+#row-tonight-live{min-height:293px}
 /* 2026-10-06 (Billy): tonight rail carousel — first card was clipping at the
    viewport edge. Mandatory snap set on .proofrow above. */
 .galaxysec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18);position:relative;overflow:hidden}
