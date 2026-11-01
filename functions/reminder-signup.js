@@ -58,10 +58,16 @@ export async function onRequestPost(context) {
     if (!r.ok) {
       // Already-subscribed (409) still counts as success for the visitor.
       if (r.status === 409) return json({ ok: true, duplicate: true });
-      return json({ ok: false, reason: 'provider-error' }, 502);
+      // 2026-10-31 (Lane 4): provider errors answer 200, not 502. A 502
+      // from a Pages Function is replaced at the edge by Cloudflare's
+      // plain-text error page, so the client's r.json() threw and every
+      // provider failure collapsed into reason "network" -- the endpoint
+      // measured nothing true. 200 + this JSON keeps the honest degrade
+      // (and the real reason) reachable end to end.
+      return json({ ok: false, reason: 'provider-error' });
     }
     return json({ ok: true });
   } catch (e) {
-    return json({ ok: false, reason: 'provider-error' }, 502);
+    return json({ ok: false, reason: 'provider-error' });
   }
 }
