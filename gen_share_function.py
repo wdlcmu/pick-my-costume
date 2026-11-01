@@ -805,6 +805,43 @@ except Exception:
     REGION = {}
 assert len(REGION) >= 100, "region map too small: %d" % len(REGION)
 
+# Hero photo dimensions per idea (SPEC-PMC-DIM10-CLS-1, staged 2026-10-31):
+# the /c/ hero <img> carried no width/height, so its box was 0px tall until
+# the photo arrived (~470-680 ms on desktop) and everything below it --
+# triple, CTA, intro, closet badge -- shifted by the full photo height
+# (CLS 0.1126 in 9/9 desktop loads, Dim 10 grade 2026-10-31). The guide
+# now emits the real pixel dimensions parsed from each photo's WebP
+# header (zero-dependency parser; verified against PIL on all 170 photo
+# files 2026-10-31, 0 mismatches) so the browser reserves the exact
+# aspect box before load. A slug whose photo is missing or unparseable
+# gets no entry and renders exactly as before.
+def _webp_size(path):
+    try:
+        with open(path, "rb") as f:
+            head = f.read(30)
+    except OSError:
+        return None
+    if len(head) < 30 or head[:4] != b"RIFF" or head[8:12] != b"WEBP":
+        return None
+    fmt = head[12:16]
+    if fmt == b"VP8X":
+        return (1 + int.from_bytes(head[24:27], "little"),
+                1 + int.from_bytes(head[27:30], "little"))
+    if fmt == b"VP8 ":
+        return (int.from_bytes(head[26:28], "little") & 0x3fff,
+                int.from_bytes(head[28:30], "little") & 0x3fff)
+    if fmt == b"VP8L":
+        v = int.from_bytes(head[21:25], "little")
+        return ((v & 0x3fff) + 1, ((v >> 14) & 0x3fff) + 1)
+    return None
+
+HERODIMS = {}
+for _s in data:
+    _dim = _webp_size(os.path.join(ROOT, "photos", _s + ".webp"))
+    if _dim:
+        HERODIMS[_s] = [_dim[0], _dim[1]]
+assert len(HERODIMS) >= 165, "hero dims map too small: %d" % len(HERODIMS)
+
 
 # 2026-10-05 (Billy): client-side tick script for the /c/ supply cards.
 # Reads/writes the same pantry2 localStorage the app uses, so ticks carry
@@ -985,6 +1022,11 @@ var PICTURED = %s;
 // Galaxy region slug per idea (utm_campaign for guide shares), parsed
 // from app.js GALAXY_REGION_BY_IDEA by gen_share_function.py.
 var REGION = %s;
+
+// Hero photo pixel dimensions per idea (SPEC-PMC-DIM10-CLS-1): parsed
+// from each photo's WebP header by gen_share_function.py so the hero
+// <img> can reserve its aspect box before the photo loads.
+var HERODIMS = %s;
 
 // Per-idea guide data, embedded in the page: materials + numbered steps
 // feed the schema.org HowTo JSON-LD in the head (honest structured data:
@@ -1208,6 +1250,22 @@ export function onRequest(context) {
      hero now shows the real photo at natural aspect (focal-fixed cards
      still protect the share unfurl). */
   var heroImg = "/photos/" + slug + ".webp";
+  /* SPEC-PMC-DIM10-CLS-1 (staged 2026-10-31): reserve the hero photo's
+     box in the initial HTML so the page does not shift when the photo
+     loads. The width/height attributes alone do NOT reserve anything
+     here: the .guide img rule sets width:auto, which overrides the
+     attribute and leaves the pre-load box at 0x0 (measured). The
+     operative part is the inline style: a definite width of
+     min(100 pct, 82vh * W/H) -- the same two clamps the loaded image's
+     used size already obeys (container width, and the .guide img
+     max-height:82vh acting through the aspect ratio) -- plus
+     aspect-ratio, so the pre-load box is pixel-identical to the
+     loaded box in every case, tall portraits included (verified
+     2026-10-31 on landscape, portrait, and max-height-clamped
+     guides at 390px and 1280px). No HERODIMS entry = the pre-fix
+     tag, unchanged. */
+  var _hd = HERODIMS[slug];
+  var _heroAttrs = _hd ? " width=\\"" + _hd[0] + "\\" height=\\"" + _hd[1] + "\\" style=\\"aspect-ratio:" + _hd[0] + "/" + _hd[1] + ";width:min(100%%," + (Math.round(82000 * _hd[0] / _hd[1]) / 1000) + "vh)\\"" : "";
   /* schema.org HowTo JSON-LD: this page's costume genuinely is a materials
      list plus numbered steps, so this is honest structured data aimed at AI
      assistants parsing the page. (Google retired HowTo rich results in 2023;
@@ -1661,6 +1719,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      native share resolves or a copy succeeds. A dismissed sheet fires
      nothing, mirroring sendShare honesty semantics. One sid is minted
      per click so the event joins the link the recipient opens. */
+  /* 2026-10-31 (Lane 4): a successful guide clipboard share now also
+     fires share_text_copied with the app's property names. Before this
+     it fired only share_created, so guide copies were invisible in the
+     share_text_copied line (85 season events, every one from the app). */
   var _shareScript = "<script>" +
     "(function(){" +
     "var btn=document.getElementById(\\"guideshare\\"),msg=document.getElementById(\\"guidesharemsg\\");" +
@@ -1671,9 +1733,10 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" \\u23f1\\ufe0f Timed: about "+String(_hw.time).replace(/\s*\+.*$/,"")):"") + ";" +
     "var _sgBusy=false;" +
     "function _sgId(){var c=\\"abcdefghijklmnopqrstuvwxyz0123456789\\",s=\\"\\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
-    "function _sgTrack(sid,via){var _p={share_id:sid,idea_id:_sgSlug,share_origin:\\"guide\\",via:via};var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\\"share_created\\",_p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
+    "function _sgTrackEv(name,p){var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(name,p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
+    "function _sgTrack(sid,via){_sgTrackEv(\\"share_created\\",{share_id:sid,idea_id:_sgSlug,share_origin:\\"guide\\",via:via});}" +
     "function _sgText(sid,medium){return \\"🎃 \\" + _sgCap + _sgTime + \\" What are you going as? Found mine with this 2-minute quiz: https://pickmycostume.com/c/\\" + _sgSlug + \\"?s=\\" + sid + \\"&o=guide&utm_source=share&utm_medium=\\" + medium + \\"&utm_campaign=\\" + _sgRegion;}" +
-    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok)_sgTrack(sid,via);if(msg)msg.textContent=ok?\\"Link copied. Send it to your crew.\\":\\"Couldn't copy it. Long-press the link instead.\\";}" +
+    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok){_sgTrack(sid,via);if(via===\\"clipboard\\")_sgTrackEv(\\"share_text_copied\\",{idea_id:_sgSlug,share_id:sid,share_origin:\\"guide\\",via:\\"clipboard\\"});}if(msg)msg.textContent=ok?\\"Link copied. Send it to your crew.\\":\\"Couldn't copy it. Long-press the link instead.\\";}" +
     "btn.addEventListener(\\"click\\",function(){" +
     "if(_sgBusy)return;_sgBusy=true;" +
     "var sid=_sgId();" +
@@ -1703,6 +1766,27 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _p={idea_id:" + JSON.stringify(slug) + ",recipient_channel:_ch(),via_share_id:sm[1]};" +
     "if(om)_p.share_origin=om[1];" +
     "var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(\\"recipient_landing_viewed\\",_p);return;}}catch(e){}if(++_t<10)setTimeout(_try,500);})();" +
+    "})();" +
+    "</" + "script>";
+
+  /* Guide funnel measurement (2026-10-31, Lane 4 instrumentation truth):
+     app.js has long described an "existing guide_viewed ->
+     guide_cta_clicked funnel on /c/ pages", but no capture call existed in
+     production -- guide_viewed fired only on 2026-10-01 (10 events,
+     including genuine Pinterest arrivals) and never again: a lost edit,
+     the same failure mode as the print rule and the AI label before it.
+     This restores the funnel IN THE GENERATOR so regen cannot drop it:
+     guide_viewed once per load; guide_cta_clicked on the plan CTAs
+     (placement top/bottom by DOM order) and on the exit card's doors
+     (placement exitcard, cta plan/related/quiz). Internal marking mirrors
+     the share-prompt script so QA traffic stays excludable. */
+  var _guideTrackScript = "<script>" +
+    "(function(){" +
+    "function _gtInt(){try{var q=location.search||\\"\\";if(/[?&]internal=1(?:&|$)/.test(q))return true;if(/[?&](probe|sim)=/.test(q))return true;try{return localStorage.getItem(\\"pmc_internal\\")==\\"1\\";}catch(e){return false;}}catch(e){return false;}}" +
+    "var _gtSlug=" + JSON.stringify(slug) + ";" +
+    "function _gtCap(name,extra){var p={slug:_gtSlug,idea_id:_gtSlug};for(var k in extra)p[k]=extra[k];if(_gtInt())p.internal=true;var t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(name,p);return;}}catch(e){}if(++t<10)setTimeout(_try,500);})();}" +
+    "_gtCap(\\"guide_viewed\\",{});" +
+    "document.addEventListener(\\"click\\",function(e){var t=e.target&&e.target.closest?e.target.closest(\\"a.plancta,[data-gx]\\"):null;if(!t)return;var gx=t.getAttribute(\\"data-gx\\");if(gx){_gtCap(\\"guide_cta_clicked\\",{cta:gx,placement:\\"exitcard\\"});return;}var links=document.querySelectorAll(\\"a.plancta\\"),idx=-1;for(var i=0;i<links.length;i++){if(links[i]===t){idx=i;break;}}_gtCap(\\"guide_cta_clicked\\",{cta:\\"plan\\",placement:idx===0?\\"top\\":(idx===1?\\"bottom\\":\\"other\\")});});" +
     "})();" +
     "</" + "script>";
 
@@ -1958,6 +2042,30 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      request time so ?s= (when present) is carried into the deep link. */
   var _plannerCtaHtml =
     "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" href=\\"" + _plannerAttr + "\\">Start this costume in the planner</a></p>";
+  /* Guide exits (2026-10-31, Lane 4): search readers land on one guide,
+     read, and leave -- of guide entrants essentially none started the
+     quiz and only a handful saved the costume (Baby Pumpkin: 23
+     entrants, 3 saved; PostHog Oct 2026). On the ten most-read guides
+     (PostHog season pageviews, public, ex-Washington) the lone planner
+     CTA after the Steps becomes a compact exit card: the same planner
+     deep link first, then three costumes like this, then the quiz as a
+     quiet line. Every other guide renders _plannerCtaHtml exactly as
+     before. Do not widen GUIDE_EXIT_TOP10 without fresh PostHog
+     numbers. */
+  var GUIDE_EXIT_TOP10 = ["baby-pumpkin", "cardboard-knight", "pickle", "coffee-cup", "classic-ghost", "boxer", "haunted-animatronics", "ghost-hunters", "ramen-bowl", "plug-socket"];
+  var _exitCardHtml = _plannerCtaHtml;
+  if (GUIDE_EXIT_TOP10.indexOf(slug) >= 0) {
+    var _gxRel = (RELATED[slug] || []).slice(0, 3).map(function(rs){
+      return "<a data-gx=\\"related\\" href=\\"/c/" + rs + "\\">" + esc(IDEAS[rs].t) + "</a>";
+    }).join(" &middot; ");
+    _exitCardHtml =
+      "<div class=\\"exitcard\\">" +
+      "<p class=\\"exithead\\">What next?</p>" +
+      "<p class=\\"ctawrap\\"><a class=\\"cta plancta\\" data-gx=\\"plan\\" href=\\"" + _plannerAttr + "\\">Start this costume in the planner</a><span class=\\"ctasub\\">Save it, check what you already own, and get the steps by email.</span></p>" +
+      (_gxRel ? "<p class=\\"exitrel\\">More like this: " + _gxRel + "</p>" : "") +
+      "<p class=\\"exitquiz\\">Rather have one picked for you? <a data-gx=\\"quiz\\" href=\\"" + quizTargetAttr + "\\">Take the 2-minute quiz</a> - free, no signup.</p>" +
+      "</div>";
+  }
   /* 2026-10-03 Stream 17: tapGuard for the plan-flow CTAs (standing rule
      2026-09-27). Both the top CTA and the new bottom planner CTA open the
      app plan flow; a finger bounce must not double-fire the entry. */
@@ -2084,6 +2192,13 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".guide img{max-width:100%%;height:auto;max-height:82vh;width:auto;display:block;border-radius:12px;margin:6px auto;}" +
     "ul,ol{font-size:16px;line-height:1.55;padding-left:22px;margin:0;}" +
     ".quizline{font-size:15px;color:#cdbcf0;margin-top:26px;}" +
+    ".exitcard{border:2px solid #4b3486;border-radius:14px;background:#211540;padding:16px;margin:20px 0;}" +
+    ".exitcard .ctawrap{margin:0;}" +
+    ".exithead{font-size:17px;font-weight:800;margin:0 0 10px;}" +
+    ".exitrel{font-size:15px;color:#cdbcf0;margin:12px 0 0;}" +
+    ".exitrel a{color:#ff8c1a;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
+    ".exitquiz{font-size:15px;color:#cdbcf0;margin:2px 0 0;}" +
+    ".exitquiz a{color:#ff8c1a;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".quizline a{color:#ff8c1a;font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
     ".pinline{font-size:14px;color:#cdbcf0;margin:10px 0 0;}" +
     ".sharerline{font-size:16px;color:#cdbcf0;margin:2px 0 12px;}" +
@@ -2155,7 +2270,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     /* Print stylesheet (live 2026-10-06): ported from the hand-edited
        deployed file 2026-10-09 so regen never drops it again. The doubled
        percent below escapes the literal percent for the format below. */
-    "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
+    "@media print{body{background:#fff !important;color:#000 !important;}.topbar,.crumb,.storyline,.ctawrap,.exitcard,.sharewrap,.quizline,.pinline,.foot,.aiphoto,.pictured,.timenote,.sharerline,.ctasub,.splitpartner-line,.madeit-line{display:none !important;}h2,.rellist,.relcard,details.faq{display:none !important;}.guide{max-width:100%%;padding:0;margin:0;}h1{font-size:22px;color:#000;margin:0 0 6px;}.triple{margin:0 0 8px;}.guide img{max-width:280px;border-radius:8px;margin:0 0 8px;}.intro{font-size:14px;color:#333;margin:0 0 10px;}.mats{background:#fff !important;border:1px solid #999;border-radius:8px;padding:4px 14px;margin:0 0 10px;}.mats li{font-size:13px;color:#000;padding:6px 0 6px 24px;border-bottom:1px solid #ddd;}.mats li::before{color:#000;}ol.steps li{font-size:13px;color:#000;line-height:1.45;padding:6px 0 6px 36px;margin:0 0 2px;}ol.steps li::before{background:#000 !important;color:#fff !important;width:24px;height:24px;font-size:12px;top:6px;}a{color:#000;text-decoration:none;}}" +
     "</style>" +
     "<script>(function(){var s=document.createElement(\\"script\\");s.async=true;s.src=\\"https://us.i.posthog.com/static/array.js\\";s.onload=function(){try{if(window.posthog&&posthog.init){posthog.init(\\"phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7\\",{api_host:\\"https://us.i.posthog.com\\",autocapture:false,capture_pageview:true,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);document.addEventListener(\\"click\\",function(e){var t=e.target.closest&&e.target.closest(\\"[data-claude]\\");if(t&&window.posthog&&posthog.capture){try{posthog.capture(\\"add_to_claude_clicked\\",{source:\\"guide_page\\"});}catch(_){}}});})();</script>" +
     "</head><body><div class=\\"topbar\\"><a class=\\"brand\\" href=\\"/\\">🎃 Pick My <span>Costume</span></a><div class=\\"topbtns\\"><a class=\\"homebtn\\" href=\\"/\\">Pick my costume</a><a class=\\"claudebtn\\" href=\\"https://pickmycostume.com/mcp\\" data-claude=\\"1\\">Add to Claude</a></div></div><main class=\\"guide\\">" +
@@ -2163,7 +2278,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<nav class=\\"crumb\\" aria-label=\\"Breadcrumb\\"><a href=\\"/\\">Home</a> &rsaquo; <a href=\\"/costumes\\">All costumes</a> &rsaquo; " + title + "</nav>" +
     "<h1>" + seoTitle + "</h1>" +
     /* 2026-10-13: first-screen order is title, photo, timed chips, plan CTA, then the intro paragraph. Photo-led arrivals (pins, trend cards, the hero tile) land on the costume itself, not on text above it. */
-    "<img src=\\"" + heroImg + "\\" srcset=\\"/photos/" + slug + "-480.webp 480w, " + heroImg + " 1200w\\" sizes=\\"(max-width:760px) 100vw, 720px\\" alt=\\"" + imgAlt + "\\" onerror=\\"this.onerror=null;this.src='" + img + "'\\">" +
+    "<img src=\\"" + heroImg + "\\"" + _heroAttrs + " srcset=\\"/photos/" + slug + "-480.webp 480w, " + heroImg + " 1200w\\" sizes=\\"(max-width:760px) 100vw, 720px\\" alt=\\"" + imgAlt + "\\" onerror=\\"this.onerror=null;this.src='" + img + "'\\">" +
     /* 2026-09-30: AI honesty label, same wording as the quiz-results tag. */
     "<div class=\\"aiphoto\\">AI-generated concept photo</div>" +
     /* 2026-10-01 (Billy): pictured honesty caption under the hero photo --
@@ -2181,7 +2296,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     _cardsHtml + _cardsScript + _tipHtml + _fit + _noscriptMats +
     _splitHtml +
     "<h2>Steps</h2><ol class=\\"steps\\">" + _steps + "</ol>" +
-    _plannerCtaHtml +
+    _exitCardHtml +
     _faqs +
     _sharePromptHtml +
     _relHtml +
@@ -2197,6 +2312,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "<p class=\\"pinline\\">Saving this idea? <a target=\\"_blank\\" rel=\\"noopener\\" href=\\"https://pinterest.com/pin/create/button/?url=" + encodeURIComponent("https://pickmycostume.com/c/" + slug) + "&amp;media=" + encodeURIComponent(img) + "&amp;description=" + encodeURIComponent(idea.t + " - DIY Halloween costume guide from Pick My Costume") + "\\">Pin it on Pinterest</a></p>" +
     "<footer class=\\"foot\\"><a href=\\"/\\">Pick My Costume</a> - Built with Muse.</footer>" +
     _landingScript +
+    _guideTrackScript +
     _shareScript +
     _sharePromptScript +
     _bannerScript +
@@ -2213,7 +2329,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   });
 }
 ''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
-       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(HUBLINKS), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION),
+       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(HUBLINKS), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION), json.dumps(HERODIMS),
        json.dumps(howto), json.dumps(_PANTRY_MATS), json.dumps(_PANTRY_LABELS), json.dumps(_PANTRY_EMOJI), json.dumps(_CLIENTJS), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
