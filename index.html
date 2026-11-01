@@ -1493,7 +1493,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
              2026-10-12: one dominant tile (bumble-bee, portrait) + two stacked
              (baby-dino, emerald-witch). Walking taco dropped here; it stays in
              the Make it tonight rail below. -->
-        <a href="/c/bumble-bee" aria-label="Bumble Bee costume guide"><img fetchpriority="high" src="photos/bumble-bee.webp" srcset="photos/bumble-bee-256.webp 256w, photos/bumble-bee-480.webp 480w, photos/bumble-bee.webp 1280w" sizes="(min-width:1024px) 480px, 100vw" alt="Bumble Bee costume" loading="eager"><span>Bumble Bee</span></a>
+        <a href="/c/bumble-bee" aria-label="Bumble Bee costume guide"><img fetchpriority="high" src="photos/bumble-bee.webp" srcset="photos/bumble-bee-256.webp 256w, photos/bumble-bee-480.webp 480w, photos/bumble-bee-768.webp 768w, photos/bumble-bee.webp 1280w" sizes="(min-width:1024px) 480px, 100vw" alt="Bumble Bee costume" loading="eager"><span>Bumble Bee</span></a>
         <a href="/c/baby-dino" aria-label="Baby Dinosaur costume guide"><img src="photos/baby-dino.webp" srcset="photos/baby-dino-256.webp 256w, photos/baby-dino-480.webp 480w, photos/baby-dino.webp 1200w" sizes="(min-width:1024px) 320px, 128px" alt="Baby Dinosaur costume" loading="eager"><span>Baby Dinosaur</span></a>
         <a href="/c/emerald-witch" aria-label="Emerald Witch costume guide"><img src="photos/emerald-witch.webp" srcset="photos/emerald-witch-256.webp 256w, photos/emerald-witch-480.webp 480w, photos/emerald-witch-960.webp 960w" sizes="(min-width:1024px) 320px, 128px" alt="Emerald Witch costume" loading="eager"><span>Emerald Witch</span></a>
 </div>
@@ -1536,7 +1536,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       {slug:"bacon-eggs", title:"Bacon & Eggs", w:1200, pos:"45%"},
       {slug:"board-game-pieces", title:"Board Game Pieces", w:1200, pos:"0%"}
     ];
-    function srcsetOf(s){ return "photos/" + s.slug + "-256.webp 256w, photos/" + s.slug + "-480.webp 480w, photos/" + s.slug + ".webp " + s.w + "w"; }
+    function srcsetOf(s){ return "photos/" + s.slug + "-256.webp 256w, photos/" + s.slug + "-480.webp 480w, photos/" + s.slug + "-768.webp 768w, photos/" + s.slug + ".webp " + s.w + "w"; }
     function srcOf(s){ return "photos/" + s.slug + ".webp"; }
     var dots = document.createElement("div");
     dots.className = "hero-dots";
@@ -1566,7 +1566,17 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     var startIdx = Math.floor(Math.random() * slides.length);
     var startPending = startIdx !== 0;
     var ready = {"bumble-bee": true}, bad = {}, i;
-    for (i = 1; i < slides.length; i++) {
+    /* Speed lane (2026-11-01): slide preloads used to start the moment
+       this script parsed, so six full-size photos fought the visible
+       hero photo for bandwidth and the hero painted seconds late.
+       Preloads now start when the hero photo itself has loaded (2.5s
+       fallback), and every slide also ships a 768w size — the width a
+       phone tile at DPR 2 actually needs. Rotation behavior unchanged. */
+    var preloadsStarted = false;
+    function startPreloads(){
+      if (preloadsStarted) return;
+      preloadsStarted = true;
+      for (i = 1; i < slides.length; i++) {
       (function(s, idx){
         var im = new Image();
         im.onload = function(){
@@ -1584,6 +1594,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         };
         im.sizes = SIZES; im.srcset = srcsetOf(s); im.src = srcOf(s);
       })(slides[i], i);
+      }
+      next = stageNext();
     }
     var fade = document.createElement("img");
     fade.className = "hero-fade";
@@ -1602,7 +1614,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       }
       return current;
     }
-    next = stageNext();
+    if (base.complete && base.naturalWidth > 0) startPreloads();
+    else { base.addEventListener("load", startPreloads); setTimeout(startPreloads, 2500); }
     /* Crossfade the tile to slide idx. Shared by the auto-rotation and
        manual swipe nav so caption, link, and dots swap identically.
        Returns false (no-op) when a fade is already running, idx is the
@@ -1631,6 +1644,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     }
     function advance(){
       if (busy || document.hidden) return;
+      if (next < 0) return; /* preloads not started yet */
       if (next === current) return;
       var s = slides[next];
       if (bad[s.slug]) { next = stageNext(); return; }
