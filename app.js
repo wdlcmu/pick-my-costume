@@ -65,30 +65,81 @@
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var lastLabel = "";
   var started = false;
+  /* 2026-11-01 interactive upgrade: the ticker text is a big tap target
+     that starts the quiz (same action as the hero button), numerals
+     render large, and a chevron opens a What's-next panel: the time
+     left broken down, plus the Oct 27 reminder the funnel ends at.
+     Reduced motion renders once a minute instead of every second. */
+  var mainBtn = document.getElementById("ticker-main");
+  var moreBtn = document.getElementById("cdx-more");
+  var panel = document.getElementById("cdx-panel");
+  var breakEl = document.getElementById("cdx-break");
+  var mileY = document.getElementById("cdx-mile-y");
+  var lastMs = null, panelOpen = false, lastBreakMin = -1, lastAriaMin = -1, lastMileYear = 0;
+  function boldNums(t) { return t.replace(/(\d[\d,]*)/g, "<b>$1</b>"); }
+  function cdParts(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var d = Math.floor(s / 86400); s -= d * 86400;
+    var h = Math.floor(s / 3600); s -= h * 3600;
+    var m = Math.floor(s / 60);
+    return { d: d, h: h, m: m, s: s - m * 60 };
+  }
+  function updateBreak(now) {
+    if (!breakEl) return;
+    var min = Math.floor(now.getTime() / 60000);
+    if (min === lastBreakMin) return;
+    lastBreakMin = min;
+    if (lastMs === null) { breakEl.textContent = ""; return; }
+    var p = cdParts(lastMs), w = Math.floor(p.d / 7), rd = p.d - w * 7, seg = [];
+    if (w > 0) seg.push(cdUnit(w, "week"));
+    if (rd > 0) seg.push(cdUnit(rd, "day"));
+    seg.push(cdUnit(p.h, "hour"));
+    breakEl.textContent = "Time left: " + seg.join(", ") + ".";
+  }
+  if (mainBtn) mainBtn.addEventListener("click", function () { var b = document.getElementById("btn-start"); if (b) b.click(); });
+  if (moreBtn && panel) {
+    moreBtn.hidden = false;
+    moreBtn.addEventListener("click", function () {
+      panelOpen = !panelOpen;
+      panel.hidden = !panelOpen;
+      moreBtn.setAttribute("aria-expanded", panelOpen ? "true" : "false");
+      if (panelOpen) { lastBreakMin = -1; updateBreak(new Date()); }
+    });
+  }
   function renderTicker(){
     var bar = document.getElementById("ticker");
     var txt = document.getElementById("ticker-text");
     if (!bar || !txt) return;
     var now = new Date();
     var label = dayMsg(now);
-    if (RM) {
-      txt.textContent = label;
-      bar.hidden = false;
-      return;
-    }
-    if (label !== lastLabel) { lastLabel = label; bar.setAttribute("aria-label", label); txt.setAttribute("aria-hidden", "true"); }
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var hw = new Date(now.getFullYear(), 9, 31);
     if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
+    if (mileY && lastMileYear !== hw.getFullYear()) { lastMileYear = hw.getFullYear(); mileY.textContent = lastMileYear; }
+    if (RM) {
+      txt.innerHTML = boldNums(label);
+      if (mainBtn) mainBtn.setAttribute("aria-label", label);
+      lastMs = (today.getTime() === hw.getTime()) ? null : (new Date(hw.getFullYear(), 10, 1) - now);
+      if (panelOpen) updateBreak(now);
+      bar.hidden = false;
+      if (!started) { started = true; setInterval(renderTicker, 60000); }
+      return;
+    }
+    if (label !== lastLabel) { lastLabel = label; bar.setAttribute("aria-label", label); txt.setAttribute("aria-hidden", "true"); }
     var msg;
     if (today.getTime() === hw.getTime()) {
       msg = "Happy Halloween! Tonight is the night";
+      lastMs = null;
     } else {
       var end = new Date(hw.getFullYear(), 10, 1);
       var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
       msg = cdTick(end - now, "Halloween, " + dateText + ".");
+      lastMs = end - now;
     }
-    txt.textContent = msg;
+    txt.innerHTML = boldNums(msg);
+    var amin = Math.floor(now.getTime() / 60000);
+    if (mainBtn && amin !== lastAriaMin) { lastAriaMin = amin; mainBtn.setAttribute("aria-label", msg); }
+    if (panelOpen) updateBreak(now);
     bar.hidden = false;
     if (!started) { started = true; setInterval(renderTicker, 1000); }
   }

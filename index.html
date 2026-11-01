@@ -115,10 +115,22 @@ body{
 /* 2026-10-04: Halloween countdown ticker. Slim, full-bleed within .wrap like
    the sitehead; scrolls away (not sticky) so it never eats phone viewport. */
 .ticker{display:flex;align-items:center;justify-content:center;gap:8px;
-  margin:0 -16px;padding:7px 16px;font-size:13px;font-weight:600;
+  margin:0 -16px;padding:7px 16px;font-size:14px;font-weight:600;
   color:#ffd166;background:rgba(255,140,26,.10);
   border-bottom:1px solid rgba(255,140,26,.25)}
 .ticker a{color:#ffd166;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
+/* 2026-11-01 interactive ticker: text is a big tap target (starts the quiz,
+   same as the hero button), numerals render large, chevron opens the panel. */
+.ticker-main{flex:1 1 auto;min-width:0;min-height:44px;background:none;border:0;font:inherit;color:inherit;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0 2px;border-radius:8px}
+.ticker-main:focus-visible{outline:3px solid #ffd166;outline-offset:2px}
+#ticker-text b{font-size:1.22em;font-weight:800}
+.ticker-more{background:none;border:0;color:#ffd166;cursor:pointer;min-width:44px;min-height:44px;font-size:15px;line-height:1;border-radius:8px;padding:0}
+.ticker-more:focus-visible{outline:3px solid #ffd166;outline-offset:2px}
+.ticker-panel{margin:0 -16px;padding:10px 16px;text-align:center;font-size:13.5px;font-weight:600;color:#ffd166;background:rgba(255,140,26,.10);border-bottom:1px solid rgba(255,140,26,.25)}
+.ticker-panel p{margin:2px 0}
+.ticker-panel .cdx-break:empty{display:none}
+@media (min-width:900px){.ticker-panel{margin:0 -32px;padding:10px 32px}}
+@media (max-width:560px){.ticker{flex-wrap:wrap}.ticker>span:first-child{display:none}.ticker-main{flex:1 1 100%}}
 @media (min-width:900px){.ticker{margin:0 -32px;padding:7px 32px;font-variant-numeric:tabular-nums}}
 /* 2026-10-17 (Billy): days-left banner. Slim strip in normal flow between
    the hero and the Make it tonight rail, so it can never overlap the hero.
@@ -1356,8 +1368,13 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        Feeds the quiz funnel, which ends at the Oct 27 reminder. -->
   <div class="ticker" id="ticker">
     <span aria-hidden="true">&#127875;</span>
-    <span id="ticker-text">364 days until Halloween, Sunday, October 31, 2027.</span>
+    <button type="button" class="ticker-main" id="ticker-main" aria-label="364 days until Halloween, Sunday, October 31, 2027."><span id="ticker-text">364 days until Halloween, Sunday, October 31, 2027.</span></button>
     <a href="/" id="ticker-cta">Pick my costume &rarr;</a>
+    <button type="button" class="ticker-more" id="cdx-more" aria-expanded="false" aria-controls="cdx-panel" aria-label="What&rsquo;s next?" hidden><span aria-hidden="true">&#9662;</span></button>
+  </div>
+  <div class="ticker-panel" id="cdx-panel" hidden>
+    <p class="cdx-break" id="cdx-break"></p>
+    <p class="cdx-mile">The one reminder email lands <strong>October 27, <span id="cdx-mile-y">2027</span></strong> &mdash; costumes you can make that night.</p>
   </div>
 
   <!-- 2026-09-29: persistent site header — logo + name on every screen, links home. -->
@@ -2375,5 +2392,131 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 <div class="stickycta" id="stickycta">
   <button type="button" id="stickycta-btn">Pick my costume &rarr;</button>
 </div>
+<!-- ASK PANEL START -->
+<style>
+.askp-open{position:fixed;right:16px;bottom:16px;z-index:9990;min-height:48px;padding:12px 20px;border:none;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.28)}
+.askp-overlay{position:fixed;inset:0;z-index:9991;background:rgba(20,12,4,.48);display:flex;align-items:flex-end;justify-content:center;font-family:inherit;color:var(--ink)}
+.askp-overlay[hidden]{display:none}
+.askp-sheet{background:var(--card);width:100%;max-height:88vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:16px 18px 22px;line-height:1.45;box-shadow:0 -6px 30px rgba(0,0,0,.3);text-align:left}
+@media (min-width:641px){.askp-overlay{align-items:flex-end;justify-content:flex-end;padding:20px}.askp-sheet{width:400px;border-radius:16px}}
+.askp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.askp-head h2{font-size:1.2rem;margin:2px 0 6px}
+.askp-close{flex:0 0 auto;min-width:44px;min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:20px;line-height:1;cursor:pointer;font-family:inherit}
+.askp-sub{margin:6px 0;color:var(--muted);font-size:15px}
+.askp-chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.askp-chips button{background:none;border:1px solid var(--line);border-radius:999px;min-height:44px;min-width:44px;padding:10px 16px;font-size:14px;color:var(--ink);cursor:pointer;font-family:inherit}
+.askp-row{display:flex;gap:8px;align-items:stretch;margin-top:10px}
+.askp-row input{flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;border:2px solid var(--line);border-radius:var(--radius);font-size:16px;font-family:inherit;background:var(--card);color:var(--ink)}
+.askp-go{flex:0 0 auto;min-height:44px;padding:0 18px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.askp-open:focus-visible,.askp-close:focus-visible,.askp-go:focus-visible,.askp-chips button:focus-visible,.askp-row input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.askp-user{margin:14px 0 8px;font-weight:700}
+.askp-note{margin:8px 0;font-size:15px}
+.askp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.askp-actions button{min-height:44px;padding:10px 16px;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.askp-plan{background:var(--accent);color:#fff;border:none}
+.askp-alt{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.askp-foot{margin:14px 0 0;font-size:14px;color:var(--muted)}
+.askp-foot button{background:none;border:none;color:var(--accent);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;padding:6px 2px;min-height:44px}
+</style>
+<button type="button" class="askp-open" id="askp-open">Know what you want? Ask here</button>
+<div class="askp-overlay" id="askp-panel" hidden>
+  <div class="askp-sheet" role="dialog" aria-modal="true" aria-labelledby="askp-title">
+    <div class="askp-head"><h2 id="askp-title">Who exactly do you want to be?</h2><button type="button" class="askp-close" id="askp-close" aria-label="Close the ask panel">&times;</button></div>
+    <p class="askp-sub">Type a character or costume name. The match runs against our own costume bank, right on this page, the same match the search box up top makes.</p>
+    <div class="askp-chips" id="askp-chips">
+      <button type="button">vampire</button>
+      <button type="button">ghost</button>
+      <button type="button">witch</button>
+      <button type="button">mermaid</button>
+    </div>
+    <div class="askp-row">
+      <input id="askp-q" type="text" enterkeyhint="go" placeholder="e.g. ghost" autocomplete="off" maxlength="40" aria-label="Who exactly do you want to be?">
+      <button type="button" class="askp-go" id="askp-go">Ask</button>
+    </div>
+    <div id="askp-answer" aria-live="polite"></div>
+    <p class="askp-foot">Not sure? <button type="button" id="askp-quiz">Take the 2-minute quiz</button></p>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var openBtn=document.getElementById("askp-open"), panel=document.getElementById("askp-panel"),
+      closeBtn=document.getElementById("askp-close"), q=document.getElementById("askp-q"),
+      goBtn=document.getElementById("askp-go"), out=document.getElementById("askp-answer"),
+      quizBtn=document.getElementById("askp-quiz"), lastFocus=null, inited=false;
+  if(!openBtn||!panel) return;
+  function lock(on){ document.documentElement.style.overflow=on?"hidden":""; document.body.style.overflow=on?"hidden":""; }
+  function open(){ init(); lastFocus=document.activeElement; panel.hidden=false; lock(true); q.focus(); }
+  function close(){ panel.hidden=true; lock(false); if(lastFocus&&lastFocus.focus) lastFocus.focus(); else openBtn.focus(); }
+  function el(tag, cls, text){ var n=document.createElement(tag); if(cls) n.className=cls; if(text!=null) n.textContent=text; return n; }
+  function openPlan(hit, kind){ close(); pinpointOpenIdea(hit, kind); }
+  function answer(){
+    var raw=(q.value||"").trim();
+    if(!raw){ q.focus(); return; }
+    out.innerHTML="";
+    out.appendChild(el("p","askp-user","You: "+raw));
+    if(typeof pinpointResolve!=="function"){
+      out.appendChild(el("p","askp-note","The costume bank is still loading. Give it a second and try again."));
+      return;
+    }
+    var res=pinpointResolve(raw);
+    if(res.kind==="match"||res.kind==="fuzzy"){
+      var idea=matchIdeaById(res.idea);
+      out.appendChild(el("p","askp-note","You asked for "+res.label+": our DIY take."));
+      if(idea&&typeof warmPairCard==="function") out.appendChild(warmPairCard(idea,"You asked for "+res.label+": this is our DIY take on it."));
+      var acts=el("div","askp-actions");
+      var plan=el("button","askp-plan","Open the full plan");
+      plan.type="button";
+      plan.addEventListener("click",function(){ openPlan({label:res.label, idea:res.idea, raw:raw}, res.kind==="fuzzy"?"typed-fuzzy":"typed"); });
+      acts.appendChild(plan); out.appendChild(acts);
+      return;
+    }
+    /* nomatch: the hero box's own honest path, word for word */
+    try{ Analytics.track("pinpoint_nomatch",{query:(raw||"").slice(0,30)}); }catch(e){}
+    var themeIds=(typeof pinpointThemeIdeas==="function")?pinpointThemeIdeas(raw):[];
+    var acts2=el("div","askp-actions");
+    if(themeIds.length){
+      out.appendChild(el("p","askp-note","No exact match, but these fit the theme."));
+      themeIds.forEach(function(id){
+        var idea=matchIdeaById(id); if(!idea) return;
+        var b=el("button","askp-alt",idea.title); b.type="button";
+        b.addEventListener("click",function(){ openPlan({label:idea.title, idea:idea.id, raw:raw},"nomatch-theme"); });
+        acts2.appendChild(b);
+      });
+    } else {
+      out.appendChild(el("p","askp-note","We don't have that one yet. Take the 2-minute quiz."));
+      var sb=el("button","askp-alt","Surprise me"); sb.type="button";
+      sb.addEventListener("click",function(){
+        if(typeof tapGuard==="function"&&!tapGuard("pinsurprise",800)) return;
+        var pool=IDEAS.filter(function(i){ var a=i.audience||[]; return a.indexOf("kid")!==-1||a.indexOf("family")!==-1; });
+        if(!pool.length) pool=IDEAS;
+        var pick=pool[Math.floor(Math.random()*pool.length)];
+        openPlan({label:pick.title, idea:pick.id, raw:raw},"nomatch-surprise");
+      });
+      acts2.appendChild(sb);
+    }
+    out.appendChild(acts2);
+    if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+  }
+  function init(){
+    if(inited) return; inited=true;
+    goBtn.addEventListener("click",answer);
+    q.addEventListener("keydown",function(ev){ if(ev.key==="Enter"){ ev.preventDefault(); answer(); } });
+    document.getElementById("askp-chips").addEventListener("click",function(ev){
+      var b=ev.target.closest("button"); if(!b) return; q.value=b.textContent.trim(); answer();
+    });
+    quizBtn.addEventListener("click",function(){
+      close();
+      var start=document.getElementById("btn-start");
+      if(start) start.click();
+    });
+  }
+  openBtn.addEventListener("click",open);
+  closeBtn.addEventListener("click",close);
+  panel.addEventListener("click",function(ev){ if(ev.target===panel) close(); });
+  document.addEventListener("keydown",function(ev){ if(ev.key==="Escape"&&!panel.hidden) close(); });
+})();
+</script>
+<!-- ASK PANEL END -->
 </body>
 </html>
