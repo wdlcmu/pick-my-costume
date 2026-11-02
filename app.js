@@ -830,6 +830,145 @@ function pinpointAskBestAlt(raw, pool, excludeId){
   for (var j = 0; j < sorted.length; j++) if (sorted[j].id !== excludeId) return sorted[j];
   return sorted[0] || null;
 }
+/* ============ ASK MATERIALS + NAMES IN SENTENCES (QA SPEC, 2026-11-01) ====
+   The independent Phase B QA filed three sibling hearing gaps in this
+   layer (SPEC-ask-materials-and-name-in-sentence.md):
+   - SPEC-A: a materials/pantry ask ("what can I make with a white
+     sheet") heard no material vocabulary and landed on the false-absence
+     nomatch, while the bank's #2 costume IS a white-sheet build and the
+     site runs a Pantry tool for exactly this question.
+   - SPEC-B: a bank title inside a sentence ("astronaut costume for my
+     husband") was dropped when the base matcher missed it: the sentence
+     layer served the generic audience pool and never named Astronaut.
+   - SPEC-C: a content-free ask ("I need a costume") got the absence
+     line, though nothing was named that could be absent.
+   Fix shape (ask-parser only; no bank, quiz, or scoring change):
+   - pinpointAskMaterial hears a material phrase in a framed ask ("with /
+     have / make / from ...") or as the whole ask, read from the bank's
+     own data: PANTRY_MATS ids (the Pantry tool's source) plus the title /
+     blurb text that names the material up front. Black dress carries no
+     pantry id by design (its builds encode it as an unmapped item; the
+     browse shelf's searchMatchLine proves it the same way, from text).
+   - pinpointAskMatTier ranks material fits: title names it (0), blurb
+     names it (1), pantry data uses it (2); bank rank breaks ties, so
+     "white sheet" serves Classic Ghost first and "paper bag" serves
+     Astronaut (its blurb IS the paper-bag helmet) before pantry-only fits.
+   - pinpointAskTitleHit checks the sentence's words against bank titles
+     (contiguous whole words, longest title wins) when the base matcher
+     missed: a title that fits the heard signals is served; one that does
+     not fit keeps the misfit path, now also tested against the material.
+   - pinpointAskMissingName returns the words the sentence named that are
+     not audience / constraint / material / generic vocabulary, so a fits
+     answer can acknowledge a truly absent name ("werewolf") before
+     serving the audience fits, instead of silently dropping it.
+   - A signal-free ask with no leftover content words is "nosignal": the
+     surfaces route it to the quiz with a matcher-limits line, reserving
+     "We don't have that one yet" for named asks the bank truly lacks. */
+var ASK_MATERIALS = [
+  {phrases: ["white sheet", "bed sheet", "bedsheet"], label: "a white sheet", ids: ["bedsheet"], text: ["white sheet", "bed sheet", "bedsheet"]},
+  {phrases: ["cardboard box", "cardboard"], label: "cardboard", ids: ["cardboard"], text: ["cardboard"]},
+  {phrases: ["paper bag", "paper bags"], label: "a paper bag", ids: ["paper-bag"], text: ["paper bag", "paper-bag"]},
+  {phrases: ["black dress", "black gown"], label: "a black dress", ids: [], text: ["black dress", "black gown"]},
+  {phrases: ["white t-shirt", "white tshirt", "white t shirt", "white tee"], label: "a white t-shirt", ids: ["white-tshirt"], text: ["white t-shirt", "white tee"]},
+  {phrases: ["hoodie", "hoodies"], label: "a hoodie", ids: ["hoodie"], text: ["hoodie"]},
+  {phrases: ["pillowcase"], label: "a pillowcase", ids: ["pillowcase"], text: ["pillowcase"]},
+  {phrases: ["aluminum foil", "aluminium foil", "foil"], label: "foil", ids: ["foil"], text: ["foil"]},
+  {phrases: ["balloons", "balloon"], label: "balloons", ids: ["balloons"], text: ["balloon"]},
+  {phrases: ["newspaper"], label: "newspaper", ids: ["newspaper"], text: ["newspaper"]},
+  {phrases: ["yarn"], label: "yarn", ids: ["yarn"], text: ["yarn"]},
+  {phrases: ["felt"], label: "felt", ids: ["felt"], text: ["felt"]}
+];
+function pinpointAskMaterial(raw){
+  var t = " " + (raw || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim() + " ";
+  var framed = / (with|using|use|used|have|has|had|got|from|make|makes|making|made|build|building|built) /.test(t) || t.indexOf(" out of ") !== -1;
+  for (var i = 0; i < ASK_MATERIALS.length; i++){
+    var m = ASK_MATERIALS[i];
+    for (var j = 0; j < m.phrases.length; j++){
+      if (t.indexOf(" " + m.phrases[j] + " ") === -1) continue;
+      if (framed) return m;
+      /* Bare material ask: nothing left once the phrase and generic
+         costume words are removed ("cardboard box", "black dress"). */
+      var rest = t.replace(" " + m.phrases[j] + " ", " ").split(/ +/).filter(function(w){
+        return w && ["costume", "costumes", "a", "an", "the", "please", "for", "me", "i"].indexOf(w) === -1;
+      });
+      if (!rest.length) return m;
+    }
+  }
+  return null;
+}
+function pinpointAskMatTier(idea, m){
+  if (!m) return -1;
+  var title = (idea.title || "").toLowerCase(), blurb = (idea.blurb || "").toLowerCase(), i;
+  for (i = 0; i < m.text.length; i++) if (title.indexOf(m.text[i]) !== -1) return 0;
+  for (i = 0; i < m.text.length; i++) if (blurb.indexOf(m.text[i]) !== -1) return 1;
+  if (m.ids.length && typeof PANTRY_MATS !== "undefined" && PANTRY_MATS.mats && PANTRY_MATS.mats[idea.id]){
+    var flat = [];
+    PANTRY_MATS.mats[idea.id].forEach(function(item){
+      item.forEach(function(grp){ grp.forEach(function(x){ if (x) flat.push(x); }); });
+    });
+    for (i = 0; i < m.ids.length; i++) if (flat.indexOf(m.ids[i]) !== -1) return 2;
+  }
+  return -1;
+}
+function pinpointAskMatFit(idea, m){ return pinpointAskMatTier(idea, m) !== -1; }
+function pinpointAskMatSort(pool, m){
+  return pool.slice().sort(function(a, b){
+    var ta = pinpointAskMatTier(a, m), tb = pinpointAskMatTier(b, m);
+    if (ta !== tb) return ta - tb;
+    return (a.rank || 999) - (b.rank || 999);
+  });
+}
+function pinpointAskTitleHit(raw){
+  var words = (raw || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/ +/).filter(Boolean);
+  if (!words.length) return null;
+  var best = null;
+  IDEAS.forEach(function(idea){
+    var tw = (idea.title || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/ +/).filter(Boolean);
+    if (!tw.length || tw.join("").length < 4) return;
+    for (var s = 0; s + tw.length <= words.length; s++){
+      var okk = true;
+      for (var k = 0; k < tw.length; k++) if (words[s + k] !== tw[k]){ okk = false; break; }
+      if (okk){
+        if (!best || tw.length > best.tw.length ||
+            (tw.length === best.tw.length && (idea.rank || 999) < (best.idea.rank || 999)))
+          best = {idea: idea, tw: tw};
+        break;
+      }
+    }
+  });
+  return best ? best.idea : null;
+}
+var ASK_GENERIC_WORDS = {a: 1, an: 1, the: 1, costume: 1, costumes: 1, for: 1, my: 1, me: 1, i: 1,
+  need: 1, needs: 1, needed: 1, want: 1, wants: 1, get: 1, got: 1, please: 1, something: 1,
+  anything: 1, what: 1, can: 1, could: 1, make: 1, makes: 1, made: 1, with: 1, that: 1, this: 1,
+  is: 1, it: 1, of: 1, to: 1, be: 1, am: 1, are: 1, do: 1, does: 1, have: 1, has: 1, using: 1,
+  use: 1, from: 1, help: 1, find: 1, show: 1, give: 1, looking: 1, look: 1, idea: 1, ideas: 1,
+  halloween: 1, dress: 1, up: 1, one: 1, some: 1, any: 1, you: 1, your: 1, how: 1, about: 1,
+  into: 1, on: 1, in: 1, at: 1, or: 1, and: 1, who: 1, wear: 1, wearing: 1, become: 1, turn: 1,
+  like: 1, really: 1, just: 1, very: 1, out: 1};
+var ASK_AUD_WORDS = {toddler: 1, toddlers: 1, baby: 1, babies: 1, infant: 1, preschooler: 1,
+  preschool: 1, kid: 1, kids: 1, child: 1, children: 1, daughter: 1, son: 1, boy: 1, girl: 1,
+  boys: 1, girls: 1, family: 1, group: 1, coworkers: 1, colleagues: 1, friends: 1, team: 1,
+  squad: 1, adult: 1, adults: 1, husband: 1, wife: 1, dad: 1, mom: 1, father: 1, mother: 1,
+  myself: 1, man: 1, woman: 1, grown: 1, couple: 1, couples: 1, people: 1, year: 1, old: 1,
+  two: 1, three: 1, four: 1, five: 1, six: 1, seven: 1, eight: 1, nine: 1, ten: 1};
+var ASK_TEST_WORDS = {no: 1, sew: 1, sewing: 1, nosew: 1, scary: 1, spooky: 1, not: 1,
+  tonight: 1, last: 1, minute: 1, today: 1, cheap: 1, easy: 1, simple: 1, closet: 1, home: 1,
+  already: 1};
+function pinpointAskMissingName(raw, mat, titleIdea){
+  var words = (raw || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/ +/).filter(Boolean);
+  var matWords = {}, titleWords = {};
+  if (mat) mat.phrases.concat(mat.text).forEach(function(p){
+    p.replace(/-/g, " ").split(/ +/).forEach(function(w){ matWords[w] = 1; });
+  });
+  if (titleIdea) (titleIdea.title || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ")
+    .split(/ +/).forEach(function(w){ titleWords[w] = 1; });
+  var left = words.filter(function(w){
+    return !ASK_GENERIC_WORDS[w] && !ASK_AUD_WORDS[w] && !ASK_TEST_WORDS[w] &&
+           !matWords[w] && !titleWords[w] && !/^[0-9]+$/.test(w);
+  });
+  return left.length ? left.join(" ") : "";
+}
 function pinpointAskResolve(raw){
   var sig = pinpointAskSignals(raw);
   var res = pinpointResolve(raw);
@@ -849,15 +988,52 @@ function pinpointAskResolve(raw){
             alt: alt ? alt.id : null, problems: problems,
             audWord: sig.audWord, desc: sig.desc, count: pool.length};
   }
-  if (sig.hasAny){
-    var fits = pinpointAskPool(sig).slice().sort(function(a, b){ return (a.rank || 999) - (b.rank || 999); });
-    if (fits.length){
-      return {kind: "fits", idea: fits[0].id,
-              alts: fits.slice(1, 4).map(function(i){ return i.id; }),
-              count: fits.length, desc: sig.desc, label: sig.desc};
-    }
-    return {kind: "nofits", desc: sig.desc};
+  /* Base matcher missed. Read the two vocabularies 917 did not: the
+     materials in the sentence (SPEC-A) and a bank title inside it
+     (SPEC-B), then the no-signal case (SPEC-C). */
+  var mat = pinpointAskMaterial(raw);
+  var titleIdea = pinpointAskTitleHit(raw);
+  function askPool(){
+    var p = sig.hasAny ? pinpointAskPool(sig) : IDEAS.slice();
+    if (mat) p = p.filter(function(i){ return pinpointAskMatFit(i, mat); });
+    return p;
   }
+  function askDesc(){
+    var parts = [];
+    if (sig.desc) parts.push(sig.desc);
+    if (mat) parts.push("made with " + mat.label);
+    return parts.join(", ");
+  }
+  if (titleIdea){
+    var tProblems = pinpointAskViolations(sig, titleIdea);
+    if (mat && !pinpointAskMatFit(titleIdea, mat))
+      tProblems.push("it does not use " + mat.label);
+    var tPool = askPool();
+    if (!tProblems.length){
+      var tOut = {kind: "match", label: titleIdea.title, idea: titleIdea.id};
+      if ((sig.hasAny || mat) && tPool.length > 1){ tOut.breadth = tPool.length; tOut.desc = askDesc(); }
+      return tOut;
+    }
+    var tAlt = pinpointAskBestAlt(raw, tPool, titleIdea.id);
+    return {kind: "misfit", label: titleIdea.title, idea: titleIdea.id,
+            alt: tAlt ? tAlt.id : null, problems: tProblems,
+            audWord: sig.audWord, desc: askDesc(), count: tPool.length};
+  }
+  if (sig.hasAny || mat){
+    var fits0 = askPool();
+    var fits = mat ? pinpointAskMatSort(fits0, mat)
+                   : fits0.slice().sort(function(a, b){ return (a.rank || 999) - (b.rank || 999); });
+    if (fits.length){
+      var fOut = {kind: "fits", idea: fits[0].id,
+              alts: fits.slice(1, 4).map(function(i){ return i.id; }),
+              count: fits.length, desc: askDesc(), label: askDesc()};
+      var miss = pinpointAskMissingName(raw, mat, null);
+      if (miss) fOut.missing = miss;
+      return fOut;
+    }
+    return {kind: "nofits", desc: askDesc()};
+  }
+  if (!pinpointAskMissingName(raw, null, null)) return {kind: "nosignal"};
   return res;
 }
 
@@ -14690,10 +14866,22 @@ function pinpointTypedGo(){
   var res = (typeof pinpointAskResolve === "function") ? pinpointAskResolve(raw) : pinpointResolve(raw);
   if (res.kind === "fits"){
     /* Addendum 914 SPEC-1: a sentence ask with real bank fits opens the
-       top fit, framed as one of N so the breadth is honest (SPEC-3). */
+       top fit, framed as one of N so the breadth is honest (SPEC-3).
+       QA SPEC-B addendum: a name the bank truly lacks is acknowledged
+       first, never silently dropped. */
     pinpointNote(""); pinpointClearNomatch();
     try { Analytics.track("pinpoint_resolved", {kind: "typed-fits", query: (raw || "").slice(0, 30), idea: res.idea, label: ""}); } catch(_f){}
-    openIdeaDetail(res.idea, "One of " + res.count + " costumes in our bank that fit: " + res.desc, "s-hero");
+    var fitsHead = (res.missing ? "No " + res.missing.charAt(0).toUpperCase() + res.missing.slice(1) + " in our bank yet. " : "") +
+      "One of " + res.count + " costumes in our bank that fit: " + res.desc;
+    openIdeaDetail(res.idea, fitsHead, "s-hero");
+    return;
+  }
+  if (res.kind === "nosignal"){
+    /* QA SPEC-C: nothing was named that could be absent, so no absence
+       claim -- a matcher-limits line and the quiz route instead. */
+    try { Analytics.track("pinpoint_nosignal", {query: (raw || "").slice(0, 30)}); } catch(_s){}
+    pinpointNote("Tell me a name, who it's for, or what you have at home — or take the 2-minute quiz.");
+    pinpointClearNomatch();
     return;
   }
   if (res.kind === "misfit"){

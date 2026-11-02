@@ -2602,8 +2602,10 @@ html{scroll-padding-bottom:96px}
       return;
     }
     if(res.kind==="fits"){
-      /* Addendum 914 SPEC-1: the sentence had real bank fits all along. */
+      /* Addendum 914 SPEC-1: the sentence had real bank fits all along.
+         QA SPEC-B addendum: a truly absent name is acknowledged first. */
       try{ Analytics.track("pinpoint_resolved",{kind:"typed-fits",query:(raw||"").slice(0,30),idea:res.idea,label:""}); }catch(e){}
+      if(res.missing) out.appendChild(el("p","askp-note","No "+res.missing.charAt(0).toUpperCase()+res.missing.slice(1)+" in our bank yet."));
       out.appendChild(el("p","askp-note","We have "+res.count+" costumes in our bank that fit: "+res.desc+". Here is one:"));
       var fidea=matchIdeaById(res.idea);
       if(fidea&&typeof warmPairCard==="function") out.appendChild(warmPairCard(fidea,"One of "+res.count+" fits for: "+res.desc+"."));
@@ -2649,6 +2651,14 @@ html{scroll-padding-bottom:96px}
     if(res.kind==="nofits"){
       try{ Analytics.track("pinpoint_nomatch",{query:(raw||"").slice(0,30)}); }catch(e){}
       out.appendChild(el("p","askp-note","We heard you, but nothing in our bank fits all of that ("+res.desc+"). Try dropping one part, or take the 2-minute quiz below."));
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      return;
+    }
+    if(res.kind==="nosignal"){
+      /* QA SPEC-C: nothing named that could be absent -- no absence
+         claim, just what the matcher can hear plus the quiz route. */
+      try{ Analytics.track("pinpoint_nosignal",{query:(raw||"").slice(0,30)}); }catch(e){}
+      out.appendChild(el("p","askp-note","Tell me a name, who it's for, or what you have at home — or take the 2-minute quiz."));
       if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
       return;
     }
