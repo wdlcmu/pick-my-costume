@@ -184,6 +184,7 @@ _DESC_OVERRIDES = {
     "referee": "How to make a referee costume in 20 min: white tape stripes on a black shirt, a dollar-store whistle, and a yellow penalty flag. Step-by-step guide.",
     "ninja": "How to make a ninja costume in 10 min from black clothes you own: a sash and a headband cut from an old black tee. Step-by-step guide.",
     "coffee-cup": "How to make a coffee cup costume in 20 min: a white trash-bag cup, a brown paper lid hat, and a hand-drawn shop logo. Step-by-step guide.",
+    "lost-tourist": "How to make a lost tourist costume in 10 min: a wrinkled shirt, a crumpled map held upside down, and a luggage tag taped on backwards. Step-by-step guide.",
 }
 assert set(_DESC_OVERRIDES) <= set(data), "desc override slug not in bank"
 def _meta_desc_for(slug):
