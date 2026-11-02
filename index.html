@@ -1374,7 +1374,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   </div>
   <div class="ticker-panel" id="cdx-panel" hidden>
     <p class="cdx-break" id="cdx-break"></p>
-    <p class="cdx-mile">The one reminder email lands <strong>October 27, <span id="cdx-mile-y">2027</span></strong> &mdash; costumes you can make that night.</p>
+    <p class="cdx-mile">Want one reminder email? It lands <strong>October 27, <span id="cdx-mile-y">2027</span></strong>, with costumes you can make that night.</p>
   </div>
 
   <!-- 2026-09-29: persistent site header — logo + name on every screen, links home. -->
@@ -2099,7 +2099,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <p class="progress">Costume duel</p>
       <!-- 2026-10-01 (Item 6): the duel step-1 title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
       <img class="duel-hero-photo" id="duel-friend-photo" src="" alt="">
-      <p class="q-hint">Two quick questions and we will pick yours, then see how you match up.</p>
+      <p class="q-hint">Two quick questions. We pick a costume for you and one for a friend &mdash; then compare the two.</p>
       <p style="font-weight:700;margin:18px 0 8px">Who is the costume for?</p>
       <div class="opts" id="duel-q1"></div>
 </div>
@@ -2261,9 +2261,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <button class="ghost" id="btn-planner-back" type="button">&larr; Back</button>
         <button class="ghost" id="btn-planner-home" type="button">&#8962; Home</button>
 </div>
-      <p class="progress">Halloween countdown</p>
-      <h2 class="q-title">Your Halloween countdown</h2>
-      <p class="blurb">Pick a costume. We work backwards from October 31. The plan names your buy day. It names your build day. It shows each day's step.</p>
+      <p class="progress">Halloween 2027 countdown</p>
+      <h2 class="q-title">Your Halloween 2027 countdown</h2>
+      <p class="blurb">Pick a costume. We work backwards from October 31, 2027. The plan names your buy day. It names your build day. It shows each day's step.</p>
       <label class="plabel" for="planner-costume">Costume</label>
       <select id="planner-costume" class="pselect" aria-label="Pick a costume for the countdown plan"></select>
       <div id="planner-plan"></div>
@@ -2413,6 +2413,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 <!-- ASK PANEL START -->
 <style>
 .askp-open{position:fixed;right:16px;bottom:16px;z-index:9990;min-height:48px;padding:12px 20px;border:none;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.28)}
+.askp-open{transition:transform .25s ease,opacity .25s ease}
+.askp-open.askp-yield{transform:translateY(170%);opacity:0;pointer-events:none}
+html{scroll-padding-bottom:96px}
+.sitefoot{padding-bottom:110px}
 .askp-overlay{position:fixed;inset:0;z-index:9991;background:rgba(20,12,4,.48);display:flex;align-items:flex-end;justify-content:center;font-family:inherit;color:var(--ink)}
 .askp-overlay[hidden]{display:none}
 .askp-sheet{background:var(--card);width:100%;max-height:88vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:16px 18px 22px;line-height:1.45;box-shadow:0 -6px 30px rgba(0,0,0,.3);text-align:left}
@@ -2466,6 +2470,26 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   function lock(on){ document.documentElement.style.overflow=on?"hidden":""; document.body.style.overflow=on?"hidden":""; }
   function open(){ init(); lastFocus=document.activeElement; panel.hidden=false; lock(true); q.focus(); }
   function close(){ panel.hidden=true; lock(false); if(lastFocus&&lastFocus.focus) lastFocus.focus(); else openBtn.focus(); }
+  // Pill yield (fleet UXR audit 2026-11-01): at any scroll stop, if page text
+  // would sit under the pill, slide the pill away; it returns when the band
+  // under it is clear. Never yields while the panel is open or the pill has
+  // keyboard focus.
+  var yieldTimer=null;
+  function pillYieldCheck(){
+    if(!panel.hidden||document.activeElement===openBtn){ openBtn.classList.remove("askp-yield"); return; }
+    var r=openBtn.getBoundingClientRect(), cover=false,
+        nodes=document.querySelectorAll("section p, section h1, section h2, section h3, section li, footer p, footer li");
+    for(var i=0;i<nodes.length;i++){
+      var b=nodes[i].getBoundingClientRect();
+      if(!b.width||!b.height) continue;
+      if(b.bottom>r.top+8 && b.top<r.bottom-8 && b.right>r.left+8 && b.left<r.right-8){ cover=true; break; }
+    }
+    openBtn.classList.toggle("askp-yield", cover);
+  }
+  window.addEventListener("scroll", function(){ if(yieldTimer) clearTimeout(yieldTimer); yieldTimer=setTimeout(pillYieldCheck, 140); }, {passive:true});
+  window.addEventListener("resize", pillYieldCheck);
+  openBtn.addEventListener("focus", function(){ openBtn.classList.remove("askp-yield"); });
+  pillYieldCheck();
   function el(tag, cls, text){ var n=document.createElement(tag); if(cls) n.className=cls; if(text!=null) n.textContent=text; return n; }
   function openPlan(hit, kind){ close(); pinpointOpenIdea(hit, kind); }
   function answer(){
