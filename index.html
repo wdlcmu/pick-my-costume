@@ -38,7 +38,7 @@
      mirrors them verbatim.
      Costume build times and prices live on each /c/ guide's own HowTo. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the quick quiz. One pick, free guide, build time and supplies up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"Make Tonight means fast. 30 minutes of work or less. 126 of the 169 costumes make the cut."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Builds use thrift-store and closet basics, listed up front."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid. Picks fit their age, with safety notes."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}},{"@type":"Question","name":"What we don't do","acceptedAnswer":{"@type":"Answer","text":"We don't sell costumes, supplies, or anything else. There is no store and no checkout here. We don't take your quiz answers off your device. They stay in your browser. We don't ask for your name, phone number, or location. We don't send marketing email. One plan email, if you ask. One reminder, only if you tick. That is all."}},{"@type":"Question","name":"Our guarantees","acceptedAnswer":{"@type":"Answer","text":"No account. No login. No email needed for your pick. We never sell your email address. Analytics are never sold. Analytics are never shared with advertisers. There are no ads on this site."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the quick quiz. One pick, free guide, build time and supplies up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"Make Tonight means fast. 30 minutes of work or less. 126 of the 169 costumes make the cut."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Builds use thrift-store and closet basics, listed up front."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid. Picks fit their age, with safety notes."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}},{"@type":"Question","name":"What we don't do","acceptedAnswer":{"@type":"Answer","text":"We don't sell costumes, supplies, or anything else \u2014 there is no store and no checkout here. Your quiz answers stay in your browser, on your device. We ask for quiz answers only. Email comes only if you ask: one plan email, one reminder if you tick."}},{"@type":"Question","name":"Our guarantees","acceptedAnswer":{"@type":"Answer","text":"No account, login, or email is needed for your pick. We never sell your email address or analytics, and never share analytics with advertisers. This site is ad-free."}}]}
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='37' rx='24' ry='20' fill='%23ff8c1a'/%3E%3Crect x='29' y='9' width='6' height='12' rx='3' fill='%232e7d32'/%3E%3Ccircle cx='24' cy='35' r='3' fill='%232a1500'/%3E%3Ccircle cx='40' cy='35' r='3' fill='%232a1500'/%3E%3Cpath d='M24 45 Q32 51 40 45' stroke='%232a1500' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script>
@@ -156,7 +156,7 @@ body{
 .sitehead{display:flex;align-items:center;gap:12px}
 .sitenav{margin-left:auto;display:flex;align-items:center;gap:2px}
 .sitenav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:700;
-  padding:12px 10px;border-radius:10px;white-space:nowrap}
+  padding:12px 10px;border-radius:10px;white-space:nowrap;min-width:44px;box-sizing:border-box;text-align:center}
 @media (hover:hover){.sitenav a:hover{color:var(--ink)}}
 @media (min-width:900px){.sitehead{margin:0 -32px 4px;padding:0 32px}}
 /* 2026-10-04: phone header goes two rows (wordmark row, nav row) so the
@@ -166,7 +166,7 @@ body{
   .sitehead-link{min-height:44px}
   .sitehead-name{white-space:nowrap}
   .sitenav{margin-left:0;flex:1 1 100%;justify-content:space-between}
-  .sitenav a{padding:12px 6px;font-size:13px;min-height:44px;box-sizing:border-box;display:flex;align-items:center}
+  .sitenav a{padding:12px 6px;font-size:13px;min-height:44px;min-width:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center}
 }
 /* 2026-10-01 Section 2: the costume-detail top row (Back/Home,
    progress, "Costume detail") used a negative-margin bleed that assumes
@@ -293,6 +293,18 @@ body.st-open .sitehead{display:none}
      The moon zone is 64px from the right (54px moon + 10px offset); the old
      84px total left 42px/side, still overlapping. 140px total clears it. */
   .hero p.fine.firstonly{max-width:calc(100% - 140px)}
+}
+/* 2026-11-01 Phase B (Dim 7 placement): spacing-only tightening so the
+   worked-example card (.examplebox, directly under .hero) starts inside
+   the first screen at 390x844. No content, order, or behavior changes. */
+@media (max-width:899px){
+  .wrap{padding-top:12px}
+  .ticker{padding-top:4px;padding-bottom:4px}
+  .sitehead{padding-top:4px;margin-bottom:0}
+  .hero{padding:16px 8px 10px}
+  .hero h1{margin-top:4px;margin-bottom:4px}
+  #s-hero #hero-mosaic{margin:8px 0 0}
+  .hero .hero-proof{margin-top:4px!important}
 }
 /* 2026-10-12 (Billy: the stacked pitch + welcome-back "feels weird"):
    returning visitors with a fresh pick get the welcome-back card as their
@@ -1084,6 +1096,9 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 @media (max-width:520px){.tminus{padding-right:64px}.hero .mooncap{display:none}}
 .about-body p{margin:0 0 14px;line-height:1.55}
 .examplebox{margin:0 0 14px;padding:14px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
+.maker{border-top:1px solid var(--line);margin-top:28px;padding-top:20px;text-align:left}
+.maker h2{font-size:22px;margin:0 0 6px}
+.maker p{color:var(--muted);margin:0;font-size:16px;line-height:1.6}
 .examplebox p{margin:0 0 8px}
 .examplebox p:last-child{margin-bottom:0}
 .ex-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -2007,11 +2022,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-7" aria-expanded="false">What we don't do</button>
-      <div class="faq-a"><p>We don't sell costumes, supplies, or anything else. There is no store and no checkout here.</p><p style="margin-top:8px">We don't take your quiz answers off your device. They stay in your browser.</p><p style="margin-top:8px">We don't ask for your name, phone number, or location.</p><p style="margin-top:8px">We don't send marketing email.</p><p style="margin-top:8px">One plan email, if you ask.</p><p style="margin-top:8px">One reminder, only if you tick.</p><p style="margin-top:8px">That is all.</p></div>
+      <div class="faq-a"><p>We don't sell costumes, supplies, or anything else &mdash; there is no store and no checkout here.</p><p style="margin-top:8px">Your quiz answers stay in your browser, on your device.</p><p style="margin-top:8px">We ask for quiz answers only.</p><p style="margin-top:8px">Email comes only if you ask: one plan email, one reminder if you tick.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-8" aria-expanded="false">Our guarantees</button>
-      <div class="faq-a"><p>No account. No login.</p><p style="margin-top:8px">No email needed for your pick.</p><p style="margin-top:8px">We never sell your email address.</p><p style="margin-top:8px">Analytics are never sold.</p><p style="margin-top:8px">Analytics are never shared with advertisers.</p><p style="margin-top:8px">There are no ads on this site.</p></div>
+      <div class="faq-a"><p>No account, login, or email is needed for your pick.</p><p style="margin-top:8px">We never sell your email address or analytics, and never share analytics with advertisers.</p><p style="margin-top:8px">This site is ad-free.</p></div>
     </div>
   </section>
   <script>
@@ -2049,6 +2064,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
 </div>
       <p class="fine" style="margin-top:16px">No account, no signup. Your quiz answers stay on your phone. We only track anonymous usage stats.</p>
+      <div class="maker">
+        <h2>Made by a dad, on the side</h2>
+        <p>I&rsquo;m Billy, a dad in Redmond, Washington. I build these tools on the side, with AI &mdash; one idea, one website, no company behind it. Pick My Costume picks one you can make from your closet, with the supplies and steps up front.</p>
+      </div>
       <footer class="sitefoot">
         <p class="fine" style="margin:0 0 6px"><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/countdown">Costume countdown</a> &middot; <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
         <p class="fine" style="margin:0">Pick My Costume is an independent project. Built with Muse.</p>
@@ -2415,6 +2434,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 <style>
 .askp-open{position:fixed;right:16px;bottom:16px;z-index:9990;min-height:48px;padding:12px 20px;border:none;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.28)}
 .askp-open{transition:transform .25s ease,opacity .25s ease}
+@media (prefers-reduced-motion:reduce){.askp-open{transition:none}}
 .askp-open.askp-yield{transform:translateY(170%);opacity:0;pointer-events:none}
 html{scroll-padding-bottom:96px}
 .sitefoot{padding-bottom:110px}
@@ -2476,6 +2496,28 @@ html{scroll-padding-bottom:96px}
   // under it is clear. Never yields while the panel is open or the pill has
   // keyboard focus.
   var yieldTimer=null;
+  /* Phase B guard adoption (fleet-yield-guard ADOPTION-SPEC, PMC section):
+     the target collection is now the reference selector, collected once and
+     kept current by a MutationObserver, instead of a fresh querySelectorAll
+     on every scroll stop (this is the fleet's heaviest DOM). The resting
+     band is still computed from the untransformed CSS position (bottom:16px
+     / right:16px from the .askp-open rule + offset size — never the live
+     rect, per the D7 note below), the site's .askp-yield CSS values are
+     unchanged, and a 6px hysteresis band (the reference rule) keeps the
+     state sticky: once yielded, a target must clear the band expanded by
+     6px before the pill returns. */
+  var FYG_SELECTOR="a[href], button, input, select, textarea, summary, [role=\"button\"], [role=\"link\"], [role=\"tab\"], [role=\"menuitem\"], [tabindex]:not([tabindex=\"-1\"]), [data-fyg-watch]";
+  var yieldTargets=[];
+  function collectYieldTargets(){
+    var list=document.querySelectorAll(FYG_SELECTOR), out=[];
+    for(var i=0;i<list.length;i++){
+      var el=list[i];
+      if(el===openBtn||openBtn.contains(el)) continue;
+      if(el===panel||panel.contains(el)) continue;
+      out.push(el);
+    }
+    yieldTargets=out;
+  }
   function pillYieldCheck(){
     if(!panel.hidden||document.activeElement===openBtn){ openBtn.classList.remove("askp-yield"); return; }
     /* D7 2026-11-01: measure the band the pill occupies when NOT yielded
@@ -2483,14 +2525,22 @@ html{scroll-padding-bottom:96px}
        rect instead made the check read its own yield transform mid-flight
        and un-yield onto the sticky CTA at page bottom. */
     var ow=openBtn.offsetWidth, oh=openBtn.offsetHeight,
-        r={top:window.innerHeight-16-oh, bottom:window.innerHeight-16, left:window.innerWidth-16-ow, right:window.innerWidth-16}, cover=false,
-        nodes=document.querySelectorAll("section p, section h1, section h2, section h3, section li, footer p, footer li, section a, section button, section input, section select, section textarea, .stickycta button");
-    for(var i=0;i<nodes.length;i++){
-      var b=nodes[i].getBoundingClientRect();
+        ex=openBtn.classList.contains("askp-yield")?6:0,
+        r={top:window.innerHeight-16-oh-ex, bottom:window.innerHeight-16+ex, left:window.innerWidth-16-ow-ex, right:window.innerWidth-16+ex}, cover=false;
+    for(var i=0;i<yieldTargets.length;i++){
+      var b=yieldTargets[i].getBoundingClientRect();
       if(!b.width||!b.height) continue;
-      if(b.bottom>r.top+8 && b.top<r.bottom-8 && b.right>r.left+8 && b.left<r.right-8){ cover=true; break; }
+      if(b.bottom>r.top && b.top<r.bottom && b.right>r.left && b.left<r.right){ cover=true; break; }
     }
     openBtn.classList.toggle("askp-yield", cover);
+  }
+  collectYieldTargets();
+  if(window.MutationObserver){
+    var yieldMoTimer=null;
+    new MutationObserver(function(){
+      if(yieldMoTimer) return;
+      yieldMoTimer=setTimeout(function(){ yieldMoTimer=null; collectYieldTargets(); pillYieldCheck(); }, 250);
+    }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden","style","class"]});
   }
   window.addEventListener("scroll", function(){ if(yieldTimer) clearTimeout(yieldTimer); yieldTimer=setTimeout(pillYieldCheck, 140); }, {passive:true});
   window.addEventListener("resize", pillYieldCheck);
