@@ -419,7 +419,7 @@ body.st-open .sitehead{display:none}
 .kidszone{max-width:760px;margin:0 auto}
 /* 2026-09-29: tools as a horizontal tab row. One tap reveals the tool
    inline below; only one panel open at a time. Mirrors .chip/.chiprow. */
-.tooltabrow{display:flex;gap:8px;margin:12px -16px 0;padding:2px 16px 8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tooltabrow{display:flex;gap:8px;margin:12px -16px 0;padding:2px 16px 8px;overflow-x:auto;touch-action:pan-x pan-y;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tooltabrow::-webkit-scrollbar{display:none}
 .tooltab{flex:0 0 auto;display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;padding:8px 18px;border:1px solid var(--line);border-radius:999px;background:none;font-size:14px;font-weight:600;color:var(--ink);font-family:inherit;white-space:nowrap;cursor:pointer}
 @media (hover:hover){.tooltab:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
@@ -438,7 +438,7 @@ body.st-open .sitehead{display:none}
 .playnudge-go{color:var(--accent);font-weight:700;font-size:20px;flex:0 0 auto}
 /* 2026-09-26: tabbed Discover feed. One section, three collections,
    kills the stacked-rails CTA overload. */
-.chiprow{display:flex;gap:8px;margin:8px -16px 0;padding:2px 16px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chiprow{display:flex;gap:8px;margin:8px -16px 0;padding:2px 16px 4px;overflow-x:auto;touch-action:pan-x pan-y;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .chiprow::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;background:none;border:1px solid var(--line);border-radius:999px;min-height:44px;padding:10px 18px;font-size:14px;color:var(--muted);cursor:pointer;font-family:inherit;box-sizing:border-box;white-space:nowrap}
 .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
@@ -562,7 +562,7 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
    small thumbnails; the hero CTA stays the dominant action on the page. */
 .proofstrip{margin-top:14px}
 /* 2026-09-25: the strip is a horizontal swipe rail, not a fixed row. */
-.proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.proofrow{display:flex;gap:8px;margin:6px -16px 0;padding:4px 16px 8px;overflow-x:auto;touch-action:pan-x pan-y;scroll-snap-type:x mandatory;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
 .proofrow::-webkit-scrollbar{display:none}
 /* 2026-09-26 (proof-strip step-6 grade): right-edge fade signals the rail scrolls; cards 5-8 were invisible on mobile with the scrollbar fully hidden. Scoped to the homepage strip. */
 .proofstrip .proofrow{-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
@@ -701,6 +701,7 @@ h1{font-size:40px;margin:12px 0 8px;letter-spacing:-0.5px}
 /* 2026-09-30: results side padding 16px to match the homepage (.wrap) side
    padding (Tab 1 #3 follow-up). */
 #s-results{padding-left:16px;padding-right:16px}
+#s-results .card h3 a{display:inline-flex;align-items:center;min-height:44px} /* D7 2026-11-01: result pick-name link is a real tap target */
 /* 2026-10-16 (Billy, results cut round 2): once the hero screen is gone,
    .wrap holds only the ticker + header, and its tall bottom padding
    (64px phone / 80px desktop) was pure dead space above the results.
@@ -2477,8 +2478,13 @@ html{scroll-padding-bottom:96px}
   var yieldTimer=null;
   function pillYieldCheck(){
     if(!panel.hidden||document.activeElement===openBtn){ openBtn.classList.remove("askp-yield"); return; }
-    var r=openBtn.getBoundingClientRect(), cover=false,
-        nodes=document.querySelectorAll("section p, section h1, section h2, section h3, section li, footer p, footer li");
+    /* D7 2026-11-01: measure the band the pill occupies when NOT yielded
+       (bottom:16px / right:16px from the .askp-open rule). Reading the live
+       rect instead made the check read its own yield transform mid-flight
+       and un-yield onto the sticky CTA at page bottom. */
+    var ow=openBtn.offsetWidth, oh=openBtn.offsetHeight,
+        r={top:window.innerHeight-16-oh, bottom:window.innerHeight-16, left:window.innerWidth-16-ow, right:window.innerWidth-16}, cover=false,
+        nodes=document.querySelectorAll("section p, section h1, section h2, section h3, section li, footer p, footer li, section a, section button, section input, section select, section textarea, .stickycta button");
     for(var i=0;i<nodes.length;i++){
       var b=nodes[i].getBoundingClientRect();
       if(!b.width||!b.height) continue;
