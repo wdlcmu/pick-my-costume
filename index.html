@@ -2497,6 +2497,37 @@ html{scroll-padding-bottom:96px}
     if(!raw){ q.focus(); return; }
     out.innerHTML="";
     out.appendChild(el("p","askp-user","You: "+raw));
+    /* D2 baseline (fleet dimension sweep, 2026-11-01): greet back, say
+       what this site is, and answer plain arithmetic BEFORE the costume
+       engine runs. "sup" used to match Superhero Family; a greeting is
+       not a costume. Panel-only change: app.js and the MCP server are
+       untouched, and every costume path below is byte-identical. */
+    var baseLow=raw.toLowerCase().replace(/[’‘]/g,"'").replace(/[\s!.?,]+$/,"");
+    if(/^(hi|hello|hey|sup|yo|hiya|howdy|good morning|good afternoon|good evening|what's up|whats up)$/.test(baseLow)){
+      out.appendChild(el("p","askp-note","Hi! This is Pick My Costume. Name a costume you want, like Spider-Man, or say it in your own words, like a no-sew dinosaur for my kid. I will find our DIY take on it."));
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      return;
+    }
+    if(/^(what is this site|what is this|what does this site do|what do you do|who are you|what is pick my costume|how does this work|what can you do)$/.test(baseLow)){
+      out.appendChild(el("p","askp-note","This is Pick My Costume. It picks a costume you can actually make, with the guide, the build time, and the supplies up front. Name a costume, or take the 2-minute quiz and we pick for you."));
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      return;
+    }
+    var baseArith=raw.toLowerCase().replace(/[’‘]/g,"'").replace(/\?+\s*$/,"").trim();
+    var baseM=baseArith.match(/^(?:what's|what is|calculate|solve)?\s*(-?\d+(?:\.\d+)?)\s*([+\-*\/x×])\s*(-?\d+(?:\.\d+)?)$/);
+    if(baseM){
+      var ba=parseFloat(baseM[1]), bb=parseFloat(baseM[3]), bop=baseM[2];
+      if(bop==="/"&&bb===0){
+        out.appendChild(el("p","askp-note","You can't divide by zero. Any other math, or a costume I can find for you?"));
+      } else {
+        var bval=(bop==="+")?ba+bb:(bop==="-")?ba-bb:(bop==="/")?ba/bb:ba*bb;
+        bval=Math.round(bval*1e10)/1e10;
+        var bsym=(bop==="*"||bop==="x"||bop==="×")?"×":bop;
+        out.appendChild(el("p","askp-note",ba+" "+bsym+" "+bb+" = "+bval+". Now, want a costume? Name one and I will find our DIY take on it."));
+      }
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      return;
+    }
     if(typeof pinpointResolve!=="function"){
       out.appendChild(el("p","askp-note","The costume bank is still loading. Give it a second and try again."));
       return;
