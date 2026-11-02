@@ -174,12 +174,28 @@ def _meta_desc(title, hw):
     if len(d) > 155:
         d = d.replace("a full supplies list", "a supplies list")
     return d
+# Per-slug meta description overrides (GSC CTR pass, 2026-11-01): same idea
+# as _TITLE_OVERRIDES. The shared template reads identically on every guide;
+# on these four well-ranked pages the snippet itself is the ad, so each one
+# names its own concrete build picture instead. Emitted as SEODESC and
+# applied over the template at render time in the function template below.
+_DESC_OVERRIDES = {
+    "fruit-salad": "How to make a fruit salad group costume in 20 min: each person wears a fruit color with a felt leaf hat. Full supplies list and step-by-step guide.",
+    "referee": "How to make a referee costume in 20 min: white tape stripes on a black shirt, a dollar-store whistle, and a yellow penalty flag. Step-by-step guide.",
+    "ninja": "How to make a ninja costume in 10 min from black clothes you own: a sash and a headband cut from an old black tee. Step-by-step guide.",
+    "coffee-cup": "How to make a coffee cup costume in 20 min: a white trash-bag cup, a brown paper lid hat, and a hand-drawn shop logo. Step-by-step guide.",
+}
+assert set(_DESC_OVERRIDES) <= set(data), "desc override slug not in bank"
+def _meta_desc_for(slug):
+    if slug in _DESC_OVERRIDES:
+        return _DESC_OVERRIDES[slug]
+    return _meta_desc(data[slug]["t"], _instructions[slug])
 # Floor lowered 110 -> 100 on 2026-10-16 (gpt-loop run 323): the sizing-tips
 # phrase was dropped from every meta description (only 31 of 169 guides render
 # a sizing paragraph, so the claim was false on 138), shortening the shortest
 # descriptions to ~105 chars. Google imposes no minimum meta length.
-_bad_desc = [(s, len(_meta_desc(data[s]["t"], _instructions[s]))) for s in data
-             if not 100 <= len(_meta_desc(data[s]["t"], _instructions[s])) <= 155]
+_bad_desc = [(s, len(_meta_desc_for(s))) for s in data
+             if not 100 <= len(_meta_desc_for(s)) <= 155]
 assert not _bad_desc, "meta description outside 120-155 chars: %s" % (_bad_desc[:10],)
 # Sourced-facts layer (AI-citation checklist item #10, audited 2026-09-26):
 # one audited external citation per guide, on safety-relevant steps only.
@@ -488,6 +504,15 @@ def _bare_title(slug):
 _TITLE_OVERRIDES = {
     "kpop-demon-huntresses": "DIY Pop Star Demon Huntresses: 40-Min Cardboard Build",
     "pumpkin-king-bride": "DIY Pumpkin Groom & Patchwork Bride: 45-Min Cardboard Build",
+    # GSC CTR pass (2026-11-01): these four rank on page 1-2 but their
+    # generic titles earned ~1% CTR in the first Search Console pull. The
+    # new titles keep the searcher's phrase and name the page's concrete
+    # build picture. coffee-cup drops "Cardboard Build": cardboard is only
+    # the optional sleeve; the build is a trash-bag cup with a paper lid hat.
+    "fruit-salad": "DIY Fruit Salad Costume: Easy 20-Min Group Build",
+    "referee": "DIY Referee Costume: 20-Min Tape-Stripe Build",
+    "ninja": "DIY Ninja Costume: 10-Min Build From Your Closet",
+    "coffee-cup": "DIY Coffee Cup Costume: 20-Min Build With a Lid Hat",
 }
 def _seo_title(slug):
     t = _bare_title(slug)
@@ -595,6 +620,7 @@ SEOTITLE = {s: _seo_title(s) for s in data}
 assert set(SEOTITLE) == set(data), "seo title map missing slugs"
 _long_titles = [(s, len(t)) for s, t in SEOTITLE.items() if len(t) > 90]
 assert not _long_titles, "seo title over 90 chars: %s" % (_long_titles[:5],)
+SEODESC = dict(_DESC_OVERRIDES)
 
 # Related-by-material internal links (Claude 4c): up to 5 other ideas sharing
 # the primary material, deterministic slug order. Rendered only when the
@@ -967,6 +993,7 @@ var RELATED = %s;
 // <=60 chars (Lane 4, 2026-10-01).
 // No costs/dollar figures anywhere.
 var SEOTITLE = %s;
+var SEODESC = %s;
 var _UNIQUE_SIZING = new Set(%s);
 
 // Primary material per idea ("cardboard", "felt", ...): the heading noun
@@ -1304,6 +1331,11 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       " DIY project with a full supplies list and a step-by-step guide.";
     if (_desc.length > 155) _desc = _desc.replace("a full supplies list", "a supplies list");
   }
+  /* Per-slug description overrides (GSC CTR pass, 2026-11-01): a few guides
+     whose search snippet needs the page's own concrete build picture instead
+     of the shared template above. Mirrors the SEOTITLE override pattern;
+     values asserted 100-155 chars at generation time (gen_share_function.py). */
+  if (SEODESC[slug]) _desc = SEODESC[slug];
   var _ld = "";
   if (_hw) {
     /* Total hands-on time: bank stores "25 min" (also "25 min + drying").
@@ -2329,7 +2361,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
   });
 }
 ''' % (json.dumps(data), json.dumps(ALIASES), json.dumps(SPLIT_SLUGS), json.dumps(HALVES), json.dumps(ROLE_CARDS), json.dumps(RELATED),
-       json.dumps(SEOTITLE), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(HUBLINKS), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION), json.dumps(HERODIMS),
+       json.dumps(SEOTITLE), json.dumps(SEODESC), json.dumps(sorted(_UNIQUE_SIZING)), json.dumps(PRIMARYMAT), json.dumps(_MAT_REL_LABEL), json.dumps(MATRELATED), json.dumps(_THEMECOLL_MAP), json.dumps(HUBLINKS), json.dumps(SHARECAP), json.dumps(INTRO), json.dumps(SEALT), json.dumps(PICTURED), json.dumps(REGION), json.dumps(HERODIMS),
        json.dumps(howto), json.dumps(_PANTRY_MATS), json.dumps(_PANTRY_LABELS), json.dumps(_PANTRY_EMOJI), json.dumps(_CLIENTJS), json.dumps(NOTFOUND_SRC),
        "true" if RECIPIENT_BANNER else "false", "true" if IMADEIT else "false")
 
