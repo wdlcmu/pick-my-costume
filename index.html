@@ -2499,7 +2499,7 @@ html{scroll-padding-bottom:96px}
 <div class="askp-overlay" id="askp-panel" hidden>
   <div class="askp-sheet" role="dialog" aria-modal="true" aria-labelledby="askp-title">
     <div class="askp-head"><h2 id="askp-title">Who exactly do you want to be?</h2><button type="button" class="askp-close" id="askp-close" aria-label="Close the ask panel">&times;</button></div>
-    <p class="askp-sub">Type a costume name, or ask in a sentence: "no sew for my toddler". The match runs against our own costume bank, right on this page, the same match the search box up top makes.</p>
+    <p class="askp-sub">Type a costume name, or ask our AI in a sentence: "no sew for my toddler". It picks only from our own bank of 169 costumes, each with its build guide. Nothing you type is saved.</p>
     <div class="askp-chips" id="askp-chips">
       <button type="button">vampire</button>
       <button type="button">ghost</button>
@@ -2593,7 +2593,55 @@ html{scroll-padding-bottom:96px}
   pillYieldCheck();
   function el(tag, cls, text){ var n=document.createElement(tag); if(cls) n.className=cls; if(text!=null) n.textContent=text; return n; }
   function openPlan(hit, kind){ close(); pinpointOpenIdea(hit, kind); }
+  /* ASK-REBUILD 2026-11-03: the panel now asks the site's AI chat
+     worker (POST /api/chat on this domain; Llama over the site's own
+     bank + facts). Session facts are held here and handed back each
+     turn; nothing is stored server-side. ANY failure (offline, worker
+     down, bad reply) falls back to answerLocal below — the original
+     in-page matcher, byte-for-byte the pre-flip behavior. */
+  var askFacts=null, askBusy=false;
   function answer(){
+    var raw=(q.value||"").trim();
+    if(!raw||askBusy){ if(!raw) q.focus(); return; }
+    if(typeof fetch!=="function"){ answerLocal(); return; }
+    askBusy=true; goBtn.disabled=true;
+    out.innerHTML="";
+    out.appendChild(el("p","askp-user","You: "+raw));
+    var thinking=el("p","askp-note","Thinking…");
+    out.appendChild(thinking);
+    var ctrl=(typeof AbortController!=="undefined")?new AbortController():null;
+    var timer=ctrl?setTimeout(function(){ try{ ctrl.abort(); }catch(e){} },30000):null;
+    fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:raw,facts:askFacts||undefined}),signal:ctrl?ctrl.signal:undefined})
+      .then(function(r){ if(!r.ok) throw new Error("chat "+r.status); return r.json(); })
+      .then(function(j){
+        if(timer) clearTimeout(timer); askBusy=false; goBtn.disabled=false;
+        if(!j||typeof j.reply!=="string"||!j.reply){ answerLocal(); return; }
+        if(j.facts) askFacts=j.facts;
+        out.innerHTML="";
+        out.appendChild(el("p","askp-user","You: "+raw));
+        j.reply.split(/\n\n+/).forEach(function(part){
+          part.split(/\n/).forEach(function(line){ line=line.replace(/\s*Guide: https:\/\/\S+/,""); if(line.trim()) out.appendChild(el("p","askp-note",line)); });
+        });
+        var picks=j.picks||[];
+        try{ Analytics.track("ask_chat_answered",{query:raw.slice(0,30),picks:picks.length}); }catch(e){}
+        picks.forEach(function(p,idx){
+          var idea=(typeof matchIdeaById==="function")?matchIdeaById(p.id):null;
+          if(idea&&typeof warmPairCard==="function") out.appendChild(warmPairCard(idea,p.title+" — picked by the Ask AI from our bank."));
+          if(idx===0&&idea){
+            var acts=el("div","askp-actions");
+            var plan=el("button","askp-plan","Open the full plan"); plan.type="button";
+            plan.addEventListener("click",function(){ openPlan({label:p.title, idea:p.id, raw:raw},"chat"); });
+            acts.appendChild(plan); out.appendChild(acts);
+          }
+        });
+        if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
+      })
+      .catch(function(){
+        if(timer) clearTimeout(timer); askBusy=false; goBtn.disabled=false;
+        answerLocal();
+      });
+  }
+  function answerLocal(){
     var raw=(q.value||"").trim();
     if(!raw){ q.focus(); return; }
     out.innerHTML="";
