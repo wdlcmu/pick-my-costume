@@ -944,6 +944,11 @@ var ASK_GENERIC_WORDS = {a: 1, an: 1, the: 1, costume: 1, costumes: 1, for: 1, m
   is: 1, it: 1, of: 1, to: 1, be: 1, am: 1, are: 1, do: 1, does: 1, have: 1, has: 1, using: 1,
   use: 1, from: 1, help: 1, find: 1, show: 1, give: 1, looking: 1, look: 1, idea: 1, ideas: 1,
   halloween: 1, dress: 1, up: 1, one: 1, some: 1, any: 1, you: 1, your: 1, how: 1, about: 1,
+  /* SPEC-COLDQA1103-2 (2026-11-03): count-question words are never a
+     costume name. "How many costumes can I make tonight?" used to leave
+     "many" as the leftover name and the panel printed "No Many in our
+     bank yet." above the true 126 answer. */
+  many: 1, much: 1, there: 1, total: 1,
   into: 1, on: 1, in: 1, at: 1, or: 1, and: 1, who: 1, wear: 1, wearing: 1, become: 1, turn: 1,
   like: 1, really: 1, just: 1, very: 1, out: 1};
 var ASK_AUD_WORDS = {toddler: 1, toddlers: 1, baby: 1, babies: 1, infant: 1, preschooler: 1,

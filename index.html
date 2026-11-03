@@ -1752,7 +1752,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            block moved here from the About screen, content unchanged. A cold
            visitor now sees input -> pick directly under the hero instead of
            far down the page. -->
-      <div class="examplebox">
+      <div class="examplebox" data-fyg-watch>
         <p class="ex-label">Example</p>
         <p>You answer: <b>couple, funny, couch-level</b>.</p>
         <p>You get: <b>Ketchup &amp; Mustard</b>.</p>
@@ -2617,6 +2617,16 @@ html{scroll-padding-bottom:96px}
     }
     if(typeof pinpointResolve!=="function"){
       out.appendChild(el("p","askp-note","The costume bank is still loading. Give it a second and try again."));
+      return;
+    }
+    /* SPEC-COLDQA1103-3 (2026-11-03): the bank-size question is a canned
+       answer like greetings and arithmetic above. It answers from the
+       live bank (IDEAS.length, never a hardcoded count). Filtered count
+       asks ("how many no sew costumes") do not match this pattern and
+       still flow to the resolver below, which counts the real fits. */
+    if(typeof IDEAS!=="undefined"&&/^how many (costumes|costume ideas)( are there( in (your|the) bank)?| do you have| are in (your|the) bank| in (your|the) bank| total)?$/.test(baseLow)){
+      out.appendChild(el("p","askp-note",IDEAS.length+" costumes, every one a DIY build with the guide, time, and supplies up front."));
+      if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
       return;
     }
     var res=(typeof pinpointAskResolve==="function")?pinpointAskResolve(raw):pinpointResolve(raw);
