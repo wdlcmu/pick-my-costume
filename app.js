@@ -14885,7 +14885,7 @@ function pinpointTypedGo(){
     /* QA SPEC-C: nothing was named that could be absent, so no absence
        claim -- a matcher-limits line and the quiz route instead. */
     try { Analytics.track("pinpoint_nosignal", {query: (raw || "").slice(0, 30)}); } catch(_s){}
-    pinpointNote("Tell me a name, who it's for, or what you have at home — or take the 2-minute quiz.");
+    pinpointNote("Tell me a name, who it's for, or what you have at home, or take the 2-minute quiz.");
     pinpointClearNomatch();
     return;
   }
