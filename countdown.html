@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The 12-Day Costume Countdown - Pick My Costume</title>
-<meta name="description" content="One costume idea a day, Oct 20 through Halloween. Share the day, dare a friend to beat your pick. Free, no signup.">
+<meta name="description" content="One costume idea a day, Oct 20 through Halloween 2027. Share the day, dare a friend to beat your pick. Free, no signup.">
 <meta property="og:title" content="The 12-Day Costume Countdown">
-<meta property="og:description" content="One costume idea a day, Oct 20 through Halloween. Share the day, dare a friend to beat your pick. Free, no signup.">
+<meta property="og:description" content="One costume idea a day, Oct 20 through Halloween 2027. Share the day, dare a friend to beat your pick. Free, no signup.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pickmycostume.com/countdown.html">
 <meta property="og:image" content="https://pickmycostume.com/images/og/classic-ghost--sheet-ghost.jpg">
@@ -59,8 +59,8 @@
   <header class="hero">
     <div class="moon" aria-hidden="true">&#127769;</div>
     <h1>The 12-Day Costume Countdown</h1>
-    <p class="sub">One costume idea a day, Oct 20 through Halloween. Share the day, dare a friend to beat your pick.</p>
-    <div><span class="dateline" id="dateline">Oct 20 - Oct 31</span></div>
+    <p class="sub">One costume idea a day, Oct 20 through Halloween 2027. Share the day, dare a friend to beat your pick.</p>
+    <div><span class="dateline" id="dateline">Oct 20 - Oct 31, 2027</span></div>
     <div><a class="quizcta" href="/">Take the 2-minute quiz</a></div>
   </header>
   <div id="today-slot"></div>
@@ -71,9 +71,11 @@
   <a href="/">pickmycostume.com</a></p>
 </div>
 <script>
-/* The 12-Day Costume Countdown (2026-09-26, code only, not deployed).
-   One featured idea per day, Oct 20-31. Each day is shareable with
-   ?s=<sid>&o=countdown so recipient opens are measurable per day. */
+/* The 12-Day Costume Countdown (first built 2026-09-26; rolled to the
+   2027 edition 2026-11-02, SPEC-1 date honesty: never present a finished
+   season's countdown as current). One featured idea per day, Oct 20-31.
+   Each day is shareable with ?s=<sid>&o=countdown so recipient opens are
+   measurable per day. */
 var COUNTDOWN_DAYS = [
   {slug:"neon-demon-hunter",  title:"Neon Demon Hunter",  blurb:"Streetwear with glowing sigils, a foam sword, and pop-idol hair and makeup.", time:"25 min",  tag:"Trending"},
   {slug:"astronaut",          title:"Astronaut",          blurb:"White sweats, a paper-bag helmet, and a flag patch.", time:"25 min",  tag:"Kid classic"},
@@ -88,8 +90,8 @@ var COUNTDOWN_DAYS = [
   {slug:"crowd-camouflage",   title:"Crowd Camouflage",   blurb:"Gray hoodie, dark pants, blank expression. Vanish into any crowd.", time:"5 min", tag:"Last minute"},
   {slug:"black-cat",          title:"Black Cat Burglar",  blurb:"Black sweatsuit, cat-ear headband, eye mask. Add a toy sack for burglar.", time:"20 min", tag:"Last minute"}
 ];
-var COUNTDOWN_START = {month:10, day:20, year:2026};
-var COUNTDOWN_END = {month:10, day:31, year:2026};
+var COUNTDOWN_START = {month:10, day:20, year:2027};
+var COUNTDOWN_END = {month:10, day:31, year:2027};
 
 /* Pure: maps a local calendar date to countdown state. Testable. */
 function countdownState(y, m, d){
@@ -212,14 +214,14 @@ function shareDay(i){
   }
 
   if (st.mode === "before") {
-    dl.textContent = "Starts Oct 20";
+    dl.textContent = "Starts Oct 20, 2027";
     slot.innerHTML =
-      '<h2 class="sec">The countdown starts Oct 20</h2>' +
+      '<h2 class="sec">The countdown starts Oct 20, 2027</h2>' +
       '<div class="today"><div class="body">' +
       '<p class="blurb" style="margin:0">Twelve days, twelve costumes, one shared dare a day. ' +
-      "Come back Oct 20 for Day 1, or take the quiz now and get your pick today.</p>" +
+      "Come back Oct 20, 2027 for Day 1, or take the quiz now and get your pick today.</p>" +
       "</div></div>";
-    document.getElementById("grid-title").textContent = "The 12 days (locked until Oct 20)";
+    document.getElementById("grid-title").textContent = "The 12 days (locked until Oct 20, 2027)";
     for (var i = 0; i < 12; i++) lockedCard(i);
   } else if (st.mode === "live") {
     var daysLeft = 11 - st.today;
@@ -229,7 +231,7 @@ function shareDay(i){
     for (var j = 0; j <= st.today; j++) { if (j !== st.today) openCard(j, false); }
     for (var k = st.today + 1; k < 12; k++) lockedCard(k);
   } else {
-    dl.textContent = "Halloween 2026: the full dozen";
+    dl.textContent = "Halloween " + COUNTDOWN_END.year + ": the full dozen";
     document.getElementById("grid-title").textContent = "All 12 days";
     for (var a = 0; a < 12; a++) openCard(a, false);
   }
