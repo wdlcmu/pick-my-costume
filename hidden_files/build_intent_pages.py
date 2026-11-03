@@ -264,9 +264,47 @@ def display_time(t):
         f'unexpected bank time format: {t!r}'
     return re.sub(r"\s*\+.*drying\s*$", "", t)
 
+# SPEC-4 (2026-11-02): cards finish the job on the page - full materials list
+# plus a 3-step summary grounded in the bank steps. The summary dict lives in
+# the SPEC-4/5 lane script (single source, imported here at build time is
+# overkill; the dict is mirrored in spec45-plain-phrase-2026-11-02/apply_spec45.py
+# - keep the two in sync). Fallback for unlisted ideas: first 3 bank steps
+# that are not Safety:/Optional lines, fragments under 4 words skipped.
+import importlib.util as _ilu
+_spec45 = _ilu.spec_from_file_location('apply_spec45_steps', os.path.join(ROOT, 'spec45-plain-phrase-2026-11-02', 'apply_spec45.py'))
+# Do NOT exec the lane script (it edits files on import); read its STEPS dict via ast instead.
+import ast as _ast
+_STEPS = {}
+for _node in _ast.parse(open(os.path.join(ROOT, 'spec45-plain-phrase-2026-11-02', 'apply_spec45.py'), encoding='utf-8').read()).body:
+    if isinstance(_node, _ast.Assign) and getattr(_node.targets[0], 'id', '') == 'STEPS':
+        _STEPS = _ast.literal_eval(_node.value)
+assert _STEPS, 'SPEC-4 STEPS dict not loaded'
+
+def _clean_mat(x):
+    return re.sub(r'\s*\((?:own|buy|make)[^)]*\)\s*$', '', x).strip()
+
+def _steps_for(iid, d):
+    if iid in _STEPS:
+        return _STEPS[iid]
+    out = []
+    for s in d.get('s', []):
+        if s.startswith('Safety:') or s.startswith('Optional'):
+            continue
+        if len(s.split()) < 4:
+            continue
+        out.append(s)
+        if len(out) == 3:
+            break
+    return out
+
 def card(iid, slug=''):
     i, d = ideas[iid], instr[iid]
-    need = need_line(d.get('m', []))
+    need = '; '.join(_clean_mat(x) for x in d.get('m', [])) + '.'
+    steps = _steps_for(iid, d)
+    how_html = ''
+    if steps:
+        lis = ''.join(f'<li>{html.escape(s)}</li>' for s in steps)
+        how_html = f'\n<div class="how"><p class="howt">How to make it</p><ol>{lis}</ol></div>'
     safety = SAFETY_NOTES.get((slug, iid), '')
     safety_html = f'\n<p class="safety-note">{safety}</p>' if safety else ''
     return f"""<article class="ccard" data-unit-item="{iid}">
@@ -274,7 +312,7 @@ def card(iid, slug=''):
 <h3><a href="/c/{iid}">{html.escape(i['title'])}</a></h3>
 <p class="chips"><span class="chip">⏱ {html.escape(display_time(d.get('time','')))} hands-on</span><span class="chip">{html.escape(d.get('effort',''))}</span></p>
 <p class="need"><strong>You need:</strong> {html.escape(need)}</p>
-<p class="blurb">{html.escape(i['blurb'])}</p>{safety_html}
+<p class="blurb">{html.escape(i['blurb'])}</p>{safety_html}{how_html}
 <p class="go"><a href="/c/{iid}">Build this costume →</a></p>
 </article>"""
 
@@ -326,7 +364,7 @@ h1{{font-size:32px;margin:10px 0 4px}}.byline{{color:var(--mut);font-size:14px;m
 .ccard img{{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:cover;background:#f3ead8}}
 .ccard h3,.ccard p{{margin:10px 16px}}.ccard h3 a{{color:var(--ink);text-decoration:none}}
 .chips{{display:flex;flex-wrap:wrap;gap:6px}}.chip{{background:#f6efe0;border-radius:999px;padding:3px 10px;font-size:13px}}
-.need{{font-size:14px;color:var(--mut)}}.blurb{{font-size:15px}}.go a{{color:var(--acc);font-weight:700;text-decoration:none}}
+.need{{font-size:14px;color:var(--mut)}}.blurb{{font-size:15px}}.how{{margin:10px 16px}}.howt{{font-weight:700;margin:0 0 4px;font-size:15px}}.how ol{{margin:0;padding-left:20px}}.how li{{margin:3px 0;font-size:14px;line-height:1.45}}.go a{{color:var(--acc);font-weight:700;text-decoration:none}}
 .cta{{background:#1d1a16;color:#fff;border-radius:14px;padding:24px;margin:32px 0;text-align:center}}
 .cta a{{color:#ffb020;font-weight:700}}
 footer{{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}}
@@ -356,7 +394,7 @@ footer a{{color:var(--mut);margin:0 10px}}
 </nav>
 </header>
 <main>
-<p class="byline">Updated September 2026 · Pick My Costume</p>
+<p class="byline">Updated November 2026 · Pick My Costume</p>
 <h1>{h1}</h1>
 <p class="lede">{intro}</p>
 <div class="grid" id="intent-grid" data-unit-id="{slug}" data-unit-type="intent-grid">
