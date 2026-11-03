@@ -271,10 +271,13 @@ def display_time(t):
 
 # SPEC-4 (2026-11-02): cards finish the job on the page - full materials list
 # plus a 3-step summary grounded in the bank steps. The summary dict lives in
-# the SPEC-4/5 lane script (single source, imported here at build time is
-# overkill; the dict is mirrored in spec45-plain-phrase-2026-11-02/apply_spec45.py
-# - keep the two in sync). Fallback for unlisted ideas: first 3 bank steps
-# that are not Safety:/Optional lines, fragments under 4 words skipped.
+# the SPEC-4/5 lane script (single source of truth; this generator reads it
+# via ast at build time): spec45-plain-phrase-2026-11-02/apply_spec45.py.
+# SPEC-INTENT-1 (2026-11-02): the dict now covers every idea in PICKS (61
+# entries), and the coverage assert below the PICKS dict makes a missing
+# summary a build failure. There is no fallback: raw bank steps are never
+# dumped onto a page (they carry drying-time lines and buying-step
+# fragments that the display rules hide).
 import importlib.util as _ilu
 _spec45 = _ilu.spec_from_file_location('apply_spec45_steps', os.path.join(ROOT, 'spec45-plain-phrase-2026-11-02', 'apply_spec45.py'))
 # Do NOT exec the lane script (it edits files on import); read its STEPS dict via ast instead.
@@ -289,18 +292,15 @@ def _clean_mat(x):
     return re.sub(r'\s*\((?:own|buy|make)[^)]*\)\s*$', '', x).strip()
 
 def _steps_for(iid, d):
-    if iid in _STEPS:
-        return _STEPS[iid]
-    out = []
-    for s in d.get('s', []):
-        if s.startswith('Safety:') or s.startswith('Optional'):
-            continue
-        if len(s.split()) < 4:
-            continue
-        out.append(s)
-        if len(out) == 3:
-            break
-    return out
+    # SPEC-INTENT-1 (2026-11-02): curated summaries only. The old fallback
+    # (first 3 bank steps) was dead code: the instruction parser above never
+    # stores bank steps under 's', so it could only ever return an empty
+    # list, which is how 47 of 58 cards shipped with no steps at all. A
+    # missing curated entry is now a build failure, never a silent
+    # empty card.
+    assert iid in _STEPS, \
+        f'no curated steps summary for {iid}: add one to the STEPS dict in spec45-plain-phrase-2026-11-02/apply_spec45.py first'
+    return _STEPS[iid]
 
 def card(iid, slug=''):
     i, d = ideas[iid], instr[iid]
@@ -513,6 +513,14 @@ PICKS = {
     'toddler-costumes': ['ninja', 'ice-skater', 'classic-ghost', 'banana', 'backyard-hero', 'cheerleader', 'pop-star', 'little-baker', 'cupcake', 'fairy-tale-princesses', 'little-artist', 'fuzzy-monster'],
     'face-paint-costumes': ['basketball-star', 'ninja', 'boxer', 'gloom-bloom', 'mystery-crew', 'deadpan-diva', 'cat-mouse', 'plumber-duo', 'little-witch', 'good-witch-bad-witch'],
 }
+
+# SPEC-INTENT-1 coverage gate (2026-11-02): every card on every intent page
+# must carry a curated steps summary, or the build stops here instead of
+# shipping a card that does not finish the job on the page.
+_missing_steps = sorted({iid for _lst in PICKS.values() for iid in _lst
+                         if iid not in _STEPS})
+assert not _missing_steps, \
+    f'PICKS ideas missing curated STEPS summaries: {_missing_steps}'
 
 # Quiz line rendered under the intro on every intent page (live since the
 # SPEC-4/5 era; ported into the generator 2026-11-02 so a regen can never
