@@ -44,9 +44,9 @@ h1{font-size:32px;margin:10px 0 4px}.byline{color:var(--mut);font-size:14px;marg
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin:28px 0}
 .ccard{background:#fff;border:1px solid #eadfc9;border-radius:14px;overflow:hidden;padding:0 0 16px}
 .ccard img{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:cover;background:#f3ead8}
-.ccard h3,.ccard p{margin:10px 16px}.ccard h3 a{color:var(--ink);text-decoration:none}
+.ccard h3,.ccard p{margin:10px 16px}.ccard h3 a{color:var(--ink);text-decoration:none;display:inline-block;min-height:44px;padding:10px 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chip{background:#f6efe0;border-radius:999px;padding:3px 10px;font-size:13px}
-.need{font-size:14px;color:var(--mut)}.blurb{font-size:15px}.go a{color:var(--acc);font-weight:700;text-decoration:none}
+.need{font-size:14px;color:var(--mut)}.blurb{font-size:15px}.how{margin:10px 16px}.howt{font-weight:700;margin:0 0 4px;font-size:15px}.how ol{margin:0;padding-left:20px}.how li{margin:3px 0;font-size:14px;line-height:1.45}.go a{color:var(--acc);font-weight:700;text-decoration:none;display:inline-block;min-height:44px;padding:12px 6px}
 .cta{background:#1d1a16;color:#fff;border-radius:14px;padding:24px;margin:32px 0;text-align:center}
 .cta a{color:#ffb020;font-weight:700}
 footer{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}
@@ -63,6 +63,25 @@ footer a{color:var(--mut);margin:0 10px}
 .remindform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px}
 .remindform button{font-size:16px;font-weight:800;padding:12px 20px;border-radius:10px;border:0;background:#e8632c;color:#fff;cursor:pointer;min-height:48px}
 .remindnote{margin:8px 0 0;font-size:14px;color:#6b6259;min-height:20px}
+/* SPEC-9 (2026-11-02): on a phone the card grid must start on the first
+   screen. Stack main as a column, put the grid right after the lede,
+   and move the follow-on intro paragraphs (.introp, which carry the
+   safety wording) and the quiz line below the grid - moved, never cut.
+   Card photos crop to 4/3 on phones so card 1's photo AND title both
+   land inside the first 844px. Desktop layout is untouched. */
+@media (max-width:640px){
+main{display:flex;flex-direction:column;padding:12px 20px 60px}
+main>*{order:10}
+.byline{order:1}main>h1{order:2}.lede{order:3}
+.grid{order:5;margin:10px 0}
+.introp{order:6}
+.quizline{order:7}
+.remindbox{order:8}.faqsec{order:9}.cta{order:10}
+.top{padding:10px 16px}
+h1{font-size:26px}
+.lede{font-size:17px;line-height:1.45}
+.ccard img{aspect-ratio:4/3}
+}
 </style>
 </head>
 <body>
@@ -76,24 +95,27 @@ footer a{color:var(--mut);margin:0 10px}
 </nav>
 </header>
 <main>
-<p class="byline">Updated September 2026 · Pick My Costume</p>
+<p class="byline">Updated November 2026 · Pick My Costume</p>
 <h1>Couples Halloween Costume Ideas</h1>
-<p class="lede">The best couples costumes have a joke a stranger gets in three seconds: ketchup and mustard, plug and socket, sun and moon. Pick the one where both people are equally recognizable, nobody wants to be the human accessory. Build both halves side by side so the colors and sizes match, and agree in advance on the effort level, one elaborate half next to one thrown-together half reads as a mistake, not a duo. Every pair below links to full build guides with real hands-on time, so you both know what the evening is going to take.</p>
-<p style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:10px 4px">Take the 2-minute quiz →</a> Free. No signup.</p>
+<p class="lede">The best couples costumes have a joke a stranger gets in three seconds: ketchup and mustard, plug and socket, sun and moon.</p>
+<p class="introp" style="max-width:720px;margin:10px 0 0">Pick the one where both people are equally recognizable, nobody wants to be the human accessory. Build both halves side by side so the colors and sizes match, and agree in advance on the effort level, one elaborate half next to one thrown-together half reads as a mistake, not a duo.</p>
+<p class="introp" style="max-width:720px;margin:10px 0 0">Every pair below links to full build guides with real hands-on time, so you both know what the evening is going to take.</p>
+<p class="quizline" style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:10px 4px">Take the 2-minute quiz →</a> Free. No signup.</p>
 <div class="grid" id="intent-grid" data-unit-id="couples-costumes" data-unit-type="intent-grid">
 <article class="ccard" data-unit-item="office-couple">
 <a href="/c/office-couple"><img src="/photos/office-couple.webp" alt="Office Couple Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/office-couple">Office Couple</a></h3>
 <p class="chips"><span class="chip">⏱ 10 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> White button-down shirts, 2; Name tags, 2; Toy teapot or a small real teapot, 1; Black pants or skirts, 2; Marker for writing names, 1.</p>
 <p class="blurb">White shirts, name tags, and a teapot. The office&#x27;s finest.</p>
+<div class="how"><p class="howt">How to make it</p><ol><li>Write joke job titles on the name tags.</li><li>Pin the tags on white shirts, worn with black pants or skirts.</li><li>One person carries the teapot. The other carries a clipboard.</li></ol></div>
 <p class="go"><a href="/c/office-couple">Build this costume →</a></p>
 </article>
 <article class="ccard" data-unit-item="galaxy-knights">
 <a href="/c/galaxy-knights"><img src="/photos/galaxy-knights.webp" alt="Galaxy Knights Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/galaxy-knights">Galaxy Knights</a></h3>
 <p class="chips"><span class="chip">⏱ 10 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 brown or beige bathrobe or long coat per knight; 1 toy energy-blade prop per knight; 1 wide belt or rope sash per knight; 1 pair dark pants and boots per knight; Brown face paint for a hood shadow, 1 tube, optional.</p>
 <p class="blurb">Robes, belts, and toy energy blades for knights of a far-off galaxy.</p>
 <p class="go"><a href="/c/galaxy-knights">Build this costume →</a></p>
 </article>
@@ -101,7 +123,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/prince-princess"><img src="/photos/prince-princess.webp" alt="Prince &amp; Princess Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/prince-princess">Prince &amp; Princess</a></h3>
 <p class="chips"><span class="chip">⏱ 10 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> Gold paper crown or plastic crown, 1; Cape or long piece of fabric, 1 about 3 feet long; Thrifted gown or long dress, 1; Tiara, 1; Toy scepter or wand, 1.</p>
 <p class="blurb">A crown and cape, a thrifted gown and tiara.</p>
 <p class="go"><a href="/c/prince-princess">Build this costume →</a></p>
 </article>
@@ -109,7 +131,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/burger-joint-couple"><img src="/photos/burger-joint-couple.webp" alt="Burger Joint Couple Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/burger-joint-couple">Burger Joint Couple</a></h3>
 <p class="chips"><span class="chip">⏱ 10 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 2 white aprons; Fake mustache, 1; Curly red wig, 1; Costume glasses, 1 pair; Order pad and pencil, 1 set.</p>
 <p class="blurb">White apron plus fake mustache, curly red wig plus glasses. Burger shop owners.</p>
 <p class="go"><a href="/c/burger-joint-couple">Build this costume →</a></p>
 </article>
@@ -117,7 +139,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/ketchup-mustard"><img src="/photos/ketchup-mustard.webp" alt="Ketchup &amp; Mustard Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/ketchup-mustard">Ketchup &amp; Mustard</a></h3>
 <p class="chips"><span class="chip">⏱ 15 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 red t-shirt, 1 yellow t-shirt; Red felt or construction paper, 1 sheet 9x12 inches; Yellow felt or construction paper, 1 sheet 9x12 inches; Safety pins, 8; Scissors, 1 pair.</p>
 <p class="blurb">Red bottle tunic and cap for one, yellow for the other.</p>
 <p class="go"><a href="/c/ketchup-mustard">Build this costume →</a></p>
 </article>
@@ -125,15 +147,16 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/salt-pepper"><img src="/photos/salt-pepper.webp" alt="Salt &amp; Pepper Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/salt-pepper">Salt &amp; Pepper</a></h3>
 <p class="chips"><span class="chip">⏱ 15 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> White shirt, pants, and hat for Salt, 1 set; Black shirt, pants, and hat for Pepper, 1 set; Cardboard for 2 shaker tops; Gray paint or gray marker, 1; Black marker for the S and P, 1; Tape or glue, 1.</p>
 <p class="blurb">White and black outfits with shaker tops made from cardboard.</p>
+<div class="how"><p class="howt">How to make it</p><ol><li>Salt dresses all in white. Pepper dresses all in black.</li><li>Cut cardboard shaker tops, paint them gray, and dot holes on top.</li><li>Tape one top to each hat, with a big S on Salt and a big P on Pepper.</li></ol></div>
 <p class="go"><a href="/c/salt-pepper">Build this costume →</a></p>
 </article>
 <article class="ccard" data-unit-item="cat-mouse">
 <a href="/c/cat-mouse"><img src="/photos/cat-mouse.webp" alt="Cat &amp; Mouse Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/cat-mouse">Cat &amp; Mouse</a></h3>
 <p class="chips"><span class="chip">⏱ 15 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 7 things in all.</p>
+<p class="need"><strong>You need:</strong> 2 headbands; 1 sheet black craft felt, 9x12 inches; 1 sheet gray craft felt, 9x12 inches; Black eyeliner pencil or non-toxic face paint, 1; Scissors, 1 pair; Tape, 1 roll; Pink felt, 1 small triangle (optional, for inner ears; buy: craft store).</p>
 <p class="blurb">Cat ears versus mouse ears. Spend the night chasing each other.</p>
 <p class="go"><a href="/c/cat-mouse">Build this costume →</a></p>
 </article>
@@ -141,7 +164,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/plastic-dream-crew"><img src="/photos/plastic-dream-crew.webp" alt="Plastic Dream Crew Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/plastic-dream-crew">Plastic Dream Crew</a></h3>
 <p class="chips"><span class="chip">⏱ 15 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> All-pink outfit per person: dress, suit, or sweatsuit, 1 set each; Pink sunglasses, 1 per person; Plastic play accessories: phone, tiara, handbag, 1 per person; Pink feather boa, 1 to share; Blonde wig, 1 per person.</p>
 <p class="blurb">Head-to-toe pink outfits with plastic accessories for the dream crew.</p>
 <p class="go"><a href="/c/plastic-dream-crew">Build this costume →</a></p>
 </article>
@@ -149,7 +172,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/plumber-duo"><img src="/photos/plumber-duo.webp" alt="Plumber Duo Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/plumber-duo">Plumber Duo</a></h3>
 <p class="chips"><span class="chip">⏱ 15 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> Blue overalls, 2; Red t-shirt and green t-shirt, 1 each; Red cap and green cap, 1 each; Brown non-toxic face paint for mustaches, 1 tube; White circle stickers or white paper, 2 about 2 inches across; Marker, 1.</p>
 <p class="blurb">Overalls, red and green caps and shirts, drawn mustaches.</p>
 <p class="go"><a href="/c/plumber-duo">Build this costume →</a></p>
 </article>
@@ -157,15 +180,16 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/bacon-eggs"><img src="/photos/bacon-eggs.webp" alt="Bacon &amp; Eggs Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/bacon-eggs">Bacon &amp; Eggs</a></h3>
 <p class="chips"><span class="chip">⏱ 20 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> Dark red or brown shirt for the bacon, 1; White shirt for the egg, 1; 1 sheet red-brown craft felt, 9x12 inches; 1 sheet each white and yellow craft felt, 9x12 inches; Safety pins, 6 to 8; Scissors, 1 pair.</p>
 <p class="blurb">Wavy bacon stripes and a sunny-side-up egg yolk.</p>
+<div class="how"><p class="howt">How to make it</p><ol><li>Cut wavy strips from the red-brown felt for the bacon.</li><li>Cut one large white oval and one yellow circle for the egg.</li><li>Pin the felt to the shirts from the inside, so pin backs face cloth, not skin.</li></ol></div>
 <p class="go"><a href="/c/bacon-eggs">Build this costume →</a></p>
 </article>
 <article class="ccard" data-unit-item="player-one-two">
 <a href="/c/player-one-two"><img src="/photos/player-one-two.webp" alt="Player One &amp; Two Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/player-one-two">Player One &amp; Two</a></h3>
 <p class="chips"><span class="chip">⏱ 20 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 4 things in all.</p>
+<p class="need"><strong>You need:</strong> Matching t-shirts, 2, any color; Iron-on letters or fabric markers, spelling 1 and 2; Toy game controllers, 2; Iron, 1.</p>
 <p class="blurb">Matching tees with 1 and 2, toy controllers in hand, ready for co-op.</p>
 <p class="go"><a href="/c/player-one-two">Build this costume →</a></p>
 </article>
@@ -173,7 +197,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/pbj"><img src="/photos/pbj.webp" alt="Peanut Butter &amp; Jelly Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/pbj">Peanut Butter &amp; Jelly</a></h3>
 <p class="chips"><span class="chip">⏱ 20 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> Brown t-shirt, 1; Purple t-shirt, 1; White poster board, 2 sheets; Markers, 1 set; Scissors, 1 pair, and tape or string, 1 roll or spool.</p>
 <p class="blurb">One in brown with a PB label, one in purple with a J label.</p>
 <p class="go"><a href="/c/pbj">Build this costume →</a></p>
 </article>

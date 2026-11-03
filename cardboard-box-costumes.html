@@ -44,9 +44,9 @@ h1{font-size:32px;margin:10px 0 4px}.byline{color:var(--mut);font-size:14px;marg
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin:28px 0}
 .ccard{background:#fff;border:1px solid #eadfc9;border-radius:14px;overflow:hidden;padding:0 0 16px}
 .ccard img{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:cover;background:#f3ead8}
-.ccard h3,.ccard p{margin:10px 16px}.ccard h3 a{color:var(--ink);text-decoration:none}
+.ccard h3,.ccard p{margin:10px 16px}.ccard h3 a{color:var(--ink);text-decoration:none;display:inline-block;min-height:44px;padding:10px 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chip{background:#f6efe0;border-radius:999px;padding:3px 10px;font-size:13px}
-.need{font-size:14px;color:var(--mut)}.blurb{font-size:15px}.go a{color:var(--acc);font-weight:700;text-decoration:none}
+.need{font-size:14px;color:var(--mut)}.blurb{font-size:15px}.how{margin:10px 16px}.howt{font-weight:700;margin:0 0 4px;font-size:15px}.how ol{margin:0;padding-left:20px}.how li{margin:3px 0;font-size:14px;line-height:1.45}.go a{color:var(--acc);font-weight:700;text-decoration:none;display:inline-block;min-height:44px;padding:12px 6px}
 .cta{background:#1d1a16;color:#fff;border-radius:14px;padding:24px;margin:32px 0;text-align:center}
 .cta a{color:#ffb020;font-weight:700}
 footer{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}
@@ -63,6 +63,25 @@ footer a{color:var(--mut);margin:0 10px}
 .remindform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px}
 .remindform button{font-size:16px;font-weight:800;padding:12px 20px;border-radius:10px;border:0;background:#e8632c;color:#fff;cursor:pointer;min-height:48px}
 .remindnote{margin:8px 0 0;font-size:14px;color:#6b6259;min-height:20px}
+/* SPEC-9 (2026-11-02): on a phone the card grid must start on the first
+   screen. Stack main as a column, put the grid right after the lede,
+   and move the follow-on intro paragraphs (.introp, which carry the
+   safety wording) and the quiz line below the grid - moved, never cut.
+   Card photos crop to 4/3 on phones so card 1's photo AND title both
+   land inside the first 844px. Desktop layout is untouched. */
+@media (max-width:640px){
+main{display:flex;flex-direction:column;padding:12px 20px 60px}
+main>*{order:10}
+.byline{order:1}main>h1{order:2}.lede{order:3}
+.grid{order:5;margin:10px 0}
+.introp{order:6}
+.quizline{order:7}
+.remindbox{order:8}.faqsec{order:9}.cta{order:10}
+.top{padding:10px 16px}
+h1{font-size:26px}
+.lede{font-size:17px;line-height:1.45}
+.ccard img{aspect-ratio:4/3}
+}
 </style>
 </head>
 <body>
@@ -76,16 +95,18 @@ footer a{color:var(--mut);margin:0 10px}
 </nav>
 </header>
 <main>
-<p class="byline">Updated September 2026 · Pick My Costume</p>
+<p class="byline">Updated November 2026 · Pick My Costume</p>
 <h1>Cardboard Box Costume Ideas</h1>
-<p class="lede">The box your last delivery came in is a costume waiting to happen. A medium box worn over the torso becomes a robot, a pizza slice, a game block, or a dinosaur body with nothing more than a box cutter, tape, and paint. Ask a grocery or liquor store for spares if you need big ones, they give them away free most mornings. Cut arm and head holes smaller than you think, reinforce inside edges with packing tape so they survive the night, and keep paint to one or two coats so the cardboard stays light. Every costume below starts from a box, lists the rest of the supplies honestly, and links to a full build guide with real hands-on time. The box is already in the recycling. The costume is not far behind.</p>
-<p style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:10px 4px">Take the 2-minute quiz →</a> Free. No signup.</p>
+<p class="lede">The box your last delivery came in is a costume waiting to happen. A medium box worn over the torso becomes a robot, a pizza slice, a game block, or a dinosaur body with nothing more than a box cutter, tape, and paint.</p>
+<p class="introp" style="max-width:720px;margin:10px 0 0">Ask a grocery or liquor store for spares if you need big ones, they give them away free most mornings. Cut arm and head holes smaller than you think, reinforce inside edges with packing tape so they survive the night, and keep paint to one or two coats so the cardboard stays light.</p>
+<p class="introp" style="max-width:720px;margin:10px 0 0">Every costume below starts from a box, lists the rest of the supplies honestly, and links to a full build guide with real hands-on time. The box is already in the recycling. The costume is not far behind.</p>
+<p class="quizline" style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:10px 4px">Take the 2-minute quiz →</a> Free. No signup.</p>
 <div class="grid" id="intent-grid" data-unit-id="cardboard-box-costumes" data-unit-type="intent-grid">
 <article class="ccard" data-unit-item="pizza-slice">
 <a href="/c/pizza-slice"><img src="/photos/pizza-slice.webp" alt="Pizza Slice Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/pizza-slice">Pizza Slice</a></h3>
 <p class="chips"><span class="chip">⏱ 45 min hands-on</span><span class="chip">Medium</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> Large cardboard box, 1; Yellow and orange acrylic paint, 1 bottle each; Red felt, 1 sheet; Brown felt scraps for crust, or 1 brown paper bag; Paintbrush, scissors, tape, 1 set; Fabric glue, 1 tube.</p>
 <p class="blurb">A big cardboard triangle, painted golden with felt pepperoni.</p>
 <p class="go"><a href="/c/pizza-slice">Build this costume →</a></p>
 </article>
@@ -93,7 +114,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/donut"><img src="/photos/donut.webp" alt="Donut Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/donut">Donut</a></h3>
 <p class="chips"><span class="chip">⏱ 35 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 large cardboard box, about 24x24 inches flat; Pink paint, 1 small bottle; Felt sprinkles, 12 to 15 small pieces, or sticker sprinkles; Ribbon or string, 4 feet; Scissors, 1 pair and glue, 1 bottle.</p>
 <p class="blurb">Pink cardboard ring with sprinkles, worn like a sandwich board.</p>
 <p class="go"><a href="/c/donut">Build this costume →</a></p>
 </article>
@@ -101,7 +122,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/kart-racers"><img src="/photos/kart-racers.webp" alt="Kart Racers Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/kart-racers">Kart Racers</a></h3>
 <p class="chips"><span class="chip">⏱ 45 min hands-on</span><span class="chip">Medium</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> Large cardboard box, 1 per racer, big enough to fit around the torso; Red, blue, green, and yellow paint or wrapping paper, 1 bottle or roll per color; Paper plates for wheels, 4 per kart; Racing cap or helmet, 1 per person; Scissors, 1 pair, tape, 1 roll, and string, 1 spool; Ribbon for kart straps, about 3 feet per kart.</p>
 <p class="blurb">Cardboard karts and racing caps for a full starting grid of friends.</p>
 <p class="go"><a href="/c/kart-racers">Build this costume →</a></p>
 </article>
@@ -109,7 +130,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/ghost-hunters"><img src="/photos/ghost-hunters.webp" alt="Ghost Hunters Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/ghost-hunters">Ghost Hunters</a></h3>
 <p class="chips"><span class="chip">⏱ 30 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 khaki or tan jumpsuit, or matching shirt and pants, per person; 1 small cardboard box per person, shoebox size; White paper, 2 sheets, and markers for name patches; 1 sheet black cardboard per person; Packing tape or glue, scissors.</p>
 <p class="blurb">Khaki jumpsuits, cardboard ghost-catching backpacks, name patches.</p>
 <p class="go"><a href="/c/ghost-hunters">Build this costume →</a></p>
 </article>
@@ -117,7 +138,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/popcorn-bucket"><img src="/photos/popcorn-bucket.webp" alt="Popcorn Bucket Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/popcorn-bucket">Popcorn Bucket</a></h3>
 <p class="chips"><span class="chip">⏱ 30 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> Cardboard box, 1 medium; Red and white striped wrapping paper or paint, 1 roll; Yellow or white balloons, 8 to 10; Tape, string, scissors, 1 set; Red marker for the label, 1.</p>
 <p class="blurb">A striped cardboard-box body with balloon popcorn on top.</p>
 <p class="go"><a href="/c/popcorn-bucket">Build this costume →</a></p>
 </article>
@@ -125,7 +146,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/block-game-crew"><img src="/photos/block-game-crew.webp" alt="Block Game Crew Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/block-game-crew">Block Game Crew</a></h3>
 <p class="chips"><span class="chip">⏱ 45 min hands-on</span><span class="chip">Medium</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 large cardboard box per person, big enough to fit over the torso; Acrylic paint in each hero&#x27;s colors, 1 small bottle per color; Paintbrushes, 1 wide and 1 detail per person; Black marker, 1; Scissors, 1 pair.</p>
 <p class="blurb">Cardboard-box heads: pick your blocky hero.</p>
 <p class="go"><a href="/c/block-game-crew">Build this costume →</a></p>
 </article>
@@ -133,7 +154,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/robot-crew"><img src="/photos/robot-crew.webp" alt="Cardboard Robot Crew Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/robot-crew">Cardboard Robot Crew</a></h3>
 <p class="chips"><span class="chip">⏱ 45 min hands-on</span><span class="chip">Medium</span></p>
-<p class="need"><strong>You need:</strong> 8 things in all.</p>
+<p class="need"><strong>You need:</strong> Medium cardboard box per person, 1 each; Small cardboard box per person for the head, 1 each; Aluminum foil, 1 large roll; Plastic bottle caps, about 20 total; Duct tape, 1 roll; Black permanent marker, 1; Elastic string or yarn, 6 feet; Glow sticks, 1 per person.</p>
 <p class="blurb">Boxy robots built from cardboard boxes, foil, and bottle-cap buttons.</p>
 <p class="go"><a href="/c/robot-crew">Build this costume →</a></p>
 </article>
@@ -141,15 +162,16 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/plug-socket"><img src="/photos/plug-socket.webp" alt="Plug and Socket Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/plug-socket">Plug and Socket</a></h3>
 <p class="chips"><span class="chip">⏱ 45 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> Cardboard box, 1 large; Gray and white acrylic paint, 1 small bottle each; Black markers, 1 set; Craft foam, 1 sheet 9x12 inches; Tape, 1 roll, and string, 1 spool, for wearing; Scissors, 1 pair.</p>
 <p class="blurb">Cardboard plug and outlet worn front and back.</p>
+<div class="how"><p class="howt">How to make it</p><ol><li>Cut two cardboard panels, each about 2 feet square.</li><li>Paint one gray and add foam prongs for the plug. Paint the other white and draw dark slots for the socket.</li><li>Tape string to the back corners and hang the panels like signs. Never loop string around the neck.</li></ol></div>
 <p class="go"><a href="/c/plug-socket">Build this costume →</a></p>
 </article>
 <article class="ccard" data-unit-item="haunted-animatronics">
 <a href="/c/haunted-animatronics"><img src="/photos/haunted-animatronics.webp" alt="Haunted Animatronics Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/haunted-animatronics">Haunted Animatronics</a></h3>
 <p class="chips"><span class="chip">⏱ 60 min hands-on</span><span class="chip">Medium</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 large cardboard box per person, big enough to cover the head; 2 red LED tea lights per person; Paint in gray, black, and one accent color, 1 small bottle each; 1 set old clothes with holes or tears; Hot glue gun, 1; scissors, 1 pair; utility knife, 1 (adults only).</p>
 <p class="blurb">Glitchy mascot heads from cardboard boxes, flickering LED eyes, jerky moves.</p>
 <p class="go"><a href="/c/haunted-animatronics">Build this costume →</a></p>
 </article>
@@ -157,7 +179,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/party-pinata"><img src="/photos/party-pinata.webp" alt="Party Pinata Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/party-pinata">Party Pinata</a></h3>
 <p class="chips"><span class="chip">⏱ 40 min hands-on</span><span class="chip">Medium</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> Cardboard box, 1 large; Crepe paper in rainbow colors, 6 rolls; Wrapped candy, 2 bags; String for hanging strips, 1 roll; Tape, 1 roll; Scissors, 1 pair.</p>
 <p class="blurb">A cardboard box wrapped in rainbow fringe, with real candy inside.</p>
 <p class="go"><a href="/c/party-pinata">Build this costume →</a></p>
 </article>
@@ -165,7 +187,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/fairy-tale-princesses"><img src="/photos/fairy-tale-princesses.webp" alt="Fairy Tale Princesses Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/fairy-tale-princesses">Fairy Tale Princesses</a></h3>
 <p class="chips"><span class="chip">⏱ 15 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 5 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 dress from the closet per person; 1 cereal box per crown; Gold or silver paint or markers, 1 set; Scissors, 1 pair and tape, 1 roll; 1 hair ribbon per person.</p>
 <p class="blurb">A dress or a crown from the closet. Every princess works.</p>
 <p class="go"><a href="/c/fairy-tale-princesses">Build this costume →</a></p>
 </article>
@@ -173,7 +195,7 @@ footer a{color:var(--mut);margin:0 10px}
 <a href="/c/good-witch-bad-witch"><img src="/photos/good-witch-bad-witch.webp" alt="Good Witch, Bad Witch Halloween costume" loading="lazy" width="400" height="400"></a>
 <h3><a href="/c/good-witch-bad-witch">Good Witch, Bad Witch</a></h3>
 <p class="chips"><span class="chip">⏱ 20 min hands-on</span><span class="chip">Easy</span></p>
-<p class="need"><strong>You need:</strong> 6 things in all.</p>
+<p class="need"><strong>You need:</strong> 1 black dress or set of black clothes for the bad witch; 1 pink dress or set of pink clothes for the good witch; Green face paint, non-toxic, 1 tube; 1 cardboard crown; 1 black cone hat; Hot glue gun, scissors, 1 pink marker, tape.</p>
 <p class="blurb">Green face paint and black for one, pink gown and crown for the other.</p>
 <p class="go"><a href="/c/good-witch-bad-witch">Build this costume →</a></p>
 </article>

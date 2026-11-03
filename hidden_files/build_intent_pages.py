@@ -225,9 +225,14 @@ before you leave. Every costume below links to a full build guide with real hand
         ('Will it survive the stroller?', 'Keep the silhouette soft and compact: no wide wings, no trailing fabric, no tall hats. Bulky extras come off in the first ten minutes, so plan the costume to look finished without them.'),
       ],
 ),
+ # face-paint title/desc below were ported live -> generator 2026-11-02
+ # (intent-regen reconciliation lane): the live page's hand-edited title/desc
+ # are the SEO-live wording; the generator's older wording must never
+ # overwrite them on a regen. Twitter/JSON-LD derive from the same fields,
+ # so they now match the live title too (live was split-brain before).
  dict(slug='face-paint-costumes', kw='face paint',
-      title='Face Paint Costume Ideas: 10 Costumes With Makeup as the Star',
-      desc='Ten Halloween costumes where face paint does the heavy lifting: ninjas, witches, animals and more. Real times, step-by-step guides.',
+      title='Face Paint Costume Ideas: 10 DIY Costumes You Make With Makeup',
+      desc='Ten Halloween costumes you can make with face paint and clothes you own: ninja, little witch, cat and mouse, and more. Real times, step-by-step guides.',
       intro=("""When the costume is mostly face paint, the outfit can be dead simple, black clothes plus a
 painted skeleton face beats a store-bought suit every time. Use proper face paint or makeup, not craft paint
 or markers, and do a small patch test on the jaw an hour before in case of sensitive skin. Paint the base
@@ -528,6 +533,31 @@ PARAS = {
         'That old bedsheet in the linen closet is the fastest costume in the house. A white flat sheet, scissors, and a marker get you the classic ghost in ten minutes flat, and a black sheet cut into a cape covers vampires, headless horsemen, and little witches with almost no sewing.',
         'The trick most people miss is sizing the sheet before you cut: twin for kids under eight, full or queen for teens and adults, and always cut eye holes smaller than you think, you can widen them but you cannot shrink them.',
         'Every costume below starts from a sheet you already own, lists exactly what else you need, gives the build steps right on this page, and links to a full build guide with real hands-on time. No costume-shop run required.',
+    ],
+    # Splits for the remaining four pages added 2026-11-02 (intent-regen
+    # reconciliation lane): same SPEC-9 mechanism as the three pages above -
+    # lede first, follow-on paragraphs as .introp below the grid on phones.
+    # Wording is the canonical intro verbatim, split at sentence boundaries
+    # only; the join-equality assert below proves no word changed.
+    'cardboard-box-costumes': [
+        'The box your last delivery came in is a costume waiting to happen. A medium box worn over the torso becomes a robot, a pizza slice, a game block, or a dinosaur body with nothing more than a box cutter, tape, and paint.',
+        'Ask a grocery or liquor store for spares if you need big ones, they give them away free most mornings. Cut arm and head holes smaller than you think, reinforce inside edges with packing tape so they survive the night, and keep paint to one or two coats so the cardboard stays light.',
+        'Every costume below starts from a box, lists the rest of the supplies honestly, and links to a full build guide with real hands-on time. The box is already in the recycling. The costume is not far behind.',
+    ],
+    'couples-costumes': [
+        'The best couples costumes have a joke a stranger gets in three seconds: ketchup and mustard, plug and socket, sun and moon.',
+        'Pick the one where both people are equally recognizable, nobody wants to be the human accessory. Build both halves side by side so the colors and sizes match, and agree in advance on the effort level, one elaborate half next to one thrown-together half reads as a mistake, not a duo.',
+        'Every pair below links to full build guides with real hands-on time, so you both know what the evening is going to take.',
+    ],
+    'family-costumes': [
+        'A family costume only works if the littlest member can actually wear it, sit in it, and survive the evening in it.',
+        'The sets below were picked because every member gets a real costume, not a background role, and the builds scale: make the baby the centerpiece, give the teens the funny parts, and keep total build time sane by repeating one simple base across the group. Start with the hardest costume first, usually the smallest person, and fit everything while they are still in a good mood.',
+        'Every set below links to full build guides with real hands-on time per person, so there are no day-of surprises.',
+    ],
+    'toddler-costumes': [
+        'Dressing a toddler is a different sport. Nothing itchy, nothing that covers the face, nothing with small parts, and it has to survive the stroller, the car seat, and a meltdown.',
+        'The costumes below were picked because they go over normal warm clothes, use soft materials, and take under half an hour, since toddlers do not do fittings. Do the fiddly bits while they nap and save the five-minute dress-up for right before you leave.',
+        'Every costume below links to a full build guide with real hands-on time and sizing notes for little bodies.',
     ],
     'face-paint-costumes': [
         'When the costume is mostly face paint, the outfit can be dead simple, black clothes plus a painted skeleton face beats a store-bought suit every time.',
