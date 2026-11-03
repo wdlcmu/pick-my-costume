@@ -38,7 +38,7 @@
      mirrors them verbatim.
      Costume build times and prices live on each /c/ guide's own HowTo. -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the quick quiz. One pick, free guide, build time and supplies up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"Make Tonight means fast. 30 minutes of work or less. 126 of the 169 costumes make the cut."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Builds use thrift-store and closet basics, listed up front."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid. Picks fit their age, with safety notes."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}},{"@type":"Question","name":"What we don't do","acceptedAnswer":{"@type":"Answer","text":"We don't sell costumes, supplies, or anything else \u2014 there is no store and no checkout here. Your quiz answers stay in your browser, on your device. We ask for quiz answers only. Email comes only if you ask: one plan email, one reminder if you tick."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the quick quiz. One pick, free guide, build time and supplies up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"Make Tonight means fast. 30 minutes of work or less. 126 of the 169 costumes make the cut."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Builds use thrift-store and closet basics, listed up front."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid. Picks fit their age, with safety notes."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}},{"@type":"Question","name":"What we don't do","acceptedAnswer":{"@type":"Answer","text":"We don't sell costumes, supplies, or anything else: there is no store and no checkout here. Your quiz answers stay in your browser, on your device. We ask for quiz answers only. Email comes only if you ask: one plan email, one reminder if you tick."}}]}
 </script>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
@@ -1102,6 +1102,20 @@ footer a#about-link{display:inline-block;padding:12px 18px}
    (returning) and the giant H1 (first-timer). The moon stays tappable via its
    title/aria label. */
 @media (max-width:520px){.tminus{padding-right:64px}.hero .mooncap{display:none}}
+/* SPEC-COLDQA1103-5 (2026-11-03): in the stacked hero (<=899px) the centered
+   H1's lines run wider than the space beside the absolute moon (52px at
+   right:10), and the disc covered H1 glyphs (measured overlap 1,400px2 at
+   390px, 601px2 at 430px, 256px2 at 768px, 2,001px2 at 360px). Give the H1
+   right-side clearance and let it rewrap inside a fixed 120px box at 1.0
+   line-height, so the moon can only ever sit on empty box area and nothing
+   below the H1 moves at 390px or desktop. The moon itself, its tap target,
+   its phase rendering, and its caption are untouched. */
+@media (max-width:899px){
+  .hero h1{padding-right:76px;line-height:1.0;height:120px;display:flex;flex-direction:column;justify-content:center}
+}
+@media (max-width:374px){
+  .hero h1{font-size:34px}
+}
 .about-body p{margin:0 0 14px;line-height:1.55}
 .examplebox{margin:0 0 14px;padding:14px;background:var(--bg2);border:2px solid var(--line);border-radius:var(--radius)}
 .maker{border-top:1px solid var(--line);margin-top:28px;padding-top:20px;text-align:left}
@@ -2037,7 +2051,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-7" aria-expanded="false">What we don't do</button>
-      <div class="faq-a"><p>We don't sell costumes, supplies, or anything else &mdash; there is no store and no checkout here.</p><p style="margin-top:8px">Your quiz answers stay in your browser, on your device.</p><p style="margin-top:8px">We ask for quiz answers only.</p><p style="margin-top:8px">Email comes only if you ask: one plan email, one reminder if you tick.</p></div>
+      <div class="faq-a"><p>We don't sell costumes, supplies, or anything else: there is no store and no checkout here.</p><p style="margin-top:8px">Your quiz answers stay in your browser, on your device.</p><p style="margin-top:8px">We ask for quiz answers only.</p><p style="margin-top:8px">Email comes only if you ask: one plan email, one reminder if you tick.</p></div>
     </div>
     <!-- 2026-11-02 (phrase sweep): cut the "Our guarantees" FAQ item. Every
          claim in it was already on this screen: no account / ad-free in
@@ -2086,7 +2100,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <p class="fine" style="margin-top:16px">We only track anonymous usage stats.</p>
       <div class="maker">
         <h2>Made by a dad, on the side</h2>
-        <p>I&rsquo;m Billy, a dad in Redmond, Washington. I build these tools on the side, with AI &mdash; one idea, one website, no company behind it. Pick My Costume picks one you can make from your closet, with the supplies and steps up front.</p>
+        <p>I&rsquo;m Billy, a dad in Redmond, Washington. I build these tools on the side, with AI, one idea, one website, no company behind it. Pick My Costume picks one you can make from your closet, with the supplies and steps up front.</p>
       </div>
       <footer class="sitefoot">
         <p class="fine" style="margin:0 0 6px"><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/countdown">Costume countdown</a> &middot; <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
@@ -2139,7 +2153,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <p class="progress">Costume duel</p>
       <!-- 2026-10-01 (Item 6): the duel step-1 title is rendered by app.js (ensureHead); no heading markup in static HTML. -->
       <img class="duel-hero-photo" id="duel-friend-photo" src="" alt="">
-      <p class="q-hint">Two quick questions. We pick a costume for you and one for a friend &mdash; then compare the two.</p>
+      <p class="q-hint">Two quick questions. We pick a costume for you and one for a friend, then compare the two.</p>
       <p style="font-weight:700;margin:18px 0 8px">Who is the costume for?</p>
       <div class="opts" id="duel-q1"></div>
 </div>
@@ -2699,7 +2713,7 @@ html{scroll-padding-bottom:96px}
       /* QA SPEC-C: nothing named that could be absent -- no absence
          claim, just what the matcher can hear plus the quiz route. */
       try{ Analytics.track("pinpoint_nosignal",{query:(raw||"").slice(0,30)}); }catch(e){}
-      out.appendChild(el("p","askp-note","Tell me a name, who it's for, or what you have at home — or take the 2-minute quiz."));
+      out.appendChild(el("p","askp-note","Tell me a name, who it's for, or what you have at home, or take the 2-minute quiz."));
       if(out.scrollIntoView){ try{ out.scrollIntoView({block:"nearest"}); }catch(e){} }
       return;
     }
