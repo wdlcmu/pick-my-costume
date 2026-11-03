@@ -116,8 +116,8 @@ scissors, and a marker get you the classic ghost in ten minutes flat, and a blac
 covers vampires, headless horsemen, and little witches with almost no sewing. The trick most people miss
 is sizing the sheet before you cut: twin for kids under eight, full or queen for teens and adults, and
 always cut eye holes smaller than you think, you can widen them but you cannot shrink them. Every costume
-below starts from a sheet you already own, lists exactly what else you need, and links to a full build
-guide with real hands-on time. No costume-shop run required."""),
+below starts from a sheet you already own, lists exactly what else you need, gives the build steps right
+on this page, and links to a full build guide with real hands-on time. No costume-shop run required."""),
       match=lambda i, d: any(re.search(r'\b(bed\s?sheet|twin sheets?|flat sheet|old sheets?|white sheets?|black sheets?)\b', x, re.I) for x in d.get('m', [])),
       rank=lambda iid: (next((n for n, x in enumerate(instr[iid]['m']) if re.search(r'sheet', x, re.I)), 9), minutes(instr[iid].get('time'))),
       limit=10,
@@ -157,8 +157,8 @@ real hands-on time. The box is already in the recycling. The costume is not far 
 hold together with safety pins, fabric tape, hot glue, or nothing at all, just clothes arranged cleverly.
 Pin from the inside so the backs never touch skin, use double-sided fabric tape for hems that need to look
 clean, and remember that a hot glue gun sets in under a minute, which beats waiting on stitches you were
-never going to do. Every costume below needs no needle, lists exactly what to pull from the closet, and
-links to a full build guide with real hands-on time. Thread not required."""),
+never going to do. Every costume below needs no needle, lists exactly what to pull from the closet, gives
+the build steps right on this page, and links to a full build guide with real hands-on time. Thread not required."""),
       match=lambda i, d: d.get('effort') == 'Easy' and not any(re.search(r'\bsew\w*|stitch|needle', x, re.I) for x in d.get('m', [])) and any('(own' in x for x in d.get('m', [])),
       rank=lambda iid: (cost_lo(instr[iid].get('cost')), minutes(instr[iid].get('time'))),
       limit=12,
@@ -353,7 +353,7 @@ TEMPLATE = """<!DOCTYPE html>
 :root{{--acc:#e8632c;--ink:#1d1a16;--mut:#6b6259;--bg:#fffaf3}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.55}}
 .top{{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:14px 20px;background:#1d1a16;color:#fff}}
-.top a{{color:#fff;text-decoration:none}}.brand{{font-weight:800;font-size:18px}}.brand span{{color:#ffb020}}
+.top a{{color:#fff;text-decoration:none}}.brand{{font-weight:800;font-size:18px;display:inline-block;padding:12px 6px;min-height:44px}}.brand span{{color:#ffb020}}
 .sitenav{{display:flex;gap:16px;align-items:center;flex-wrap:wrap}}.sitenav a{{font-weight:600;font-size:15px;padding:12px 8px;display:inline-flex;align-items:center;min-height:44px}}
 @media (hover:hover){{.sitenav a:hover{{color:#ffb020}}}}
 main{{max-width:1060px;margin:0 auto;padding:24px 20px 60px}}
@@ -362,9 +362,9 @@ h1{{font-size:32px;margin:10px 0 4px}}.byline{{color:var(--mut);font-size:14px;m
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin:28px 0}}
 .ccard{{background:#fff;border:1px solid #eadfc9;border-radius:14px;overflow:hidden;padding:0 0 16px}}
 .ccard img{{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:cover;background:#f3ead8}}
-.ccard h3,.ccard p{{margin:10px 16px}}.ccard h3 a{{color:var(--ink);text-decoration:none}}
+.ccard h3,.ccard p{{margin:10px 16px}}.ccard h3 a{{color:var(--ink);text-decoration:none;display:inline-block;min-height:44px;padding:10px 0}}
 .chips{{display:flex;flex-wrap:wrap;gap:6px}}.chip{{background:#f6efe0;border-radius:999px;padding:3px 10px;font-size:13px}}
-.need{{font-size:14px;color:var(--mut)}}.blurb{{font-size:15px}}.how{{margin:10px 16px}}.howt{{font-weight:700;margin:0 0 4px;font-size:15px}}.how ol{{margin:0;padding-left:20px}}.how li{{margin:3px 0;font-size:14px;line-height:1.45}}.go a{{color:var(--acc);font-weight:700;text-decoration:none}}
+.need{{font-size:14px;color:var(--mut)}}.blurb{{font-size:15px}}.how{{margin:10px 16px}}.howt{{font-weight:700;margin:0 0 4px;font-size:15px}}.how ol{{margin:0;padding-left:20px}}.how li{{margin:3px 0;font-size:14px;line-height:1.45}}.go a{{color:var(--acc);font-weight:700;text-decoration:none;display:inline-block;min-height:44px;padding:12px 6px}}
 .cta{{background:#1d1a16;color:#fff;border-radius:14px;padding:24px;margin:32px 0;text-align:center}}
 .cta a{{color:#ffb020;font-weight:700}}
 footer{{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}}
@@ -381,6 +381,25 @@ footer a{{color:var(--mut);margin:0 10px}}
 .remindform input[type=email]{{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px}}
 .remindform button{{font-size:16px;font-weight:800;padding:12px 20px;border-radius:10px;border:0;background:#e8632c;color:#fff;cursor:pointer;min-height:48px}}
 .remindnote{{margin:8px 0 0;font-size:14px;color:#6b6259;min-height:20px}}
+/* SPEC-9 (2026-11-02): on a phone the card grid must start on the first
+   screen. Stack main as a column, put the grid right after the lede,
+   and move the follow-on intro paragraphs (.introp, which carry the
+   safety wording) and the quiz line below the grid - moved, never cut.
+   Card photos crop to 4/3 on phones so card 1's photo AND title both
+   land inside the first 844px. Desktop layout is untouched. */
+@media (max-width:640px){{
+main{{display:flex;flex-direction:column;padding:12px 20px 60px}}
+main>*{{order:10}}
+.byline{{order:1}}main>h1{{order:2}}.lede{{order:3}}
+.grid{{order:5;margin:10px 0}}
+.introp{{order:6}}
+.quizline{{order:7}}
+.remindbox{{order:8}}.faqsec{{order:9}}.cta{{order:10}}
+.top{{padding:10px 16px}}
+h1{{font-size:26px}}
+.lede{{font-size:17px;line-height:1.45}}
+.ccard img{{aspect-ratio:4/3}}
+}}
 </style>
 </head>
 <body>
@@ -396,7 +415,7 @@ footer a{{color:var(--mut);margin:0 10px}}
 <main>
 <p class="byline">Updated November 2026 · Pick My Costume</p>
 <h1>{h1}</h1>
-<p class="lede">{intro}</p>
+{intro}
 <div class="grid" id="intent-grid" data-unit-id="{slug}" data-unit-type="intent-grid">
 {cards}
 </div>
@@ -490,6 +509,33 @@ PICKS = {
     'face-paint-costumes': ['basketball-star', 'ninja', 'boxer', 'gloom-bloom', 'mystery-crew', 'deadpan-diva', 'cat-mouse', 'plumber-duo', 'little-witch', 'good-witch-bad-witch'],
 }
 
+# Quiz line rendered under the intro on every intent page (live since the
+# SPEC-4/5 era; ported into the generator 2026-11-02 so a regen can never
+# drop it again). Raw HTML by design: it carries the page's next step.
+QUIZLINE = ('<p class="quizline" style="margin:14px 0 18px;font-size:17px">Can\'t pick? '
+            '<a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;'
+            'min-height:44px;padding:10px 4px">Take the 2-minute quiz \u2192</a> Free. No signup.</p>')
+
+# Intro paragraph splits, ported verbatim from the live pages 2026-11-02
+# (SPEC-9 lane). Pages not listed render their intro as one lede paragraph.
+PARAS = {
+    'no-sew-costumes': [
+        'If you do not sew, you are not locked out of a good homemade costume. Most of the ideas below hold together with safety pins, fabric tape, hot glue, or nothing at all, just clothes arranged cleverly.',
+        'Pin from the inside so the backs never touch skin, use double-sided fabric tape for hems that need to look clean, and remember that a hot glue gun sets in under a minute, which beats waiting on stitches you were never going to do.',
+        'Every costume below needs no needle, lists exactly what to pull from the closet, gives the build steps right on this page, and links to a full build guide with real hands-on time. Thread not required.',
+    ],
+    'white-sheet-costumes': [
+        'That old bedsheet in the linen closet is the fastest costume in the house. A white flat sheet, scissors, and a marker get you the classic ghost in ten minutes flat, and a black sheet cut into a cape covers vampires, headless horsemen, and little witches with almost no sewing.',
+        'The trick most people miss is sizing the sheet before you cut: twin for kids under eight, full or queen for teens and adults, and always cut eye holes smaller than you think, you can widen them but you cannot shrink them.',
+        'Every costume below starts from a sheet you already own, lists exactly what else you need, gives the build steps right on this page, and links to a full build guide with real hands-on time. No costume-shop run required.',
+    ],
+    'face-paint-costumes': [
+        'When the costume is mostly face paint, the outfit can be dead simple, black clothes plus a painted skeleton face beats a store-bought suit every time.',
+        'Use proper face paint or makeup, not craft paint or markers, and do a small patch test on the jaw an hour before in case of sensitive skin. Paint the base first, let it set, then add details, and keep makeup wipes in your pocket because touch-ups are part of the deal.',
+        'Every costume below leans on the paint job, lists the rest honestly, and links to a full build guide with real hands-on time. The brush is the costume.',
+    ],
+}
+
 built = []
 for p in PAGES:
     picked = list(PICKS[p['slug']])
@@ -511,7 +557,21 @@ for p in PAGES:
          "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p['faqs']]}
     faq_json = '<script type="application/ld+json">\n' + json.dumps(faq_ld, ensure_ascii=False) + '\n</script>'
     assert len(p['faqs']) >= 3, p['slug']
-    intro_html = html.escape(' '.join(p['intro'].split()))
+    # Intro rendering (ported from the live pages 2026-11-02, SPEC-9 lane):
+    # a lede paragraph, any follow-on paragraphs as .introp (the mobile CSS
+    # moves them below the grid; their wording, including every safety
+    # line, stays on the page), then the quiz line. PARAS splits must join
+    # back to the canonical 'intro' text exactly - asserted, never drift.
+    _paras = PARAS.get(p['slug'])
+    if _paras:
+        assert ' '.join(' '.join(_paras).split()) == ' '.join(p['intro'].split()), \
+            f"{p['slug']}: PARAS drift from intro"
+        _parts = [f'<p class="lede">{html.escape(_paras[0])}</p>']
+        _parts += [f'<p class="introp" style="max-width:720px;margin:10px 0 0">{html.escape(x)}</p>'
+                   for x in _paras[1:]]
+        intro_html = '\n'.join(_parts) + '\n' + QUIZLINE
+    else:
+        intro_html = f'<p class="lede">{html.escape(" ".join(p["intro"].split()))}</p>\n' + QUIZLINE
     # Optional per-page hub link (2026-10-23): one added line in the .cta
     # box, only on pages whose PAGES entry sets hub=(path, text). Pages
     # without it render byte-identical to before ({hub_line} sits where

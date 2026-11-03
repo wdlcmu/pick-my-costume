@@ -299,12 +299,19 @@ body.st-open .sitehead{display:none}
    worked-example card (.examplebox, directly under .hero) starts inside
    the first screen at 390x844. No content, order, or behavior changes. */
 @media (max-width:899px){
-  .wrap{padding-top:12px}
-  .ticker{padding-top:4px;padding-bottom:4px}
+  .wrap{padding-top:6px}
+  .ticker{padding-top:2px;padding-bottom:2px}
   .sitehead{padding-top:4px;margin-bottom:0}
-  .hero{padding:16px 8px 10px}
-  .hero h1{margin-top:4px;margin-bottom:4px}
-  #s-hero #hero-mosaic{margin:8px 0 0}
+  .hero{padding:10px 8px 6px}
+  .hero h1{margin-top:2px;margin-bottom:2px}
+  #s-hero #hero-mosaic{margin:4px 0 0}
+  /* SPEC-8 (2026-11-02): the fixed Ask pill band (bottom:16px + 48px tall)
+     starts at y=780 on a 390x844 phone and sat on the hero proof line and
+     the EXAMPLE label at first paint. Tighten the mobile hero stack and
+     crop the mosaic tile to 16/10 so every first-screen text element
+     clears the pill's band at scroll 0. Spacing-only, same fleet pattern
+     as the hero/example spacing fix bar; desktop untouched. */
+  #s-hero #hero-mosaic img{aspect-ratio:16/10}
   .hero .hero-proof{margin-top:4px!important}
 }
 /* 2026-10-12 (Billy: the stacked pitch + welcome-back "feels weird"):
@@ -2520,6 +2527,13 @@ html{scroll-padding-bottom:96px}
      state sticky: once yielded, a target must clear the band expanded by
      6px before the pill returns. */
   var FYG_SELECTOR="a[href], button, input, select, textarea, summary, [role=\"button\"], [role=\"link\"], [role=\"tab\"], [role=\"menuitem\"], [tabindex]:not([tabindex=\"-1\"]), [data-fyg-watch]";
+  /* SPEC-8 (2026-11-02): on phones the pill docks only after the first
+     scroll. At first paint it stays yielded, so no first-screen text can
+     sit under it; the hero spacing fix in the Phase B media block also
+     clears the proof line and EXAMPLE label from its resting band. The
+     hold releases permanently on the first real scroll or on any
+     desktop-width viewport. Desktop behavior is unchanged. */
+  var dockHold = window.innerWidth<=899 && window.scrollY<12;
   var yieldTargets=[];
   function collectYieldTargets(){
     var list=document.querySelectorAll(FYG_SELECTOR), out=[];
@@ -2532,6 +2546,10 @@ html{scroll-padding-bottom:96px}
     yieldTargets=out;
   }
   function pillYieldCheck(){
+    if(dockHold){
+      if(window.innerWidth>899||window.scrollY>=12){ dockHold=false; }
+      else { openBtn.classList.add("askp-yield"); return; }
+    }
     if(!panel.hidden||document.activeElement===openBtn){ openBtn.classList.remove("askp-yield"); return; }
     /* D7 2026-11-01: measure the band the pill occupies when NOT yielded
        (bottom:16px / right:16px from the .askp-open rule). Reading the live

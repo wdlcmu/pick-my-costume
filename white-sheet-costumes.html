@@ -44,9 +44,9 @@ h1{font-size:32px;margin:10px 0 4px}.byline{color:var(--mut);font-size:14px;marg
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin:28px 0}
 .ccard{background:#fff;border:1px solid #eadfc9;border-radius:14px;overflow:hidden;padding:0 0 16px}
 .ccard img{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:cover;background:#f3ead8}
-.ccard h3,.ccard p{margin:10px 16px}.ccard h3 a{color:var(--ink);text-decoration:none}
+.ccard h3,.ccard p{margin:10px 16px}.ccard h3 a{color:var(--ink);text-decoration:none;display:inline-block;min-height:44px;padding:10px 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chip{background:#f6efe0;border-radius:999px;padding:3px 10px;font-size:13px}
-.need{font-size:14px;color:var(--mut)}.blurb{font-size:15px}.how{margin:10px 16px}.howt{font-weight:700;margin:0 0 4px;font-size:15px}.how ol{margin:0;padding-left:20px}.how li{margin:3px 0;font-size:14px;line-height:1.45}.go a{color:var(--acc);font-weight:700;text-decoration:none}
+.need{font-size:14px;color:var(--mut)}.blurb{font-size:15px}.how{margin:10px 16px}.howt{font-weight:700;margin:0 0 4px;font-size:15px}.how ol{margin:0;padding-left:20px}.how li{margin:3px 0;font-size:14px;line-height:1.45}.go a{color:var(--acc);font-weight:700;text-decoration:none;display:inline-block;min-height:44px;padding:12px 6px}
 .cta{background:#1d1a16;color:#fff;border-radius:14px;padding:24px;margin:32px 0;text-align:center}
 .cta a{color:#ffb020;font-weight:700}
 footer{border-top:1px solid #eadfc9;margin-top:40px;padding:20px;text-align:center;color:var(--mut);font-size:14px}
@@ -63,6 +63,25 @@ footer a{color:var(--mut);margin:0 10px}
 .remindform input[type=email]{font-size:16px;padding:12px 14px;border-radius:10px;border:1px solid #e0d4c2;min-width:220px}
 .remindform button{font-size:16px;font-weight:800;padding:12px 20px;border-radius:10px;border:0;background:#e8632c;color:#fff;cursor:pointer;min-height:48px}
 .remindnote{margin:8px 0 0;font-size:14px;color:#6b6259;min-height:20px}
+/* SPEC-9 (2026-11-02): on a phone the card grid must start on the first
+   screen. Stack main as a column, put the grid right after the lede,
+   and move the follow-on intro paragraphs (.introp, which carry the
+   safety wording) and the quiz line below the grid - moved, never cut.
+   Card photos crop to 4/3 on phones so card 1's photo AND title both
+   land inside the first 844px. Desktop layout is untouched. */
+@media (max-width:640px){
+main{display:flex;flex-direction:column;padding:12px 20px 60px}
+main>*{order:10}
+.byline{order:1}main>h1{order:2}.lede{order:3}
+.grid{order:5;margin:10px 0}
+.introp{order:6}
+.quizline{order:7}
+.remindbox{order:8}.faqsec{order:9}.cta{order:10}
+.top{padding:10px 16px}
+h1{font-size:26px}
+.lede{font-size:17px;line-height:1.45}
+.ccard img{aspect-ratio:4/3}
+}
 </style>
 </head>
 <body>
@@ -79,10 +98,9 @@ footer a{color:var(--mut);margin:0 10px}
 <p class="byline">Updated November 2026 · Pick My Costume</p>
 <h1>White Sheet Costume Ideas</h1>
 <p class="lede">That old bedsheet in the linen closet is the fastest costume in the house. A white flat sheet, scissors, and a marker get you the classic ghost in ten minutes flat, and a black sheet cut into a cape covers vampires, headless horsemen, and little witches with almost no sewing.</p>
-<p style="max-width:720px;margin:10px 0 0">The trick most people miss is sizing the sheet before you cut: twin for kids under eight, full or queen for teens and adults, and always cut eye holes smaller than you think, you can widen them but you cannot shrink them.</p>
-<p style="max-width:720px;margin:10px 0 0">Every costume below starts from a sheet you already own, lists exactly what else you need, gives the build steps right on this page, and links to a full build guide with real hands-on time. No costume-shop run required.</p>
-<p style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:10px 4px">Take the 2-minute quiz →</a> Free. No signup.</p>
-
+<p class="introp" style="max-width:720px;margin:10px 0 0">The trick most people miss is sizing the sheet before you cut: twin for kids under eight, full or queen for teens and adults, and always cut eye holes smaller than you think, you can widen them but you cannot shrink them.</p>
+<p class="introp" style="max-width:720px;margin:10px 0 0">Every costume below starts from a sheet you already own, lists exactly what else you need, gives the build steps right on this page, and links to a full build guide with real hands-on time. No costume-shop run required.</p>
+<p class="quizline" style="margin:14px 0 18px;font-size:17px">Can't pick? <a href="/?quiz=1" style="font-weight:700;display:inline-flex;align-items:center;min-height:44px;padding:10px 4px">Take the 2-minute quiz →</a> Free. No signup.</p>
 <div class="grid" id="intent-grid" data-unit-id="white-sheet-costumes" data-unit-type="intent-grid">
 <article class="ccard" data-unit-item="classic-ghost">
 <a href="/c/classic-ghost"><img src="/photos/classic-ghost.webp" alt="Classic Ghost Halloween costume" loading="lazy" width="400" height="400"></a>
