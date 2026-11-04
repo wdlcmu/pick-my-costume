@@ -1917,8 +1917,38 @@ function whyLine(scored, idx){
      claim the vibe. Say what's true instead. */
   if (vibe && !state._vibeRelaxed) personal.push("a " + vibe.toLowerCase() + " vibe");
   var interest = answerLabel("qinterest");
-  if (interest && interest !== "Surprise me") personal.push("your interest in " + interest.toLowerCase());
-  if (personal.length) tail += " Picked for " + personal.join(" and ") + ".";
+  /* 2026-11-04 (SPEC-PMC-COLDQA1104-01, Addendum 1374): mirror the vibe
+     guard for interest. The interest fragment is claimed ONLY when this
+     idea itself carries the picked interest tag (idea.tags[tag] > 0).
+     A card that lacks the tag omits the fragment and, so the line still
+     explains itself honestly, carries a closest-match disclosure
+     instead. Enumeration before this fix: 627/2484 paths served at
+     least one card claiming an interest the card does not carry, and
+     the #1 card itself claimed falsely on 6 paths. */
+  var interestTag = firstTag("qinterest");
+  var interestClaimed = !!(interest && interest !== "Surprise me" && interestTag && idea.tags && idea.tags[interestTag]);
+  if (interestClaimed) personal.push("your interest in " + interest.toLowerCase());
+  if (personal.length){
+    /* 2026-11-04 (SPEC-PMC-COLDQA1104-07): the closer rotates through
+       3 STRUCTURES keyed on the same result index as the middle
+       fragments, instead of one fixed template sentence on every
+       card: verb + joined fragments / verb + fragments in reverse
+       order / two short fits sentences. */
+    if (v === 0) tail += " Picked for " + personal.join(" and ") + ".";
+    else if (v === 1) tail += " Chosen for " + personal.slice().reverse().join(" and ") + ".";
+    else if (personal.length > 1) tail += " It fits " + personal[0] + ". It also matches " + personal[1] + ".";
+    else tail += " It fits " + personal[0] + ".";
+  }
+  if (interest && interest !== "Surprise me" && interestTag && !(idea.tags && idea.tags[interestTag])){
+    /* The disclosure rotates too, so the honesty sentence never
+       becomes the next fixed template. */
+    var disclosures = [
+      "This one does not carry " + interest.toLowerCase() + " itself; it is a closest match for the rest of your answers.",
+      interest + " is not one of its tags, so read it as a close match on your other answers.",
+      "It is not a " + interest.toLowerCase() + " pick itself; it earned its place from your other answers."
+    ];
+    tail += " " + disclosures[v];
+  }
   if (vibe && state._vibeRelaxed){
     var _audLabel = answerLabel("q1");
     tail += " Not many " + vibe.toLowerCase() + " options" + (_audLabel ? " for " + _audLabel.toLowerCase() : "") + " in our collection, so these are the closest matches.";
