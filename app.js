@@ -4399,7 +4399,7 @@ function buildClosetBadge(idea, skipTrack){
     panel.appendChild(line(
       st.state === "full" ? "You have everything for this one. Nothing to buy."
       : (st.have === 0 ? "None of this one is in your pantry yet."
-         : "You already have " + st.have + " of " + st.total + " things for this.")));
+         : "You already have " + st.have + " of " + st.total + " supplies for this.")));
     if (st.state === "partial"){
       panel.appendChild(line("Tap a supply to tick what you own.", "ptiles-sub"));
     }
@@ -7964,7 +7964,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
     if (_pm >= 0){
       _pb = document.createElement("span");
       _pb.className = "pantrybadge";
-      _pb.textContent = _pm === 0 ? "Make tonight" : ("Still needs " + _pm + " of " + _pt + " things");
+      _pb.textContent = _pm === 0 ? "Make tonight" : ("Still needs " + _pm + " of its " + _pt + " supplies");
       _pb.title = "Made from your pantry";
     }
     /* 2026-10-16 (Billy, results cut round 2): the "YOUR 2026 HALLOWEEN
@@ -8645,7 +8645,7 @@ function renderWarmResults(){
           _pcov.style.cssText = "margin:0 0 12px;font-size:14px;color:#444";
           if (typeof pantrySaved === "function" && pantrySaved() && _mats && typeof pantryMissing === "function" && pantryMissing(WARM.anchor.id) >= 0){
             var _miss = pantryMissing(WARM.anchor.id);
-            _pcov.appendChild(document.createTextNode("You already have " + (_mats.length - _miss) + " of " + _mats.length + " things for this. "));
+            _pcov.appendChild(document.createTextNode("You already have " + (_mats.length - _miss) + " of " + _mats.length + " supplies for this. "));
             var _pl = document.createElement("a"); _pl.href = "/pantry"; _pl.textContent = "Update the pantry";
             _pcov.appendChild(_pl); _pcov.appendChild(document.createTextNode("."));
           } else {
@@ -9712,7 +9712,7 @@ function renderResults(results){
     if (_pm2 >= 0){
       _pb2 = document.createElement("span");
       _pb2.className = "pantrybadge";
-      _pb2.textContent = _pm2 === 0 ? "Make tonight" : ("Still needs " + _pm2 + " of " + _pt2 + " things");
+      _pb2.textContent = _pm2 === 0 ? "Make tonight" : ("Still needs " + _pm2 + " of its " + _pt2 + " supplies");
       _pb2.title = "Made from your pantry";
     }
     card.appendChild(rbadge); card.appendChild(im); card.appendChild(h);
