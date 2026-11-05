@@ -36,8 +36,11 @@
    countdown fleet pass it rolls to next year's Halloween once this year's
    has passed, so the bar is never dark for a full year. Ticking upgrade
    (same pass): the bar is a live clock, ticking every second (days,
-   hours, minutes, seconds) to the end of Halloween; Halloween itself
-   keeps the classic line. Reduced motion: one static day count. */
+   hours, minutes, seconds) to Halloween (Oct 31 00:00 local); Halloween
+   itself keeps the classic line. Reduced motion: one static day count.
+   2026-11-05 countdown sweep fix: the tick previously ran to Nov 1
+   00:00 (the end of Halloween), overstating the time until Halloween
+   by 24 hours; it now ticks to Oct 31 00:00 local, one true duration. */
 (function(){
   function cdUnit(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
   function cdTick(ms, tail) {
@@ -119,7 +122,7 @@
     if (RM) {
       txt.innerHTML = boldNums(label);
       if (mainBtn) mainBtn.setAttribute("aria-label", label);
-      lastMs = (today.getTime() === hw.getTime()) ? null : (new Date(hw.getFullYear(), 10, 1) - now);
+      lastMs = (today.getTime() === hw.getTime()) ? null : (hw - now);
       if (panelOpen) updateBreak(now);
       bar.hidden = false;
       if (!started) { started = true; setInterval(renderTicker, 60000); }
@@ -131,7 +134,7 @@
       msg = "Happy Halloween! Tonight is the night";
       lastMs = null;
     } else {
-      var end = new Date(hw.getFullYear(), 10, 1);
+      var end = hw;
       var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
       msg = cdTick(end - now, "Halloween, " + dateText + ".");
       lastMs = end - now;
