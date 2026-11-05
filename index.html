@@ -313,6 +313,22 @@ body.st-open .sitehead{display:none}
      as the hero/example spacing fix bar; desktop untouched. */
   #s-hero #hero-mosaic img{aspect-ratio:16/10}
   .hero .hero-proof{margin-top:4px!important}
+  /* SPEC-PMC-COLDQA1104E-04 (2026-11-04): the worked-example card must land
+     FULLY inside screen one at 390x844 too (its "You get" payoff line sat at
+     y=824-848, half-clipped, and the card ran to y=928). Spacing/crop only:
+     shorter hero tile, tighter hero stack, tighter example card. No content,
+     order, or behavior changes; example words untouched. */
+  #s-hero #hero-mosaic img{aspect-ratio:1.85}
+  .hero{padding:6px 8px 2px}
+  .hero h1{font-size:36px;line-height:1;margin-top:0;margin-bottom:0}
+  .hero .hero-sub{margin-top:6px!important}
+  #btn-start{margin-top:8px!important}
+  #s-hero .examplebox{padding:10px 14px}
+  #s-hero .examplebox p{margin-bottom:5px;line-height:1.35}
+  #s-hero .examplebox p:last-child{margin-bottom:0}
+  #s-hero .hero .hero-proof{max-width:100%;margin-top:2px!important}
+  #s-hero .hero .hero-sub{line-height:1.35}
+  #s-hero #hero-mosaic{margin-top:0}
 }
 /* 2026-10-12 (Billy: the stacked pitch + welcome-back "feels weird"):
    returning visitors with a fresh pick get the welcome-back card as their
@@ -392,7 +408,7 @@ body.st-open .sitehead{display:none}
      Was a 2x2 mosaic of four equal photos splitting attention six ways;
      now bumble-bee carries the entrance with two supporting photos stacked.
      Container widened to the full 1240px well, type stepped up. */
-  #s-hero .hero{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:48px;align-items:center;max-width:1240px;text-align:left;padding-top:68px}
+  #s-hero .hero{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:48px;align-items:center;max-width:1240px;text-align:left;padding-top:24px;padding-bottom:12px}
   #s-hero .hero .herotext{text-align:left}
   #s-hero .hero h1{margin-left:0;margin-right:0;max-width:none;font-size:48px;line-height:1.06}
   #s-hero .hero .honestline{margin-left:0;margin-right:0}
@@ -410,7 +426,7 @@ body.st-open .sitehead{display:none}
      with the column at any desktop width). Photos keep object-fit:cover
      inside the fixed box, so a swap can no longer move the page.
      Desktop-only rule: the phone tile keeps its own aspect-ratio:4/3. */
-  #hero-mosaic{display:grid;grid-template-columns:1.5fr 1fr;grid-template-rows:1fr 1fr;gap:14px;align-self:center;aspect-ratio:656/578}
+  #hero-mosaic{display:grid;grid-template-columns:1.5fr 1fr;grid-template-rows:1fr 1fr;gap:14px;align-self:center;aspect-ratio:656/408}
   #hero-mosaic a{position:relative;display:block;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
   #hero-mosaic a:first-child{grid-row:1/3}
   #hero-mosaic img{display:block;width:100%;height:100%;aspect-ratio:1/1;object-fit:cover}
@@ -2128,7 +2144,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 }</code></pre>
 </details>
 <p style="margin:.8rem 0 .2rem"><strong>3. Ask your AI:</strong> &ldquo;Pick a costume for a family of four that we can build tonight.&rdquo;</p>
-<p style="margin:.8rem 0 .2rem">Also on ChatGPT: Pick My Costume is published in the ChatGPT plugin directory. <a href="https://chatgpt.com/plugins">Open the directory</a> and search &ldquo;Pick My Costume&rdquo; to add it there.</p>
+<p style="margin:.8rem 0 .2rem">Also on ChatGPT: Pick My Costume is published in the ChatGPT plugin directory. <a href="https://chatgpt.com/plugins" style="display:inline-block;min-height:44px;line-height:44px">Open the directory</a> and search &ldquo;Pick My Costume&rdquo; to add it there.</p>
 </section>
 <script>
 (function(){var b=document.querySelector('.wai-copy');if(!b)return;b.addEventListener('click',function(){var el=document.getElementById(b.getAttribute('data-copy-target'));var t=el?el.textContent.trim():'';function done(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},2000);}function fallback(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback);}else{fallback();}});})();
