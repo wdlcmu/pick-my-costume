@@ -645,7 +645,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
      the meta tags in the head, so they cannot regress. */
-  var _mats = "", _steps = "", _triple = "", _faqs = "", _fit = "", _sharerLine = "";
+  var _mats = "", _steps = "", _triple = "", _faqs = "", _fit = "", _sharerLine = "", _copyBtn = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     _steps = _hw.s.map(function(x, i){
@@ -662,6 +662,8 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       }
       return "<li>" + _tx + "</li>";
     }).join("");
+    var _copyText = idea.t + "\n\nYou need:\n" + _hw.m.map(function(x){ return "- " + x; }).join("\n") + "\n\nSteps:\n" + _hw.s.map(function(x, i){ return (i + 1) + ". " + x; }).join("\n") + "\n\nhttps://pickmycostume.com/c/" + slug;
+    _copyBtn = "<button class=\"copybtn\" id=\"svbtn\" type=\"button\">Copy this costume</button><script>(function(){var b=document.getElementById(\"svbtn\");if(!b)return;var t=" + JSON.stringify(_copyText).replace(/<\//g, "<\\/") + ";var L=\"Copy this costume\";function done(){b.textContent=\"Copied\";setTimeout(function(){b.textContent=L;},3000);}function failed(){b.textContent=\"Select + copy manually\";setTimeout(function(){b.textContent=L;},4000);}function fb(){var ta=document.createElement(\"textarea\");ta.value=t;ta.setAttribute(\"readonly\",\"\");ta.style.position=\"absolute\";ta.style.left=\"-9999px\";document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand(\"copy\");}catch(e){ok=false;}document.body.removeChild(ta);if(ok){done();}else{failed();}}b.addEventListener(\"click\",function(){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fb);}else{fb();}});})();</scr" + "ipt>";
     /* 2026-09-25: quick version leads. 2026-09-29 (#31): the quickcard
        used to render first-sentences of the same 5 steps the full ordered
        list repeats below -- structural duplication. The quickcard is now a
@@ -1273,7 +1275,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     ".sharebtn{display:inline-block;background:transparent;border:2px solid #ff8c1a;color:#ff8c1a;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;}.shareprompt{margin:18px 0 4px;text-align:center;}.sharepromptbtn{background:transparent;border:0;color:#ff8c1a;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;text-decoration:underline;padding:8px;}" +
     /* Print feature (live 2026-10-06, commit e6d18cf6): ported from the
        hand-edited deployed file 2026-10-09 so regen never drops it again. */
-    ".printbtn{display:inline-block;background:transparent;border:2px solid #cdbcf0;color:#cdbcf0;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;margin-left:10px;}" +
+    ".printbtn{display:inline-block;background:transparent;border:2px solid #cdbcf0;color:#cdbcf0;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;margin-left:10px;}.copybtn{display:inline-block;background:#ff8c1a;border:2px solid #ff8c1a;color:#fff;font-weight:800;font-size:16px;padding:10px 22px;border-radius:12px;cursor:pointer;font-family:inherit;margin-left:10px;min-height:44px;}" +
     ".sharemsg{font-size:14px;color:#cdbcf0;margin-left:10px;}" +
     ".storyline{font-size:16px;margin:0 0 14px;color:#cdbcf0;}" +
     ".storyline a{color:#ff8c1a;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px;}" +
@@ -1376,7 +1378,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     (PICTURED[slug] ? "<p class=\"pictured\">" + esc(PICTURED[slug]) + "</p>" : "") +
     _triple +
     "<p class=\"ctawrap\"><a class=\"cta plancta\" href=\"" + targetAttr + "\">" + _ctaLabel + "</a><span class=\"ctasub\">No signup \u00b7 2 minutes.</span></p>" +
-    "<p class=\"sharewrap\"><button class=\"sharebtn\" id=\"guideshare\" type=\"button\">Share</button><button class=\"printbtn\" id=\"guideprint\" type=\"button\" onclick=\"window.print()\">Print</button><span class=\"sharemsg\" id=\"guidesharemsg\" role=\"status\"></span></p>" +
+    "<p class=\"sharewrap\"><button class=\"sharebtn\" id=\"guideshare\" type=\"button\">Share</button><button class=\"printbtn\" id=\"guideprint\" type=\"button\" onclick=\"window.print()\">Print</button>" + _copyBtn + "<span class=\"sharemsg\" id=\"guidesharemsg\" role=\"status\"></span></p>" +
     _introHtml +
     /* Item 132 early quiz line (reconciled 2026-10-29, ADV-2/3/4 lane): live carried this line on exactly 9 guides while the tree carried it on none; the gated set below is the live-verified set (full 169-guide live scan 2026-10-29). Do not widen or drop without a live scan. */
     ((["baby-pumpkin","boxer","cardboard-knight","classic-ghost","coffee-cup","ghost-hunters","haunted-animatronics","pickle","ramen-bowl"].indexOf(slug) >= 0) ? "<p style=\"margin:14px 0 18px;font-size:17px\">Can't pick? <a href=\"" + quizTargetAttr + "\" style=\"font-weight:700\">Take the 2-minute quiz →</a> Free. No signup.</p>" : "") +
