@@ -252,6 +252,9 @@ var UNIT_REGISTRY = {
   /* unit_id: {type, container} — container is the element id holding the items */
   "kids-rail":         {type: "rail", container: "row-kids"},
   "discover-trending": {type: "rail", container: "row-trending"},
+  /* 2026-11-05 (Billy): Halloween 2026 retrospective unit + its search chips. */
+  "wrapped-2026":      {type: "rail", container: "row-wrapped"},
+  "wrapped-searches":  {type: "bar",  container: "wrapped-searches"},
   /* 2026-10-03 (Billy): homepage simplification. The Make-tonight tab is
      retired; the always-visible tonight section renders from the stored
      idea.tonight predicate (time-only). */

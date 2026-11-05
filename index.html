@@ -670,6 +670,22 @@ a.pcal{display:inline-block;margin-top:10px;background:var(--btn-bg);color:var(-
 .trendcard .tt{font-weight:700;color:#fff;font-size:14px}
 .trendcard .tg{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
 .trendmore{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;font-weight:700}
+/* 2026-11-05 (Billy): Halloween 2026 retrospective. Unit: wrapped-2026.
+   Real counts from this site's own analytics (see lane report). The rail
+   mirrors .proofrow swipe mechanics with wider stat cards. */
+.wrapsec{margin-top:22px;padding:18px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(0,0,0,.18)}
+.wrapsec .q-title{margin:0 0 8px}
+.wraprow{display:flex;gap:10px;margin:10px -16px 0;padding:4px 16px 8px;overflow-x:auto;touch-action:pan-x pan-y;scroll-snap-type:x mandatory;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;-webkit-mask-image:linear-gradient(to right,#000 92%,transparent 100%);mask-image:linear-gradient(to right,#000 92%,transparent 100%)}
+.wraprow::-webkit-scrollbar{display:none}
+.wrapcard{flex:0 0 172px;scroll-snap-align:start;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card);position:relative}
+.wrapcard img{width:100%;height:118px;object-fit:cover;display:block}
+.wrapbadge{position:absolute;top:8px;left:8px;background:rgba(10,6,20,.78);color:#ffd98a;font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;letter-spacing:.02em}
+.wrapcard .wb{display:block;padding:10px 12px 12px}
+.wrapname{display:block;font-weight:700;color:#fff;font-size:15px;line-height:1.25}
+.wrapstat{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
+.wrapstat b{color:var(--accent);font-size:14px}
+.wrapchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.wrapchip{display:inline-flex;align-items:center;min-height:44px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--text);font-size:14px;background:rgba(255,255,255,.03)}
 .featsec{margin-top:18px}
 .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
 .featgrid a{display:block;text-decoration:none;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
@@ -1871,6 +1887,33 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            spend" etc. Figures and source unchanged. -->
       <section class="nrfsec" id="nrf-section" aria-label="Halloween by the numbers">
         <p class="fine" style="margin:0">Halloween by the numbers: Americans planned to spend $13.5 billion on Halloween in 2026. Half of consumers planned to dress in costume. Nearly half of shoppers planned to use AI to help with Halloween shopping. (Source: NRF 2026 Halloween survey, Sept 2026.)</p>
+      </section>
+      <!-- 2026-11-05 (Billy): Halloween 2026 retrospective. Every count is
+           real, from this site's own analytics, Sep 1 - Nov 1, 2026
+           (PostHog: guide pageviews; share_created + share_text_copied and
+           pick_saved with site-flagged internal traffic removed). Searches
+           are Google Search Console's top queries, Oct 7 - Nov 3, 2026.
+           Data table: builds/pick-my-costume/retrospective-2026-11-05/REPORT.md
+           Unit: wrapped-2026 (+ wrapped-searches chips). -->
+      <section class="wrapsec" id="wrapped-section" aria-label="Halloween 2026 wrapped">
+        <h2 class="q-title">Halloween 2026, wrapped</h2>
+        <p class="fine" style="margin:0 0 4px">What people viewed, shared, and saved most on this site.</p>
+        <div class="wraprow" id="row-wrapped" role="list" aria-label="Top costumes of Halloween 2026">
+          <a class="wrapcard" role="listitem" href="/c/baby-pumpkin"><img src="photos/baby-pumpkin-480.webp" srcset="photos/baby-pumpkin-256.webp 256w, photos/baby-pumpkin-480.webp 480w" sizes="172px" alt="Baby Pumpkin costume" loading="lazy"><span class="wrapbadge">#1 viewed</span><span class="wb"><span class="wrapname">Baby Pumpkin</span><span class="wrapstat"><b>34</b> views of its guide</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew-480.webp" srcset="photos/enchanted-castle-crew-256.webp 256w, photos/enchanted-castle-crew-480.webp 480w" sizes="172px" alt="Enchanted Castle Crew costume" loading="lazy"><span class="wrapbadge">#1 shared</span><span class="wb"><span class="wrapname">Enchanted Castle Crew</span><span class="wrapstat"><b>11</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/pickle"><img src="photos/pickle-480.webp" srcset="photos/pickle-256.webp 256w, photos/pickle-480.webp 480w" sizes="172px" alt="Pickle costume" loading="lazy"><span class="wrapbadge">#2 shared</span><span class="wb"><span class="wrapname">Pickle</span><span class="wrapstat"><b>7</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/lost-tourist"><img src="photos/lost-tourist-480.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="172px" alt="Lost Tourist costume" loading="lazy"><span class="wrapbadge">#3 shared</span><span class="wb"><span class="wrapname">Lost Tourist</span><span class="wrapstat"><b>6</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses-480.webp" srcset="photos/fairy-tale-princesses-256.webp 256w, photos/fairy-tale-princesses-480.webp 480w" sizes="172px" alt="Fairy Tale Princesses costume" loading="lazy"><span class="wrapbadge">#4 shared</span><span class="wb"><span class="wrapname">Fairy Tale Princesses</span><span class="wrapstat"><b>5</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/snow-sisters"><img src="photos/snow-sisters-480.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w" sizes="172px" alt="Ice Kingdom Crew costume" loading="lazy"><span class="wrapbadge">#1 saved</span><span class="wb"><span class="wrapname">Ice Kingdom Crew</span><span class="wrapstat"><b>15</b> saves</span></span></a>
+        </div>
+        <p class="fine" style="margin:12px 0 0">What people searched for</p>
+        <div class="wrapchips" id="wrapped-searches">
+          <a class="wrapchip" href="/c/fruit-salad">fruit salad costume</a>
+          <a class="wrapchip" href="/c/lost-tourist">lost tourist costume</a>
+          <a class="wrapchip" href="/c/coffee-cup">diy coffee cup costume</a>
+          <a class="wrapchip" href="/white-sheet-costumes">white sheet halloween costumes</a>
+        </div>
+        <p class="fine" style="margin:10px 0 0">Counts from this site, Sep 1 to Nov 1, 2026. Searches are the top Google searches that found this site, Oct 7 to Nov 3, 2026.</p>
       </section>
 <script>
 /* 2026-10-13 (Billy): trends bars + galaxy sky. The trend bars grow from
