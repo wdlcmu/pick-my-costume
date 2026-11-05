@@ -17296,6 +17296,13 @@ function shareLandingHeadline(idea, search){
     if (!el) return;
     var now = new Date();
     var hw = new Date(now.getFullYear(), 9, 31);
+    /* 2026-11-05 (Halloween 2027 countdown ship): roll to next year's
+       Halloween once this year's date has passed, like the ticker and
+       daysToHalloween() already do. Before this the hero line computed a
+       negative count every Nov 1 and hid itself until the next Jan 1.
+       Date-level compare keeps Oct 31 itself on the "today" line. */
+    var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (todayStart > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
     /* 2026-09-30: weekday dropped per Billy ("kill the (Saturday)").
        Just "N days until Halloween". */
     var days = Math.ceil((hw.getTime() - now.getTime()) / 86400000);
