@@ -2102,6 +2102,37 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2>Made by a dad, on the side</h2>
         <p>I&rsquo;m Billy, a dad in Redmond, Washington. I build these tools on the side, with AI, one idea, one website, no company behind it. Pick My Costume picks one you can make from your closet, with the supplies and steps up front.</p>
       </div>
+<!-- Works with your AI (fleet AI section, 2026-11-04) -->
+<section class="works-with-ai" aria-label="Works with your AI" style="max-width:44rem;margin:2.5rem auto;padding:1.25rem 1rem;border:1px solid rgba(127,127,127,.45);border-radius:14px;font-family:inherit;line-height:1.55">
+<h2 style="margin:.1rem 0 .5rem;font-size:1.35rem">Works with your AI</h2>
+<p style="margin:.4rem 0">Your AI can run this site's costume picker. It ranks the same 169 checked costume ideas this site uses, so the pick fits your crew, your time, and what you already own.</p>
+<p style="margin:.4rem 0">Connect this site to Claude, Cursor, or any other MCP client. It is free, and it takes about a minute.</p>
+<p style="margin:.8rem 0 .3rem"><strong>1. Copy the server address</strong></p>
+<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:stretch">
+<code id="wai-url" style="flex:1 1 16rem;display:flex;align-items:center;padding:.6rem .7rem;border:1px solid rgba(127,127,127,.45);border-radius:10px;word-break:break-all">https://mcp.pickmycostume.com/mcp</code>
+<button type="button" class="wai-copy" data-copy-target="wai-url" style="min-height:44px;min-width:44px;padding:.6rem 1.1rem;border-radius:10px;border:1px solid rgba(127,127,127,.55);background:transparent;color:inherit;font:inherit;cursor:pointer">Copy</button>
+</div>
+<p style="margin:.9rem 0 .3rem"><strong>2. Add it to your AI</strong></p>
+<details>
+<summary style="min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600">Claude Code — one command</summary>
+<pre style="overflow-x:auto;padding:.7rem;border:1px solid rgba(127,127,127,.35);border-radius:10px"><code>claude mcp add --transport http pick-my-costume https://mcp.pickmycostume.com/mcp</code></pre>
+</details>
+<details>
+<summary style="min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600">Claude Desktop or Cursor — paste into the MCP settings</summary>
+<pre style="overflow-x:auto;padding:.7rem;border:1px solid rgba(127,127,127,.35);border-radius:10px"><code>{
+  "mcpServers": {
+    "pick-my-costume": {
+      "url": "https://mcp.pickmycostume.com/mcp"
+    }
+  }
+}</code></pre>
+</details>
+<p style="margin:.8rem 0 .2rem"><strong>3. Ask your AI:</strong> &ldquo;Pick a costume for a family of four that we can build tonight.&rdquo;</p>
+<p style="margin:.8rem 0 .2rem">Also on ChatGPT: Pick My Costume is published in the ChatGPT plugin directory. <a href="https://chatgpt.com/plugins">Open the directory</a> and search &ldquo;Pick My Costume&rdquo; to add it there.</p>
+</section>
+<script>
+(function(){var b=document.querySelector('.wai-copy');if(!b)return;b.addEventListener('click',function(){var el=document.getElementById(b.getAttribute('data-copy-target'));var t=el?el.textContent.trim():'';function done(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},2000);}function fallback(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback);}else{fallback();}});})();
+</script>
       <footer class="sitefoot">
         <p class="fine" style="margin:0 0 6px"><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/countdown">Costume countdown</a> &middot; <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
         <p class="fine" style="margin:0">Pick My Costume is an independent project. Built with Muse.</p>
