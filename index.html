@@ -319,6 +319,15 @@ body.st-open .sitehead{display:none}
      shorter hero tile, tighter hero stack, tighter example card. No content,
      order, or behavior changes; example words untouched. */
   #s-hero #hero-mosaic img{aspect-ratio:1.85}
+  /* SPEC-PMC-COLDQA1105K-06 (2026-11-05): the Nov 5 hero T-minus line
+     added ~23px above the worked example and pushed its last line
+     ("Yellow for the other.") to y=842-864 at 390x844, 20px past the
+     fold. Recover ~36px in the mobile hero only: a flatter mosaic
+     crop (1.85 -> 2.15, ~26px at 342px wide) and tighter T-minus
+     margins (10/16 -> 6/10, 10px). The CTA keeps its place above the
+     photo, the payoff stays on screen one, desktop is untouched. */
+  #s-hero #hero-mosaic img{aspect-ratio:2.15}
+  #tminus{margin-top:6px;margin-bottom:10px}
   .hero{padding:6px 8px 2px}
   .hero h1{font-size:36px;line-height:1;margin-top:0;margin-bottom:0}
   .hero .hero-sub{margin-top:6px!important}
