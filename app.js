@@ -59,11 +59,17 @@
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var hw = new Date(now.getFullYear(), 9, 31);
     if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
-    var days = Math.round((hw.getTime() - today.getTime()) / 864e5);
     var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    if (today.getTime() === hw.getTime()) return "Happy Halloween! Tonight is the night";
+    /* SPEC-PMC-COLDQA1105K-04: whole days are full 24h days remaining
+       to Oct 31 00:00 local — the live tick's own count (cdTick floors
+       the same span). This line serves the reduced-motion ticker and
+       the bar's aria-label; its old calendar-day round read one MORE
+       than the ticking bar every afternoon. */
+    var days = Math.floor((hw.getTime() - now.getTime()) / 864e5);
     return days > 1 ? days + " days until Halloween, " + dateText + "."
-      : days === 1 ? "Tomorrow is Halloween, " + dateText + "."
-      : "Happy Halloween! Tonight is the night";
+      : days === 1 ? "1 day until Halloween, " + dateText + "."
+      : "Tomorrow is Halloween, " + dateText + ".";
   }
   var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var lastLabel = "";
@@ -519,6 +525,10 @@ function rallyCopyFor(nowMs){
   if (d.getMonth() === 9 && d.getDate() === 31)
     return "Halloween is today. Your pick is saved. Send it to the group chat.";
   var n = daysToHalloween();
+  /* K-04: n is 0 on the day before Halloween too (floored count);
+     that state is "tomorrow", never "0 days away". Oct 31 itself is
+     handled by the calendar branch above. */
+  if (n === 0) return "Halloween is tomorrow. Your pick is saved. Send it to the group chat.";
   return "Halloween is " + n + (n === 1 ? " day" : " days") + " away. Your pick is saved. Send it to the group chat.";
 }
 function rallyShouldShow(rec, recoverSnoozedAt, rallySnoozedAt, search, nowMs){
@@ -4070,15 +4080,21 @@ var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","markers","foil","ca
   var bar = document.getElementById("days-banner");
   if (!bar) return;
   var now = new Date();
-  var days = Math.ceil((new Date(now.getFullYear(), 9, 31).getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 864e5);
-  if (days < 0) return;
+  /* K-04: floored full days to Oct 31 00:00 (the ticker count); the
+     old calendar-day ceil read one more than the ticker. Past
+     Halloween the banner stays hidden, as before. */
+  var hwB = new Date(now.getFullYear(), 9, 31);
+  var todayB = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (todayB > hwB) return;
+  var isTodayB = todayB.getTime() === hwB.getTime();
+  var days = isTodayB ? 0 : Math.floor((hwB.getTime() - now.getTime()) / 864e5);
   var n = 0;
   for (var i = 0; i < IDEAS.length; i++) if (IDEAS[i].tonight) n++;
   if (!n) return;
   var dEl = document.getElementById("days-banner-days");
   var bEl = document.getElementById("days-banner-builds");
   if (!dEl || !bEl) return;
-  dEl.textContent = days === 0 ? "Halloween is tonight. " : days === 1 ? "1 day to Halloween. " : days + " days to Halloween. ";
+  dEl.textContent = isTodayB ? "Halloween is tonight. " : days === 0 ? "Halloween is tomorrow. " : days === 1 ? "1 day to Halloween. " : days + " days to Halloween. ";
   bEl.textContent = n === 1 ? "1 build still fits tonight." : n + " builds still fit tonight.";
   bar.hidden = false;
 })();
@@ -7093,12 +7109,21 @@ function daysToHalloween(){
   /* 2026-09-27 red-team: was Math.round() to Oct 31 23:59:59, which read 35
      on Sep 27 while the hero countdown (Math.ceil to Oct 31 00:00) read 34.
      Now counts calendar days to Oct 31 00:00 like the hero, so every surface
-     agrees. After Halloween night fully passes it rolls to next year. */
+     agrees. After Halloween night fully passes it rolls to next year.
+     SPEC-PMC-COLDQA1105K-04 (2026-11-05): the ceil/calendar count itself
+     became the split once the ticker moved to target-day 00:00
+     (Addendum 1582) — the ticker floors full 24h days to Oct 31 00:00
+     and read one LESS than this function every afternoon. Now the
+     fleet convention: full 24h days remaining to Oct 31 00:00 local,
+     floored; Halloween day itself returns 0 by the calendar test, and
+     the day before returns 0 too (its rendered callers say "tomorrow"
+     for that state — see rallyCopyFor and the living-share banner). */
   var now = new Date();
-  var end = new Date(now.getFullYear(), 9, 31, 23, 59, 59);
-  if (end.getTime() < now.getTime()) end = new Date(now.getFullYear() + 1, 9, 31, 23, 59, 59);
-  var day0 = new Date(end.getFullYear(), 9, 31);
-  return Math.max(0, Math.ceil((day0.getTime() - now.getTime()) / 86400000));
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var hw = new Date(now.getFullYear(), 9, 31);
+  if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
+  if (today.getTime() === hw.getTime()) return 0;
+  return Math.max(0, Math.floor((hw.getTime() - now.getTime()) / 86400000));
 }
 /* NOCLONE-START (2026-09-27 no-clone pact experiment): class-parade
    duplicate-avoidance share. The one parent anxiety no surface serves:
@@ -16827,10 +16852,13 @@ function shareLandingHeadline(idea, search){
       lsb.id = "pmc-friend-banner";
       lsb.style.cssText = "display:block;width:100%;text-align:left;font:inherit;color:inherit;background:#fff7ec;border:1px solid #ffd9a3;border-radius:14px;padding:12px 14px;margin:0 0 14px;cursor:pointer";
       var _lsDays = daysToHalloween();
+      var _lsToday = (new Date().getMonth() === 9 && new Date().getDate() === 31);
       lsb.innerHTML = "<p style=\"margin:0 0 4px;font-weight:700;color:#333;line-height:1.4\">Your friend shared a living costume link.</p>" +
         /* 2026-09-27 red-team: on Halloween day itself _lsDays is 0, so it
-           says "today", never the awkward "0 days to Halloween". */
-        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + LIVING_SHARE.idea.title + " &middot; " + (_lsDays === 0 ? "Halloween is today" : _lsDays + " day" + (_lsDays === 1 ? "" : "s") + " to Halloween") + "</p>" +
+           says "today", never the awkward "0 days to Halloween".
+           K-04: _lsDays is ALSO 0 on the day before (floored count);
+           that state is "tomorrow", told apart by the calendar test. */
+        "<p style=\"margin:0;font-size:14px;color:#666;line-height:1.4\">" + LIVING_SHARE.idea.title + " &middot; " + (_lsToday ? "Halloween is today" : _lsDays === 0 ? "Halloween is tomorrow" : _lsDays + " day" + (_lsDays === 1 ? "" : "s") + " to Halloween") + "</p>" +
         "<p style=\"margin:8px 0 0;font-size:13px;color:#666;line-height:1.6\">" + livingStripHtml(LIVING_SHARE.stage) + "</p>" +
         "<p style=\"margin:8px 0 0;font-size:14px;color:#333;line-height:1.4\"><b>You have not taken the quiz yet.</b> Take the 2-minute quiz and find your pick.</p>";
       lsb.onclick = function(){
@@ -17134,9 +17162,12 @@ function shareLandingHeadline(idea, search){
         var hwY = rolled ? nowY + 1 : nowY;
         /* Halloween night, 8pm viewer-local: the moment you look up. */
         var hw = moonPhaseInfo(new Date(hwY, 9, 31, 20, 0, 0).getTime());
-        var days = Math.ceil((new Date(hwY, 9, 31).getTime() - nowT) / 86400000);
+        /* K-04: floored full days to Oct 31 00:00 (the ticker count),
+           not ceil — the panel read one more than the ticker. */
+        var days = Math.floor((new Date(hwY, 9, 31).getTime() - nowT) / 86400000);
+        var hwToday = (new Date(nowT).getMonth() === 9 && new Date(nowT).getDate() === 31 && !rolled);
         var tpct = Math.round(tn.illum * 100), hpct = Math.round(hw.illum * 100);
-        var daybit = days > 1 ? " (" + days + " days away)" : days === 1 ? " (tomorrow night)" : days === 0 ? " (tonight!)" : "";
+        var daybit = hwToday ? " (tonight!)" : days > 1 ? " (" + days + " days away)" : days === 1 ? " (1 day away)" : days === 0 ? " (tomorrow night)" : "";
         var hwLabel = rolled ? "Next Halloween night" : "Halloween night";
         $("moon-tonight").textContent = "Tonight: " + tn.name + " · " + tpct + "% lit."; /* 2026-09-30: moon-only widget, no day sun branch */
         $("moon-halloween").textContent = hwLabel + ": " + hw.name + " · " + hpct + "% lit" + daybit + ".";
@@ -17307,14 +17338,21 @@ function shareLandingHeadline(idea, search){
     var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     if (todayStart > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
     /* 2026-09-30: weekday dropped per Billy ("kill the (Saturday)").
-       Just "N days until Halloween". */
-    var days = Math.ceil((hw.getTime() - now.getTime()) / 86400000);
-    /* 2026-09-26 red-team D11: the clock hid ON Halloween (days <= 0 at midnight).
-       Halloween day deserves its own line, not silence. Hides only after Oct 31. */
-    if (days < 0) return; /* hidden: style starts display:none */
+       Just "N days until Halloween".
+       SPEC-PMC-COLDQA1105K-04 (2026-11-05): the count is the ticker's —
+       full 24h days remaining to Oct 31 00:00 local, floored, from the
+       same target the ticker ticks to. The old Math.ceil read one MORE
+       than the ticker on the same screen every afternoon. "Today" is
+       a calendar test, not a count, so Halloween day keeps its line
+       (2026-09-26 red-team D11) and the day before reads "tomorrow"
+       at count 0. */
+    var isToday = todayStart.getTime() === hw.getTime();
+    var days = Math.floor((hw.getTime() - now.getTime()) / 86400000);
+    if (days < 0 && !isToday) return; /* hidden: style starts display:none */
     var msg;
-    if (days === 0) msg = "🎃 Halloween is today: pick a costume you can build tonight";
-    else if (days === 1) msg = "🎃 Halloween is tomorrow: pick a costume you can build tonight";
+    if (isToday) msg = "🎃 Halloween is today: pick a costume you can build tonight";
+    else if (days === 0) msg = "🎃 Halloween is tomorrow: pick a costume you can build tonight";
+    else if (days === 1) msg = "🎃 1 day until Halloween: every idea here builds from your closet";
     else if (days <= 7) msg = "🎃 " + days + " days until Halloween: every idea here builds from your closet";
     else msg = "🎃 " + days + " days until Halloween";
     el.textContent = msg;
