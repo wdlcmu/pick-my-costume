@@ -328,6 +328,18 @@ body.st-open .sitehead{display:none}
      photo, the payoff stays on screen one, desktop is untouched. */
   #s-hero #hero-mosaic img{aspect-ratio:2.15}
   #tminus{margin-top:6px;margin-bottom:10px}
+  /* SPEC-FUNNEL-PMC-1 (2026-11-05): the hero Q1 chips take the start
+     button's slot (~+28px net). Recover it in the mobile hero only:
+     mosaic 2.15 -> 2.5 (~-22px at 342px wide) and 2px tighter example
+     card padding, so the worked example still ends inside screen one
+     at 390x844. Desktop untouched. */
+  #s-hero #hero-mosaic img{aspect-ratio:2.6}
+  #tminus{margin-bottom:6px}
+  #s-hero .examplebox{padding:8px 14px}
+  .hero-q1{margin-top:6px}
+  .hq1-opt{min-height:56px;padding:6px 2px}
+  .hq1-opt span:last-child{white-space:nowrap;font-size:11.5px}
+  .hq1-emoji{font-size:19px}
   .hero{padding:6px 8px 2px}
   .hero h1{font-size:36px;line-height:1;margin-top:0;margin-bottom:0}
   .hero .hero-sub{margin-top:6px!important}
@@ -898,6 +910,30 @@ body:has(#s-hero:not(.on)) .wrap{padding-bottom:10px}
   background:none;border:none;color:var(--accent);font-size:15px;font-weight:600;
   text-align:center;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 @media (hover:hover){.q-alt-link:hover{filter:brightness(1.15)}}
+/* SPEC-FUNNEL-PMC-1 (2026-11-05): quiz question 1 lives on screen 1.
+   The hero start button is replaced by Q1's own answer chips: tapping a
+   chip IS the start (no separate start tap). #btn-start stays in the DOM
+   hidden because other entry points (About, sticky CTA, browse) delegate
+   to its onclick handler, which still opens the quiz sheet at Q1. */
+#btn-start{display:none!important}
+.hero-q1{margin:14px auto 0;max-width:560px}
+.hq1-title{font-size:19px;font-weight:800;margin:0 0 8px;line-height:1.25}
+.hq1-opts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.hq1-opt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:58px;padding:8px 4px;background:var(--bg2);color:var(--ink);
+  border:2px solid var(--line);border-radius:var(--radius);cursor:pointer;
+  font-size:12px;font-weight:700;line-height:1.2;text-align:center}
+.hq1-emoji{font-size:21px;line-height:1}
+@media (hover:hover){.hq1-opt:hover{border-color:#b2691f}}
+.hq1-opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:899px){
+  .hero-q1{order:3;margin-top:10px;align-self:stretch}
+  .hq1-title{font-size:18px;margin-bottom:6px}
+}
+@media (min-width:900px){
+  .hero-q1{margin-left:0}
+  .hq1-title{text-align:left}
+}
 button:focus-visible,.opt:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @media (hover:hover){button.cta:hover{filter:brightness(1.08)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
 @media (hover:hover){button.ghost:hover{border-color:var(--accent)}} /* 2026-09-30: touch devices never clear :hover; gate on hover-capable pointers */
@@ -1535,6 +1571,22 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            quiz; the product's edge is matching real builds to what you own. -->
       <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Tell us who it&rsquo;s for. We pick a costume you can make.</p>
       <p class="tminus" id="tminus" style="display:none"></p>
+      <!-- SPEC-FUNNEL-PMC-1 (2026-11-05): question 1, answerable right
+           here on screen 1. The chips carry the same five answers as the
+           quiz sheet's Q1, in the same order; app.js wires them to start
+           the quiz with that answer already recorded and advance to Q2.
+           The start button below is hidden (see the CSS note): one job,
+           one set of controls, no duplicate CTA. -->
+      <div class="hero-q1 firstonly" id="hero-q1">
+        <p class="hq1-title" id="hq1-title">Who is dressing up?</p>
+        <div class="hq1-opts" role="group" aria-labelledby="hq1-title">
+          <button type="button" class="hq1-opt" data-q1="solo"><span class="hq1-emoji" aria-hidden="true">👤</span><span>Solo</span></button>
+          <button type="button" class="hq1-opt" data-q1="kid"><span class="hq1-emoji" aria-hidden="true">🧒</span><span>My kid</span></button>
+          <button type="button" class="hq1-opt" data-q1="family"><span class="hq1-emoji" aria-hidden="true">👪</span><span>My family</span></button>
+          <button type="button" class="hq1-opt" data-q1="couple"><span class="hq1-emoji" aria-hidden="true">💑</span><span>Couple</span></button>
+          <button type="button" class="hq1-opt" data-q1="group"><span class="hq1-emoji" aria-hidden="true">👥</span><span>Group</span></button>
+        </div>
+      </div>
       <button class="cta firstonly" id="btn-start" type="button">Pick my costume</button>
       <!-- 2026-10-16 (Billy): cut the "Use what I already have" hero button. One button only. The closet flow still lives in the quiz and Pantry. -->
       <!-- 2026-10-06 (Billy): quiet tertiary link — galaxy is a marquee feature

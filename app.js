@@ -15062,6 +15062,41 @@ $("btn-start").onclick = function(){
      from the Q1 link instead of an uncounted pre-question. */
   renderQ();
 };
+/* SPEC-FUNNEL-PMC-1 (2026-11-05): the hero Q1 chips. A chip tap runs the
+   exact start the button used to run (fresh state, one quiz_started),
+   records that chip as the Q1 answer on the fresh state (renderQ's Q1
+   stale-answer cleanups are no-ops on a fresh state), fires the same
+   structural quiz_answered event the sheet fires, persists resume state,
+   and advances straight to Q2 in the sheet. The sheet's own Q1 (with its
+   "Already have one" warm link) is unchanged and still reachable via
+   Back from Q2 and via every other entry point. */
+(function(){
+  var heroQ1 = document.getElementById("hero-q1");
+  if (!heroQ1) return;
+  heroQ1.addEventListener("click", function(ev){
+    var b = ev.target && ev.target.closest ? ev.target.closest(".hq1-opt") : null;
+    if (!b) return;
+    var val = b.getAttribute("data-q1");
+    var opt = null;
+    qById("q1").options.forEach(function(o){ if (o.value === val) opt = o; });
+    if (!opt) return;
+    $("btn-start").onclick();
+    /* If the start was tap-guarded (double-tap), state was not reset and
+       the sheet is already running: do not record a second answer. */
+    if (state.qi !== 0 || state.answers.q1) return;
+    state.answers.q1 = opt;
+    try {
+      Analytics.track("quiz_answered", {
+        question_id: "q1",
+        question_index: 1,
+        question_count: flowOrder().length
+      });
+    } catch(_){}
+    quizResumeSave();
+    state.qi = 1;
+    renderQ();
+  });
+})();
 $("q-back").onclick = function(){
   /* 2026-09-26 pm3 red-team: double-tap Back on Q2 stranded the user on the
      hero (2nd tap hit qi===0) with no in-session path back into the quiz. */
@@ -17295,7 +17330,11 @@ function shareLandingHeadline(idea, search){
      overlay is open (2026-09-26 red-team: it used to show on results and
      wipe them when tapped). */
   (function(){
-    var bar = $("stickycta"), heroBtn = $("btn-start"), heroScreen = $("s-hero");
+    /* SPEC-FUNNEL-PMC-1 (2026-11-05): the observed "hero start control"
+       is the hero Q1 unit when present (the start button is hidden now;
+       observing a display:none element reads as permanently out of view
+       and showed this bar at scroll 0, duplicating the Q1 controls). */
+    var bar = $("stickycta"), heroBtn = document.getElementById("hero-q1") || $("btn-start"), heroScreen = $("s-hero");
     if (!bar || !heroBtn || !heroScreen || !("IntersectionObserver" in window)) return;
     $("stickycta-btn").onclick = function(){ $("btn-start").onclick(); };
     var heroHidden = false;
