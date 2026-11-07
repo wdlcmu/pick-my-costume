@@ -565,7 +565,7 @@ var QUESTIONS = [
     {label:"Cute", emoji:"\uD83E\uDD70", tags:{cute:2}},
     {label:"Chill", emoji:"\uD83D\uDE0E", tags:{simple:2}}
   ]},
-  {id:"q4", title:"How much effort?", hint:"Be honest. Couch-level is a fine answer.", options:[
+  {id:"q4", title:"How much effort?", hint:"Be honest. Couch-level is 30 min or less of making.", options:[
     {label:"Couch-level", emoji:"\uD83D\uDECB\uFE0F", tags:{couch:2}},
     {label:"A little crafty", emoji:"\u2702\uFE0F", tags:{crafty:2}},
     {label:"Go all out", emoji:"\uD83D\uDE80", tags:{allout:2}}
