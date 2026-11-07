@@ -1483,12 +1483,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        Feeds the quiz funnel, which ends at the Oct 27 reminder. -->
   <div class="ticker" id="ticker">
     <span aria-hidden="true">&#127875;</span>
-    <button type="button" class="ticker-main" id="ticker-main" aria-label="Counting down to Halloween, Sunday, October 31, 2027."><span id="ticker-text">Counting down to Halloween, Sunday, October 31, 2027.</span></button>
+    <button type="button" class="ticker-main" id="ticker-main" aria-label="Pick my costume: 169 closet costumes, about 2 minutes to pick."><span id="ticker-text">169 closet costumes: pick yours in about 2 minutes.</span></button>
     <a href="/" id="ticker-cta">Pick my costume &rarr;</a>
     <button type="button" class="ticker-more" id="cdx-more" aria-expanded="false" aria-controls="cdx-panel" aria-label="What&rsquo;s next?" hidden><span aria-hidden="true">&#9662;</span></button>
   </div>
   <div class="ticker-panel" id="cdx-panel" hidden>
-    <p class="cdx-break" id="cdx-break"></p>
     <p class="cdx-mile">Want one reminder email? It lands <strong>October 27, <span id="cdx-mile-y">2027</span></strong>, with costumes you can make that night.</p>
     <p class="cdx-mile">Skip the email? <a href="webcal://pickmycostume.com/feeds/halloween-2027.ics" style="display:inline-flex;align-items:center;min-height:44px;padding:6px 12px;border-radius:10px;font-weight:700">Subscribe in your calendar</a> — the October 27 make-it night and Halloween itself, in your own calendar. Subscribes to the whole season.</p>
   </div>
@@ -1568,10 +1567,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
       <div class="herotext">
       <h1 class="firstonly">Make a costume from your closet.</h1>
+      <!-- 2026-11-07 (SPEC-PMC-SIM1107-04): off-season hero frame. The one
+           countdown on screen one lives directly under the headline
+           (#tminus, filled by app.js); the top banner no longer repeats
+           it (SPEC-PMC-SIM1107-02). -->
+      <p class="tminus" id="tminus" style="display:none"></p>
       <!-- 2026-10-06 (Billy): moat-forward hero. The old headline sold a generic
            quiz; the product's edge is matching real builds to what you own. -->
-      <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Tell us who it&rsquo;s for. We pick a costume you can make.</p>
-      <p class="tminus" id="tminus" style="display:none"></p>
+      <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Costumes for Halloween and any party. Tell us who it&rsquo;s for.</p>
       <!-- SPEC-FUNNEL-PMC-1 (2026-11-05): question 1, answerable right
            here on screen 1. The chips carry the same five answers as the
            quiz sheet's Q1, in the same order; app.js wires them to start
@@ -1891,8 +1894,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <div class="daysbanner" id="days-banner" hidden>
         <strong id="days-banner-days"></strong><span id="days-banner-builds"></span>
       </div>
-      <section class="tonightsec" id="tonight-section" aria-label="Costumes you can make tonight">
-        <h2 class="q-title">Make it tonight</h2>
+      <section class="tonightsec" id="tonight-section" aria-label="Quick costumes you can make in one night">
+        <h2 class="q-title">Make it any night</h2>
         <p class="fine" style="margin:0 0 10px"><span id="tonight-count">126 of the 169 costumes</span> you can start after dinner and finish before bed.</p>
         <div class="proofrow" id="row-tonight-live" role="list" aria-label="Costumes you can make tonight"></div>
       </section>
@@ -1949,33 +1952,6 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            spend" etc. Figures and source unchanged. -->
       <section class="nrfsec" id="nrf-section" aria-label="Halloween by the numbers">
         <p class="fine" style="margin:0">Halloween by the numbers: Americans planned to spend $13.5 billion on Halloween in 2026. Half of consumers planned to dress in costume. Nearly half of shoppers planned to use AI to help with Halloween shopping. (Source: NRF 2026 Halloween survey, Sept 2026.)</p>
-      </section>
-      <!-- 2026-11-05 (Billy): Halloween 2026 retrospective. Every count is
-           real, from this site's own analytics, Sep 1 - Nov 1, 2026
-           (PostHog: guide pageviews; share_created + share_text_copied and
-           pick_saved with site-flagged internal traffic removed). Searches
-           are Google Search Console's top queries, Oct 7 - Nov 3, 2026.
-           Data table: builds/pick-my-costume/retrospective-2026-11-05/REPORT.md
-           Unit: wrapped-2026 (+ wrapped-searches chips). -->
-      <section class="wrapsec" id="wrapped-section" aria-label="Halloween 2026 wrapped">
-        <h2 class="q-title">Halloween 2026, wrapped</h2>
-        <p class="fine" style="margin:0 0 4px">What people viewed, shared, and saved most on this site.</p>
-        <div class="wraprow" id="row-wrapped" role="list" aria-label="Top costumes of Halloween 2026">
-          <a class="wrapcard" role="listitem" href="/c/baby-pumpkin"><img src="photos/baby-pumpkin-480.webp" srcset="photos/baby-pumpkin-256.webp 256w, photos/baby-pumpkin-480.webp 480w" sizes="172px" alt="Baby Pumpkin costume" loading="lazy"><span class="wrapbadge">#1 viewed</span><span class="wb"><span class="wrapname">Baby Pumpkin</span><span class="wrapstat"><b>34</b> views of its guide</span></span></a>
-          <a class="wrapcard" role="listitem" href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew-480.webp" srcset="photos/enchanted-castle-crew-256.webp 256w, photos/enchanted-castle-crew-480.webp 480w" sizes="172px" alt="Enchanted Castle Crew costume" loading="lazy"><span class="wrapbadge">#1 shared</span><span class="wb"><span class="wrapname">Enchanted Castle Crew</span><span class="wrapstat"><b>11</b> shares</span></span></a>
-          <a class="wrapcard" role="listitem" href="/c/pickle"><img src="photos/pickle-480.webp" srcset="photos/pickle-256.webp 256w, photos/pickle-480.webp 480w" sizes="172px" alt="Pickle costume" loading="lazy"><span class="wrapbadge">#2 shared</span><span class="wb"><span class="wrapname">Pickle</span><span class="wrapstat"><b>7</b> shares</span></span></a>
-          <a class="wrapcard" role="listitem" href="/c/lost-tourist"><img src="photos/lost-tourist-480.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="172px" alt="Lost Tourist costume" loading="lazy"><span class="wrapbadge">#3 shared</span><span class="wb"><span class="wrapname">Lost Tourist</span><span class="wrapstat"><b>6</b> shares</span></span></a>
-          <a class="wrapcard" role="listitem" href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses-480.webp" srcset="photos/fairy-tale-princesses-256.webp 256w, photos/fairy-tale-princesses-480.webp 480w" sizes="172px" alt="Fairy Tale Princesses costume" loading="lazy"><span class="wrapbadge">#4 shared</span><span class="wb"><span class="wrapname">Fairy Tale Princesses</span><span class="wrapstat"><b>5</b> shares</span></span></a>
-          <a class="wrapcard" role="listitem" href="/c/snow-sisters"><img src="photos/snow-sisters-480.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w" sizes="172px" alt="Ice Kingdom Crew costume" loading="lazy"><span class="wrapbadge">#1 saved</span><span class="wb"><span class="wrapname">Ice Kingdom Crew</span><span class="wrapstat"><b>15</b> saves</span></span></a>
-        </div>
-        <p class="fine" style="margin:12px 0 0">What people searched for</p>
-        <div class="wrapchips" id="wrapped-searches">
-          <a class="wrapchip" href="/c/fruit-salad">fruit salad costume</a>
-          <a class="wrapchip" href="/c/lost-tourist">lost tourist costume</a>
-          <a class="wrapchip" href="/c/coffee-cup">diy coffee cup costume</a>
-          <a class="wrapchip" href="/white-sheet-costumes">white sheet halloween costumes</a>
-        </div>
-        <p class="fine" style="margin:10px 0 0">Counts from this site, Sep 1 to Nov 1, 2026. Searches are the top Google searches that found this site, Oct 7 to Nov 3, 2026.</p>
       </section>
 <script>
 /* 2026-10-13 (Billy): trends bars + galaxy sky. The trend bars grow from
@@ -2078,6 +2054,33 @@ footer a#about-link{display:inline-block;padding:12px 18px}
           <a href="/c/blue-dog-family" aria-label="Aussie Dog Family costume guide"><img src="photos/blue-dog-family.webp" srcset="photos/blue-dog-family-256.webp 256w, photos/blue-dog-family-480.webp 480w" sizes="128px" alt="Aussie Dog Family costume" loading="lazy"><span>Aussie Dog Family</span><span class="proofmeta">25 min · Easy</span></a>
           <a href="/c/vampire" aria-label="Classic Vampire costume guide"><img src="photos/vampire.webp" srcset="photos/vampire-256.webp 256w, photos/vampire-480.webp 480w" sizes="128px" alt="Classic Vampire costume" loading="lazy"><span>Classic Vampire</span><span class="proofmeta">25 min · Easy</span></a>
         </div>
+      </section>
+      <!-- 2026-11-05 (Billy): Halloween 2026 retrospective. Every count is
+           real, from this site's own analytics, Sep 1 - Nov 1, 2026
+           (PostHog: guide pageviews; share_created + share_text_copied and
+           pick_saved with site-flagged internal traffic removed). Searches
+           are Google Search Console's top queries, Oct 7 - Nov 3, 2026.
+           Data table: builds/pick-my-costume/retrospective-2026-11-05/REPORT.md
+           Unit: wrapped-2026 (+ wrapped-searches chips). -->
+      <section class="wrapsec" id="wrapped-section" aria-label="Halloween 2026 wrapped">
+        <h2 class="q-title">Halloween 2026, wrapped</h2>
+        <p class="fine" style="margin:0 0 4px">What people viewed, shared, and saved most on this site.</p>
+        <div class="wraprow" id="row-wrapped" role="list" aria-label="Top costumes of Halloween 2026">
+          <a class="wrapcard" role="listitem" href="/c/baby-pumpkin"><img src="photos/baby-pumpkin-480.webp" srcset="photos/baby-pumpkin-256.webp 256w, photos/baby-pumpkin-480.webp 480w" sizes="172px" alt="Baby Pumpkin costume" loading="lazy"><span class="wrapbadge">#1 viewed</span><span class="wb"><span class="wrapname">Baby Pumpkin</span><span class="wrapstat"><b>34</b> views of its guide</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew-480.webp" srcset="photos/enchanted-castle-crew-256.webp 256w, photos/enchanted-castle-crew-480.webp 480w" sizes="172px" alt="Enchanted Castle Crew costume" loading="lazy"><span class="wrapbadge">#1 shared</span><span class="wb"><span class="wrapname">Enchanted Castle Crew</span><span class="wrapstat"><b>11</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/pickle"><img src="photos/pickle-480.webp" srcset="photos/pickle-256.webp 256w, photos/pickle-480.webp 480w" sizes="172px" alt="Pickle costume" loading="lazy"><span class="wrapbadge">#2 shared</span><span class="wb"><span class="wrapname">Pickle</span><span class="wrapstat"><b>7</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/lost-tourist"><img src="photos/lost-tourist-480.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="172px" alt="Lost Tourist costume" loading="lazy"><span class="wrapbadge">#3 shared</span><span class="wb"><span class="wrapname">Lost Tourist</span><span class="wrapstat"><b>6</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/fairy-tale-princesses"><img src="photos/fairy-tale-princesses-480.webp" srcset="photos/fairy-tale-princesses-256.webp 256w, photos/fairy-tale-princesses-480.webp 480w" sizes="172px" alt="Fairy Tale Princesses costume" loading="lazy"><span class="wrapbadge">#4 shared</span><span class="wb"><span class="wrapname">Fairy Tale Princesses</span><span class="wrapstat"><b>5</b> shares</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/snow-sisters"><img src="photos/snow-sisters-480.webp" srcset="photos/snow-sisters-256.webp 256w, photos/snow-sisters-480.webp 480w" sizes="172px" alt="Ice Kingdom Crew costume" loading="lazy"><span class="wrapbadge">#1 saved</span><span class="wb"><span class="wrapname">Ice Kingdom Crew</span><span class="wrapstat"><b>15</b> saves</span></span></a>
+        </div>
+        <p class="fine" style="margin:12px 0 0">What people searched for</p>
+        <div class="wrapchips" id="wrapped-searches">
+          <a class="wrapchip" href="/c/fruit-salad">fruit salad costume</a>
+          <a class="wrapchip" href="/c/lost-tourist">lost tourist costume</a>
+          <a class="wrapchip" href="/c/coffee-cup">diy coffee cup costume</a>
+          <a class="wrapchip" href="/white-sheet-costumes">white sheet halloween costumes</a>
+        </div>
+        <p class="fine" style="margin:10px 0 0">Counts from this site, Sep 1 to Nov 1, 2026. Searches are the top Google searches that found this site, Oct 7 to Nov 3, 2026.</p>
       </section>
       <!-- 2026-09-27: Kid favorites moved above Discover (kid-first
            order). Curated rail, F/M/F/M visual rhythm, generic names only

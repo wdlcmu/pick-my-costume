@@ -31,129 +31,36 @@
   else sweep();
 })();
 
-/* 2026-10-04: Halloween countdown ticker (novel-finds 2026-10-04). Pure date
-   math, no server call. Shows days until Oct 31; since the 2026-11-01
-   countdown fleet pass it rolls to next year's Halloween once this year's
-   has passed, so the bar is never dark for a full year. Ticking upgrade
-   (same pass): the bar is a live clock, ticking every second (days,
-   hours, minutes, seconds) to Halloween (Oct 31 00:00 local); Halloween
-   itself keeps the classic line. Reduced motion: one static day count.
-   2026-11-05 countdown sweep fix: the tick previously ran to Nov 1
-   00:00 (the end of Halloween), overstating the time until Halloween
-   by 24 hours; it now ticks to Oct 31 00:00 local, one true duration. */
+/* 2026-10-04: site-top ticker bar. 2026-11-07 (SPEC-PMC-SIM1107-02):
+   the bar no longer states the Halloween countdown in any form: the
+   hero #tminus line is the one countdown on screen one. The bar
+   carries different information instead (169 closet costumes, about
+   2 minutes to pick; static text in index.html, never overwritten
+   here). What stays dynamic: the tap targets (the bar text starts
+   the quiz, same as the hero button) and the What's-next panel,
+   whose Oct 27 reminder year rolls to the next Halloween. */
 (function(){
-  function cdUnit(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
-  function cdTick(ms, tail) {
-    var s = Math.floor(ms / 1000);
-    var d = Math.floor(s / 86400); s -= d * 86400;
-    var h = Math.floor(s / 3600); s -= h * 3600;
-    var m = Math.floor(s / 60); var sec = s - m * 60;
-    var seg = [];
-    if (d > 0) seg.push(cdUnit(d, "day"));
-    if (d > 0 || h > 0) seg.push(cdUnit(h, "hour"));
-    seg.push(cdUnit(m, "minute"));
-    seg.push(cdUnit(sec, "second"));
-    return seg.join(", ") + " until " + tail;
-  }
-  function dayMsg(now) {
-    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    var hw = new Date(now.getFullYear(), 9, 31);
-    if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
-    var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-    if (today.getTime() === hw.getTime()) return "Happy Halloween! Tonight is the night";
-    /* SPEC-PMC-COLDQA1105K-04: whole days are full 24h days remaining
-       to Oct 31 00:00 local — the live tick's own count (cdTick floors
-       the same span). This line serves the reduced-motion ticker and
-       the bar's aria-label; its old calendar-day round read one MORE
-       than the ticking bar every afternoon. */
-    var days = Math.floor((hw.getTime() - now.getTime()) / 864e5);
-    return days > 1 ? days + " days until Halloween, " + dateText + "."
-      : days === 1 ? "1 day until Halloween, " + dateText + "."
-      : "Tomorrow is Halloween, " + dateText + ".";
-  }
-  var RM = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var lastLabel = "";
-  var started = false;
-  /* 2026-11-01 interactive upgrade: the ticker text is a big tap target
-     that starts the quiz (same action as the hero button), numerals
-     render large, and a chevron opens a What's-next panel: the time
-     left broken down, plus the Oct 27 reminder the funnel ends at.
-     Reduced motion renders once a minute instead of every second. */
   var mainBtn = document.getElementById("ticker-main");
   var moreBtn = document.getElementById("cdx-more");
   var panel = document.getElementById("cdx-panel");
-  var breakEl = document.getElementById("cdx-break");
   var mileY = document.getElementById("cdx-mile-y");
-  var lastMs = null, panelOpen = false, lastBreakMin = -1, lastAriaMin = -1, lastMileYear = 0;
-  function boldNums(t) { return t.replace(/(\d[\d,]*)/g, "<b>$1</b>"); }
-  function cdParts(ms) {
-    var s = Math.max(0, Math.floor(ms / 1000));
-    var d = Math.floor(s / 86400); s -= d * 86400;
-    var h = Math.floor(s / 3600); s -= h * 3600;
-    var m = Math.floor(s / 60);
-    return { d: d, h: h, m: m, s: s - m * 60 };
-  }
-  function updateBreak(now) {
-    if (!breakEl) return;
-    var min = Math.floor(now.getTime() / 60000);
-    if (min === lastBreakMin) return;
-    lastBreakMin = min;
-    if (lastMs === null) { breakEl.textContent = ""; return; }
-    var p = cdParts(lastMs), w = Math.floor(p.d / 7), rd = p.d - w * 7, seg = [];
-    if (w > 0) seg.push(cdUnit(w, "week"));
-    if (rd > 0) seg.push(cdUnit(rd, "day"));
-    seg.push(cdUnit(p.h, "hour"));
-    breakEl.textContent = "Time left: " + seg.join(", ") + ".";
+  if (mileY){
+    var nowY = new Date();
+    var todayY = new Date(nowY.getFullYear(), nowY.getMonth(), nowY.getDate());
+    var hwY = new Date(nowY.getFullYear(), 9, 31);
+    if (todayY > hwY) hwY = new Date(nowY.getFullYear() + 1, 9, 31);
+    mileY.textContent = hwY.getFullYear();
   }
   if (mainBtn) mainBtn.addEventListener("click", function () { var b = document.getElementById("btn-start"); if (b) b.click(); });
   if (moreBtn && panel) {
     moreBtn.hidden = false;
+    var panelOpen = false;
     moreBtn.addEventListener("click", function () {
       panelOpen = !panelOpen;
       panel.hidden = !panelOpen;
       moreBtn.setAttribute("aria-expanded", panelOpen ? "true" : "false");
-      if (panelOpen) { lastBreakMin = -1; updateBreak(new Date()); }
     });
   }
-  function renderTicker(){
-    var bar = document.getElementById("ticker");
-    var txt = document.getElementById("ticker-text");
-    if (!bar || !txt) return;
-    var now = new Date();
-    var label = dayMsg(now);
-    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    var hw = new Date(now.getFullYear(), 9, 31);
-    if (today > hw) hw = new Date(now.getFullYear() + 1, 9, 31);
-    if (mileY && lastMileYear !== hw.getFullYear()) { lastMileYear = hw.getFullYear(); mileY.textContent = lastMileYear; }
-    if (RM) {
-      txt.innerHTML = boldNums(label);
-      if (mainBtn) mainBtn.setAttribute("aria-label", label);
-      lastMs = (today.getTime() === hw.getTime()) ? null : (hw - now);
-      if (panelOpen) updateBreak(now);
-      bar.hidden = false;
-      if (!started) { started = true; setInterval(renderTicker, 60000); }
-      return;
-    }
-    if (label !== lastLabel) { lastLabel = label; bar.setAttribute("aria-label", label); txt.setAttribute("aria-hidden", "true"); }
-    var msg;
-    if (today.getTime() === hw.getTime()) {
-      msg = "Happy Halloween! Tonight is the night";
-      lastMs = null;
-    } else {
-      var end = hw;
-      var dateText = hw.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-      msg = cdTick(end - now, "Halloween, " + dateText + ".");
-      lastMs = end - now;
-    }
-    txt.innerHTML = boldNums(msg);
-    var amin = Math.floor(now.getTime() / 60000);
-    if (mainBtn && amin !== lastAriaMin) { lastAriaMin = amin; mainBtn.setAttribute("aria-label", msg); }
-    if (panelOpen) updateBreak(now);
-    bar.hidden = false;
-    if (!started) { started = true; setInterval(renderTicker, 1000); }
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderTicker);
-  else renderTicker();
 })();
 /* 2026-10-11 (gpt-loop run 74): Track B approval-day pre-prep. ChatGPT
    directory-link CTA flag, DARK until the plugin is approved. On approval
@@ -3481,7 +3388,15 @@ function renderPlanMatsGrouped(box, idea){
     var isOpt = /\([^)]*optional/i.test(m);
     var fi = isOpt ? -1 : fidx;
     if (!isOpt) fidx++;
-    groups[planMatGroup(m)].push({m: m, fi: fi, rawIdx: rawIdx});
+    var gkey = planMatGroup(m);
+    /* 2026-11-07 (SPEC-PMC-SIM1107-01): with a saved pantry, a "home"
+       material the pantry says you do NOT have is not already at
+       home — it joins Buy, so the plan's still-needed count matches
+       the result card's pantry badge (same pantryMatOk walk). */
+    if (!isOpt && gkey === "home" && typeof PANTRY_MATS !== "undefined" && PANTRY_MATS.mats[idea.id] &&
+        PANTRY_MATS.mats[idea.id][fi] && typeof pantrySaved === "function" && pantrySaved() &&
+        typeof pantryMatOk === "function" && !pantryMatOk(PANTRY_MATS.mats[idea.id][fi], pantryTicked(), idea.id, fi)) gkey = "buy";
+    groups[gkey].push({m: m, fi: fi, rawIdx: rawIdx, opt: isOpt});
   });
   var summary = document.createElement("p");
   summary.className = "plan-need-summary";
@@ -3526,7 +3441,12 @@ function renderPlanMatsGrouped(box, idea){
     items.forEach(function(it){
       var li = document.createElement("li");
       var disp = planDisplayMat(it.m);
-      if (key === "home"){
+      /* 2026-11-07 (SPEC-PMC-SIM1107-01): optional extras are listed
+         but never counted. They used to carry a checkbox and inflate
+         "You need X things" past the pantry list's own count (the
+         ghost's optional tulle read as 1 needed thing against a
+         badge count of 0). */
+      if (key === "home" || it.opt){
         li.textContent = disp;
       } else {
         var tkey = idea.id + "#" + it.rawIdx;
@@ -4109,8 +4029,11 @@ var PANTRY_MATS = {"staples":["scissors","tape","paper-pen","markers","foil","ca
   var dEl = document.getElementById("days-banner-days");
   var bEl = document.getElementById("days-banner-builds");
   if (!dEl || !bEl) return;
-  dEl.textContent = isTodayB ? "Halloween is tonight. " : days === 0 ? "Halloween is tomorrow. " : days === 1 ? "1 day to Halloween. " : days + " days to Halloween. ";
-  bEl.textContent = n === 1 ? "1 build still fits tonight." : n + " builds still fit tonight.";
+  /* 2026-11-07 (SPEC-PMC-SIM1107-02): no day count on this strip. The
+     hero #tminus line is the one countdown on screen one; this strip
+     carries only the builds count. */
+  dEl.textContent = "";
+  bEl.textContent = n === 1 ? "1 costume you can make in one night." : n + " costumes you can make in one night.";
   bar.hidden = false;
 })();
 function pantryTicked(){
@@ -4309,6 +4232,17 @@ function pantryScore(ideaId, ticked){
         var allNull = true;
         for (var k3 = 0; k3 < grp.length; k3++){ if (grp[k3]){ allNull = false; break; } }
         if (allNull && tk.has(pantryBuyKey(ideaId, i))) gok = true;
+        /* 2026-11-07 (SPEC-PMC-SIM1107-01): the Section 2 rule from
+           pantryMatOk — an all-null group bundled with real groups is
+           decorative. Same rule here so this walk, the plan labels,
+           and the result badge can never disagree on a count. */
+        if (!gok && allNull){
+          var hasRealS = false;
+          for (var gi = 0; gi < list[i].length && !hasRealS; gi++){
+            for (var gj = 0; gj < list[i][gi].length; gj++){ if (list[i][gi][gj]){ hasRealS = true; break; } }
+          }
+          if (hasRealS) gok = true;
+        }
       }
       if (!gok){
         ok = false;
@@ -4328,6 +4262,34 @@ function pantryScore(ideaId, ticked){
   }
   return {have: total - missing, total: total, missing: missing,
     missingNames: (missing >= 1 && missing <= 2 && names.length === missing) ? names : null};
+}
+/* pantryMissingNames: every still-missing material's display name, in
+   plan order, from the same pantryMatOk walk the plan's own labels and
+   tiles use (2026-11-07, SPEC-PMC-SIM1107-01). The name is the plan's
+   own displayed name for that material (planDisplayMat on the
+   instruction text) so the badge names exactly what the plan lists;
+   the pantry label is the fallback. Returns [] when nothing is
+   missing, null when the idea has no pantry entry. */
+function pantryMissingNames(ideaId, ticked){
+  var list = PANTRY_MATS.mats[ideaId];
+  if (!list || !list.length) return null;
+  var tk = (ticked instanceof Set) ? ticked : pantryTicked();
+  var texts = pantryMaterialTexts(ideaId);
+  var names = [];
+  for (var i = 0; i < list.length; i++){
+    if (pantryMatOk(list[i], tk, ideaId, i)) continue;
+    var rep = null;
+    for (var g = 0; g < list[i].length && !rep; g++){
+      var grp = list[i][g], gok = false;
+      for (var k = 0; k < grp.length; k++){ if (grp[k] && tk.has(grp[k])){ gok = true; break; } }
+      if (gok) continue;
+      for (var k2 = 0; k2 < grp.length; k2++){ var id2 = grp[k2]; if (id2 && PANTRY_LABELS[id2]){ rep = PANTRY_LABELS[id2]; break; } }
+    }
+    var nm = (typeof planDisplayMat === "function" && texts[i]) ? planDisplayMat(texts[i]) : null;
+    if (!nm) nm = rep || shortMaterialName(texts[i]) || "Supply";
+    names.push(nm);
+  }
+  return names;
 }
 /* closetBadgeState: pure state decision for the badge. Keeps the render dumb
    and the journey gate behavioral. saved = pantrySaved(). */
@@ -8034,14 +7996,28 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
        not a button/link: taps on it behave like taps anywhere else on the card
        body (the card-level click handler only exempts button/a). Informational
        only: no CTA, no prompt toward the pantry. */
-    var _pm = pantryMissing(idea.id);
-    var _pt = _pm >= 0 ? PANTRY_MATS.mats[idea.id].length : 0;
+    /* 2026-11-07 (SPEC-PMC-SIM1107-01): the badge prints ONLY when a
+       pantry exists (pantrySaved). It used to run on the staples
+       fallback for every first-timer and print a phantom count
+       ("Still needs 4 of its 5 supplies", none of them named) that
+       contradicted the plan. The count now comes from pantryScore
+       and every missing item is named by pantryMissingNames — the
+       same pantryMatOk walk the plan's own list uses. */
+    var _pm = -1;
     var _pb = null;
-    if (_pm >= 0){
-      _pb = document.createElement("span");
-      _pb.className = "pantrybadge";
-      _pb.textContent = _pm === 0 ? "Make tonight" : ("Still needs " + _pm + " of its " + _pt + " supplies");
-      _pb.title = "Made from your pantry";
+    if (pantrySaved()){
+      var _psc = pantryScore(idea.id, pantryTicked());
+      if (_psc){
+        _pm = _psc.missing;
+        _pb = document.createElement("span");
+        _pb.className = "pantrybadge";
+        if (_psc.missing === 0) _pb.textContent = "Make tonight";
+        else {
+          var _pnames = pantryMissingNames(idea.id, pantryTicked()) || [];
+          _pb.textContent = "Still needs " + _psc.missing + " of its " + _psc.total + " supplies" + (_pnames.length ? ": " + _pnames.join(", ") : "");
+        }
+        _pb.title = "Made from your pantry";
+      }
     }
     /* 2026-10-16 (Billy, results cut round 2): the "YOUR 2026 HALLOWEEN
        COSTUME" eyebrow is cut. The costume name is the header now. */
@@ -9782,14 +9758,24 @@ function renderResults(results){
     hint.textContent = "Tap to view full screen";
     /* Pantry badge on runner-ups too (2026-09-26 QA): this is exactly where
        users compare options, so it matches the hero card's badge. */
-    var _pm2 = pantryMissing(idea.id);
-    var _pt2 = _pm2 >= 0 ? PANTRY_MATS.mats[idea.id].length : 0;
+    /* 2026-11-07 (SPEC-PMC-SIM1107-01): same gate and same walk as
+       the hero card's badge (see buildResultCard). No pantry saved,
+       no badge; a printed badge names every missing item. */
+    var _pm2 = -1;
     var _pb2 = null;
-    if (_pm2 >= 0){
-      _pb2 = document.createElement("span");
-      _pb2.className = "pantrybadge";
-      _pb2.textContent = _pm2 === 0 ? "Make tonight" : ("Still needs " + _pm2 + " of its " + _pt2 + " supplies");
-      _pb2.title = "Made from your pantry";
+    if (pantrySaved()){
+      var _psc2 = pantryScore(idea.id, pantryTicked());
+      if (_psc2){
+        _pm2 = _psc2.missing;
+        _pb2 = document.createElement("span");
+        _pb2.className = "pantrybadge";
+        if (_psc2.missing === 0) _pb2.textContent = "Make tonight";
+        else {
+          var _pnames2 = pantryMissingNames(idea.id, pantryTicked()) || [];
+          _pb2.textContent = "Still needs " + _psc2.missing + " of its " + _psc2.total + " supplies" + (_pnames2.length ? ": " + _pnames2.join(", ") : "");
+        }
+        _pb2.title = "Made from your pantry";
+      }
     }
     card.appendChild(rbadge); card.appendChild(im); card.appendChild(h);
     if (_pb2) card.appendChild(_pb2);
@@ -17408,7 +17394,7 @@ function shareLandingHeadline(idea, search){
     else if (days === 0) msg = "🎃 Halloween is tomorrow: pick a costume you can build tonight";
     else if (days === 1) msg = "🎃 1 day until Halloween: every idea here builds from your closet";
     else if (days <= 7) msg = "🎃 " + days + " days until Halloween: every idea here builds from your closet";
-    else msg = "🎃 " + days + " days until Halloween";
+    else msg = "🎃 " + days + " days until Halloween " + hw.getFullYear();
     el.textContent = msg;
     el.style.display = "";
   })();
