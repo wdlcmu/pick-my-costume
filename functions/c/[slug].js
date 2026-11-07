@@ -825,7 +825,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var _sgBusy=false;" +
     "function _sgId(){var c=\"abcdefghijklmnopqrstuvwxyz0123456789\",s=\"\";for(var i=0;i<8;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}" +
     "function _sgTrackEv(name,p){var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(name,p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
-    "function _sgTrack(sid,via){_sgTrackEv(\"share_created\",{share_id:sid,idea_id:_sgSlug,share_origin:\"guide\",via:via});}" +
+    "function _sgTrack(sid,via){_sgTrackEv(\"share_created\",{share_id:sid,idea_id:_sgSlug,share_origin:\"guide\",via:via});_sgTrackEv(\"share_intent\",{site:\"pickmycostume\",surface:\"guide\",channel:via});}" +
     "function _sgText(sid,medium){return \"🎃 \" + _sgCap + _sgTime + \" What are you going as? Found mine with this 2-minute quiz: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + sid + \"&o=guide&utm_source=share&utm_medium=\" + medium + \"&utm_campaign=\" + _sgRegion;}" +
     "function _sgDone(ok,via,sid){_sgBusy=false;if(ok){_sgTrack(sid,via);if(via===\"clipboard\")_sgTrackEv(\"share_text_copied\",{idea_id:_sgSlug,share_id:sid,share_origin:\"guide\",via:\"clipboard\"});}if(msg)msg.textContent=ok?\"Link copied. Send it to your crew.\":\"Couldn't copy it. Long-press the link instead.\";}" +
     "btn.addEventListener(\"click\",function(){" +

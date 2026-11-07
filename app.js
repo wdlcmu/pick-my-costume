@@ -441,7 +441,22 @@ function recoverMarkShared(ideaId){
     try {
       if ((name === "share_created" || name === "second_share_created") && props && props.idea_id) recoverMarkShared(props.idea_id);
     } catch(e){}
-    return _track2.call(Analytics, name, props);
+    var r = _track2.call(Analytics, name, props);
+    try {
+      /* SPEC-SHARE-MEASURE-1 (Nov 7, 2026): every completed share action
+         also fires the fleet event share_intent, so PMC shares are
+         countable in the one fleet share table instead of only under
+         PMC-only names. Props are the fleet enums only (site, surface,
+         channel) -- no idea ids or share ids leave under this name.
+         Fires through _track2 (the pre-existing chain), never through
+         Analytics.track itself, so it cannot recurse. */
+      if (name === "share_created" || name === "second_share_created" || name === "shuffler_shared") {
+        var sp = {site: "pickmycostume", surface: (name === "shuffler_shared" ? "shuffler" : "quiz")};
+        if (props && props.via) sp.channel = props.via;
+        _track2.call(Analytics, "share_intent", sp);
+      }
+    } catch(e){}
+    return r;
   };
 })();
 var RECOVER_NUDGE_MIN_AGE_MS = 6*60*60*1000;
