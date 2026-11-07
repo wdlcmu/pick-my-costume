@@ -1,0 +1,32 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Built with Muse//Fleet Calendar Feeds//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Pick My Costume — Halloween 2027
+REFRESH-INTERVAL;VALUE=DURATION:PT24H
+X-PUBLISHED-TTL:PT24H
+BEGIN:VEVENT
+UID:pmc-lastminute-2027@pickmycostume.com
+DTSTAMP:20261107T195033Z
+DTSTART;VALUE=DATE:20271027
+DTEND;VALUE=DATE:20271028
+SUMMARY:Last-minute costume night — make one tonight
+DESCRIPTION:Pick My Costume's own reminder date: Wednesday\, October 27\, 2
+ 027 — costumes you can make that night\, from your closet. https://pickm
+ ycostume.com/
+URL:https://pickmycostume.com/
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+UID:pmc-halloween-2027@pickmycostume.com
+DTSTAMP:20261107T195033Z
+DTSTART;VALUE=DATE:20271031
+DTEND;VALUE=DATE:20271101
+SUMMARY:Halloween — Sunday\, October 31\, 2027
+DESCRIPTION:Halloween 2027. The day Pick My Costume counts down to all year
+ .
+URL:https://pickmycostume.com/
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
