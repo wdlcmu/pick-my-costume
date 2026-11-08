@@ -30,16 +30,13 @@
 </script>
 <!-- 2026-09-28: the visible FAQ section was cut for simplicity, so its
      FAQPage JSON-LD went with it. Structured data never describes content
-     visitors cannot read. 2026-09-30: the FAQ is restored as a visible
-     section above the footer; its FAQPage JSON-LD is below. -->
-<!-- FAQPage for the visible FAQ section (AI-citation onsite checklist: answer-shape).
-     2026-09-30: HowTo for the quiz flow replaced by this FAQPage. The visible
-     FAQ section (above the footer) carries these exact Q&As; the schema
-     mirrors them verbatim.
-     Costume build times and prices live on each /c/ guide's own HowTo. -->
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","publisher":{"@id":"https://pickmycostume.com/#organization"},"mainEntity":[{"@type":"Question","name":"What should I be for Halloween?","acceptedAnswer":{"@type":"Answer","text":"Take the quick quiz. One pick, free guide, build time and supplies up front."}},{"@type":"Question","name":"I need a costume for tonight. What is actually last-minute?","acceptedAnswer":{"@type":"Answer","text":"Make Tonight means fast. 30 minutes of work or less. 126 of the 169 costumes make the cut."}},{"@type":"Question","name":"What are some cheap couples costumes?","acceptedAnswer":{"@type":"Answer","text":"Take the quiz as a couple. Builds use thrift-store and closet basics, listed up front."}},{"@type":"Question","name":"Do you have costume ideas for kids?","acceptedAnswer":{"@type":"Answer","text":"Yes. Take the quiz for your kid. Picks fit their age, with safety notes."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. No account, no ads, no checkout. It is a hobby project, free forever."}},{"@type":"Question","name":"What we don't do","acceptedAnswer":{"@type":"Answer","text":"We don't sell costumes, supplies, or anything else: there is no store and no checkout here. Your quiz answers stay in your browser, on your device. We ask for quiz answers only. Email comes only if you ask: one plan email, one reminder if you tick."}}]}
-</script>
+     visitors cannot read. 2026-09-30: the FAQ was restored as a visible
+     section above the footer, with FAQPage JSON-LD mirroring it.
+     2026-11-07 (SPEC-PMC-SIM1107-03): the JSON-LD copy is REMOVED -- the
+     served document answered the same five questions twice (visible
+     "Common questions" section + this schema block). The visible section
+     below is now the ONE canonical Q&A set; no FAQ schema remains, so
+     nothing invisible duplicates a visible answer. -->
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
 <script>
@@ -2582,8 +2579,8 @@ footer a#about-link{display:inline-block;padding:12px 18px}
   <!-- 2026-09-30: visible FAQ. Answers are collapsed by default (Billy);
        each question toggles its answer. Unit: faq (questions are button[data-item-id]
        toggles, instrumented like every other content unit). The FAQPage
-       JSON-LD in <head> mirrors these Q&As verbatim; the content stays in
-       the DOM so the schema and the visible section never drift. -->
+       JSON-LD that mirrored these Q&As was removed 2026-11-07
+       (SIM1107-03): this visible section is the one canonical set. -->
 
   <!-- 2026-10-01 (Billy): footer killed -- the About/Privacy + SEO-link
        block added visual noise at the bottom of the homepage without earning

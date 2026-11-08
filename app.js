@@ -8072,6 +8072,7 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
        panel for cast-enabled ideas). Split from doPick so a re-rendered
        results page can restore the picked card's panel without re-recording
        the pick. */
+    var _booHome = null;
     function mountPanel(){
       planBox.innerHTML = ""; /* re-tapping pick must not stack duplicate sections */
       /* 2026-09-26: the vibe check lives on the card itself (ask
@@ -8093,6 +8094,18 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
          uncommit. */
       var _rn = document.getElementById("results-next");
       if (_rn) _rn.style.display = "none";
+      /* SIM1107-03: with the plan panel open, the results-level
+         "Share this pick" retires (the plan's Share card is the one
+         high-contrast Share CTA in this view) and the Boo card moves
+         into the plan's More ways door; both restore on unmount. */
+      var _ps = document.getElementById("pick-share");
+      if (_ps) _ps.style.display = "none";
+      var _door3 = planBox.querySelector(".more-ways-door");
+      var _boo = document.getElementById("boo-card-cta");
+      if (_door3 && _boo && _boo.parentNode){
+        _booHome = {p: _boo.parentNode, n: _boo.nextSibling};
+        _door3.appendChild(_boo);
+      }
       /* 2026-09-26: the build guide is one section now; the separate
          "Make it this week" block was merged into it above. */
       card.setAttribute("data-panel", "1");
@@ -8108,6 +8121,13 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
        field values survive separately in castStateByIdea; re-picking
        rebuilds the panel from them. */
     function unmountPanel(){
+      /* SIM1107-03: rescue the Boo card from the plan's More ways
+         door BEFORE the panel wipe below destroys it. */
+      if (_booHome && _booHome.p){
+        var _booR2 = document.getElementById("boo-card-cta");
+        if (_booR2) _booHome.p.insertBefore(_booR2, _booHome.n);
+        _booHome = null;
+      }
       planBox.innerHTML = "";
       card.removeAttribute("data-panel");
       delete panelOpenByIdea[idea.id];
@@ -8116,6 +8136,9 @@ function buildResultCard(scored, idx, pick, noArt, role, roleNote, xopts){
          "What's next" block hidden on commit. */
       var _rn = document.getElementById("results-next");
       if (_rn) _rn.style.display = "";
+      /* SIM1107-03: restore the results-level Share + Boo card. */
+      var _ps2 = document.getElementById("pick-share");
+      if (_ps2) _ps2.style.display = "";
     }
     function doPick(){
       var already = load("pmc_pick_v1");
@@ -9901,6 +9924,14 @@ function renderResults(results){
      by the results Next block, which carries the default-ticked reminder
      checkbox with explicit, honest enrollment copy. */
   box.appendChild(buildResultsNextBlock(results));
+  /* SIM1107-03: on the results view the Boo card (a secondary share
+     play) moves under the What's-next block's existing "More ways
+     to share" door; "Share this pick" stays the one primary CTA.
+     Its home here is re-captured at plan-mount time, so the detail
+     view's door move + unmount restore still round-trip. */
+  var _booR = document.getElementById("boo-card-cta");
+  var _mwsR = box.querySelector("#results-next details");
+  if (_booR && _mwsR) _mwsR.appendChild(_booR);
   show("s-results");
 }
 
@@ -11697,7 +11728,7 @@ function buildPlanShareCard(idea, source){
   card.appendChild(prev);
   var st = document.createElement("p"); st.className = "status";
   var btn = document.createElement("button");
-  btn.type = "button"; btn.className = "ghost"; btn.textContent = "Share";
+  btn.type = "button"; btn.className = "cta"; btn.textContent = "Share";
   /* E17 lesson: taps inside the pick card must not re-run doPick. */
   btn.addEventListener("click", function(e){ e.stopPropagation(); });
   btn.onclick = function(){ planShare(idea, source, btn, st); };
@@ -11756,7 +11787,24 @@ function buildPlanNextBlock(idea, source, returnTo, opts, planEl, withAi){
   if (next.addEventListener) next.addEventListener("click", function(e){ e.stopPropagation(); });
   var nh = document.createElement("h3"); nh.textContent = "Next";
   next.appendChild(nh);
-  /* (a) Email capture, shown openly: field + Send, no toggle.
+  /* 2026-11-07 (SPEC-PMC-SIM1107-03, Billy's Sep 27 ruling): ONE
+     high-contrast Share CTA leads this block (the share card below,
+     its Share button now .cta); every other next action -- email,
+     calendar, print, the extra share plays -- sits under ONE
+     "More ways" door. Nothing is deleted; everything stays one tap
+     behind the door. The door is built first so the cast path and
+     the results mount can move their own secondary actions into
+     this same door (one door per post-pick view). */
+  var door = document.createElement("details");
+  door.className = "more-ways-door";
+  door.style.cssText = "margin-top:12px";
+  var dsum = document.createElement("summary");
+  dsum.textContent = "More ways";
+  dsum.style.cssText = "cursor:pointer;font-weight:700;font-size:16px;min-height:44px;display:flex;align-items:center";
+  dsum.addEventListener("click", function(e){ e.stopPropagation(); });
+  door.appendChild(dsum);
+  next._moreWaysDoor = door;
+  /* (a) Email capture: field + Send, inside the More ways door.
      2026-10-01 (Claude fix 1a): on the quiz results page the capture
      carries the Oct 27 reminder checkbox (absorbed from "What's next"). */
   if (typeof renderEmailCapture === "function"){
@@ -11764,15 +11812,15 @@ function buildPlanNextBlock(idea, source, returnTo, opts, planEl, withAi){
     emWrap.addEventListener("click", function(e){ e.stopPropagation(); });
     renderEmailCapture(emWrap, idea, source,
       opts.reminder ? {label: "Email me this plan", reminder: true} : undefined);
-    next.appendChild(emWrap);
+    door.appendChild(emWrap);
   }
-  /* (b) Add to my calendar, secondary. */
+  /* (b) Add to my calendar, secondary, inside the door. */
   if (typeof openPlanner === "function" && typeof INSTRUCTIONS !== "undefined" && INSTRUCTIONS[idea.id]){
     var cal = document.createElement("button");
     cal.type = "button"; cal.className = "ghost"; cal.textContent = "Add to my calendar";
     cal.addEventListener("click", function(e){ e.stopPropagation(); });
     cal.onclick = function(){ openPlanner(idea.id, returnTo, source); };
-    next.appendChild(cal);
+    door.appendChild(cal);
   }
   /* (b2) 2026-10-24 (value pass): print the plan itself. Until now the only
      print path in this flow printed a Boo card for a neighbor's door; the
@@ -11784,17 +11832,24 @@ function buildPlanNextBlock(idea, source, returnTo, opts, planEl, withAi){
     pr.type = "button"; pr.className = "ghost"; pr.textContent = "Print this plan";
     pr.addEventListener("click", function(e){ e.stopPropagation(); });
     pr.onclick = function(){ printPlan(idea, planEl); };
-    next.appendChild(pr);
+    door.appendChild(pr);
   }
-  /* (c) ONE share card with ONE Share button. 2026-10-01 (Claude fix 1a):
-     on the quiz results page the shared "More ways to share" disclosure
-     lives inside this card (absorbed from "What's next"). */
+  /* (c) ONE share card with THE one high-contrast Share button
+     (SIM1107-03: promoted from ghost to .cta in buildPlanShareCard).
+     2026-10-01 (Claude fix 1a) put the "More ways to share" disclosure
+     inside this card; SIM1107-03 unwraps it into the same single
+     "More ways" door instead of a second nested door. */
   var _shareCard = buildPlanShareCard(idea, source);
+  next.appendChild(_shareCard);
   if (opts.moreShare && typeof buildMoreWaysShare === "function"){
     var _mws = opts.moreShare();
-    if (_mws){ _mws.style.marginTop = "10px"; _shareCard.appendChild(_mws); }
+    if (_mws){
+      Array.prototype.slice.call(_mws.childNodes).forEach(function(n){
+        if (n.nodeName !== "SUMMARY") door.appendChild(n);
+      });
+    }
   }
-  next.appendChild(_shareCard);
+  if (door.childNodes.length > 1) next.appendChild(door);
   /* (d) "Customize with AI" as a text link (not orange): opens the existing
      Copy-costume-plan panel in place. The link hides after one tap: one
      panel per guide. */
@@ -11850,7 +11905,27 @@ function mountPlanFirstPanel(planBox, idea, returnTo, copyEvent, srcHint, opts){
        print source is the idea's inline plan, built for print only (the
        cast panel already shows the per-person plans on screen). */
     var _castPrintEl = (typeof buildInlinePlan === "function") ? buildInlinePlan(idea) : null;
-    planBox.appendChild(buildPlanNextBlock(idea, source, returnTo, opts, _castPrintEl, false));
+    var _nb = buildPlanNextBlock(idea, source, returnTo, opts, _castPrintEl, false);
+    planBox.appendChild(_nb);
+    /* SIM1107-03: the cast panel's own secondary actions (the
+       "Share my costume" row with Pick for a friend / Download /
+       Pin, the AI plan box with Copy costume plan, and the Shuffle
+       who's who link) move into the Next block's ONE "More ways"
+       door, so the post-pick view carries one Share CTA and one
+       door. All elements keep their handlers; only parents change.
+       (Build-time insertBefore calls against aiPlanBox already ran
+       inside buildCastPanel, before this move.) */
+    var _door = _nb._moreWaysDoor;
+    if (_door){
+      _door.appendChild(shareBox);
+      _door.appendChild(aiPlanBox);
+      var _castBox = planBox.querySelector(".castbox");
+      if (_castBox){
+        Array.prototype.slice.call(_castBox.childNodes).forEach(function(n){
+          if (n.nodeName === "P" && /Shuffle who/.test(n.textContent || "")) _door.appendChild(n);
+        });
+      }
+    }
     return;
   }
   /* 1. The plan itself, exactly once. */
@@ -11939,6 +12014,10 @@ function scrollBehavior(){
    No new screens, no modals. */
 function revealAiPlan(aiBox){
   if (!aiBox) return;
+  /* SIM1107-03: the AI box may live inside the More ways door; open
+     the door so the post-share scroll actually lands on it. */
+  var _rd = (aiBox.closest) ? aiBox.closest("details") : null;
+  if (_rd && !_rd.open) _rd.open = true;
   /* Mara 2026-09-25: parents are not pasting a prompt into ChatGPT at 9:47pm;
      the in-site build guide is the product for them. Skip the post-share
      highlight for kid/family flows (the quiet block below still exists). */
