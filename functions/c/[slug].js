@@ -645,7 +645,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
      assistant browsers, humans, messenger preview crawlers). Identical
      content for everyone: not cloaking. Messenger link previews only read
      the meta tags in the head, so they cannot regress. */
-  var _mats = "", _steps = "", _triple = "", _faqs = "", _fit = "", _sharerLine = "", _copyBtn = "";
+  var _mats = "", _steps = "", _triple = "", _faqs = "", _fit = "", _sharerLine = "", _copyBtn = "", _fullCopy = "";
   if (_hw) {
     _mats = _hw.m.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("");
     _steps = _hw.s.map(function(x, i){
@@ -663,7 +663,8 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       return "<li>" + _tx + "</li>";
     }).join("");
     var _copyText = idea.t + "\n\nYou need:\n" + _hw.m.map(function(x){ return "- " + x; }).join("\n") + "\n\nSteps:\n" + _hw.s.map(function(x, i){ return (i + 1) + ". " + x; }).join("\n") + "\n\nhttps://pickmycostume.com/c/" + slug;
-    _copyBtn = "<button class=\"copybtn\" id=\"svbtn\" type=\"button\">Copy this costume</button><script>(function(){var b=document.getElementById(\"svbtn\");if(!b)return;var t=" + JSON.stringify(_copyText).replace(/<\//g, "<\\/") + ";var L=\"Copy this costume\";function done(){b.textContent=\"Copied\";setTimeout(function(){b.textContent=L;},3000);}function failed(){b.textContent=\"Select + copy manually\";setTimeout(function(){b.textContent=L;},4000);}function fb(){var ta=document.createElement(\"textarea\");ta.value=t;ta.setAttribute(\"readonly\",\"\");ta.style.position=\"absolute\";ta.style.left=\"-9999px\";document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand(\"copy\");}catch(e){ok=false;}document.body.removeChild(ta);if(ok){done();}else{failed();}}b.addEventListener(\"click\",function(){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fb);}else{fb();}});})();</scr" + "ipt>";
+    /* SPEC-PMC-SHARE1108-01 (Nov 8, 2026): no sibling copy button in the share row. The full costume text is the Share button's clipboard fallback where native share is missing (see _shareScript: _sgFull). */
+    _fullCopy = _copyText;
     /* 2026-09-25: quick version leads. 2026-09-29 (#31): the quickcard
        used to render first-sentences of the same 5 steps the full ordered
        list repeats below -- structural duplication. The quickcard is now a
@@ -819,6 +820,7 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "var btn=document.getElementById(\"guideshare\"),msg=document.getElementById(\"guidesharemsg\");" +
     "if(!btn||btn._sgW)return;btn._sgW=true;" +
     "var _sgCap=" + JSON.stringify(SHARECAP[slug] || "") + ";" +
+    "var _sgFull=" + JSON.stringify(_fullCopy || "") + ";" +
     "var _sgSlug=" + JSON.stringify(slug) + ";" +
     "var _sgRegion=" + JSON.stringify(REGION[slug] || "unknown") + ";" +
     "var _sgTime=" + (_hw&&_hw.time?JSON.stringify(" \u23f1\ufe0f Timed: about "+String(_hw.time).replace(/\s*\+.*$/,"")):"") + ";" +
@@ -827,13 +829,14 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
     "function _sgTrackEv(name,p){var _t=0;(function _try(){try{if(window.posthog&&posthog.capture){posthog.capture(name,p);return;}}catch(e){}if(++_t<8)setTimeout(_try,500);})();}" +
     "function _sgTrack(sid,via){_sgTrackEv(\"share_created\",{share_id:sid,idea_id:_sgSlug,share_origin:\"guide\",via:via});_sgTrackEv(\"share_intent\",{site:\"pickmycostume\",surface:\"guide\",channel:via});}" +
     "function _sgText(sid,medium){return \"🎃 \" + _sgCap + _sgTime + \" What are you going as? Found mine with this 2-minute quiz: https://pickmycostume.com/c/\" + _sgSlug + \"?s=\" + sid + \"&o=guide&utm_source=share&utm_medium=\" + medium + \"&utm_campaign=\" + _sgRegion;}" +
-    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok){_sgTrack(sid,via);if(via===\"clipboard\")_sgTrackEv(\"share_text_copied\",{idea_id:_sgSlug,share_id:sid,share_origin:\"guide\",via:\"clipboard\"});}if(msg)msg.textContent=ok?\"Link copied. Send it to your crew.\":\"Couldn't copy it. Long-press the link instead.\";}" +
+    "function _sgClip(sid){return _sgFull?_sgFull:_sgText(sid,'copy');}" +
+    "function _sgDone(ok,via,sid){_sgBusy=false;if(ok){_sgTrack(sid,via);if(via===\"clipboard\")_sgTrackEv(\"share_text_copied\",{idea_id:_sgSlug,share_id:sid,share_origin:\"guide\",via:\"clipboard\"});}if(msg)msg.textContent=ok?(via==='clipboard'?'Copied. Send it to your crew.':'Link copied. Send it to your crew.'):\"Couldn't copy it. Long-press the link instead.\";}" +
     "btn.addEventListener(\"click\",function(){" +
     "if(_sgBusy)return;_sgBusy=true;" +
     "var sid=_sgId();" +
     "if(navigator.share){navigator.share({title:\"Pick My Costume\",text:_sgText(sid,\"native\")}).then(function(){_sgDone(true,\"native\",sid);},function(){_sgBusy=false;});}" +
-    "else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(_sgText(sid,\"copy\")).then(function(){_sgDone(true,\"clipboard\",sid);},function(){_sgDone(false);});}" +
-    "else{var ta=document.createElement(\"textarea\");ta.value=_sgText(sid,\"copy\");document.body.appendChild(ta);ta.select();try{document.execCommand(\"copy\");_sgDone(true,\"clipboard\",sid);}catch(e){_sgDone(false);}if(ta.parentNode)ta.parentNode.removeChild(ta);}" +
+    "else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(_sgClip(sid)).then(function(){_sgDone(true,\"clipboard\",sid);},function(){_sgDone(false);});}" +
+    "else{var ta=document.createElement(\"textarea\");ta.value=_sgClip(sid);document.body.appendChild(ta);ta.select();try{document.execCommand(\"copy\");_sgDone(true,\"clipboard\",sid);}catch(e){_sgDone(false);}if(ta.parentNode)ta.parentNode.removeChild(ta);}" +
     "});" +
     "})();" +
     "</" + "script>";
@@ -1105,10 +1108,9 @@ var _tripleText = (_hw && _hw.time && _hw.effort) ?
       "var res=wrap.querySelector('.splitresult');" +
       "var html='<p class=\"splitres-head\">The split is ready. Send it to the group chat:</p><ol class=\"splitres-list\">';" +
       "names.forEach(function(nm,i){var items=a[i].map(function(mi){return SPLIT_MATS[mi];});html+='<li><strong>'+escH(nm)+':</strong> '+escH(items.join(', ')||'nothing yet')+'</li>';});" +
-      "html+='</ol><p><button type=\"button\" class=\"cta splitcopygroup\">Copy group text</button> <button type=\"button\" class=\"ghost splitcopylink\">Copy link only</button></p><p class=\"splitnote\">Everyone taps the link, taps their name, and sees exactly what to get.</p>';" +
+      "html+='</ol><p><button type=\"button\" class=\"cta splitcopygroup\">Copy group text</button></p><p class=\"splitnote\">Everyone taps the link, taps their name, and sees exactly what to get.</p>';" +
       "res.innerHTML=html;" +
       "res.querySelector('.splitcopygroup').onclick=function(){var btn=this;copyText(groupText(names,a,url),function(){btn.textContent='Copied. Send it to the group chat.';});};" +
-      "res.querySelector('.splitcopylink').onclick=function(){var btn2=this;copyText(url,function(){btn2.textContent='Link copied.';});};" +
       "};" +
       "})();" +
       "<" + "/script>";
