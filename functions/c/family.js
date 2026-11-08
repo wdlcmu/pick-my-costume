@@ -88,7 +88,7 @@ var HTML = `<!DOCTYPE html>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/couples">Couples Halloween costume ideas</a> &middot; <a href="/c/last-minute">Last-minute Halloween costumes</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
 <footer>Built with Muse.</footer>
-</main></body></html>
+</main><script>(function(){function ft(){try{if(!window.posthog||!posthog.people||!posthog.people.set_once)return false;var ref=document.referrer||'';var ro='',rd='$direct';if(ref){try{var ru=new URL(ref);if(ru.origin&&ru.origin!=='null'){ro=ru.origin+'/';rd=ru.hostname||'$direct';}}catch(e){}}var ua=(navigator.userAgent||'').toLowerCase();var app='other';if(ua.indexOf('kakaotalk')!==-1)app='kakaotalk';else if(ua.indexOf('whatsapp')!==-1)app='whatsapp';else if(ua.indexOf('instagram')!==-1)app='instagram';else if(ua.indexOf('telegram')!==-1)app='telegram';else if(ua.indexOf('teams')!==-1)app='teams';else if(ua.indexOf('fban')!==-1||ua.indexOf('fbav')!==-1||ua.indexOf('fb_iab')!==-1||ua.indexOf('facebook')!==-1)app='facebook';else if(ua.indexOf('mozilla/')!==-1)app='browser';posthog.people.set_once({entry_referrer:ro,entry_referring_domain:rd,entry_url:window.location.origin+(window.location.pathname||'/'),entry_at:new Date().toISOString(),entry_app:app});return true;}catch(e){return false;}}if(!ft()){var n=0;var iv=setInterval(function(){n++;if(ft()||n>100)clearInterval(iv);},100);}})();</script></body></html>
 `;
 
 export function onRequest(context) {
