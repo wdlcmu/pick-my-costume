@@ -210,7 +210,7 @@ def main():
 
     title = "Halloween Costume Trends 2026: What America Is Searching For | Pick My Costume"
     desc = ("Real weekly costume search data from Pinterest Trends: which Halloween "
-            "costumes America is searching for right now, with links to our matching "
+            "costumes America searched for this Halloween, with links to our matching "
             "DIY costume guides. Week ending %s." % week)
 
     fg_items = "\n".join("      <li>%s</li>" % html.escape(x) for x in fg_top10)
@@ -279,7 +279,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Bl
 .wrap{max-width:860px;margin:0 auto;padding:20px 16px 64px}
 header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
 header.top a{display:inline-block;padding:12px 10px;min-height:44px}
-.brand{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none}
+.brand{font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;display:inline-block;padding:12px 6px;min-height:44px}
 .brand span{color:var(--accent)}
 .home-link{color:var(--muted);text-decoration:none;font-size:14px}
 .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px}
@@ -322,8 +322,8 @@ p.a{color:var(--muted);margin:0 0 20px}
   <a class="home-link" href="/">Home</a>
 </header>
 
-<h1>What the country is searching for</h1>
-<p class="lede">Which costumes America is actually looking up right now, and which ones we can help you build tonight.</p>
+<h1>What the country searched for this Halloween</h1>
+<p class="lede">Which costumes America actually looked up this Halloween, and which ones we can help you build any night.</p>
 
 <table id="trends-table">
   <thead><tr><th>#</th><th>Costume search</th><th>Interest</th><th><span style="white-space:nowrap">4-week</span> change</th><th>Our guide</th></tr></thead>
