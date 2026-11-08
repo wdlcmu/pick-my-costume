@@ -2,6 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+/* FLEET-FT2-2026-11-08: first-touch capture at the door. The first page
+   this browser ever loads on this site stores its referrer, UTM tags and
+   landing address in localStorage (first write wins, never overwritten).
+   The PostHog first-touch writer reads this store, so a creator's
+   discovery channel survives the tool-page to homepage hop that used
+   to erase it (attribution trace, Nov 8, 2026, BP-5). The address is
+   cut to origin + path, /s/ and /g/ code segments are dropped, and no
+   query beyond utm_* and a whitelisted ?via= kind word is kept. */
+(function(){try{
+if(localStorage.getItem("fleet_ft2"))return;
+var q=new URLSearchParams(location.search);
+function utm(n){var v=q.get(n)||"";return v.slice(0,100);}
+var p=location.pathname||"/";
+if(/^\/(s|g)\/[^/]/.test(p))p=p.replace(/^\/(s|g)\/[^/]+.*$/,"/$1/");
+var via=q.get("via")||"";
+var ft={r:document.referrer||"",u:location.origin+p,
+via:["share","own","group"].indexOf(via)>=0?via:"",
+s:utm("utm_source"),m:utm("utm_medium"),c:utm("utm_campaign"),
+at:new Date().toISOString()};
+localStorage.setItem("fleet_ft2",JSON.stringify(ft));
+}catch(e){}})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Costumes for People Who Hate Costumes | Pick My Costume</title>
 <meta name="description" content="12 Halloween costumes for the person who says they are not dressing up. Each one barely counts as trying, and each card shows its full timed build. That is the point.">
@@ -73,7 +97,7 @@ footer a{color:#ffd166}
 </main>
 <script>
 /* PostHog: anonymous usage stats only. No names or answers are sent. Session replay is off. */
-(function(){var s=document.createElement("script");s.async=true;s.src="https://us.i.posthog.com/static/array.js";s.onload=function(){try{if(window.posthog&&window.posthog.capture){posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7",{api_host:"https://us.i.posthog.com",autocapture:false,capture_pageview:true,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);})();
+(function(){var s=document.createElement("script");s.async=true;s.src="https://us.i.posthog.com/static/array.js";s.onload=function(){try{if(window.posthog&&window.posthog.capture){posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7",{persistence: "localStorage", api_host:"https://us.i.posthog.com",autocapture:false,capture_pageview:true,disable_session_recording:true});}}catch(e){}};document.head.appendChild(s);})();
 function ph(name,props){props=props||{};try{var q=location.search;if(/[?&](probe|sim)=/.test(q)||/[?&]internal=1/.test(q))props.internal=true;if(window.posthog&&window.posthog.capture){window.posthog.capture(name,props);}}catch(e){}}
 ph("reluctant_viewed",{});
 var DATA=[{"id":"error-404","title":"Error 404","blurb":"Wear all black with a blank white page taped to your chest; carry a phone with a cracked-screen prop.","time":"10 min","effort":"Easy","gag":"Your costume is literally 'costume not found'. The refusal is the costume.","sid":"f97d865c"},{"id":"lost-tourist","title":"Lost Tourist","blurb":"Wear wrinkled clothes, carry a crumpled map, add one luggage tag backwards on your shoulder.","time":"10 min","effort":"Easy","gag":"Wear the wrinkliest thing you own and carry a map. Nobody questions it.","sid":"0e54b15b"},{"id":"boxer","title":"Boxer","blurb":"Bathrobe, toy gloves, bruise makeup, and entrance music.","time":"10 min","effort":"Easy","gag":"Bathrobe, toy gloves, entrance music. You were already 90 percent there.","sid":"faaf5fb9"},{"id":"office-couple","title":"Office Couple","blurb":"White shirts, name tags, and a teapot. The office's finest.","time":"10 min","effort":"Easy","gag":"White shirt, name tag, done. You go as what you already are.","sid":"72a04b7d"},{"id":"banana","title":"Banana","blurb":"Yellow sweatsuit with a green felt stem hat.","time":"10 min","effort":"Easy","gag":"A yellow sweatsuit and a green hat. Comfortable. Zero dignity required.","sid":"6abb1511"},{"id":"classic-ghost","title":"Classic Ghost","blurb":"A white sheet with cut-out eyes.","time":"10 min","effort":"Easy","gag":"The oldest costume in history: a sheet with eye holes. Ten minutes, tops.","sid":"c364b7e9"},{"id":"zombie-coworker","title":"Zombie Coworker","blurb":"Torn button-down, loosened tie, pale makeup, coffee mug.","time":"20 min","effort":"Easy","gag":"Torn shirt, loose tie, coffee mug. Your Monday morning look, weaponized.","sid":"a5b7918d"},{"id":"referee","title":"Referee","blurb":"A striped shirt, a whistle, and a yellow penalty flag.","time":"20 min","effort":"Easy","gag":"Striped shirt and a whistle. Blow it at anyone who asks what you are.","sid":"4f0d1b79"},{"id":"coffee-cup","title":"Coffee Cup","blurb":"White trash bag over a cardboard tube, brown lid hat.","time":"20 min","effort":"Easy","gag":"Trash bag, cardboard tube, lid hat. For the person fueled entirely by coffee.","sid":"5be4afc2"},{"id":"deviled-egg","title":"Deviled Egg","blurb":"White shirt with a felt yolk, devil horns, and a red tail. Half egg, half devil.","time":"20 min","effort":"Easy","gag":"White shirt, felt yolk, devil horns. The pun does all the work.","sid":"6a338b37"},{"id":"space-crewmate","title":"Spaceship Cadet","blurb":"Colored sweatsuit plus a cardboard backpack.","time":"20 min","effort":"Easy","gag":"Colored sweatsuit plus a cardboard backpack. Pajamas with a theme.","sid":"460fd3ac"},{"id":"extinct-party-animal","title":"Extinct Party Animal","blurb":"Felt dino spikes on a normal jacket, plus a party hat and a badge that reads Last seen 66 million years ago.","time":"20 min","effort":"Easy","gag":"Felt spikes on a normal jacket plus a party hat. Gone but still partying.","sid":"5e753914"}];
@@ -133,28 +157,59 @@ document.getElementById("grid").addEventListener("click",function(ev){
    no fragment, no tokens), entry_at, entry_app (app kind classified from
    the user-agent string - in-app browsers name themselves there even when
    they strip the referrer). No raw UA stored, no PII. */
+/* FLEET-FT2-2026-11-08: first-touch now reads the fleet_ft2 door store written by the <head> snippet (the acting person's entry referrer/UTM survive page hops); prop names unchanged, entry_utm_* added. */
 function fleetFirstTouch(){
   try {
     if (!window.posthog || !posthog.people || !posthog.people.set_once) return;
-    var ref = document.referrer || "";
+    var ft = null;
+    try { ft = JSON.parse(localStorage.getItem("fleet_ft2") || "null"); } catch (e) {}
+    var ref = (ft && typeof ft.r === "string") ? ft.r : (document.referrer || "");
     var refOrigin = "", refDomain = "$direct";
-    if (ref) { try { var ru = new URL(ref); if (ru.origin && ru.origin !== "null") { refOrigin = ru.origin + "/"; refDomain = ru.hostname || "$direct"; } } catch (e) {} }
-    var ua = (navigator.userAgent || "").toLowerCase();
+    if (ref) {
+      try {
+        var ru = new URL(ref);
+        if (ru.origin && ru.origin !== "null") { refOrigin = ru.origin + "/"; refDomain = ru.hostname || "$direct"; }
+      } catch (e) {}
+      if (!refOrigin) {
+        var m = /^[a-z][a-z0-9+.-]*:\/\/[^/?#]+/i.exec(ref);
+        if (m) { refOrigin = m[0] + "/"; refDomain = m[0].split("://")[1] || "$direct"; }
+      }
+    }
+    var entryUrl, entryAt;
+    if (ft && ft.u) {
+      entryUrl = ft.u + (ft.via ? "?via=" + ft.via : "");
+      entryAt = ft.at || new Date().toISOString();
+    } else {
+      var path = window.location.pathname || "/";
+      if (/^\/(s|g)\/[^/]/.test(path)) path = path.replace(/^\/(s|g)\/[^/]+.*$/, "/$1/");
+      var viaRaw = "";
+      try { viaRaw = new URLSearchParams(window.location.search).get("via") || ""; } catch (e) {}
+      var via = (viaRaw === "share" || viaRaw === "own" || viaRaw === "group") ? "?via=" + viaRaw : "";
+      entryUrl = window.location.origin + path + via;
+      entryAt = new Date().toISOString();
+    }
+    var ua = (navigator.userAgent || "").slice(0, 500);
+    var l = ua.toLowerCase();
     var app = "other";
-    if (ua.indexOf("kakaotalk") !== -1) app = "kakaotalk";
-    else if (ua.indexOf("whatsapp") !== -1) app = "whatsapp";
-    else if (ua.indexOf("instagram") !== -1) app = "instagram";
-    else if (ua.indexOf("telegram") !== -1) app = "telegram";
-    else if (ua.indexOf("teams") !== -1) app = "teams";
-    else if (ua.indexOf("fban") !== -1 || ua.indexOf("fbav") !== -1 || ua.indexOf("fb_iab") !== -1 || ua.indexOf("facebook") !== -1) app = "facebook";
-    else if (ua.indexOf("mozilla/") !== -1) app = "browser";
-    posthog.people.set_once({
+    if (l.indexOf("kakaotalk") !== -1) app = "kakaotalk";
+    else if (l.indexOf("whatsapp") !== -1) app = "whatsapp";
+    else if (l.indexOf("instagram") !== -1) app = "instagram";
+    else if (l.indexOf("telegram") !== -1) app = "telegram";
+    else if (l.indexOf("teams") !== -1) app = "teams";
+    else if (l.indexOf("fban") !== -1 || l.indexOf("fbav") !== -1 || l.indexOf("fb_iab") !== -1 || l.indexOf("facebook") !== -1) app = "facebook";
+    else if (l.indexOf("mozilla/") !== -1) app = "browser";
+    var props = {
       entry_referrer: refOrigin,
       entry_referring_domain: refDomain,
-      entry_url: window.location.origin + (window.location.pathname || "/"),
-      entry_at: new Date().toISOString(),
+      entry_url: entryUrl,
+      entry_at: entryAt,
+      entry_user_agent: ua,
       entry_app: app
-    });
+    };
+    if (ft && ft.s) props.entry_utm_source = ft.s;
+    if (ft && ft.m) props.entry_utm_medium = ft.m;
+    if (ft && ft.c) props.entry_utm_campaign = ft.c;
+    posthog.people.set_once(props);
   } catch (e) {}
 }
 

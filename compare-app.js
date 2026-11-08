@@ -158,7 +158,7 @@ if (typeof window !== 'undefined') (function () {
     s.onload = function () {
       try {
         if (window.posthog && posthog.init) {
-          posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7', {
+          posthog.init('phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7', {persistence: "localStorage", 
             api_host: 'https://us.i.posthog.com', autocapture: false,
             capture_pageview: true, disable_session_recording: true
           });

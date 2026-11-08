@@ -3,6 +3,30 @@ var HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+/* FLEET-FT2-2026-11-08: first-touch capture at the door. The first page
+   this browser ever loads on this site stores its referrer, UTM tags and
+   landing address in localStorage (first write wins, never overwritten).
+   The PostHog first-touch writer reads this store, so a creator's
+   discovery channel survives the tool-page to homepage hop that used
+   to erase it (attribution trace, Nov 8, 2026, BP-5). The address is
+   cut to origin + path, /s/ and /g/ code segments are dropped, and no
+   query beyond utm_* and a whitelisted ?via= kind word is kept. */
+(function(){try{
+if(localStorage.getItem("fleet_ft2"))return;
+var q=new URLSearchParams(location.search);
+function utm(n){var v=q.get(n)||"";return v.slice(0,100);}
+var p=location.pathname||"/";
+if(/^\\/(s|g)\\/[^/]/.test(p))p=p.replace(/^\\/(s|g)\\/[^/]+.*$/,"/$1/");
+var via=q.get("via")||"";
+var ft={r:document.referrer||"",u:location.origin+p,
+via:["share","own","group"].indexOf(via)>=0?via:"",
+s:utm("utm_source"),m:utm("utm_medium"),c:utm("utm_campaign"),
+at:new Date().toISOString()};
+localStorage.setItem("fleet_ft2",JSON.stringify(ft));
+}catch(e){}})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Couples Halloween costume ideas - Pick My Costume</title>
 <meta name="description" content="38 couples Halloween costume ideas with free DIY build guides: time, cost, materials, and steps for each.">
@@ -23,7 +47,7 @@ var HTML = `<!DOCTYPE html>
   s.onload = function(){
     try {
       if (window.posthog && posthog.init) {
-        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {
+        posthog.init("phc_t9dkHXAZR5VEjPFm3K5JDzGKFsNNxKcwSxxcEBEeLbS7", {persistence: "localStorage", 
           api_host: "https://us.i.posthog.com",
           autocapture: false,
           capture_pageview: true,
@@ -90,7 +114,7 @@ var HTML = `<!DOCTYPE html>
 </ul>
 <p class="home" style="margin-top:10px">Explore: <a href="/c/family">Family Halloween costume ideas</a> &middot; <a href="/c/last-minute">Last-minute Halloween costumes</a> &middot; <a href="/costumes">All costume guides</a> &middot; <a href="/trending">Trending costumes</a> &middot; <a href="/pantry">What you already own</a></p>
 <footer>Built with Muse.</footer>
-</main><script>(function(){function ft(){try{if(!window.posthog||!posthog.people||!posthog.people.set_once)return false;var ref=document.referrer||'';var ro='',rd='$direct';if(ref){try{var ru=new URL(ref);if(ru.origin&&ru.origin!=='null'){ro=ru.origin+'/';rd=ru.hostname||'$direct';}}catch(e){}}var ua=(navigator.userAgent||'').toLowerCase();var app='other';if(ua.indexOf('kakaotalk')!==-1)app='kakaotalk';else if(ua.indexOf('whatsapp')!==-1)app='whatsapp';else if(ua.indexOf('instagram')!==-1)app='instagram';else if(ua.indexOf('telegram')!==-1)app='telegram';else if(ua.indexOf('teams')!==-1)app='teams';else if(ua.indexOf('fban')!==-1||ua.indexOf('fbav')!==-1||ua.indexOf('fb_iab')!==-1||ua.indexOf('facebook')!==-1)app='facebook';else if(ua.indexOf('mozilla/')!==-1)app='browser';posthog.people.set_once({entry_referrer:ro,entry_referring_domain:rd,entry_url:window.location.origin+(window.location.pathname||'/'),entry_at:new Date().toISOString(),entry_app:app});return true;}catch(e){return false;}}if(!ft()){var n=0;var iv=setInterval(function(){n++;if(ft()||n>100)clearInterval(iv);},100);}})();</script></body></html>
+</main><script>(function(){function ft(){try{if(!window.posthog||!posthog.people||!posthog.people.set_once)return false;var ft2=null;try{ft2=JSON.parse(localStorage.getItem('fleet_ft2')||'null');}catch(e){}var ref=(ft2&&typeof ft2.r==='string')?ft2.r:(document.referrer||'');var ro='',rd='$direct';if(ref){try{var ru=new URL(ref);if(ru.origin&&ru.origin!=='null'){ro=ru.origin+'/';rd=ru.hostname||'$direct';}}catch(e){}if(!ro){var mm=/^[a-z][a-z0-9+.-]*:\/\/[^/?#]+/i.exec(ref);if(mm){ro=mm[0]+'/';rd=mm[0].split('://')[1]||'$direct';}}}var eu,ea;if(ft2&&ft2.u){eu=ft2.u+(ft2.via?('?via='+ft2.via):'');ea=ft2.at||new Date().toISOString();}else{var pp=window.location.pathname||'/';if(/^\/(s|g)\/[^/]/.test(pp))pp=pp.replace(/^\/(s|g)\/[^/]+.*$/,'/$1/');var vr='';try{vr=new URLSearchParams(window.location.search).get('via')||'';}catch(e){}eu=window.location.origin+pp+((vr==='share'||vr==='own'||vr==='group')?('?via='+vr):'');ea=new Date().toISOString();}var ua=(navigator.userAgent||'');var l=ua.toLowerCase();var app='other';if(l.indexOf('kakaotalk')!==-1)app='kakaotalk';else if(l.indexOf('whatsapp')!==-1)app='whatsapp';else if(l.indexOf('instagram')!==-1)app='instagram';else if(l.indexOf('telegram')!==-1)app='telegram';else if(l.indexOf('teams')!==-1)app='teams';else if(l.indexOf('fban')!==-1||l.indexOf('fbav')!==-1||l.indexOf('fb_iab')!==-1||l.indexOf('facebook')!==-1)app='facebook';else if(l.indexOf('mozilla/')!==-1)app='browser';var pr={entry_referrer:ro,entry_referring_domain:rd,entry_url:eu,entry_at:ea,entry_user_agent:ua.slice(0,500),entry_app:app};if(ft2&&ft2.s)pr.entry_utm_source=ft2.s;if(ft2&&ft2.m)pr.entry_utm_medium=ft2.m;if(ft2&&ft2.c)pr.entry_utm_campaign=ft2.c;posthog.people.set_once(pr);return true;}catch(e){return false;}}if(!ft()){var n=0;var iv=setInterval(function(){n++;if(ft()||n>100)clearInterval(iv);},100);}})();</script></body></html>
 `;
 
 export function onRequest(context) {
