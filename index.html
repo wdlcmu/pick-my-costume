@@ -308,6 +308,10 @@ body.st-open .sitehead{display:none}
   .hero .hero-pantry{order:5;align-self:center}
   .hero .hero-proof{order:6}
   .hero .hero-galaxylink{order:7}
+  /* 2026-11-09 (market teardown F1/F2): the two static lines under the
+     hero proof line stack after it on phone. */
+  .hero .hero-next{order:8}
+  .hero .hero-wrapped{order:9}
   .hero .honestline{order:5}
   #resume-wrap{order:6}
   #returnbox{order:8;align-self:stretch}
@@ -1592,7 +1596,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            countdown on screen one lives directly under the headline
            (#tminus, filled by app.js); the top banner no longer repeats
            it (SPEC-PMC-SIM1107-02). -->
-      <p class="tminus" id="tminus" style="display:none"></p>
+      <!-- 2026-11-09 (market teardown F1): static fallback text. app.js
+           overwrites this element's text and count when it runs, so the
+           line below is only what a no-JS read of screen 1 sees. Count is
+           calendar days from Nov 9, 2026 to Oct 31, 2027. -->
+      <p class="tminus" id="tminus">🎃 356 days until Halloween 2027</p>
       <!-- 2026-10-06 (Billy): moat-forward hero. The old headline sold a generic
            quiz; the product's edge is matching real builds to what you own. -->
       <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Costumes for Halloween and any party. Tell us who it&rsquo;s for.</p>
@@ -1624,6 +1632,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            ("Your pick, your materials list, your build plan, matched to what you
            already own") — concrete explanation now sits under the headline. -->
       <p class="fine firstonly hero-proof" style="margin:10px auto 0">5 questions &middot; about 2 minutes &middot; free &middot; no signup</p>
+      <!-- 2026-11-09 (market teardown F1): static next-occasion bridge.
+           Names the next real costume occasions plus Halloween 2027.
+           No day count here: the #tminus line is the one countdown. -->
+      <p class="fine firstonly hero-next" style="margin:6px auto 0">For holiday parties, school plays, and Halloween, Oct 31, 2027.</p>
+      <!-- 2026-11-09 (market teardown F2): one counted line promoted
+           verbatim from the "Halloween 2026, wrapped" section below
+           (Baby Pumpkin card: #1 viewed, 34 views of its guide). -->
+      <p class="fine firstonly hero-wrapped" style="margin:6px auto 0">Halloween 2026: Baby Pumpkin was #1 viewed, with 34 views of its guide.</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
            The Trending tab below shows the photos; a text list of names was
@@ -1888,6 +1904,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <p class="ex-label">Example</p>
         <p>You answer: <b>couple, funny, couch-level (30 min or less of making), house party, food &amp; snacks</b>.</p>
         <p>You get: <b>Ketchup &amp; Mustard</b>.</p>
+        <!-- 2026-11-09 (market teardown F4): the guide's own time for
+             this pick (15 min in its /c/ guide data). No cost line: the
+             guide's cost field is empty, so no price is stated. -->
+        <p>15 min to make.</p>
         <p>Red tunic and cap for one.</p>
         <p>Yellow for the other.</p>
         <!-- 2026-11-02 (phrase sweep): cut the three post-pick lines that
