@@ -53,6 +53,29 @@ async function rateLimitedKV(kv, ip) {
   return false;
 }
 
+// SPEC-PMC-COLDQA1109-01 (2026-11-09): the deletion the privacy page
+// promises is now in code. Before this fix a signup was stored with NO
+// expiry at all -- no year, no TTL -- so "deleted right after Oct 27"
+// was copy only, and the copy still named 2026 after the rollover.
+// New reminder signups now carry a KV expiration set for just after
+// the NEXT Oct 27: the delete moment is Oct 28 07:00 UTC of the season
+// year (midnight PT at the end of Oct 27 -- the same deadline
+// convention as the pmcReminderLive() gate in app.js). The season year
+// is computed with the same next-Halloween rollover rule the homepage
+// banner uses (app.js sets #cdx-mile-y from the next Oct 31), never
+// hardcoded, so the 2028 rollover cannot drift the way 2027 did.
+// A post-rollover signup today is therefore held until Oct 27, 2027
+// and deleted right after, automatically. Signups stored before this
+// fix carry no expiry (unchanged); they still need the manual
+// post-season deletion pass they always needed.
+export function reminderExpirySeconds(now) {
+  const t = now ? new Date(now) : new Date();
+  let year = t.getUTCFullYear();
+  let deadline = Date.UTC(year, 9, 28, 7, 0, 0);
+  if (t.getTime() >= deadline) { year += 1; deadline = Date.UTC(year, 9, 28, 7, 0, 0); }
+  return Math.floor((deadline - t.getTime()) / 1000);
+}
+
 function json(obj, status) {
   return new Response(JSON.stringify(obj), {
     status: status || 200,
@@ -64,7 +87,7 @@ async function signupKV(env, email, source) {
   const store = new ListStore(env.REMINDERS, { prefix: LIST_PREFIX });
   // startLesson null: a reminder list has no lesson ladder, and a null
   // next_lesson keeps the bridge from sending that property to Resend.
-  const r = await store.signup(email, { source: source || "web", startLesson: null });
+  const r = await store.signup(email, { source: source || "web", startLesson: null, ttlSeconds: reminderExpirySeconds() });
   if (!r.ok) return json({ ok: false, reason: r.error || 'bad-email' }, 400);
   if (r.duplicate) return json({ ok: true, duplicate: true });
   if (r.rejoined) return json({ ok: true, rejoined: true });

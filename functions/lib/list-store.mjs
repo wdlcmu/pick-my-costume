@@ -75,8 +75,18 @@ export class ListStore {
     return raw ? JSON.parse(raw) : null;
   }
 
-  async putContact(rec) {
-    await this.kv.put(this.k("sub", rec.email), JSON.stringify(rec));
+  async putContact(rec, opts = {}) {
+    // SPEC-PMC-COLDQA1109-01 (2026-11-09): an optional ttlSeconds lets a
+    // caller give the record a real KV expiry (the reminder list uses it
+    // so the promised post-Oct-27 deletion happens in code, not just in
+    // the privacy copy). No ttlSeconds = the old no-expiry behavior, so
+    // every other caller is unchanged.
+    const ttl = opts && opts.ttlSeconds;
+    if (ttl && ttl > 60) {
+      await this.kv.put(this.k("sub", rec.email), JSON.stringify(rec), { expirationTtl: Math.floor(ttl) });
+    } else {
+      await this.kv.put(this.k("sub", rec.email), JSON.stringify(rec));
+    }
     return rec;
   }
 
@@ -84,7 +94,7 @@ export class ListStore {
   // EXCEPT a contact who left (unsubscribed / status "left"): a fresh
   // explicit opt-in rejoins them at the start, mirroring the live
   // Dadiosity signup semantics.
-  async signup(email, { source = "web", properties = {}, startLesson = 1 } = {}) {
+  async signup(email, { source = "web", properties = {}, startLesson = 1, ttlSeconds = null } = {}) {
     email = normalizeEmail(email);
     if (!email) return { ok: false, error: "bad-email" };
     const existing = await this.getContact(email);
@@ -99,7 +109,7 @@ export class ListStore {
           properties: { ...existing.properties, ...properties },
           rejoined_ts: new Date().toISOString()
         };
-        await this.putContact(rec);
+        await this.putContact(rec, { ttlSeconds });
         return { ok: true, rejoined: true, contact: rec };
       }
       return { ok: true, duplicate: true, contact: existing };
@@ -114,7 +124,7 @@ export class ListStore {
       unsubscribed: false,
       resend_id: null
     };
-    await this.putContact(rec);
+    await this.putContact(rec, { ttlSeconds });
     return { ok: true, contact: rec };
   }
 

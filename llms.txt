@@ -15,7 +15,7 @@
 - [Homepage and quiz](https://pickmycostume.com/): 2-minute picker returning 3 matched ideas; picking one opens the plan-first panel with materials and numbered steps.
 - [Costumes from clothes you already have](https://pickmycostume.com/pantry): tick the supplies you own and the 169 ideas reshuffle by what you can make; the buildable-tonight ideas lead.
 - [Full corpus](https://pickmycostume.com/llms-full.txt): all 169 build guides in one Markdown file for direct context ingestion.
-- [Plan email](https://pickmycostume.com/): on any costume plan, tap "Email me this plan" to get the plan by email; tick the box on the form to also get one reminder on Oct 27.
+- [Plan email](https://pickmycostume.com/): on any costume plan, tap "Email me this plan" to get the plan by email; tick the box on the form to also get one reminder on Oct 27, 2027.
 
 ## Key pages
 
@@ -67,7 +67,7 @@
 - [The office Halloween contest kit](https://pickmycostume.com/office-costumes): Work-appropriate Halloween costume ideas: 16 easy DIY office costumes, a printable contest ballot, and a copy-paste Slack announcement.
 - [Costume collections](https://pickmycostume.com/collections/): Browse Pick My Costume's curated costume collections: last-minute builds, cheap homemade costumes, easy DIY kids costumes, toddler costumes, and family group costumes.
 - [Halloween costume trends](https://pickmycostume.com/trending): The most-searched Halloween costumes in America right now, from Google's Frightgeist, plus what's trending on Pick My Costume this week.
-- [Privacy](https://pickmycostume.com/privacy): Pick My Costume privacy policy: what we collect, what we don't, and how to reach us. Effective September 28, 2026.
+- [Privacy](https://pickmycostume.com/privacy): Pick My Costume privacy policy: what we collect, what we don't, and how to reach us. Effective November 9, 2026.
 - [Terms](https://pickmycostume.com/terms): Pick My Costume terms: a free costume picker, DIY guides, and what we do not sell or promise. Effective October 25, 2026.
 - [Run your office costume contest](https://pickmycostume.com/office-contest-kit): Updated for Halloween 2026: a free office-manager tool to run your work costume contest. Pick contest categories, print ballots, tally votes, announce winners, and send coworkers to a 2-minute costume quiz. No account, prints clean.
 - [How to run an office Halloween costume contest](https://pickmycostume.com/office-contest-guide): Updated for Halloween 2026: handed the office costume contest? A plain-English plan: categories that work, fair voting rules, free prize ideas, and copy-paste announcements. Free contest tool included.
@@ -261,4 +261,4 @@ Every guide below is one of the 169 build guides, plus the three /c/ hub pages. 
 - [Kids games](https://pickmycostume.com/play): Peekaboo, Match the pieces, and Chopped: three games for kids.
 - [Storytime](https://pickmycostume.com/#s-storytime): 10 costumes as hand-written read-aloud bedtime stories.
 - [About](https://pickmycostume.com/about): what the site is and is not.
-- Pages are served as static files plus small server functions that render the guides and send the plan email. Data collection is anonymous usage counts, plus an email address only when a visitor asks for a plan email: the address is sent to the server only to send that one email, and if the visitor ticks the Oct 27 reminder box it is kept until October 27, 2026, to send one reminder, then deleted right after October 27.
+- Pages are served as static files plus small server functions that render the guides and send the plan email. Data collection is anonymous usage counts, plus an email address only when a visitor asks for a plan email: the address is sent to the server only to send that one email, and if the visitor ticks the Oct 27 reminder box it is kept until October 27, 2027, to send one reminder, then deleted right after October 27, 2027.

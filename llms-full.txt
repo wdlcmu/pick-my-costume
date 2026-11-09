@@ -8795,12 +8795,12 @@ Pick My Costume is an independent project. Built with Muse.
 🎃 Pick My Costume
 Take the quiz
 Privacy
-Effective: September 28, 2026
+Effective: November 9, 2026
 Pick My Costume is a free Halloween costume picker with no account, no login, and no email required. This policy explains what we collect and what we don't.
 What we collect
 Anonymous usage counts. We count events like quiz completions and button taps so we can see which parts of the site work. They carry a random ID, not your name, email, or account. Nothing that identifies you.
 Your email, only if you ask. Tapping “Email me this plan” sends your address to our server for the sole purpose of sending that one email with your costume plan.
-Oct 27 reminder (only if you tick the box). If you also tick “Remind me Oct 27,” we keep your address until October 27, 2026, to send you one reminder email that morning with last-minute ideas you can make that night. That is it: one plan email, plus one reminder only if you asked for it. We delete reminder addresses right after October 27. We never sell your address, never add it to any other list, and never use it for anything you did not ask for. Want it deleted sooner? Email [email protected] and a human will remove it.
+Oct 27 reminder (only if you tick the box). If you also tick “Remind me Oct 27,” we keep your address until October 27, 2027, to send you one reminder email that morning with last-minute ideas you can make that night. That is it: one plan email, plus one reminder only if you asked for it. We delete reminder addresses right after October 27. We never sell your address, never add it to any other list, and never use it for anything you did not ask for. Want it deleted sooner? Email [email protected] and a human will remove it.
 Typed costume names (structural only). If you type a custom costume name, the text itself never leaves your device; we only record that the feature was used.
 Costume searches (anonymous). When you search for a costume, we log the first 30 characters of your search term with a random ID, never your name, so we can see which costumes people look for and add the ones we are missing.
 What we don't collect
@@ -8808,7 +8808,7 @@ Your individual quiz answers stay in your browser. We record which costume ideas
 We don't ask for, and don't store, names, phone numbers, or locations.
 No ads. Analytics goes only to PostHog, our own analytics provider, to count usage. Never sold or shared with advertisers.
 How long we keep things
-Anonymous usage counts are kept as long as they are useful for improving the site. Email addresses for the Oct 27 reminder are deleted right after October 27, 2026. If you ask us to delete your address sooner, we will.
+Anonymous usage counts are kept as long as they are useful for improving the site. Email addresses for the Oct 27 reminder are deleted right after October 27, 2027. If you ask us to delete your address sooner, we will.
 AI assistants and connectors
 If you use Pick My Costume through an AI assistant (like ChatGPT or Claude), the connector only reads our public costume guides, the same pages anyone can open. It does not log your questions or store anything about you.
 Cookies
