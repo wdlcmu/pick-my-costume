@@ -2790,7 +2790,22 @@ html{scroll-padding-bottom:96px}
       yieldMoTimer=setTimeout(function(){ yieldMoTimer=null; collectYieldTargets(); pillYieldCheck(); }, 250);
     }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden","style","class"]});
   }
-  window.addEventListener("scroll", function(){ if(yieldTimer) clearTimeout(yieldTimer); yieldTimer=setTimeout(pillYieldCheck, 140); }, {passive:true});
+  /* Transient fix 2026-11-09 (SPEC-PMC-COLDQA1104E-05-RENDERED): the
+     debounced check below runs 140ms after scroll STOP, so during active
+     scrolling the docked pill stayed tappable on top of the sticky quiz
+     CTA (~217ms / 14 rAF frames / 279x42px measured; a mid-scroll tap at
+     the CTA's right end opened the Ask panel instead of the quiz). Yield
+     synchronously on scroll start: .askp-yield sets pointer-events:none
+     immediately, so the pill can never swallow a tap mid-scroll, and it
+     stays yielded until the existing 140ms-after-stop check restores the
+     correct settled state (docked where its band is clear, yielded where
+     it is not). Settled behaviour is unchanged. Panel-open and
+     keyboard-focus keep the pill, exactly as pillYieldCheck does. */
+  window.addEventListener("scroll", function(){
+    if(panel.hidden && document.activeElement!==openBtn) setYield(true);
+    if(yieldTimer) clearTimeout(yieldTimer);
+    yieldTimer=setTimeout(pillYieldCheck, 140);
+  }, {passive:true});
   window.addEventListener("resize", pillYieldCheck);
   openBtn.addEventListener("focus", function(){ setYield(false); });
   pillYieldCheck();
