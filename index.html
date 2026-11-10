@@ -1596,11 +1596,14 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            countdown on screen one lives directly under the headline
            (#tminus, filled by app.js); the top banner no longer repeats
            it (SPEC-PMC-SIM1107-02). -->
-      <!-- 2026-11-09 (market teardown F1): static fallback text. app.js
-           overwrites this element's text and count when it runs, so the
-           line below is only what a no-JS read of screen 1 sees. Count is
-           calendar days from Nov 9, 2026 to Oct 31, 2027. -->
-      <p class="tminus" id="tminus">🎃 356 days until Halloween 2027</p>
+      <!-- 2026-11-09 (market teardown F1; fixed SPEC-PMC-COLDQA1109E-01
+           same night): static fallback text. app.js overwrites this
+           element's text and count when it runs, so the line below is
+           only what a no-JS read of screen 1 sees. It carries NO day
+           count on purpose: a hard-coded count went stale the next day
+           and disagreed with the live floored count. Never type a
+           date-specific day number into this fallback. -->
+      <p class="tminus" id="tminus">🎃 Counting down to Halloween 2027</p>
       <!-- 2026-10-06 (Billy): moat-forward hero. The old headline sold a generic
            quiz; the product's edge is matching real builds to what you own. -->
       <p class="firstonly hero-sub" style="margin:10px auto 0;max-width:34em">Costumes for Halloween and any party. Tell us who it&rsquo;s for.</p>
@@ -1637,8 +1640,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            No day count here: the #tminus line is the one countdown. -->
       <p class="fine firstonly hero-next" style="margin:6px auto 0">For holiday parties, school plays, and Halloween, Oct 31, 2027.</p>
       <!-- 2026-11-09 (market teardown F2): one counted line promoted
-           verbatim from the "Halloween 2026, wrapped" section below
-           (Baby Pumpkin card: #1 viewed, 34 views of its guide). -->
+           from the "Halloween 2026, wrapped" section below (Baby
+           Pumpkin card: #1 viewed). SPEC-PMC-COLDQA1109E-02 (same
+           night): the 34-views count lives ONLY in this hero line
+           now — the wrapped card below keeps its #1 viewed badge and
+           name but no count, so the fact prints once on the page. -->
       <p class="fine firstonly hero-wrapped" style="margin:6px auto 0">Halloween 2026: Baby Pumpkin was #1 viewed, with 34 views of its guide.</p>
 
       <!-- 2026-09-30 delight: the "Trending this week" text line is gone.
@@ -2107,7 +2113,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2 class="q-title">Halloween 2026, wrapped</h2>
         <p class="fine" style="margin:0 0 4px">What people viewed, shared, and saved most on this site.</p>
         <div class="wraprow" id="row-wrapped" role="list" aria-label="Top costumes of Halloween 2026">
-          <a class="wrapcard" role="listitem" href="/c/baby-pumpkin"><img src="photos/baby-pumpkin-480.webp" srcset="photos/baby-pumpkin-256.webp 256w, photos/baby-pumpkin-480.webp 480w" sizes="172px" alt="Baby Pumpkin costume" loading="lazy"><span class="wrapbadge">#1 viewed</span><span class="wb"><span class="wrapname">Baby Pumpkin</span><span class="wrapstat"><b>34</b> views of its guide</span></span></a>
+          <a class="wrapcard" role="listitem" href="/c/baby-pumpkin"><img src="photos/baby-pumpkin-480.webp" srcset="photos/baby-pumpkin-256.webp 256w, photos/baby-pumpkin-480.webp 480w" sizes="172px" alt="Baby Pumpkin costume" loading="lazy"><span class="wrapbadge">#1 viewed</span><span class="wb"><span class="wrapname">Baby Pumpkin</span></span></a>
           <a class="wrapcard" role="listitem" href="/c/enchanted-castle-crew"><img src="photos/enchanted-castle-crew-480.webp" srcset="photos/enchanted-castle-crew-256.webp 256w, photos/enchanted-castle-crew-480.webp 480w" sizes="172px" alt="Enchanted Castle Crew costume" loading="lazy"><span class="wrapbadge">#1 shared</span><span class="wb"><span class="wrapname">Enchanted Castle Crew</span><span class="wrapstat"><b>11</b> shares</span></span></a>
           <a class="wrapcard" role="listitem" href="/c/pickle"><img src="photos/pickle-480.webp" srcset="photos/pickle-256.webp 256w, photos/pickle-480.webp 480w" sizes="172px" alt="Pickle costume" loading="lazy"><span class="wrapbadge">#2 shared</span><span class="wb"><span class="wrapname">Pickle</span><span class="wrapstat"><b>7</b> shares</span></span></a>
           <a class="wrapcard" role="listitem" href="/c/lost-tourist"><img src="photos/lost-tourist-480.webp" srcset="photos/lost-tourist-256.webp 256w, photos/lost-tourist-480.webp 480w" sizes="172px" alt="Lost Tourist costume" loading="lazy"><span class="wrapbadge">#3 shared</span><span class="wb"><span class="wrapname">Lost Tourist</span><span class="wrapstat"><b>6</b> shares</span></span></a>
