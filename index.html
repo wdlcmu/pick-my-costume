@@ -2672,7 +2672,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 .askp-open{position:fixed;right:16px;bottom:16px;z-index:9990;min-height:48px;padding:12px 20px;border:none;border-radius:999px;background:var(--accent);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.28)}
 .askp-open{transition:transform .25s ease,opacity .25s ease}
 @media (prefers-reduced-motion:reduce){.askp-open{transition:none}}
-.askp-open.askp-yield{transform:translateY(170%);opacity:0;pointer-events:none}.askp-open.askp-hidden{display:none}
+.askp-open.askp-yield{opacity:.18}
 html{scroll-padding-bottom:96px}
 .sitefoot{padding-bottom:110px}
 .askp-overlay{position:fixed;inset:0;z-index:9991;background:rgba(20,12,4,.48);display:flex;align-items:flex-end;justify-content:center;font-family:inherit;color:var(--ink)}
@@ -2733,28 +2733,23 @@ html{scroll-padding-bottom:96px}
   // under it is clear. Never yields while the panel is open or the pill has
   // keyboard focus.
   var yieldTimer=null;
-  /* Fleet yield-guard sweep 2026-11-04 (SPEC-05 pattern, adapted from
-     Pick My Resolution Addendum 1476): once the slide-out finishes, the
-     pill leaves layout entirely (display:none via .askp-hidden), so the
-     settled yielded pill has a ZERO rect. Parked with translateY(170%)
-     alone it kept a 48px rect below the fold that the rect-based settled
-     sweep counted as covering tap targets near the bottom edge (78 at
-     390px / 17 at 1280px pre-fix), even though opacity:0 +
-     pointer-events:none already let real taps pass through. On return,
-     .askp-hidden is removed first and a reflow forced, so the slide
-     back in still animates. lastOW/lastOH cache the pill size because
-     offsetWidth/offsetHeight read 0 while display:none. */
-  var yieldOn=false, hideTimer=null, lastOW=0, lastOH=0;
+  /* SPEC-FLEET-ASKPILL-01 (Nov 10, 2026): yielding is now a FADE, not a
+     disappearance — port of the Santa SPEC-SS-ASKPILL-01 fix. The old
+     behaviour (fleet yield-guard sweep 2026-11-04, SPEC-05 pattern) slid
+     the pill off-screen and then display:none'd it, so
+     on any page stretch where watched content sat under the pill, the
+     site's ONE AI entry point was simply gone — at every probed scroll
+     stop in the Nov 10 rendered walk. The pill now stays in place at
+     low opacity while yielded: still visible, still tappable, content
+     readable through it. lastOW/lastOH still cache the pill size as a
+     fallback for the resting-band computation. */
+  var yieldOn=false, lastOW=0, lastOH=0;
   function setYield(on){
     if(on===yieldOn) return;
     yieldOn=on;
-    if(hideTimer){ clearTimeout(hideTimer); hideTimer=null; }
     if(on){
       openBtn.classList.add("askp-yield");
-      hideTimer=setTimeout(function(){ hideTimer=null; if(yieldOn) openBtn.classList.add("askp-hidden"); },300);
     } else {
-      openBtn.classList.remove("askp-hidden");
-      void openBtn.offsetWidth;
       openBtn.classList.remove("askp-yield");
     }
   }
@@ -2800,7 +2795,8 @@ html{scroll-padding-bottom:96px}
     var ow=openBtn.offsetWidth, oh=openBtn.offsetHeight;
     if(ow&&oh){ lastOW=ow; lastOH=oh; } else { ow=lastOW; oh=lastOH; }
     var ex=openBtn.classList.contains("askp-yield")?6:0,
-        r={top:window.innerHeight-16-oh-ex, bottom:window.innerHeight-16+ex, left:window.innerWidth-16-ow-ex, right:window.innerWidth-16+ex}, cover=false;
+        vvh=(window.visualViewport&&window.visualViewport.height)||window.innerHeight,
+        r={top:vvh-16-oh-ex, bottom:vvh-16+ex, left:window.innerWidth-16-ow-ex, right:window.innerWidth-16+ex}, cover=false;
     for(var i=0;i<yieldTargets.length;i++){
       var b=yieldTargets[i].getBoundingClientRect();
       if(!b.width||!b.height) continue;
