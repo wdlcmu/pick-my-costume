@@ -148,6 +148,13 @@ body{
 #ticker-text b{font-size:1.22em;font-weight:800}
 .ticker-more{background:none;border:0;color:#ffd166;cursor:pointer;min-width:44px;min-height:44px;font-size:15px;line-height:1;border-radius:8px;padding:0}
 .ticker-more:focus-visible{outline:3px solid #ffd166;outline-offset:2px}
+/* 2026-11-24 (fleet text cut): moon widget relocated below the hero quiz block. */
+.moonbelow{width:min(560px,100%);align-self:center;margin:16px auto 4px;text-align:center;position:relative}
+.moonbelow .moonwrap{position:relative;width:54px;margin:0 auto;cursor:pointer;-webkit-tap-highlight-color:transparent;text-align:center}
+.moonbelow .moonwrap:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
+.moonbelow .moon{width:52px;height:52px;display:block;margin:0 auto;filter:drop-shadow(0 0 12px rgba(245,238,210,.35))}
+.moonbelow .mooncap{margin:4px 0 0;font-size:10px;color:var(--muted);letter-spacing:.06em;line-height:1.35}
+.moonbelow .moonpanel{margin:10px auto 0}
 .ticker-panel{margin:0 -16px;padding:10px 16px;text-align:center;font-size:13.5px;font-weight:600;color:#ffd166;background:rgba(255,140,26,.10);border-bottom:1px solid rgba(255,140,26,.25)}
 .ticker-panel p{margin:2px 0}
 .ticker-panel .cdx-break:empty{display:none}
@@ -1508,14 +1515,11 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        Feeds the quiz funnel, which ends at the Oct 27 reminder. -->
   <div class="ticker" id="ticker">
     <span aria-hidden="true">&#127875;</span>
-    <button type="button" class="ticker-main" id="ticker-main" aria-label="Pick my costume: 169 closet costumes, about 2 minutes to pick."><span id="ticker-text">169 closet costumes: pick yours in about 2 minutes.</span></button>
+    <button type="button" class="ticker-main" id="ticker-main" aria-label="Pick my costume: closet costumes, picked for you."><span id="ticker-text">Closet costumes: pick yours.</span></button>
     <a href="/" id="ticker-cta">Pick my costume &rarr;</a>
     <button type="button" class="ticker-more" id="cdx-more" aria-expanded="false" aria-controls="cdx-panel" aria-label="What&rsquo;s next?" hidden><span aria-hidden="true">&#9662;</span></button>
   </div>
-  <div class="ticker-panel" id="cdx-panel" hidden>
-    <p class="cdx-mile">Want one reminder email? It lands <strong>October 27, <span id="cdx-mile-y">2027</span></strong>, with costumes you can make that night.</p>
-    <p class="cdx-mile">Skip the email? <a href="webcal://pickmycostume.com/feeds/halloween-2027.ics" style="display:inline-flex;align-items:center;min-height:44px;padding:6px 12px;border-radius:10px;font-weight:700">Subscribe in your calendar</a>: the October 27 make-it night and Halloween itself, in your own calendar. Subscribes to the whole season.</p>
-  </div>
+  <!-- 2026-11-24 (fleet text cut): the reminder-email/calendar panel (#cdx-panel) moved below the hero quiz block; it is re-inserted after the worked example. Its toggle (#cdx-more in the ticker) is unchanged. -->
 
   <!-- 2026-09-29: persistent site header — logo + name on every screen, links home. -->
   <header class="sitehead">
@@ -1566,30 +1570,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 </div>
     </div><!-- /heroskyclip -->
     <div class="hero">
-      <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
-        <div class="halo" id="moon-halo" aria-hidden="true"></div>
-        <span id="sky-icon"><svg class="moon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          <defs>
-            <radialGradient id="moonlit" cx="38%" cy="35%" r="75%">
-              <stop offset="0%" stop-color="#fdfbf3"/>
-              <stop offset="60%" stop-color="#f2edda"/>
-              <stop offset="100%" stop-color="#d9d2b4"/>
-            </radialGradient>
-          </defs>
-          <circle cx="50" cy="50" r="46" fill="#232338" stroke="#3d3d5c" stroke-width="1.5"/>
-          <path id="moon-lit" fill="url(#moonlit)" d=""/>
-        </svg></span>
-        <p class="mooncap" id="mooncap">tonight's moon phase</p>
-</div>
-      <!-- 2026-09-26: moon detail panel, populated on tap. -->
-      <div class="moonpanel" id="moon-panel" hidden>
-        <p id="moon-tonight"></p>
-        <p id="moon-halloween"></p>
-        <p class="mp-fun" id="moon-fun"></p>
-        <!-- 2026-09-27: honesty caveat. The sun is a 6am-6pm clock
-             heuristic; the moon phase is genuinely computed. -->
-        <p class="fine" id="moon-caveat" style="margin:8px 0 0">Computed fresh every night. We never ask for your location.</p>
-</div>
+      <!-- 2026-11-24 (fleet text cut): the moon widget (moonwrap + moon panel) moved below the hero quiz block; re-inserted after the worked example, IDs unchanged so app.js painting/toggle work as before. -->
       <div class="herotext">
       <h1 class="firstonly">Make a costume from your closet.</h1>
       <!-- 2026-11-07 (SPEC-PMC-SIM1107-04): off-season hero frame. The one
@@ -1634,7 +1615,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
       <!-- 2026-10-06 (Billy): proof line replaces the old abstract pre-headline
            ("Your pick, your materials list, your build plan, matched to what you
            already own") — concrete explanation now sits under the headline. -->
-      <p class="fine firstonly hero-proof" style="margin:10px auto 0">Free &middot; 5 questions &middot; about 2 minutes &middot; no signup</p>
+      <p class="fine firstonly hero-proof" style="margin:10px auto 0">5 questions &middot; about 2 minutes &middot; free &middot; no signup</p>
       <!-- 2026-11-09 (market teardown F1): static next-occasion bridge.
            Names the next real costume occasions plus Halloween 2027.
            No day count here: the #tminus line is the one countdown. -->
@@ -1922,6 +1903,41 @@ footer a#about-link{display:inline-block;padding:12px 18px}
              that live on the results screen, above the main action; the
              example's job is input -> pick -> what it looks like. -->
       </div>
+      <!-- 2026-11-24 (fleet text cut): relocated from above the hero so screen
+           one is headline -> question -> tappable answers with nothing in
+           between. The reminder/calendar panel keeps its ticker toggle
+           (#cdx-more); app.js now scrolls it into view when opened. The moon
+           widget keeps its IDs and tap-to-expand panel. -->
+  <div class="ticker-panel" id="cdx-panel" hidden>
+    <p class="cdx-mile">Want one reminder email? It lands <strong>October 27, <span id="cdx-mile-y">2027</span></strong>, with costumes you can make that night.</p>
+    <p class="cdx-mile">Skip the email? <a href="webcal://pickmycostume.com/feeds/halloween-2027.ics" style="display:inline-flex;align-items:center;min-height:44px;padding:6px 12px;border-radius:10px;font-weight:700">Subscribe in your calendar</a>: the October 27 make-it night and Halloween itself, in your own calendar. Subscribes to the whole season.</p>
+  </div>
+      <div class="moonbelow">
+      <div class="moonwrap" id="moon-btn" role="button" tabindex="0" aria-expanded="false" aria-controls="moon-panel" title="Tonight's moon: tap for details">
+        <div class="halo" id="moon-halo" aria-hidden="true"></div>
+        <span id="sky-icon"><svg class="moon" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <defs>
+            <radialGradient id="moonlit" cx="38%" cy="35%" r="75%">
+              <stop offset="0%" stop-color="#fdfbf3"/>
+              <stop offset="60%" stop-color="#f2edda"/>
+              <stop offset="100%" stop-color="#d9d2b4"/>
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="46" fill="#232338" stroke="#3d3d5c" stroke-width="1.5"/>
+          <path id="moon-lit" fill="url(#moonlit)" d=""/>
+        </svg></span>
+        <p class="mooncap" id="mooncap">tonight's moon phase</p>
+</div>
+      <!-- 2026-09-26: moon detail panel, populated on tap. -->
+      <div class="moonpanel" id="moon-panel" hidden>
+        <p id="moon-tonight"></p>
+        <p id="moon-halloween"></p>
+        <p class="mp-fun" id="moon-fun"></p>
+        <!-- 2026-09-27: honesty caveat. The sun is a 6am-6pm clock
+             heuristic; the moon phase is genuinely computed. -->
+        <p class="fine" id="moon-caveat" style="margin:8px 0 0">Computed fresh every night. We never ask for your location.</p>
+</div>
+      </div>
       <!-- 2026-10-06 (Lane 2, second wave): Pantry elevation. Strong secondary
            section directly under the hero. Chip counts are computed live by
            renderPantryPreview() in app.js from the visitor's saved pantry
@@ -1971,7 +1987,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <h2 class="q-title">See all 169 costumes on one map.</h2>
         <p class="fine" style="margin:0 0 10px">Zoom, wander, find something new.</p>
         <a class="galaxypreview" href="/map" aria-label="See all 169 costumes on one map">
-          <img src="images/galaxy-preview-stars.webp" alt="A map of all 169 costumes in glowing groups, like Dinosaur Land and Princess Castle" loading="lazy">
+          <img src="images/galaxy-preview-stars.webp" alt="A map of all the costumes in glowing groups, like Dinosaur Land and Princess Castle" loading="lazy">
           <div class="gpstars" aria-hidden="true"></div>
           <span>See the costume map &rarr;</span>
         </a>
@@ -2202,7 +2218,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-2" aria-expanded="false">I need a costume for tonight. What is actually last-minute?</button>
-      <div class="faq-a"><p>Make Tonight means fast. 30 minutes of work or less. 126 of the 169 costumes make the cut.</p></div>
+      <div class="faq-a"><p>Make Tonight means fast. 30 minutes of work or less.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-3" aria-expanded="false">What are some cheap couples costumes?</button>
@@ -2214,7 +2230,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-5" aria-expanded="false">Is it really free?</button>
-      <div class="faq-a"><p>Yes. No account, no ads, no checkout. It is a hobby project, and it is free.</p></div>
+      <div class="faq-a"><p>Yes. No account, no ads, no checkout. It is a hobby project, free forever.</p></div>
     </div>
     <div class="faq-item">
       <button type="button" class="faq-q" data-item-id="faq-6" aria-expanded="false">Can I use this with Claude?</button>
@@ -2268,7 +2284,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
            signup" (hero proof line + free FAQ) and "answers stay on your
            phone" (What we don't do FAQ) for a third time on one screen.
            Cut to the one claim that lives nowhere else on the page. -->
-      <p class="fine" style="margin-top:16px">We track anonymous usage stats. The only other thing we ever receive is an email address you give us for a plan or reminder email.</p>
+      <p class="fine" style="margin-top:16px">We only track anonymous usage stats.</p>
       <div class="maker">
         <h2>Made by a dad, on the side</h2>
         <p>I&rsquo;m Billy, a dad in Redmond, Washington. I build these tools on the side, with AI, one idea, one website, no company behind it. Pick My Costume picks one you can make from your closet, with the supplies and steps up front.</p>
@@ -2276,34 +2292,10 @@ footer a#about-link{display:inline-block;padding:12px 18px}
 <!-- Works with your AI (fleet AI section, 2026-11-04) -->
 <section class="works-with-ai" aria-label="Works with your AI" style="max-width:44rem;margin:2.5rem auto;padding:1.25rem 1rem;border:1px solid rgba(127,127,127,.45);border-radius:14px;font-family:inherit;line-height:1.55">
 <h2 style="margin:.1rem 0 .5rem;font-size:1.35rem">Works with your AI</h2>
-<p style="margin:.4rem 0">Your AI can run this site's costume picker. It ranks the same 169 checked costume ideas this site uses, so the pick fits your crew, your time, and what you already own.</p>
-<p style="margin:.4rem 0">Connect this site to Claude, Cursor, or any other MCP client (MCP, the standard way AI apps connect to outside tools). It is free, and it takes about a minute.</p>
-<p style="margin:.8rem 0 .3rem"><strong>1. Copy the server address</strong></p>
-<div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:stretch">
-<code id="wai-url" style="flex:1 1 16rem;display:flex;align-items:center;padding:.6rem .7rem;border:1px solid rgba(127,127,127,.45);border-radius:10px;word-break:break-all">https://mcp.pickmycostume.com/mcp</code>
-<button type="button" class="wai-copy" data-copy-target="wai-url" style="min-height:44px;min-width:44px;padding:.6rem 1.1rem;border-radius:10px;border:1px solid rgba(127,127,127,.55);background:transparent;color:inherit;font:inherit;cursor:pointer">Copy</button>
-</div>
-<p style="margin:.9rem 0 .3rem"><strong>2. Add it to your AI</strong></p>
-<details>
-<summary style="min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600">Claude Code: one command</summary>
-<pre style="overflow-x:auto;padding:.7rem;border:1px solid rgba(127,127,127,.35);border-radius:10px"><code>claude mcp add --transport http pick-my-costume https://mcp.pickmycostume.com/mcp</code></pre>
-</details>
-<details>
-<summary style="min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:600">Claude Desktop or Cursor: paste into the MCP settings</summary>
-<pre style="overflow-x:auto;padding:.7rem;border:1px solid rgba(127,127,127,.35);border-radius:10px"><code>{
-  "mcpServers": {
-    "pick-my-costume": {
-      "url": "https://mcp.pickmycostume.com/mcp"
-    }
-  }
-}</code></pre>
-</details>
-<p style="margin:.8rem 0 .2rem"><strong>3. Ask your AI:</strong> &ldquo;Pick a costume for a family of four that we can build tonight.&rdquo;</p>
-<p style="margin:.8rem 0 .2rem">Also on ChatGPT: Pick My Costume is published in the ChatGPT plugin directory. <a href="https://chatgpt.com/plugins" style="display:inline-block;min-height:44px;line-height:44px">Open the directory</a> and search &ldquo;Pick My Costume&rdquo; to add it there.</p>
+<p style="margin:.4rem 0">Your AI can run this site's costume picker: the same checked costume ideas this site uses, ranked for your crew, your time, and what you already own.</p>
+<p style="margin:.4rem 0">It works with Claude, Cursor, and other AI apps that connect to outside tools (MCP). Setup takes about a minute, and then you can just ask: &ldquo;Pick a costume for a family of four that we can build tonight.&rdquo;</p>
+<p style="margin:.8rem 0 .2rem"><a href="/mcp" style="display:inline-block;min-height:44px;line-height:44px;font-weight:700">Connect Pick My Costume to your AI &rarr;</a></p>
 </section>
-<script>
-(function(){var b=document.querySelector('.wai-copy');if(!b)return;b.addEventListener('click',function(){var el=document.getElementById(b.getAttribute('data-copy-target'));var t=el?el.textContent.trim():'';function done(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},2000);}function fallback(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);done();}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback);}else{fallback();}});})();
-</script>
       <footer class="sitefoot">
         <p class="fine" style="margin:0 0 6px"><a href="/about">About</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/countdown">Costume countdown</a> &middot; <a href="mailto:hello@pickmycostume.com">hello@pickmycostume.com</a></p>
         <p class="fine" style="margin:0">Pick My Costume is an independent project. Built with Muse.</p>
@@ -2546,7 +2538,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
         <button class="ghost" id="shuffler-add" type="button" style="flex:1">+ Add a person</button>
         <button class="ghost" id="shuffler-remove" type="button" style="flex:1">Remove last</button>
 </div>
-      <p class="fine" style="margin-top:10px">Kid / grown-up matters: some roles only fit one or the other, and the dealer respects that. Names stay on this page unless you tap Share this lineup.</p>
+      <p class="fine" style="margin-top:10px">Kid / grown-up matters: some roles only fit one or the other, and the dealer respects that. Names never leave this page.</p>
       <button class="cta" id="shuffler-deal" type="button" style="width:100%;margin-top:12px">Deal the roles</button>
       <p class="fine" id="shuffler-hint" style="text-align:center" role="status"></p>
       <div id="shuffler-result" class="card" style="display:none;margin-top:16px">
@@ -2639,7 +2631,7 @@ footer a#about-link{display:inline-block;padding:12px 18px}
        in the sitemap. -->
 
 </div>
-<script src="/app.js?v=20261006c" defer></script>
+<script src="/app.js?v=20261124a" defer></script>
 <script>
 /* 2026-09-30 (Week-2 traffic sprint): app bundle boot-guard. The 1.18MB inline
    script moved to /app.js (defer) so the document parses fast. If the bundle
@@ -2702,7 +2694,7 @@ html{scroll-padding-bottom:96px}
 <div class="askp-overlay" id="askp-panel" hidden>
   <div class="askp-sheet" role="dialog" aria-modal="true" aria-labelledby="askp-title">
     <div class="askp-head"><h2 id="askp-title">Who exactly do you want to be?</h2><button type="button" class="askp-close" id="askp-close" aria-label="Close the ask panel">&times;</button></div>
-    <p class="askp-sub">Type a costume name, or ask our AI in a sentence: "no sew for my toddler". It picks only from our own bank of 169 costumes, each with its build guide. Your words go to our AI to answer. Nothing you type is saved.</p>
+    <p class="askp-sub">Type a costume name, or ask our AI in a sentence: "no sew for my toddler". It picks only from our own bank of costumes, each with its build guide. Nothing you type is saved.</p>
     <div class="askp-chips" id="askp-chips">
       <button type="button">vampire</button>
       <button type="button">ghost</button>

@@ -59,6 +59,9 @@
       panelOpen = !panelOpen;
       panel.hidden = !panelOpen;
       moreBtn.setAttribute("aria-expanded", panelOpen ? "true" : "false");
+      /* 2026-11-24 (fleet text cut): the panel now lives below the hero quiz
+         block, so bring it into view when it opens from the ticker toggle. */
+      if (panelOpen && panel.scrollIntoView) { try { panel.scrollIntoView({block: "nearest"}); } catch(e) {} }
     });
   }
 })();
