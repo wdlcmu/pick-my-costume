@@ -6453,7 +6453,7 @@ Take the quiz as a couple. Builds use thrift-store and closet basics, listed up 
 Do you have costume ideas for kids?
 Yes. Take the quiz for your kid. Picks fit their age, with safety notes.
 Is it really free?
-Yes. No account, no ads, no checkout. It is a hobby project, free forever.
+Yes. No account, no ads, no checkout. It is a hobby project, and it is free.
 Can I use this with Claude?
 Yes. Add Pick My Costume to Claude .
 Ask for costume ideas in chat.
@@ -6466,7 +6466,7 @@ Here's a pick for you:
 Pick again
 Share
 See the full guide or take the 2-minute quiz
-We only track anonymous usage stats.
+We track anonymous usage stats. The only other thing we ever receive is an email address you give us for a plan or reminder email.
 Made by a dad, on the side
 I’m Billy, a dad in Redmond, Washington. I build these tools on the side, with AI, one idea, one website, no company behind it. Pick My Costume picks one you can make from your closet, with the supplies and steps up front.
 Works with your AI
@@ -6572,7 +6572,7 @@ Costume
 Who is playing
 + Add a person
 Remove last
-Kid / grown-up matters: some roles only fit one or the other, and the dealer respects that. Names never leave this page.
+Kid / grown-up matters: some roles only fit one or the other, and the dealer respects that. Names stay on this page unless you tap Share this lineup.
 Deal the roles
 The lineup
 Shuffle again
@@ -8642,7 +8642,7 @@ Classic Ghost: 10 min, nothing to buy beyond the assumed basics. Top five for ki
 Classic Vampire: 25 min, needs 4 store items. Scary with 25 minutes of effort and it photographs great.
 Every idea above also has a full free build guide with materials, numbered steps, and parent FAQs. Tap a photo or title.
 Pick my costume →
-5 questions · 2 minutes · free forever
+5 questions · 2 minutes · free
 Where this comes from
 Every number and material list on this page comes from the same costume bank that powers the Pick My Costume quiz: build time, difficulty, and per-idea materials. That is why this page always matches the quiz.
 We show them side by side and recommend nothing in particular: the right costume is the one you will actually finish before the party.
@@ -8704,7 +8704,7 @@ Most saved and picked on this site. Updated September 2026. Every one has a free
 #7 Little Pig Family Timed: about 25 min
 #8 Breakfast Buffet Timed: about 25 min
 Pick my costume →
-5 questions · 2 minutes · free forever
+5 questions · 2 minutes · free
 Where this comes from
 National trends: Google's Frightgeist , which ranks costumes from Google Search data. The top 10 above is Frightgeist's latest published ranking (October 2026). We update this page when Google publishes new rankings.
 On-site trends: the 8 costumes our visitors saved and picked most in recent weeks. No fake counts, no made-up names.
